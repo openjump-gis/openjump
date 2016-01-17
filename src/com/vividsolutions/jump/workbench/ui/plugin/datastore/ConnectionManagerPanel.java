@@ -492,7 +492,7 @@ public class ConnectionManagerPanel extends JPanel {
       String driverClassName = desc.getDataStoreDriverClassName();
       
       if (driverClassName
-          .equals(com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver.class
+          .equals(com.vividsolutions.jump.datastore.postgis.PostgisDSDriver.class
               .getName())) {
         return isClosed ? PG_DISCONNECTED_ICON : PG_CONNECTED_ICON;
       } else if (driverClassName

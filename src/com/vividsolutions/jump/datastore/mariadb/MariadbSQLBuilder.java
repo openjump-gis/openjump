@@ -4,8 +4,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
-import com.vividsolutions.jump.datastore.jdbc.BoundQuery;
-import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDataStoreMetadata;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMetadata;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 
 
@@ -15,7 +14,7 @@ import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBui
  */
 public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
 
-  public MariadbSQLBuilder(SpatialDataStoreMetadata dsMetadata, SpatialReferenceSystemID defaultSRID, String[] colNames) {
+  public MariadbSQLBuilder(SpatialDatabasesDSMetadata dsMetadata, SpatialReferenceSystemID defaultSRID, String[] colNames) {
     super(dsMetadata, defaultSRID, colNames);
   }
 
@@ -25,7 +24,7 @@ public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
    * @return a SQL query to get column names
    */
   @Override
-  public BoundQuery getSQL(FilterQuery query) {
+  public String getSQL(FilterQuery query) {
     StringBuilder qs = new StringBuilder();
     //HACK
     qs.append("SELECT ");
@@ -43,7 +42,7 @@ public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
     if (limit != 0 && limit != Integer.MAX_VALUE) {
       qs.append(" LIMIT ").append(limit);
     }
-    return new BoundQuery(qs.toString());
+    return qs.toString();
   };
   
   /**
@@ -52,7 +51,7 @@ public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
    * @return 
    */
   @Override
-  public BoundQuery getCheckSQL(DataStoreLayer dsLayer) {
+  public String getCheckSQL(DataStoreLayer dsLayer) {
     String s = "select * FROM %s %s LIMIT 0";
     String wc = dsLayer.getWhereClause();
     if (wc != null && ! wc.isEmpty()) {
@@ -61,7 +60,7 @@ public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
       wc = "";
     }
     //System.out.println(qs);
-    return new BoundQuery(String.format(s, dsLayer.getFullName(), wc));
+    return String.format(s, dsLayer.getFullName(), wc);
   }
 
   

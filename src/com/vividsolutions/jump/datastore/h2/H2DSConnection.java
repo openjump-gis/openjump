@@ -4,7 +4,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
-import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDataStoreConnection;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.FeatureInputStream;
@@ -15,12 +15,12 @@ import java.sql.SQLException;
 /**
  * Connection to a H2GIS database.
  */
-public class H2DataStoreConnection extends SpatialDataStoreConnection {
+public class H2DSConnection extends SpatialDatabasesDSConnection {
 
-    public H2DataStoreConnection(Connection con) {
+    public H2DSConnection(Connection con) {
         super(con); // ?
         connection = con;
-        this.dbMetadata = new H2DataStoreMetadata(this);
+        this.dbMetadata = new H2DSMetadata(this);
     }
 
     @Override
@@ -46,9 +46,10 @@ public class H2DataStoreConnection extends SpatialDataStoreConnection {
         String[] colNames = dbMetadata.getColumnNames(query.getDatasetName());
 
         H2SQLBuilder builder = (H2SQLBuilder)this.getSqlBuilder(srid, colNames);
+        String queryString = builder.getSQL(query);
+
         // [mmichaud 2013-08-07] add a parameter for database primary key name
-        return new H2FeatureInputStream(
-            connection, builder.getSQL(query).getQuery(), query.getPrimaryKey());
+        return new H2FeatureInputStream(connection, queryString, query.getPrimaryKey());
     }
 
     /**
@@ -72,12 +73,12 @@ public class H2DataStoreConnection extends SpatialDataStoreConnection {
             fs = ifs.getFeatureSchema();
         } catch (Exception e) {
             throw new Exception(
-                    I18N.get(SpatialDataStoreConnection.class.getName()
+                    I18N.get(SpatialDatabasesDSConnection.class.getName()
                             + ".SQL-error") + e.getMessage());
         }
 
         if (fs.getGeometryIndex() < 0) {
-            throw new Exception(I18N.get(SpatialDataStoreConnection.class.getName()
+            throw new Exception(I18N.get(SpatialDatabasesDSConnection.class.getName()
                     +".resultset-must-have-a-geometry-column"));
         }
         return ifs;

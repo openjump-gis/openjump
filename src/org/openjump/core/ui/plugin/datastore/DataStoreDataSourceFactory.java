@@ -20,7 +20,7 @@ public class DataStoreDataSourceFactory {
             boolean tableAlreadyCreated)  throws Exception {
         WritableDataStoreDataSource source;
         String driverName = connectionDescriptor.getDataStoreDriverClassName();
-        if (driverName.equals(com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver.class.getName())) {
+        if (driverName.equals(com.vividsolutions.jump.datastore.postgis.PostgisDSDriver.class.getName())) {
             source = new PostGISDataStoreDataSource(
                     connectionDescriptor, datasetName, geometryAttributeName, externalPKName);
             source.setTableAlreadyCreated(tableAlreadyCreated);

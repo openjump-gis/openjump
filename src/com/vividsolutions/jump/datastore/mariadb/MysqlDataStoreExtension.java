@@ -3,13 +3,13 @@ package com.vividsolutions.jump.datastore.mariadb;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDataStoreExtension;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSExtension;
 
 /**
  * installs the MySQL database datastore driver if available
  */
 public class MysqlDataStoreExtension extends
-    AbstractSpatialDataStoreExtension {
+    AbstractSpatialDatabasesDSExtension {
 
   /**
    * customize the abstract implementation

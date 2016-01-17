@@ -3,14 +3,14 @@ package com.vividsolutions.jump.datastore.mariadb;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDataStoreExtension;
+import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSExtension;
 
 /**
  * a database datastore extension for accessing MariaDB and MySQL w/ the MariaDB
  * JDBC driver
  */
 public class MariadbDataStoreExtension extends
-    AbstractSpatialDataStoreExtension {
+    AbstractSpatialDatabasesDSExtension {
 
   /**
    * customize the abstract implementation

@@ -2,10 +2,8 @@ package com.vividsolutions.jump.datastore.spatialdatabases;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jump.datastore.jdbc.BoundQuery;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreMetadata;
 import com.vividsolutions.jump.datastore.GeometryColumn;
@@ -21,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.dbutils.ResultSetHandler;
 
 /**
  * A base class for Spatial Databases DataStore Metadata: DB accessed through
@@ -35,7 +32,7 @@ import org.apache.commons.dbutils.ResultSetHandler;
  *
  * @author Nicolas Ribot
  */
-public class SpatialDataStoreMetadata implements DataStoreMetadata {
+public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
 
   /**
    * OGC WKB reader if needed: TODO: keep only in needed classes ?
@@ -92,18 +89,27 @@ public class SpatialDataStoreMetadata implements DataStoreMetadata {
    */
   protected String sridQuery = null;
 
-  public SpatialDataStoreMetadata() {
+  public SpatialDatabasesDSMetadata() {
   }
 
-  public SpatialDataStoreMetadata(DataStoreConnection conn) {
+  public SpatialDatabasesDSMetadata(DataStoreConnection conn) {
     this.conn = conn;
+    // TODO: use bind parameters to avoid SQL injection
     this.datasetNameQuery = "";
     this.defaultSchemaName = "";
     this.spatialDbName = "";
+    // TODO
     this.spatialExtentQuery1 = "";
+    // TODO
     this.spatialExtentQuery2 = "";
+    // TODO
     this.geoColumnsQuery = "";
+    // TODO
     this.sridQuery = "";
+  }
+
+  public String getDatasetNameQuery() {
+    return this.datasetNameQuery;
   }
 
   public String getDefaultSchemaName() {
@@ -114,61 +120,22 @@ public class SpatialDataStoreMetadata implements DataStoreMetadata {
     return this.spatialDbName;
   }
 
-  /**
-   * 
-   * @return a BoundQuery bound without parameters
-   */
-  public BoundQuery getDatasetNameQuery() {
-    return new BoundQuery(this.datasetNameQuery);
+  public String getSpatialExtentQuery1(String schema, String table, String attributeName) {
+    return null;
   }
 
-  /**
-   * Default behaviour is to use 3 bound parameters
-   *
-   * @param schema
-   * @param table
-   * @param attributeName
-   * @return
-   */
-  public BoundQuery getSpatialExtentQuery1(String schema, String table, String attributeName) {
-    return new BoundQuery(spatialExtentQuery1).addParameter(schema)
-        .addParameter(table).addParameter(attributeName);
+  public String getSpatialExtentQuery2(String schema, String table, String attributeName) {
+    return null;
   }
 
-  /**
-   * Default behaviour is to use 3 bound parameters
-   *
-   * @param schema
-   * @param table
-   * @param attributeName
-   * @return
-   */
-  public BoundQuery getSpatialExtentQuery2(String schema, String table, String attributeName) {
-    return new BoundQuery(String.format(this.spatialExtentQuery2, attributeName, schema, table));
+  public String getGeoColumnsQuery(String datasetName) {
+    // TODO
+    return String.format(this.geoColumnsQuery, datasetName);
   }
 
-  /**
-   * Default behaviour is to use 2 bound parameters took from datasetName
-   *
-   * @param datasetName
-   * @return
-   */
-  public BoundQuery getGeoColumnsQuery(String datasetName) {
-    return new BoundQuery(this.geoColumnsQuery).addParameter(getSchemaName(datasetName))
-        .addParameter(getTableName(datasetName));
-  }
-
-  /**
-   * Default behaviour is to use 3 bound parameters took from given parameters
-   *
-   * @param schemaName
-   * @param tableName
-   * @param colName
-   * @return
-   */
-  public BoundQuery getSridQuery(String schemaName, String tableName, String colName) {
-    return new BoundQuery(this.sridQuery).addParameter(schemaName)
-        .addParameter(tableName).addParameter(colName);
+  public String getSridQuery(String schemaName, String tableName, String colName) {
+    // TODO
+    return String.format(this.sridQuery, schemaName, tableName, colName);
   }
 
   /**
@@ -217,41 +184,19 @@ public class SpatialDataStoreMetadata implements DataStoreMetadata {
     final List datasetNames = new ArrayList();
     // Spatial tables only.
     try {
-//      JDBCUtil.execute(
-//          conn.getJdbcConnection(),
-//          this.getDatasetNameQuery(),
-//          new ResultSetBlock() {
-//            public void yield(ResultSet resultSet) throws SQLException {
-//              while (resultSet.next()) {
-//                String schema = resultSet.getString(1);
-//                String table = resultSet.getString(2);
-//                if (!schema.equalsIgnoreCase(SpatialDataStoreMetadata.this.getDefaultSchemaName())) {
-//                  table = schema + "." + table;
-//                }
-//                datasetNames.add(table);
-//              }
-//            }
-//          });
-
-      // try to use preparedStatements from now on
-      JDBCUtil.query(conn.getJdbcConnection(),
-          getDatasetNameQuery(),
-          new ResultSetHandler<Object[]>() {
-            @Override
-            public Object[] handle(ResultSet resultSet) throws SQLException {
+      JDBCUtil.execute(
+          conn.getJdbcConnection(),
+          this.getDatasetNameQuery(),
+          new ResultSetBlock() {
+            public void yield(ResultSet resultSet) throws SQLException {
               while (resultSet.next()) {
                 String schema = resultSet.getString(1);
                 String table = resultSet.getString(2);
-                // checks for ";" in identifiers
-                if (schema.contains(";") || table.contains(";")) {
-                  throw new SQLException("Invalid dataset name: schema or table contains ';'");
-                }
-                if (!schema.equalsIgnoreCase(SpatialDataStoreMetadata.this.getDefaultSchemaName())) {
+                if (!schema.equalsIgnoreCase(SpatialDatabasesDSMetadata.this.getDefaultSchemaName())) {
                   table = schema + "." + table;
                 }
                 datasetNames.add(table);
               }
-              return null;
             }
           });
     } catch (Exception e) {
@@ -266,46 +211,27 @@ public class SpatialDataStoreMetadata implements DataStoreMetadata {
     return (String[]) datasetNames.toArray(new String[datasetNames.size()]);
   }
 
-  /**
-   * Gets envelope for given dataset and geo column name.
-   *
-   * @param datasetName
-   * @param attributeName
-   * @return
-   */
-  @Override
   public synchronized Envelope getExtents(String datasetName, String attributeName) {
 
     final Envelope[] e = new Envelope[]{null};
 
-    String schema = getSchemaName(datasetName);
-    String table = getTableName(datasetName);
-    BoundQuery bSql1 = getSpatialExtentQuery1(schema, table, attributeName);
-    BoundQuery bSql2 = getSpatialExtentQuery2(schema, table, attributeName);
+    String schema;
+    String table;
+    if (datasetName.indexOf('.') != -1) {
+      String[] parts = datasetName.split("\\.", 2);
+      schema = parts[0];
+      table = parts[1];
+    } else {
+      schema = this.defaultSchemaName;
+      table = datasetName;
+    }
+    // There are two methods to compute the extent,
+    // from DB metadata or from layer directly
+    String sql1 = this.getSpatialExtentQuery1(schema, table, attributeName);
+    String sql2 = this.getSpatialExtentQuery2(schema, table, attributeName);
 
-//    final ResultSetBlock resultSetBlock = new ResultSetBlock() {
-//      public void yield(ResultSet resultSet) throws Exception {
-//        if (resultSet.next()) {
-//          byte[] bytes = null;
-//          Geometry geom = null;
-//          try {
-//            bytes = (byte[]) resultSet.getObject(1);
-//            if (bytes != null) {
-//              geom = reader.read(bytes);
-//            }
-//          } catch (Exception e) {
-//            geom = txtReader.read(resultSet.getString(1));
-//          }
-//          if (geom != null) {
-//            e[0] = geom.getEnvelopeInternal();
-//          }
-//        }
-//      }
-//    };
-    // PreparedStatements from now on
-    final ResultSetHandler resultSetHandler = new ResultSetHandler<Object[]>() {
-      @Override
-      public Object[] handle(ResultSet resultSet) throws SQLException {
+    final ResultSetBlock resultSetBlock = new ResultSetBlock() {
+      public void yield(ResultSet resultSet) throws Exception {
         if (resultSet.next()) {
           byte[] bytes = null;
           Geometry geom = null;
@@ -315,39 +241,24 @@ public class SpatialDataStoreMetadata implements DataStoreMetadata {
               geom = reader.read(bytes);
             }
           } catch (Exception e) {
-            try {
-              geom = txtReader.read(resultSet.getString(1));
-            } catch (ParseException pe) {
-              throw new SQLException(pe);
-            }
+            geom = txtReader.read(resultSet.getString(1));
           }
           if (geom != null) {
             e[0] = geom.getEnvelopeInternal();
           }
         }
-        return null;
       }
     };
-
     try {
-      JDBCUtil.query(
-          conn.getJdbcConnection(), 
-          getSpatialExtentQuery1(schema, table, attributeName), 
-          resultSetHandler);
+      JDBCUtil.execute(conn.getJdbcConnection(), (sql1), resultSetBlock);
       if (e[0] == null || e[0].isNull()) {
-        JDBCUtil.query(
-            conn.getJdbcConnection(), 
-            getSpatialExtentQuery2(schema, table, attributeName), 
-            resultSetHandler);
+        JDBCUtil.execute(conn.getJdbcConnection(), (sql2), resultSetBlock);
       }
     } catch (Exception ex1) {
-      if (bSql2.getQuery() != null) {
+      if (sql2 != null) {
         // some drivers do not support a second SQL query for extent:
         /// sqlite w/o spatialite for instance
-        JDBCUtil.query(
-            conn.getJdbcConnection(), 
-            getSpatialExtentQuery2(schema, table, attributeName), 
-            resultSetHandler);
+        JDBCUtil.execute(conn.getJdbcConnection(), sql2, resultSetBlock);
       }
     }
     //System.out.println("getting extent for: " + datasetName + "." + attributeName + ": " + e[0].toString()  + " in th: " + Thread.currentThread().getName());
@@ -362,43 +273,28 @@ public class SpatialDataStoreMetadata implements DataStoreMetadata {
    * @return
    */
   public List<GeometryColumn> getGeometryAttributes(String datasetName) {
+    String sql = getGeoColumnsQuery(datasetName);
+    return getGeometryAttributes(sql, datasetName);
+  }
+
+  protected List<GeometryColumn> getGeometryAttributes(String sql, String datasetName) {
     final List<GeometryColumn> geometryAttributes = new ArrayList<GeometryColumn>();
     //System.out.println("getting geom Attribute for dataset: " + datasetName + " with query: " + sql);
 
-//    JDBCUtil.execute(
-//        conn.getJdbcConnection(), sql,
-//        new ResultSetBlock() {
-//          public void yield(ResultSet resultSet) throws SQLException {
-//            while (resultSet.next()) {
-//              // TODO: escape single quotes in geo column name ?
-//              geometryAttributes.add(new GeometryColumn(
-//                      resultSet.getString(1),
-//                      resultSet.getInt(2),
-//                      resultSet.getString(3)));
-//            }
-//          }
-//        });
-    // PreparedStatements for now on
-    ResultSetHandler rsh = new ResultSetHandler() {
-      public Object handle(ResultSet resultSet) throws SQLException {
-        while (resultSet.next()) {
-          String s = resultSet.getString(1);
-          if (s.contains(";")) {
-            throw new SQLException("Invalid geometric column name: contains ';'");
+    JDBCUtil.execute(
+        conn.getJdbcConnection(), sql,
+        new ResultSetBlock() {
+          public void yield(ResultSet resultSet) throws SQLException {
+            while (resultSet.next()) {
+              // TODO: escape single quotes in geo column name ?
+              geometryAttributes.add(new GeometryColumn(
+                      resultSet.getString(1),
+                      resultSet.getInt(2),
+                      resultSet.getString(3)));
+            }
           }
-          geometryAttributes.add(new GeometryColumn(
-              s,
-              resultSet.getInt(2),
-              resultSet.getString(3)));
-        }
-        return null;
-      }
-    };
-
-    JDBCUtil.query(conn.getJdbcConnection(), getGeoColumnsQuery(datasetName), rsh);
-
+        });
     return geometryAttributes;
-
   }
 
   /**
@@ -455,12 +351,8 @@ public class SpatialDataStoreMetadata implements DataStoreMetadata {
       DatabaseMetaData dbMd = this.conn.getJdbcConnection().getMetaData();
       rs = dbMd.getColumns(null, getSchemaName(datasetName), getTableName(datasetName), null);
       while (rs.next()) {
-        String s = rs.getString(4);
-        //TODO: deal with exceptions ?
-//        if (s.contains(";")) {
-//          throw new SQLException("Invalid dataset name: schema or table contains ';'");
-//        }
-        cols.add(s);
+        // TODO: escape quotes in column names ?
+        cols.add(rs.getString(4));
       }
     } catch (SQLException sqle) {
 
@@ -475,10 +367,9 @@ public class SpatialDataStoreMetadata implements DataStoreMetadata {
 
   /**
    * Returns whether column is used by a spatial index (Gist) or not.
-   *
    * @param dsName
    * @param column
-   * @return
+   * @return 
    * @throws java.sql.SQLException
    */
   public boolean isIndexed(final String dsName, final String column) throws SQLException {
@@ -537,35 +428,20 @@ public class SpatialDataStoreMetadata implements DataStoreMetadata {
 
   protected String querySRID(String datasetName, String colName) {
     final StringBuffer srid = new StringBuffer();
-//    String sql = this.getSridQuery(this.getSchemaName(datasetName), this.getTableName(datasetName), colName);
-
-//    JDBCUtil.execute(conn.getJdbcConnection(), sql, new ResultSetBlock() {
-//      public void yield(ResultSet resultSet) throws SQLException {
-//        if (resultSet.next()) {
-//          // Nicolas Ribot: test if a null is returned
-//          String s = resultSet.getString(1);
-//          srid.append(s == null ? "0" : s);
-//        }
-//      }
-//    });
-    ResultSetHandler rsh = new ResultSetHandler() {
-      public Object handle(ResultSet resultSet) throws SQLException {
+    String sql = this.getSridQuery(this.getSchemaName(datasetName), this.getTableName(datasetName), colName);
+    JDBCUtil.execute(conn.getJdbcConnection(), sql, new ResultSetBlock() {
+      public void yield(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
           // Nicolas Ribot: test if a null is returned
           String s = resultSet.getString(1);
           srid.append(s == null ? "0" : s);
         }
-        return null;
       }
-    };
-    JDBCUtil.query(
-        conn.getJdbcConnection(), 
-        getSridQuery(getSchemaName(datasetName), getTableName(datasetName), colName), 
-        rsh);
+    });
 
     return srid.toString();
   }
-
+  
   @Override
   public DataStoreConnection getDataStoreConnection() {
     return this.conn;

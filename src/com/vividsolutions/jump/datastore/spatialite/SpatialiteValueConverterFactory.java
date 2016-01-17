@@ -24,13 +24,13 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
    * propagate the metadata object through Spatialite classes to get access to
    * specific information
    */
-  private SpatialiteDataStoreMetadata metadata;
+  private SpatialiteDSMetadata metadata;
 
   public SpatialiteValueConverterFactory(Connection conn) {
     super(conn);
   }
 
-  public void setMetadata(SpatialiteDataStoreMetadata metadata) {
+  public void setMetadata(SpatialiteDSMetadata metadata) {
     this.metadata = metadata;
   }
 

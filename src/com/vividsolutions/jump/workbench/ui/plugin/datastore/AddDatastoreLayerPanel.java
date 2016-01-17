@@ -18,8 +18,8 @@ import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.DataStoreMetadata;
 import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
-import com.vividsolutions.jump.datastore.jdbc.BoundQuery;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
+import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -48,7 +48,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import org.apache.commons.dbutils.ResultSetHandler;
 
 // TODO             String s1 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Prevents-unnecessary-queries-to-the-datastore");
 //            String s2 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.The-recommended-setting-is-to-leave-this-checked");
@@ -382,22 +381,12 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
       SpatialReferenceSystemID srid = conn.getMetadata().getSRID(layer.getFullName(), layer.getGeoCol().getName());
       String[] colNames = conn.getMetadata().getColumnNames(layer.getFullName());
       SpatialDatabasesSQLBuilder builder = conn.getSqlBuilder(srid, colNames);
-      BoundQuery bSql = builder.getCheckSQL(layer);
+      String sql = builder.getCheckSQL(layer);
       try {
-//        JDBCUtil.execute(conn.getJdbcConnection(), sql, new ResultSetBlock() {
-//          public void yield(ResultSet resultSet) throws SQLException {
-//            // if query succeeds, nothing to do. 
-//            // Exception thrown in case of error: we manage it.
-//          }
-//        });
-        
-        // using prepared statements now.
-        JDBCUtil.query(conn.getJdbcConnection(), bSql, new ResultSetHandler() {
-          @Override
-          public Object handle(ResultSet resultSet) throws SQLException {
+        JDBCUtil.execute(conn.getJdbcConnection(), sql, new ResultSetBlock() {
+          public void yield(ResultSet resultSet) throws SQLException {
             // if query succeeds, nothing to do. 
             // Exception thrown in case of error: we manage it.
-            return null;
           }
         });
       } catch (Exception e) {

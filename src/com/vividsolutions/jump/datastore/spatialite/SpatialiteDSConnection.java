@@ -1,10 +1,10 @@
-package com.vividsolutions.jump.datastore.mariadb;
+package com.vividsolutions.jump.datastore.spatialite;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
-import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDataStoreConnection;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.FeatureInputStream;
@@ -13,19 +13,29 @@ import java.sql.SQLException;
 
 /**
  *
- * @author nicolas Ribot
+ * @author nicolas ribot
+ * TODO: Manage converter to handle all geometry type in the same database.
  */
-public class MariadbDataStoreConnection extends SpatialDataStoreConnection {
+public class SpatialiteDSConnection extends SpatialDatabasesDSConnection {
 
-    public MariadbDataStoreConnection(Connection con) {
+    public SpatialiteDSConnection(Connection con) {
         super(con); // ?
         connection = con;
-        this.dbMetadata = new MariadbDataStoreMetadata(this);
+        this.dbMetadata = new SpatialiteDSMetadata(this);
     }
     
+    /**
+     * Keeps a reference on SpatialiteDSMetadata into the SQL builder, to access
+     * Spatialite preferences necessary in order to build proper queries according to 
+     * geometric type
+     * @param srid
+     * @param colNames
+     * @return 
+     */
     @Override
     public SpatialDatabasesSQLBuilder getSqlBuilder(SpatialReferenceSystemID srid, String[] colNames) {
-      return new MariadbSQLBuilder(this.dbMetadata, srid, colNames);
+        SpatialiteSQLBuilder ret = new SpatialiteSQLBuilder((SpatialiteDSMetadata)this.dbMetadata, srid, colNames);
+        return ret;
     }
 
     /**
@@ -43,9 +53,14 @@ public class MariadbDataStoreConnection extends SpatialDataStoreConnection {
         SpatialReferenceSystemID srid = dbMetadata.getSRID(query.getDatasetName(), query.getGeometryAttributeName());
         String[] colNames = dbMetadata.getColumnNames(query.getDatasetName());
 
-        MariadbSQLBuilder builder = (MariadbSQLBuilder)this.getSqlBuilder(srid, colNames);
+        SpatialiteSQLBuilder builder = (SpatialiteSQLBuilder)this.getSqlBuilder(srid, colNames);
+        String queryString = builder.getSQL(query);
+
         // [mmichaud 2013-08-07] add a parameter for database primary key name
-        return new MariadbFeatureInputStream(connection, builder.getSQL(query).getQuery(), query.getPrimaryKey());
+        SpatialiteFeatureInputStream fis = new SpatialiteFeatureInputStream(connection, queryString, query.getPrimaryKey());
+        // Needed to choose converter according to real geometry type
+        fis.setMetadata((SpatialiteDSMetadata)dbMetadata);
+        return fis;
     }
     
     /**
@@ -61,7 +76,9 @@ public class MariadbDataStoreConnection extends SpatialDataStoreConnection {
     @Override
     public FeatureInputStream executeAdhocQuery(AdhocQuery query) throws Exception {
         String queryString = query.getQuery();
-        MariadbFeatureInputStream ifs = new MariadbFeatureInputStream(connection, queryString, query.getPrimaryKey());
+        SpatialiteFeatureInputStream ifs = new SpatialiteFeatureInputStream(connection, queryString, query.getPrimaryKey());
+        // Needed to choose converter according to real geometry type
+        ifs.setMetadata((SpatialiteDSMetadata)dbMetadata);
         
         // Nicolas Ribot: getting FeatureSchema here actually runs the query: if an error occurs, must trap it here
         FeatureSchema fs = null;
@@ -69,12 +86,13 @@ public class MariadbDataStoreConnection extends SpatialDataStoreConnection {
           fs = ifs.getFeatureSchema();
         } catch (Exception e) {
           throw new Exception(
-              I18N.get(com.vividsolutions.jump.datastore.spatialdatabases.SpatialDataStoreConnection.class.getName()
-                  +".SQL-error") + e.getMessage());
+            I18N.get(com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection.class.getName()
+                +".SQL-error") + e.getMessage());
         }
         
         if (fs.getGeometryIndex() < 0) {
-            throw new Exception(I18N.get(com.vividsolutions.jump.datastore.spatialdatabases.SpatialDataStoreConnection.class.getName()
+            throw new Exception(I18N.get(
+                com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection.class.getName()
                 +".resultset-must-have-a-geometry-column"));
         }
         return ifs;

@@ -6,7 +6,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
-import com.vividsolutions.jump.datastore.jdbc.BoundQuery;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
@@ -18,7 +17,7 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
 
   private String datasetName;
 
-  public SpatialiteSQLBuilder(SpatialiteDataStoreMetadata dsMetadata, SpatialReferenceSystemID defaultSRID, String[] colNames) {
+  public SpatialiteSQLBuilder(SpatialiteDSMetadata dsMetadata, SpatialReferenceSystemID defaultSRID, String[] colNames) {
     super(dsMetadata, defaultSRID, colNames);
   }
 
@@ -29,7 +28,7 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
    * @return a SQL query to get column names
    */
   @Override
-  public BoundQuery getSQL(FilterQuery query) {
+  public String getSQL(FilterQuery query) {
     this.datasetName = query.getDatasetName();
     StringBuilder qs = new StringBuilder();
     //HACK
@@ -39,8 +38,13 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
     String and = query.getCondition() == null ? "1" : query.getCondition();
     String lim = (query.getLimit() != 0 && query.getLimit() != Integer.MAX_VALUE) ? " LIMIT " + query.getLimit() : "";
 
-    return new BoundQuery(
-        String.format(ret, cols, this.datasetName, bbox, and, lim));
+    //System.out.println(qs);
+    String s = String.format(ret, cols, this.datasetName, bbox, and, lim);
+//    JUMPWorkbench.getInstance().getFrame().log(
+//        "SQL query to get Spatial table features:\n\t"
+//        + s, this.getClass());
+
+    return s;
   }
 
   /**
@@ -50,7 +54,7 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
    * @return
    */
   @Override
-  public BoundQuery getCheckSQL(DataStoreLayer dsLayer) {
+  public String getCheckSQL(DataStoreLayer dsLayer) {
     // select * crashes Java with Spatialite extension loaded ??
     String s = "select * FROM %s %s LIMIT 0";
     String wc = dsLayer.getWhereClause();
@@ -60,7 +64,7 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
       wc = "";
     }
     //System.out.println(qs);
-    return new BoundQuery(String.format(s, dsLayer.getFullName(), wc));
+    return String.format(s, dsLayer.getFullName(), wc);
   }
 
   /**
@@ -76,7 +80,7 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
     // Added double quotes around each column name in order to read mixed case table names
     // correctly [mmichaud 2007-05-13]
     StringBuilder buf = new StringBuilder();
-    SpatialiteDataStoreMetadata dsm = (SpatialiteDataStoreMetadata) getDbMetadata();
+    SpatialiteDSMetadata dsm = (SpatialiteDSMetadata) getDbMetadata();
     GeometricColumnType gcType = dsm.getGeoColTypesdMap().get(this.datasetName.toLowerCase() + "." + geomColName.toLowerCase());
     String s = null;
     switch (gcType) {
@@ -109,7 +113,7 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
     String ret = "1";
     // Example of Spatialite SQL: 
     // select nom_comm from commune where st_envIntersects(wkt_geometry, bbox(516707,6279239,600721,6347851)
-    SpatialiteDataStoreMetadata dsm = (SpatialiteDataStoreMetadata) getDbMetadata();
+    SpatialiteDSMetadata dsm = (SpatialiteDSMetadata) getDbMetadata();
     if (dsm.isSpatialiteLoaded()) {
       GeometricColumnType gcType = dsm.getGeoColTypesdMap().get(
           query.getDatasetName().toLowerCase() + "." + query.getGeometryAttributeName().toLowerCase());

@@ -19,14 +19,14 @@ import java.sql.SQLException;
  *
  * @author nicolas Ribot
  */
-public class SpatialDataStoreConnection implements DataStoreConnection {
+public class SpatialDatabasesDSConnection implements DataStoreConnection {
 
-  protected SpatialDataStoreMetadata dbMetadata;
+  protected SpatialDatabasesDSMetadata dbMetadata;
   protected Connection connection;
 
-  public SpatialDataStoreConnection(Connection conn) {
+  public SpatialDatabasesDSConnection(Connection conn) {
     connection = conn;
-    dbMetadata = new SpatialDataStoreMetadata(this);
+    dbMetadata = new SpatialDatabasesDSMetadata(this);
   }
 
   @Override
