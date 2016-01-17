@@ -5,6 +5,10 @@ import java.io.IOException;
 public class WMSException extends IOException {
   String source = "";
 
+  public WMSException(String message) {
+    super(message);
+  }
+
   public WMSException(String message, String xml_src) {
     super(message);
     this.source=xml_src;
