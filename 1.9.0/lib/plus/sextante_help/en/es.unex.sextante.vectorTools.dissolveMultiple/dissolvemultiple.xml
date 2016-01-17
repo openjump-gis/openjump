@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm works as the regular Dissolve algorithm (see its help file for more information), but uses more than one field to define classes.&#10;&#10;In the regular dissolve algorithm, all features with the same value for a given field are dissolved. In this algorithm, features must have the same value not for just a single field, but for a set of them defined by the user.&#10;&#10;Apart from that, the behaviour of the algorithm is identical to the Dissolve algorithm" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="LAYER" text="The input  layer to dissolve." description="Polygons" type="3">
+		</element>
+		<element name="GROUPING_FIELD" text="The names of the fields to define each class, separated by commas. Names are case-sensitive." description="Field with class name" type="3">
+		</element>
+		<element name="GROUPING_FUNCTIONS" text="The values to add to the resulting dissolved polygons." description="Summary statistics" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting layer with dissolved features." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

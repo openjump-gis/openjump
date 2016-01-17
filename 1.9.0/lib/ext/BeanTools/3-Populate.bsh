@@ -1,0 +1,46 @@
+///////////////////////////////////////////////////////////////
+// POPULATE THE FIRST SELECTED LAYER WITH RANDOM POINT FEATURES
+// Michael Michaud   2007-03-15
+///////////////////////////////////////////////////////////////
+
+import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+
+// feature collection of the first selected layer
+fc = wc.getLayerNamePanel().getSelectedLayers()[0].getFeatureCollectionWrapper();
+fs = fc.getFeatureSchema();
+
+// error message if the selected layer is not editable
+if (!wc.getLayerNamePanel().getSelectedLayers()[0].isEditable()) {
+    dialog = new MultiInputDialog(wc.workbench.frame, "", true);
+    dialog.addLabel(wc.getLayerNamePanel().getSelectedLayers()[0].getName() + " is not editable");
+    dialog.setVisible(true);
+}
+
+else {
+
+    // geometry factory to create random coordinates
+    GeometryFactory gf = new GeometryFactory();
+    
+    // small function to create random strings
+    randomString(int length) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0 ; i < length ; i++) sb.append((char)(64 + 27.0*Math.random()));
+        return sb.toString();
+    }
+    
+    // populating the feature collection
+    for (int i = 0 ; i < 1000 ; i++) {
+        feature = new BasicFeature(fs);
+        g = gf.createPoint(new Coordinate(100000.0*Math.random(),
+                                          100000.0*Math.random(),
+                                          1000.0*Math.random()));
+        feature.setGeometry(g);
+        for (int j = 0 ; j < fs.getAttributeCount() ; j++) {
+            if (fs.getAttributeType(j) == AttributeType.STRING) feature.setAttribute(j, randomString(12));
+            else if (fs.getAttributeType(j) == AttributeType.INTEGER) feature.setAttribute(j, (int)(1000000000.0*Math.random()));
+            else if (fs.getAttributeType(j) == AttributeType.DOUBLE) feature.setAttribute(j, Math.random());
+            else if (fs.getAttributeType(j) == AttributeType.DATE) feature.setAttribute(j, new Date());
+        }
+        fc.add(feature);
+    }
+}

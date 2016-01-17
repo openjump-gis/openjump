@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the hipsography of a watershed, given its outlet point and a DEM. The watershed is calculated and then used as a mask, to mask out values outside of the watershed. The resulting hypsometry is, thus, calculated using only values from cells belonging to the watershed." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="This model has been created as an example to show users how to create complex models using the SEXTANTE modeler. Please, open it in the modeler to study its structure and learn more about how to use this powerful and versatile element of SEXTANTE. Feel free to edit the model to adapt it to your particular needs." description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="V&#237;ctor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT0" text="A Digital Elevation Model" description="DEM" type="3">
+		</element>
+		<element name="INPUT1" text="The coordinates of the outlet point to be used to delineate the watershed" description="Coordinate" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

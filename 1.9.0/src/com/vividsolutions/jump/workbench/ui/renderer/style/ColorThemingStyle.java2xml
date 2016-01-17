@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<root>
+  <attribute xml-name="enabled" java-name="enabled"/>
+  <attribute xml-name="global-transparency-enabled" java-name="globalTransparencyEnabled"/>
+  <attribute xml-name="global-line-width-enabled" java-name="globalLineWidthEnabled"/>
+  <attribute xml-name="vertex-style-enabled" java-name="vertexStyleEnabled"/>
+  <!-- attributeName will be null if there are no
+  non-spatial attributes. So we must store it as an element
+  rather than an attribute. [Jon Aquino] -->
+  <element xml-name="attribute-name" java-name="attributeName"/>
+  <element xml-name="default-style" java-name="defaultStyle"/>
+  <element xml-name="attribute-value-to-style-map" java-name="attributeValueToBasicStyleMap"/>
+  <element xml-name="attribute-value-to-label-map" java-name="attributeValueToLabelMap"/>  
+</root>

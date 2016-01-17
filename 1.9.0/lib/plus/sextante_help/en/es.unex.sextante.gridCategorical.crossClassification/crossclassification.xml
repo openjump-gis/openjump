@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the kappa index of agreement for 2 raster layers. This index can be used to check the degree of similarity between two layers such as two land use layers corresponding to two different dates.&#10;&#10;The  Kappa index is not biased by random coincidences, since it takes into account agreement that could occur by change (expected agreement). Kappa index values range from -1 to 1. 1 indicates a complete similarity, while the -1 defines a negative sign correlation. Values around 0 indicates that there is no correlaci&#243;n between the layers. Values higher than 0.75 indicate a very good correlation. &#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* http://en.wikipedia.org/wiki/Cohen's_kappa" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="GRID" text="first input raster layer." description="Grid 1" type="3">
+		</element>
+		<element name="GRID2" text="second input raster layer." description="Grid 2" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="CROSCLASS" text="a new layer with a value that defines the change that has taken place in that cell between both images&#10;&#10;Unique cell values are obtained using the following formula:&#10;&#10;V=  class_grid_1 X total_number_classes_in_grid_2 + class_grid_2&#10;&#10;" description="Cross classification" type="2">
+		</element>
+		<element name="TABLE" text="" description="Cross classification" type="2">
+		</element>
+		<element name="KAPPA" text="global and individual class Kappa values" description="Cross classification" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
