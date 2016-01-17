@@ -17,6 +17,7 @@ import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.java2xml.Java2XML;
 import com.vividsolutions.jump.util.java2xml.XML2Java;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -70,13 +71,11 @@ public class PersistentBlackboardPlugIn extends AbstractPlugIn {
 
     private void restoreState(WorkbenchContext workbenchContext) {
         File curState = new File(getFilePath());
+        Logger.info("Restore state from "+curState.getAbsolutePath());
         try {
           load(workbenchContext, curState);
         } catch (Exception e) {
-            // Before we just ate exceptions. But this is confusing when
-            // there is a problem and we don't know that the cause is an
-            // exception [Jon Aquino 2005-03-11]
-            e.printStackTrace(System.err);
+            Logger.error(e);
             
             // retry from backup
             File bkpState = new File(getBKPFilePath()); 
@@ -88,7 +87,7 @@ public class PersistentBlackboardPlugIn extends AbstractPlugIn {
               load(workbenchContext, curState);
               workbenchContext.getWorkbench().getFrame().log("restore/load successful.");
             } catch (Exception e2) {
-              e.printStackTrace(System.err);
+              Logger.error(e2);
             }
         }
     }
@@ -106,6 +105,9 @@ public class PersistentBlackboardPlugIn extends AbstractPlugIn {
             String newPath = getNEWFilePath();
             String oldPath = getBKPFilePath();
             String curPath = getFilePath();
+            
+            Logger.info("Save state to "+curPath);
+            
             FileOutputStream fos = new FileOutputStream(newPath, false);
             OutputStreamWriter osw = new OutputStreamWriter(fos , Charset.forName("UTF-8"));
             try {
