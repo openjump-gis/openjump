@@ -1,0 +1,16 @@
+The JUMP DB Query plugin is licensed under the GNU General
+License, version 3.   See the file COPYING for more information.
+
+It includes the following other software:
+
+Xerial SQLite JDBC Driver (https://bitbucket.org/xerial/sqlite-jdbc)
+MySQL Connector/J JDBC Driver (http://dev.mysql.com/downloads/connector/j/)
+jsyntaxpane-1.0.0. (https://code.google.com/p/jsyntaxpane/)
+Geotools Oracle Spatial Package (http://www.geotools.org/)
+
+
+For licenses see the LICENSE.txt file.
+
+If any software distributed with this plugin does not have a GPLv3 license,
+ its license is explicitly listed in the LICENSE.txt file.
+

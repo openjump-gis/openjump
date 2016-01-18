@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text='This algorithm creates a Delaunay triangulation from a set of points.&#10;&#10;The Delaunay triangulation of a point set is a collection of edges satisfying an "empty circle" property: for each edge we can find a circle containing the edge&apos;s endpoints but not containing any other points.&#10;&#10;The Delaunay triangulation is closely related to the Voronoi tesselation. Connecting the center of the circumcircles in the Delaunay triangulation produces the Voronoi tesselation.' description="Description" type="0">
+			<image description="" file="delaunay.png">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="POINTS" text="The layer with the points to triangulate." description="Points layers" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="TRIANGLES" text="The layer with the resulting triangulation. Each triangle just has an ID in its attributes table. Attributes from the input layer are not preserved." description="Resultado" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

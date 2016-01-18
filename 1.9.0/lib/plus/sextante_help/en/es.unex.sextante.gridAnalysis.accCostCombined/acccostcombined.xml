@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="ISOCOST" text="" description="Isotropic cost" type="3">
+		</element>
+		<element name="ANISOCOST" text="" description="Anisotropic cost" type="3">
+		</element>
+		<element name="COSTDIR" text="" description="Direction of maximum cost[degrees]" type="3">
+		</element>
+		<element name="FEATURES" text="" description="Origin/destination points" type="3">
+		</element>
+		<element name="THRESHOLD" text="" description="Threshold for route separation" type="3">
+		</element>
+		<element name="KFACTOR" text="" description="K" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="ACCCOST" text="" description="Accumulated cost" type="2">
+		</element>
+		<element name="CLOSESTPOINT" text="" description="Closest points" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

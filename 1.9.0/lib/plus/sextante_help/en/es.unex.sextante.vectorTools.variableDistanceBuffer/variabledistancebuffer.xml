@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm creates a new polygons layer with buffers around features in the input layer. The size of the buffer depends on the values from a field in the attributes table of the input layer." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The layer with features to buffer." description="Input layer" type="3">
+		</element>
+		<element name="FIELD" text="The field in the attributes table which contains the size of the buffer to be created around each feature." description="Distance field" type="3">
+		</element>
+		<element name="TYPES" text="The following methods are available:&#10;* Inside the polygon.&#10;* Inside and outside the polygon.&#10;* Outside the polygon.&#10;&#10;This parameter applies just if the input layer contain polygons. If the input layer contains points or lines, this parameter has no effect at all, since there is just one way of creating the buffer based on them." description="Buffer type" type="3">
+		</element>
+		<element name="RINGS" text="The number of concentric rings to create." description="Number of concentric rings" type="3">
+		</element>
+		<element name="NOTROUNDED" text="If selected, resulting polygons will not be rounded." description="Do not round resulting polygons" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting buffer layer." description="Buffer" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
