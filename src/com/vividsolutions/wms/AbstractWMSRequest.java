@@ -129,8 +129,9 @@ abstract public class AbstractWMSRequest implements WMSRequest {
     if (isImage)
       return ImageIO.read(con.getInputStream());
 
-    // finally, no image? ok we just printout what we received
-    readToLog(con);
+    // finally, no image? let's throw some error
+    readToError(con);
+    
     return null;
   }
 
@@ -145,12 +146,12 @@ abstract public class AbstractWMSRequest implements WMSRequest {
     return readConnection(con, 0, false);
   }
 
-  protected String readToLog(HttpURLConnection con) throws IOException {
+  protected String readToError(HttpURLConnection con) throws IOException {
     return readConnection(con, 1024, true);
   }
 
   protected String readConnection(HttpURLConnection con, long limit,
-      boolean debug) throws IOException {
+      boolean throwError) throws IOException {
     boolean httpOk = con.getResponseCode() == HttpURLConnection.HTTP_OK;
     // get correct stream
     InputStream in = httpOk ? con.getInputStream() : con.getErrorStream();
@@ -160,9 +161,9 @@ abstract public class AbstractWMSRequest implements WMSRequest {
     String result = IOUtils.toString(bin);
     FileUtil.close(bin);
 
-    if (debug) {
-      Logger.info("Response code: " + con.getResponseCode());
-      Logger.info("Response body:\n" + result + "\n");
+    if (throwError) {
+      throw new WMSException("Response code: " + con.getResponseCode()
+          + "\nResponse body:\n" + result);
     }
 
     return result;
