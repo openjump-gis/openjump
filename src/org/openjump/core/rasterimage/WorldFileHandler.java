@@ -210,7 +210,9 @@ public class WorldFileHandler implements HandlerToMakeYourLifeEasier{
         possibleWorldFileNames.add((worldFileName + "." + imageExtension.substring(0, 1).toUpperCase() + imageExtension.substring(imageExtension.length() - 1) + "w").toUpperCase());
         possibleWorldFileNames.add(worldFileName + "." + imageExtension + "w");
         possibleWorldFileNames.add(worldFileName + "." + (imageExtension + "w").toUpperCase());
-        
+        //2016.01.19 Add Worldfile extension used by QGIS
+        possibleWorldFileNames.add(worldFileName + ".wld");
+        possibleWorldFileNames.add(worldFileName + "." + ("wld").toUpperCase());
         if (allwaysLookForTFWExtension) {
             possibleWorldFileNames.add(worldFileName + ".tfw");
             possibleWorldFileNames.add(worldFileName + ".tfw".toUpperCase());
