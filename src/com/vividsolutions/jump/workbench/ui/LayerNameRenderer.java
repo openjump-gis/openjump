@@ -781,30 +781,30 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         /*
          * Sextante RasterImageLayer.class
          */
+
         else if (layerable instanceof RasterImageLayer) {
             RasterImageLayer layer = (RasterImageLayer) layerable;
-            // If RasterImageLayer.class has a datasource
-            if (layer.getImageFileName() != null) {
-                File image = new File(layer.getImageFileName());
-                image.getParent();
-                image.getName();
+            // RasterImageLayer.class must have a datasource but also not stored into a TEMP folder
+            if (layer.getImageFileName() != null && !layer.getImageFileName().contains(System.getProperty("java.io.tmpdir"))) {
+               	File image = new File(layer.getImageFileName());
                 String type = filetype(image);
                 String path = StringUtil.split(image.toString(), 350);
-
+                String temporallayer =I18N
+                        .get("ui.GenericNames.Temporal-layer");
                 tooltip = "<HTML><BODY>";
                 tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
-                tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()
-                        + "<br>";
-                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + ":  " + type
-                        + " (" + SEXTANTE + ")<br>";
+                tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()+ "<br>";
+                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + ":  " + type + " (" + SEXTANTE + ")<br>";
                 // tooltip += "<b>" + FILE_NAME + ": </b>" + nameFile + "<br>";
+                          
                 tooltip += "<b>" + SOURCE_PATH + ": </b>" + path + "<br>";
                 tooltip += "<b>" + FEATURE_COUNT + ": </b>" + "1" + "<br>";
                 tooltip += "</DIV></BODY></HTML>";
             }
-            // If RasterImageLayer.class has no datasource
+            // If RasterImageLayer.class has no datasource or if it is stored into a TEMP folder
+            //tooltip show it as it has no datasource
             else {
-                sourcePath = NODATASOURCELAYER;
+            	sourcePath = NODATASOURCELAYER;
                 tooltip = "<HTML><BODY>";
                 tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
                 tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()
@@ -813,13 +813,12 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                 tooltip += SEXTANTE + "<br>";
 
                 tooltip += "<b>" + SOURCE_PATH + ": </b>"
-                        + "<b><font color='red'>" + sourcePath
+                        + "<b><font color='red'>" + NODATASOURCELAYER
                         + "</font></b><br>";
                 tooltip += "<b>" + FEATURE_COUNT + ": </b>" + "1" + "<br>";
                 tooltip += "</DIV></BODY></HTML>";
             }
         }
-
         /*
          * Layer.class
          */
