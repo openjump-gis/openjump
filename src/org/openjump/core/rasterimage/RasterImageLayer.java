@@ -1671,7 +1671,10 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
 //            fireAppearanceChanged();
 //        }
         imageProcessingStep2 = null;
-        getWorkbenchContext().getLayerViewPanel().getViewport().update();
+        LayerViewPanel layerViewPanel = getWorkbenchContext().getLayerViewPanel();
+        if(layerViewPanel != null) {
+            layerViewPanel.getViewport().update();
+        }
     }
 
     public Raster getActualRasterData() {
