@@ -35,6 +35,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -1684,6 +1685,45 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
     public UUID getUUID() {
         return uuid;
     }
+    
+  
+    /*
+     *  Giuseppe Aruta 26/01/2015
+     *  Some experimental boolean methods 
+     */
+    
+    /**
+     * Check if selected sextante raster layer is Temporary layer
+     * Both layers in memory and layes stored into TEMP folder are considered
+     * as "Temporary layers"
+     */
+    public boolean isTemporaryLayer() {
+  	  if (getName().contains(System.getProperty("java.io.tmpdir"))) {
+  	          return true;
+  	      } else{
+  	    	  return false;
+  	      }
+  	  } 
+   
+ 
+   
+    private final static String NODATASOURCELAYER= I18N
+            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.nodatasourcelayer.message");
+	/**
+     *@return the file path of a RasterImageLayer.class
+     *eg. C/File/imagename.tif. If the file path is a TEMP folder
+     * it returns that the layer has no datasource
+     */
+    public String getFilePath() {
+    	String fileName = null;
+    	if (!getName().contains(System.getProperty("java.io.tmpdir"))) {
+    		fileName = getImageFileName();
+         } else{
+        	 fileName = NODATASOURCELAYER;
+         }
+    	return fileName;
+    	}
+    
     
     
 }
