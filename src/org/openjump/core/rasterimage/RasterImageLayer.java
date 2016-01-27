@@ -1698,7 +1698,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
      * as "Temporary layers"
      */
     public boolean isTemporaryLayer() {
-  	  if (getName().contains(System.getProperty("java.io.tmpdir"))) {
+  	  if (imageFileName.contains(System.getProperty("java.io.tmpdir"))) {
   	          return true;
   	      } else{
   	    	  return false;
@@ -1716,7 +1716,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
      */
     public String getFilePath() {
     	String fileName = null;
-    	if (!getName().contains(System.getProperty("java.io.tmpdir"))) {
+    	if (!imageFileName.contains(System.getProperty("java.io.tmpdir"))) {
     		fileName = getImageFileName();
          } else{
         	 fileName = NODATASOURCELAYER;
