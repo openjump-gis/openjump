@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-01-30
+  * Fix for missing layers problem when loading projects that include rasters.
+
 2016-01-21 bertazza@gmail.com
   * Quick fix for NullPointerException when loading a project containing
     raster(s) when no other projects (tasks) are open.

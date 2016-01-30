@@ -161,6 +161,10 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     private void addImage(WorkbenchContext context, Envelope envelope,
             Point imageDimensions) throws NoninvertibleTransformException {
 
+        if(context.getTask() == null) {
+            context.getWorkbench().getFrame().addTaskFrame();
+        }
+        
         String newLayerName = context.getLayerManager().uniqueLayerName(
                 cachedLayer);
 

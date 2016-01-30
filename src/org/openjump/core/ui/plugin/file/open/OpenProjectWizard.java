@@ -314,7 +314,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
 
                         RasterImageLayer rasterImageLayer = (RasterImageLayer) layerable;
                         loadRasterImageLayer(workbenchContext, rasterImageLayer, rasterImageLayer.getSymbology(), sourceLayerCategory);
-                        break;
+                        continue;
                     }
 
                     newLayerManager.addLayerable(sourceLayerCategory.getName(), layerable);

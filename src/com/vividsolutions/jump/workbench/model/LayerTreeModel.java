@@ -280,11 +280,11 @@ public class LayerTreeModel extends SimpleTreeModel {
             if (parent instanceof RasterImageLayer) {
                 
                 RasterImageLayer rasterImageLayer = (RasterImageLayer)parent;
-                if(rasterImageLayer.getSymbology() != null) {
+                if(rasterImageLayer.getSymbology() != null && rasterImageLayer.getMetadata() != null) {
 
                     RasterSymbology rasterSymbology = rasterImageLayer.getSymbology();
 
-                    if(rasterImageLayer.getSymbology().getColorMapType() != RasterSymbology.TYPE_RAMP) {
+                    if(!rasterImageLayer.getSymbology().getColorMapType().equals(RasterSymbology.TYPE_RAMP)) {
 
                         List<RasterStyleValueIntv> styleValues_l = new ArrayList<RasterStyleValueIntv>();
 
@@ -321,7 +321,7 @@ public class LayerTreeModel extends SimpleTreeModel {
                     } else {
 
                         List<RasterStyleValueRamp> styleValues_l = new ArrayList<RasterStyleValueRamp>();
-
+              
                         double topValue = rasterImageLayer.getMetadata().getStats().getMax(0);
                         double bottomValue = rasterImageLayer.getMetadata().getStats().getMin(0);
 
