@@ -50,6 +50,9 @@ public class AttributeTypeFilter {
     public static final int DOUBLE       = 8;
     public static final int DATE         = 16;
     public static final int OBJECT       = 32;
+    public static final int BOOLEAN      = 64;
+    public static final int LONG         = 128;
+
     
     /** Attribute filter includes GEOMETRY attributes.*/
     public static final AttributeTypeFilter GEOMETRY_FILTER = new AttributeTypeFilter(GEOMETRY);
@@ -68,21 +71,27 @@ public class AttributeTypeFilter {
     
     /** Attribute filter includes OBJECT attributes.*/
     public static final AttributeTypeFilter OBJECT_FILTER   = new AttributeTypeFilter(OBJECT);
+
+    /** Attribute filter includes BOOLEAN attributes.*/
+    public static final AttributeTypeFilter BOOLEAN_FILTER  = new AttributeTypeFilter(BOOLEAN);
+
+    /** Attribute filter includes LONG attributes.*/
+    public static final AttributeTypeFilter LONG_FILTER     = new AttributeTypeFilter(LONG);
     
     /** Attribute filter includes NON GEOMETRIC attributes.*/
     public static final AttributeTypeFilter NO_GEOMETRY_FILTER
-           = new AttributeTypeFilter(STRING + INTEGER + DOUBLE + DATE + OBJECT);
+           = new AttributeTypeFilter(STRING + INTEGER + DOUBLE + DATE + OBJECT + BOOLEAN + LONG);
     
     /** Attribute filter includes NUMERIC attributes.*/
     public static final AttributeTypeFilter NUMERIC_FILTER 
-           = new AttributeTypeFilter(INTEGER + DOUBLE);
+           = new AttributeTypeFilter(INTEGER + LONG + DOUBLE);
            
     /** Attribute filter includes NUMERIC and STRING attributes.*/
     public static final AttributeTypeFilter NUMSTRING_FILTER 
-           = new AttributeTypeFilter(INTEGER + DOUBLE + STRING);
+           = new AttributeTypeFilter(INTEGER + LONG + DOUBLE + STRING);
     
     /** Attribute filter includes NUMERIC attributes.*/
-    public static final AttributeTypeFilter ALL_FILTER      = new AttributeTypeFilter(63);
+    public static final AttributeTypeFilter ALL_FILTER      = new AttributeTypeFilter(255);
     
     private int filterType = 0;
     
@@ -122,7 +131,9 @@ public class AttributeTypeFilter {
                 (type == AttributeType.INTEGER && (filterType & 4)==4) ||
                 (type == AttributeType.DOUBLE && (filterType & 8)==8) ||
                 (type == AttributeType.DATE && (filterType & 16)==16) ||
-                (type == AttributeType.OBJECT && (filterType & 32)==32)) {
+                (type == AttributeType.OBJECT && (filterType & 32)==32) ||
+                (type == AttributeType.BOOLEAN && (filterType & 64)==64) ||
+                (type == AttributeType.LONG && (filterType & 128)==128)    ) {
             
                 attributes.add(schema.getAttributeName(i));
             }
@@ -131,18 +142,18 @@ public class AttributeTypeFilter {
     }
     
     public String toString() {
-        if (filterType == 1) return "Geometry filter";
-        if (filterType == 2) return "String filter";
-        if (filterType == 4) return "Integer filter";
-        if (filterType == 8) return "Double filter";
-        if (filterType == 12) return "Numeric filter";
-        if (filterType == 14) return "String or Numeric filter";
-        if (filterType == 16) return "Date filter";
-        if (filterType == 28) return "Numeric or Date filter";
-        if (filterType == 30) return "String, Numeric or Date filter";
-        if (filterType == 32) return "Object filter";
-        if (filterType == 62) return "No Geometry filter";
-        if (filterType == 63) return "All filter";
+        if (filterType == GEOMETRY) return "Geometry filter";
+        if (filterType == STRING)   return "String filter";
+        if (filterType == INTEGER)  return "Integer filter";
+        if (filterType == DOUBLE)   return "Double filter";
+        if (filterType == DATE)     return "Date filter";
+        if (filterType == OBJECT)   return "Object filter";
+        if (filterType == BOOLEAN)  return "Boolean filter";
+        if (filterType == LONG)     return "Long filter";
+        if (filterType == NUMERIC_FILTER.filterType) return "Numeric filter";
+        if (filterType == NUMSTRING_FILTER.filterType) return "String or Numeric filter";
+        if (filterType == NO_GEOMETRY_FILTER.filterType) return "No Geometry filter";
+        if (filterType == ALL_FILTER.filterType) return "All filter";
         return "\"" + filterType + "\" filter";
     }
     
