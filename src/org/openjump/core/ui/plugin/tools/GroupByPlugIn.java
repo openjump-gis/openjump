@@ -41,7 +41,7 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
     private final static String KEY_ATTRIBUTES            = I18N.get(KEY + ".key-attributes");
     private final static String ADD_KEY_ATTRIBUTE         = I18N.get(KEY + ".add-key-attribute");
     private final static String AGGREGATORS               = I18N.get(KEY + ".aggregators");
-    private final static String AGGREGATE_FUNCTION        = I18N.get(KEY + ".aggregate-function");
+    private final static String AGGREGATE_FUNCTIONS       = I18N.get(KEY + ".aggregate-functions");
     private final static String ADD_AGGREGATE_FUNCTION    = I18N.get(KEY + ".add-aggregate-function");
     private final static String REMOVE_AGGREGATE_FUNCTION = I18N.get(KEY + ".remove-aggregate-function");
     private final static String IGNORE_NULL               = I18N.get(KEY + ".ignore-null");
@@ -335,7 +335,7 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
         AggregateOptionPanel() {
             super();
             northPanel = new JPanel(new BorderLayout());
-            northPanel.add(new JLabel("<html><b>" + AGGREGATE_FUNCTION + "</b></html>"), BorderLayout.NORTH);
+            northPanel.add(new JLabel("<html><b>" + AGGREGATE_FUNCTIONS + "</b></html>"), BorderLayout.NORTH);
 
             JPanel titleLine = new JPanel();
             JLabel jlOutputName = new JLabel(OUTPUT_NAME);
@@ -346,7 +346,7 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
             jlInputName.setPreferredSize(LARGE);
             titleLine.add(jlInputName);
 
-            JLabel jlFunction = new JLabel(AGGREGATE_FUNCTION);
+            JLabel jlFunction = new JLabel(AGGREGATE_FUNCTIONS);
             jlFunction.setPreferredSize(LARGE);
             titleLine.add(jlFunction);
 

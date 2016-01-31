@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-02-01
+  * Add new GroupByPlugIn in Tools>Analysis menu
+
 2016-01-30
   * Fix for missing layers problem when loading projects that include rasters.
 
