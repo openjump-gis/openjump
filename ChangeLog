@@ -10,6 +10,8 @@
   * Quick fix for NullPointerException when loading a project containing
     raster(s) when no other projects (tasks) are open.
 
+* release 1.9.0 ****************************************************************
+
 2016-01-10 ede
   * linewrap and overall cutification of the extensions about panel
   * reroute jdbc loading issues into extensions about panel as a message
@@ -616,7 +618,7 @@
 2014-12-18 mmichaud <m.michael.michaud@orange.fr>
   * add CTSPlugIn in PLUS distribution
 
-* release 1.8.0 ***************************************************************
+* release 1.8.0 ****************************************************************
 
 2014-12-01 ede
   * beautified attribtab edit geom buttons, icons visualize (partly) empty 
