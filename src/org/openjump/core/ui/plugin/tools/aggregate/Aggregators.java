@@ -180,7 +180,10 @@ public class Aggregators {
             List<Geometry> geometries = new ArrayList<Geometry>();
             geometries.addAll(points);
             geometries.addAll(merger.getMergedLineStrings());
-            geometries.add(UnaryUnionOp.union(polygons));
+            Geometry mpoly = UnaryUnionOp.union(polygons);
+            for (int i = 0 ; i < mpoly.getNumGeometries() ; i++) {
+                geometries.add(mpoly.getGeometryN(i));
+            }
             return gf.buildGeometry(geometries);
         }
         private void decompose(Geometry geometry, List<Geometry> dim0, List<Geometry> dim1, List<Geometry> dim2) {

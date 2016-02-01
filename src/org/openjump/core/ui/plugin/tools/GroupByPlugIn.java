@@ -35,12 +35,12 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
     private final static Dimension MEDIUM = new Dimension(22,22);
     private final static Dimension NARROW = new Dimension(22,22);
 
-    private final static String LAYER                     = I18N.get(KEY + ".layer");
     private final static String SOURCE_LAYER              = I18N.get(KEY + ".source-layer");
     private final static String DESCRIPTION               = I18N.get(KEY + ".description");
     private final static String KEY_ATTRIBUTES            = I18N.get(KEY + ".key-attributes");
     private final static String ADD_KEY_ATTRIBUTE         = I18N.get(KEY + ".add-key-attribute");
     private final static String AGGREGATORS               = I18N.get(KEY + ".aggregators");
+    private final static String AGGREGATE_FUNCTION        = I18N.get(KEY + ".aggregate-function");
     private final static String AGGREGATE_FUNCTIONS       = I18N.get(KEY + ".aggregate-functions");
     private final static String ADD_AGGREGATE_FUNCTION    = I18N.get(KEY + ".add-aggregate-function");
     private final static String REMOVE_AGGREGATE_FUNCTION = I18N.get(KEY + ".remove-aggregate-function");
@@ -48,11 +48,11 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
     private final static String PARAMETER                 = I18N.get(KEY + ".parameter");
     private final static String OUTPUT_NAME               = I18N.get(KEY + ".output-name");
     private final static String INPUT_ATTRIBUTE           = I18N.get(KEY + ".input-attribute");
+    private final static String GEOMETRY_AGGREGATOR       = I18N.get(KEY + ".geometry-aggregator");
 
 
     private Layer layer;
     FeatureCollectionAggregator fca;
-    int lastAttributeIndex = -1;
 
     public GroupByPlugIn() {
     }
@@ -111,33 +111,34 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
         dialog.setSideBarDescription(DESCRIPTION);
 
         dialog.addSeparator();
-        dialog.addSubTitle(SOURCE_LAYER);
-        // Filter out layers without attribute
-        final JComboBox layerComboBox = dialog.addLayerComboBox(LAYER, "", context.getLayerManager(), AttributeTypeFilter.NO_GEOMETRY_FILTER);
 
+        // Filter out layers without attribute
+        final JComboBox layerComboBox = dialog.addLayerComboBox(SOURCE_LAYER, "", context.getLayerManager(), AttributeTypeFilter.NO_GEOMETRY_FILTER);
         if (context.getCandidateLayer(0).getFeatureCollectionWrapper().getFeatureSchema().getAttributeCount() > 1) {
             layerComboBox.setSelectedItem(context.getCandidateLayer(0));
         }
 
         dialog.addSeparator();
-        dialog.addSubTitle(KEY_ATTRIBUTES);
-        // Key attributes definition
-        //dialog.addSubTitle(KEY_ATTRIBUTES);
-        keyOptionPanel.setSchema(dialog.getLayer(LAYER).getFeatureCollectionWrapper().getFeatureSchema());
-        dialog.addRow("KEY_ATTRIBUTES", null, keyOptionPanel, null, "",
-                MultiInputDialog.NO_LABEL, MultiInputDialog.HORIZONTAL);
+
+        keyOptionPanel.setSchema(dialog.getLayer(SOURCE_LAYER).getFeatureCollectionWrapper().getFeatureSchema());
+        dialog.addRow(KEY_ATTRIBUTES, new JLabel(KEY_ATTRIBUTES), keyOptionPanel, null, "",
+                MultiInputDialog.LEFT_LABEL, MultiInputDialog.HORIZONTAL);
+
+        dialog.addSeparator();
+
+        Aggregator union = new Aggregators.Union();
+        Aggregator collect = new Aggregators.Collect();
+        dialog.addComboBox(GEOMETRY_AGGREGATOR, union, Arrays.asList(union, collect), "");
 
         dialog.addSeparator();
 
         // Aggregators definition
         final JPanel aggregationOptionsTab = dialog.addPane(I18N.get(AGGREGATORS));
         aggregationOptionsTab.setLayout(new BorderLayout());
-        aggregateOptionPanel.setSchema(dialog.getLayer(LAYER).getFeatureCollectionWrapper().getFeatureSchema());
+        aggregateOptionPanel.setSchema(dialog.getLayer(SOURCE_LAYER).getFeatureCollectionWrapper().getFeatureSchema());
         aggregationOptionsTab.add(aggregateOptionPanel, BorderLayout.NORTH);
 
         dialog.pack();
-
-        //updateControls(dialog, keyAttributeOptionPanel, aggregateOptionPanel);
 
         layerComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
@@ -147,7 +148,6 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
                     try {
                         keyOptionPanel.setSchema(schema);
                         aggregateOptionPanel.setSchema(schema);
-                        lastAttributeIndex = schema.getGeometryIndex();
                         updateControls(dialog, keyOptionPanel, aggregateOptionPanel);
                     } catch(Exception ex) {
                         throw new RuntimeException(ex);
@@ -162,9 +162,15 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
     private void getDialogValues(MultiInputDialog dialog,
                                  KeyOptionPanel keyOptionPanel,
                                  AggregateOptionPanel aggregateOptionPanel) {
-        layer = dialog.getLayer(LAYER);
+        layer = dialog.getLayer(SOURCE_LAYER);
+        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
         List<String> keyAttributes = new ArrayList<String>(keyOptionPanel.getKeyAttributes());
-        List<AttributeAggregator> aggregators = aggregateOptionPanel.getAttributeAggregators();
+        List<AttributeAggregator> aggregators = new ArrayList<AttributeAggregator>();
+        aggregators.add(new AttributeAggregator(
+                schema.getAttributeName(schema.getGeometryIndex()),
+                (Aggregator)dialog.getComboBox(GEOMETRY_AGGREGATOR).getSelectedItem(),
+                schema.getAttributeName(schema.getGeometryIndex())));
+        aggregators.addAll(aggregateOptionPanel.getAttributeAggregators());
         int geometryTypeCount = 0;
         for (AttributeAggregator agg : aggregators) {
             if (agg.getAggregator().getOutputAttributeType() == AttributeType.GEOMETRY) {
@@ -210,6 +216,7 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
 
         KeyOptionPanel() {
             super();
+            setLayout(new BorderLayout());
             northPanel = new JPanel(new BorderLayout());
 
             JPanel titleLine = new JPanel();
@@ -218,7 +225,7 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
             jlInputName.setPreferredSize(LARGE);
             titleLine.add(jlInputName);
 
-            JButton jbPlus = new JButton(org.openjump.core.ui.images.IconLoader.icon("plus.gif"));
+            JButton jbPlus = new JButton(IconLoader.icon("plus.gif"));
             jbPlus.setToolTipText(ADD_KEY_ATTRIBUTE);
             jbPlus.setPreferredSize(NARROW);
             titleLine.add(jbPlus);
@@ -226,7 +233,6 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
 
             keyAttributesPanel = new JPanel();
             keyAttributesPanel.setLayout(new BoxLayout(keyAttributesPanel, BoxLayout.Y_AXIS));
-
 
             jbPlus.addActionListener(new ActionListener() {
                 @Override
@@ -239,9 +245,11 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
                     }
                 }
             });
-            setLayout(new BorderLayout());
-            add(northPanel, BorderLayout.NORTH);
-            add(keyAttributesPanel, BorderLayout.CENTER);
+
+            JPanel westPanel = new JPanel(new BorderLayout());
+            add(westPanel, BorderLayout.WEST);
+            westPanel.add(northPanel, BorderLayout.NORTH);
+            westPanel.add(keyAttributesPanel, BorderLayout.CENTER);
         }
 
         public void setSchema(final FeatureSchema schema) throws Exception {
@@ -330,7 +338,6 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
         final JPanel northPanel;
         final JPanel aggregatorsPanel;
         FeatureSchema schema;
-        boolean geomAttribute = false;
 
         AggregateOptionPanel() {
             super();
@@ -346,7 +353,7 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
             jlInputName.setPreferredSize(LARGE);
             titleLine.add(jlInputName);
 
-            JLabel jlFunction = new JLabel(AGGREGATE_FUNCTIONS);
+            JLabel jlFunction = new JLabel(AGGREGATE_FUNCTION);
             jlFunction.setPreferredSize(LARGE);
             titleLine.add(jlFunction);
 
@@ -372,12 +379,9 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
             jbPlus.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    lastAttributeIndex = Math.min(schema.getAttributeCount()-1, ++lastAttributeIndex);
                     aggregatorsPanel.add(new AttributeAggregatePanel(
                             AggregateOptionPanel.this,
-                            schema,
-                            schema.getAttributeName(lastAttributeIndex),
-                            true));
+                            schema));
                     SwingUtilities.getWindowAncestor(aggregatorsPanel).pack();
                 }
             });
@@ -388,16 +392,7 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
 
         public void setSchema(final FeatureSchema schema) {
             this.schema = schema;
-
             aggregatorsPanel.removeAll();
-
-            aggregatorsPanel.add(new AttributeAggregatePanel(
-                    this,
-                    schema,
-                    schema.getAttributeName(schema.getGeometryIndex()),
-                    false));
-            geomAttribute = true;
-            lastAttributeIndex = schema.getGeometryIndex();
         }
 
         public JPanel getAggregatorsPanel() {
@@ -431,7 +426,6 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
 
         final AggregateOptionPanel aggregatePanel;
         final FeatureSchema schema;
-        final String defaultAttribute;
 
         JTextField jtfOutputAttributeName;
         JComboBox jcbInputAttributeName;
@@ -442,22 +436,22 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
 
 
         AttributeAggregatePanel(final AggregateOptionPanel aggregatePanel,
-                                final FeatureSchema schema,
-                                final String defaultAttribute,
-                                final boolean removable) {
+                                final FeatureSchema schema) {
             this.aggregatePanel = aggregatePanel;
             this.schema = schema;
-            this.defaultAttribute = defaultAttribute;
 
-            jtfOutputAttributeName = new JTextField(defaultAttribute);
+            jtfOutputAttributeName = new JTextField();
             jtfOutputAttributeName.setPreferredSize(LARGE);
 
             jcbInputAttributeName = new JComboBox();
             for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
+                if (i == schema.getGeometryIndex()) continue;
                 jcbInputAttributeName.addItem(schema.getAttributeName(i));
             }
-            jcbInputAttributeName.setSelectedItem(defaultAttribute);
+            String defaultAttribute = jcbInputAttributeName.getSelectedItem().toString();
+            jtfOutputAttributeName.setText(defaultAttribute);
             jcbInputAttributeName.setPreferredSize(LARGE);
+
             jcbAggregators = new JComboBox(Aggregators.getAggregators(schema.getAttributeType(defaultAttribute)).values().toArray());
             jcbAggregators.setPreferredSize(LARGE);
 
@@ -469,10 +463,8 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
             jtfParameter.setEditable(aggregator.getParameters().size() > 0);
             jtfParameter.setPreferredSize(NARROW);
             jbRemove = new JButton();
-            if (removable) {
-                jbRemove.setIcon(IconLoader.icon("remove.gif"));
-                jbRemove.setToolTipText(REMOVE_AGGREGATE_FUNCTION);
-            }
+            jbRemove.setIcon(IconLoader.icon("remove.gif"));
+            jbRemove.setToolTipText(REMOVE_AGGREGATE_FUNCTION);
             jbRemove.setPreferredSize(NARROW);
 
             jcbInputAttributeName.addActionListener(new ActionListener() {
@@ -484,7 +476,6 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
                     jcbIgnoreNull.setSelected(agg.ignoreNull());
                     jtfParameter.setEditable(agg.getParameters().size() > 0);
                     jtfOutputAttributeName.setText(jcbInputAttributeName.getSelectedItem().toString());
-                    lastAttributeIndex = Math.min(schema.getAttributeCount()-1, schema.getAttributeIndex(jcbInputAttributeName.getSelectedItem().toString()));
                 }
             });
 
@@ -497,15 +488,13 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
                 }
             });
 
-            if (removable) {
-                jbRemove.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        aggregatePanel.getAggregatorsPanel().remove(AttributeAggregatePanel.this);
-                        aggregatePanel.repaint();
-                    }
-                });
-            }
+            jbRemove.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    aggregatePanel.getAggregatorsPanel().remove(AttributeAggregatePanel.this);
+                    SwingUtilities.getWindowAncestor(aggregatePanel).pack();
+                }
+            });
 
             add(jtfOutputAttributeName);
             add(jcbInputAttributeName);
