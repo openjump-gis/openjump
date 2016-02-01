@@ -1344,7 +1344,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         for (Iterator i = getLayerManagers().iterator(); i.hasNext();) {
             LayerManager layerManager = (LayerManager) i.next();
             list.addAll(layerManager.getLayersWithNullDataSource());
-            // list.add(layerManager.getRasterLayersWithNullDataSource());
+            //Giuseppe Aruta 2016_01_02. Adds also temporary raster image layers
+            list.addAll(layerManager.getTemporaryRasterImageLayers());;
         }
         return list;
     }

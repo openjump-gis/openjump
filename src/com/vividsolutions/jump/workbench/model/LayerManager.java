@@ -816,6 +816,25 @@ public class LayerManager {
         return layersWithModifiedFeatureCollections;
     }
 
+    //Giuseppe Aruta 2016_01_02
+    /**
+     * @return a List of Temporary Raster Layers
+     * (RasterImageLayer.class in TMP folder)
+     */
+      public LinkedList<String> getTemporaryRasterImageLayers() {
+       	LinkedList<String> list = new LinkedList<String>();
+       	Collection<Layer>  rlayers =  getLayerables(RasterImageLayer.class);
+           for (Iterator i = rlayers.iterator(); i.hasNext();) {
+           	
+               RasterImageLayer layer = (RasterImageLayer) i.next();
+               if (layer.isTemporaryLayer()) {
+                   list.add(layer.getName());
+               }
+           }
+
+           return list;
+       }
+    
     public LinkedList getLayersWithNullDataSource() {
         LinkedList list = new LinkedList();
 
