@@ -578,7 +578,10 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                     // create a set of sorted rows to be selected
                     Set<Integer> rowset = new TreeSet<Integer>();
                     for (Object obj : selection) {
-                        rowset.add(mapIdRow.get(((Feature) obj).getID()));
+                      Feature f = (Feature) obj;
+                      int id = f.getID();
+                      Integer i = mapIdRow.get(id);
+                      rowset.add(i);
                     }
 
                     // update the table
