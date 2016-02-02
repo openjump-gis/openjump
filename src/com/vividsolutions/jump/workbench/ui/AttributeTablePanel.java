@@ -561,7 +561,6 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                     }
                     // add selected features which are not yet in the AttributeTablePanel
                     if (selection.size() > 0) {
-                        int nextRow = getModel().getRowCount();
                         List<Feature> newFeatures = new ArrayList<Feature>();
                         for (Object obj : selection) {
                             int fid = ((Feature) obj).getID();
@@ -570,7 +569,9 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                             }
                         }
                         getModel().addAll(newFeatures);
-                        for (int row = nextRow; row < getModel().getRowCount(); row++) {
+                        // re-compute the full mapIdRow, because if the model is sorted
+                        // mapping may have changed even in the first rows
+                        for (int row = 0; row < getModel().getRowCount(); row++) {
                             mapIdRow.put(getModel().getFeature(row).getID(), row);
                         }
                     }
