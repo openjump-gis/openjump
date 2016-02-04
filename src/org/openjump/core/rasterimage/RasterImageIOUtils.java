@@ -304,11 +304,13 @@ public class RasterImageIOUtils {
                     + Double.toString(rstLayer.getLayerCellSize().x));
 
             String sNoDataVal = Double.toString(rstLayer.getNoDataValue());
-            if (Math.floor(defaultNoData) == defaultNoData)
+            //Uncomment this code. It seems to rewrite original nodata value with
+            //a fix value modifying raster statistics if nodata cells exists
+          /*  if (Math.floor(defaultNoData) == defaultNoData)
                 sNoDataVal = Integer.toString((int) defaultNoData);
             else {
                 sNoDataVal = Double.toString(defaultNoData);
-            }
+            }*/
             o.println("NODATA_value " + sNoDataVal);
             o.println("byteorder " + byteOrder);
             o.close();
