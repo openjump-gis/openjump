@@ -27,9 +27,9 @@ import java.util.List;
 /**
  * Plugin to mimic a SQL GROUP BY operation.
  */
-public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
+public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
 
-    private final static String KEY = GroupByPlugIn.class.getName();
+    private final static String KEY = Dissolve2PlugIn.class.getName();
 
     private final static Dimension LARGE = new Dimension(110,22);
     private final static Dimension MEDIUM = new Dimension(22,22);
@@ -54,7 +54,7 @@ public class GroupByPlugIn extends AbstractThreadedUiPlugIn {
     private Layer layer;
     FeatureCollectionAggregator fca;
 
-    public GroupByPlugIn() {
+    public Dissolve2PlugIn() {
     }
 
     public String getName() {

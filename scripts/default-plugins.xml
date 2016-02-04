@@ -628,7 +628,7 @@
 		org.openjump.core.ui.plugin.tools.DissolvePlugIn
 	</plug-in>
 	<plug-in>
-		org.openjump.core.ui.plugin.tools.GroupByPlugIn
+		org.openjump.core.ui.plugin.tools.Dissolve2PlugIn
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn
