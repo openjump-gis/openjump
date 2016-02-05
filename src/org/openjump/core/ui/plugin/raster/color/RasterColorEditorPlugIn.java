@@ -2,6 +2,7 @@ package org.openjump.core.ui.plugin.raster.color;
 
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.rasterimage.styler.RasterStylesPlugIn;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -60,14 +61,15 @@ public class RasterColorEditorPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
 
-		RasterImageLayer actualLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
+		 new RasterStylesPlugIn().execute(context);
+			/*	RasterImageLayer actualLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
 
-		RasterColorEditorDialog rasterColorEditor = new RasterColorEditorDialog(
-				context, actualLayer);
+				RasterColorEditorDialog rasterColorEditor = new RasterColorEditorDialog(
+						context, actualLayer);
 
-		rasterColorEditor.setVisible(true);
+				rasterColorEditor.setVisible(true);*/
 
-		//System.out.println(actualLayer);
+				//System.out.println(actualLayer);
 
 		return true;
 	}

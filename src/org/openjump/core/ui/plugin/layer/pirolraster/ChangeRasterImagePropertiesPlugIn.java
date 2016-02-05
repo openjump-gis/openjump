@@ -89,7 +89,7 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
         if (rLayer.getNumBands() == 1) {
             stylePanels.add(rasstyle);
             stylePanels.add(rasterScalepanel);
-            stylePanels.add(rascolorpanel);
+           // stylePanels.add(rascolorpanel);
         } else {
             stylePanels.add(rasstyle);
             stylePanels.add(rasterScalepanel);

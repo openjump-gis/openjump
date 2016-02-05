@@ -2,6 +2,7 @@ package org.openjump.core.rasterimage.styler;
 
 import org.openjump.core.rasterimage.styler.ui.NoDataValueDialog;
 import org.openjump.core.rasterimage.styler.ui.RasterStylesDialog;
+
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -9,8 +10,12 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
 import java.util.List;
+
 import javax.swing.JPopupMenu;
+
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.styler.ui.GUIUtils;
@@ -33,7 +38,7 @@ public class RasterStylesPlugIn implements ThreadedPlugIn {
                 this,
                 getName(),
                 false,
-                null,
+                IconLoader.icon("color_wheel.png"),
                 createEnableCheck(context.getWorkbenchContext()));
         
     }
