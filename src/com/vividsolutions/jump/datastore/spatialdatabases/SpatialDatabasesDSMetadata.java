@@ -12,9 +12,8 @@ import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -323,6 +322,21 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
         String colType = rs2.getString(6);
         identifierColumns.add(new PrimaryKeyColumn(colName, colType));
         rs2.close();
+      }
+      // For wiew, which have no PK but can reference a pk column,
+      // give the opportunity to use int, bigint or varchar attribute
+      rs = dbMd.getTables(null, getSchemaName(datasetName), getTableName(datasetName), null);
+      while (rs.next()) {
+        String tableType = rs.getString(4);
+        if (tableType.equals("VIEW")) {
+          ResultSet rs2 = dbMd.getColumns(null, getSchemaName(datasetName), getTableName(datasetName), null);
+          while (rs2.next()) {
+            PrimaryKeyColumn pk = new PrimaryKeyColumn(rs2.getString(4), rs2.getString(6));
+            if (pk.getType()== Types.VARCHAR || pk.getType() == Types.INTEGER || pk.getType() == Types.BIGINT) {
+              identifierColumns.add(new PrimaryKeyColumn(rs2.getString(4), rs2.getString(6)));
+            }
+          }
+        }
       }
     } catch (SQLException sqle) {
 
