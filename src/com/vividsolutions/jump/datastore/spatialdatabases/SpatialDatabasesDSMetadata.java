@@ -305,7 +305,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * @return the list of columns involved in the Primary Key (generally, a
    * single column)
    */
-  public List<PrimaryKeyColumn> getPrimaryKeyColumns(String datasetName) {
+  public List<PrimaryKeyColumn> getPrimaryKeyColumns(String datasetName) throws SQLException {
     final List<PrimaryKeyColumn> identifierColumns = new ArrayList<PrimaryKeyColumn>();
     ResultSet rs = null;
 
@@ -333,13 +333,13 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
           while (rs2.next()) {
             PrimaryKeyColumn pk = new PrimaryKeyColumn(rs2.getString(4), rs2.getString(6));
             if (pk.getType()== Types.VARCHAR || pk.getType() == Types.INTEGER || pk.getType() == Types.BIGINT) {
-              identifierColumns.add(new PrimaryKeyColumn(rs2.getString(4), rs2.getString(6)));
+              identifierColumns.add(pk);
             }
           }
         }
       }
     } catch (SQLException sqle) {
-
+      throw sqle;
     } finally {
       try {
         rs.close();

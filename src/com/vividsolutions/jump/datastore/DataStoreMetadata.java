@@ -24,7 +24,8 @@ public interface DataStoreMetadata {
    * @param datasetName
    *          the table name (optionally prefixed by a schema name)
    */
-  List<PrimaryKeyColumn> getPrimaryKeyColumns(String datasetName);
+  List<PrimaryKeyColumn> getPrimaryKeyColumns(String datasetName)
+      throws SQLException;
 
   /**
    * @param datasetName
