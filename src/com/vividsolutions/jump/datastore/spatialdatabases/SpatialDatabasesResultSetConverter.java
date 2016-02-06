@@ -22,7 +22,6 @@ public class SpatialDatabasesResultSetConverter {
 
   protected ResultSet rs;
   protected FeatureSchema featureSchema;
-  protected int geometryColIndex = -1;
   protected ValueConverter[] mapper;
   protected SpatialDatabasesValueConverterFactory odm;
   protected boolean isInitialized = false;
@@ -74,19 +73,19 @@ public class SpatialDatabasesResultSetConverter {
       // Convert the first geometry into AttributeType.GEOMETRY and the following ones
       // into AttributeType.STRINGs [mmichaud 2007-05-13]
       if (mapper[i].getType() == AttributeType.GEOMETRY) {
-        // Nicolas Ribot: stores geomCol index as it is needed by Adhoc query
-        //geometryColIndex = i+1;
         if (featureSchema.getGeometryIndex() == -1) {
           // fixed by mmichaud using a patch from jaakko [2008-05-21] :
           // use colName instead of "GEOMETRY" for attribute name
           featureSchema.addAttribute(colName, mapper[i].getType());
         } else {
-          //mapper[i] = odm.WKB_OBJECT_MAPPER;
-          // Other attributes as string
+          // Other geometry attributes as string
           featureSchema.addAttribute(colName, AttributeType.STRING);
+          featureSchema.setAttributeReadOnly(i, true);
         }
       } else {
         featureSchema.addAttribute(colName, mapper[i].getType());
+        // Not yet available in postgresql driver
+        if (rsmd.isReadOnly(i + 1)) featureSchema.setAttributeReadOnly(i, true);
       }
     }
   }
