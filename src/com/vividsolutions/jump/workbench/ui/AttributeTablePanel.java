@@ -163,7 +163,6 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                 final JComponent renderer = (JComponent) super.getCellRenderer(row,
                         column);
                 // Get the prefered date formatter from the PersistentBlackboard
-                Blackboard blackBoard = PersistentBlackboardPlugIn.get(workbenchContext);
                 DateFormat _formatter;
                 try {
                     _formatter = blackboard.get(DATE_FORMAT_KEY) == null ?
