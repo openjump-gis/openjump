@@ -392,12 +392,8 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
     String schemaName = this.getSchemaName(dsName);
     String tableName = this.getTableName(dsName);
     try {
-      if (schemaName.equals(dsName)) {
-        // no schema defined in given dataset name: use default one
-        schemaName = this.getDefaultSchemaName();
-      }
       DatabaseMetaData dbMd = this.conn.getJdbcConnection().getMetaData();
-      rs = dbMd.getIndexInfo(null, this.getSchemaName(dsName), this.getTableName(dsName), false, true);
+      rs = dbMd.getIndexInfo(null, schemaName, tableName, false, true);
       while (rs.next()) {
         if (column.equals(rs.getString(9)) && rs.getString(6) != null && rs.getString(9) != null) {
           ret = true;

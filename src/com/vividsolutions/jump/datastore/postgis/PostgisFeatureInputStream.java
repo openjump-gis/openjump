@@ -2,12 +2,8 @@ package com.vividsolutions.jump.datastore.postgis;
 
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesFeatureInputStream;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesResultSetConverter;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -15,7 +11,7 @@ import java.util.logging.Logger;
  */
 public class PostgisFeatureInputStream extends SpatialDatabasesFeatureInputStream {
 
-  public PostgisFeatureInputStream(Connection conn, String queryString) {
+    public PostgisFeatureInputStream(Connection conn, String queryString) {
         this(conn, queryString, null);
     }
 
@@ -30,6 +26,7 @@ public class PostgisFeatureInputStream extends SpatialDatabasesFeatureInputStrea
      */
     @Override
     protected SpatialDatabasesResultSetConverter getResultSetConverter(ResultSet rs) {
-      return new PostgisResultSetConverter(conn, rs);
+        return new PostgisResultSetConverter(conn, rs);
     }
+
 }
