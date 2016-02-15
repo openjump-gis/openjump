@@ -122,6 +122,8 @@ public class FillPolygonTool extends NClickTool {
           }
         } catch (Exception ex) {
           ex.printStackTrace();
+        } finally {
+          INTERRUPTED = false;
         }
       }
     });
@@ -226,6 +228,8 @@ public class FillPolygonTool extends NClickTool {
       }
     } catch (Exception e) {
       e.printStackTrace();
+    } finally {
+      INTERRUPTED = false;
     }
 
     return null;
@@ -289,7 +293,7 @@ public class FillPolygonTool extends NClickTool {
     Coordinate[] cc = line.getCoordinates();
     for (int i = 1; i < cc.length; i++) {
       LineString ls = line.getFactory().createLineString(
-          new Coordinate[] { cc[i - 1], cc[i] });
+          new Coordinate[] { new Coordinate(cc[i - 1]), new Coordinate(cc[i]) });
       ls.normalize();
       linearComponents.add(ls);
     }
