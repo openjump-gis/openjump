@@ -5,6 +5,9 @@
 
 2016-02-16 mmichaud <m.michael.michaud@orange.fr>
   * Fix bug 416 in FillPolygonTool (regression due to JTS change)
+  * If a datastore table has several geometries, secondary geometries are
+    read as AttributeType.OBJECT attributes rather than STRING so that
+    datastore driver can easily write them back as a byte array.
 
 2016-02-02 mmichaud <m.michael.michaud@orange.fr>
   * Fix bug #415 throwing exceptions in AttributeTablePanel

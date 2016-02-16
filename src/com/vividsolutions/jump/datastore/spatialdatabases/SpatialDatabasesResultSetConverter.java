@@ -78,8 +78,9 @@ public class SpatialDatabasesResultSetConverter {
           // use colName instead of "GEOMETRY" for attribute name
           featureSchema.addAttribute(colName, mapper[i].getType());
         } else {
-          // Other geometry attributes as string
-          featureSchema.addAttribute(colName, AttributeType.STRING);
+          // 2016-02-16 : Other geometry attributes as object rather than String
+          // so that it can be written back to datastore more easily
+          featureSchema.addAttribute(colName, AttributeType.OBJECT);
           featureSchema.setAttributeReadOnly(i, true);
         }
       } else {
