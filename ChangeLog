@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-02-17 mmichaud <m.michael.michaud@orange.fr>
+  * patch SpatialiteValueConverterFactory to transform ogc-wkb geometry z
+    to postgis ewkb, as this is the only way to parse geometry z with JTS
+    currently.
+
 2016-02-16 mmichaud <m.michael.michaud@orange.fr>
   * Fix bug 416 in FillPolygonTool (regression due to JTS change)
   * If a datastore table has several geometries, secondary geometries are

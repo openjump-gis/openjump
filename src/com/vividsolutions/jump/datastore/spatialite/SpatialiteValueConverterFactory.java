@@ -106,6 +106,7 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
       wkb[0] = blobAsBytes[1];
 
       WKBReader wkbReader = new WKBReader();
+      setEwkbGeometryType(wkb);
       returnGeometry = wkbReader.read(wkb);
 
       if (returnGeometry == null) {
@@ -114,6 +115,8 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
 
       return returnGeometry;
     }
+
+
 
     /**
      * From DB Query plugin: TODO: factorize code
@@ -144,6 +147,7 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
       byte[] wkb = new byte[blobAsBytes.length - headerSize];
       System.arraycopy(blobAsBytes, headerSize, wkb, 0, blobAsBytes.length - headerSize);
       WKBReader wkbReader = new WKBReader();
+      setEwkbGeometryType(wkb);
       returnGeometry = wkbReader.read(wkb);
 
       if (returnGeometry == null) {
@@ -151,6 +155,33 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
       }
 
       return returnGeometry;
+    }
+
+    // JTS only supports postgis ewkb for geometry with Z values
+    // following method rewrites a wkb geometry written according to OGC (SQL/MM)
+    // to a valid postgis ewkb.
+    private void setEwkbGeometryType(byte[] wkb) {
+      int byteOrder = wkb[0];
+      int geometryType;
+      if (byteOrder == 0) {
+        geometryType = (wkb[4] & 0xFF) | (wkb[3] & 0xFF) << 8 | (wkb[2] & 0xFF) << 16 | (wkb[1] & 0xFF) << 24;
+      } else {
+        geometryType = (wkb[1] & 0xFF) | (wkb[2] & 0xFF) << 8 | (wkb[3] & 0xFF) << 16 | (wkb[4] & 0xFF) << 24;
+      }
+      boolean hasZ = ((geometryType & 0x80000000) != 0) || (geometryType > 1000);
+      System.out.println("hasZ " + hasZ);
+      if (hasZ) geometryType = 0x80000000 | (geometryType & 0x0000FFFF)%1000;
+      if (byteOrder == 0) {
+        wkb[1] = hasZ ? (byte)0x80 : (byte)0x00;
+        wkb[2] = 0x00;
+        wkb[3] = 0x00;
+        wkb[4] = (byte)(geometryType & 0x000000FF);
+      } else {
+        wkb[4] = hasZ ? (byte)0x80 : (byte)0x00;
+        wkb[3] = 0x00;
+        wkb[2] = 0x00;
+        wkb[1] = (byte)(geometryType & 0x000000FF);
+      }
     }
 
     /**
