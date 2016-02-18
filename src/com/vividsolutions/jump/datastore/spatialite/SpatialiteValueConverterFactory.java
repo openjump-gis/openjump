@@ -168,9 +168,8 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
       } else {
         geometryType = (wkb[1] & 0xFF) | (wkb[2] & 0xFF) << 8 | (wkb[3] & 0xFF) << 16 | (wkb[4] & 0xFF) << 24;
       }
-      boolean hasZ = ((geometryType & 0x80000000) != 0) || (geometryType > 1000);
-      System.out.println("hasZ " + hasZ);
-      if (hasZ) geometryType = 0x80000000 | (geometryType & 0x0000FFFF)%1000;
+      boolean hasZ = ((geometryType & 0x80000000) != 0) || (geometryType >= 1000 && geometryType < 3000);
+      geometryType = (geometryType & 0x0000FFFF)%1000;
       if (byteOrder == 0) {
         wkb[1] = hasZ ? (byte)(wkb[1] | 0x80) : wkb[1];
         wkb[2] = 0x00;
