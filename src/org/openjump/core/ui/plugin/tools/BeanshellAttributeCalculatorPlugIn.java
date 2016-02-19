@@ -88,8 +88,9 @@ import bsh.Interpreter;
  * Creates a new layer, adding a (dynamic) attribute computed from a
  * beanshell expression.
  * @author Micha&euml;l Michaud
- * @version 0.3 (2012-10-13)
+ * @version 0.4 (2016-02-19)
  */
+ // 0.4 (2016-02-19) add long and boolean attribute types
  // 0.3 (2012-10-13) complete refactoring
  //      inclusion of dynamic capabilities in core openjump feature package
  // 0.2 (2011-03-26) fix a NPE
@@ -180,14 +181,11 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         list.add(AttributeType.STRING);
         list.add(AttributeType.DOUBLE);
         list.add(AttributeType.INTEGER);
+        list.add(AttributeType.LONG);
+        list.add(AttributeType.BOOLEAN);
         list.add(AttributeType.DATE);
         list.add(AttributeType.OBJECT);
         final JComboBox jcb_type = dialog.addComboBox(NEW_ATTRIBUTE_TYPE, new_attribute_type, list, "");
-        //jcb_type.addActionListener(new ActionListener() {
-        //    public void actionPerformed(ActionEvent e) {
-        //        new_attribute_type = (AttributeType)dialog.getComboBox(NEW_ATTRIBUTE_TYPE).getSelectedItem();
-        //    }
-        //});
         
         final JCheckBox jcb_dynamic = dialog.addCheckBox(
             DYNAMIC, false, DYNAMIC);
@@ -317,8 +315,7 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         String tmp_bsh_expression = dialog.getText(BSH_EXPRESSION);
         FeatureCollection fc = layer.getFeatureCollectionWrapper();
         new_attribute_type = (AttributeType)dialog.getComboBox(NEW_ATTRIBUTE_TYPE).getSelectedItem();
-        //FeatureSchema dfs = (FeatureSchema)fc.getFeatureSchema().clone();
-        //dfs.addAttribute(new_attribute_name, new_attribute_type);
+
         try {
             BeanshellAttributeOperation operation = 
                 (BeanshellAttributeOperation)AttributeOperationFactory
@@ -327,10 +324,6 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
             int count = 0;
             for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
                 BasicFeature old = (BasicFeature)it.next();
-                //BasicFeature bf = new BasicFeature(dfs);
-                //Object[] att = bf.getAttributes();
-                //System.arraycopy(old.getAttributes(), 0, att, 0, old.getAttributes().length);
-                //bf.setAttributes(att);
                 operation.evaluate(old);
                 if (count++ > 6) break;
             }
@@ -383,6 +376,8 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
             else if (fs.getAttributeType(i) == AttributeType.STRING) bf.setAttribute(i,"Michaël");
             else if (fs.getAttributeType(i) == AttributeType.DOUBLE) bf.setAttribute(i,9.999);
             else if (fs.getAttributeType(i) == AttributeType.INTEGER) bf.setAttribute(i,100);
+            else if (fs.getAttributeType(i) == AttributeType.LONG) bf.setAttribute(i,1000000L);
+            else if (fs.getAttributeType(i) == AttributeType.BOOLEAN) bf.setAttribute(i,true);
             else if (fs.getAttributeType(i) == AttributeType.DATE) bf.setAttribute(i,new Date());
             else if (fs.getAttributeType(i) == AttributeType.GEOMETRY) {
                 bf.setAttribute(i, new GeometryFactory().createPoint((Coordinate)null));

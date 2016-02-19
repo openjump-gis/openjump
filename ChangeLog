@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-02-19 mmichaud <m.michael.michaud@orange.fr>
+  * Better handling of readOnly attributes in PostGIS writer
+  * Add Boolean and Long AttributeType in AttributeCalculator (beanshell)
+
 2016-02-17 mmichaud <m.michael.michaud@orange.fr>
   * patch SpatialiteValueConverterFactory to transform ogc-wkb geometry z
     to postgis ewkb, as this is the only way to parse geometry z with JTS
