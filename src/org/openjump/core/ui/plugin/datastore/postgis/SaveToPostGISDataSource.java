@@ -530,7 +530,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
           .append(") VALUES(");
         boolean first = true;
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-            if (schema.getExternalPrimaryKeyIndex() == i) continue;
+            if (schema.getExternalPrimaryKeyIndex() == i || schema.isAttributeReadOnly(i)) continue;
             sb.append(first?"?":",?");
             first = false;
         }
@@ -560,7 +560,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
         int shift = 1;
         try {
             for (int i = 0; i < schema.getAttributeCount(); i++) {
-                if (schema.getExternalPrimaryKeyIndex() == i) {
+                if (schema.getExternalPrimaryKeyIndex() == i || schema.isAttributeReadOnly(i)) {
                     shift--;
                     continue;
                 }
