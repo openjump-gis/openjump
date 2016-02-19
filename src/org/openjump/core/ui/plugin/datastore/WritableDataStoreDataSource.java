@@ -7,14 +7,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import javax.swing.JOptionPane;
 
@@ -274,7 +267,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             if (evolution.getType() == Evolution.Type.CREATION) {
                 PreparedStatement pstmt = insertStatement(conn,
                         evolution.getNewFeature().getSchema(), normalizedColumnNames);
-                pstmt = setAttributeValues(pstmt, evolution.getNewFeature(), srid, dim, primaryKeyName);
+                pstmt = setAttributeValues(pstmt, evolution.getNewFeature(), srid, dim);
                 pstmt.execute();
                 Logger.info("  create new feature " + evolution.getNewFeature().getID()+"/");
             } else if (evolution.getType() == Evolution.Type.SUPPRESSION) {
@@ -288,6 +281,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 // Attribute changes are updated individually, avoiding to replace
                 // values changed concurrently by another client if it is not needed
                 for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
+                    if (schema.isAttributeReadOnly(i)) return;
                     if (oldFeature.getAttribute(i) == null && newFeature.getAttribute(i) != null ||
                         oldFeature.getAttribute(i) != null && newFeature.getAttribute(i) == null ||
                         oldFeature.getAttribute(i) != null && !oldFeature.getAttribute(i).equals(newFeature.getAttribute(i))) {
@@ -315,14 +309,19 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
         StringBuilder sb = new StringBuilder("INSERT INTO " + compose(schemaName, tableName) + "(");
         // create a column name list without datatypes, including geometry and excluding primary key
-        sb.append(PostGISQueryUtil.createColumnList(fSchema, false, true, false, normalizedColumnNames))
+        sb.append(PostGISQueryUtil.createColumnList(fSchema, false, true, false, false, normalizedColumnNames))
           .append(") VALUES(");
-        int nbValues = fSchema.getAttributeCount();
-        if (primaryKeyName != null && fSchema.hasAttribute(primaryKeyName)) nbValues --;
-        for (int i = 0 ; i < nbValues ; i++) {
-            sb.append(i==0?"?":",?");
+        //int nbValues = fSchema.getAttributeCount();
+        //if (primaryKeyName != null && fSchema.hasAttribute(primaryKeyName)) nbValues --;
+        boolean first = true;
+        for (int i = 0 ; i < fSchema.getAttributeCount() ; i++) {
+            if (fSchema.getExternalPrimaryKeyIndex() == i) continue;
+            if (fSchema.isAttributeReadOnly(i)) continue;
+            sb.append(first?"?":",?");
+            first = false;
         }
         sb.append(");");
+        Logger.trace(sb.toString());
         PreparedStatement pstmt = conn.prepareStatement(sb.toString());
         return pstmt;
     }
@@ -365,13 +364,18 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     }
 
     protected PreparedStatement setAttributeValues(PreparedStatement pstmt,
-                Feature feature, int srid, int dim, String...exclude) throws SQLException {
+                Feature feature, int srid, int dim) throws SQLException {
         FeatureSchema schema = feature.getSchema();
-        List<String> excludeList = Arrays.asList(exclude);
+        Set<String> excludedAttributes = new HashSet<String>();
+        for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
+            if (schema.isAttributeReadOnly(i)) {
+                excludedAttributes.add(schema.getAttributeName(i));
+            }
+        }
         int index = 1;
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
             AttributeType type = schema.getAttributeType(i);
-            if (excludeList.contains(schema.getAttributeName(i))) continue;
+            if (excludedAttributes.contains(schema.getAttributeName(i))) continue;
             if (schema.getExternalPrimaryKeyIndex() == i) pstmt.setObject(index++, null);
             if (feature.getAttribute(i) == null)     pstmt.setObject(index++, null);
             else if (type == AttributeType.STRING)   pstmt.setString(index++, feature.getString(i));

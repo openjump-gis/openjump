@@ -526,7 +526,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
             String primaryKey, boolean hasSrid, int dim, boolean normalizedColumnNames) throws SQLException {
         String tableQName = compose(schemaName, tableName);
         StringBuilder sb = new StringBuilder("INSERT INTO " + tableQName + "(");
-        sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false, normalizedColumnNames))
+        sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false, false, normalizedColumnNames))
           .append(") VALUES(");
         boolean first = true;
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
@@ -544,7 +544,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 boolean normalizedColumnNames) throws SQLException {
         String tableQName = compose(dbSchema, dbTable);
         StringBuilder sb = new StringBuilder("UPDATE " + tableQName + " SET (");
-        sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false, normalizedColumnNames))
+        sb.append(PostGISQueryUtil.createColumnList(schema, false, true, false, false, normalizedColumnNames))
           .append(") = (");
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
             if (schema.getExternalPrimaryKeyIndex() == i) continue;

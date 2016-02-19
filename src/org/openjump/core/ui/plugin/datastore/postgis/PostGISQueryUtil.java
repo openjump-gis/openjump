@@ -110,13 +110,13 @@ public class PostGISQueryUtil {
      * @fSchema client feature schema
      * @schemaName unquoted schema name or null to use default schema
      * @tableName unquoted table name
-     * @param normalizedColumnNames whether column names must be normalized (lowercased
+     * @param normalizeColumnNames whether column names must be normalized (lowercased
      *                              and without special characters) or not
      */
     public static String getCreateTableStatement(FeatureSchema fSchema,
-            String schemaName, String tableName, boolean normalizedColumnNames) {
+            String schemaName, String tableName, boolean normalizeColumnNames) {
         return "CREATE TABLE " + compose(schemaName, tableName) +
-               " (" + createColumnList(fSchema, true, false, false, normalizedColumnNames) + ");";
+               " (" + createColumnList(fSchema, true, false, false, true, normalizeColumnNames) + ");";
     }
 
 
@@ -143,7 +143,7 @@ public class PostGISQueryUtil {
      *        followed by its corresponding sql DataType
      * @param includeGeometry if true, the geometry attribute is included
      * @param includeExternalPK if true, the external primary key is included
-     * @param normalizedColumnName whether feature attribute names must be normalized
+     * @param normalizeColumnNames whether feature attribute names must be normalized
      *                             (lower case without spacial characters) to specify
      *                             table column names.
      */
@@ -151,14 +151,16 @@ public class PostGISQueryUtil {
                           boolean includeSQLDataType,
                           boolean includeGeometry,
                           boolean includeExternalPK,
-                          boolean normalizedColumnName) {
+                          boolean includeReadOnly,
+                          boolean normalizeColumnNames) {
         StringBuilder sb = new StringBuilder();
         int count = 0;
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
             AttributeType type = schema.getAttributeType(i);
             if (type == AttributeType.GEOMETRY && !includeGeometry) continue;
             if (!includeExternalPK && schema.getExternalPrimaryKeyIndex() == i) continue;
-            String name = normalizedColumnName ?
+            if (!includeReadOnly && schema.getExternalPrimaryKeyIndex()!=i && schema.isAttributeReadOnly(i)) continue;
+            String name = normalizeColumnNames ?
                     normalize(schema.getAttributeName(i))
                     :schema.getAttributeName(i);
             if (0 < count++) sb.append(", ");
