@@ -1,6 +1,7 @@
 package com.vividsolutions.jump.workbench;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -189,7 +190,7 @@ public class Logger {
 
     org.apache.log4j.Logger.getRootLogger().setLevel(level);
 
-    info(I18N.getMessage("setting-log-level-to-{0}", level));
+    info(new MessageFormat("Setting log level to {0}").format(new Object[]{level}));
   }
 
   /**

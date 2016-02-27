@@ -119,11 +119,11 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
       }
     }
     if (!msg.isEmpty())
-      msg = I18N.getMessage(I18NPREFIX + ".missing-dependency-jars {0}", msg);
+      msg = I18N.getMessage(I18NPREFIX + ".missing-dependency-jars", msg);
 
     if (!others.isEmpty())
       msg += (!msg.isEmpty() ? " " : "")
-          + I18N.getMessage(I18NPREFIX + ".there-were-errors:-{0}", others);
+          + I18N.getMessage(I18NPREFIX + ".there-were-errors", others);
 
     return errorMessage = msg;
   }
@@ -166,7 +166,7 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
             dsDriver);
       }
     } else {
-      Logger.warn(I18N.getMessage(I18NPREFIX + ".datastore-{0}-disabled:-{1}",
+      Logger.warn(I18N.getMessage(I18NPREFIX + ".datastore-disabled",
           getName(), isAvailable()));
     }
   }
