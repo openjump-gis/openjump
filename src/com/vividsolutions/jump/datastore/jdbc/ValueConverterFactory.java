@@ -94,18 +94,16 @@ public class ValueConverterFactory {
     public static class IntegerConverter implements ValueConverter {
         public AttributeType getType() { return AttributeType.INTEGER; }
         public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
-            Object value = rs.getObject(columnIndex);
-            if (value == null) return null;
-            else return rs.getInt(columnIndex);
+            int value = rs.getInt(columnIndex);
+            return rs.wasNull() ? null : value;
         }
     }
 
     public static class  DoubleConverter implements ValueConverter {
         public AttributeType getType() { return AttributeType.DOUBLE; }
         public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
-            Object value = rs.getObject(columnIndex);
-            if (value == null) return null;
-            return rs.getDouble(columnIndex);
+            double value = rs.getDouble(columnIndex);
+            return rs.wasNull() ? null : value;
         }
     }
 
@@ -119,23 +117,23 @@ public class ValueConverterFactory {
     public static class  DateConverter implements ValueConverter {
         public AttributeType getType() { return AttributeType.DATE; }
         public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
-          //return rs.getDate(columnIndex);
-          Object ret = null;
-          try {
-            ret = rs.getTimestamp(columnIndex);
-          } catch (Exception e) {
-            // try to read date from string, as some SpatialDatabases like SQLite
-            // can store DATE type in string
-            FlexibleDateParser parser = new FlexibleDateParser();
+            //return rs.getDate(columnIndex);
+            Object ret = null;
             try {
-              ret = parser.parse(rs.getString(columnIndex), false);
-            } catch (Exception ee) {
-              System.err.println("cannot parse date value: \"" + rs.getString(columnIndex)
-              + "\" Defaulting to null.\n" + ee.getMessage());
+                ret = rs.getTimestamp(columnIndex);
+                if (rs.wasNull()) return null;
+            } catch (Exception e) {
+                // try to read date from string, as some SpatialDatabases like SQLite
+                // can store DATE type in string
+                FlexibleDateParser parser = new FlexibleDateParser();
+                try {
+                    ret = parser.parse(rs.getString(columnIndex), false);
+                } catch (Exception ee) {
+                    System.err.println("cannot parse date value: \"" + rs.getString(columnIndex)
+                    + "\" Defaulting to null.\n" + ee.getMessage());
+                }
             }
-          }
-          
-          return ret;
+            return ret;
         }
     }
 
@@ -143,9 +141,8 @@ public class ValueConverterFactory {
     public static class LongConverter implements ValueConverter {
         public AttributeType getType() { return AttributeType.LONG; }
         public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
-            Object value = rs.getObject(columnIndex);
-            if (value == null) return null;
-            else return rs.getLong(columnIndex);
+            long value = rs.getLong(columnIndex);
+            return rs.wasNull() ? null : value;
         }
     }
 
@@ -153,7 +150,8 @@ public class ValueConverterFactory {
     public static class  BooleanConverter implements ValueConverter {
         public AttributeType getType() { return AttributeType.BOOLEAN; }
         public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
-            return rs.getBoolean(columnIndex);
+            boolean value = rs.getBoolean(columnIndex);
+            return rs.wasNull() ? null : value;
         }
     }
 
