@@ -18,8 +18,7 @@ import java.sql.SQLException;
 public class OracleDSConnection extends SpatialDatabasesDSConnection {
 
     public OracleDSConnection(Connection con) {
-        super(con); // ?
-        connection = con;
+        super(con);
         this.dbMetadata = new OracleDSMetadata(this);
     }
     
@@ -66,7 +65,7 @@ public class OracleDSConnection extends SpatialDatabasesDSConnection {
         OracleFeatureInputStream ifs = new OracleFeatureInputStream(connection, queryString, query.getPrimaryKey());
         
         // Nicolas Ribot: getting FeatureSchema here actually runs the query: if an error occurs, must trap it here
-        FeatureSchema fs = null;
+        FeatureSchema fs;
         try {
           fs = ifs.getFeatureSchema();
         } catch (Exception e) {
@@ -82,6 +81,10 @@ public class OracleDSConnection extends SpatialDatabasesDSConnection {
         }
         return ifs;
         
+    }
+
+    public OracleValueConverterFactory getValueConverterFactory() {
+        return new OracleValueConverterFactory(connection);
     }
     
 }

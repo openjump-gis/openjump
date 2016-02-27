@@ -18,8 +18,7 @@ import java.sql.SQLException;
 public class MariadbDSConnection extends SpatialDatabasesDSConnection {
 
     public MariadbDSConnection(Connection con) {
-        super(con); // ?
-        connection = con;
+        super(con);
         this.dbMetadata = new MariadbDSMetadata(this);
     }
     
@@ -66,7 +65,7 @@ public class MariadbDSConnection extends SpatialDatabasesDSConnection {
         MariadbFeatureInputStream ifs = new MariadbFeatureInputStream(connection, queryString, query.getPrimaryKey());
         
         // Nicolas Ribot: getting FeatureSchema here actually runs the query: if an error occurs, must trap it here
-        FeatureSchema fs = null;
+        FeatureSchema fs;
         try {
           fs = ifs.getFeatureSchema();
         } catch (Exception e) {
@@ -82,6 +81,10 @@ public class MariadbDSConnection extends SpatialDatabasesDSConnection {
         }
         return ifs;
         
+    }
+
+    public MariadbValueConverterFactory getValueConverterFactory() {
+        return new MariadbValueConverterFactory(connection);
     }
     
 }

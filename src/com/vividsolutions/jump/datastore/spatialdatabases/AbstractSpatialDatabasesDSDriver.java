@@ -13,6 +13,7 @@ import com.vividsolutions.jump.datastore.jdbc.DelegatingDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * A driver for supplying {@link SpatialDatabasesDSConnection}s
@@ -225,6 +226,8 @@ public abstract class AbstractSpatialDatabasesDSDriver implements
     if (password != null) {
       info.put("password", password);
     }
+    Logger.info("java.net.preferIPv4Stack=" + System.getProperty("java.net.preferIPv4Stack"));
+    Logger.info("java.net.preferIPv6Addresses="+System.getProperty("java.net.preferIPv6Addresses"));
     Connection conn = driver.connect(url, info);
 
     if (savePreferIPv4Stack == null) {

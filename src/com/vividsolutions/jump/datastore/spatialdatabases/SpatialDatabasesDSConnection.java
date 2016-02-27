@@ -1,17 +1,16 @@
 package com.vividsolutions.jump.datastore.spatialdatabases;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.datastore.AdhocQuery;
-import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.DataStoreException;
-import com.vividsolutions.jump.datastore.DataStoreMetadata;
-import com.vividsolutions.jump.datastore.FilterQuery;
-import com.vividsolutions.jump.datastore.Query;
-import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
+import com.vividsolutions.jump.datastore.*;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.FeatureInputStream;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for all spatial databases DataStore connections. No need to
@@ -35,7 +34,7 @@ public class SpatialDatabasesDSConnection implements DataStoreConnection {
   }
 
   @Override
-  public DataStoreMetadata getMetadata() {
+  public SpatialDatabasesDSMetadata getMetadata() {
     return dbMetadata;
   }
 
@@ -105,4 +104,28 @@ public class SpatialDatabasesDSConnection implements DataStoreConnection {
       throw new DataStoreException(e);
     }
   }
+
+  public SpatialDatabasesValueConverterFactory getValueConverterFactory() {
+    return new SpatialDatabasesValueConverterFactory(connection);
+  }
+
+  public String[] getCompatibleSchemaSubset(String schemaName, String tableName,
+          FeatureSchema featureSchema, boolean normalizedColumnNames) throws Exception {
+    SpatialDatabasesValueConverterFactory factory = getValueConverterFactory();
+    ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM " +
+            SQLUtil.compose(schemaName, tableName) + " LIMIT 0");
+    ResultSetMetaData rsMetaData = rs.getMetaData();
+    List<String> commonAttributes = new ArrayList<String>();
+    for (int i = 0 ; i < featureSchema.getAttributeCount() ; i++) {
+      String attribut = featureSchema.getAttributeName(i);
+      if (normalizedColumnNames) attribut = SQLUtil.normalize(attribut);
+      try {
+        AttributeType type = factory.getConverter(rsMetaData, rs.findColumn(attribut)).getType();
+        if (type == featureSchema.getAttributeType(i));
+        commonAttributes.add(featureSchema.getAttributeName(i));
+      } catch(SQLException e) {}
+    }
+    return commonAttributes.toArray(new String[0]);
+  }
+
 }

@@ -19,8 +19,7 @@ import java.sql.SQLException;
 public class SpatialiteDSConnection extends SpatialDatabasesDSConnection {
 
     public SpatialiteDSConnection(Connection con) {
-        super(con); // ?
-        connection = con;
+        super(con);
         this.dbMetadata = new SpatialiteDSMetadata(this);
     }
     
@@ -28,14 +27,12 @@ public class SpatialiteDSConnection extends SpatialDatabasesDSConnection {
      * Keeps a reference on SpatialiteDSMetadata into the SQL builder, to access
      * Spatialite preferences necessary in order to build proper queries according to 
      * geometric type
-     * @param srid
-     * @param colNames
-     * @return 
+     * @param srid srid of the dataset
+     * @param colNames list of column names
      */
     @Override
     public SpatialDatabasesSQLBuilder getSqlBuilder(SpatialReferenceSystemID srid, String[] colNames) {
-        SpatialiteSQLBuilder ret = new SpatialiteSQLBuilder((SpatialiteDSMetadata)this.dbMetadata, srid, colNames);
-        return ret;
+        return new SpatialiteSQLBuilder((SpatialiteDSMetadata)this.dbMetadata, srid, colNames);
     }
 
     /**
@@ -81,7 +78,7 @@ public class SpatialiteDSConnection extends SpatialDatabasesDSConnection {
         ifs.setMetadata((SpatialiteDSMetadata)dbMetadata);
         
         // Nicolas Ribot: getting FeatureSchema here actually runs the query: if an error occurs, must trap it here
-        FeatureSchema fs = null;
+        FeatureSchema fs;
         try {
           fs = ifs.getFeatureSchema();
         } catch (Exception e) {
@@ -97,6 +94,10 @@ public class SpatialiteDSConnection extends SpatialDatabasesDSConnection {
         }
         return ifs;
         
+    }
+
+    public SpatialiteValueConverterFactory getValueConverterFactory() {
+        return new SpatialiteValueConverterFactory(connection);
     }
     
 }

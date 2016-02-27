@@ -4,13 +4,11 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.DataStoreMetadata;
-import com.vividsolutions.jump.datastore.GeometryColumn;
-import com.vividsolutions.jump.datastore.PrimaryKeyColumn;
-import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
+import com.vividsolutions.jump.datastore.*;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
 import java.sql.*;
@@ -37,18 +35,22 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * OGC WKB reader if needed: TODO: keep only in needed classes ?
    */
   protected final WKBReader reader = new WKBReader();
+
   /**
    * OGC WKB reader if needed: TODO: keep only in needed classes ?
    */
   protected final WKTReader txtReader = new WKTReader();
+
   /**
    * The dataStoreConnection to get MD from
    */
   protected DataStoreConnection conn;
+
   /**
    * The map of SRIDs found for these MD
    */
   protected Map sridMap = new HashMap();
+
   /**
    * query to get list of spatial tables from the connection. Must return
    * following columns: distinct table_schema, table_name (if several geo
@@ -57,23 +59,28 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * @param conn
    */
   protected String datasetNameQuery = null;
+
   /**
    * the name of the default schema
    */
   protected String defaultSchemaName = null;
+
   /**
    * The name of this SpatialDatabase
    */
   protected String spatialDbName = null;
+
   /**
    * The SQL query to get spatial extent. Must return following columns: a
    * geometric column representing the extent
    */
   protected String spatialExtentQuery1 = null;
+
   /**
    * The alternate SQL query to get spatial extent (for instance for postgis)
    */
   protected String spatialExtentQuery2 = null;
+
   /**
    * The SQL query to get list of geo columns. Must return column name (String),
    * srid(int) and type (string) (if spatial database does not store type in
@@ -81,12 +88,18 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * 'SDO_GEOMETRY' as type from all_sdo_geom_metadata
    */
   protected String geoColumnsQuery = null;
+
   /**
-   * The SQL query to get a SRID for a given schema name, table name and geo
-   * column
-   *
+   * The SQL query to get a SRID for a given schema name, table name and
+   * geometry column
    */
   protected String sridQuery = null;
+
+  /**
+   * The SQL query to get the coordinate dimension for a given schema name,
+   * table name and geometry column
+   */
+  protected String coordDimQuery = null;
 
   public SpatialDatabasesDSMetadata() {
   }
@@ -135,6 +148,11 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
   public String getSridQuery(String schemaName, String tableName, String colName) {
     // TODO
     return String.format(this.sridQuery, schemaName, tableName, colName);
+  }
+
+  public String getCoordinateDimensionQuery(String schemaName, String tableName, String colName) {
+    // TODO
+    return String.format(this.coordDimQuery, schemaName, tableName, colName);
   }
 
   /**
@@ -451,9 +469,178 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
 
     return srid.toString();
   }
+
+  public int getCoordinateDimension(String datasetName, String colName) {
+    final StringBuffer coordDim = new StringBuffer();
+    String sql = this.getCoordinateDimensionQuery(this.getSchemaName(datasetName),
+            this.getTableName(datasetName), colName);
+    JDBCUtil.execute(conn.getJdbcConnection(), sql, new ResultSetBlock() {
+      public void yield(ResultSet resultSet) throws SQLException {
+        if (resultSet.next()) {
+          // Nicolas Ribot: test if a null is returned
+          String s = resultSet.getString(1);
+          coordDim.append(s == null ? "0" : s);
+        }
+      }
+    });
+
+    return Integer.parseInt(coordDim.toString());
+  }
   
   @Override
   public DataStoreConnection getDataStoreConnection() {
     return this.conn;
   }
+
+  /**
+   * Returns the CREATE TABLE statement corresponding to this feature schema.
+   * The statement includes column names and data types, but neither geometry
+   * column nor primary key.
+   * @fSchema client feature schema
+   * @schemaName unquoted schema name or null to use default schema
+   * @tableName unquoted table name
+   * @param normalizeColumnNames whether column names must be normalized (lowercased
+   *                              and without special characters) or not
+   */
+  public String getCreateTableStatement(FeatureSchema fSchema,
+                                        String schemaName, String tableName, boolean normalizeColumnNames) {
+    return "CREATE TABLE " + SQLUtil.compose(schemaName, tableName) +
+            " (" + createColumnList(fSchema, true, false, false, true, normalizeColumnNames) + ");";
+  }
+
+  /**
+   * Returns a comma-separated list of attributes included in schema.
+   * @param schema the FeatureSchema
+   * @param includeSQLDataType if true, each attribute name is immediately
+   *        followed by its corresponding sql DataType
+   * @param includeGeometry if true, the geometry attribute is included
+   * @param includeExternalPK if true, the external primary key is included
+   * @param includeReadOnly if true, readOnly attributes are included
+   * @param normalizeColumnNames whether feature attribute names must be normalized
+   *                             (lower case without spacial characters) to specify
+   *                             table column names.
+   */
+  public String createColumnList(FeatureSchema schema,
+                                    boolean includeSQLDataType,
+                                    boolean includeGeometry,
+                                    boolean includeExternalPK,
+                                    boolean includeReadOnly,
+                                    boolean normalizeColumnNames) {
+    StringBuilder sb = new StringBuilder();
+    int count = 0;
+    for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
+      AttributeType type = schema.getAttributeType(i);
+      if (type == AttributeType.GEOMETRY && !includeGeometry) continue;
+      if (!includeExternalPK && schema.getExternalPrimaryKeyIndex() == i) continue;
+      if (!includeReadOnly && schema.getExternalPrimaryKeyIndex()!=i && schema.isAttributeReadOnly(i)) continue;
+      String name = normalizeColumnNames ?
+              SQLUtil.normalize(schema.getAttributeName(i))
+              :schema.getAttributeName(i);
+      if (0 < count++) sb.append(", ");
+      sb.append("\"").append(name).append("\"");
+      if (includeSQLDataType) sb.append(" ").append(getDbTypeName(type));
+    }
+    return sb.toString();
+  }
+
+  /**
+   * Create statement to add a spatial index on the specified geometry column.
+   * The geometry column name must have its final form. Attribute name normalization
+   * is the responsability of the calling method.
+   * @param schemaName unquoted schema name or null if default schema is used
+   * @param tableName unquoted table name
+   * @param geometryColumn unquoted geometry column name
+   * @return a sql string to add a spatial index
+   */
+  public String getAddSpatialIndexStatement(String schemaName, String tableName, String geometryColumn) {
+    // Geometry index creation is different on different spatial databases
+    // Do not add if it is not defined
+    return ";";
+  }
+
+  /**
+   * Creates the query String to add a GeometryColumn.
+   * <p>Note 1 : In PostGIS 2.x, srid=-1 is automatically converted to srid=0 by
+   * AddGeometryColumn function.</p>
+   * <p>Note 2 : To stay compatible with PostGIS 1.x, last argument of
+   * AddGeometryColumn is omitted. As a consequence, geometry type is inserted
+   * a the column type rather than a constraint (new default behaviour in 2.x)</p>
+   * <p>The geometry column name must have its final form. Attribute name normalization
+   * is the responsability of the calling method.</p>
+   */
+  public String getAddGeometryColumnStatement(String schemaName, String tableName,
+                                                     String geometryColumn, int srid, String geometryType, int dim) {
+    if (schemaName == null) {
+      return "SELECT AddGeometryColumn('" + tableName + "','" +
+              geometryColumn + "'," +
+              srid + ",'" +
+              geometryType.toUpperCase() + "'," +
+              dim + ");";
+    } else {
+      return "SELECT AddGeometryColumn('" + schemaName + "','" +
+              tableName + "','" +
+              geometryColumn + "'," +
+              srid + ",'" +
+              geometryType.toUpperCase() + "'," +
+              dim + ");";
+    }
+  }
+
+  /**
+   * Return standard SQL data type for OpenJUMP AttributeType.
+   * This method must be overloaded by specific database oj2dbType
+   * @param type OpenJUMP attribute type
+   * @return
+   */
+  protected String getDbTypeName(AttributeType type) {
+    if (type == AttributeType.GEOMETRY)      return "varbinary";
+    else if (type == AttributeType.STRING)   return "varchar";
+    else if (type == AttributeType.INTEGER)  return "integer";
+    else if (type == AttributeType.LONG)     return "bigint";
+    else if (type == AttributeType.DOUBLE)   return "double precision";
+    else if (type == AttributeType.NUMERIC)  return "numeric";
+    else if (type == AttributeType.DATE)     return "timestamp";
+    else if (type == AttributeType.BOOLEAN)  return "boolean";
+    else if (type == AttributeType.OBJECT)   return "varbinary";
+    else return "varchar";
+  }
+
+  /**
+   * Return the JDBC datatype from the native datatype.
+   * This method is implemented for PostgreSQL datatypes. It must be overloaded
+   * by specific database mapping.
+   * @param sqlType
+   * @return
+   */
+  //protected int getJdbcTypeFromSQL(String sqlType) {
+  //  if (sqlType.equals("character"))                return Types.VARCHAR;
+  //  else if (sqlType.equals("character varying"))   return Types.VARCHAR;
+  //  else if (sqlType.equals("text"))                return Types.VARCHAR;
+  //  else if (sqlType.equals("integer"))             return Types.INTEGER;
+  //  else if (sqlType.equals("bigint"))              return Types.BIGINT;
+  //  else if (sqlType.equals("bigserial"))           return Types.BIGINT;
+  //  else if (sqlType.equals("bit"))                 return Types.BIT;
+  //  else if (sqlType.equals("boolean"))             return Types.BOOLEAN;
+  //  else if (sqlType.equals("date"))                return Types.DATE;
+  //  else if (sqlType.equals("decimal"))             return Types.NUMERIC;
+  //  else if (sqlType.equals("double"))              return Types.DOUBLE;
+  //  else if (sqlType.equals("double precision"))    return Types.DOUBLE;
+  //  else if (sqlType.equals("int4"))                return Types.INTEGER;
+  //  else if (sqlType.equals("int8"))                return Types.BIGINT;
+  //  else if (sqlType.equals("json"))                return Types.VARCHAR;
+  //  else if (sqlType.equals("numeric"))             return Types.NUMERIC;
+  //  else if (sqlType.equals("real"))                return Types.REAL;
+  //  else if (sqlType.equals("smallint"))            return Types.SMALLINT;
+  //  else if (sqlType.equals("serial"))              return Types.BIGINT;
+  //  else if (sqlType.equals("serial4"))             return Types.INTEGER;
+  //  else if (sqlType.equals("serial8"))             return Types.BIGINT;
+  //  else if (sqlType.equals("timestamp"))           return Types.TIMESTAMP;
+  //  else if (sqlType.equals("timestamp with time zone")) return Types.TIMESTAMP;
+  //  else if (sqlType.equals("timestamp without time zone")) return Types.TIMESTAMP;
+  //  else if (sqlType.equals("time"))                return Types.TIME;
+  //  else if (sqlType.equals("varchar"))             return Types.VARCHAR;
+  //  else                                            return Types.JAVA_OBJECT;
+  //}
+//
+
 }

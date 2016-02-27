@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-02-27 mmichaud <m.michael.michaud@orange.fr>
+  * Null boolean was not handled correctly in datastore datasources.
+  * Refactoring of DataStore framework. Prepare writing capabilities for
+    multiple kinds of drivers.
+
 2016-02-19 mmichaud <m.michael.michaud@orange.fr>
   * Better handling of readOnly attributes in PostGIS writer
   * Add Boolean and Long AttributeType in AttributeCalculator (beanshell)

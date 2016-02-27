@@ -18,8 +18,7 @@ import java.sql.SQLException;
 public class H2DSConnection extends SpatialDatabasesDSConnection {
 
     public H2DSConnection(Connection con) {
-        super(con); // ?
-        connection = con;
+        super(con);
         this.dbMetadata = new H2DSMetadata(this);
     }
 
@@ -68,7 +67,7 @@ public class H2DSConnection extends SpatialDatabasesDSConnection {
         H2FeatureInputStream ifs = new H2FeatureInputStream(connection, queryString, query.getPrimaryKey());
 
         // Nicolas Ribot: getting FeatureSchema here actually runs the query: if an error occurs, must trap it here
-        FeatureSchema fs = null;
+        FeatureSchema fs;
         try {
             fs = ifs.getFeatureSchema();
         } catch (Exception e) {
@@ -83,5 +82,9 @@ public class H2DSConnection extends SpatialDatabasesDSConnection {
         }
         return ifs;
 
+    }
+
+    public H2ValueConverterFactory getValueConverterFactory() {
+        return new H2ValueConverterFactory(connection);
     }
 }

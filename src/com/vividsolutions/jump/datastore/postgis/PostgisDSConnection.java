@@ -8,9 +8,6 @@ import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConn
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.FeatureInputStream;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.ui.ErrorDialog;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -21,8 +18,7 @@ import java.sql.SQLException;
 public class PostgisDSConnection extends SpatialDatabasesDSConnection {
 
     public PostgisDSConnection(Connection con) {
-        super(con); // ?
-        connection = con;
+        super(con);
         this.dbMetadata = new PostgisDSMetadata(this);
     }
     
@@ -71,7 +67,7 @@ public class PostgisDSConnection extends SpatialDatabasesDSConnection {
         PostgisFeatureInputStream ifs = new PostgisFeatureInputStream(connection, queryString, query.getPrimaryKey());
         
         // Nicolas Ribot: getting FeatureSchema here actually runs the query: if an error occurs, must trap it here
-        FeatureSchema fs = null;
+        FeatureSchema fs;
         try {
           fs = ifs.getFeatureSchema();
         } catch (Exception e) {
@@ -86,6 +82,10 @@ public class PostgisDSConnection extends SpatialDatabasesDSConnection {
         }
         return ifs;
         
+    }
+
+    public PostgisValueConverterFactory getValueConverterFactory() {
+        return new PostgisValueConverterFactory(connection);
     }
     
 }

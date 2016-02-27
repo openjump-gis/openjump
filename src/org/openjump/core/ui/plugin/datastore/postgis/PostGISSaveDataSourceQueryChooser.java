@@ -17,6 +17,7 @@
 package org.openjump.core.ui.plugin.datastore.postgis;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -138,11 +139,10 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         Layer[] layers = context.getWorkbenchContext().getLayerNamePanel().getSelectedLayers();
         if (layers.length == 1) {
             properties.put(SaveToPostGISDataSource.DATASET_NAME_KEY, layers[0].getName());
-            //FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
-            String[] schema_table = PostGISQueryUtil.splitTableName(panel.getTableName());
+            String[] schema_table = SQLUtil.splitTableName(panel.getTableName());
             
             properties.put(SaveToPostGISDataSource.SQL_QUERY_KEY, "SELECT * FROM " +
-                PostGISQueryUtil.compose(schema_table[0], schema_table[1]) + " LIMIT 100000");
+                    SQLUtil.compose(schema_table[0], schema_table[1]) + " LIMIT 100000");
             // OpenJUMP has now a better support of Coordinate System at
             // FeatureCollection and FeatureSchema level, but this one is simple
             // and makes it easy to set the SRID the user want before an update

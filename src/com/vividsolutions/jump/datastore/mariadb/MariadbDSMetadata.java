@@ -1,6 +1,7 @@
 package com.vividsolutions.jump.datastore.mariadb;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.spatialdatabases.*;
 import com.vividsolutions.jump.datastore.GeometryColumn;
 import java.sql.DatabaseMetaData;
@@ -10,10 +11,12 @@ import java.util.List;
 public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
 
   public static String GC_COLUMN_NAME = "geometry_columns";
+
   /**
    * The second query to get geometric columns
    */
   private String geoColumnsQuery2;
+
   /**
    * The second query to get SRID
    */
@@ -103,8 +106,8 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
   @Override
   public String getGeoColumnsQuery(String datasetName) {
     // escape single quotes in identifier
-    return String.format(this.geoColumnsQuery, 
-        SpatialDatabasesSQLBuilder.escapeSingleQuote(getTableName(datasetName)));
+    return String.format(this.geoColumnsQuery,
+            SQLUtil.escapeSingleQuote(getTableName(datasetName)));
   }
 
   public String getGeoColumnsQuery2(String datasetName) {
@@ -115,14 +118,14 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
   public String getSridQuery(String schemaName, String tableName, String colName) {
     // escape single quotes in identifier
     // TODO: geom ?
-    return String.format(this.sridQuery, 
-        SpatialDatabasesSQLBuilder.escapeSingleQuote(tableName), colName);
+    return String.format(this.sridQuery,
+            SQLUtil.escapeSingleQuote(tableName), colName);
   }
 
   public String getSridQuery2(String schemaName, String tableName, String colName) {
-    return String.format(this.sridQuery2, colName, colName, colName, 
-        SpatialDatabasesSQLBuilder.escapeSingleQuote(schemaName), 
-        SpatialDatabasesSQLBuilder.escapeSingleQuote(tableName));
+    return String.format(this.sridQuery2, colName, colName, colName,
+            SQLUtil.escapeSingleQuote(schemaName),
+            SQLUtil.escapeSingleQuote(tableName));
   }
 
   @Override

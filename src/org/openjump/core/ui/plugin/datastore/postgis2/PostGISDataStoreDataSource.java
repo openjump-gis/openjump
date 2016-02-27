@@ -1,23 +1,18 @@
 package org.openjump.core.ui.plugin.datastore.postgis2;
 
-import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.compose;
-import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.normalize;
-import static org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil.unquote;
-
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
+import com.vividsolutions.jump.datastore.SQLUtil;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
-import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
 import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSMetadata;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -48,21 +43,16 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
     /**
      * After a new postgis table has been create, it is useful to execute a VACUUM ANALYZE
      * in order to update indexes and get a precise estimated_extent.
-     * @param conn
-     * @throws Exception
      */
-    public void finalizeUpdate(Connection conn) throws Exception {
-        conn.createStatement().execute("VACUUM ANALYZE " +
-                                   PostGISQueryUtil.compose(schemaName, tableName));
-        Logger.debug("VACUUM ANALYZE " + PostGISQueryUtil.compose(schemaName, tableName));
+    public void finalizeUpdate(SpatialDatabasesDSConnection conn) throws Exception {
+        conn.getJdbcConnection().createStatement().execute("VACUUM ANALYZE " +
+                                   SQLUtil.compose(schemaName, tableName));
+        Logger.debug("VACUUM ANALYZE " + SQLUtil.compose(schemaName, tableName));
     }
 
     protected FeatureCollection createFeatureCollection() throws Exception {
 
         Logger.debug("Create new FeatureCollection from " + getProperties().get(DATASET_NAME_KEY));
-        //String[] datasetName = PostGISQueryUtil.splitTableName((String)getProperties().get(DATASET_NAME_KEY));
-        //schemaName = datasetName[0];
-        //tableName = datasetName[1];
         ConnectionDescriptor connectionDescriptor =
                 (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY);
 
@@ -107,17 +97,15 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
 
     }
 
-    private String buildQueryString(PostgisDSConnection pgConnection) throws SQLException {
+    private String buildQueryString(SpatialDatabasesDSConnection conn) throws SQLException {
 
         String geometryColumn = (String)getProperties().get(GEOMETRY_ATTRIBUTE_NAME_KEY);
 
         //@TODO This method should be available in DataStoreMetadata to avoid the cast
-        String[] columns = ((PostgisDSMetadata)pgConnection.getMetadata())
-                .getColumnNames(PostGISQueryUtil.unquote((String)getProperties().get(DATASET_NAME_KEY)));
+        String[] columns = conn.getMetadata()
+                .getColumnNames(SQLUtil.unquote((String) getProperties().get(DATASET_NAME_KEY)));
 
-        Connection conn = pgConnection.getJdbcConnection();
-
-        int table_srid = getTableSRID(conn, geometryColumn);
+        int table_srid = getTableSRID(conn.getJdbcConnection(), geometryColumn);
 
         boolean limited_to_view = (Boolean)getProperties().get(LIMITED_TO_VIEW);
         String extent = limited_to_view ? " AND (\"" + geometryColumn + "\" && ST_GeomFromText('" +
@@ -134,8 +122,8 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
             sb.append(", \"").append(col).append("\"");
         }
         sb.append(" FROM \"")
-                .append(schemaName == null ? "" : unquote(schemaName)+"\".\"")
-                .append(unquote(tableName))
+                .append(schemaName == null ? "" : SQLUtil.unquote(schemaName)+"\".\"")
+                .append(SQLUtil.unquote(tableName))
                 .append("\" WHERE ")
                 .append(whereClause)
                 .append(extent)
@@ -149,19 +137,19 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
      * Execute a query on this connection to DROP this table as well as
      * its reference in the PostGIS's geometry_columns table (PostGIS < 2).
      */
-    protected void deleteTableQuery(java.sql.Connection connection) throws SQLException {
+    protected void deleteTableQuery(SpatialDatabasesDSConnection conn) throws SQLException {
         try {
             // Try to delete dbTable AND the corresponding rows in geometry_columns table
             if (schemaName == null) {
-                connection.createStatement().execute("SELECT DropGeometryTable( '" +
+                conn.getJdbcConnection().createStatement().execute("SELECT DropGeometryTable( '" +
                         tableName + "' );");
             } else {
-                connection.createStatement().execute("SELECT DropGeometryTable( '" +
+                conn.getJdbcConnection().createStatement().execute("SELECT DropGeometryTable( '" +
                         schemaName + "' , '" + tableName + "' );");
             }
         } catch(SQLException e) {
             // If DropGeometryTable failed, try a simple DROP TABLE statement
-            connection.createStatement().execute("DROP TABLE " + compose(schemaName, tableName) + ";");
+            conn.getJdbcConnection().createStatement().execute("DROP TABLE " + SQLUtil.compose(schemaName, tableName) + ";");
         }
     }
 
@@ -176,39 +164,39 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
      * @throws SQLException
      */
     protected void createAndPopulateTable(
-            java.sql.Connection conn,
+            SpatialDatabasesDSConnection conn,
             FeatureCollection fc,
             int srid, String geometryType, int dim,
             boolean normalizedColumnNames) throws SQLException {
         FeatureSchema schema = fc.getFeatureSchema();
         String geometryColumn = normalizedColumnNames ?
-                normalize(schema.getAttributeName(schema.getGeometryIndex()))
+                SQLUtil.normalize(schema.getAttributeName(schema.getGeometryIndex()))
                 :schema.getAttributeName(schema.getGeometryIndex());
         try {
-            conn.createStatement().execute(PostGISQueryUtil
+            conn.getJdbcConnection().createStatement().execute(conn.getMetadata()
                     .getCreateTableStatement(fc.getFeatureSchema(), schemaName, tableName, normalizedColumnNames));
         } catch (SQLException sqle) {
-            throw new SQLException("Error executing query: " + PostGISQueryUtil
+            throw new SQLException("Error executing query: " + conn.getMetadata()
                     .getCreateTableStatement(fc.getFeatureSchema(), schemaName, tableName, normalizedColumnNames), sqle);
         }
         try {
-            conn.createStatement().execute(PostGISQueryUtil
+            conn.getJdbcConnection().createStatement().execute(conn.getMetadata()
                     .getAddGeometryColumnStatement(schemaName, tableName, geometryColumn, srid, geometryType, dim));
         } catch (SQLException sqle) {
-            throw new SQLException("Error executing query: " + PostGISQueryUtil
+            throw new SQLException("Error executing query: " + conn.getMetadata()
                     .getAddGeometryColumnStatement(schemaName, tableName, geometryColumn, srid, geometryType, dim), sqle);
         }
         populateTable(conn, fc, null, srid, dim, normalizedColumnNames);
         try {
-            conn.createStatement().execute(PostGISQueryUtil
+            conn.getJdbcConnection().createStatement().execute(conn.getMetadata()
                     .getAddSpatialIndexStatement(schemaName, tableName, geometryColumn));
         } catch (SQLException sqle) {
-            throw new SQLException("Error executing query: " + PostGISQueryUtil
+            throw new SQLException("Error executing query: " + conn.getMetadata()
                     .getAddSpatialIndexStatement(schemaName, tableName, geometryColumn), sqle);
         }
     }
 
-    private void populateTable(java.sql.Connection conn, FeatureCollection fc, String primaryKey,
+    private void populateTable(SpatialDatabasesDSConnection conn, FeatureCollection fc, String primaryKey,
                                int srid, int dim, boolean normalizedColumnNames) throws SQLException {
         PreparedStatement statement = insertStatement(conn, fc.getFeatureSchema(), normalizedColumnNames);
         int count = 0;
@@ -238,11 +226,11 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
     }
 
 
-    protected void addDBPrimaryKey(java.sql.Connection conn, String primaryKey) throws SQLException {
-        String sql_create_dbid = "ALTER TABLE " + compose(schemaName,tableName) + " ADD COLUMN \"" +
+    protected void addDBPrimaryKey(SpatialDatabasesDSConnection conn, String primaryKey) throws SQLException {
+        String sql_create_dbid = "ALTER TABLE " + SQLUtil.compose(schemaName, tableName) + " ADD COLUMN \"" +
                 primaryKey + "\" serial NOT NULL PRIMARY KEY;";
         try {
-            conn.createStatement().execute(sql_create_dbid);
+            conn.getJdbcConnection().createStatement().execute(sql_create_dbid);
         } catch (SQLException sqle) {
             throw new SQLException(sql_create_dbid, sqle);
         }
@@ -252,8 +240,8 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
     // @TODO for backward compatibility it could be useful to implement a 1.3 compatibility mode
     protected int getTableSRID(java.sql.Connection conn, String column) throws SQLException {
         String sql = schemaName == null ?
-                "SELECT Find_SRID('public', '" + tableName + "', '" + unquote(column) + "');" :
-                "SELECT Find_SRID('" + schemaName + "', '" + tableName + "', '" + unquote(column) + "');";
+                "SELECT Find_SRID('public', '" + tableName + "', '" + SQLUtil.unquote(column) + "');" :
+                "SELECT Find_SRID('" + schemaName + "', '" + tableName + "', '" + SQLUtil.unquote(column) + "');";
         Logger.debug(sql);
         ResultSet rs = conn.prepareStatement(sql).executeQuery();
         if (rs.next()) return rs.getInt(1);

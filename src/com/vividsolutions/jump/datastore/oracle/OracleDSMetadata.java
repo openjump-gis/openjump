@@ -6,6 +6,7 @@
 package com.vividsolutions.jump.datastore.oracle;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.spatialdatabases.*;
 import com.vividsolutions.jump.datastore.GeometryColumn;
 import java.sql.SQLException;
@@ -58,8 +59,8 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
     public String getSpatialExtentQuery1(String schema, String table, String attributeName) {
         // escape single quote for table name:
         // TODO: do it for schema/user name ?
-        return String.format(this.spatialExtentQuery1, schema, 
-            SpatialDatabasesSQLBuilder.escapeSingleQuote(table), attributeName);
+        return String.format(this.spatialExtentQuery1, schema,
+                SQLUtil.escapeSingleQuote(table), attributeName);
     }
 
     @Override
@@ -71,16 +72,16 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
     public String getGeoColumnsQuery(String datasetName) {
         // escape single quote for table name:
         // TODO: do it for schema/user name ?
-        return String.format(this.geoColumnsQuery, getSchemaName(datasetName), 
-            SpatialDatabasesSQLBuilder.escapeSingleQuote(getTableName(datasetName)));
+        return String.format(this.geoColumnsQuery, getSchemaName(datasetName),
+                SQLUtil.escapeSingleQuote(getTableName(datasetName)));
     }
 
     @Override
     public String getSridQuery(String schemaName, String tableName, String colName) {
         // escape single quote for table name:
         // TODO: do it for schema/user name ?
-        return String.format(this.sridQuery, schemaName, 
-            SpatialDatabasesSQLBuilder.escapeSingleQuote(tableName), colName);
+        return String.format(this.sridQuery, schemaName,
+                SQLUtil.escapeSingleQuote(tableName), colName);
     }
     
     @Override

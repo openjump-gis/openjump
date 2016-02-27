@@ -1,6 +1,7 @@
 package org.openjump.core.ui.plugin.datastore.postgis2;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser;
@@ -8,7 +9,6 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
-import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -143,7 +143,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
             FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
             properties.put(WritableDataStoreDataSource.GEOMETRY_ATTRIBUTE_NAME_KEY,
                 panel.isNormalizedColumnNames()?
-                    PostGISQueryUtil.normalize(schema.getAttributeName(schema.getGeometryIndex()))
+                        SQLUtil.normalize(schema.getAttributeName(schema.getGeometryIndex()))
                     :schema.getAttributeName(schema.getGeometryIndex()));
 
             // OpenJUMP has now a better support of Coordinate System at

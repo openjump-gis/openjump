@@ -1,5 +1,7 @@
 package com.vividsolutions.jump.datastore.spatialdatabases;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKBWriter;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
@@ -24,7 +26,7 @@ public class SpatialDatabasesSQLBuilder {
 
   /**
    * Builds a valid SQL spatial query with the given spatial filter.
-   * @param query
+   * @param query the filter query
    * @return a SQL query to get column names
    */
   public String getSQL(FilterQuery query) {
@@ -43,8 +45,8 @@ public class SpatialDatabasesSQLBuilder {
   /**
    * Returns the string representing a SQL column definition.
    * Implementors should take care of column names (case, quotes)
-   * @param colNames
-   * @param geomColName
+   * @param colNames list of column names
+   * @param geomColName name of the geometry column
    * @return column list
    */
   protected String getColumnListSpecifier(String[] colNames, String geomColName) {
@@ -69,14 +71,6 @@ public class SpatialDatabasesSQLBuilder {
     else
       return srid.getString();
   }
-  
-  /**
-   * Utility method to escape single quotes in given identifier.
-   * Replace all single quotes ("'") by double single quotes ("''") 
-   * @param identifier
-   * @return the identifier with single quotes escaped, or identifier if no string found
-   */
-  public static String escapeSingleQuote(String identifier) {
-    return identifier == null ? null : identifier.replaceAll("'", "''");
-  }
+
+
 }

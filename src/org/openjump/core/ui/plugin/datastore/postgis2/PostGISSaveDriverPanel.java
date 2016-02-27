@@ -3,6 +3,7 @@ package org.openjump.core.ui.plugin.datastore.postgis2;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreMetadata;
+import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
@@ -11,7 +12,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.AbstractDriverPanel;
 import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionPanel;
-import org.openjump.core.ui.plugin.datastore.postgis.PostGISQueryUtil;
 
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
@@ -161,7 +161,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel {
         normalizedTableNameCheckBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (((JCheckBox)e.getSource()).isSelected()) {
-                    tableComboBox.setSelectedItem(PostGISQueryUtil.normalize(
+                    tableComboBox.setSelectedItem(SQLUtil.normalize(
                             wbContext.getLayerNamePanel().getSelectedLayers()[0].getName()));
                 } else {
                     tableComboBox.setSelectedItem(

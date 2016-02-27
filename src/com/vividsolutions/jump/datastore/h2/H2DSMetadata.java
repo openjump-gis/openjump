@@ -2,8 +2,8 @@ package com.vividsolutions.jump.datastore.h2;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.GeometryColumn;
+import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMetadata;
-import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 
 import java.util.List;
 
@@ -37,17 +37,17 @@ public class H2DSMetadata extends SpatialDatabasesDSMetadata {
     @Override
     public String getGeoColumnsQuery(String datasetName) {
         // escape single quotes
-        return String.format(this.geoColumnsQuery, 
-            SpatialDatabasesSQLBuilder.escapeSingleQuote(getSchemaName(datasetName)), 
-            SpatialDatabasesSQLBuilder.escapeSingleQuote(getTableName(datasetName)));
+        return String.format(this.geoColumnsQuery,
+                SQLUtil.escapeSingleQuote(getSchemaName(datasetName)),
+                SQLUtil.escapeSingleQuote(getTableName(datasetName)));
     }
 
     @Override
     public String getSridQuery(String schemaName, String tableName, String colName) {
         // escape single quotes
-        return String.format(this.sridQuery, 
-            SpatialDatabasesSQLBuilder.escapeSingleQuote(schemaName), 
-            SpatialDatabasesSQLBuilder.escapeSingleQuote(tableName), colName);
+        return String.format(this.sridQuery,
+                SQLUtil.escapeSingleQuote(schemaName),
+                SQLUtil.escapeSingleQuote(tableName), colName);
     }
 
     @Override
