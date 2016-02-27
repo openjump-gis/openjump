@@ -44,6 +44,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.workbench.model.Layer;
+import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 
 public class SchemaTableModel extends ColumnBasedTableModel {
 	
@@ -184,7 +185,8 @@ public class SchemaTableModel extends ColumnBasedTableModel {
     private Layer layer;
 
     public boolean isCellEditable(int row, int column) {
-        return layer.isEditable();
+        return layer.isEditable() && (layer.getDataSourceQuery() == null ||
+                !(layer.getDataSourceQuery().getDataSource() instanceof WritableDataStoreDataSource));
     }
 
     private void removeField(int row) {
