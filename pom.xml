@@ -765,7 +765,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.4-1206-jdbc4</version>
+            <version>9.4.1208.jre6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
