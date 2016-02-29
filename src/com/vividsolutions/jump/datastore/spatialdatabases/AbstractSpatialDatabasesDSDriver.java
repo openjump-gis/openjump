@@ -182,11 +182,12 @@ public abstract class AbstractSpatialDatabasesDSDriver implements
     // }
 
     // mmichaud 2013-08-27 workaround for ticket #330
-    String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack");
-    String savePreferIPv6Addresses = System
-        .getProperty("java.net.preferIPv6Addresses");
-    System.setProperty("java.net.preferIPv4Stack", "true");
-    System.setProperty("java.net.preferIPv6Addresses", "false");
+    // deactivated on 2016-02-29 as it does not seem to work anymore...
+    // String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack");
+    // String savePreferIPv6Addresses = System
+    //     .getProperty("java.net.preferIPv6Addresses");
+    // System.setProperty("java.net.preferIPv4Stack", "true");
+    // System.setProperty("java.net.preferIPv6Addresses", "false");
 
     // workaround a bug in DriverManager.getConnection() when used like this:
     // Connection conn = DriverManager.getConnection(url, user, password);
@@ -230,17 +231,18 @@ public abstract class AbstractSpatialDatabasesDSDriver implements
     Logger.info("java.net.preferIPv6Addresses="+System.getProperty("java.net.preferIPv6Addresses"));
     Connection conn = driver.connect(url, info);
 
-    if (savePreferIPv4Stack == null) {
-      System.getProperties().remove("java.net.preferIPv4Stack");
-    } else {
-      System.setProperty("java.net.preferIPv4Stack", savePreferIPv4Stack);
-    }
-    if (savePreferIPv6Addresses == null) {
-      System.getProperties().remove("java.net.preferIPv6Addresses");
-    } else {
-      System.setProperty("java.net.preferIPv6Addresses",
-          savePreferIPv6Addresses);
-    }
+    // deactivated on 2016-02-29 as it does not seem to work anymore...
+    //if (savePreferIPv4Stack == null) {
+    //  System.getProperties().remove("java.net.preferIPv4Stack");
+    //} else {
+    //  System.setProperty("java.net.preferIPv4Stack", savePreferIPv4Stack);
+    //}
+    //if (savePreferIPv6Addresses == null) {
+    //  System.getProperties().remove("java.net.preferIPv6Addresses");
+    //} else {
+    //  System.setProperty("java.net.preferIPv6Addresses",
+    //      savePreferIPv6Addresses);
+    //}
 
     return conn;
   }
