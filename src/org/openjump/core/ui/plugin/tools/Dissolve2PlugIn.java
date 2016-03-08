@@ -133,7 +133,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
         dialog.addSeparator();
 
         // Aggregators definition
-        final JPanel aggregationOptionsTab = dialog.addPane(I18N.get(AGGREGATORS));
+        final JPanel aggregationOptionsTab = dialog.addPane(AGGREGATORS);
         aggregationOptionsTab.setLayout(new BorderLayout());
         aggregateOptionPanel.setSchema(dialog.getLayer(SOURCE_LAYER).getFeatureCollectionWrapper().getFeatureSchema());
         aggregationOptionsTab.add(aggregateOptionPanel, BorderLayout.NORTH);

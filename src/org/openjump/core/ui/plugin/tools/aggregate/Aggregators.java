@@ -181,8 +181,10 @@ public class Aggregators {
             geometries.addAll(points);
             geometries.addAll(merger.getMergedLineStrings());
             Geometry mpoly = UnaryUnionOp.union(polygons);
-            for (int i = 0 ; i < mpoly.getNumGeometries() ; i++) {
-                geometries.add(mpoly.getGeometryN(i));
+            if (mpoly != null) {
+                for (int i = 0; i < mpoly.getNumGeometries(); i++) {
+                    geometries.add(mpoly.getGeometryN(i));
+                }
             }
             return gf.buildGeometry(geometries);
         }

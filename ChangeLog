@@ -5,6 +5,7 @@
 
 2016-03-08 mmichaud <m.michael.michaud@orange.fr>
   * JML format did not preserve null attribute values
+  * Fix new aggregation plugin for point and/or linestring unioning
 
 2016-02-27 mmichaud <m.michael.michaud@orange.fr>
   * Null boolean was not handled correctly in datastore datasources.
