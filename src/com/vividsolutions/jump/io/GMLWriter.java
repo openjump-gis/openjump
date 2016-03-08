@@ -194,11 +194,11 @@ public class GMLWriter implements JUMPWriter {
                 String evaled;
                 pre = (String) outputTemplate.featureText.get(u);
                 token = (String) outputTemplate.codingText.get(u);
-                buffWriter.write(pre);
+                //buffWriter.write(pre);
                 //[mmichaud 2012-04-27] write directly into the writer instead
                 // of getting string which are hard to handle for multi-million
                 // coordinates geometries
-                evaluateToken(f, token, buffWriter);
+                evaluateToken(f, pre, token, buffWriter);
                 //evaled = evaluateToken(f, token);
                 
                 //if (evaled == null) {
@@ -222,6 +222,7 @@ public class GMLWriter implements JUMPWriter {
      *@param s string to safe-ify
      */
     public static String safeXML(String s) {
+        if (s == null) return null;
         StringBuffer sb = new StringBuffer(s);
         char c;
 
@@ -317,7 +318,7 @@ public class GMLWriter implements JUMPWriter {
         }
     }
     
-    private void evaluateToken(Feature f, String token, Writer writer)
+    private void evaluateToken(Feature f, String pre, String token, Writer writer)
         throws Exception, ParseException {
         String column;
         String cmd;
@@ -351,17 +352,21 @@ public class GMLWriter implements JUMPWriter {
 
             //need to ensure that the output is XML okay
             result = safeXML(result);
-            writer.append(result);
+            if (result == null) writer.append(pre.replaceAll(">$"," xsi:nil=\"true\">"));
+            else writer.append(pre).append(result);
+            //writer.append(result);
             //return result;
         } else if (cmd.equalsIgnoreCase("geometry")) {
             // MD - testing new GMLGeometryWriter
             geometryWriter.setMaximumCoordinatesPerLine(1);
 
             //return geometryWriter.write(f.getGeometry(), writer);
+            writer.append(pre);
             geometryWriter.write(f.getGeometry(), writer);
 
             //return Geometry2GML(f.getGeometry());
         } else if (cmd.equalsIgnoreCase("geometrytype")) {
+            writer.append(pre);
             writer.append(f.getGeometry().getGeometryType());
             //return f.getGeometry().getGeometryType();
         } else {
@@ -374,7 +379,7 @@ public class GMLWriter implements JUMPWriter {
         Assert.isTrue(f.getSchema().getAttributeType(column) != AttributeType.GEOMETRY);
         Object attribute = f.getAttribute(column);
         if (attribute == null) { 
-            return "";
+            return null;
         }
         if (attribute instanceof Date) {
             return format((Date)attribute);
