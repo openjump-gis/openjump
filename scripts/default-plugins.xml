@@ -759,6 +759,9 @@
 		org.openjump.core.ui.plugin.tools.MakeValidPlugIn
 	</plug-in>
 	<plug-in>
+		org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn
+	</plug-in>
+	<plug-in>
 		com.vividsolutions.jump.plugin.edit.LineNoderPlugIn
 	</plug-in>
 	<plug-in>
