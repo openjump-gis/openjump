@@ -55,7 +55,7 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
         featureInstaller.addMainMenuPlugin(
                 this,
-                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},
+                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA},
                 getName() + "...", false, null,
                 createEnableCheck(context.getWorkbenchContext()));
     }

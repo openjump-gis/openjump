@@ -4,6 +4,9 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2016-03-10 mmichaud <m.michael.michaud@orange.fr>
+  * Deactivate RemoveSpike plugin for 1.9.1 release
+
+2016-03-10 mmichaud <m.michael.michaud@orange.fr>
   * Add a plugin to remove spikes from polygonal geometries
 
 2016-03-08 mmichaud <m.michael.michaud@orange.fr>
