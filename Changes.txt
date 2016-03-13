@@ -1,5 +1,35 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
+  New Features
+  * Add new GroupByPlugIn in Tools>Analysis menu
+  * Add a plugin to remove spikes from polygonal geometries
+  * Deactivate RemoveSpike plugin for 1.9.1 release
+
+  Improvements
+  * If a datastore table has several geometries, secondary geometries are
+    read as AttributeType.OBJECT attributes rather than STRING so that
+    datastore driver can easily write them back as a byte array.
+  * Better handling of readOnly attributes in PostGIS writer
+  * Add Boolean and Long AttributeType in AttributeCalculator (beanshell)
+  * Null boolean was not handled correctly in datastore datasources.
+  * Refactoring of DataStore framework. Prepare writing capabilities for
+    multiple kinds of drivers.
+
+  Bug Fixes
+  * Quick fix for NullPointerException when loading a project containing
+    raster(s) when no other projects (tasks) are open.
+  * Fix for missing layers problem when loading projects that include rasters.
+  * Fix bug #415 throwing exceptions in AttributeTablePanel
+  * Fix bug 416 in FillPolygonTool (regression due to JTS change)
+  * patch SpatialiteValueConverterFactory to transform ogc-wkb geometry z
+    to postgis ewkb, as this is the only way to parse geometry z with JTS
+    currently.
+  * JML format did not preserve null attribute values
+  * Fix new aggregation plugin for point and/or linestring unioning
+
+
+Version 1.9.0 release rev.4795 (released on 18. January 2016)
+
   Highlights
   - updated to JTS 1.14
   - "Raster styler" to edit, load and save raster symbologies

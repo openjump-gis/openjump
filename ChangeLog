@@ -3,6 +3,8 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+* release 1.9.1  ****************************************************************
+
 2016-03-10 mmichaud <m.michael.michaud@orange.fr>
   * Deactivate RemoveSpike plugin for 1.9.1 release
 
