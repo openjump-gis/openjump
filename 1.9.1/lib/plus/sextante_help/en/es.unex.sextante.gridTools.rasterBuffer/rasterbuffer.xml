@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithms creates a buffer around a set of features. Both the input and output layers are raster layers" description="Description" type="0">
+			<image description="Buffer layer created from a raster layer containing a channel network." file="zona_de_influencia_distanciafija.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The raster layer with the features to buffer. These should be represented by non-zero values. All cells not representing a feature to buffer should have a zero value or the no-data value of the layer." description="Layer" type="3">
+		</element>
+		<element name="METHOD" text="The following methods are available:&#10;&#10;* Fixed distance: the same buffer distance for all the cells.&#10;* Use cell value as: the buffer distance for each cell is the value of the cell itself, expresed in map units." description="Method" type="3">
+		</element>
+		<element name="DIST" text="If the fixed distance method is used, the value of this parameter will be used as the buffer distance." description="Distance" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="BUFFER" text="The buffer layer, containing the following values&#10;* 0: cells outside of the buffer.&#10;* 1: original feature cells.&#10;* 2: buffer cells." description="Buffer" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,14 @@
+ECW/JP2 support is realized via native libraries compiled from the ECW SDK 3.3 .
+As these have to be compiled for every platform the support is limited to
+platforms where the libraries are available.
+
+Currently included in OJ PLUS is support for the following combinations
+
+Linux (32bit/64bit) with Java (32bit/64bit)
+MacOSX with Java (32bit)
+Windows (XP - 8.1 [32bit/64bit]) with Java (32bit)
+
+NOTE: 64bit Java is currently _not_ supported on MacOSX and Windows.
+
+
+

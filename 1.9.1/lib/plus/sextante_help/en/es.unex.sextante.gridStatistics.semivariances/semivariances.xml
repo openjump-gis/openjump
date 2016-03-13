@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates semivariances from a raster layer, calculating the mean of all semivariances in each interval. &#10;&#10;Vertical and horizontal semivariances are calculated, analyzing cells from each cell in the input layer, in vertical and horizontal direction up to a maximum given distance.&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="Layer with the variable to be studied." description="Layer" type="3">
+		</element>
+		<element name="MAXDIST" text="Maximum distance to calculate semivariances (in number of cells). The larger this number, the longer it takes to run this algorithm, since the number of intervals to calculate is larger." description="Maximum distance (pixels)" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="New table with three fields: distance, horizontal semivariance, vertical  semivariance" description="Semivariances" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

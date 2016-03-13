@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    A setAttributeToolBox defines a Toolbox containing buttons.
+	Each button set one or more attributes in selected features.
+	The toolbox has 3 attributes :
+	- title : title of the toolbox
+	- maxCol : maximum number of buttons in one row
+    - iconWidth : button width
+    - iconHeight : button height
+    - unselect : unselect selected features after every use of SetAttributes
+-->	
+<setAttributesToolbox title="MyAttributeSet" maxCol="5" iconWidth="36" iconHeight="24">
+
+    <!--
+    A button has five optional attributes
+        icon : path of the png or jpg icon (path is relative to the xml file)
+        text : if icon is not defined, this text is displayed
+        backgroundColor : color of the button background (or border) for text-based
+            button (accept 0xFFFFFF or #FFFFFF syntax)
+        atomic (default is false) : if atomic is set to true, all attributes
+		    of a single object will be changed or none.
+			setting atomic to false may be useful to create a single button
+			to change different values depending on the schema of the feature
+        layer : only features of these layers are changed. Layer name can be one of
+			- simple name (ex. "road")
+			- name with glob (ex. "road*" includes road, road1, road2)
+			- regex between / (ex. "/road.*|highway/")
+		dimension : set dimension to 0, 1 or 2 to restrict set attributes to punctual
+		    linear or polygonal features
+		tooltip : tooltip to dispoverflying the button
+    -->
+    <button icon="" text="Button1" atomic="false" backgroundColor="#FF0000" layer="*" tooltip="MyName [Type1 if null]">
+        <!--
+        Name and value are mandatory attributes. Optional attributes are
+            preRequisite : this attribute can take the following values :
+                isNull : value will be set only if it is null
+                isNullOrEmpty : value will be set if it is null or empty
+                =someText : value will be set it is is currently = someText
+                #someText : value will be set it is is currently != someText
+        -->
+        <attribute name="Name" value="MyName"/>
+        <attribute name="Type" value="Type1" prerequisite="isNull"/>
+    </button>
+
+    <button icon="" text="Button2" >
+        <attribute name="Type" value="Type1"/>
+    </button>
+
+    <button icon="img/airfield-24.png" text="Button3" atomic="true" layer="layerName">
+        <attribute name="Type" value="Airport"/>
+    </button>
+
+</setAttributesToolbox>

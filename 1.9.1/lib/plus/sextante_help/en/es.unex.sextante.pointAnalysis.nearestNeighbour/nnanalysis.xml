@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm performs point pattern analysis using the Nearest-Neighbour method" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* http://www.geog.ucsb.edu/~dongmei/ppa/ppa.html&#10;* http://www.mcs.sdsmt.edu/rwjohnso/html/sofiya.pdf" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="POINTS" text="the input points layer" description="Puntos" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="Statistical values resulting from the NN analysis" description="Statistics" type="2">
+			<image description="" file="analisis_de_vecino_mas_proximo.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
