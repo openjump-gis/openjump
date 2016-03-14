@@ -728,9 +728,12 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn
 	</plug-in>
-	<!--plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.tools.MakeValidPlugIn
+	</plug-in>
+	<plug-in>
 		org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn
-	</plug-in-->
+	</plug-in>
 
 	<!--- ========= Edit Geometry ========================================= / -->
 
@@ -757,9 +760,6 @@
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn
-	</plug-in>
-	<plug-in>
-		org.openjump.core.ui.plugin.tools.MakeValidPlugIn
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.plugin.edit.LineNoderPlugIn

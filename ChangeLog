@@ -3,9 +3,14 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-03-12 mmichaud <m.michael.michaud@orange.fr>
+  * Improve RemoveSpike plugin an move RemoveSpike and MakeValid plugins
+    to Tools > QA submenu
+
+
 * release 1.9.1  ****************************************************************
 
-2016-03-10 mmichaud <m.michael.michaud@orange.fr>
+2016-03-12 mmichaud <m.michael.michaud@orange.fr>
   * Deactivate RemoveSpike plugin for 1.9.1 release
 
 2016-03-10 mmichaud <m.michael.michaud@orange.fr>

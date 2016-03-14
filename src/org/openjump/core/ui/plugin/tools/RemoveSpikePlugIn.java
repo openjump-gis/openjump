@@ -5,9 +5,7 @@ import com.vividsolutions.jts.algorithm.distance.DistanceToPoint;
 import com.vividsolutions.jts.algorithm.distance.PointPairDistance;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -37,10 +35,13 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
     public static String DIST_TOLERANCE_TOOLTIP  = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.dist-tolerance-tooltip");
     public static String ANGLE_TOLERANCE         = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.angle-tolerance");
     public static String ANGLE_TOLERANCE_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.angle-tolerance-tooltip");
+    public static String SPIKES_LOCALIZATION     = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.spikes-localisation");
+
 
     private Layer layerA;
     private double distTolerance = 1.0;
     private double angleTolerance = 5.0;
+    private boolean preventInvalid = true;
 
     public RemoveSpikePlugIn() {
     }
@@ -85,7 +86,6 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
                 dialog.addLayerComboBox(SOURCE_LAYER, candidateA, context.getLayerManager());
         dialog.addDoubleField(DIST_TOLERANCE, distTolerance, 8, DIST_TOLERANCE_TOOLTIP);
         dialog.addDoubleField(ANGLE_TOLERANCE, angleTolerance, 8, ANGLE_TOLERANCE_TOOLTIP);
-
         GUIUtil.centreOnWindow(dialog);
     }
 
@@ -100,28 +100,52 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
 
         // Clone layerA
         FeatureCollection result1 = new FeatureDataset(layerA.getFeatureCollectionWrapper().getFeatureSchema());
+        FeatureSchema spikeSchema = new FeatureSchema();
+        spikeSchema.addAttribute("geometry", AttributeType.GEOMETRY);
+        spikeSchema.addAttribute("source_fid", AttributeType.INTEGER);
+        spikeSchema.addAttribute("status", AttributeType.STRING);
+        FeatureCollection result2 = new FeatureDataset(spikeSchema);
         for (Object o : layerA.getFeatureCollectionWrapper().getFeatures()) {
             Feature feature = ((Feature)o).clone(true, true);
+            List<Geometry> spikes = new ArrayList<Geometry>();
+            Geometry newGeom = null;
+            Feature spike = new BasicFeature(spikeSchema);
             if (feature.getGeometry() instanceof GeometryCollection) {
-                feature.setGeometry(removeSpike((GeometryCollection) feature.getGeometry(), distTolerance, angleTolerance));
+                newGeom = removeSpike((GeometryCollection) feature.getGeometry(),
+                        distTolerance, angleTolerance, spikes);
             } else if (feature.getGeometry() instanceof Polygon) {
-                feature.setGeometry(removeSpike((Polygon) feature.getGeometry(), distTolerance, angleTolerance));
+                newGeom = removeSpike((Polygon) feature.getGeometry(),
+                        distTolerance, angleTolerance, spikes);
+            }
+            boolean isValid = false;
+            if (newGeom.isValid()) {
+                feature.setGeometry(newGeom);
+                isValid = true;
+            }
+            if (spikes.size() > 0) {
+                Feature spikesFeature = new BasicFeature(spikeSchema);
+                spikesFeature.setGeometry(((Feature) o).getGeometry().getFactory().buildGeometry(spikes));
+                spikesFeature.setAttribute("source_fid", ((Feature) o).getID());
+                spikesFeature.setAttribute("status", isValid?"Fixed":"Not fixed");
+                result2.add(spikesFeature);
             }
             result1.add(feature);
         }
         workbenchContext.getLayerManager().addLayer(StandardCategoryNames.RESULT,
                     layerA.getName() + " - " + RESULT_LAYER_SUFFIX, result1);
+        workbenchContext.getLayerManager().addLayer(StandardCategoryNames.RESULT, SPIKES_LOCALIZATION, result2);
     }
 
 
-    private Geometry removeSpike(GeometryCollection geomCollection, double distTolerance,double angleTolerance) {
+    private Geometry removeSpike(GeometryCollection geomCollection,
+                                 double distTolerance, double angleTolerance, List<Geometry> spikes) {
         List<Geometry> geometries = new ArrayList<Geometry>();
         for (int i = 0; i < geomCollection.getNumGeometries() ; i++) {
             Geometry g = geomCollection.getGeometryN(i);
             if (g instanceof GeometryCollection) {
-                geometries.add(removeSpike((GeometryCollection) g, distTolerance, angleTolerance));
+                geometries.add(removeSpike((GeometryCollection) g, distTolerance, angleTolerance, spikes));
             } else if (g instanceof Polygon) {
-                geometries.add(removeSpike((Polygon) g, distTolerance, angleTolerance));
+                geometries.add(removeSpike((Polygon) g, distTolerance, angleTolerance, spikes));
             } else {
                 geometries.add(g);
             }
@@ -130,23 +154,24 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
     }
 
 
-    private Polygon removeSpike(Polygon poly, double distTolerance, double angleTolerance) {
-        LinearRing shell = removeSpike((LinearRing)poly.getExteriorRing(), distTolerance, angleTolerance);
+    private Polygon removeSpike(Polygon poly, double distTolerance, double angleTolerance, List<Geometry> spikes) {
+        LinearRing shell = removeSpike((LinearRing)poly.getExteriorRing(), distTolerance, angleTolerance, spikes);
         LinearRing[] holes = new LinearRing[poly.getNumInteriorRing()];
         for (int i = 0 ; i < poly.getNumInteriorRing() ; i++) {
-            holes[i] = removeSpike((LinearRing)poly.getInteriorRingN(i), distTolerance, angleTolerance);
+            holes[i] = removeSpike((LinearRing)poly.getInteriorRingN(i), distTolerance, angleTolerance, spikes);
         }
         return poly.getFactory().createPolygon(shell,  holes);
     }
 
 
-    private LinearRing removeSpike(LinearRing ring, double distTolerance, double angleTolerance) {
+    private LinearRing removeSpike(LinearRing ring, double distTolerance,
+                                   double angleTolerance, List<Geometry> spikes) {
         CoordinateList cl = new CoordinateList(ring.getCoordinates(), false);
         CoordinateList newCl = new CoordinateList();
         int size = cl.size();
         // If the LinearRing has only four points, it cannot be reduced
         if (size < 5) return ring;
-        //DistanceToPoint dtp = new DistanceToPoint();
+        boolean vertexRemoved = false;
         for (int i = 0, j = 1, k = 2 ; i < size; ) {
             Coordinate a = (Coordinate)cl.get(i);
             Coordinate b = (Coordinate)cl.get((j)%(size-1));
@@ -161,7 +186,9 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
                 newCl.add(cl.get((i+1)%(size-1)), false);
                 i++; j++; k++;
             } else {
+                spikes.add(ring.getFactory().createLineString(new Coordinate[]{a,b,c}));
                 i = j; j++; k++;
+                vertexRemoved = true;
             }
         }
         if (newCl.size() == size) return ring;
@@ -169,8 +196,8 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
         else {
             newCl.closeRing();
             LinearRing newLinearRing = ring.getFactory().createLinearRing(newCl.toCoordinateArray());
-            if (newLinearRing.isValid()) return newLinearRing;
-            else return ring;
+            if (vertexRemoved) newLinearRing = removeSpike(newLinearRing, distTolerance, angleTolerance, spikes);
+            return newLinearRing;
         }
     }
 }
