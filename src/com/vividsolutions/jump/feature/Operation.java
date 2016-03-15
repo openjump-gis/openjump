@@ -31,8 +31,6 @@
  */
 package com.vividsolutions.jump.feature;
 
-import java.io.Serializable;
-
 /**
  * Interface that any dynamic attribute must implement.
  * @author Michaël Michaud
@@ -40,6 +38,6 @@ import java.io.Serializable;
  */
 public interface Operation  extends Cloneable {
 
-	public Object invoke(Feature feature) throws Exception;
+	Object invoke(Feature feature) throws Exception;
 
 }

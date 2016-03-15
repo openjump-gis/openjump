@@ -5,7 +5,7 @@
 
 2016-03-15 mmichaud <m.michael.michaud@orange.fr>
   * Switch compiler source and target to java 1.7
-  * Feature#getString() now returns null instead of "" if value is null
+  * Adopt java 5 style for feature package (generics, foreach loops)
 
 2016-03-14 mmichaud <m.michael.michaud@orange.fr>
   * Improve RemoveSpike plugin an move RemoveSpike and MakeValid plugins

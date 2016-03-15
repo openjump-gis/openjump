@@ -73,28 +73,30 @@ public class IndexedFeatureCollection extends FeatureCollectionWrapper {
         createIndex();
     }
 
+    @Override
     public void add(Feature feature) {
         throw new UnsupportedOperationException(I18N.get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
     }
 
+    @Override
     public void remove(Feature feature) {
         throw new UnsupportedOperationException(I18N.get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
     }
 
-    public List query(Envelope env) {
+    @Override
+    public List<Feature> query(Envelope env) {
 
         // index query returns list of *potential* overlaps (e.g. it is a primary filter)
-        List candidate = spatialIndex.query(env);
+        List<Feature> candidate = spatialIndex.query(env);
 
         // filter out only Features where envelope actually intersects
-        List result = new ArrayList();
+        List<Feature> result = new ArrayList<>();
 
-        for (Iterator i = candidate.iterator(); i.hasNext();) {
-            Feature f = (Feature) i.next();
-            Geometry g = f.getGeometry();
+        for (Feature feature : candidate) {
+            Geometry g = feature.getGeometry();
 
             if (env.intersects(g.getEnvelopeInternal())) {
-                result.add(f);
+                result.add(feature);
             }
         }
 
@@ -102,24 +104,24 @@ public class IndexedFeatureCollection extends FeatureCollectionWrapper {
     }
 
     private void createIndex() {
-        int count = 0; // debugging
-
         for (Iterator i = iterator(); i.hasNext();) {
             Feature f = (Feature) i.next();
             spatialIndex.insert(f.getGeometry().getEnvelopeInternal(), f);
-            count++;
         }
     }
 
-    public void addAll(Collection features) {
+    @Override
+    public void addAll(Collection<Feature> features) {
         throw new UnsupportedOperationException(I18N.get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
     }
 
-    public Collection remove(Envelope env) {
+    @Override
+    public Collection<Feature> remove(Envelope env) {
         throw new UnsupportedOperationException(I18N.get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
     }
 
-    public void removeAll(Collection features) {
+    @Override
+    public void removeAll(Collection<Feature> features) {
         throw new UnsupportedOperationException(I18N.get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
     }
 }

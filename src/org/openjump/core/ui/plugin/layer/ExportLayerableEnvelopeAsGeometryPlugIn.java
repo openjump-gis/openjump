@@ -246,8 +246,10 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
                         .getFeatureCollectionWrapper();
                 for (Iterator i = featureCollection.iterator(); i.hasNext();) {
                     Feature feat = (Feature) i.next();
-                    sourcePath = (String) feat.getString("IMG_URI");
-                    sourcePath = sourcePath.substring(5);
+                    sourcePath = feat.getString("IMG_URI");
+                    if (sourcePath != null) {
+                        sourcePath = sourcePath.substring(5);
+                    }
 
                 }
 

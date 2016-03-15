@@ -216,7 +216,9 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 		        for (Iterator j = featureList.iterator(); j.hasNext();) {
 		        	Feature feature = (Feature) j.next();
 		        	String attributeValue = feature.getString(textAttribute);
-		        	if ( feature.getString(attributeIndex).equals(layerName) && attributeValue != null && !attributeValue.isEmpty()) {
+		        	if ( feature.getString(attributeIndex) != null &&
+							feature.getString(attributeIndex).equals(layerName) &&
+							attributeValue != null && !attributeValue.isEmpty()) {
 		        		textAttributePopulated = true;
 			        	break;
 		        	}

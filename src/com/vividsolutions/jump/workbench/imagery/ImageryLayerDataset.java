@@ -91,15 +91,14 @@ public class ImageryLayerDataset {
   }
 
   public ReferencedImage referencedImage(Feature feature) throws Exception {
-    if (!(feature.getString(ATTR_ERROR) == null || feature
-        .getString(ATTR_ERROR).equals(""))) {
+    if (feature.getString(ATTR_ERROR) != null && !feature.getString(ATTR_ERROR).equals("")) {
       return null;
     }
     if (!featureToReferencedImageMap.containsKey(feature)) {
       attachImage(feature);
     }
     // Will be null if an exception occurs [Jon Aquino 2005-04-12]
-    return (ReferencedImage) featureToReferencedImageMap.get(feature);
+    return featureToReferencedImageMap.get(feature);
   }
 
   public void attachImage(Feature feature) throws Exception {
@@ -108,7 +107,10 @@ public class ImageryLayerDataset {
 
   public static void attachImage(Feature feature, ImageryLayerDataset ils)
       throws Exception {
-    String imageFilePath = (String) feature.getString(ATTR_URI);
+    String imageFilePath = feature.getString(ATTR_URI);
+    if (imageFilePath == null) {
+      throw new Exception("Image file path in '" + ATTR_URI + "' attribute is null");
+    }
     GeometryFactory geometryFactory = new GeometryFactory();
 
     ReferencedImageFactory imageFactory = createFeatureFactory(feature);
@@ -166,8 +168,10 @@ public class ImageryLayerDataset {
       feature.setAttribute(ImageryLayerDataset.ATTR_FACTORY,
           imprint.getString(ImageryLayerDataset.OLD_ATTR_FACTORY));
       // convert old file to uri
-      feature.setAttribute(ImageryLayerDataset.ATTR_URI,
-          new File(imprint.getString(ImageryLayerDataset.OLD_ATTR_FILE)).toURI().toString());
+      String imageFile = imprint.getString(ImageryLayerDataset.OLD_ATTR_FILE);
+      if (imageFile != null) {
+        feature.setAttribute(ImageryLayerDataset.ATTR_URI, new File(imageFile).toURI().toString());
+      }
     }
     else if (ImageryLayerDataset.isNewImageFeature(imprint)) {
       // copy factory & loader
@@ -194,8 +198,16 @@ public class ImageryLayerDataset {
   public static ReferencedImageFactory createFeatureFactory(Feature feature)
       throws ClassNotFoundException, InstantiationException,
       IllegalAccessException {
-    String factoryClassPath = (String) feature.getString(ATTR_FACTORY);
-    String loaderClassPath = (String) feature.getString(ATTR_LOADER);
+    String factoryClassPath = feature.getString(ATTR_FACTORY);
+    if (factoryClassPath == null) {
+      throw new InstantiationException("Cannot instantiate ReferencedImageFactory: " +
+        ATTR_FACTORY + " is null");
+    }
+    String loaderClassPath = feature.getString(ATTR_LOADER);
+    if (factoryClassPath == null) {
+      throw new InstantiationException("Cannot instantiate ReferencedImageFactory: " +
+              ATTR_LOADER + " is null");
+    }
     Class imageFactoryClass = Class.forName(factoryClassPath);
     ReferencedImageFactory imageFactory = (ReferencedImageFactory) imageFactoryClass
         .newInstance();

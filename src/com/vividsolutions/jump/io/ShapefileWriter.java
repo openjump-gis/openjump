@@ -743,9 +743,9 @@ public class ShapefileWriter implements JUMPWriter {
     /**
      *look at all the data in the column of the featurecollection, and find the largest string!
      *@param fc features to look at
-     *@param attributeNumber which of the column to test.
+     *@param attributeIndex which of the column to test.
      */
-    int findMaxStringLength(FeatureCollection fc, int attributeNumber, Charset charset) {
+    int findMaxStringLength(FeatureCollection fc, int attributeIndex, Charset charset) {
         int l;
         int maxlen = 0;
         Feature f;
@@ -753,7 +753,10 @@ public class ShapefileWriter implements JUMPWriter {
         for (Iterator i = fc.iterator(); i.hasNext();) {
             f = (Feature) i.next();
             //patch from Hisaji Ono for Double byte characters
-            l = f.getString(attributeNumber).getBytes(charset).length;
+            if (f.getAttribute(attributeIndex) == null) {
+                continue;
+            }
+            l = f.getString(attributeIndex).getBytes(charset).length;
 
             if (l > maxlen) {
                 maxlen = l;

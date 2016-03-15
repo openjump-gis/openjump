@@ -929,12 +929,18 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                         .getFeatureCollectionWrapper();
                 for (Iterator i = featureCollection.iterator(); i.hasNext();) {
                     Feature feature = (Feature) i.next();
-                    sourcePathImage = (String) feature
-                            .getString(ImageryLayerDataset.ATTR_URI);
-                    sourcePathImage = sourcePathImage.substring(5);
-                    sourceClassImage = (String) feature
-                            .getString(ImageryLayerDataset.ATTR_TYPE);
-                    sourceClassImage.replace("%20", " ");
+                    sourcePathImage = feature.getString(ImageryLayerDataset.ATTR_URI);
+                    if (sourcePathImage == null || sourcePathImage.length() < 5) {
+                        sourcePathImage = "";
+                    } else {
+                        sourcePathImage = sourcePathImage.substring(5);
+                    }
+                    sourceClassImage = feature.getString(ImageryLayerDataset.ATTR_TYPE);
+                    if (sourceClassImage == null) {
+                        sourceClassImage = "";
+                    } else {
+                        sourceClassImage.replace("%20", " ");
+                    }
                     /*
                      * Check if the Image Layer.class has only one file loaded
                      */

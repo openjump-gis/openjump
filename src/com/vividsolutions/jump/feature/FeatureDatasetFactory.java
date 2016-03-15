@@ -43,6 +43,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * Utility functions to create different kinds of FeatureDatasets
  */
 public class FeatureDatasetFactory {
+
   /**
    * Creates a FeatureCollection from a Collection of {@link Geometry}s
    * @param geoms a collection of {@link Geometry}s
@@ -53,9 +54,9 @@ public class FeatureDatasetFactory {
 
     FeatureCollection fc = new FeatureDataset(featureSchema);
 
-    for (Iterator i = geoms.iterator(); i.hasNext();) {
+    for (Object geom : geoms) {
       Feature feature = new BasicFeature(fc.getFeatureSchema());
-      feature.setGeometry((Geometry) i.next());
+      feature.setGeometry((Geometry) geom);
       fc.add(feature);
     }
 
@@ -77,11 +78,11 @@ public class FeatureDatasetFactory {
 
     FeatureDataset fc = new FeatureDataset(featureSchema);
 
-    for (Iterator i = geoms.iterator(); i.hasNext();) {
+    for (Object geom : geoms) {
       Feature feature = new BasicFeature(fc.getFeatureSchema());
-      Geometry g = (Geometry) i.next();
+      Geometry g = (Geometry) geom;
       feature.setGeometry(g);
-      feature.setAttribute(attrName, new Double(g.getLength()));
+      feature.setAttribute(attrName, g.getLength());
       fc.add(feature);
     }
 
@@ -99,9 +100,9 @@ public class FeatureDatasetFactory {
    */
   public static FeatureDataset createFromGeometry(Collection geoms, FeatureSchema featureSchema) {
     FeatureDataset fc = new FeatureDataset(featureSchema);
-    for (Iterator i = geoms.iterator(); i.hasNext();) {
+    for (Object geom : geoms) {
       Feature feature = new BasicFeature(fc.getFeatureSchema());
-      feature.setGeometry((Geometry) i.next());
+      feature.setGeometry((Geometry) geom);
       fc.add(feature);
     }
     return fc;
@@ -127,14 +128,14 @@ public class FeatureDatasetFactory {
 
     FeatureDataset fc = new FeatureDataset(featureSchema);
 
-    for (Iterator i = geoms.iterator(); i.hasNext();) {
+    for (Object geom : geoms) {
       Feature feature = new BasicFeature(fc.getFeatureSchema());
-      Geometry g = (Geometry) i.next();
+      Geometry g = (Geometry) geom;
       feature.setGeometry(g);
       if (attrNameLen != null)
-        feature.setAttribute(attrNameLen, new Double(g.getLength()));
+        feature.setAttribute(attrNameLen, g.getLength());
       if (attrNameArea != null)
-        feature.setAttribute(attrNameArea, new Double(g.getArea()));
+        feature.setAttribute(attrNameArea, g.getArea());
       fc.add(feature);
     }
     return fc;

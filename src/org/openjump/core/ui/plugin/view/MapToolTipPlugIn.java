@@ -206,7 +206,8 @@ public class MapToolTipPlugIn extends AbstractPlugIn
                         if (type == AttributeType.STRING)
                         {
                             String name = featureSchema.getAttributeName(num);
-                            String data = feature.getString(name).trim();
+                            String data = feature.getString(name);
+                            data = data == null ? "" : data.trim();
                             if (name.endsWith(pictureSuffix)) {
                             	data = "<img src=\"file:///" + data + "\">";
                             }

@@ -110,10 +110,6 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
         return getAttribute(schema.getAttributeIndex(name));
     }
 
-    //[2016-03-15] method usued to return "" for numm attribute value.
-    // It now returns null.
-    // Rational : follow the principle of least astonishment. In particular,
-    // when dealing with datasources supporting null values (ex. database).
     /**
      * Returns a String representation of the attribute at the given index.
      * If the attribute at the given index is null, the method returns null.

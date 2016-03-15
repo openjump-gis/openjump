@@ -43,11 +43,12 @@ import java.util.*;
  * Default implementation of FeatureCollection.
  */
 public class FeatureDataset implements FeatureCollection, Serializable {
+
     private static final long serialVersionUID = 5573446944516446540L;
     private FeatureSchema featureSchema;
 
     //<<TODO>> Possibly use hashtable to do spatial indexing [Jon Aquino]
-    private ArrayList features;
+    private List<Feature> features;
     private Envelope envelope = null;
 
     /**
@@ -55,8 +56,8 @@ public class FeatureDataset implements FeatureCollection, Serializable {
      * @param newFeatures an initial group of features to add to this FeatureDataset
      * @param featureSchema the types of the attributes of the features in this collection
      */
-    public FeatureDataset(Collection newFeatures, FeatureSchema featureSchema) {
-        features = new ArrayList(newFeatures);
+    public FeatureDataset(Collection<Feature> newFeatures, FeatureSchema featureSchema) {
+        features = new ArrayList<>(newFeatures);
         this.featureSchema = featureSchema;
     }
 
@@ -65,16 +66,17 @@ public class FeatureDataset implements FeatureCollection, Serializable {
      * @param featureSchema the types of the attributes of the features in this collection
      */
     public FeatureDataset(FeatureSchema featureSchema) {
-        this(new ArrayList(), featureSchema);
+        this(new ArrayList<Feature>(), featureSchema);
     }
 
     /**
      * Returns the Feature at the given index (zero-based).
      */
     public Feature getFeature(int index) {
-        return (Feature) features.get(index);
+        return features.get(index);
     }
 
+    @Override
     public FeatureSchema getFeatureSchema() {
         return featureSchema;
     }
@@ -83,47 +85,46 @@ public class FeatureDataset implements FeatureCollection, Serializable {
      * Because the envelope is cached, the envelope may be incorrect if you
      * later change a Feature's geometry using Feature#setGeometry.
      */
+    @Override
     public Envelope getEnvelope() {
         if (envelope == null) {
             envelope = new Envelope();
 
-            for (Iterator i = features.iterator(); i.hasNext();) {
-                Feature feature = (Feature) i.next();
-                envelope.expandToInclude(feature.getGeometry()
-                                                .getEnvelopeInternal());
+            for (Feature feature : features) {
+                envelope.expandToInclude(feature.getGeometry().getEnvelopeInternal());
             }
         }
 
         return envelope;
     }
 
-    public List getFeatures() {
+    @Override
+    public List<Feature> getFeatures() {
         return Collections.unmodifiableList(features);
     }
 
+    @Override
     public boolean isEmpty() {
         return size() == 0;
     }
 
     /**
-     *@return    a List containing the features whose envelopes intersect the
-     *      given envelope
+     * @return a List containing the features whose envelopes intersect the given envelope
      */
 
     //<<TODO:DESIGN>> Perhaps return value should be a Set, not a List, because order
     //doesn't matter. [Jon Aquino]
-    public List query(Envelope envelope) {
+    @Override
+    public List<Feature> query(Envelope envelope) {
         if (!envelope.intersects(getEnvelope())) {
-            return new ArrayList();
+            return new ArrayList<>();
         }
 
         //<<TODO:NAMING>> Rename this method to getFeatures(Envelope), to parallel
         //getFeatures() [Jon Aquino]
-        ArrayList queryResult = new ArrayList();
+        List<Feature> queryResult = new ArrayList<>();
 
-        for (Iterator i = features.iterator(); i.hasNext();) {
-            Feature feature = (Feature) i.next();
-
+        for (Feature feature : features) {
             if (feature.getGeometry().getEnvelopeInternal().intersects(envelope)) {
                 queryResult.add(feature);
             }
@@ -132,6 +133,7 @@ public class FeatureDataset implements FeatureCollection, Serializable {
         return queryResult;
     }
 
+    @Override
     public void add(Feature feature) {
         features.add(feature);
         if (envelope != null) {
@@ -151,13 +153,15 @@ public class FeatureDataset implements FeatureCollection, Serializable {
     /**
      * Removes the features which intersect the given envelope
      */
-    public Collection remove(Envelope env) {
-        Collection features = query(env);
+    @Override
+    public Collection<Feature> remove(Envelope env) {
+        Collection<Feature> features = query(env);
         removeAll(features);
 
         return features;
     }
 
+    @Override
     public void remove(Feature feature) {
         features.remove(feature);
         invalidateEnvelope();
@@ -166,16 +170,19 @@ public class FeatureDataset implements FeatureCollection, Serializable {
     /**
      * Removes all features from this collection.
      */
+    @Override
     public void clear() {
         invalidateEnvelope();
         features.clear();
     }
 
+    @Override
     public int size() {
         return features.size();
     }
 
-    public Iterator iterator() {
+    @Override
+    public Iterator<Feature> iterator() {
         return features.iterator();
     }
 
@@ -187,11 +194,11 @@ public class FeatureDataset implements FeatureCollection, Serializable {
         envelope = null;
     }
 
-    public void addAll(Collection features) {
+    @Override
+    public void addAll(Collection<Feature> features) {
         this.features.addAll(features);
         if (envelope != null) {
-            for (Iterator i = features.iterator(); i.hasNext(); ) {
-                Feature feature = (Feature) i.next();
+            for (Feature feature : features) {
                 envelope.expandToInclude(feature.getGeometry().getEnvelopeInternal());
             }            
         }
@@ -202,16 +209,16 @@ public class FeatureDataset implements FeatureCollection, Serializable {
     // note that the semantic is slightly changed as the FID is used to identify 
     // features to remove rather than object Equality
     // [michaudm 2013-07-13] change HashMap to LinkedHashMap to preserve feature order
-    public void removeAll(Collection c) {
-        Map<Integer,Feature> map = new LinkedHashMap<Integer,Feature>();
-        for (Iterator i = features.iterator(); i.hasNext(); ) {
-            Feature f = (Feature)i.next();
-            map.put(f.getID(), f);
+    @Override
+    public void removeAll(Collection<Feature> c) {
+        Map<Integer,Feature> map = new LinkedHashMap<>();
+        for (Feature feature : features) {
+            map.put(feature.getID(), feature);
         }
-        for (Iterator i = c.iterator(); i.hasNext(); ) {
-            map.remove(((Feature)i.next()).getID());
+        for (Feature feature : c) {
+            map.remove(feature.getID());
         }
-        features = new ArrayList();
+        features = new ArrayList<>();
         features.addAll(map.values());
         invalidateEnvelope();
     }

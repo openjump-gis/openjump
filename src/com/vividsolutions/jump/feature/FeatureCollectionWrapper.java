@@ -43,6 +43,7 @@ import com.vividsolutions.jts.util.Assert;
  * (i.e. without subclassing).
  */
 public abstract class FeatureCollectionWrapper implements FeatureCollection {
+
 	private FeatureCollection fc;
 
 	/**
@@ -80,7 +81,8 @@ public abstract class FeatureCollectionWrapper implements FeatureCollection {
 						.hasWrapper(getClass())));
 	}
 
-	public Collection remove(Envelope env) {
+	@Override
+	public Collection<Feature> remove(Envelope env) {
 		return fc.remove(env);
 	}
 
@@ -110,54 +112,66 @@ public abstract class FeatureCollectionWrapper implements FeatureCollection {
 		return fc;
 	}
 
+	@Override
 	public FeatureSchema getFeatureSchema() {
 		return fc.getFeatureSchema();
 	}
 
+	@Override
 	public Envelope getEnvelope() {
 		return fc.getEnvelope();
 	}
 
+	@Override
 	public int size() {
 		return fc.size();
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return fc.isEmpty();
 	}
 
-	public List getFeatures() {
+	@Override
+	public List<Feature> getFeatures() {
 		return fc.getFeatures();
 	}
 
-	public Iterator iterator() {
+	@Override
+	public Iterator<Feature> iterator() {
 		return fc.iterator();
 	}
 
-	public List query(Envelope envelope) {
+	@Override
+	public List<Feature> query(Envelope envelope) {
 		return fc.query(envelope);
 	}
 
+	@Override
 	public void add(Feature feature) {
 		fc.add(feature);
 	}
 
+	@Override
 	public void remove(Feature feature) {
 		fc.remove(feature);
 	}
 
-	public void addAll(Collection features) {
+	@Override
+	public void addAll(Collection<Feature> features) {
 		fc.addAll(features);
 	}
 
-	public void removeAll(Collection features) {
+	@Override
+	public void removeAll(Collection<Feature> features) {
 		fc.removeAll(features);
 	}
 
+	@Override
 	public void clear() {
 		//Create a new ArrayList to avoid a ConcurrentModificationException.
 		// [Jon Aquino]
-		removeAll(new ArrayList(getFeatures()));
+		removeAll(new ArrayList<>(getFeatures()));
 	}
 
 	protected FeatureCollection getFeatureCollection() {

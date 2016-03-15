@@ -148,12 +148,13 @@ public class JoinTable {
 					
 			newFeatures.add(fNew);			
 				
-			keyValue = fNew.getString(attributeIndex).trim();
+			keyValue = fNew.getString(attributeIndex);
+			if (keyValue != null) keyValue = keyValue.trim();
 			valeurs = (String[]) table.get(keyValue);
 			for (j=0; j<fieldCount; j++){
 				if (j!=keyIndex) {
 					if (valeurs != null)
-						value = castValue((String) valeurs[j], (AttributeType) fieldTypes.get(j));
+						value = castValue(valeurs[j], (AttributeType) fieldTypes.get(j));
 					else 
 						value =null;					
 					fNew.setAttribute((String) fieldNames.get(j), value);

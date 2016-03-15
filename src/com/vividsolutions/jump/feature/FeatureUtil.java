@@ -64,11 +64,10 @@ public class FeatureUtil {
     /**
      * Returns the n Geometries extracted from the given n Features
      */
-	public static List toGeometries(Collection features) {
-	    ArrayList list = new ArrayList();
+	public static List<Geometry> toGeometries(Collection<Feature> features) {
+	    ArrayList<Geometry> list = new ArrayList<>();
 	
-	    for (Iterator i = features.iterator(); i.hasNext();) {
-	        Feature feature = (Feature) i.next();
+	    for (Feature feature : features) {
 	        list.add(feature.getGeometry());
 	    }
 	

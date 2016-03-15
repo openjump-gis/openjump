@@ -51,15 +51,15 @@ public class FeatureSchema implements Cloneable, Serializable {
     private static final long serialVersionUID = -8627306219650589202L;
 
     private CoordinateSystem coordinateSystem = CoordinateSystem.UNSPECIFIED;
-    private Map<String,Integer> attributeNameToIndexMap = new HashMap<String,Integer>();
+    private Map<String,Integer> attributeNameToIndexMap = new HashMap<>();
     private int geometryIndex = -1;
     private int externalPKIndex = -1;    // [mmichaud 2013-07-21] database id used in client-server environment
     private int attributeCount = 0;
-    private List<String> attributeNames = new ArrayList<String>();
-    private List<AttributeType> attributeTypes = new ArrayList<AttributeType>();
-    private List<Boolean> attributeReadOnly = new ArrayList<Boolean>();
+    private List<String> attributeNames = new ArrayList<>();
+    private List<AttributeType> attributeTypes = new ArrayList<>();
+    private List<Boolean> attributeReadOnly = new ArrayList<>();
     // [mmichaud 2012-10-13] add Operation capability for dynamic attributes 
-    private ArrayList<Operation> operations = new ArrayList<Operation>();
+    private ArrayList<Operation> operations = new ArrayList<>();
 
 
     /**
@@ -249,8 +249,7 @@ public class FeatureSchema implements Cloneable, Serializable {
 	 * edit the attribute in the layer's attribute table, even though the
 	 * layer's "editable" flag has been set to <tt>TRUE</tt>
 	 * 
-	 * @param attributeIndex
-	 *            The index of the attribute in question.
+	 * @param attributeIndex The index of the attribute in question.
 	 * @return <tt>TRUE</tt> if the specified attribute has been previously set
 	 *         as readonly.
 	 * @see #setAttributeReadOnly(int, boolean)
@@ -269,10 +268,8 @@ public class FeatureSchema implements Cloneable, Serializable {
 	 * attribute in the layer's attribute table, even though the layer's
 	 * "editable" flag has been set to <tt>TRUE</tt>
 	 * 
-	 * @param attributeIndex
-	 *            The index of the attribute to set
-	 * @param isReadOnly
-	 *            A flag that indicates whether the specified attribute should
+	 * @param attributeIndex The index of the attribute to set
+	 * @param isReadOnly A flag that indicates whether the specified attribute should
 	 *            be considered "readonly".
 	 * @see #isAttributeReadOnly(int)
 	 */
@@ -314,6 +311,10 @@ public class FeatureSchema implements Cloneable, Serializable {
         return externalPKIndex;
     }
 
+    /**
+     * Sets the primary key to be the attribute at position index.
+     * @param index
+     */
     public void setExternalPrimaryKeyIndex(int index) {
         assert index < getAttributeCount();
         AttributeType attributeType = this.getAttributeType(index);
@@ -328,6 +329,9 @@ public class FeatureSchema implements Cloneable, Serializable {
         }
     }
 
+    /**
+     * Remove the primary key from this schema definition.
+     */
     public void removeExternalPrimaryKey() {
         this.externalPKIndex = -1;
     }
@@ -352,6 +356,7 @@ public class FeatureSchema implements Cloneable, Serializable {
         }
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("FeatureSchema (").append(getCoordinateSystem()).append(")");
         for (int i = 0 ; i < getAttributeCount() ; i++) {
