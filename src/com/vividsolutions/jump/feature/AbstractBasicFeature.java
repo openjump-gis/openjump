@@ -36,35 +36,40 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Assert;
 import java.util.HashMap;
 import java.util.Map;
+
 /**
  * Default implementation of the Feature interface. Subclasses need
  * implement only the four remaining Feature methods: #getAttribute,
  * #setAttribute, #getAttributes, #setAttributes
  */
 public abstract class AbstractBasicFeature implements Feature, Serializable {
+
     private static final long serialVersionUID = 4215477286292970800L;
     private FeatureSchema schema;
     private int id;
+
     // [mmichaud 2012-10-13] userData idea is taken from the GeoAPI interfaces,
     // and is used for dynamic attributes calculation to avoid circular references.
     // Access methods are not yet exposed in Feature interface.
     private Map<Object,Object> userData;
+
     /**
      * A low-level accessor that is not normally used.
      */
     public void setSchema(FeatureSchema schema) {
         this.schema = schema;
     }
+
     /**
-     *  Creates a new Feature based on the given metadata.
+     * Creates a new Feature based on the given metadata.
      *
-     *@param  featureSchema  the metadata containing information on
-     *      each column
+     *@param  featureSchema  the metadata containing information on each column
      */
     public AbstractBasicFeature(FeatureSchema featureSchema) {
         id = FeatureUtil.nextID();
         this.schema = featureSchema;
     }
+
     /**
      * Returns a number that uniquely identifies this feature. This number is not
      * persistent.
@@ -73,8 +78,9 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     public int getID() {
         return id;
     }
+
     /**
-     *  Sets the specified attribute.
+     * Sets the specified attribute.
      *
      *@param  attributeName  the name of the attribute to set
      *@param  newAttribute   the new attribute
@@ -82,6 +88,7 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     public void setAttribute(String attributeName, Object newAttribute) {
         setAttribute(schema.getAttributeIndex(attributeName), newAttribute);
     }
+
     /**
      *  Convenience method for setting the spatial attribute. JUMP Workbench
      * PlugIns and CursorTools should not use this method directly, but should use an
@@ -92,26 +99,27 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     public void setGeometry(Geometry geometry) {
         setAttribute(schema.getGeometryIndex(), geometry);
     }
+
     /**
-     *  Returns the specified attribute.
-     *
+     * Returns the specified attribute.
+     * Throws an ArrayOutOfBoundException if attributeName does not exists.
      *@param  name  the name of the attribute to get
      *@return the attribute
      */
     public Object getAttribute(String name) {
-        try {
-            return getAttribute(schema.getAttributeIndex(name));
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw e;
-        }
+        return getAttribute(schema.getAttributeIndex(name));
     }
-    //<<TODO:DOC>>Update JavaDoc -- the attribute need not be a String [Jon Aquino]
+
+    //[2016-03-15] method usued to return "" for numm attribute value.
+    // It now returns null.
+    // Rational : follow the principle of least astonishment. In particular,
+    // when dealing with datasources supporting null values (ex. database).
     /**
-     *  Returns a String attribute. The attribute at the given index must be a
-     *  String.
+     * Returns a String representation of the attribute at the given index.
+     * If the attribute at the given index is null, the method returns null.
      *
      *@param  attributeIndex  the array index of the attribute
-     *@return                 the String attribute at the given index
+     *@return                 a String representation of the attribute.
      */
     public String getString(int attributeIndex) {
         // return (String) attributes[attributeIndex];
@@ -131,8 +139,9 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
             return "";
         }
     }
+
     /**
-     *  Returns a integer attribute.
+     * Returns a integer attribute.
      *
      *@param  attributeIndex the index of the attribute to retrieve
      *@return                the integer attribute with the given name
@@ -140,6 +149,7 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     public int getInteger(int attributeIndex) {
         return ((Integer) getAttribute(attributeIndex)).intValue();
     }
+
     /**
      *  Returns a double attribute.
      *
@@ -149,10 +159,11 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     public double getDouble(int attributeIndex) {
         return ((Double) getAttribute(attributeIndex)).doubleValue();
     }
+
     //<<TODO:DOC>>Update JavaDoc -- the attribute need not be a String [Jon Aquino]
     /**
-     *  Returns a String attribute. The attribute with the given name must be a
-     *  String.
+     * Returns a String representation of the attribute at the given index.
+     * If the attribute at the given index is null, the method returns null.
      *
      *@param  attributeName  the name of the attribute to retrieve
      *@return                the String attribute with the given name
@@ -160,14 +171,16 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     public String getString(String attributeName) {
         return getString(schema.getAttributeIndex(attributeName));
     }
+
     /**
-     *  Convenience method for returning the spatial attribute.
+     * Convenience method for returning the spatial attribute.
      *
      *@return    the feature's spatial attribute
      */
     public Geometry getGeometry() {
         return (Geometry) getAttribute(schema.getGeometryIndex());
     }
+
     /**
      *  Returns the feature's metadata
      *
@@ -176,6 +189,7 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     public FeatureSchema getSchema() {
         return schema;
     }
+
     /**
      * Clones this Feature. The geometry will also be cloned.
      * @return a new Feature with the same attributes as this Feature
@@ -183,6 +197,7 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     public Object clone() {
         return clone(true);
     }
+
     /**
      * Clones this Feature.
      * @param deep whether or not to clone the geometry
@@ -191,6 +206,7 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     public Feature clone(boolean deep) {
         return clone(this, deep, true);
     }
+
     /**
      * Clones this Feature.
      * @param deep whether or not to clone the geometry
@@ -201,6 +217,15 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
         return clone(this, deep, copyPK);
     }
 
+    /**
+     * Util static method used to create a new BasicFeature from a feature.
+     *
+     * @param feature the feature to be cloned
+     * @param deep if deep, the geometry is cloned.
+     * @param copyPK if copyPK is true and a PK is defined, the PK is copied
+     *               otherwise, the PK is set to null.
+     * @return a new BasicFeature
+     */
     public static BasicFeature clone(Feature feature, boolean deep, boolean copyPK) {
         BasicFeature clone = new BasicFeature(feature.getSchema());
         for (int i = 0; i < feature.getSchema().getAttributeCount(); i++) {
@@ -218,13 +243,21 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     public int compareTo(Object o) {
         return compare(this, (Feature)o);
     }
-    
+
+    /**
+     * Static method to compare two features. The method uses feature ID to
+     * compare them in a first time, and if equals, it uses the feature hashcode.
+     * @param a the first feature to be compared
+     * @param b the second feature to be compared
+     * @return a positive integer if a > b, a negative integer if a < b and 0
+     * if a and b have same ID and same hashcode.
+     */
     public static int compare(Feature a, Feature b) {
-        int geometryComparison = a.getGeometry().compareTo(((Feature) b).getGeometry());
+        int geometryComparison = a.getGeometry().compareTo((b).getGeometry());
         if (geometryComparison != 0) { return geometryComparison; }
         if (a == b) { return 0; }
         //The features do not refer to the same object, so try to return something consistent. [Jon Aquino]
-        if (a.getID() != ((Feature) b).getID()) { return a.getID() - ((Feature) b).getID(); }
+        if (a.getID() != b.getID()) { return a.getID() - b.getID(); }
         //The ID is hosed. Last gasp: hope the hash codes are different. [Jon Aquino]
         if (a.hashCode() != b.hashCode()) { return a.hashCode() - b.hashCode(); }
         Assert.shouldNeverReachHere();

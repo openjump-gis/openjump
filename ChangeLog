@@ -3,7 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
-2016-03-12 mmichaud <m.michael.michaud@orange.fr>
+2016-03-15 mmichaud <m.michael.michaud@orange.fr>
+  * Switch compiler source and target to java 1.7
+  * Feature#getString() now returns null instead of "" if value is null
+
+2016-03-14 mmichaud <m.michael.michaud@orange.fr>
   * Improve RemoveSpike plugin an move RemoveSpike and MakeValid plugins
     to Tools > QA submenu
 

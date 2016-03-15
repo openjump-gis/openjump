@@ -45,20 +45,18 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Types of attributes
- * <p>
- * </p>
- * 
- * @author
+ *
  * @since 1.0
  */
 public class AttributeType implements Serializable {
+
   private static final long serialVersionUID = -8443945292593638566L;
 
   // [SBCALVO - 27/10/2008] Changed from HashMap to LinkedMap to iterate over
   // the values preserving adding order Must be initialized before the
   // AttributeType constants because AttributeType constructor uses
   // nameToAttributeTypeMap
-  private static Map nameToAttributeTypeMap = new LinkedHashMap();
+  private static Map<String,AttributeType> nameToAttributeTypeMap = new LinkedHashMap<>();
 
   // String attributes
   public final static AttributeType STRING = new AttributeType(
@@ -138,17 +136,17 @@ public class AttributeType implements Serializable {
   private Class<?> javaClass;
 
   /**
-   * @return
+   * @return all AttributeTypes defined in that class.
    */
   public static Collection<AttributeType> allTypes() {
     return nameToAttributeTypeMap.values();
   }
 
   /**
-   * @return
+   * @return AttributeTypes currently used through OpenJUMP user interface
    */
   public static Collection<AttributeType> basicTypes() {
-    List<AttributeType> basicTypes = new ArrayList<AttributeType>();
+    List<AttributeType> basicTypes = new ArrayList<>();
     basicTypes.add(GEOMETRY);
     basicTypes.add(STRING);
     basicTypes.add(INTEGER);
@@ -163,8 +161,8 @@ public class AttributeType implements Serializable {
   }
 
   /**
-   * @param name
-   * @param javaClass
+   * @param name of the new AttributeType
+   * @param javaClass java class used to store attributes of this type
    */
   private AttributeType(String name, Class<?> javaClass) {
     this.name = name;
@@ -172,9 +170,12 @@ public class AttributeType implements Serializable {
     nameToAttributeTypeMap.put(name, this);
   }
 
+  //[2016-03-15 mmichaud] deprecate this method. It is not safe as it makes possible
+  // to create an attributeType without java class defined. Not used through the API.
   /**
-   * @param name
+   * @param name of this new AttributeType
    */
+  @Deprecated
   public AttributeType(String name) {
     this.name = name;
     this.javaClass = ((AttributeType) nameToAttributeTypeMap.get(name))
@@ -189,12 +190,11 @@ public class AttributeType implements Serializable {
   /**
    * Converts a type name to an AttributeType.
    * 
-   * @param name
-   *          the name of the AttributeType to retrieve
+   * @param name the name of the AttributeType to retrieve
    * @return the corresponding AttributeType
    */
   public final static AttributeType toAttributeType(String name) {
-    AttributeType type = (AttributeType) nameToAttributeTypeMap.get(name);
+    AttributeType type = nameToAttributeTypeMap.get(name);
 
     if (type == null) {
       throw new IllegalArgumentException();
@@ -204,7 +204,7 @@ public class AttributeType implements Serializable {
   }
 
   /**
-   * @return
+   * @return the java class used to store attributes of this type.
    */
   public Class<?> toJavaClass() {
     return javaClass;
@@ -215,23 +215,28 @@ public class AttributeType implements Serializable {
     if (obj == null || !obj.getClass().equals(AttributeType.class)) {
       return false;
     }
-    AttributeType tipo = (AttributeType) obj;
+    AttributeType type = (AttributeType) obj;
 
     // [SBCALVO: 18/09/2008] Cambiado la comparacion de tipo de clase a nombre
     // (revisar)
-    return name.equals(tipo.getName());
+    return name.equals(type.getName());
   }
 
   /**
-   * Gets the attribute type related with a given class
+   * Gets the first attribute type related with a given class.
+   * Tries the basic types first.
    * 
-   * @param javaClass
-   * @return
+   * @param javaClass the javaClass to retrieve
+   * @return an AttributeType based on this java class
    */
   public static AttributeType toAttributeType(Class<?> javaClass) {
     // The order is given by the adding order
-    for (Iterator<AttributeType> i = allTypes().iterator(); i.hasNext();) {
-      AttributeType type = i.next();
+    for (AttributeType type : basicTypes()) {
+      if (type.toJavaClass() == javaClass) {
+        return type;
+      }
+    }
+    for (AttributeType type : allTypes()) {
       if (type.toJavaClass() == javaClass) {
         return type;
       }
@@ -240,7 +245,7 @@ public class AttributeType implements Serializable {
   }
 
   /**
-   * @return
+   * @return the name of this AtributeType.
    */
   public String getName() {
     return name;
@@ -248,14 +253,10 @@ public class AttributeType implements Serializable {
 
   /**
    * Checks if two attribute types are compatible.
-   * 
-   * @param attrType1
-   * @param attrType2
-   * @return
    */
   public static boolean areCompatibleTypes(AttributeType attrType1,
       AttributeType attrType2) {
-    // Primero miramos si son el mismo o se traducen a la misma clase
+    // First check if attrType1 and attrType2 use the same java class
     boolean compatible = attrType1.equals(attrType2)
         || attrType1.toJavaClass().equals(attrType2.toJavaClass());
 
@@ -283,9 +284,8 @@ public class AttributeType implements Serializable {
   /**
    * Checks if an attribute type is numeric
    * 
-   * @param type
-   *          Tipo de atributo
-   * @return
+   * @param type the AttributeType
+   * @return true if type uses a java class implementing Number to store attribute values.
    */
   public static boolean isNumeric(AttributeType type) {
     return Number.class.isAssignableFrom(type.toJavaClass());
@@ -294,19 +294,19 @@ public class AttributeType implements Serializable {
   /**
    * Checks if an attribute type is numeric without any decimal
    * 
-   * @param type
-   * @return
+   * @param type the AttributeType
+   * @return true if type uses an Integer or a Long to store attribute values
    */
   public static boolean isNumericWithoutDecimal(AttributeType type) {
-    return Long.class.isAssignableFrom(type.toJavaClass());
+    return Long.class.isAssignableFrom(type.toJavaClass()) ||
+            Integer.class.isAssignableFrom(type.toJavaClass());
   }
 
   /**
    * Checks if an attribute type is a date
    * 
-   * @param type
-   *          Tipo de atributo
-   * @return
+   * @param type the AttributeType
+   * @return true if type uses a java.util.Date to store attribute values
    */
   public static boolean isDate(AttributeType type) {
     return Date.class.isAssignableFrom(type.toJavaClass());
@@ -315,9 +315,8 @@ public class AttributeType implements Serializable {
   /**
    * Checks if an attribute type is assignable to a String
    * 
-   * @param type
-   *          Tipo de atributo
-   * @return
+   * @param type the AttributeType
+   * @return true if type uses a java String to store attribute values
    */
   public static boolean isString(AttributeType type) {
     return String.class.isAssignableFrom(type.toJavaClass());
@@ -326,11 +325,11 @@ public class AttributeType implements Serializable {
   /**
    * Checks if an attribute type is assignable to a boolean
    * 
-   * @param type
-   *          Tipo de atributo
-   * @return
+   * @param type the AttributeType
+   * @return true if type uses a java Boolean to store attribute values.
    */
   public static boolean isBoolean(AttributeType type) {
     return Boolean.class.isAssignableFrom(type.toJavaClass());
   }
+
 }

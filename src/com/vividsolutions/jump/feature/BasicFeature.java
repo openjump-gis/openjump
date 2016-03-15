@@ -76,7 +76,7 @@ public class BasicFeature extends AbstractBasicFeature implements Serializable {
     }
 
     /**
-     *  Sets the specified attribute.
+     * Sets the specified attribute.
      *
      *@param  attributeIndex  the array index at which to put the new attribute
      *@param  newAttribute    the new attribute
@@ -90,7 +90,7 @@ public class BasicFeature extends AbstractBasicFeature implements Serializable {
     }
 
     /**
-     *  Returns the specified attribute.
+     * Returns the specified attribute.
      *
      *@param  i the index of the attribute to get
      *@return the attribute
