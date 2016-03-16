@@ -33,7 +33,8 @@
 package com.vividsolutions.jump.algorithm;
 
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jump.geom.LineSegmentUtil;
+
+import com.vividsolutions.jts.algorithm.distance.*;
 
 /**
  * Implements algorithm for computing a distance metric
@@ -59,11 +60,20 @@ public class VertexHausdorffDistance
 
   private PointPairDistance ptDist = new PointPairDistance();
 
+  // This one is now available in JTS
+  @Deprecated
   public VertexHausdorffDistance(Geometry g0, Geometry g1)
   {
     compute(g0, g1);
   }
 
+  /**
+   * Computes Hausdorff distance between two segments
+   * Hausdorff distance with LineSegment arguments is not implemented in JTS
+   * (used by UniqueSegmentsWithToleranceFinder)
+   * @param seg0
+   * @param seg1
+     */
   public VertexHausdorffDistance(LineSegment seg0, LineSegment seg1)
   {
     compute(seg0, seg1);
@@ -113,7 +123,7 @@ public class VertexHausdorffDistance
   {
     private PointPairDistance maxPtDist = new PointPairDistance();
     private PointPairDistance minPtDist = new PointPairDistance();
-    private EuclideanDistanceToPoint euclideanDist = new EuclideanDistanceToPoint();
+    private DistanceToPoint euclideanDist = new DistanceToPoint();
     private Geometry geom;
 
     public MaxPointDistanceFilter(Geometry geom)

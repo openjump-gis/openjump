@@ -19,6 +19,8 @@ import com.vividsolutions.jts.geom.*;
  * 
  * @author Martin Davis
  */
+// Deprecated by JTS AffineTransformationBuilder
+@Deprecated
 public class AffineTransformationBuilder
 {
   private Coordinate src0;

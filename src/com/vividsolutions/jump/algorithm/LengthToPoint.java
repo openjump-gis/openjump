@@ -7,6 +7,7 @@ import com.vividsolutions.jts.geom.*;
  */
 //Martin made a decision to create this duplicate of a class from JCS. 
 //[Jon Aquino 2004-10-25]
+//TODO check if it can be replaced by linear referencing package from JTS
 public class LengthToPoint
 {
   public static double lengthAlongSegment(LineSegment seg, Coordinate pt)

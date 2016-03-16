@@ -33,6 +33,8 @@
 package com.vividsolutions.jump.qa.diff;
 
 import java.util.*;
+
+import com.vividsolutions.jts.algorithm.distance.DiscreteHausdorffDistance;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.util.CoordinateArrays;
@@ -108,8 +110,6 @@ public class UniqueSegmentsWithToleranceFinder {
       VertexHausdorffDistance vhd = new VertexHausdorffDistance(querySeg, testSeg);
       if (vhd.distance() < tolerance)
         return true;
-      //if (maximumDistance(querySeg, testSeg) < tolerance)
-      //  return true;
     }
     return false;
   }

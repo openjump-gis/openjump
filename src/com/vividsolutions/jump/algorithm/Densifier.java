@@ -35,19 +35,19 @@ package com.vividsolutions.jump.algorithm;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateList;
 import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
+ * Inser vertices every x units along linear components of a Geometry.
+ *
  * @author Micha&euml; Michaud
  */
 public class Densifier {
@@ -56,14 +56,27 @@ public class Densifier {
     private GeometryFactory factory;
     private double maxLength = 1.0;
 
+    /**
+     * A Densifier to insert vertices every maxLength units along geom.
+     *
+     * @param geom the geometry to densify
+     * @param maxLength the maximum length between two vertices
+     */
     public Densifier(Geometry geom, double maxLength) {
         this.geom = geom;
         this.factory = geom.getFactory();
         this.maxLength = maxLength;
     }
-    
-    public static Geometry densify(Geometry g, double maxLength) {
-        Densifier densifier = new Densifier(g, maxLength);
+
+    /**
+     * Static method to densify a geometry by inserting vertices every
+     * maxLength distance along linear components.
+     *
+     * @param geom the geometry to densify
+     * @param maxLength the maximum length between two vertices
+     */
+    public static Geometry densify(Geometry geom, double maxLength) {
+        Densifier densifier = new Densifier(geom, maxLength);
         return densifier.densify();
     }
     
@@ -71,7 +84,7 @@ public class Densifier {
         if (geom.isEmpty() || geom.getDimension() == 0) {
             return geom;
         }
-        List<Geometry> list = new ArrayList<Geometry>();
+        List<Geometry> list = new ArrayList<>();
         for (int i = 0 ; i < geom.getNumGeometries() ; i++) {
             list.add(densify(geom.getGeometryN(i)));
         }

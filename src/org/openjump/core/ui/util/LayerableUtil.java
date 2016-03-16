@@ -234,14 +234,14 @@ public static boolean isEmpty(Layer layer){
 public static boolean isMixedGeometryType(Layer layer) {
 	    FeatureCollectionWrapper featureCollection = layer.getFeatureCollectionWrapper();
 	    @SuppressWarnings("unchecked")
-	    List<FeatureCollectionWrapper> featureList = featureCollection.getFeatures();
+	    List<Feature> featureList = featureCollection.getFeatures();
 	    BitSet layerBit = new BitSet();
 	    BitSet currFeatureBit = new BitSet();
 	    if (featureList.size() > 0) {
 	    	Geometry firstGeo = ((Feature) featureList.iterator().next()).getGeometry();
 	    	layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer type
 	    }
-	    for (Iterator<FeatureCollectionWrapper> i = featureList.iterator(); i.hasNext();) {
+	    for (Iterator<Feature> i = featureList.iterator(); i.hasNext();) {
 	    	Feature feature = (Feature) i.next();
 	    	Geometry geo = feature.getGeometry();
 	    	currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
@@ -264,7 +264,7 @@ public static String getGeometryType(Layer layer) {
     Geometry geo = null;
     boolean multipleGeoTypes = false;
     for (@SuppressWarnings("unchecked")
-    	Iterator<FeatureCollectionWrapper> i = fcw.getFeatures().iterator(); i.hasNext();) {
+    	Iterator<Feature> i = fcw.getFeatures().iterator(); i.hasNext();) {
          geo = ((Feature) i.next()).getGeometry();
          if (geo != null) {
             if (geoClass.equals(""))
@@ -480,14 +480,12 @@ public static String getVectorImageFileDescription(Layer layer){
 }
 
 /**
- * @param RasterImagelayer
- @return a description of raster image layer
+ * @param layer the Raster image layer
+ * @return a description of raster image layer
  * ex. "GEOTIF/TIFF - Tagged Image File Format"
  * if the file extension is not into the enum list
  * it returns only the extension (eg. "MAP") 
  */
-
-
 public static String getRasterFileDescription(RasterImageLayer layer){
 	 String name = null;
 	 File file= new File(layer.getImageFileName());

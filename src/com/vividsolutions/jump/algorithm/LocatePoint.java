@@ -9,6 +9,7 @@ import com.vividsolutions.jts.geom.*;
  * Provides various ways of computing the actual value
  * of a point a given length along a line.
  */
+//TODO check if it can be replaced by linear referencing package from JTS
 public class LocatePoint {
 
   /**
