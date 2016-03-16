@@ -42,6 +42,7 @@ import com.vividsolutions.jts.geom.*;
  * Some utility functions not present in the JTS version of this class
  */
 public class GeometryFactoryUtil {
+
     public GeometryFactoryUtil() {
     }
 
