@@ -44,6 +44,7 @@ import com.vividsolutions.jts.geom.*;
  * {@link LineSegment}s and {@link Envelope}s.
  */
 public class LineSegmentEnvelopeIntersector {
+
     private static final LineIntersector lineInt = new RobustLineIntersector();
 
     public LineSegmentEnvelopeIntersector() {

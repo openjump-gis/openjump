@@ -43,6 +43,7 @@ import com.vividsolutions.jump.util.CoordinateArrays;
  * Magnifies a given area of a set of Geometry's.
  */
 public class GeometryMicroscope {
+
     private List geomList;
     private Envelope env;
     private double minSep;
@@ -119,4 +120,5 @@ public class GeometryMicroscope {
             }
         }
     }
+
 }

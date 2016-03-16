@@ -43,6 +43,7 @@ import com.vividsolutions.jts.geom.*;
  * Eventually some of these functions may be moved into the JTS LineSegment class.</i>
  */
 public class LineSegmentUtil {
+
     /**
      * Projects one line segment onto another and returns the resulting
      * line segment.
@@ -137,24 +138,4 @@ public class LineSegmentUtil {
         return line;
     }
 
-    //Is this the same as LineSegment's #closestPoint method? If so, this method
-    //should be removed. [Jon Aquino]
-    /*
-    public static Coordinate OLDclosestPoint(LineSegment seg, Coordinate p) {
-        double factor = seg.projectionFactor(p);
-
-        if ((factor > 0) && (factor < 1)) {
-            return seg.project(p);
-        }
-
-        double dist0 = seg.p0.distance(p);
-        double dist1 = seg.p1.distance(p);
-
-        if (dist0 < dist1) {
-            return seg.p0;
-        }
-
-        return seg.p1;
-    }
-    */
 }

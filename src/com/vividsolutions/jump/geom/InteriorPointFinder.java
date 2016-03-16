@@ -49,6 +49,7 @@ import com.vividsolutions.jump.util.MathUtil;
  * </ul>
  */
 public class InteriorPointFinder {
+
     private GeometryFactory factory = new GeometryFactory();
 
     //<<TODO:REFACTORING>> Move this class to JTS [Jon Aquino]

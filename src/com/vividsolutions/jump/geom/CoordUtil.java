@@ -46,6 +46,7 @@ import com.vividsolutions.jump.util.MathUtil;
  * Utility functions for working with Coordinates.
  */
 public class CoordUtil {
+
     /**
      * Returns the average of two Coordinates.
      * @param c1 one coordinate

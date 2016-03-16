@@ -40,6 +40,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * Utility functions for working with angles.
  */
 public class Angle {
+
   public static final double PI_TIMES_2 = 2.0 * Math.PI;
   public static final double PI_OVER_2 = Math.PI / 2.0;
   public static final double PI_OVER_4 = Math.PI / 4.0;
@@ -179,4 +180,5 @@ public class Angle {
 
       return da;
   }
+
 }

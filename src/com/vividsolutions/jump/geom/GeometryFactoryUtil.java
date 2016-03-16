@@ -104,4 +104,5 @@ public class GeometryFactoryUtil {
 
         return factory.createGeometryCollection(new Geometry[0]);
     }
+
 }
