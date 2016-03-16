@@ -38,6 +38,7 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 
 import java.util.HashMap;
 import java.util.Map;
+
 /**
  * A file, database, web service, or other source of data. To be savable to a
  * project file, a DataSource must not be an anonymous class (because the class

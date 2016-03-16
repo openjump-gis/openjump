@@ -40,6 +40,7 @@ import com.vividsolutions.jump.task.TaskMonitor;
  * A channel of communication with a DataSource.
  */
 public interface Connection {
+
     /**
      * Returns from a DataSource a dataset specified using a query string (the format
      * of which is implementation-dependent). Callers: be sure to call 
@@ -50,7 +51,7 @@ public interface Connection {
      * @return null if a FeatureCollection could not be created because of a serious
      * problem (indicated in the exceptions)
      */
-    public FeatureCollection executeQuery(String query, Collection exceptions, TaskMonitor monitor);
+    FeatureCollection executeQuery(String query, Collection exceptions, TaskMonitor monitor);
 
     /**
      * Returns from a DataSource a dataset specified using a query string (the format
@@ -58,18 +59,18 @@ public interface Connection {
      * is stopped and the exception thrown. Callers: be sure to call 
      * DataSource#setCoordinateSystem on the returned FeatureCollection.
      */
-    public FeatureCollection executeQuery(String query, TaskMonitor monitor)
+    FeatureCollection executeQuery(String query, TaskMonitor monitor)
         throws Exception;
 
     /**
      * Modifies data in the DataSource accordinate to a query string (the format of
      * which is implementation-dependent).
      */
-    public void executeUpdate(String query, FeatureCollection featureCollection, TaskMonitor monitor)
+    void executeUpdate(String query, FeatureCollection featureCollection, TaskMonitor monitor)
         throws Exception;
 
     /**
      * Ends the connection, performing any necessary cleanup.
      */
-    public void close();
+    void close();
 }

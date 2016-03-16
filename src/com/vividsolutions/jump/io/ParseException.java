@@ -40,12 +40,13 @@ import com.vividsolutions.jump.JUMPException;
  *Simple exception class to express problems parsing data.
  */
 public class ParseException extends JUMPException {
+
     //<<TODO:NAMING>> Perhaps we should expand these names to full words; for example,
     //fileName. cpos is kind of cryptic. Also, the Java naming convention is to
     //separate words with capitals; for example, lineNo rather than lineno. [Jon Aquino]
-    public String fname;
-    public int lineno;
-    public int cpos;
+    public String fileName;
+    public int lineNumber;
+    public int charPos;
 
     /** construct exception with a message*/
     public ParseException(String message) {
@@ -53,22 +54,20 @@ public class ParseException extends JUMPException {
     }
 
     /**
-     *  More explictly construct a parse exception.
-     *  Resulting message will be :message + " in file '" + newFname +"', line " + newLineno + ", char " + newCpos
-     * @param message information about the type of error
-     * @param newFname filename the error occurred in
-     * @param newLineno line number the error occurred at
-     * @param newCpos character position on the line
+     * More explictly construct a parse exception.
+     * Resulting message will be :message + " in file '" + newFname +"', line " + newLineno + ", char " + newCpos
      *
-     **/
-    public ParseException(String message, String newFname, int newLineno,
-        int newCpos) {
-        super(message + " in file '" + newFname + "', line " + newLineno +
-            ", char " + newCpos);
+     * @param message information about the type of error
+     * @param newFileName filename the error occurred in
+     * @param newLineNumber line number the error occurred at
+     * @param newCharPos character position on the line
+     */
+    public ParseException(String message, String newFileName, int newLineNumber, int newCharPos) {
+        super(message + " in file '" + newFileName + "', line " + newLineNumber +
+            ", char " + newCharPos);
 
-        //  super(message);
-        fname = newFname;
-        lineno = newLineno;
-        cpos = newCpos;
+        fileName = newFileName;
+        lineNumber = newLineNumber;
+        charPos = newCharPos;
     }
 }

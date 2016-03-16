@@ -55,6 +55,7 @@ import java.util.Properties;
  *       Typically one uses 'DefaultValue' or 'InputFile' or 'OutputFile'
  */
 public class DriverProperties extends Properties {
+
     /** Creates new DataProperties */
     public DriverProperties() {
     }
@@ -63,7 +64,7 @@ public class DriverProperties extends Properties {
      *constructor that will autoset the key 'DefaultValue'
      *
      *@param defaultValue value portion for the the key 'DefaultValue'
-     **/
+     */
     public DriverProperties(String defaultValue) {
         this.set("DefaultValue", defaultValue);
     }

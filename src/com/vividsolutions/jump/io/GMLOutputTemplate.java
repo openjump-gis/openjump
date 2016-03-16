@@ -55,59 +55,60 @@ import java.util.ArrayList;
  *<br>
  *<br>
  *Here's an example of how a simple GMLOutputTemplate is parsed by this class:
-*for input like:
-*<br>
-*&lt;?xml version='1.0' encoding='UTF-8'?&gt; <br>
-*&lt;dataset...&gt; <br>
-*&lt;schemaFeatures&gt; <br>
-*&lt;gml:featureMember&gt; <br>
-*&lt;% FEATURE %&gt; <br>
-*&lt;Feature&gt; <br>
-*&lt;featureType&gt; &lt;%=COLUMN featureType %&gt; &lt;/featureType&gt; <br>
-*&lt;property fme:name="ID"&gt; &lt;%=COLUMN ID %&gt; &lt;/property&gt; <br>
-*&lt;property fme:name="SITE"&gt; &lt;%=COLUMN SITE %&gt; &lt;/property&gt; <br>
-*&lt;property fme:name="gml2_coordsys"&gt;&lt;/property&gt; <br>
-*&lt;gml:pointProperty&gt; <br>
-* &lt;%=GEOMETRY %&gt;  <br>
-*&lt;/gml:pointProperty&gt; <br>
-*&lt;/Feature&gt; <br>
-*&lt;% ENDFEATURE %&gt; <br>
-*&lt;/gml:featureMember&gt; <br>
-*&lt;/dataFeatures&gt; <br>
-*&lt;/dataset&gt; <br>
-* <br>
-* <br>
-* headeText =  <br>
-* <br>
-*&lt;?xml version='1.0' encoding='UTF-8'?&gt; <br>
-*&lt;dataset...&gt; <br>
-*&lt;schemaFeatures&gt; <br>
-*&lt;gml:featureMember&gt; <br>
-*  <br>
-* footerText = <br>
-*&lt;/gml:featureMember&gt; <br>
-*&lt;/dataFeatures&gt; <br>
-*&lt;/dataset&gt; <br>
-* <br>
-* <br>
-*featureText[0] =  <br>
-*&lt;Feature&gt; <br>
-*&lt;featureType&gt; <br>
-* <br>
-* codingText[0] = "=COLUMN featureTtype" <br>
-* <br>
-*featureText[1] =  <br>
-*&lt;/property&gt; <br>
-*&lt;property fme:name="SITE"&gt;  <br>
-* <br>
-*codingText[1] = "=COLUMN ID" <br>
- **/
-public class GMLOutputTemplate {
+ *for input like:
+ *<br>
+ *&lt;?xml version='1.0' encoding='UTF-8'?&gt; <br>
+ *&lt;dataset...&gt; <br>
+ *&lt;schemaFeatures&gt; <br>
+ *&lt;gml:featureMember&gt; <br>
+ *&lt;% FEATURE %&gt; <br>
+ *&lt;Feature&gt; <br>
+ *&lt;featureType&gt; &lt;%=COLUMN featureType %&gt; &lt;/featureType&gt; <br>
+ *&lt;property fme:name="ID"&gt; &lt;%=COLUMN ID %&gt; &lt;/property&gt; <br>
+ *&lt;property fme:name="SITE"&gt; &lt;%=COLUMN SITE %&gt; &lt;/property&gt; <br>
+ *&lt;property fme:name="gml2_coordsys"&gt;&lt;/property&gt; <br>
+ *&lt;gml:pointProperty&gt; <br>
+ * &lt;%=GEOMETRY %&gt;  <br>
+ *&lt;/gml:pointProperty&gt; <br>
+ *&lt;/Feature&gt; <br>
+ *&lt;% ENDFEATURE %&gt; <br>
+ *&lt;/gml:featureMember&gt; <br>
+ *&lt;/dataFeatures&gt; <br>
+ *&lt;/dataset&gt; <br>
+ * <br>
+ * <br>
+ * headeText =  <br>
+ * <br>
+ *&lt;?xml version='1.0' encoding='UTF-8'?&gt; <br>
+ *&lt;dataset...&gt; <br>
+ *&lt;schemaFeatures&gt; <br>
+ *&lt;gml:featureMember&gt; <br>
+ *  <br>
+ * footerText = <br>
+ *&lt;/gml:featureMember&gt; <br>
+ *&lt;/dataFeatures&gt; <br>
+ *&lt;/dataset&gt; <br>
+ * <br>
+ * <br>
+ *featureText[0] =  <br>
+ *&lt;Feature&gt; <br>
+ *&lt;featureType&gt; <br>
+ * <br>
+ * codingText[0] = "=COLUMN featureTtype" <br>
+ * <br>
+ *featureText[1] =  <br>
+ *&lt;/property&gt; <br>
+ *&lt;property fme:name="SITE"&gt;  <br>
+ * <br>
+ *codingText[1] = "=COLUMN ID" <br>
+ */
+public class  GMLOutputTemplate {
+
     String headerText;
     String footerText;
     String AllFeatureText;
-    ArrayList featureText = new ArrayList();
-    ArrayList codingText = new ArrayList();
+    ArrayList<String> featureText = new ArrayList<>();
+    ArrayList<String> codingText = new ArrayList<>();
     String featureTextfooter;
     int lineNumber = 0;
     String streamName;
@@ -132,13 +133,12 @@ public class GMLOutputTemplate {
     }
 
     /**
-      *for input like : <br>
+     * for input like : <br>
      * &lt;feature&gt; &lt;PROPERTY type=name&gt; &lt;%=NAME&gt;&lt;/property&gt; &lt;PROPERTY type=address&gt; &lt;%=ADDRESS&gt; &lt;/property&gt;<br>
-     *<br>
+     * <br>
      * use addItem("&lt;feature&gt; &lt;PROPERTY type=name&gt;","=NAME")<br>
      *     addItem("&lt;/property&gt; &lt;PROPERTY type=address&gt;", "%=ADDRESS")<br>
-     *
-     **/
+     */
     public void addItem(String header, String coding) {
         featureText.add(header);
         codingText.add(coding);
@@ -166,7 +166,7 @@ public class GMLOutputTemplate {
      *@param readerName name of the stream (for error reporting)
      */
     public void load(java.io.Reader r, String readerName)
-        throws Exception {
+            throws Exception {
         int index;
         int index2;
         String line;
@@ -310,7 +310,7 @@ public class GMLOutputTemplate {
     private boolean validop(String op) {
         String op2;
 
-        op2 = new String(op);
+        op2 = op;
         op2 = op2.trim();
         op2 = op2.toLowerCase();
 

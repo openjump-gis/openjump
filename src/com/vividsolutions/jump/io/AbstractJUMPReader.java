@@ -6,11 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Michaël
- * Date: 09/10/13
- * Time: 07:49
- * To change this template use File | Settings | File Templates.
+ * Partial implementation of JUMPReader implementing getExceptions
+ * method.
  */
 abstract public class AbstractJUMPReader implements JUMPReader {
 

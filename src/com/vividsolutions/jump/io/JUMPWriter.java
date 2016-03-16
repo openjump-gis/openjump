@@ -51,5 +51,5 @@ public interface JUMPWriter {
     *  specific parameters.
     */
     void write(FeatureCollection featureCollection, DriverProperties dp)
-        throws IllegalParametersException, Exception;
+        throws Exception;
 }

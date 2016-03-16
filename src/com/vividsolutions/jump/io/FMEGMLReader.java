@@ -59,19 +59,19 @@ import java.nio.charset.Charset;
  */
 // TODO : I18N
 public class FMEGMLReader extends AbstractJUMPReader {
+
     /** Creates new FMEGMLReader */
     public FMEGMLReader() {
     }
 
     /**
-     *  Main method - reads in FMEGML file specified in the DriverProperties ('InputFile' or 'DefaultValue')
+     * Main method - reads in FMEGML file specified in the DriverProperties ('InputFile' or 'DefaultValue')
      *
      * @param dp {@link DriverProperties} to specify the file to read ('InputFile' or 'DefaultValue')
      */
-    public FeatureCollection read(DriverProperties dp)
-        throws IllegalParametersException, Exception {
+    public FeatureCollection read(DriverProperties dp) throws Exception {
+
         FeatureCollection result;
-        //java.io.Reader r;
         InputStream inputStream;
         GMLInputTemplate inputTemplate;
         GMLReader gmlReader = new GMLReader();
@@ -80,7 +80,6 @@ public class FMEGMLReader extends AbstractJUMPReader {
 
         isCompressed = (dp.getProperty("CompressedFile") != null);
 
-        //dp.relabel("InputFMEGMLFile","File");
         inputfname = dp.getProperty("DefaultValue");
 
         if (inputfname == null) {
@@ -139,8 +138,9 @@ public class FMEGMLReader extends AbstractJUMPReader {
      */
     public GMLInputTemplate getGMLInputTemplate(InputStream inputStream, String fname)
         throws java.io.IOException, ParseException {
+
         GMLInputTemplate result;
-        java.io.LineNumberReader reader = new java.io.LineNumberReader(
+        LineNumberReader reader = new LineNumberReader(
                 new InputStreamReader(inputStream, Charset.forName("UTF-8")));
         int lineNo = 0;
         boolean foundStartTag = false;

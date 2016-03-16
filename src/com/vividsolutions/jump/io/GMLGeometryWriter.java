@@ -41,15 +41,14 @@ import java.io.IOException;
  * Supports a user-defined line prefix and a user-defined maximum number of coordinates per line.
  * Indents components of Geometries to provide a nicely-formatted representation.
  */
-public class GMLGeometryWriter
-{
+public class GMLGeometryWriter {
 
   /**
-   *  Returns a <code>String</code> of repeated characters.
+   * Returns a <code>String</code> of repeated characters.
    *
-   *@param  ch     the character to repeat
-   *@param  count  the number of times to repeat the character
-   *@return        a <code>String</code> of characters
+   * @param  ch     the character to repeat
+   * @param  count  the number of times to repeat the character
+   * @return        a <code>String</code> of characters
    */
   private static String stringOfChar(char ch, int count) {
     StringBuffer buf = new StringBuffer();
@@ -101,7 +100,7 @@ public class GMLGeometryWriter
   public void setMaximumCoordinatesPerLine(int maxCoordinatesPerLine)
   {
     if (maxCoordinatesPerLine <= 0) {
-      maxCoordinatesPerLine = 1;
+      this.maxCoordinatesPerLine = 1;
       return;
     }
     this.maxCoordinatesPerLine = maxCoordinatesPerLine;
@@ -118,12 +117,6 @@ public class GMLGeometryWriter
       }
       return null;
   }
-
-  //public void write(Geometry geometry, Writer writer)
-  //  throws IOException
-  //{
-  //  writer.write(write(geometry));
-  //}
 
 
   /**
@@ -143,7 +136,7 @@ public class GMLGeometryWriter
     /*
      * order is important in this if-else list.
      * E.g. homogeneous collections need to come before GeometryCollection
-    */
+     */
       if (g instanceof Point) {
           writePoint((Point) g, attributes, level, writer);
       } else if (g instanceof LinearRing) {

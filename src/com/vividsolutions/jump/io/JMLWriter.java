@@ -67,17 +67,18 @@ import com.vividsolutions.jump.feature.FeatureCollection;
  * </p>
  */
 public class JMLWriter implements JUMPWriter {
+
     /** Creates new JMLWriter */
     public JMLWriter() {
     }
 
     /**
-     *  Writes the feature collection to the specified file in JML format.
+     * Writes the feature collection to the specified file in JML format.
      * @param featureCollection features to write
      * @param dp 'OutputFile' or 'DefaultValue' to specify what file to write.
      */
     public void write(FeatureCollection featureCollection, DriverProperties dp)
-        throws IllegalParametersException, Exception {
+        throws Exception {
         GMLWriter gmlWriter;
         String outputFname;
 

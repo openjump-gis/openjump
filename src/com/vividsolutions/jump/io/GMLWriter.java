@@ -106,6 +106,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
  * 
  */
 public class GMLWriter implements JUMPWriter {
+
     // Standard tags for the auto-generated outputTemplate.
     public static String standard_geom = "geometry";
     public static String standard_feature = "feature";
@@ -124,7 +125,7 @@ public class GMLWriter implements JUMPWriter {
      * @param dp specify the 'OuputFile' and 'OuputTemplateFile'
      */
     public void write(FeatureCollection featureCollection, DriverProperties dp)
-        throws IllegalParametersException, Exception {
+            throws Exception {
         GMLOutputTemplate gmlTemplate;
         String outputFname;
 
@@ -191,21 +192,12 @@ public class GMLWriter implements JUMPWriter {
             f = (Feature) t.next();
 
             for (int u = 0; u < outputTemplate.featureText.size(); u++) {
-                String evaled;
-                pre = (String) outputTemplate.featureText.get(u);
-                token = (String) outputTemplate.codingText.get(u);
-                //buffWriter.write(pre);
+                pre = outputTemplate.featureText.get(u);
+                token = outputTemplate.codingText.get(u);
                 //[mmichaud 2012-04-27] write directly into the writer instead
                 // of getting string which are hard to handle for multi-million
                 // coordinates geometries
                 evaluateToken(f, pre, token, buffWriter);
-                //evaled = evaluateToken(f, token);
-                
-                //if (evaled == null) {
-                //    evaled = "";
-                //}
-
-                //buffWriter.write(evaled);
             }
 
             buffWriter.write(outputTemplate.featureTextfooter);
@@ -223,7 +215,7 @@ public class GMLWriter implements JUMPWriter {
      */
     public static String safeXML(String s) {
         if (s == null) return null;
-        StringBuffer sb = new StringBuffer(s);
+        StringBuilder sb = new StringBuilder(s);
         char c;
 
         for (int t = 0; t < sb.length(); t++) {
@@ -261,14 +253,14 @@ public class GMLWriter implements JUMPWriter {
     }
 
     /**
-     *takes a token and replaces it with its value (ie. geometry or column)
+     * Takes a token and replaces it with its value (ie. geometry or column)
      * @param f feature to take geometry or column value from
-     *@token token to evaluate - "column","geometry" or "geometrytype"
+     * @param token to evaluate - "column","geometry" or "geometrytype"
      */
     // [mmichaud 2012-04-27] no mor eused, replaced by 
     // evaluateToken(Feature f, String token, Writer writer)
     private String evaluateToken(Feature f, String token)
-        throws Exception, ParseException {
+        throws Exception {
         String column;
         String cmd;
         String result;
@@ -319,7 +311,7 @@ public class GMLWriter implements JUMPWriter {
     }
     
     private void evaluateToken(Feature f, String pre, String token, Writer writer)
-        throws Exception, ParseException {
+        throws Exception {
         String column;
         String cmd;
         String result;
@@ -393,8 +385,9 @@ public class GMLWriter implements JUMPWriter {
     
     private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
-    /** given a FEatureSchema, make an output template
-     *  in the JCS  format
+    /**
+     * Given a FeatureSchema, make an output template
+     * in the JCS  format
      * @param fcmd input featureSchema
      */
     public static GMLOutputTemplate makeOutputTemplate(FeatureSchema fcmd) {
@@ -402,9 +395,9 @@ public class GMLWriter implements JUMPWriter {
         String inputTemplate;
         int t;
         String colName;
-        String colText = "";
-        String colCode = "";
-        String colHeader = "";
+        String colText;
+        String colCode;
+        String colHeader;
 
         result = new GMLOutputTemplate();
 
@@ -414,12 +407,10 @@ public class GMLWriter implements JUMPWriter {
             "<?xml version='1.0' encoding='UTF-8'?>\n<JCSDataFile xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2000/10/XMLSchema-instance\" >\n" +
             inputTemplate + "<" + standard_featureCollection + ">\n");
 
-        colText = "";
         colHeader = "     <" + standard_feature + "> \n";
 
         for (t = 0; t < fcmd.getAttributeCount(); t++) {
             colName = fcmd.getAttributeName(t);
-            colText = "";
 
             if (t != fcmd.getGeometryIndex()) {
                 //not geometry

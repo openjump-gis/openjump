@@ -43,6 +43,7 @@ package com.vividsolutions.jump.io;
  * Simple class to report missing/bad {@link DriverProperties} problems.
  */
 public class IllegalParametersException extends java.lang.Exception {
+
     /**
      * Creates new <code>IllegleParametersException</code> without detail message.
      */

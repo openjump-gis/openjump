@@ -44,8 +44,10 @@ import com.vividsolutions.jump.feature.AttributeType;
  * Also has a function for checking if an XML tag matches this column specification.
  */
 public class ColumnDescription {
+
     public static final int VALUE_IS_BODY = 1;
     public static final int VALUE_IS_ATT = 2;
+
     String columnName; //jcs column name
     String tagName; //XML tag this is a part of
     boolean tagNeedsAttribute = false; //true if the tag containing the value has a certain attribute in it

@@ -82,6 +82,7 @@ import com.vividsolutions.jump.feature.FeatureCollection;
  * <br>
  */
 public class JMLReader extends AbstractJUMPReader {
+
     /** Creates new JMLReader */
     public JMLReader() {
     }
@@ -92,7 +93,7 @@ public class JMLReader extends AbstractJUMPReader {
      *@param dp 'InputFile' or 'DefaultValue' for the input JML file
      */
     public FeatureCollection read(DriverProperties dp)
-        throws IllegalParametersException, Exception {
+            throws Exception {
         GMLReader gmlReader;
         String inputFname;
 

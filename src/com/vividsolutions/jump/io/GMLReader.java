@@ -237,8 +237,9 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
   static int STATE_WAIT_COLLECTION_TAG = 1;
   static int STATE_WAIT_FEATURE_TAG = 2;
 
-  final static List simpleGeoms = new ArrayList<String>();
-  final static List multiGeoms = new ArrayList<String>();
+  final static List<String> simpleGeoms = new ArrayList<>();
+  final static List<String> multiGeoms = new ArrayList<>();
+
   static {
     multiGeoms.add("multipoint");
     multiGeoms.add("multilinestring");
@@ -266,7 +267,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                                                            // replaced if
                                                            // there's an SRID
                                                            // change
-  ArrayList innerBoundaries = new ArrayList();
+  ArrayList<LinearRing> innerBoundaries = new ArrayList<>();
   Attributes lastStartTag_atts;
   String lastStartTag_name;
   String lastStartTag_qName; // accumulate values inside a tag
@@ -276,12 +277,12 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
   LineString lineString;
   LinearRing linearRing; // a LR
   LinearRing outerBoundary; // list of LinearRing
-  ArrayList pointList = new ArrayList(); // list of accumulated points
+  ArrayList<Coordinate> pointList = new ArrayList<>(); // list of accumulated points
                                          // (Coordinate)
   Polygon polygon; // polygon
 
   // higherlevel geomery object
-  ArrayList recursivegeometry = new ArrayList();
+  ArrayList<ArrayList> recursivegeometry = new ArrayList<>();
 
   // low-level geometry objects
   Coordinate singleCoordinate = new Coordinate();
@@ -291,6 +292,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
 
   int SRID = 0; // srid to give the created geometries
   public boolean parseSRID = false; // true = put SRID for srsName="EPSG:42102"
+
   /**
    * true => for 'OBJECT' types, if you find more than 1 item, make a list and
    * store all the results
@@ -311,8 +313,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
   /**
    * parse SRID information in geometry tags
    * 
-   * @param parseTheSRID
-   *          true = parse
+   * @param parseTheSRID true = parse
    */
   public void acceptSRID(boolean parseTheSRID) {
     parseSRID = parseTheSRID;
@@ -345,14 +346,10 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
   /**
    * SAX handler - store and accumulate tag bodies
    *
-   * @param ch
-   *          Description of the Parameter
-   * @param start
-   *          Description of the Parameter
-   * @param length
-   *          Description of the Parameter
-   * @exception SAXException
-   *              Description of the Exception
+   * @param ch      Description of the Parameter
+   * @param start   Description of the Parameter
+   * @param length  Description of the Parameter
+   * @exception SAXException Description of the Exception
    */
   public void characters(char[] ch, int start, int length) throws SAXException {
     try {
@@ -429,16 +426,14 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
           }
 
           if (current_geom_qname.matches("^(?i)(gml:)?multipoint$"))
-            finalGeometry = geometryFactory.createMultiPoint((Point[]) geometry
-                .toArray(new Point[] {}));
+            finalGeometry = geometryFactory
+                .createMultiPoint(geometry.toArray(new Point[0]));
           else if (current_geom_qname.matches("^(?i)(gml:)?multilinestring$"))
             finalGeometry = geometryFactory
-                .createMultiLineString(((LineString[]) geometry
-                    .toArray(new LineString[] {})));
+                .createMultiLineString((geometry.toArray(new LineString[0])));
           else if (current_geom_qname.matches("^(?i)(gml:)?multipolygon$"))
             finalGeometry = geometryFactory
-                .createMultiPolygon(((Polygon[]) geometry
-                    .toArray(new Polygon[] {})));
+                .createMultiPolygon((geometry.toArray(new Polygon[0])));
 //          else if (current_geom_qname.matches("^(?i)(gml:)?linearring$"))
 //            finalGeometry = (Geometry) geometry.get(0);
           else
@@ -458,13 +453,13 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
         // these correspond to <coord><X>0.0</X><Y>0.0</Y></coord>
         if ((qName.compareToIgnoreCase("X") == 0)
             || (qName.compareToIgnoreCase("gml:X") == 0)) {
-          singleCoordinate.x = (new Double(tagBody.toString())).doubleValue();
+          singleCoordinate.x = Double.parseDouble(tagBody.toString());
         } else if ((qName.compareToIgnoreCase("Y") == 0)
             || (qName.compareToIgnoreCase("gml:y") == 0)) {
-          singleCoordinate.y = (new Double(tagBody.toString())).doubleValue();
+          singleCoordinate.y = Double.parseDouble(tagBody.toString());
         } else if ((qName.compareToIgnoreCase("Z") == 0)
             || (qName.compareToIgnoreCase("gml:z") == 0)) {
-          singleCoordinate.z = (new Double(tagBody.toString())).doubleValue();
+          singleCoordinate.z = Double.parseDouble(tagBody.toString());
         } else if ((qName.compareToIgnoreCase("COORD") == 0)
             || (qName.compareToIgnoreCase("gml:coord") == 0)) {
           pointList.add(new Coordinate(singleCoordinate)); // remember it
@@ -482,7 +477,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
             || (qName.compareToIgnoreCase("gml:linearring") == 0)) {
           Coordinate[] c = new Coordinate[0];
 
-          c = (Coordinate[]) pointList.toArray(c);
+          c = pointList.toArray(c);
 
           linearRing = geometryFactory.createLinearRing(c);
         } else if ((qName.compareToIgnoreCase("outerBoundaryIs") == 0)
@@ -497,22 +492,21 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
             || (qName.compareToIgnoreCase("gml:polygon") == 0)) {
           // LinearRing[] lrs = new LinearRing[1];
           LinearRing[] lrs = new LinearRing[0];
-          lrs = (LinearRing[]) innerBoundaries.toArray(lrs);
+          lrs = innerBoundaries.toArray(lrs);
           polygon = geometryFactory.createPolygon(outerBoundary, lrs);
           geometry.add(polygon);
         } else if ((qName.compareToIgnoreCase("linestring") == 0)
             || (qName.compareToIgnoreCase("gml:linestring") == 0)) {
           Coordinate[] c = new Coordinate[0];
 
-          c = (Coordinate[]) pointList.toArray(c);
+          c = pointList.toArray(c);
 
           lineString = geometryFactory.createLineString(c);
           geometry.add(lineString);
         } else if ((qName.compareToIgnoreCase("point") == 0)
             || (qName.compareToIgnoreCase("gml:point") == 0)) {
           apoint = geometryFactory
-              .createPoint(pointList.size() > 0 ? (Coordinate) pointList.get(0)
-                  : null);
+              .createPoint(pointList.size() > 0 ? pointList.get(0) : null);
           geometry.add(apoint);
         }
       } else if (STATE == STATE_GET_COLUMNS) {
@@ -625,8 +619,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
    * @exception Exception
    *              Description of the Exception
    */
-  public FeatureCollection read(DriverProperties dp)
-      throws IllegalParametersException, Exception {
+  public FeatureCollection read(DriverProperties dp) throws Exception {
     FeatureCollection fc;
     GMLInputTemplate gmlTemplate;
     String inputFname;
@@ -842,8 +835,8 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
       if ((STATE == STATE_GET_COLUMNS) && GMLinput.isGeometryElement(qName)) {
         // found the geom tag
         // System.out.println("found geom #"+currentGeometryNumb );
-        recursivegeometry = new ArrayList();
-        geometry = new ArrayList();
+        recursivegeometry = new ArrayList<>();
+        geometry = new ArrayList<>();
         recursivegeometry.add(geometry);
 
         // recursivegeometry[0] = geometry
@@ -904,7 +897,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
           current_geom_qname = qName;
         } else {
           STATE++;
-          geometry = new ArrayList();
+          geometry = new ArrayList<>();
           recursivegeometry.add(geometry);
         }
       }
@@ -966,17 +959,14 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
   }
 
   private GMLInputTemplate inputTemplateFromFile(InputStream in)
-      throws ParseException, FileNotFoundException, IOException {
+      throws ParseException, IOException {
     GMLInputTemplate result;
-    //java.io.Reader r = new BufferedReader(new InputStreamReader(in));
     result = inputTemplate(in);
-    //r.close();
-
     return result;
   }
 
   private GMLInputTemplate inputTemplateFromFile(String filename)
-      throws ParseException, FileNotFoundException, IOException {
+      throws ParseException, IOException {
     GMLInputTemplate result;
     InputStream is = new BufferedInputStream(new FileInputStream(filename));
     result = inputTemplate(is);
@@ -1084,7 +1074,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
    */
   public Collection<Exception> getExceptions() {
     if (exceptions == null)
-      exceptions = new ArrayList<Exception>();
+      exceptions = new ArrayList<>();
     return exceptions;
   }
 }

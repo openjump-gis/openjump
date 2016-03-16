@@ -42,9 +42,11 @@ import org.xml.sax.SAXException;
 
 
 /**
- * This is a fake exception class so the {@link GMLReader} can abort a read mid-stream via the standard SAX error handing methods.
-*/
+ * This is a fake exception class so the {@link GMLReader} can abort a read mid-stream
+ * via the standard SAX error handing methods.
+ */
 public class EndOfParseException extends SAXException {
+
     /**
      * Creates new <code>EndOfParseException</code> without detail message.
      */

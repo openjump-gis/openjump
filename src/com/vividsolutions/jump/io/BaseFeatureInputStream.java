@@ -1,8 +1,6 @@
 package com.vividsolutions.jump.io;
 
 import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jump.io.*;
-import java.io.*;
 
 /**
  * Base class for FeatureInputStreamReaders.
@@ -14,31 +12,26 @@ import java.io.*;
  * Subclasses need to define readNext and close.
  * They also need to set the featureSchema instance variable.
  */
-public abstract class BaseFeatureInputStream
-    implements FeatureInputStream
-{
-  private Feature nextFeature = null;
+public abstract class BaseFeatureInputStream implements FeatureInputStream {
+    private Feature nextFeature = null;
 
-  public abstract FeatureSchema getFeatureSchema();
+    public abstract FeatureSchema getFeatureSchema();
 
-  public Feature next()
-      throws Exception
-  {
-    if (nextFeature == null)
-      return readNext();
-    Feature currFeature = nextFeature;
-    nextFeature = null;
-    return currFeature;
-  }
-
-  public boolean hasNext()
-      throws Exception
-  {
-    if (nextFeature == null) {
-        nextFeature = readNext();
+    public Feature next() throws Exception {
+        if (nextFeature == null) {
+            return readNext();
+        }
+        Feature currFeature = nextFeature;
+        nextFeature = null;
+        return currFeature;
     }
-    return nextFeature != null;
-  }
+
+    public boolean hasNext() throws Exception {
+        if (nextFeature == null) {
+            nextFeature = readNext();
+        }
+        return nextFeature != null;
+    }
 
   /**
    * Read the next feature, if any.
@@ -46,7 +39,7 @@ public abstract class BaseFeatureInputStream
    * @return the next Feature, or <code>null</code> if there is none
    * @throws Exception
    */
-  protected abstract Feature readNext()        throws Exception;
+    protected abstract Feature readNext() throws Exception;
 
-  public abstract void close()      throws Exception;
+    public abstract void close() throws Exception;
 }
