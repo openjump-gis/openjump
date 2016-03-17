@@ -57,10 +57,23 @@ public class InstallDummyReaderPlugIn extends AbstractPlugIn {
         public DummyDataSource() {
         }
         public Connection getConnection() {
+
             return new Connection() {
+
+                @Override
                 public void close() {}
-                public FeatureCollection executeQuery(String query, Collection exceptions, TaskMonitor monitor) {return null;}
-                public FeatureCollection executeQuery(String query, TaskMonitor monitor) {return null;}
+
+                @Override
+                public FeatureCollection executeQuery(String query, Collection<Throwable> exceptions, TaskMonitor monitor) {
+                    return null;
+                }
+
+                @Override
+                public FeatureCollection executeQuery(String query, TaskMonitor monitor) {
+                    return null;
+                }
+
+                @Override
                 public void executeUpdate(String query, FeatureCollection featureCollection, TaskMonitor monitor) {}
             };
         }

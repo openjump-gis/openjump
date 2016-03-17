@@ -291,11 +291,10 @@ public class CollectionUtil {
     /**
      * The Smalltalk #collect method.
      */
-    public static Collection collect(Collection collection, Block block) {
-        ArrayList result = new ArrayList();
-        for (Iterator i = collection.iterator(); i.hasNext();) {
-            Object item = i.next();
-            result.add(block.yield(item));
+    public static <T> Collection<T> collect(Collection<T> collection, Block block) {
+        ArrayList<T> result = new ArrayList<>();
+        for (Object object : collection) {
+            result.add((T)block.yield(object));
         }
 
         return result;

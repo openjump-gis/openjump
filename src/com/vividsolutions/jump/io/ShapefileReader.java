@@ -125,12 +125,13 @@ public class ShapefileReader extends AbstractJUMPReader {
      * @param dp 'InputFile' or 'DefaultValue' to specify output .shp file.
      * @return a FeatureCollection created from .shp and .dbf (dbf is optional)
      */
-    public FeatureCollection read(DriverProperties dp)
-        throws IllegalParametersException, Exception {
+    public FeatureCollection read(DriverProperties dp) throws Exception {
+
         //long t0 = System.currentTimeMillis();
         getExceptions().clear();
 
         // ATTENTION: this can contain a zip file path as well
+        // shpFileName contains the .shp extension
         String shpFileName = dp.getProperty(FILE_PROPERTY_KEY);
 
         if (shpFileName == null) {
@@ -141,40 +142,13 @@ public class ShapefileReader extends AbstractJUMPReader {
             throw new IllegalParametersException(I18N.get("io.ShapefileReader.no-file-property-specified"));
         }
 
-        int loc = shpFileName.lastIndexOf(File.separatorChar);
-        String path = shpFileName.substring(0, loc + 1); // ie. "/data1/hills.shp" -> "/data1/"
-        String fname = shpFileName.substring(loc + 1); // ie. "/data1/hills.shp" -> "hills.shp"
-
         //okay, we have .shp and .dbf file paths, lets create Shapefile and DbfFile
         Shapefile myshape = getShapefile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
-        InputStream cpgCharsetInputStream = getCpg(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
-        // charset used to read dbf is platform default charset
-        String charsetName = Charset.defaultCharset().name();
-        // if a cpg file is found, charset used is the one defined in the cpg file
-        BufferedReader cpgCharsetReader = null;
-        try {
-            if (cpgCharsetInputStream != null) {
-                cpgCharsetReader = new BufferedReader(new InputStreamReader(cpgCharsetInputStream));
-                String cpgCharset = cpgCharsetReader.readLine();
-                cpgCharset = esri_cp_2_java(cpgCharset);
-                try {
-                    if (Charset.isSupported(cpgCharset)) {
-                        charsetName = cpgCharset;
-                    }
-                } catch (IllegalCharsetNameException ice) {
-                    Logger.info("Could not interpret charset name " + cpgCharset + " : revert to default " + charsetName);
-                }
-            }
-        } finally {
-            if (cpgCharsetReader != null) cpgCharsetInputStream.close();
-        }
-        // if dp.getProperty("charset") contains a charset different from platform default,
-        // this charset is preferred to the one defined by cpg file
-        if (dp.getProperty("charset") != null && Charset.isSupported(dp.getProperty("charset")) &&
-                !Charset.defaultCharset().name().equals(Charset.forName(dp.getProperty("charset")))) {
-            charsetName = dp.getProperty("charset");
-        }
-        //System.out.println("read as " + charsetName);
+
+        // charset used to read dbf (one charset defined by cpg file,
+        // charset defined in dp or default platform charset)
+        String charsetName = getCharset(shpFileName, dp);
+
         DbfFile mydbf = getDbfFile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY),
                 Charset.forName(charsetName));
         InputStream shx = getShx(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
@@ -191,7 +165,7 @@ public class ShapefileReader extends AbstractJUMPReader {
         // fill in schema
         fs.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
 
-        FeatureCollection featureCollection = null;
+        FeatureCollection featureCollection;
 
         if ( mydbf == null ) {
             // handle shapefiles without dbf files.
@@ -209,10 +183,7 @@ public class ShapefileReader extends AbstractJUMPReader {
         } else {
             // There is a DBF file so we have to set the Charset to use and
             // to associate the attributes in the DBF file with the features.
-            
-            //if (mydbf.getLastRec()-1 > collection.getNumGeometries()) {
-            //    throw new ShapefileException("Error : shp shape number does not match dbf record number");
-            //}
+
             int numfields = mydbf.getNumFields();
 
             for (int j = 0; j < numfields; j++) {
@@ -225,7 +196,7 @@ public class ShapefileReader extends AbstractJUMPReader {
             for (int x = 0; x < Math.min(mydbf.getLastRec(), collection.getNumGeometries()); x++) {
                 Feature feature = new BasicFeature(fs);
                 Geometry geo = collection.getGeometryN(x);
-                //StringBuffer s = mydbf.GetDbfRec(x); //[sstein 9.Sept.08]
+                // Get bytes rather than String to be able to read multibytes strings
                 byte[] s = mydbf.GetDbfRec(x); //[sstein 9.Sept.08]
 
                 for (int y = 0; y < numfields; y++) {
@@ -240,7 +211,7 @@ public class ShapefileReader extends AbstractJUMPReader {
             // it is better to go on and create features with a geometry and null attributes
             if (collection.getNumGeometries() > mydbf.getLastRec()) {
                 String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-gt-dbf",
-                        new Object[]{shpFileName, collection.getNumGeometries(), mydbf.getLastRec()});
+                        shpFileName, collection.getNumGeometries(), mydbf.getLastRec());
                 Logger.error(message);
                 getExceptions().add(new Exception(message));
                 for (int x = mydbf.getLastRec() ; x < collection.getNumGeometries() ; x++) {
@@ -252,7 +223,7 @@ public class ShapefileReader extends AbstractJUMPReader {
             }
             if (collection.getNumGeometries() < mydbf.getLastRec()) {
                 String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-lt-dbf",
-                        new Object[]{shpFileName, collection.getNumGeometries(), mydbf.getLastRec()});
+                        shpFileName, collection.getNumGeometries(), mydbf.getLastRec());
                 Logger.error(message);
                 getExceptions().add(new Exception(message));
                 List emptyList = new ArrayList();
@@ -272,7 +243,7 @@ public class ShapefileReader extends AbstractJUMPReader {
             mydbf.close();
             deleteTmpDbf(); // delete dbf file if it was decompressed
             deleteTmpShx(); // delete shx file if it was decompressed
-            deleteTmpCpg();
+            deleteTmpCpg(); // delete cpg file if it was decompressed
         }
         //System.out.println("Shapfile read in " + (System.currentTimeMillis()-t0) + " ms");
         return featureCollection;
@@ -280,10 +251,9 @@ public class ShapefileReader extends AbstractJUMPReader {
 
 
     protected Shapefile getShapefile(String shpfileName, String compressedFname)
-        throws Exception {
+                throws Exception {
         InputStream in = CompressedFile.openFile(shpfileName,compressedFname);
-        Shapefile myshape = new Shapefile(in);
-        return myshape;
+        return new Shapefile(in);
     }
 
     protected InputStream getShx(String srcFileName, String compressedFname) throws Exception {
@@ -298,7 +268,7 @@ public class ShapefileReader extends AbstractJUMPReader {
                 return new FileInputStream(srcFileName);
         }
         // if we are in an archive that can hold multiple files compressedFname is defined and a String
-        else if (compressedFname instanceof String) {
+        else if (compressedFname != null) {
             byte[] b = new byte[16000];
             int len;
             boolean keepGoing = true;
@@ -337,7 +307,37 @@ public class ShapefileReader extends AbstractJUMPReader {
         return null;
     }
 
-    protected InputStream getCpg(String srcFileName, String compressedFname) throws Exception {
+    protected String getCharset(String shpFileName, DriverProperties dp) throws Exception {
+
+        // default charset used to read dbf is platform default charset
+        String charsetName = Charset.defaultCharset().name();
+
+        // if a cpg file is found, charset used is the one defined in the cpg file
+        //BufferedReader cpgCharsetReader = null;
+        try (InputStream cpgCharsetInputStream =
+                     getCpgInputStream(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
+             BufferedReader cpgCharsetReader =
+                     new BufferedReader(new InputStreamReader(cpgCharsetInputStream))){
+            String cpgCharset = cpgCharsetReader.readLine();
+            cpgCharset = esri_cp_2_java(cpgCharset);
+            try {
+                if (Charset.isSupported(cpgCharset)) {
+                    charsetName = cpgCharset;
+                }
+            } catch (IllegalCharsetNameException ice) {
+                Logger.info("Could not interpret charset name " + cpgCharset + " : revert to default " + charsetName);
+            }
+        }
+        // if dp.getProperty("charset") contains a charset different from platform default,
+        // this charset is preferred to the one defined by cpg file
+        if (dp.getProperty("charset") != null && Charset.isSupported(dp.getProperty("charset")) &&
+                !Charset.defaultCharset().name().equals(Charset.forName(dp.getProperty("charset")).name())) {
+            charsetName = dp.getProperty("charset");
+        }
+        return charsetName;
+    }
+
+    protected InputStream getCpgInputStream(String srcFileName, String compressedFname) throws Exception {
         FileInputStream cpgInputStream;
 
         // default is a *.cpg src file
@@ -350,7 +350,7 @@ public class ShapefileReader extends AbstractJUMPReader {
             }
         }
         // if we are in an archive that can hold multiple files compressedFname is defined and a String
-        else if (compressedFname instanceof String) {
+        else if (compressedFname != null) {
             byte[] b = new byte[2048];
             int len;
             boolean keepGoing = true;
@@ -395,7 +395,7 @@ public class ShapefileReader extends AbstractJUMPReader {
 	 * Charset functions.
 	 *
 	 * @param srcFileName either a pass to a dbf or an archive file (*.zip etc.) accompanied by the compressedFname it contains
-	 * @param compressedFname
+	 * @param compressedFname the name of the compressed entry in the compressed file or null
 	 * @return a DbfFile object for the dbf file named FileName
 	 * @throws Exception
 	 */
@@ -417,7 +417,7 @@ public class ShapefileReader extends AbstractJUMPReader {
               return new DbfFile(srcFileName, charset);
         }
         // if we are in an archive that can hold multiple files compressedFname is defined and a String
-        else if (compressedFname instanceof String) {
+        else if (compressedFname != null) {
             byte[] b = new byte[16000];
             int len;
             boolean keepGoing = true;

@@ -63,6 +63,7 @@ import com.vividsolutions.jump.feature.FeatureCollection;
  * </p>
  */
 public class WKTWriter implements JUMPWriter {
+
     private com.vividsolutions.jts.io.WKTWriter wktWriter = 
         new com.vividsolutions.jts.io.WKTWriter(3);
 
@@ -77,7 +78,8 @@ public class WKTWriter implements JUMPWriter {
      * @param dp 'OutputFile' or 'DefaultValue' to specify the output file.
      */
     public void write(FeatureCollection featureCollection, DriverProperties dp)
-        throws IllegalParametersException, Exception {
+                throws Exception {
+
         String outputFname;
 
         outputFname = dp.getProperty("File");
@@ -91,17 +93,17 @@ public class WKTWriter implements JUMPWriter {
                 "call to WKTWrite.write() has DataProperties w/o a OutputFile specified");
         }
 
-        java.io.Writer w;
+        Writer writer;
 
-        w = new java.io.FileWriter(outputFname);
-        this.write(featureCollection, w);
-        w.close();
+        writer = new java.io.FileWriter(outputFname);
+        this.write(featureCollection, writer);
+        writer.close();
     }
 
     /**
      * Function that actually does the writing
-     *@param featureCollection features to write
-     *@param writer where to write
+     * @param featureCollection features to write
+     * @param writer where to write
      */
     public void write(FeatureCollection featureCollection, Writer writer)
         throws IOException {

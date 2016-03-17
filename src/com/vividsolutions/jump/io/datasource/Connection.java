@@ -51,7 +51,7 @@ public interface Connection {
      * @return null if a FeatureCollection could not be created because of a serious
      * problem (indicated in the exceptions)
      */
-    FeatureCollection executeQuery(String query, Collection exceptions, TaskMonitor monitor);
+    FeatureCollection executeQuery(String query, Collection<Throwable> exceptions, TaskMonitor monitor);
 
     /**
      * Returns from a DataSource a dataset specified using a query string (the format

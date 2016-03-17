@@ -89,9 +89,10 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     public Connection getConnection() {
         
         return new Connection() {
-            
+
+            @Override
             public FeatureCollection executeQuery(String query,
-                    Collection exceptions, TaskMonitor monitor) {
+                    Collection<Throwable> exceptions, TaskMonitor monitor) {
                 try {
                     return createFeatureCollection();
                 } catch (Exception e) {
@@ -100,6 +101,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 }
             }
 
+            @Override
             public FeatureCollection executeQuery(String query,
                     TaskMonitor monitor) throws Exception {
                 Collection exceptions = new ArrayList();
@@ -113,6 +115,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
             
 
             // Main method doing the job of updating a PostGIS table
+            @Override
             public void executeUpdate(String query,
                     FeatureCollection featureCollection, TaskMonitor monitor)
                     throws Exception {
@@ -276,6 +279,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
 
             }
 
+            @Override
             public void close() {
                 // Do nothing, because DataStore connections are always
                 // open (managed by the ConnectionManager). [Jon Aquino

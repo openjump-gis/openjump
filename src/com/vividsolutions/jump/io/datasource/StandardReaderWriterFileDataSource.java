@@ -44,8 +44,7 @@ import com.vividsolutions.jump.util.CollectionUtil;
  * Writers. DataSource implementations cannot be anonymous classes if they are
  * to be saved to a project file (because the class name is saved).  
  */
-public abstract class StandardReaderWriterFileDataSource
-    extends ReaderWriterFileDataSource {
+public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFileDataSource {
 
     protected String[] extensions;
 
@@ -100,14 +99,14 @@ public abstract class StandardReaderWriterFileDataSource
                     dp,
                     "TemplateFile",
                     "CompressedFileTemplate",
-                    Arrays.asList(new String[] { "_input.xml", ".input", ".template" }));
+                    Arrays.asList("_input.xml", ".input", ".template"));
                 return super.read(dp);
             }
     
         };
     }
 
-    public static Collection toEndings(String[] extensions) {
+    public static Collection<String> toEndings(String[] extensions) {
         return CollectionUtil.collect(Arrays.asList(extensions), new Block() {
             public Object yield(Object extension) {
                 return "." + extension;

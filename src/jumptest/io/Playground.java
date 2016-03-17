@@ -17,7 +17,7 @@ import java.util.Iterator;
 public class Playground {
     public static void main(String[] args) throws Exception {
         DataSource ds = new ReaderWriterFileDataSource(new WKTReader(), new WKTWriter());
-        ds.setProperties(Collections.singletonMap(DataSource.FILE_KEY, "C:/junk/a.wkt"));
+        ds.setProperties(Collections.singletonMap(DataSource.FILE_KEY, (Object)"C:/junk/a.wkt"));
 
         Connection conn = ds.getConnection();
 

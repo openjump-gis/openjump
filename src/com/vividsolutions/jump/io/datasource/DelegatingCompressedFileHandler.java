@@ -50,7 +50,7 @@ import com.vividsolutions.jump.io.JUMPReader;
  */
 public class DelegatingCompressedFileHandler extends AbstractJUMPReader {
 
-    private Collection endings;
+    private Collection<String> endings;
 
     private JUMPReader reader;
 
@@ -59,9 +59,9 @@ public class DelegatingCompressedFileHandler extends AbstractJUMPReader {
      * @param endings strings found at the ends of filenames, used to identify
      * the file to extract from a .zip; does not apply to .gz files
      */
-    public DelegatingCompressedFileHandler(JUMPReader reader, Collection endings) {
+    public DelegatingCompressedFileHandler(JUMPReader reader, Collection<String> endings) {
         this.reader = reader;
-        this.endings = new ArrayList(endings);
+        this.endings = new ArrayList<>(endings);
     }
 
     /**
@@ -81,7 +81,7 @@ public class DelegatingCompressedFileHandler extends AbstractJUMPReader {
     // [ede 05.2012]
     //  we keep this as stub as StandardReaderWriter seems to need the definition
     protected void mangle(DriverProperties dp, String fileProperty,
-        String compressedFileProperty, Collection myEndings) throws Exception {
+        String compressedFileProperty, Collection<String> myEndings) throws Exception {
       
 //      if (FileUtil.getExtension(new File(dp.getProperty(fileProperty)))
 //          .equalsIgnoreCase("zip")) {

@@ -49,8 +49,6 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -230,7 +228,7 @@ public class ShapefileWriter implements JUMPWriter {
 	public static boolean truncate = false;
 	private static long lastTimeTruncate = new Date(0).getTime();
 	
-    protected static CGAlgorithms cga = new CGAlgorithms();
+    protected static CGAlgorithms CG_ALGO = new CGAlgorithms();
 
     /** Creates new ShapefileWriter */
     public ShapefileWriter() {
@@ -243,6 +241,7 @@ public class ShapefileWriter implements JUMPWriter {
      * @param dp 'OutputFile' or 'DefaultValue' to specify where to write, and 'ShapeType' to specify dimensionality.
      */
     public void write(FeatureCollection featureCollection, DriverProperties dp) throws Exception {
+
         String shpfileName;
         String dbffname;
         String shxfname;
@@ -365,8 +364,8 @@ public class ShapefileWriter implements JUMPWriter {
     public int guessCoordinateDims(Geometry g) {
         Coordinate[] cs = g.getCoordinates();
 
-        for (int t = 0; t < cs.length; t++) {
-            if (!(Double.isNaN(cs[t].z))) {
+        for (Coordinate coord : cs) {
+            if (!(Double.isNaN(coord.z))) {
                 return 4;
             }
         }
@@ -381,9 +380,8 @@ public class ShapefileWriter implements JUMPWriter {
 	 *
 	 * @see #writeDbf(com.vividsolutions.jump.feature.FeatureCollection, String, java.nio.charset.Charset)
 	 *
-	 * @param featureCollection
-	 * @param fname
-	 * @throws Exception
+	 * @param featureCollection featureCollection to write
+	 * @param fname name of the shapefile to write to
 	 */
 	void writeDbf(FeatureCollection featureCollection, String fname) throws Exception {
 		writeDbf(featureCollection, fname, Charset.defaultCharset());
@@ -391,7 +389,7 @@ public class ShapefileWriter implements JUMPWriter {
 
     /**
      * Write a dbf file with the information from the featureCollection.
-     * @param featureCollection column data from collection
+     * @param featureCollection featureCollection to write
      * @param fname name of the dbf file to write to
      * July 2, 2010 - modified by beckerl to read existing dbf file header
      * and use the existing numeric field definitions.
@@ -405,11 +403,11 @@ public class ShapefileWriter implements JUMPWriter {
         int u;
         int num;
 
-        HashMap fieldMap = null;
+        HashMap<String,DbfFieldDef> fieldMap = null;
         if (new File(fname).exists()){
         	DbfFile dbfFile = new DbfFile(fname);
         	int numFields = dbfFile.getNumFields();
-        	fieldMap = new HashMap(numFields);
+        	fieldMap = new HashMap<>(numFields);
         	for (int i = 0; i<numFields; i++) {
         		String fieldName = dbfFile.getFieldName(i);
         		fieldMap.put(fieldName, dbfFile.fielddef[i]);
@@ -425,7 +423,7 @@ public class ShapefileWriter implements JUMPWriter {
         // dbf column type and size
         f = 0;
         
-        Set<String> uniqueNames = new HashSet<String>();
+        Set<String> uniqueNames = new HashSet<>();
 
         for (t = 0; t < fs.getAttributeCount(); t++) {
             AttributeType columnType = fs.getAttributeType(t);
@@ -465,21 +463,6 @@ public class ShapefileWriter implements JUMPWriter {
                 f++;
             }
 
-            //if (columnType == AttributeType.INTEGER ||
-            //        columnType == AttributeType.SMALLINT ||
-            //        columnType == AttributeType.TINYINT) {
-            //    fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);  //LDB: previously 16
-            //    DbfFieldDef fromFile = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
-            //    if (fromFile.fieldnumdec == 0)
-            //        fields[f] = fromFile;
-            //    f++;
-            //} else if (columnType == AttributeType.LONG || columnType == AttributeType.BIGINT) {
-            //    fields[f] = new DbfFieldDef(columnName, 'N', 21, 0);
-            //    DbfFieldDef fromFile = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
-            //    if (fromFile.fieldnumdec == 0)
-            //        fields[f] = fromFile;
-            //    f++;
-            //}
             else if (columnType == AttributeType.DOUBLE ||
                         columnType == AttributeType.REAL ||
                         columnType == AttributeType.FLOAT ||
@@ -491,7 +474,9 @@ public class ShapefileWriter implements JUMPWriter {
                 if (fromFile.fieldnumdec > 0)
                     fields[f] = fromFile;
                 f++;
-            } else if (columnType == AttributeType.STRING ||
+            }
+
+            else if (columnType == AttributeType.STRING ||
                         columnType == AttributeType.OBJECT ||
                         columnType == AttributeType.VARCHAR ||
                         columnType == AttributeType.LONGVARCHAR ||
@@ -537,7 +522,7 @@ public class ShapefileWriter implements JUMPWriter {
                 //do nothing - the .shp file handles this
             } else if (columnType == null) {
             	//[sstein 9.Nov.2012] added this, as Sextante delivered an AttributeType set to null
-            	if(columnName.isEmpty() == false){
+            	if(!columnName.isEmpty()){
 	            	// treat as string
 	                int maxlength = findMaxStringLength(featureCollection, t, charset);
 	
@@ -586,7 +571,7 @@ public class ShapefileWriter implements JUMPWriter {
         for (t = 0; t < num; t++) {
             //System.out.println("dbf: record "+t);
             Feature feature = (Feature) features.get(t);
-            Vector DBFrow = new Vector();
+            Vector<Object> DBFrow = new Vector<>();
 
             //make data for each column in this feature (row)
             for (u = 0; u < fs.getAttributeCount(); u++) {
@@ -598,7 +583,7 @@ public class ShapefileWriter implements JUMPWriter {
                     Object a = feature.getAttribute(u);
 
                     if (a == null) {
-                        DBFrow.add(new Integer(0));
+                        DBFrow.add(0);
                     } else {
                         DBFrow.add(a);
                     }
@@ -606,7 +591,7 @@ public class ShapefileWriter implements JUMPWriter {
                     Object a = feature.getAttribute(u);
 
                     if (a == null) {
-                        DBFrow.add(new Long(0));
+                        DBFrow.add(0L);
                     } else {
                         DBFrow.add(a);
                     }
@@ -619,7 +604,7 @@ public class ShapefileWriter implements JUMPWriter {
                     Object a = feature.getAttribute(u);
 
                     if (a == null) {
-                        DBFrow.add(new Double(0.0));
+                        DBFrow.add(0.0);
                     } else {
                         DBFrow.add(a);
                     }
@@ -641,7 +626,7 @@ public class ShapefileWriter implements JUMPWriter {
                     Object a = feature.getAttribute(u);
 
                     if (a == null) {
-                        DBFrow.add(new String(""));
+                        DBFrow.add("");
                     } else {
                         // MD 16 jan 03 - added some defensive programming
                         if (a instanceof String) {
@@ -663,11 +648,11 @@ public class ShapefileWriter implements JUMPWriter {
                 	// which was for instance returned by Sextante Buffer algorithm
                 	// than we treat it like a String
                 	String columnName = fs.getAttributeName(u);
-                	if(columnName.isEmpty() == false){
+                	if(!columnName.isEmpty()){
                         Object a = feature.getAttribute(u);
 
                         if (a == null) {
-                            DBFrow.add(new String(""));
+                            DBFrow.add("");
                         } else {
                             // MD 16 jan 03 - added some defensive programming
                             if (a instanceof String) {
@@ -741,9 +726,9 @@ public class ShapefileWriter implements JUMPWriter {
     }
 
     /**
-     *look at all the data in the column of the featurecollection, and find the largest string!
-     *@param fc features to look at
-     *@param attributeIndex which of the column to test.
+     * Look at all the data in the column of the featurecollection, and find the largest string!
+     * @param fc features to look at
+     * @param attributeIndex which of the column to test.
      */
     int findMaxStringLength(FeatureCollection fc, int attributeIndex, Charset charset) {
         int l;
@@ -777,8 +762,8 @@ public class ShapefileWriter implements JUMPWriter {
      *          5 : at least one polygon or multipolygon <br>
      *          8 : at least one multipoint<br>
      *         31 : only non empty geometry collection<br>
-     *@param fc feature collection containing tet geometries.
-     **/
+     * @param fc feature collection containing tet geometries.
+     */
     int findBestGeometryType(FeatureCollection fc) {
         Geometry geom;
         boolean onlyPoints = true;
@@ -829,8 +814,7 @@ public class ShapefileWriter implements JUMPWriter {
         
     }
 
-    public void checkIfGeomsAreMixed(FeatureCollection featureCollection)
-    	throws IllegalParametersException, Exception {
+    public void checkIfGeomsAreMixed(FeatureCollection featureCollection) throws Exception {
 	    //-- sstein: check first if features are of different geometry type.
 	    int i= 0;
 	    Class firstClass = null;
@@ -848,7 +832,7 @@ public class ShapefileWriter implements JUMPWriter {
 				if (firstClass != myf.getGeometry().getClass()){
 			       // System.out.println("first test failed");
 					if((firstGeom instanceof Polygon) && (myf.getGeometry() instanceof MultiPolygon)){
-						//everything is ok
+                        //everything is ok
 					}
 					else if((firstGeom instanceof MultiPolygon) && (myf.getGeometry() instanceof Polygon)){
 						//everything is ok
@@ -876,7 +860,7 @@ public class ShapefileWriter implements JUMPWriter {
 	}
     
     /**
-     *  Reverses the order of points in lr (is CW -> CCW or CCW->CW)
+     * Reverses the order of points in lr (is CW -> CCW or CCW->CW)
      */
     LinearRing reverseRing(LinearRing lr) {
         int numPoints = lr.getNumPoints();
@@ -890,7 +874,7 @@ public class ShapefileWriter implements JUMPWriter {
     }
 
     /**
-     * make sure outer ring is CCW and holes are CW
+     * Make sure outer ring is CCW and holes are CW
      * @param p polygon to check
      */
     Polygon makeGoodSHAPEPolygon(Polygon p) {
@@ -903,7 +887,7 @@ public class ShapefileWriter implements JUMPWriter {
 
         coords = p.getExteriorRing().getCoordinates();
 
-        if (cga.isCCW(coords)) {
+        if (CG_ALGO.isCCW(coords)) {
             outer = reverseRing((LinearRing) p.getExteriorRing());
         } else {
             outer = (LinearRing) p.getExteriorRing();
@@ -911,7 +895,7 @@ public class ShapefileWriter implements JUMPWriter {
 
         for (int t = 0; t < p.getNumInteriorRing(); t++) {
             coords = p.getInteriorRingN(t).getCoordinates();
-            if (!(cga.isCCW(coords))) {
+            if (!(CG_ALGO.isCCW(coords))) {
                 holes[t] = reverseRing((LinearRing) p.getInteriorRingN(t));
             } else {
                 holes[t] = (LinearRing) p.getInteriorRingN(t);
@@ -922,8 +906,8 @@ public class ShapefileWriter implements JUMPWriter {
     }
 
     /**
-     * make sure outer ring is CCW and holes are CW for all the polygons in the Geometry
-     *@param mp set of polygons to check
+     * Make sure outer ring is CCW and holes are CW for all the polygons in the Geometry
+     * @param mp set of polygons to check
      */
     MultiPolygon makeGoodSHAPEMultiPolygon(MultiPolygon mp) {
         MultiPolygon result;
@@ -940,14 +924,14 @@ public class ShapefileWriter implements JUMPWriter {
     }
 
     /**
-     * return a single geometry collection <Br>
-     *  result.GeometryN(i) = the i-th feature in the FeatureCollection<br>
-     *   All the geometry types will be the same type (ie. all polygons) - or they will be set to<br>
-     *     NULL geometries<br>
+     * Return a single geometry collection <br>
+     * result.GeometryN(i) = the i-th feature in the FeatureCollection<br>
+     * All the geometry types will be the same type (ie. all polygons) - or they will be set to<br>
+     * NULL geometries<br>
      * <br>
      * GeometryN(i) = {Multipoint,Multilinestring, or Multipolygon)<br>
      *
-     *@param fc feature collection to make homogeneous
+     * @param fc feature collection to make homogeneous
      */
     public GeometryCollection makeSHAPEGeometryCollection(FeatureCollection fc)
         throws Exception {
@@ -979,7 +963,7 @@ public class ShapefileWriter implements JUMPWriter {
             case 1: //single point
 
                 if ((geom instanceof Point)) {
-                    allGeoms[t] = (Point) geom;
+                    allGeoms[t] = geom;
                 } else {
                     allGeoms[t] = gf.createPoint((Coordinate)null);
                 }
@@ -1045,8 +1029,7 @@ public class ShapefileWriter implements JUMPWriter {
         if (file.exists()) return file.delete();
         else {
             file = new File(path + nameWithoutExtension + "." + extension.toUpperCase());
-            if (file.exists()) return file.delete();
-            return false;
+            return file.exists() && file.delete();
         }
     }
     

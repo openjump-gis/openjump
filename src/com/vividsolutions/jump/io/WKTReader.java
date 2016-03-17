@@ -64,10 +64,11 @@ import com.vividsolutions.jump.feature.*;
  *         (specified by File)</td>
  *   </tr>
  * </table> <br>
- *</p>
+ * </p>
  *
  */
 public class WKTReader extends AbstractJUMPReader {
+
     private GeometryFactory geometryFactory = new GeometryFactory();
     private com.vividsolutions.jts.io.WKTReader wktReader = new com.vividsolutions.jts.io.WKTReader(geometryFactory);
 
@@ -79,13 +80,12 @@ public class WKTReader extends AbstractJUMPReader {
      * Main function -read in a file containing a list of WKT geometries
      * @param dp 'InputFile' or 'DefaultValue' to specify where the WKT file is.
      */
-    public FeatureCollection read(DriverProperties dp)
-        throws IllegalParametersException, Exception {
+    public FeatureCollection read(DriverProperties dp) throws Exception {
         FeatureCollection fc;
 
         String inputFname;
         boolean isCompressed;
-        Reader fileReader;
+        Reader fileReader = null;
 
         isCompressed = (dp.getProperty("CompressedFile") != null);
 
@@ -100,23 +100,19 @@ public class WKTReader extends AbstractJUMPReader {
                 "call to WKTReader.read() has DataProperties w/o a InputFile specified");
         }
 
-        if (isCompressed) {
-            fileReader = new InputStreamReader(CompressedFile.openFile(
-                        inputFname, dp.getProperty("CompressedFile")));
-        } else {
-            fileReader = new FileReader(inputFname);
-        }
-
         try {
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            if (isCompressed) {
+                fileReader = new InputStreamReader(CompressedFile.openFile(
+                            inputFname, dp.getProperty("CompressedFile")));
+            } else {
+                fileReader = new FileReader(inputFname);
+            }
 
-            try {
+            try (BufferedReader bufferedReader = new BufferedReader(fileReader)) {
                 fc = read(bufferedReader);
-            } finally {
-                bufferedReader.close();
             }
         } finally {
-            fileReader.close();
+            if (fileReader != null) fileReader.close();
         }
 
         return fc;
@@ -124,21 +120,19 @@ public class WKTReader extends AbstractJUMPReader {
 
     /**
      * Reads in the actual WKT geometries
-     *@param reader where to read the geometries from
+     * @param reader where to read the geometries from
      */
     public FeatureCollection read(Reader reader) throws Exception {
+
         FeatureSchema featureSchema = new FeatureSchema();
         featureSchema.addAttribute("Geometry", AttributeType.GEOMETRY);
 
         FeatureCollection featureCollection = new FeatureDataset(featureSchema);
-        BufferedReader bufferedReader = new BufferedReader(reader);
 
-        try {
+        try (BufferedReader bufferedReader = new BufferedReader(reader)) {
             while (!isAtEndOfFile(bufferedReader)) {
                 featureCollection.add(nextFeature(bufferedReader, featureSchema));
             }
-        } finally {
-            bufferedReader.close();
         }
 
         return featureCollection;
@@ -148,7 +142,7 @@ public class WKTReader extends AbstractJUMPReader {
      * returns true if at the end of the file.
      */
     private boolean isAtEndOfFile(BufferedReader bufferedReader)
-        throws IOException, ParseException {
+                throws IOException, ParseException {
         bufferedReader.mark(1000);
 
         try {
@@ -175,7 +169,8 @@ public class WKTReader extends AbstractJUMPReader {
      * Reads 1 feature
      */
     private Feature nextFeature(Reader reader, FeatureSchema featureSchema)
-        throws ParseException {
+                throws ParseException {
+
         Feature feature = new BasicFeature(featureSchema);
         feature.setGeometry(wktReader.read(reader));
 

@@ -23,10 +23,8 @@ import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public abstract class AbstractLoadDatasetPlugIn extends AbstractLoadSaveDatasetPlugIn { 
     public void run(TaskMonitor monitor, PlugInContext context)
@@ -43,15 +41,12 @@ public abstract class AbstractLoadDatasetPlugIn extends AbstractLoadSaveDatasetP
             Assert.isTrue(dataSourceQuery.getDataSource().isReadable());
             monitor.report(I18N.get("datasource.LoadDatasetPlugIn.loading")+" " + dataSourceQuery.toString() + "...");
 
-            Connection connection = dataSourceQuery.getDataSource()
-                                                   .getConnection();
+            Connection connection = dataSourceQuery.getDataSource().getConnection();
+
             try {
                 FeatureCollection dataset = dataSourceQuery.getDataSource().installCoordinateSystem(
-                                                                            connection.executeQuery(dataSourceQuery.getQuery(),
-                                                                            exceptions, 
-                                                                            monitor), 
-                                                                            CoordinateSystemRegistry.instance(
-                                                                                    context.getWorkbenchContext().getBlackboard()));
+                        connection.executeQuery(dataSourceQuery.getQuery(),exceptions,monitor),
+                        CoordinateSystemRegistry.instance(context.getWorkbenchContext().getBlackboard()));
                 if (dataset != null) {
                     context.getLayerManager()
                            .addLayer(chooseCategory(context),

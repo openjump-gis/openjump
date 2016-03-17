@@ -185,10 +185,11 @@ public class LoadDatasetPlugIn extends ThreadedBasePlugIn {
             Assert.isTrue(dataSourceQuery.getDataSource().isReadable());
             monitor.report("Loading " + dataSourceQuery.toString() + "...");
 
-            Connection connection = dataSourceQuery.getDataSource()
-                                                   .getConnection();
+            Connection connection = dataSourceQuery.getDataSource().getConnection();
+
             try {
-                FeatureCollection dataset = dataSourceQuery.getDataSource().installCoordinateSystem(connection.executeQuery(dataSourceQuery.getQuery(),
+                FeatureCollection dataset = dataSourceQuery.getDataSource()
+                        .installCoordinateSystem(connection.executeQuery(dataSourceQuery.getQuery(),
                         exceptions, monitor), CoordinateSystemRegistry.instance(context.getWorkbenchContext().getBlackboard()));
                 if (dataset != null) {
                     context.getLayerManager()

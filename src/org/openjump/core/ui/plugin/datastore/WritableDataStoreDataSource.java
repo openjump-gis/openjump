@@ -141,8 +141,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     public Connection getConnection() {
 
         return new Connection() {
+
+            @Override
             public FeatureCollection executeQuery(String query,
-                                                  Collection exceptions, TaskMonitor monitor) {
+                        Collection<Throwable> exceptions, TaskMonitor monitor) {
                 try {
                     String[] datasetName = SQLUtil.splitTableName((String) getProperties().get(DATASET_NAME_KEY));
                     schemaName = datasetName[0];
@@ -156,6 +158,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 }
             }
 
+            @Override
             public FeatureCollection executeQuery(String query,
                                                   TaskMonitor monitor) throws Exception {
                 Collection exceptions = new ArrayList();
@@ -167,6 +170,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 return featureCollection;
             }
 
+            @Override
             public void executeUpdate(String query,
                         FeatureCollection featureCollection, TaskMonitor monitor) throws Exception {
 
@@ -239,6 +243,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 finalizeUpdate(conn);
             }
 
+            @Override
             public void close() {
                 // Do nothing, because DataStore connections are always
                 // open (managed by the ConnectionManager). [Jon Aquino

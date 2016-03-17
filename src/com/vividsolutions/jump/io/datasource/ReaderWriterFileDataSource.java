@@ -45,6 +45,7 @@ import com.vividsolutions.jump.task.TaskMonitor;
  * (DataSources).
  */
 public class ReaderWriterFileDataSource extends DataSource {
+
     protected JUMPReader reader;
     protected JUMPWriter writer;
     
@@ -54,8 +55,11 @@ public class ReaderWriterFileDataSource extends DataSource {
     }   
 
     public Connection getConnection() {
+
         return new Connection() {
-            public FeatureCollection executeQuery(String query, Collection exceptions, TaskMonitor monitor) {
+
+            @Override
+            public FeatureCollection executeQuery(String query, Collection<Throwable> exceptions, TaskMonitor monitor) {
                 try {
                     FeatureCollection fc = reader.read(getReaderDriverProperties());
                     exceptions.addAll(reader.getExceptions());
@@ -68,15 +72,18 @@ public class ReaderWriterFileDataSource extends DataSource {
                 }
             }
 
+            @Override
             public void executeUpdate(String update, FeatureCollection featureCollection, TaskMonitor monitor)
                 throws Exception {
                 writer.write(featureCollection, getWriterDriverProperties());
             }
 
+            @Override
             public void close() {}
 
+            @Override
             public FeatureCollection executeQuery(String query, TaskMonitor monitor) throws Exception {
-                ArrayList exceptions = new ArrayList();
+                ArrayList<Throwable> exceptions = new ArrayList<>();
                 FeatureCollection featureCollection = executeQuery(query, exceptions, monitor);
                 if (!exceptions.isEmpty()) {
                     throw (Exception) exceptions.iterator().next();

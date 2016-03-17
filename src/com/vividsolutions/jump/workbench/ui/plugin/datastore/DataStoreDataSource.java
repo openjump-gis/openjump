@@ -90,9 +90,12 @@ public class DataStoreDataSource extends DataStoreQueryDataSource implements
     }
 
     public Connection getConnection() {
+
         return new Connection() {
+
+            @Override
             public FeatureCollection executeQuery(String query,
-                    Collection exceptions, TaskMonitor monitor) {
+                    Collection<Throwable> exceptions, TaskMonitor monitor) {
                 try {
                     return createFeatureCollection();
                 } catch (Exception e) {
@@ -101,6 +104,7 @@ public class DataStoreDataSource extends DataStoreQueryDataSource implements
                 }
             }
 
+            @Override
             public FeatureCollection executeQuery(String query,
                     TaskMonitor monitor) throws Exception {
                 Collection exceptions = new ArrayList();
@@ -112,12 +116,14 @@ public class DataStoreDataSource extends DataStoreQueryDataSource implements
                 return featureCollection;
             }
 
+            @Override
             public void executeUpdate(String query,
                     FeatureCollection featureCollection, TaskMonitor monitor)
                     throws Exception {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public void close() {
                 // Do nothing, because DataStore connections are always
                 // open (managed by the ConnectionManager). [Jon Aquino

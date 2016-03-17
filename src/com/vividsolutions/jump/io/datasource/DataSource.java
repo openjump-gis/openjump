@@ -48,14 +48,14 @@ import java.util.Map;
  */
 public abstract class DataSource {
 
-    private Map properties;
+    private Map<?,?> properties;
 
     /**
      * Sets properties required to open a DataSource, such as username, password,
      * filename, coordinate system, etc. Called by DataSourceQueryChoosers.
      */
-    public void setProperties(Map properties) {
-        this.properties = new HashMap(properties);
+    public void setProperties(Map<?,?> properties) {
+        this.properties = new HashMap<>(properties);
     }
 
     public Map getProperties() {
@@ -93,7 +93,7 @@ public abstract class DataSource {
     
     public FeatureCollection installCoordinateSystem(FeatureCollection queryResult, 
             										CoordinateSystemRegistry registry) {
-        if (queryResult == null) { return queryResult; }
+        if (queryResult == null) { return null; }
         String coordinateSystemName;
         try {
             coordinateSystemName = (String) getProperties().get(COORDINATE_SYSTEM_KEY);

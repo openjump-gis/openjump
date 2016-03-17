@@ -78,8 +78,8 @@ public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
           if (dataSourceQuery.getDataSource().isReadable()) {
             monitor.report("Loading " + dataSourceQuery.toString() + "...");
 
-            Connection connection = dataSourceQuery.getDataSource()
-              .getConnection();
+            Connection connection = dataSourceQuery.getDataSource().getConnection();
+
             try {
               FeatureCollection dataset = dataSourceQuery.getDataSource()
                 .installCoordinateSystem(
