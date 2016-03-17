@@ -38,12 +38,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -68,8 +63,8 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
  * and the CoordinateSystem.
  * @see com.vividsolutions.jump.coordsys.CoordinateSystem
  */
-public abstract class FileDataSourceQueryChooser
-    implements DataSourceQueryChooser {
+public abstract class FileDataSourceQueryChooser implements DataSourceQueryChooser {
+
     private String description;
     private Class dataSourceClass;
     private FileFilter fileFilter;
@@ -126,8 +121,8 @@ public abstract class FileDataSourceQueryChooser
     	boolean gotFileName = true;
         try {
         	JFileChooser chooser = getFileChooserPanel().getChooser();
-        	Method getFileName = chooser.getUI().getClass().getDeclaredMethod("getFileName", new Class[]{});
-        	String fn = (String)getFileName.invoke(chooser.getUI(), new Object[]{});
+        	Method getFileName = chooser.getUI().getClass().getDeclaredMethod("getFileName");
+        	String fn = (String)getFileName.invoke(chooser.getUI());
                 chooser.setSelectedFile(new File(chooser.getCurrentDirectory(), fn));
             } 
         catch (Exception e) { 
@@ -137,26 +132,24 @@ public abstract class FileDataSourceQueryChooser
         return gotFileName;
     }
 
-    public Collection getDataSourceQueries() {
-        ArrayList queries = new ArrayList();
+    public Collection<DataSourceQuery> getDataSourceQueries() {
+        List<DataSourceQuery> queries = new ArrayList<>();
         File[] files = GUIUtil.selectedFiles(getFileChooserPanel().getChooser());
 
-        for (int i = 0; i < files.length; i++) {
+        for (File file : files) {
             //LDB: mod to append standard extension to save file names
-          String fname = files[i].getAbsolutePath();
+          String fname = file.getAbsolutePath();
             if (fname.lastIndexOf(".") == -1) {
               fname = fname + "." + extensions[0];  //first extension (i.e. shp)
             }
-          File file = new File(fname);
-            queries.addAll(toDataSourceQueries(file));
-            //queries.addAll(toDataSourceQueries(files[i]));
+            queries.addAll(toDataSourceQueries(new File(fname)));
         }
 
         return queries;
     }
 
     //Overridden by IGDSDataSourceQueryChooser [Jon Aquino]
-    protected Collection toDataSourceQueries(File file) {
+    protected Collection<DataSourceQuery> toDataSourceQueries(File file) {
         return Collections.singleton(toDataSourceQuery(file));
     }
 
@@ -210,14 +203,15 @@ public abstract class FileDataSourceQueryChooser
 
     public DataSourceQuery toDataSourceQuery(File file) {
         DataSource dataSource = (DataSource) LangUtil.newInstance(dataSourceClass);
-        dataSource.setProperties(toProperties(file));
-
+        if (dataSource != null) {
+            dataSource.setProperties(toProperties(file));
+        }
         return new DataSourceQuery(dataSource, null,
             GUIUtil.nameWithoutExtension(file));
     }
 
-    protected Map toProperties(File file) {
-        HashMap properties = new HashMap();
+    protected Map<?,?> toProperties(File file) {
+        HashMap<String,String> properties = new HashMap<>();
         properties.put(DataSource.FILE_KEY, file.getPath());
         properties.put(DataSource.COORDINATE_SYSTEM_KEY,
             getFileChooserPanel().getSelectedCoordinateSystem().getName());
@@ -263,7 +257,7 @@ public abstract class FileDataSourceQueryChooser
 
         public FileChooserPanel(JFileChooser chooser, Blackboard blackboard) {
             setLayout(new BorderLayout());
-            ArrayList sortedSystems = new ArrayList( CoordinateSystemRegistry.instance(blackboard).getCoordinateSystems() );
+            List sortedSystems = new ArrayList<>(CoordinateSystemRegistry.instance(blackboard).getCoordinateSystems() );
             Collections.sort( sortedSystems );
             coordinateSystemComboBox.setModel(new DefaultComboBoxModel( new Vector(sortedSystems) ) );
             this.chooser = chooser;

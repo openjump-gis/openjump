@@ -43,12 +43,9 @@ public class DataSourceQuery {
 	 * Constructs a DataSourceQuery that wraps a query string
 	 * (implementation-dependent) and a DataSource to apply it against.
 	 * 
-	 * @param query
-	 *                  identifies the dataset; may take the form of a SQL statement,
-	 *                  a table name, null (if there is only one dataset), or other
-	 *                  format
-	 * @param name
-	 *                  will be used for the layer name
+	 * @param query identifies the dataset; may take the form of a SQL statement,
+	 *              a table name, null (if there is only one dataset), or other format
+	 * @param name will be used for the layer name
 	 */
     public DataSourceQuery(DataSource dataSource, String query, String name) {
         this.dataSource = dataSource;

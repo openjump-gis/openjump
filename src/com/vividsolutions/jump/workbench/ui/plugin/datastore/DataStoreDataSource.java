@@ -2,6 +2,7 @@ package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -107,7 +108,7 @@ public class DataStoreDataSource extends DataStoreQueryDataSource implements
             @Override
             public FeatureCollection executeQuery(String query,
                     TaskMonitor monitor) throws Exception {
-                Collection exceptions = new ArrayList();
+                Collection<Throwable> exceptions = new ArrayList<>();
                 FeatureCollection featureCollection = executeQuery(query,
                         exceptions, monitor);
                 if (!exceptions.isEmpty()) {
