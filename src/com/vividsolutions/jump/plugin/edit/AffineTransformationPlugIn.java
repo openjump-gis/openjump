@@ -34,7 +34,6 @@
 package com.vividsolutions.jump.plugin.edit;
 
 import java.util.*;
-import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -43,7 +42,6 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 
-import com.vividsolutions.jump.util.ColorUtil;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -61,7 +59,6 @@ import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
 
   private DualPaneInputDialog dialog;
-  //private Layer layer;
   private String layerName;
   private double originX = 0.0;
   private double originY = 0.0;
@@ -78,11 +75,13 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
   public String getName() { return I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Affine-Transformation"); }
 
   public void initialize(PlugInContext context) throws Exception {
-      	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		featureInstaller.addMainMenuItem(
-            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_WARP},
+    FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    featureInstaller.addMainMenuPlugin(
             this,
-            new JMenuItem(getName() + "..."),
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_WARP},
+            getName() + "...",
+            false,
+            null,
             createEnableCheck(context.getWorkbenchContext()),
             -1);
   }
@@ -106,35 +105,26 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
   }
 
   public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+
     AffineTransformation trans = new AffineTransformation();
 
-    AffineTransformation toOriginTrans
-    = AffineTransformation.translationInstance(-originX, -originY);
-    trans.compose(toOriginTrans);
+    trans.translate(-originX, -originY);
 
     if (scaleX != 1.0 || scaleY != 1.0) {
-      AffineTransformation scaleTrans
-        = AffineTransformation.scaleInstance(scaleX, scaleY);
       trans.scale(scaleX, scaleY);
     }
     if (shearX != 0.0 || shearY != 0.0) {
       trans.shear(shearX, shearY);
     }
     if (rotationAngle != 0.0) {
-      AffineTransformation rotTrans
-        = AffineTransformation.rotationInstance(Math.toRadians(rotationAngle));
       trans.rotate(Math.toRadians(rotationAngle));
     }
 
-    AffineTransformation fromOriginTrans
-    = AffineTransformation.translationInstance(originX, originY);
+    AffineTransformation fromOriginTrans =
+            AffineTransformation.translationInstance(originX, originY);
     trans.compose(fromOriginTrans);
 
-    if (transX != 0.0 || transY != 0.0) {
-      AffineTransformation translateTrans
-        = AffineTransformation.translationInstance(transX, transY);
-      trans.compose(translateTrans);
-    }
+    trans.translate(transX, transY);
 
     FeatureCollection fc = context.getLayerManager()
                                   .getLayer(layerName)
@@ -160,23 +150,18 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
     lyr.fireAppearanceChanged();
   }
 
-  private static String LAYER = GenericNames.LAYER;
-  private static String ORIGIN = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Anchor-Point");
-  private static String ORIGIN_FROM_LL = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Set-to-Lower-Left");
-  private static String ORIGIN_FROM_MIDPOINT = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Set-to-Midpoint");
-  private final static String ORIGIN_X = "X";
-  private final static String ORIGIN_Y = "Y";
-  private final static String TRANS_DX = "DX";
-  private final static String TRANS_DY = "DY";
-  private static String TRANS_DX_DY = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Translate-by") +" (X,Y)";
-  private static String SCALE_X = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.X-Factor");
-  private static String SCALE_Y = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Y-Factor");
-  private static String ROTATE_ANGLE = GenericNames.ANGLE;
-  private static String SHEAR_X = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.X-Shear");
-  private static String SHEAR_Y = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Y-Shear");
-  private static String SRC_BASE_LAYER = GenericNames.SOURCE_LAYER;
-  private static String DEST_BASE_LAYER = GenericNames.TARGET_LAYER;
-  private static String BASELINE_BUTTON = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Compute-Parameters");
+  private String LAYER;
+  private String ORIGIN_X;
+  private String ORIGIN_Y;
+  private String TRANS_DX;
+  private String TRANS_DY;
+  private String SCALE_X;
+  private String SCALE_Y;
+  private String ROTATE_ANGLE;
+  private String SHEAR_X;
+  private String SHEAR_Y;
+  private String SRC_BASE_LAYER;
+  private String DEST_BASE_LAYER;
 
 //  private JRadioButton matchSegmentsRB;
   private JTextField originXField;
@@ -190,12 +175,15 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
   private JTextField rotateAngleField;
 
   private void setDialogValues(DualPaneInputDialog dialog, PlugInContext context) {
-  	
-    String LAYER = GenericNames.LAYER;
-    ORIGIN = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Anchor-Point");
-    ORIGIN_FROM_LL = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Set-to-Lower-Left");
-    ORIGIN_FROM_MIDPOINT = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Set-to-Midpoint");
-    TRANS_DX_DY = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Translate-by") +" (X,Y)";
+
+    String ORIGIN = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Anchor-Point");
+    String ORIGIN_FROM_LL = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Set-to-Lower-Left");
+    String ORIGIN_FROM_MIDPOINT = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Set-to-Midpoint");
+    LAYER = GenericNames.LAYER;
+    ORIGIN_X = "X";
+    ORIGIN_Y = "Y";
+    TRANS_DX = "DX";
+    TRANS_DY = "DY";
     SCALE_X = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.X-Factor");
     SCALE_Y = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Y-Factor");
     ROTATE_ANGLE = GenericNames.ANGLE;
@@ -203,7 +191,7 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
     SHEAR_Y = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Y-Shear");
     SRC_BASE_LAYER = GenericNames.SOURCE_LAYER;
     DEST_BASE_LAYER = GenericNames.TARGET_LAYER;
-    BASELINE_BUTTON = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Compute-Parameters");
+    String BASELINE_BUTTON = I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Compute-Parameters");
 
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("AffineTransformation.png")));
     dialog.setSideBarDescription(
@@ -214,7 +202,7 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
     dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0),
         context.getLayerManager());
 
-    dialog.addLabel("<HTML><B>"+I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Anchor-Point")+"</B></HTML>");
+    dialog.addLabel("<HTML><B>"+ORIGIN+"</B></HTML>");
 
     originXField = dialog.addDoubleField(ORIGIN_X, originX, 20,
     		I18N.get("jump.plugin.edit.AffineTransformationPlugIn.Anchor-Point-X-value"));
@@ -299,7 +287,7 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
     FeatureCollection fcDest = layerDest.getFeatureCollectionWrapper();
 
     AffineTransControlPointExtracter controlPtExtracter = new AffineTransControlPointExtracter(fcSrc, fcDest);
-    String parseErrMsg = null;
+    String parseErrMsg;
     if (controlPtExtracter.getInputType() == AffineTransControlPointExtracter.TYPE_UNKNOWN) {
       parseErrMsg = controlPtExtracter.getParseErrorMessage();
       return parseErrMsg;

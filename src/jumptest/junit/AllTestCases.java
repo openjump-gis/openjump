@@ -20,7 +20,6 @@ public class AllTestCases extends TestCase {
     result.addTest(new TestSuite(AttributeMappingTestCase.class));
     result.addTest(new TestSuite(AttributeTypeTestCase.class));
     result.addTest(new TestSuite(CollectionUtilTestCase.class));
-    result.addTest(new TestSuite(CoordinateArraysTestCase.class));
     result.addTest(new TestSuite(DbfFileTestCase.class));
     result.addTest(new TestSuite(EnvelopeIntersectorTestCase.class));
     result.addTest(new TestSuite(FeatureCollectionMetaDataTestCase.class));

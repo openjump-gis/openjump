@@ -39,8 +39,7 @@ public class ParameterList {
     }
 
     public boolean equals(Object obj) {
-        return obj != null &&
-                obj instanceof ParameterList &&
+        return obj instanceof ParameterList &&
                 equals((ParameterList)obj);
     }
 

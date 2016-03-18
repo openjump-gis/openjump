@@ -45,30 +45,16 @@ import com.vividsolutions.jts.util.Assert;
  * Some utility functions for handling Coordinate arrays.
  */
 public class CoordinateArrays {
+
     //<<TODO:REFACTORING>> JTS already has a class named CoordinateArrays.
     //I wonder if we should collapse this class into that one. [Jon Aquino]
     // MD - yep, at some point.
-    private static final CGAlgorithms cga = new RobustCGAlgorithms();
-    private final static Coordinate[] coordArrayType = new Coordinate[0];
+    // [mmichaud - 2016] some methods have not yet been integrated into
+    // JTS CoordinateArrays
+    private static final Coordinate[] coordArrayType = new Coordinate[0];
 
-    public static Coordinate[] toCoordinateArray(List coordList) {
-        return (Coordinate[]) coordList.toArray(coordArrayType);
-    }
-
-    //<<TODO:REFACTORING>> This functionality is duplicated in
-    //the protected method Geometry#reversePointOrder. Perhaps we should
-    //make that method public and deprecate this method, or have this method
-    //delegate to the other. [Jon Aquino]
-    //MD: Geometry#reversePointOrder could delegate to this method.  Can't do it other way around.
-    public static void reverse(Coordinate[] coord) {
-        int last = coord.length - 1;
-        int mid = last / 2;
-
-        for (int i = 0; i <= mid; i++) {
-            Coordinate tmp = coord[i];
-            coord[i] = coord[last - i];
-            coord[last - i] = tmp;
-        }
+    public static Coordinate[] toCoordinateArray(List<Coordinate[]> coordList) {
+        return coordList.toArray(coordArrayType);
     }
 
     /**
@@ -92,25 +78,7 @@ public class CoordinateArrays {
     }
 
     public static boolean equals(Coordinate[] coord1, Coordinate[] coord2) {
-        if (coord1 == coord2) {
-            return true;
-        }
-
-        if ((coord1 == null) || (coord2 == null)) {
-            return false;
-        }
-
-        if (coord1.length != coord2.length) {
-            return false;
-        }
-
-        for (int i = 0; i < coord1.length; i++) {
-            if (!coord1[i].equals(coord2[i])) {
-                return false;
-            }
-        }
-
-        return true;
+        return com.vividsolutions.jts.geom.CoordinateArrays.equals(coord1, coord2);
     }
 
     /**
@@ -119,13 +87,12 @@ public class CoordinateArrays {
      * @param fact a factory used to create the Geometries
      * @return a collection of LineStrings and Points
      */
-    public static List fromCoordinateArrays(List coordArrays,
-        GeometryFactory fact) {
-        List geomList = new ArrayList();
+    public static List<Geometry> fromCoordinateArrays(
+            List<Coordinate[]> coordArrays, GeometryFactory fact) {
+        List<Geometry> geomList = new ArrayList<>();
 
-        for (Iterator i = coordArrays.iterator(); i.hasNext();) {
-            Coordinate[] coords = (Coordinate[]) i.next();
-            Geometry geom = toLineOrPoint(coords, fact);
+        for (Coordinate[] coordArray : coordArrays) {
+            Geometry geom = toLineOrPoint(coordArray, fact);
             geomList.add(geom);
         }
 
@@ -140,7 +107,7 @@ public class CoordinateArrays {
      * oriented (clockwise for the shell, counterclockwise for the holes)
      */
     public static void addCoordinateArrays(Geometry g, boolean orientPolygons,
-        List coordArrayList) {
+        List<Coordinate[]> coordArrayList) {
         if (g.getDimension() <= 0) {
             return;
         } else if (g instanceof LineString) {
@@ -185,18 +152,17 @@ public class CoordinateArrays {
      * @return a new array with entries in reverse order, if the orientation is
      * incorrect; otherwise, the original array
      */
-    public static Coordinate[] ensureOrientation(Coordinate[] coord,
-        int desiredOrientation) {
+    public static Coordinate[] ensureOrientation(Coordinate[] coord, int desiredOrientation) {
         if (coord.length == 0) {
             return coord;
         }
 
-        int orientation = cga.isCCW(coord) ? CGAlgorithms.COUNTERCLOCKWISE
-                                           : CGAlgorithms.CLOCKWISE;
+        int orientation = CGAlgorithms.isCCW(coord) ?
+                CGAlgorithms.COUNTERCLOCKWISE : CGAlgorithms.CLOCKWISE;
 
         if (orientation != desiredOrientation) {
-            Coordinate[] reverse = (Coordinate[]) coord.clone();
-            CoordinateArrays.reverse(reverse);
+            Coordinate[] reverse = coord.clone();
+            com.vividsolutions.jts.geom.CoordinateArrays.reverse(reverse);
 
             return reverse;
         }
@@ -212,8 +178,8 @@ public class CoordinateArrays {
      * @param orientPolygons ensure that Polygons are correctly oriented
      * @return a list of Coordinate[]
      */
-    public static List toCoordinateArrays(Geometry g, boolean orientPolygons) {
-        List coordArrayList = new ArrayList();
+    public static List<Coordinate[]> toCoordinateArrays(Geometry g, boolean orientPolygons) {
+        List<Coordinate[]> coordArrayList = new ArrayList<>();
         addCoordinateArrays(g, orientPolygons, coordArrayList);
 
         return coordArrayList;

@@ -36,8 +36,7 @@ public class ParameterListSchema {
     }
   
     public boolean equals(Object obj) {
-        return obj != null &&
-                obj instanceof ParameterListSchema &&
+        return obj instanceof ParameterListSchema &&
                 equals((ParameterListSchema) obj);
     }
 
