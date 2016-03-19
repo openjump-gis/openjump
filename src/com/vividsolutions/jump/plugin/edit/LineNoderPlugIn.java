@@ -33,8 +33,6 @@ package com.vividsolutions.jump.plugin.edit;
 
 
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
 
 import java.util.*;
 
@@ -104,9 +102,9 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
 
     Layer layer = context.getLayerManager().getLayer(layerName);
     
-    Collection inputFeatures = getFeaturesToProcess(layer, context);
+    Collection<Feature> inputFeatures = getFeaturesToProcess(layer, context);
 
-    Collection lines = getLines(inputFeatures);
+    Collection<LineString> lines = getLines(inputFeatures);
 
     monitor.report(I18N.get("jump.plugin.edit.LineNoderPlugIn.Noding-input-lines"));
     Geometry nodedGeom = nodeLines(lines);
@@ -116,14 +114,14 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
     createLayer(context, nodedLines);
   }
 
-  private Collection getFeaturesToProcess(Layer lyr, PlugInContext context){
+  private Collection<Feature> getFeaturesToProcess(Layer lyr, PlugInContext context){
     if (useSelected)
       return context.getLayerViewPanel()
                         .getSelectionManager().getFeaturesWithSelectedItems(lyr);
     return lyr.getFeatureCollectionWrapper().getFeatures();
   }
 
-  private Collection getLines(Collection inputFeatures) {
+  private Collection<LineString> getLines(Collection<Feature> inputFeatures) {
     List<LineString> linesList = new ArrayList<>();
     LinearComponentExtracter lineFilter = new LinearComponentExtracter(linesList);
     for (Object obj : inputFeatures) {
@@ -142,7 +140,7 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
    * @param lines the linear geometries to node
    * @return a collection of linear geometries, noded together
    */
-  private Geometry nodeLines(Collection lines) {
+  private Geometry nodeLines(Collection<LineString> lines) {
     Geometry linesGeom = fact.createMultiLineString(GeometryFactory.toLineStringArray(lines));
 
     Geometry unionInput  = fact.createMultiLineString(null);
@@ -162,15 +160,13 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
     return linesList;
   }
 
-  private Geometry extractPoint(Collection lines) {
-    int minPts = Integer.MAX_VALUE;
+  private Geometry extractPoint(Collection<LineString> lines) {
     Geometry point = null;
     // extract first point from first non-empty geometry
-    for (Iterator i = lines.iterator(); i.hasNext(); ) {
-      Geometry g = (Geometry) i.next();
-      if (! g.isEmpty()) {
-        Coordinate p = g.getCoordinate();
-        point = g.getFactory().createPoint(p);
+    for (LineString lineString : lines) {
+      if (! lineString.isEmpty()) {
+        Coordinate p = lineString.getCoordinate();
+        point = lineString.getFactory().createPoint(p);
       }
     }
     return point;

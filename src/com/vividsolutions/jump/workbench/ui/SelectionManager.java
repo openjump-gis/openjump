@@ -273,8 +273,8 @@ public class SelectionManager {
         this.panelUpdatesEnabled = panelUpdatesEnabled;
     }
 
-    public Collection getFeaturesWithSelectedItems(Layer layer) {
-        Set featuresWithSelectedItems = new java.util.LinkedHashSet();
+    public Collection<Feature> getFeaturesWithSelectedItems(Layer layer) {
+        Set<Feature> featuresWithSelectedItems = new java.util.LinkedHashSet<>();
         for (AbstractSelection selection : selections) {
             featuresWithSelectedItems.addAll(selection.getFeaturesWithSelectedItems(layer));
         }

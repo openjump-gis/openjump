@@ -93,7 +93,6 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private final static String POLYGON_OPTIONS         = I18N.get("jump.plugin.edit.NoderPlugIn.polygon-options");
                                                         
     private final static String ADVANCED_OPTIONS        = I18N.get("jump.plugin.edit.NoderPlugIn.advanced-options");
-    //private final static String NODING_METHOD           = I18N.get("jump.plugin.edit.NoderPlugIn.noding-method");
     private final static String SNAP_ROUNDING           = I18N.get("jump.plugin.edit.NoderPlugIn.snap-rounding");
     private final static String SNAP_ROUNDING_TOOLTIP   = I18N.get("jump.plugin.edit.NoderPlugIn.snap-rounding-makes-noding-algorithm-fully-robust");
     private final static String SNAP_ROUNDING_DP        = I18N.get("jump.plugin.edit.NoderPlugIn.snap-rounding-decimal-places");
@@ -109,7 +108,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
      * Enumeration to choose if elements are processed and if they are only
      * noded or also splitted.
      */
-    public static enum Processor {
+    public enum Processor {
         
         DO_NOT_PROCESS, NODE, SPLIT;
         
@@ -122,8 +121,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private boolean use_selected = false;
     private String layerName;
     private GeometryFactory gf;
-    //private FeatureSchema schema_preserve_attributes;
-    
+
     private boolean find_intersections = true;
     private Processor line_processor = Processor.SPLIT;
     private Processor polygon_processor = Processor.NODE;
@@ -187,9 +185,9 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         // [mmichaud 2012-04-18] main change in input data structure to be able to
         // manage input from a selection of features belonging to several layers.
         Map<Layer,Collection<Feature>> inputFeatures = getFeaturesToProcess(context);
-        Map<Layer,Collection<Feature>> outputFeatures = new HashMap<Layer,Collection<Feature>>();
-        Collection<Feature> inputAll = new ArrayList<Feature>();
-        Map<Feature,Layer> featureToLayer = new HashMap<Feature,Layer>(); 
+        Map<Layer,Collection<Feature>> outputFeatures = new HashMap<>();
+        Collection<Feature> inputAll = new ArrayList<>();
+        Map<Feature,Layer> featureToLayer = new HashMap<>();
         for (Layer layer : inputFeatures.keySet()) {
             outputFeatures.put(layer, new ArrayList<Feature>());
             inputAll.addAll(inputFeatures.get(layer));
@@ -233,10 +231,10 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             // If the user does not want to split features, find intersections will
             // only find places where a vertex is missing (intersections located in
             // the interior of a segment)
-            // ==> use IntersectionFinderAdder
-            //if ((!split_lines) && (!split_polygons)) {
+            // ==> use InteriorIntersectionFinderAdder
             if (line_processor != Processor.SPLIT && polygon_processor != Processor.SPLIT) {
-                IntersectionFinderAdder intersector = new IntersectionFinderAdder(ROBUST_INTERSECTOR);
+                InteriorIntersectionFinderAdder intersector =
+                    new InteriorIntersectionFinderAdder(ROBUST_INTERSECTOR);
                 nodes = findInteriorIntersections(segmentStrings, intersector);
             }
             // If the user wants to split features (either linestring or polygons), 
@@ -271,7 +269,6 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                                    .getFeature2SegmentStringTreeMap(nodedSubstring);
             FeatureCollection fc = new FeatureDataset(
                 inputFeatures.keySet().iterator().next().getFeatureCollectionWrapper().getFeatureSchema());
-            //final Collection<Feature> updatedFeatures = new ArrayList<Feature>();
 
             //if (node_lines || node_polygons) {
             if (line_processor == Processor.NODE || polygon_processor == Processor.NODE) {
@@ -326,7 +323,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                 for (Layer layer : inputFeatures.keySet()) {
                     if (layer.isEditable()) {
                         commitUpdate(context, layer, inputFeatures.get(layer), outputFeatures.get(layer));
-                        //[mmichaud 2012-04-19] sellect updated features
+                        //[mmichaud 2012-04-19] select updated features
                         context.getLayerViewPanel().getSelectionManager().getFeatureSelection().unselectItems(layer);
                         context.getLayerViewPanel().getSelectionManager().getFeatureSelection().selectItems(layer, outputFeatures.get(layer));
                     }
@@ -350,13 +347,11 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private Noder getMCIndexNoder(SegmentIntersector intersector) {
         MCIndexNoder noder = new MCIndexNoder();
         noder.setSegmentIntersector(intersector);
-        //IteratedNoder noder = new IteratedNoder(new PrecisionModel());
-        //noder.setMaximumIterations(16);
         return noder;
     }
     
     private Map<Layer,Collection<Feature>> getFeaturesToProcess(PlugInContext context){
-        Map<Layer,Collection<Feature>> map = new HashMap<Layer,Collection<Feature>>();
+        Map<Layer,Collection<Feature>> map = new HashMap<>();
         if (use_selected) {
             Collection<Layer> layers = context.getLayerViewPanel().getSelectionManager().getLayersWithSelectedItems();
             for (Layer layer : layers) {
@@ -387,10 +382,10 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
      * @return a collection of nodes missing from the input
      */
     private FeatureCollection findInteriorIntersections(List<SegmentString> segmentStrings,
-                                        IntersectionFinderAdder intersector) {
+                                        InteriorIntersectionFinderAdder intersector) {
         Noder noder = getMCIndexNoder(intersector);
         noder.computeNodes(segmentStrings);
-        List<Geometry> nodes = new ArrayList<Geometry>();
+        List<Geometry> nodes = new ArrayList<>();
         for (Object node : intersector.getInteriorIntersections()) {
             nodes.add(gf.createPoint((Coordinate)node));
         }
@@ -414,7 +409,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     
         Noder noder = getMCIndexNoder(intersector);
         noder.computeNodes(segmentStrings);
-        Set<Geometry> nodes = new HashSet<Geometry>();
+        Set<Geometry> nodes = new HashSet<>();
         List<SegmentString> sss = (List<SegmentString>)noder.getNodedSubstrings();
         for (SegmentString ss : sss) {
             SegmentStringData data = (SegmentStringData)ss.getData();
@@ -434,7 +429,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private List<Feature> nodeFeatures(
         Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> geomStructureMap,
         boolean interpolate, int interpolated_z_dp) {
-        List<Feature> list = new ArrayList<Feature>();
+        List<Feature> list = new ArrayList<>();
         for (Map.Entry<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> entry : geomStructureMap.entrySet()) {
             int dim = entry.getKey().getGeometry().getDimension();
             if ((dim == 1 && line_processor == Processor.NODE) || 
@@ -467,7 +462,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.split-lines"));
         int count = 0, total = nodedSubstring.size();
-        List<Feature> list = new ArrayList<Feature>();
+        List<Feature> list = new ArrayList<>();
         for (Object line : nodedSubstring) {
             SegmentString ss = (SegmentString)line;
             Coordinate[] cc = ss.getCoordinates();
@@ -481,7 +476,6 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                     outputFeatures.get(featureToLayer.get(metadata.getFeature())).add(feature);
                 }
             }
-            //else if (outputFeatures.get(featureToLayer.get(metadata.getFeature())).contains())
             monitor.report(++count, total, "");
         }
         return list;
@@ -518,7 +512,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.split-polygons"));
         int count = 0 , total = geomStructureMap.size();
-        List<Feature> list = new ArrayList<Feature>();
+        List<Feature> list = new ArrayList<>();
         
         for (Map.Entry<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> entry : geomStructureMap.entrySet()) {
             Geometry geometry = entry.getKey().getGeometry();
@@ -539,8 +533,8 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                 Polygonizer polygonizer = new Polygonizer();
                 // Building a set will remove duplicates
                 // (polygonize does not work with duplicate LineStrings in jts 1.12)
-                Set<Geometry> uniqueCandidates = new HashSet<Geometry>();
-                Collection<SegmentString> sourceSegmentStrings = new ArrayList<SegmentString>();
+                Set<Geometry> uniqueCandidates = new HashSet<>();
+                Collection<SegmentString> sourceSegmentStrings = new ArrayList<>();
                 // Add SegmentStrings issued from source geometry
                 for (Map<Integer,List<SegmentString>> map : entry.getValue().values()) {
                     for (List<SegmentString> ssList : map.values()) {
