@@ -54,16 +54,13 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     
   private final static String LAYER = I18N.get("ui.MenuNames.LAYER");
 
-  private static FeatureCollection toLineStrings(Collection segments) {
+  private static FeatureCollection toLineStrings(Collection<LineSegment> segments) {
     FeatureSchema schema = new FeatureSchema();
     schema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
     GeometryFactory fact = new GeometryFactory();
-    //List lineStringList = new ArrayList();
     FeatureDataset dataset = new FeatureDataset(schema);
-    for (Iterator i = segments.iterator(); i.hasNext();) {
-      LineSegment seg = (LineSegment) i.next();
-      LineString ls = LineSegmentUtil.asGeometry(fact, seg);
-      //lineStringList.add(ls);
+    for (LineSegment segment : segments) {
+      LineString ls = LineSegmentUtil.asGeometry(fact, segment);
       BasicFeature f = new BasicFeature(schema);
       f.setGeometry(ls);
       dataset.add(f);
@@ -71,37 +68,33 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     return dataset;
   }
 
-  private static FeatureCollection toLineStrings(Collection segments, Map<LineSegment,List<Feature>> map) {
+  private static FeatureCollection toLineStrings(Collection<LineSegment> segments, Map<LineSegment,List<Feature>> map) {
     assert map != null;
     assert map.size() > 0 : "no segment/feature map";
     assert map.get(map.keySet().iterator().next()) != null : "first segment does not map any feature";
     assert map.get(map.keySet().iterator().next()).size() > 0 : "first segment does not map any feature";
     FeatureSchema schema = map.get(map.keySet().iterator().next()).get(0).getSchema();
     GeometryFactory fact = new GeometryFactory();
-    List lineStringList = new ArrayList();
     FeatureDataset dataset = new FeatureDataset(schema);
-    for (Iterator i = segments.iterator(); i.hasNext();) {
-      LineSegment seg = (LineSegment) i.next();
-      List<Feature> features = map.get(seg);
-      LineString ls = LineSegmentUtil.asGeometry(fact, seg);
+    for (LineSegment segment : segments) {
+      List<Feature> features = map.get(segment);
+      LineString ls = LineSegmentUtil.asGeometry(fact, segment);
       for (Feature f : features) {
-          Feature bf = (Feature)f.clone(false);
+          Feature bf = f.clone(false);
           bf.setGeometry(ls);
           dataset.add(bf);
       }
-      //lineStringList.add(ls);
     }
     return dataset;
   }
   
-  private static FeatureCollection toMergedLineStrings(Collection segments) {
+  private static FeatureCollection toMergedLineStrings(Collection<LineSegment> segments) {
     FeatureSchema schema = new FeatureSchema();
     schema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
     GeometryFactory fact = new GeometryFactory();
     LineMerger lineMerger = new LineMerger(); 
-    for (Iterator i = segments.iterator(); i.hasNext();) {
-      LineSegment seg = (LineSegment) i.next();
-      lineMerger.add(LineSegmentUtil.asGeometry(fact, seg));
+    for (LineSegment segment : segments) {
+      lineMerger.add(LineSegmentUtil.asGeometry(fact, segment));
     }
     FeatureDataset dataset = new FeatureDataset(schema);
     for (Object o : lineMerger.getMergedLineStrings()) {
@@ -112,14 +105,12 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     return dataset;
   }
 
-  //private MultiInputDialog dialog;
   private String layerName;
   private boolean removeDoubledSegments     = false;
   private boolean makeDoubledSegmentsUnique = false;
   private boolean mergeResultingSegments    = false;
   private boolean keepAllSegments           = true;
   private boolean keepAttributes            = false;
-  private int inputEdgeCount                = 0;
   private int uniqueSegmentCount            = 0;
 
   public ExtractSegmentsPlugIn() { }
@@ -134,10 +125,11 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
 
   public void initialize(PlugInContext context) throws Exception {
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		featureInstaller.addMainMenuItem(
+  		featureInstaller.addMainMenuPlugin(this,
 			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT},
-            this, 
-            new JMenuItem(getName() + "..."),
+            getName() + "...",
+            false,
+            null,
             createEnableCheck(context.getWorkbenchContext()),
             -1);  
   }
@@ -168,15 +160,14 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
 
     Layer layer = context.getLayerManager().getLayer(layerName);
     FeatureCollection lineFC = layer.getFeatureCollectionWrapper();
-    inputEdgeCount = lineFC.size();
+    int inputEdgeCount = lineFC.size();
     if (inputEdgeCount == 0) {
         context.getWorkbenchFrame().warnUser("jump.plugin.edit.ExtractSegmentsPlugIn.No-edge-to-process");
         return;
     }
-    //UniqueSegmentsExtracter extracter = new UniqueSegmentsExtracter(monitor);
     SegmentsExtracter extracter = new SegmentsExtracter(monitor);
-    Collection<LineSegment> segmentList = null;
-    FeatureCollection result = null;
+    Collection<LineSegment> segmentList;
+    FeatureCollection result;
     if (removeDoubledSegments || makeDoubledSegmentsUnique) {
         extracter.normalizeSegments();
         extracter.add(lineFC);
@@ -185,7 +176,9 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
                 : extracter.getSegments();
         if (mergeResultingSegments) result = toMergedLineStrings(segmentList);
         else result = toLineStrings(segmentList);
-    } else if (keepAllSegments) {
+    } else {
+        // if !removeDoubledSegments && !makeDoubledSegmentsUnique
+        // then keepAllSegments is true (it is a radio button
         if (keepAttributes) extracter.keepSource();
         extracter.add(lineFC);
         if (keepAttributes) {
@@ -201,9 +194,7 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     createLayers(context, result);
   }
 
-  private void createLayers(PlugInContext context, FeatureCollection result)
-         throws Exception {
-    //FeatureCollection lineStringFC = FeatureDatasetFactory.createFromGeometry(linestringList);
+  private void createLayers(PlugInContext context, FeatureCollection result) throws Exception {
     context.addLayer(
         StandardCategoryNames.RESULT,
         layerName + " " + I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracted-Segs"),
@@ -226,7 +217,7 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("ExtractSegments.png")));
     dialog.setSideBarDescription(I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracts-all-unique-line-segments-from-a-dataset"));
-    final JComboBox layerComboBox = dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
+    dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
     final JRadioButton removeDoubleSegmentsCheckBox = dialog.addRadioButton(
             I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Remove-doubled-segments"),
             "group1", removeDoubledSegments, null);

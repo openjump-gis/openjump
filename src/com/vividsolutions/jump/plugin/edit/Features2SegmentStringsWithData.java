@@ -33,18 +33,14 @@ package com.vividsolutions.jump.plugin.edit;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.noding.*;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jump.feature.Feature;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Utility class to transform a collection of Features into a List of
- * SegmentStrings, and to store genealogy data in into their data field.
+ * SegmentStrings, and to store genealogy data into their data field.
  *
  * @author Micha&eumll Michaud
  */
@@ -53,7 +49,7 @@ public class Features2SegmentStringsWithData {
     private Features2SegmentStringsWithData() {}
     
     public static List<SegmentString> getSegmentStrings(Collection inputFeatures) {
-        List<SegmentString> segmentStrings = new ArrayList<SegmentString>();
+        List<SegmentString> segmentStrings = new ArrayList<>();
         for (Object o : inputFeatures) {
             Feature f = (Feature)o;
             segmentStrings.addAll(getSegmentStrings(f));
@@ -63,7 +59,7 @@ public class Features2SegmentStringsWithData {
     
     public static List<SegmentString> getSegmentStrings(Feature f) {
         Geometry g = f.getGeometry();
-        List<SegmentString> segmentStrings = new ArrayList<SegmentString>();
+        List<SegmentString> segmentStrings = new ArrayList<>();
         for (int i = 0 ; i < g.getNumGeometries() ; i++) {
             Geometry component = g.getGeometryN(i);
             if (component instanceof Polygon) {

@@ -32,7 +32,6 @@
 package com.vividsolutions.jump.plugin.edit;
 
 
-import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
@@ -48,9 +47,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.*;
 import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jts.util.*;
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.polygonize.*;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.workbench.ui.*;
@@ -77,9 +74,9 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
   
   public void initialize(PlugInContext context) throws Exception {
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		featureInstaller.addMainMenuItem(
+  		featureInstaller.addMainMenuPlugin(this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},
-            this, new JMenuItem(getName() + "..."),
+            getName() + "...", false, null,
             createEnableCheck(context.getWorkbenchContext()), -1);  
   }
   
@@ -112,7 +109,7 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
     Collection lines = getLines(inputFeatures);
 
     monitor.report(I18N.get("jump.plugin.edit.LineNoderPlugIn.Noding-input-lines"));
-    Geometry nodedGeom = nodeLines((List) lines);
+    Geometry nodedGeom = nodeLines(lines);
     Collection nodedLines = toLines(nodedGeom);
 
     if (monitor.isCancelRequested()) return;
@@ -127,10 +124,10 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
   }
 
   private Collection getLines(Collection inputFeatures) {
-    List linesList = new ArrayList();
+    List<LineString> linesList = new ArrayList<>();
     LinearComponentExtracter lineFilter = new LinearComponentExtracter(linesList);
-    for (Iterator i = inputFeatures.iterator(); i.hasNext(); ) {
-      Feature f = (Feature) i.next();
+    for (Object obj : inputFeatures) {
+      Feature f = (Feature) obj;
       Geometry g = f.getGeometry();
       g.apply(lineFilter);
     }
@@ -146,16 +143,16 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
    * @return a collection of linear geometries, noded together
    */
   private Geometry nodeLines(Collection lines) {
-    Geometry linesGeom = fact.createMultiLineString(fact.toLineStringArray(lines));
+    Geometry linesGeom = fact.createMultiLineString(GeometryFactory.toLineStringArray(lines));
 
     Geometry unionInput  = fact.createMultiLineString(null);
     // force the unionInput to be non-empty if possible, to ensure union is not optimized away
     Geometry minLine = extractPoint(lines);
-    if (minLine != null)
+    if (minLine != null) {
       unionInput = minLine;
+    }
 
-    Geometry noded = linesGeom.union(unionInput);
-    return noded;
+    return linesGeom.union(unionInput);
   }
 
   private static List toLines(Geometry geom) {
@@ -193,7 +190,7 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("Polygonize.png")));
     dialog.setSideBarDescription(I18N.get("jump.plugin.edit.LineNoderPlugIn.Nodes-the-lines-in-a-layer"));
     String fieldName = SRC_LAYER;
-    JComboBox addLayerComboBox = dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
+    dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
     dialog.addCheckBox(SELECTED_ONLY, useSelected);
   }
 
