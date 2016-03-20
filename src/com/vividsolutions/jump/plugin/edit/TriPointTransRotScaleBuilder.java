@@ -33,25 +33,11 @@
 
 package com.vividsolutions.jump.plugin.edit;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.*;
-import com.vividsolutions.jump.I18N;
-
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.geom.*;
-import com.vividsolutions.jump.util.ColorUtil;
-import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jump.task.*;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.*;
-import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.ui.*;
 
 /**
- * Class used by {@link AffineTransformation} to build a transformation from a src
+ * Class used by {@link AffineTransformationPlugIn} to build a transformation from a src
  * Coordinate[3] array and a dest Coordinate[3] array.
  *
  * @author Martin Davis
@@ -76,17 +62,6 @@ class TriPointTransRotScaleBuilder extends TransRotScaleBuilder {
      * For now just extract a Y scale from the third pt.
      * In future could do shear too.
      */
-
-    /*
-    AffineTransformationBuilder atBuilder = new AffineTransformationBuilder(
-        srcPt[0],
-        srcPt[1],
-        srcPt[2],
-        destPt[0],
-        destPt[1],
-        destPt[2]
-        );
-    */
 
     originX = srcPt[1].x;
     originY = srcPt[1].y;

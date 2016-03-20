@@ -32,15 +32,7 @@
 package com.vividsolutions.jump.plugin.edit;
 
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.noding.*;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jump.feature.Feature;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /** 
  * Data attached to a SegmentString to remember which Feature, which Geometry

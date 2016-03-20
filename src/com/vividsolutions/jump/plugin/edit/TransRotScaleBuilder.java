@@ -33,22 +33,7 @@
 
 package com.vividsolutions.jump.plugin.edit;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.*;
-import com.vividsolutions.jump.I18N;
-
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jump.geom.*;
-import com.vividsolutions.jump.util.ColorUtil;
-import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jump.task.*;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.*;
-import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.ui.*;
 
 /**
  * Computes a translation, scale and rotation

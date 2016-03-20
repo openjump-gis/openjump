@@ -104,7 +104,7 @@ public class SegmentStringsWithData2Features {
                 }
                 // Now process holes the same way
                 //LinearRing[] holes = new LinearRing[lines.size()-1];
-                List<LinearRing> holes = new ArrayList<LinearRing>();
+                List<LinearRing> holes = new ArrayList<>();
                 for (int j = 0 ; j < lines.size()-1 ; j++) {
                     LinearRing hole = (LinearRing)merge(lines.get(j+1), gf, true);
                     restoreZ(lines.get(j+1), ((Polygon)sourceComponent).getInteriorRingN(j));
@@ -158,7 +158,7 @@ public class SegmentStringsWithData2Features {
      * transferring a z from a feature to the other).
      */
     private static void restoreZ(List<SegmentString> list, LineString g) {
-        Map<Coordinate,Coordinate> map = new HashMap<Coordinate,Coordinate>();
+        Map<Coordinate,Coordinate> map = new HashMap<>();
         for (Coordinate c : g.getCoordinates()) {
             map.put(c,c);
         }
@@ -204,10 +204,10 @@ public class SegmentStringsWithData2Features {
         int nextIndex = -1;
         Coordinate[] cc = line.getCoordinates();
         for (int i = 0 ; i < cc.length ; i++) {
-            if (c.equals(cc[i]) && !Double.isNaN(cc[i].z)) return cc[i].z;
-            else if (index==-1 && c.equals(cc[i])) index = i;
-            else if (Double.isNaN(cc[i].z)) continue;
-            else if (index==-1) prevIndex = i;
+            if (c.equals(cc[i]) && !Double.isNaN(cc[i].z)) {return cc[i].z;}
+            else if (index==-1 && c.equals(cc[i])) {index = i;}
+            else if (Double.isNaN(cc[i].z)) {}
+            else if (index==-1) {prevIndex = i;}
             else {nextIndex = i; break;}
         }
         if (prevIndex > -1 && nextIndex > -1) {
@@ -243,7 +243,7 @@ public class SegmentStringsWithData2Features {
         // componentMap         : 1 component --> N linearElements
         // segmentString List   : 1 linearElement --> N SegmentStringWithRef
         Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> geomStructureMap = 
-            new HashMap<Feature,Map<Integer,Map<Integer,List<SegmentString>>>>();
+            new HashMap<>();
         for (Object line : nodedSubstring) {
             SegmentString ss = (SegmentString)line;
             SegmentStringData metadata = (SegmentStringData)ss.getData();
@@ -254,9 +254,9 @@ public class SegmentStringsWithData2Features {
             Map<Integer,Map<Integer,List<SegmentString>>> components = geomStructureMap.get(feature);
             // Ce Feature n'a pas encore d'entrée
             if (components == null) {
-                components = new HashMap<Integer,Map<Integer,List<SegmentString>>>(1);
-                Map<Integer,List<SegmentString>> linearElements = new HashMap<Integer,List<SegmentString>>(1);
-                List<SegmentString> ssl = new ArrayList<SegmentString>(2);
+                components = new HashMap<>(1);
+                Map<Integer,List<SegmentString>> linearElements = new HashMap<>(1);
+                List<SegmentString> ssl = new ArrayList<>(2);
                 ssl.add(ss);
                 linearElements.put(linearElement, ssl);
                 components.put(component, linearElements);
@@ -265,8 +265,8 @@ public class SegmentStringsWithData2Features {
             else {
                 Map<Integer,List<SegmentString>> linearElements = components.get(component);
                 if (linearElements == null) {
-                    linearElements = new HashMap<Integer,List<SegmentString>>(1);
-                    List<SegmentString> ssl = new ArrayList<SegmentString>(2);
+                    linearElements = new HashMap<>(1);
+                    List<SegmentString> ssl = new ArrayList<>(2);
                     ssl.add(ss);
                     linearElements.put(linearElement, ssl);
                     components.put(component, linearElements);
@@ -274,7 +274,7 @@ public class SegmentStringsWithData2Features {
                 else {
                     List<SegmentString> ssl = linearElements.get(linearElement);
                     if (ssl == null) {
-                        ssl = new ArrayList<SegmentString>(2);
+                        ssl = new ArrayList<>(2);
                     }
                     ssl.add(ss);
                     linearElements.put(linearElement, ssl);

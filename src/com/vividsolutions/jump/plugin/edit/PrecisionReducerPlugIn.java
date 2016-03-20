@@ -79,9 +79,9 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
 
   public void initialize(PlugInContext context) throws Exception {
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		featureInstaller.addMainMenuItem(
+  		featureInstaller.addMainMenuPlugin(this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},
-            this, new JMenuItem(getName() + "..."),
+            getName() + "...", false, null,
             createEnableCheck(context.getWorkbenchContext()), -1);  
   }
   
@@ -118,12 +118,14 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
 
     if (bad[0].size() > 0) {
       Layer lyr = context.getLayerManager().addLayer(StandardCategoryNames.QA,
-      		I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Invalid-Input-Geometries"), FeatureDatasetFactory.createFromGeometry(bad[0]));
+      		I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Invalid-Input-Geometries"),
+            FeatureDatasetFactory.createFromGeometry(bad[0]));
       LayerStyleUtil.setLinearStyle(lyr, Color.red, 2, 0);
       lyr.fireAppearanceChanged();
 
       Layer lyr2 = context.getLayerManager().addLayer(StandardCategoryNames.QA,
-      		I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Invalid-Reduced-Geometries"), FeatureDatasetFactory.createFromGeometry(bad[1]));
+      		I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Invalid-Reduced-Geometries"),
+            FeatureDatasetFactory.createFromGeometry(bad[1]));
       lyr2.getBasicStyle().setFillColor( ColorUtil.GOLD);
       lyr2.getBasicStyle().setLineColor( Layer.defaultLineColor(ColorUtil.GOLD));
       lyr2.fireAppearanceChanged();
@@ -145,7 +147,8 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
    * The second contains the invalid geometries created
    */
   private List[] reducePrecision(FeatureCollection fc, TaskMonitor monitor) {
-    List[] bad = { new ArrayList(), new ArrayList() };
+    List<Geometry> bad0 = new ArrayList<>();
+    List<Geometry> bad1 = new ArrayList<>();
     int total = fc.size();
     int count = 0;
     for (Iterator i = fc.iterator(); i.hasNext(); ) {
@@ -160,18 +163,18 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
         f.setGeometry(g2);
       }
       else {
-        bad[0].add(g.clone());
-        bad[1].add(g2);
+        bad0.add((Geometry)g.clone());
+        bad1.add(g2);
       }
     }
-    return bad;
+    return new List[]{bad0,bad1};
   }
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("PrecisionReducer.png")));
     dialog.setSideBarDescription(I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Reduces-the-precision-of-the-coordinates-in-a-layer"));
     String fieldName = LAYER;
-    JComboBox addLayerComboBox = dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
+    dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
 
     scaleFactorField = dialog.addIntegerField(SCALE_FACTOR, scaleFactor, 8,
     		I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.The-scale-factor-to-multiply-by-before-rounding-(-Negative-for-left-of-decimal-point-,-0-if-not-used-)"));

@@ -34,8 +34,6 @@ package com.vividsolutions.jump.plugin.edit;
 
 import java.awt.Color;
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
 
 import java.util.*;
 
@@ -48,7 +46,6 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.*;
 import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jts.util.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.operation.polygonize.*;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
@@ -64,7 +61,6 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
     
   private boolean useSelected = false;
   private String layerName;
-  private boolean splitLineStrings = false;
   private boolean nodeInputLines = false;
   private int inputEdgeCount = 0;
   private int dangleCount = 0;
@@ -86,10 +82,10 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
   public void initialize(PlugInContext context) throws Exception {
       
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		featureInstaller.addMainMenuItem(
-            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT},
+  		featureInstaller.addMainMenuPlugin(
             this,
-            new JMenuItem(getName() + "..."), 
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT},
+            getName() + "...", false, null,
             createEnableCheck(context.getWorkbenchContext()),
             -1); 
   }
@@ -120,37 +116,36 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
     monitor.report(I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonizing"));
 
     Layer layer = context.getLayerManager().getLayer(layerName);
-    Collection inputFeatures = getFeaturesToProcess(layer, context);
+    Collection<Feature> inputFeatures = getFeaturesToProcess(layer, context);
     inputEdgeCount = inputFeatures.size();
 
-    Collection lines = getLines(inputFeatures);
-    Collection nodedLines = lines;
+    Collection<Geometry> lines = getLines(inputFeatures);
+    Collection<Geometry> nodedLines = lines;
     if (nodeInputLines) {
       monitor.report(I18N.get("jump.plugin.edit.PolygonizerPlugIn.Noding-input-lines"));
-      nodedLines = nodeLines((List) lines);
+      nodedLines = nodeLines(lines);
     }
 
-    for (Iterator i = nodedLines.iterator(); i.hasNext(); ) {
-      Geometry g = (Geometry) i.next();
-      polygonizer.add(g);
+    for (Geometry geometry : nodedLines) {
+      polygonizer.add(geometry);
     }
     if (monitor.isCancelRequested()) return;
     createLayers(context, polygonizer);
   }
 
-  private Collection getFeaturesToProcess(Layer lyr, PlugInContext context){
-    if (useSelected)
+  private Collection<Feature> getFeaturesToProcess(Layer lyr, PlugInContext context){
+    if (useSelected) {
       return context.getLayerViewPanel()
-                        .getSelectionManager().getFeaturesWithSelectedItems(lyr);
+              .getSelectionManager().getFeaturesWithSelectedItems(lyr);
+    }
     return lyr.getFeatureCollectionWrapper().getFeatures();
   }
 
-  private Collection getLines(Collection inputFeatures) {
-    List linesList = new ArrayList();
+  private Collection<Geometry> getLines(Collection<Feature> inputFeatures) {
+    List<Geometry> linesList = new ArrayList<>();
     LinearComponentExtracter lineFilter = new LinearComponentExtracter(linesList);
-    for (Iterator i = inputFeatures.iterator(); i.hasNext(); ) {
-      Feature f = (Feature) i.next();
-      Geometry g = f.getGeometry();
+    for (Feature feature : inputFeatures) {
+      Geometry g = feature.getGeometry();
       g.apply(lineFilter);
     }
     return linesList;
@@ -164,8 +159,8 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
    * @param lines the linear geometries to node
    * @return a collection of linear geometries, noded together
    */
-  private Collection nodeLines(Collection lines) {
-    Geometry linesGeom = fact.createMultiLineString(fact.toLineStringArray(lines));
+  private Collection<Geometry> nodeLines(Collection<Geometry> lines) {
+    Geometry linesGeom = fact.createMultiLineString(GeometryFactory.toLineStringArray(lines));
 
     Geometry unionInput  = fact.createMultiLineString(null);
     // force the unionInput to be non-empty if possible, to ensure union is not optimized away
@@ -174,20 +169,18 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
       unionInput = point;
 
     Geometry noded = linesGeom.union(unionInput);
-    List nodedList = new ArrayList();
+    List<Geometry> nodedList = new ArrayList<>();
     nodedList.add(noded);
     return nodedList;
   }
 
-  private Geometry extractPoint(Collection lines) {
-    int minPts = Integer.MAX_VALUE;
+  private Geometry extractPoint(Collection<Geometry> lines) {
     Geometry point = null;
     // extract first point from first non-empty geometry
-    for (Iterator i = lines.iterator(); i.hasNext(); ) {
-      Geometry g = (Geometry) i.next();
-      if (! g.isEmpty()) {
-        Coordinate p = g.getCoordinate();
-        point = g.getFactory().createPoint(p);
+    for (Geometry geometry : lines) {
+      if (! geometry.isEmpty()) {
+        Coordinate p = geometry.getCoordinate();
+        point = geometry.getFactory().createPoint(p);
       }
     }
     return point;
@@ -265,12 +258,12 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("Polygonize.png")));
     dialog.setSideBarDescription(I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonizes-the-line-segments-in-a-layer")
-                                 + " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonization-requires-correctly-noded-data")
-								 + " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.If-desired-the-input-data-may-be-noded-before-polygonizing-is-performed")
-								 + " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.Dangles-Cutlines-and-Invalid-Rings-are-identified")
+            + " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonization-requires-correctly-noded-data")
+			+ " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.If-desired-the-input-data-may-be-noded-before-polygonizing-is-performed")
+			+ " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.Dangles-Cutlines-and-Invalid-Rings-are-identified")
     );
     String fieldName = SRC_LAYER;
-    JComboBox addLayerComboBox = dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
+    dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
     dialog.addCheckBox(SELECTED_ONLY, useSelected);
     dialog.addCheckBox(NODE_INPUT, nodeInputLines, NODE_INPUT);
   }
