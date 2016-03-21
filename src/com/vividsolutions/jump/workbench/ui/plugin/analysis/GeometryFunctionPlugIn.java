@@ -359,7 +359,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
 
   private void setDialogValues(final MultiInputDialog dialog, PlugInContext context)
   {
-    //dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffSegments.png")));
+    //dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffGeometry.png")));
     dialog.setSideBarDescription(
     		I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Computes-a-geometric-function-on-features-in-the-Source-layer") + "  "
         + I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Geometry-can-be-saved-to-a-new-layer,-updated-in-place,-or-added-to-the-Source-layer")+ "  "

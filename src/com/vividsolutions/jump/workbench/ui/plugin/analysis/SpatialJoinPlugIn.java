@@ -145,13 +145,7 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 
     private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     
-        //dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffSegments.png")));
-        //[sstein 31March2008] replaced sidebar description by better description use in SIGLE plugin  
-        /*
-        dialog.setSideBarDescription(
-            I18N.get("ui.plugin.analysis.SpatialJoinPlugIn.Joins-two-layers-on-a-given-spatial-relationship")
-            + " (" + I18N.get("ui.plugin.analysis.SpatialJoinPlugIn.example") +")");
-        */
+        //[sstein 31March2008] replaced sidebar description by better description use in SIGLE plugin
         dialog.setSideBarDescription(
             I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfers-the-attributes-of-Layer-B-to-Layer-A-using-a-spatial-criterion")
         );

@@ -225,7 +225,7 @@ public class SpatialJoinPlugIn extends ThreadedBasePlugIn {
 
 	  private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
 	  {
-	    //dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffSegments.png")));
+	    //dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffGeometry.png")));
 	    dialog.setSideBarDescription(I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfers-the-attributes-of-Layer-B-to-Layer-A-using-a-spatial-criterion"));
 	    //Set initial layer values to the first and second layers in the layer list.
 	    //In #initialize we've already checked that the number of layers >= 2. [Jon Aquino]

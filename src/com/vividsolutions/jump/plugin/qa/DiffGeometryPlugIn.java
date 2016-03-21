@@ -73,7 +73,6 @@ public class DiffGeometryPlugIn
   private String sSegmentDiffs = I18N.get("jump.plugin.qa.DiffGeometryPlugIn.Segment-Diffs"); 
   private String sUnmGeoms = I18N.get("jump.plugin.qa.DiffGeometryPlugIn.Unmatched-Geometries-in-Layer");
   private String sUnmSegms = I18N.get("jump.plugin.qa.DiffGeometryPlugIn.Unmatched-Segments-in-Geometry-Diffs-in-Layer");
-  //note: further strings below
   
   private MultiInputDialog dialog;
   private Layer layer1, layer2;
@@ -85,15 +84,6 @@ public class DiffGeometryPlugIn
 
   public DiffGeometryPlugIn() { }
 
-/*
-  public void initialize(PlugInContext context) throws Exception {
-    context.getFeatureInstaller().addMainMenuItem(this, new String[] {"QA"},
-        getName() + "...", false, null, new MultiEnableCheck()
-        .add(context.getCheckFactory().createWindowWithLayerViewPanelMustBeActiveCheck())
-        .add(context.getCheckFactory().createAtLeastNLayersMustExistCheck(2)));
-  }
-*/
-
   public String getName(){
   	return I18N.get("jump.plugin.qa.DiffGeometryPlugIn.Calculate-Geometry-Differences"); 
   }
@@ -101,13 +91,13 @@ public class DiffGeometryPlugIn
   public void initialize(PlugInContext context) throws Exception
   {
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		featureInstaller.addMainMenuItem(
-  	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA}, 	//menu path
-              this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
-              false,			//checkbox
-              null,			//icon
-              createEnableCheck(context.getWorkbenchContext())); //enable check  
+  		featureInstaller.addMainMenuPlugin(
+  	        this,
+			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA},
+            this.getName() + "...",
+            false,
+            null,
+            createEnableCheck(context.getWorkbenchContext()));
   }
   
   public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -142,7 +132,6 @@ public class DiffGeometryPlugIn
     dialog.setVisible(true);
     if (! dialog.wasOKPressed()) { return false; }
     getDialogValues(dialog);
-    //perform(dialog, context);
     return true;
   }
 
@@ -197,9 +186,6 @@ public class DiffGeometryPlugIn
 
   /**
    * Sets the style for a diff geometry layer.
-   * @param lyr
-   * @param fillColor
-   * @param lineColor
    */
   public static void setDiffGeometryStyle(Layer lyr, Color fillColor, Color lineColor)
   {
@@ -255,7 +241,7 @@ public class DiffGeometryPlugIn
     }
     if (testExactCoordinateOrder) {
       context.getOutputFrame().addField(EXACT_COORD_ORDER + ":",
-                                        (new Boolean(testExactCoordinateOrder)).toString() );
+                                        Boolean.toString(testExactCoordinateOrder) );
     }
 
     if (matchGeometry) {
@@ -275,14 +261,13 @@ public class DiffGeometryPlugIn
 
   private JRadioButton matchSegmentsRB;
   private JRadioButton matchGeometryRB;
-  private JCheckBox matchGeometryCheckbox;
   private JCheckBox splitComponentsCheckbox;
   private JCheckBox exactOrderCheckbox;
   private JCheckBox useToleranceCheckbox;
   private JTextField distanceTextField;
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
-    dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffSegments.png")));
+    dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffGeometry.png")));
     dialog.setSideBarDescription(
     		I18N.get("jump.plugin.qa.DiffGeometryPlugIn.Finds-differences-between-the-Segments-or-Geometries-in-two-layers")
             + "  " + I18N.get("jump.plugin.qa.DiffGeometryPlugIn.Matching-can-be-either-exact-or-within-a-Distance-Tolerance"));

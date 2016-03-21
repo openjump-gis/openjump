@@ -175,7 +175,7 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
-    //dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffSegments.png")));
+    //dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffGeometry.png")));
     dialog.setSideBarDescription(
     		I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Finds-the-Source-features-which-have-a-given-spatial-relationship-to-some-feature-in-the-Mask-layer")
         + " (" + I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.ie-where-Source.Relationship(Mask)-is-true") + ")" );

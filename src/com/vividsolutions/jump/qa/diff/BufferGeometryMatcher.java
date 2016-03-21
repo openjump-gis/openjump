@@ -34,14 +34,15 @@ package com.vividsolutions.jump.qa.diff;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
+import com.vividsolutions.jump.workbench.Logger;
+
 /**
  * Matches geometries based on whether each Geometry is contained in the
  * other's buffer.  This is equivalent to each geometry being entirely
  * within the distance tolerance of the other.
  */
-public class BufferGeometryMatcher
-    implements DiffGeometryMatcher
-{
+public class BufferGeometryMatcher implements DiffGeometryMatcher {
+
 	/**
 	 * Computes whether two geometries match under
 	 * this similarity test.
@@ -52,12 +53,11 @@ public class BufferGeometryMatcher
 	 * @param g2 a Geometry
 	 * @return true if the geometries match under this comparison operation
 	 */
-public static boolean isMatch(Geometry g1, Geometry g2, double tolerance)
-{
+  public static boolean isMatch(Geometry g1, Geometry g2, double tolerance) {
 	BufferGeometryMatcher matcher = new BufferGeometryMatcher(tolerance);
 	matcher.setQueryGeometry(g1);
 	return matcher.isMatch(g2);
-}
+  }
 	
   // the percentage of the buffer distance to use as the error tolerance for perturbation
   public static final double ERROR_TOLERANCE = .1;
@@ -89,12 +89,11 @@ public static boolean isMatch(Geometry g1, Geometry g2, double tolerance)
   private Geometry queryBoundary = null;
   private Geometry queryBoundaryBuffer = null;
 
-  public BufferGeometryMatcher(double tolerance)
-  {
+  public BufferGeometryMatcher(double tolerance) {
     this.tolerance = tolerance;
   }
-  public void setQueryGeometry(Geometry geom)
-  {
+
+  public void setQueryGeometry(Geometry geom) {
     queryGeom = geom;
     queryBuffer = checkedBuffer(geom);
 
@@ -106,32 +105,29 @@ public static boolean isMatch(Geometry g1, Geometry g2, double tolerance)
     }
   }
 
-  public Geometry getQueryGeometry()
-  {
+  public Geometry getQueryGeometry() {
     return queryBuffer;
   }
-  public boolean isMatch(Geometry geom)
-  {
+
+  public boolean isMatch(Geometry geom) {
     if (geom.getClass() != queryGeom.getClass()) return false;
     if (! isEnvelopeMatch(geom)) return false;
 
     boolean buffersMatch = isBufferMatch(geom);
     if (! buffersMatch) return false;
 
-    if (! checkBoundary)
-      return true;
-    else {
+    if (checkBoundary) {
       // for non-area geometries this is all we need to check
-      if (queryGeom.getDimension() < 2)
-        return true;
+      if (queryGeom.getDimension() < 2) return true;
 
       // for area geometries, check that the linework matches as well
       return isBoundaryBufferMatch(geom);
+    } else {
+      return true;
     }
   }
 
-  private boolean isBufferMatch(Geometry geom)
-  {
+  private boolean isBufferMatch(Geometry geom) {
     Geometry buf = checkedBuffer(geom);
 
     boolean queryContains = queryBuffer.contains(geom);
@@ -139,8 +135,7 @@ public static boolean isMatch(Geometry g1, Geometry g2, double tolerance)
     return queryContains && queryIsContained;
   }
 
-  private boolean isBoundaryBufferMatch(Geometry geom)
-  {
+  private boolean isBoundaryBufferMatch(Geometry geom) {
     Geometry boundary = geom.getBoundary();
     Geometry bndBuf = getBoundaryBuffer(geom);
 
@@ -149,38 +144,33 @@ public static boolean isMatch(Geometry g1, Geometry g2, double tolerance)
     return queryContains && queryIsContained;
   }
 
-  private Geometry checkedBuffer(Geometry geom)
-  {
-    Geometry buf = null;
+  private Geometry checkedBuffer(Geometry geom) {
+    Geometry buf;
     try {
       buf = geom.buffer(tolerance);
-      //buf = bufferDP.buffer(geom);
     }
     catch (RuntimeException ex) {
       // hack to get around buffer robustness problems
-      System.out.println("Buffer error!");
-      System.out.println(geom);
+      Logger.debug("Buffer error for geometry " + geom);
       buf = geom;
     }
     return buf;
   }
 
 
-  private Geometry getBoundaryBuffer(Geometry geom)
-  {
+  private Geometry getBoundaryBuffer(Geometry geom) {
     double scaleFactor = 1 / (tolerance * ERROR_TOLERANCE);
     Geometry boundary = DouglasPeuckerSimplifier.simplify(geom.getBoundary(), scaleFactor);
     Geometry buf = checkedBuffer(boundary);
     if (buf.isEmpty()) {
-      System.out.println("Empty boundary buffer found");
-      System.out.println(geom);
-      System.out.println(boundary);
+      Logger.debug("Empty boundary buffer found");
+      Logger.debug("geom: " + geom);
+      Logger.debug("boundary: " + boundary);
     }
     return buf;
   }
 
-  private boolean isEnvelopeMatch(Geometry geom)
-  {
+  private boolean isEnvelopeMatch(Geometry geom) {
     // first check envelopes - if they are too far apart the geometries do not match
     double envDist = maxOrthogonalDistance(queryGeom.getEnvelopeInternal(), geom.getEnvelopeInternal());
     return envDist <= tolerance;
