@@ -34,9 +34,8 @@ package com.vividsolutions.jump.qa.diff;
 
 import com.vividsolutions.jts.geom.*;
 
-public class ExactGeometryMatcher
-    implements DiffGeometryMatcher
-{
+public class ExactGeometryMatcher implements DiffGeometryMatcher {
+
   private Geometry queryGeom;
 
   public void setQueryGeometry(Geometry geom)

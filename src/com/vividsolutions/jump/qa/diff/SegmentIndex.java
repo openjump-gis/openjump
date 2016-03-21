@@ -44,31 +44,29 @@ public class SegmentIndex {
   private SpatialIndex segIndex = new Quadtree();
   private Envelope itemEnv = new Envelope();
 
-  public SegmentIndex(FeatureCollection fc)
-  {
+  public SegmentIndex(FeatureCollection fc) {
     for (Iterator i = fc.iterator(); i.hasNext(); ) {
       Feature f = (Feature) i.next();
       add(f.getGeometry());
     }
   }
 
-  public void add(Geometry geom)
-  {
+  public void add(Geometry geom) {
     // don't need to worry about orienting polygons
     add(CoordinateArrays.toCoordinateArrays(geom, false));
   }
-  public void add(LineString line)
-  {
+
+  public void add(LineString line) {
     add(line.getCoordinates());
   }
-  public void add(List coordArrays)
-  {
-    for (Iterator i = coordArrays.iterator(); i.hasNext(); ) {
-      add((Coordinate[]) i.next());
+
+  public void add(List<Coordinate[]> coordArrays) {
+    for (Coordinate[] coordArray : coordArrays) {
+      add(coordArray);
     }
   }
-  public void add(Coordinate[] coord)
-  {
+
+  public void add(Coordinate[] coord) {
     for (int i = 0; i < coord.length - 1; i++) {
       LineSegment lineseg = new LineSegment(coord[i], coord[i + 1]);
       lineseg.normalize();
@@ -78,8 +76,7 @@ public class SegmentIndex {
     }
   }
 
-  public List query(Envelope env)
-  {
+  public List query(Envelope env) {
     return segIndex.query(env);
   }
 

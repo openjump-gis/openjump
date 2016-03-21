@@ -33,12 +33,9 @@
 package com.vividsolutions.jump.qa.diff;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jts.index.SpatialIndex;
-import com.vividsolutions.jts.index.strtree.STRtree;
 
 public class DiffGeometryComponents {
 
@@ -61,7 +58,9 @@ public class DiffGeometryComponents {
 
   public void setNormalize(boolean normalizeGeometry)
   {
-    diffMatcher = new NormalizedExactGeometryMatcher();
+    diffMatcher = normalizeGeometry ?
+            new NormalizedExactGeometryMatcher()
+            : new ExactGeometryMatcher();
   }
 
   public void setSplitIntoComponents(boolean splitIntoComponents)
@@ -74,8 +73,7 @@ public class DiffGeometryComponents {
     this.diffMatcher = diffMatcher;
   }
 
-  public FeatureCollection[] diff()
-  {
+  public FeatureCollection[] diff() {
     MatchCollection[] mc = {
       new MatchCollection(inputFC[0], splitIntoComponents),
       new MatchCollection(inputFC[1], splitIntoComponents) };
@@ -87,24 +85,22 @@ public class DiffGeometryComponents {
 
   }
 
-  private void compute(MatchCollection mc0, MatchCollection mc1)
-  {
+  private void compute(MatchCollection mc0, MatchCollection mc1) {
     MatchIndex index = new MatchIndex(mc1);
 
     monitor.report(sMatchingfeatures);
-    FeatureCollection[] diffFC = new FeatureCollection[2];
     matchFeatures(mc0, index);
 
     // compute feature matches based on own geometries
     mc0.computeFeatureMatches();
     mc1.computeFeatureMatches();
+
     // compute matches based on matched geometries
     mc0.propagateUnmatchedFeatures();
     mc1.propagateUnmatchedFeatures();
   }
 
-  private void matchFeatures(MatchCollection matchColl, MatchIndex index)
-  {
+  private void matchFeatures(MatchCollection matchColl, MatchIndex index) {
     int count = 1;
     int totalItems = matchColl.geometrySize();
     for (Iterator i = matchColl.geometryIterator(); i.hasNext(); ) {

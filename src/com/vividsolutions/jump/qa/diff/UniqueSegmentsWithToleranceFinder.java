@@ -34,7 +34,6 @@ package com.vividsolutions.jump.qa.diff;
 
 import java.util.*;
 
-import com.vividsolutions.jts.algorithm.distance.DiscreteHausdorffDistance;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.util.CoordinateArrays;
@@ -43,12 +42,11 @@ import com.vividsolutions.jump.algorithm.VertexHausdorffDistance;
 
 public class UniqueSegmentsWithToleranceFinder {
 
-  public static double maximumDistance(LineSegment seg1, LineSegment seg2)
-  {
-    double maxDist = 0.0;
+  public static double maximumDistance(LineSegment seg1, LineSegment seg2) {
+
     double dist;
     dist = seg1.p0.distance(seg2.p0);
-    maxDist = dist;
+    double maxDist = dist;
 
     dist = seg1.p0.distance(seg2.p1);
     if (dist > maxDist) maxDist = dist;
@@ -64,17 +62,15 @@ public class UniqueSegmentsWithToleranceFinder {
 
   private FeatureCollection queryFC;
   private SegmentIndex segIndex;
-  private List resultSegs = new ArrayList();
+  private List<LineSegment> resultSegs = new ArrayList<>();
   private Envelope queryEnv = new Envelope();
 
-  public UniqueSegmentsWithToleranceFinder(FeatureCollection fc0, FeatureCollection fc1)
-  {
+  public UniqueSegmentsWithToleranceFinder(FeatureCollection fc0, FeatureCollection fc1) {
     queryFC = fc0;
     segIndex = new SegmentIndex(fc1);
   }
 
-  public List findUniqueSegments(double tolerance)
-  {
+  public List<LineSegment> findUniqueSegments(double tolerance) {
     for (Iterator it = queryFC.iterator(); it.hasNext(); ) {
       Feature f = (Feature) it.next();
       Geometry geom = f.getGeometry();
@@ -83,15 +79,14 @@ public class UniqueSegmentsWithToleranceFinder {
     return resultSegs;
   }
 
-  public void findUniqueSegments(Geometry geom, double tolerance)
-  {
-    List coordArrays = CoordinateArrays.toCoordinateArrays(geom, false);
-    for (Iterator i = coordArrays.iterator(); i.hasNext(); ) {
-      findUniqueSegments((Coordinate[]) i.next(), tolerance);
+  public void findUniqueSegments(Geometry geom, double tolerance) {
+    List<Coordinate[]> coordArrays = CoordinateArrays.toCoordinateArrays(geom, false);
+    for (Coordinate[] coordArray : coordArrays) {
+      findUniqueSegments(coordArray, tolerance);
     }
   }
-  public void findUniqueSegments(Coordinate[] coord, double tolerance)
-  {
+
+  public void findUniqueSegments(Coordinate[] coord, double tolerance) {
     for (int i = 0; i < coord.length - 1; i++) {
       LineSegment querySeg = new LineSegment(coord[i], coord[i + 1]);
       querySeg.normalize();
@@ -103,8 +98,7 @@ public class UniqueSegmentsWithToleranceFinder {
     }
   }
 
-  private boolean hasSegmentWithinTolerance(LineSegment querySeg, List testSegs, double tolerance)
-  {
+  private boolean hasSegmentWithinTolerance(LineSegment querySeg, List testSegs, double tolerance) {
     for (Iterator i = testSegs.iterator(); i.hasNext(); ) {
       LineSegment testSeg = (LineSegment) i.next();
       VertexHausdorffDistance vhd = new VertexHausdorffDistance(querySeg, testSeg);

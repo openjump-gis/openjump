@@ -36,37 +36,32 @@ import java.util.*;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class MatchCollection
-{
+public class MatchCollection {
 
   private FeatureCollection inputFC;
-  private Collection matchFeatures = new ArrayList();
-  private Collection matchGeometries = new ArrayList();
+  private Collection<MatchFeature> matchFeatures = new ArrayList<>();
+  private Collection<MatchGeometry> matchGeometries = new ArrayList<>();
 
-  public MatchCollection(FeatureCollection fc, boolean splitIntoComponents)
-  {
+  public MatchCollection(FeatureCollection fc, boolean splitIntoComponents) {
     this.inputFC = fc;
     init(fc, splitIntoComponents);
   }
 
-  private void init(FeatureCollection fc, boolean splitIntoComponents)
-  {
-    for (Iterator i = fc.iterator(); i.hasNext(); )
-    {
-      Feature feat = (Feature) i.next();
-      MatchFeature matchFeat = new MatchFeature(feat);
+  private void init(FeatureCollection fc, boolean splitIntoComponents) {
+    for (Feature feature : fc.getFeatures()) {
+      MatchFeature matchFeat = new MatchFeature(feature);
       matchFeatures.add(matchFeat);
-      Geometry geom = feat.getGeometry();
-      Collection list = MatchGeometry.splitGeometry(geom, splitIntoComponents);
-      for (Iterator j = list.iterator(); j.hasNext(); ) {
-        Geometry g = (Geometry) j.next();
-        MatchGeometry matchGeom = new MatchGeometry(matchFeat, g);
+      Geometry geom = feature.getGeometry();
+      Collection<Geometry> list = MatchGeometry.splitGeometry(geom, splitIntoComponents);
+      for (Geometry geometry : list) {
+        MatchGeometry matchGeom = new MatchGeometry(matchFeat, geometry);
         matchGeometries.add(matchGeom);
       }
     }
   }
 
   public Iterator geometryIterator() { return matchGeometries.iterator(); }
+
   /**
    * An iterator over all MatchFeatures in the collection.
    */
@@ -79,18 +74,15 @@ public class MatchCollection
   /**
    * Updates the match flag for features based on the matches
    */
-  public void computeFeatureMatches()
-  {
+  public void computeFeatureMatches() {
     // set all feature matches to true
-    for (Iterator i = matchFeatures.iterator(); i.hasNext(); ) {
-      MatchFeature mf = (MatchFeature) i.next();
-      mf.setMatched(true);
+    for (MatchFeature matchFeature : matchFeatures) {
+      matchFeature.setMatched(true);
     }
     // clear feature matches if any feature geometry is unmatched
-    for (Iterator j = matchGeometries.iterator(); j.hasNext(); ) {
-      MatchGeometry mg = (MatchGeometry) j.next();
-      if (! mg.isMatched())
-        mg.getFeature().setMatched(false);
+    for (MatchGeometry matchGeometry : matchGeometries) {
+      if (! matchGeometry.isMatched())
+        matchGeometry.getFeature().setMatched(false);
     }
   }
 
@@ -98,25 +90,21 @@ public class MatchCollection
    * Ensures that if a feature is unmatched,
    * any features matched to its geometries are also unmatched
    */
-  public void propagateUnmatchedFeatures()
-  {
-    for (Iterator j = matchGeometries.iterator(); j.hasNext(); ) {
-      MatchGeometry mg = (MatchGeometry) j.next();
-      if (! mg.getFeature().isMatched()) {
-        MatchGeometry mgOpposite = mg.getMatch();
+  public void propagateUnmatchedFeatures() {
+    for (MatchGeometry matchGeometry : matchGeometries) {
+      if (! matchGeometry.getFeature().isMatched()) {
+        MatchGeometry mgOpposite = matchGeometry.getMatch();
         if (mgOpposite != null)
           mgOpposite.getFeature().setMatched(false);
       }
     }
   }
 
-  public FeatureCollection getUnmatchedFeatures()
-  {
+  public FeatureCollection getUnmatchedFeatures() {
     FeatureCollection noMatch = new FeatureDataset(inputFC.getFeatureSchema());
-    for (Iterator i = matchFeatures.iterator(); i.hasNext(); ) {
-      MatchFeature mf = (MatchFeature) i.next();
-      if (! mf.isMatched())
-        noMatch.add(mf.getFeature());
+    for (MatchFeature matchFeature : matchFeatures) {
+      if (! matchFeature.isMatched())
+        noMatch.add(matchFeature.getFeature());
     }
     return noMatch;
   }

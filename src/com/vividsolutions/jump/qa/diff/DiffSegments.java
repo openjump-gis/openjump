@@ -32,6 +32,7 @@
 
 package com.vividsolutions.jump.qa.diff;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.*;
 import java.util.*;
 import com.vividsolutions.jump.task.TaskMonitor;
@@ -55,9 +56,8 @@ public class DiffSegments {
   {
     this.fc[index] = fc;
     uee[index] = new UnmatchedEdgeExtracter();
-    for (Iterator it = fc.getFeatures().iterator(); it.hasNext(); ) {
-      Feature f = (Feature) it.next();
-      uee[index].add(f.getGeometry());
+    for (Feature feature : fc.getFeatures()) {
+      uee[index].add(feature.getGeometry());
     }
   }
 
@@ -66,11 +66,10 @@ public class DiffSegments {
    */
   public FeatureCollection computeDiffEdges(int index)
   {
-    List diffEdges = new ArrayList();
+    List<Geometry> diffEdges = new ArrayList<>();
     UnmatchedEdgeExtracter otherUee = uee[1 - index];
-    for (Iterator i = fc[index].getFeatures().iterator(); i.hasNext(); ) {
-      Feature f = (Feature) i.next();
-      otherUee.getDiffEdges(f.getGeometry(), diffEdges);
+    for (Feature feature : fc[index].getFeatures()) {
+      otherUee.getDiffEdges(feature.getGeometry(), diffEdges);
     }
     return FeatureDatasetFactory.createFromGeometry(diffEdges);
   }

@@ -146,6 +146,7 @@ public class DiffGeometryPlugIn
       DiffGeometryComponents diff = new DiffGeometryComponents(layer1.getFeatureCollectionWrapper(),
           layer2.getFeatureCollectionWrapper(),
           monitor);
+      // mmichaud
       diff.setNormalize(! testExactCoordinateOrder);
       diff.setSplitIntoComponents(splitIntoComponents);
       if (useTolerance) {

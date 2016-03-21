@@ -37,9 +37,8 @@ import com.vividsolutions.jts.geom.*;
 
 public class MatchGeometry {
 
-  public static Collection splitGeometry(Geometry geom, boolean splitIntoComponents)
-  {
-    Collection list = new ArrayList();
+  public static Collection<Geometry> splitGeometry(Geometry geom, boolean splitIntoComponents) {
+    Collection<Geometry> list = new ArrayList<>();
     if (splitIntoComponents && geom instanceof GeometryCollection) {
       GeometryCollection geomColl = (GeometryCollection) geom;
       for (GeometryCollectionIterator gci = new GeometryCollectionIterator(geomColl); gci.hasNext(); ) {
