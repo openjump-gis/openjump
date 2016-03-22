@@ -68,7 +68,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
  * last column. Rows are striped for non-editable table.
  */
 
-public class AttributeTablePanel extends JPanel implements AttributeTablePanelListener {
+public class AttributeTablePanel extends JPanel implements AttributeTablePanelListener, HierarchyListener {
 	
 	/**
 	 * The property name of the columns width map in the project file (resides in the data-source subtree).
@@ -277,7 +277,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
             }
             return geomCellRenderer;
         }
-    };
+    }
 
     class NullableCheckBox extends JCheckBox implements TableCellRenderer {
         public NullableCheckBox() {
@@ -352,7 +352,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                 menu = null;
             }
         }
-    };
+    }
 
     private ImageIcon buildPartlyEmptyIcon(ImageIcon icon) {
         ImageIcon empty = buildEmptyIcon(icon);
@@ -378,8 +378,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         g.setColor(Color.PINK);
         g.fillRect(0, 0, red.getWidth(), red.getHeight());
         // build red empty
-        ImageIcon empty = GUIUtil.overlay(new ImageIcon(red), gray, 0, 0, 1F, null);
-        return empty;
+        return GUIUtil.overlay(new ImageIcon(red), gray, 0, 0, 1F, null);
     }
    
     private JLabel buildIconLabel( ImageIcon icon ){
@@ -389,14 +388,12 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     
    private JLabel buildEmptyIconLabel( ImageIcon icon ){
         icon = GUIUtil.pad(icon, 2);
-        JLabel b = buildIconLabel(buildEmptyIcon(icon));
-        return b;
+        return buildIconLabel(buildEmptyIcon(icon));
    }
    
    private JLabel buildPartlyEmptyIconLabel( ImageIcon icon ){
         icon = GUIUtil.pad(icon, 2);
-        JLabel b = buildIconLabel(buildPartlyEmptyIcon(icon));
-        return b;
+        return buildIconLabel(buildPartlyEmptyIcon(icon));
    }
    
     private boolean isPartlyEmpty(Geometry g) {
@@ -493,11 +490,11 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 
     private LayerNameRenderer layerListCellRenderer;
 
-    private ArrayList listeners = new ArrayList();
+    private ArrayList<AttributeTablePanelListener> listeners = new ArrayList<>();
 
     private WorkbenchContext workbenchContext;
     private Layer layer;
-    private HashMap columnsWidthMap;
+    private HashMap<Object,Integer> columnsWidthMap;
 
     private boolean selectionSynchronized = true;
 
@@ -509,6 +506,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         return selectionSynchronized;
     }
 
+    AttributeTableLayerViewPanelListener layerViewPanelListener = null;
 
     public AttributeTablePanel(final LayerTableModel model, boolean addScrollPane,
             final WorkbenchContext workbenchContext) {
@@ -522,101 +520,8 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         selectionModel.setFireSelectionReplaced(true);
 
         // A LayerViewPanel listener to reflect layerView selection into the AttributeTablePanel
-        final LayerViewPanelListener layerViewPanelListener = new LayerViewPanelListener() {
-            @Override
-            public void selectionChanged() {
-                try {
-
-                    if (workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
-                            .isAncestorOf(AttributeTablePanel.this)) return;
-                    if (workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
-                            .isAncestorOf(AttributeTablePanel.this)) return;
-
-                    // Get selected features :
-                    // For AttributeTable, selected features are highlighted
-                    // For InfoModel, selected features may be added to the model
-                    // before being highlighted
-                    Collection selection = workbenchContext
-                            .getLayerViewPanel().getSelectionManager()
-                            .getFeaturesWithSelectedItems(layer);
-
-                    // From now on (2015-06-13), LayerViewSelection is propagated to
-                    // AttributeTablePanel and the other way.
-                    // This assertion will avoid recursive updates between LayerView and
-                    // AttributeTable
-                    selectionModel.setFireSelectionReplaced(false);
-
-                    table.clearSelection();
-                    if (selection.size() == 0) {
-                        selectionModel.setFireSelectionReplaced(true);
-                        return;
-                    }
-
-                    // Map feature ids to row ids
-                    Map<Integer, Integer> mapIdRow = new HashMap<Integer, Integer>();
-                    int rowCount = getModel().getRowCount();
-                    for (int row = 0; row < rowCount; row++) {
-                        mapIdRow.put(getModel().getFeature(row).getID(), row);
-                    }
-                    // add selected features which are not yet in the AttributeTablePanel
-                    if (selection.size() > 0) {
-                        List<Feature> newFeatures = new ArrayList<Feature>();
-                        for (Object obj : selection) {
-                            int fid = ((Feature) obj).getID();
-                            if (!mapIdRow.containsKey(fid)) {
-                                newFeatures.add((Feature) obj);
-                            }
-                        }
-                        getModel().addAll(newFeatures);
-                        // re-compute the full mapIdRow, because if the model is sorted
-                        // mapping may have changed even in the first rows
-                        for (int row = 0; row < getModel().getRowCount(); row++) {
-                            mapIdRow.put(getModel().getFeature(row).getID(), row);
-                        }
-                    }
-
-                    // create a set of sorted rows to be selected
-                    Set<Integer> rowset = new TreeSet<Integer>();
-                    for (Object obj : selection) {
-                      Feature f = (Feature) obj;
-                      int id = f.getID();
-                      Integer i = mapIdRow.get(id);
-                      rowset.add(i);
-                    }
-
-                    // update the table
-                    int rowini = -2, rowfin = -2;
-                    table.setSelectionModel(defaultSelectionModel);
-                    for (int row : rowset) {
-                        if (row == rowfin + 1) rowfin = row;
-                        else if (row > rowfin + 1) {
-                            if (rowfin >= rowini && rowini > -1) {
-                                selectionModel.addSelectionInterval(rowini, rowfin);
-                            }
-                            rowini = row;
-                            rowfin = row;
-                        }
-                    }
-                    if (rowfin >= rowini && rowini > -1) {
-                        selectionModel.addSelectionInterval(rowini, rowfin);
-                    }
-                    table.setSelectionModel(selectionModel);
-
-                } finally {
-                    selectionModel.setFireSelectionReplaced(true);
-                }
-            }
-
-            @Override
-            public void cursorPositionChanged(String x, String y) {
-
-            }
-
-            @Override
-            public void painted(Graphics graphics) {
-
-            }
-        };
+        layerViewPanelListener = new AttributeTableLayerViewPanelListener(
+                workbenchContext, this, selectionModel, defaultSelectionModel);
 
         if (addScrollPane) {
           remove(table);
@@ -696,10 +601,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                         if (isEditButtonColumn(column)) { return; }
                         if (SwingUtilities.isLeftMouseButton(e)) {
                             model.sort(table.getColumnName(column));
-                            boolean oldSync = isSelectionSynchronized();
-                            //setSelectionSynchronized(true);
                             layerViewPanelListener.selectionChanged();
-                            //setSelectionSynchronized(oldSync);
                         }
                     } catch (Throwable t) {
                         workbenchContext.getErrorHandler().handleThrowable(t);
@@ -727,7 +629,6 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                                         .getUndoableEditReceiver()
                                         .stopReceiving();
                             }
-                            return;
                         }
                     } catch (Throwable t) {
                         workbenchContext.getErrorHandler().handleThrowable(t);
@@ -762,11 +663,20 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
             // to be able to reflect the view selection into the table
             workbenchContext.getLayerViewPanel().addListener(layerViewPanelListener);
             this.addListener(this);
+            this.addHierarchyListener(this);
             // reflect the layerView feature selection into the AttributeTablePanel
             // just "after" the table and its model have been initialized
             layerViewPanelListener.selectionChanged();
         } catch (Throwable t) {
             workbenchContext.getErrorHandler().handleThrowable(t);
+        }
+    }
+
+    public void hierarchyChanged(HierarchyEvent e) {
+        if(e.getChanged() instanceof JInternalFrame) {
+            if(!this.isDisplayable()) {
+                workbenchContext.getLayerViewPanel().removeListener(layerViewPanelListener);
+            }
         }
     }
 
@@ -869,10 +779,13 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
       table.getColumnModel().getColumn(0).setPreferredWidth(editButtonWidth);
   
       // reset to possibly saved column widths
-      if (layer.getDataSourceQuery() instanceof DataSourceQuery) {
-        HashMap savedWidthMap = (HashMap) layer.getDataSourceQuery()
-            .getDataSource().getProperties().get(ATTRIBUTE_COLUMNS_WIDTH_MAP);
-        if (savedWidthMap instanceof HashMap)
+      if (layer.getDataSourceQuery() != null) {
+        HashMap<Object,Integer> savedWidthMap = (HashMap<Object,Integer>) layer
+                .getDataSourceQuery()
+                .getDataSource()
+                .getProperties()
+                .get(ATTRIBUTE_COLUMNS_WIDTH_MAP);
+        if (savedWidthMap != null)
           columnsWidthMap = savedWidthMap;
       }
       changeColumnWidths(table.getColumnModel(), false);
@@ -880,7 +793,6 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
       // add the Listener for changes
       table.getColumnModel().addColumnModelListener(
           new TableColumnModelListener() {
-            final MyTable mytable = table;
   
             public void columnAdded(TableColumnModelEvent e) {
               changeColumnWidths((TableColumnModel) e.getSource(), false);
@@ -918,7 +830,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
   
       // init col widths memory map
       if (!(columnsWidthMap instanceof HashMap))
-        columnsWidthMap = new HashMap(columnModel.getColumnCount());
+        columnsWidthMap = new HashMap<>(columnModel.getColumnCount());
       // loop over table cols and restore if entry found
       for (int i = 0; i < columnModel.getColumnCount(); i++) {
         Integer savedWidth = (Integer) columnsWidthMap.get(columnModel.getColumn(
@@ -957,10 +869,8 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
      * existing selection
      */
     private void fireSelectionReplaced() {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            AttributeTablePanelListener listener = (AttributeTablePanelListener) i
-                    .next();
-            listener.selectionReplaced(/*this*/);
+        for (AttributeTablePanelListener listener : listeners) {
+            listener.selectionReplaced();
         }
     }
 
@@ -1069,7 +979,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     }
 
     public Collection getSelectedFeatures() {
-        ArrayList selectedFeatures = new ArrayList();
+        ArrayList<Feature> selectedFeatures = new ArrayList<>();
         if (getModel().getRowCount() == 0) {
         	return selectedFeatures;
         }
@@ -1083,6 +993,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     public LayerNameRenderer getLayerNameRenderer() {
         return layerListCellRenderer;
     }
+
     public void setFeatureEditor(FeatureEditor featureEditor) {
         this.featureEditor = featureEditor;
     }
@@ -1097,7 +1008,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         // After selectedRows have been memorized, clear the layer selection,
         // other wise OpenJUMP will add the selectedRows to the already selected features
         workbenchContext.getLayerViewPanel().getSelectionManager().unselectItems(getModel().getLayer());
-        Map<Feature,List<Geometry>> map = new HashMap<Feature, List<Geometry>>();
+        Map<Feature,List<Geometry>> map = new HashMap<>();
         for (int j = 0; j < selectedRows.length; j++) {
             Feature feature = getModel().getFeature(selectedRows[j]);
             map.put(feature, Collections.singletonList(feature.getGeometry()));
@@ -1107,6 +1018,121 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                 .getSelectionManager()
                 .getFeatureSelection()
                 .selectItems(getModel().getLayer(), map);
+    }
+
+    // A LayerViewListener to synchronized selection in AttributeTablePanel every time
+    // the selection change in LayerViewPanel
+    static class AttributeTableLayerViewPanelListener implements LayerViewPanelListener {
+
+        final WorkbenchContext workbenchContext;
+        final AttributeTablePanel attributeTablePanel;
+        final SelectionModelWrapper selectionModel;
+        final DefaultListSelectionModel defaultSelectionModel;
+
+        AttributeTableLayerViewPanelListener(WorkbenchContext context,
+                                             AttributeTablePanel attributeTablePanel,
+                                             SelectionModelWrapper selectionModel,
+                                             DefaultListSelectionModel defaultSelectionModel) {
+            this.workbenchContext = context;
+            this.attributeTablePanel = attributeTablePanel;
+            this.selectionModel = selectionModel;
+            this.defaultSelectionModel = defaultSelectionModel;
+        }
+
+        @Override
+        public void selectionChanged() {
+            try {
+
+                if (workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
+                        .isAncestorOf(attributeTablePanel)) return;
+                if (workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
+                        .isAncestorOf(attributeTablePanel)) return;
+
+                // Get selected features :
+                // For AttributeTable, selected features are highlighted
+                // For InfoModel, selected features may be added to the model
+                // before being highlighted
+                Collection selection = workbenchContext
+                        .getLayerViewPanel().getSelectionManager()
+                        .getFeaturesWithSelectedItems(attributeTablePanel.layer);
+
+                // From now on (2015-06-13), LayerViewSelection is propagated to
+                // AttributeTablePanel and the other way.
+                // This assertion will avoid recursive updates between LayerView and
+                // AttributeTable
+                selectionModel.setFireSelectionReplaced(false);
+
+                attributeTablePanel.table.clearSelection();
+                if (selection.size() == 0) {
+                    selectionModel.setFireSelectionReplaced(true);
+                    return;
+                }
+
+                // Map feature ids to row ids
+                Map<Integer, Integer> mapIdRow = new HashMap<>();
+                int rowCount = attributeTablePanel.getModel().getRowCount();
+                for (int row = 0; row < rowCount; row++) {
+                    mapIdRow.put(attributeTablePanel.getModel().getFeature(row).getID(), row);
+                }
+                // add selected features which are not yet in the AttributeTablePanel
+                if (selection.size() > 0) {
+                    List<Feature> newFeatures = new ArrayList<>();
+                    for (Object obj : selection) {
+                        int fid = ((Feature) obj).getID();
+                        if (!mapIdRow.containsKey(fid)) {
+                            newFeatures.add((Feature) obj);
+                        }
+                    }
+                    attributeTablePanel.getModel().addAll(newFeatures);
+                    // re-compute the full mapIdRow, because if the model is sorted
+                    // mapping may have changed even in the first rows
+                    for (int row = 0; row < attributeTablePanel.getModel().getRowCount(); row++) {
+                        mapIdRow.put(attributeTablePanel.getModel().getFeature(row).getID(), row);
+                    }
+                }
+
+                // create a set of sorted rows to be selected
+                Set<Integer> rowset = new TreeSet<>();
+                for (Object obj : selection) {
+                    Feature f = (Feature) obj;
+                    int id = f.getID();
+                    Integer i = mapIdRow.get(id);
+                    rowset.add(i);
+                }
+
+                // update the table
+                int rowini = -2, rowfin = -2;
+                attributeTablePanel.table.setSelectionModel(defaultSelectionModel);
+                for (int row : rowset) {
+                    if (row == rowfin + 1) rowfin = row;
+                    else if (row > rowfin + 1) {
+                        if (rowfin >= rowini && rowini > -1) {
+                            selectionModel.addSelectionInterval(rowini, rowfin);
+                        }
+                        rowini = row;
+                        rowfin = row;
+                    }
+                }
+                if (rowfin >= rowini && rowini > -1) {
+                    selectionModel.addSelectionInterval(rowini, rowfin);
+                }
+                attributeTablePanel.table.setSelectionModel(selectionModel);
+
+            } finally {
+                selectionModel.setFireSelectionReplaced(true);
+            }
+        }
+
+        @Override
+        public void cursorPositionChanged(String x, String y) {
+
+        }
+
+        @Override
+        public void painted(Graphics graphics) {
+
+        }
+
     }
 
 }
