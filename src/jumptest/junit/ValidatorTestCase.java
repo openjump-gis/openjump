@@ -16,6 +16,7 @@ import junit.framework.TestCase;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class ValidatorTestCase extends TestCase {
 
@@ -29,7 +30,7 @@ public class ValidatorTestCase extends TestCase {
   }
 
   private class TestValidator extends Validator {
-    protected void addIfNotNull(Object item, Collection collection) {
+    protected void addIfNotNull(Object item, Collection<Object> collection) {
       super.addIfNotNull(item, collection);
     }
     protected ValidationError validateNoRepeatedConsecutivePoints(Feature feature) {
@@ -64,7 +65,7 @@ public class ValidatorTestCase extends TestCase {
   private TestValidator testValidator;
 
   public void testAddIfNotNull() {
-    ArrayList list = new ArrayList();
+    List<Object> list = new ArrayList<>();
     assertTrue(list.isEmpty());
     testValidator.addIfNotNull(null, list);
     assertTrue(list.isEmpty());
@@ -85,7 +86,7 @@ public class ValidatorTestCase extends TestCase {
     assertTypeEquals(null, testValidator.validateGeometryClass(toFeature("POINT EMPTY")));
     assertTypeEquals(ValidationErrorType.GEOMETRY_CLASS_DISALLOWED,
                      testValidator.validateGeometryClass(toFeature("LINESTRING EMPTY")));
-    assertTypeEquals(null, testValidator.validateGeometryClass(toFeature(new LinearRing(null, null, 0))));
+    assertTypeEquals(null, testValidator.validateGeometryClass(toFeature("LINEARRING EMPTY")));
     assertTypeEquals(null, testValidator.validateGeometryClass(toFeature("POLYGON EMPTY")));
   }
 
@@ -266,14 +267,14 @@ public class ValidatorTestCase extends TestCase {
   }
 
   public void testValidateGeometriesSimple() {
-    testValidator.setCheckingLineStringsSimple(true);
+    testValidator.setCheckingGeometriesSimple(true);
     assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("GEOMETRYCOLLECTION EMPTY")));
     assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("MULTIPOINT EMPTY")));
     assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("MULTILINESTRING EMPTY")));
     assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("MULTIPOLYGON EMPTY")));
     assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("POINT EMPTY")));
     assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("LINESTRING EMPTY")));
-    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature(new LinearRing(null, null, 0))));
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("LINEARRING EMPTY")));
     assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature("POLYGON EMPTY")));
 
     assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature(
@@ -290,9 +291,8 @@ public class ValidatorTestCase extends TestCase {
     assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature(
         "LINESTRING(0 0, 10 10, 10 0, 0 0)")));
 
-    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature(new LinearRing(new Coordinate[] {
-        new Coordinate(0, 0), new Coordinate(10, 10), new Coordinate(10, 0),
-        new Coordinate(0, 0)}, null, 0))));
+    assertTypeEquals(null, testValidator.validateGeometriesSimple(toFeature(
+        "LINEARRING(0 0, 10 10, 10 0, 0 0)")));
   }
 
   public void testValidatePolygonOrientation() {
@@ -303,7 +303,7 @@ public class ValidatorTestCase extends TestCase {
     assertTypeEquals(null, testValidator.validatePolygonOrientation(toFeature("MULTIPOLYGON EMPTY")));
     assertTypeEquals(null, testValidator.validatePolygonOrientation(toFeature("POINT EMPTY")));
     assertTypeEquals(null, testValidator.validatePolygonOrientation(toFeature("LINESTRING EMPTY")));
-    assertTypeEquals(null, testValidator.validatePolygonOrientation(toFeature(new LinearRing(null, null, 0))));
+    assertTypeEquals(null, testValidator.validatePolygonOrientation(toFeature("LINEARRING EMPTY")));
     assertTypeEquals(null, testValidator.validatePolygonOrientation(toFeature("POLYGON EMPTY")));
 
     assertTypeEquals(null, testValidator.validatePolygonOrientation(toFeature(

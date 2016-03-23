@@ -1,6 +1,7 @@
 package jumptest.junit;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -32,15 +33,19 @@ public class GMLWriterTestCase extends TestCase {
 
     public void testToString() throws Exception {
         doAssert("ABC 123", "ABC 123", AttributeType.STRING);
-        doAssert("", null, AttributeType.STRING);
+        doAssert(null, null, AttributeType.STRING);
         doAssert("", "", AttributeType.STRING);
         doAssert(" ", " ", AttributeType.STRING);
-        doAssert("1.23", new Double(1.23), AttributeType.DOUBLE);
-        doAssert("", null, AttributeType.DOUBLE);
-        doAssert("4", new Integer(4), AttributeType.INTEGER);
-        doAssert("", null, AttributeType.INTEGER);
-        doAssert(dateFormatter.format(new FlexibleDateParser().parse("April 18, 1921", false)), new FlexibleDateParser().parse("1921-04-18", false), AttributeType.DATE);
-        doAssert("", null, AttributeType.DATE);
+        doAssert("1.23", 1.23, AttributeType.DOUBLE);
+        doAssert(null, null, AttributeType.DOUBLE);
+        doAssert("4", 4, AttributeType.INTEGER);
+        doAssert(null, null, AttributeType.INTEGER);
+        if (Locale.getDefault().getLanguage().equals("fr")) {
+            doAssert(dateFormatter.format(new FlexibleDateParser().parse("18 Avril 1921", false)), new FlexibleDateParser().parse("1921-04-18", false), AttributeType.DATE);
+        } else{
+            doAssert(dateFormatter.format(new FlexibleDateParser().parse("April 18, 1921", false)), new FlexibleDateParser().parse("1921-04-18", false), AttributeType.DATE);
+        }
+        doAssert(null, null, AttributeType.DATE);
 
         try {
             doAssert("", factory.createPoint(new Coordinate()),

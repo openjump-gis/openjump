@@ -5,9 +5,12 @@ import junit.framework.TestCase;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class FlexibleDateParserTestCase extends TestCase {
-    private FlexibleDateParser parser = new FlexibleDateParser();
+
+    FlexibleDateParser parser = new FlexibleDateParser();
+    static Locale defaultLocale = Locale.getDefault();
     private SimpleDateFormat simpleFormat1 = new SimpleDateFormat("yyyy-MM-dd");
     private SimpleDateFormat simpleFormat2 = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss:SSS");
@@ -23,9 +26,19 @@ public class FlexibleDateParserTestCase extends TestCase {
         junit.textui.TestRunner.run(FlexibleDateParserTestCase.class);
     }
 
-    public void test() throws Exception {
-        parser.setVerbose(true);
+    protected void setUp() throws Exception {
+        parser.setLocale(Locale.ENGLISH);
+    }
 
+    protected void tearDown() throws Exception {
+        parser.setLocale(defaultLocale);
+    }
+
+    public void test() throws Exception {
+
+        parser.setVerbose(true);
+        //Locale oldLocale = Locale.getDefault();
+        //Locale.setDefault(Locale.ENGLISH);
         //Some of these test are based on the formats in Excel [Jon Aquino]
         assertEquals(simpleFormat1.parse("2003-05-21"),
             parser.parse("2003-05-21", false));
@@ -42,7 +55,7 @@ public class FlexibleDateParserTestCase extends TestCase {
         //assertEquals(simpleFormat1.parse("1998-03-14"),
         //    parser.parse("14-Mar-98", false));
         assertEquals(simpleFormat1.parse("1998-03-01"),
-            parser.parse("Mar-1998", false));
+            parser.parse("March-1998", false));
         assertEquals(simpleFormat1.parse("1998-03-01"),
             parser.parse("March-1998", false));
         assertEquals(simpleFormat1.parse("1998-03-14"),
@@ -99,5 +112,6 @@ public class FlexibleDateParserTestCase extends TestCase {
         //    parser.parse("02/03/04", false));
         //assertEquals(simpleFormat1.parse("1999-03-04"),
         //    parser.parse("99/03/04", false));
+
     }
 }

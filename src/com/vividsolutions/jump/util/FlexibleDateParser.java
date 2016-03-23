@@ -40,20 +40,9 @@ import java.awt.Component;
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
+import java.text.*;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComponent;
@@ -61,7 +50,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
 
 /**
  * Warning: This class can parse a wide variety of formats. This flexibility is fine for parsing user
@@ -72,8 +60,10 @@ import javax.swing.table.TableCellEditor;
  * in FlexibleDateParser.txt).
  */
 public class FlexibleDateParser {
+
     private static Collection lenientFormatters = null;
     private static Collection unlenientFormatters = null;
+
     //CellEditor used to be a static field CELL_EDITOR, but I was getting
     //problems calling it from ESETextField (it simply didn't appear).
     //The problems vanished when I turned it into a static class. I didn't
@@ -287,10 +277,24 @@ public class FlexibleDateParser {
         }
     }
 
+    public FlexibleDateParser setLocale(Locale locale) {
+        Locale defaultLocale = Locale.getDefault();
+        Locale.setDefault(locale);
+        lenientFormatters = null;
+        unlenientFormatters = null;
+        load();
+        Locale.setDefault(defaultLocale);
+        return this;
+    }
+
     private void load() {
         if (lenientFormatters == null) {
+            // Does not use 18N to be able to reload another language file dynamically
+            // (with 18N, things seems to be started only once at the start of the application)
+            ResourceBundle resourceBundle = ResourceBundle.getBundle("language/jump");
             InputStream inputStream =
-                getClass().getResourceAsStream(I18N.get("com.vividsolutions.jump.util.FlexibleDateParser"));
+                getClass().getResourceAsStream(resourceBundle
+                        .getString("com.vividsolutions.jump.util.FlexibleDateParser"));
 
             try {
                 try {
@@ -339,7 +343,7 @@ public class FlexibleDateParser {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println(DateFormat.getDateInstance().parse("03-Mar-1998"));
+        //System.out.println(new FlexibleDateParser().parse("03-Mars-1998", false));
     }
 
     public void setVerbose(boolean b) {

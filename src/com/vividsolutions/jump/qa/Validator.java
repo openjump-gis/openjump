@@ -35,7 +35,7 @@ package com.vividsolutions.jump.qa;
 
 import java.util.*;
 
-import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.operation.IsSimpleOp;
 import com.vividsolutions.jts.operation.valid.*;
@@ -52,10 +52,9 @@ import com.vividsolutions.jump.util.CoordinateArrays;
  * orientation.
  */
 public class Validator {
-    private int validatedFeatureCount;
+
     private boolean checkingBasicTopology = true;
     private boolean checkingPolygonOrientation = false;
-    private boolean checkingLineStringsSimple = false;
     private boolean checkingGeometriesSimple = false;
     private boolean checkingMinSegmentLength = false;
     private boolean checkingMinAngle = false;
@@ -65,9 +64,8 @@ public class Validator {
     private double minSegmentLength = 0;
     private double minAngle = 0;
     private double minPolygonArea = 0;
-    private Collection disallowedGeometryClassNames = new ArrayList();
+    private Collection<String> disallowedGeometryClassNames = new ArrayList<>();
     private RepeatedPointTester repeatedPointTester = new RepeatedPointTester();
-    private RobustCGAlgorithms cgAlgorithms = new RobustCGAlgorithms();
 
     //<<TODO:REFACTORING>> Move this class and associated classes to JTS [Jon Aquino]
     public Validator() {
@@ -140,16 +138,6 @@ public class Validator {
     public void setMinPolygonArea(double minPolygonArea) {
         this.minPolygonArea = minPolygonArea;
     }
-
-    /**
-     * Sets whether to enforce the constraint that LineStrings must be simple
-     * @param checkingLineStringsSimple whether to enforce the constraint that
-     * LineStrings must be simple
-     * @deprecated As of OpenJUMP 1.6, replaced by {@link #setCheckingGeometriesSimple}
-     */
-    public void setCheckingLineStringsSimple(boolean checkingLineStringsSimple) {
-        this.checkingLineStringsSimple = checkingLineStringsSimple;
-    }
     
     /**
      * Sets whether to enforce the constraint that Geometries must be simple
@@ -198,13 +186,11 @@ public class Validator {
      * @param disallowedGeometryClasses Geometry classes (Polygon.class, for
      * example) that are not allowed
      */
-    public void setDisallowedGeometryClasses(
-        Collection disallowedGeometryClasses) {
+    public void setDisallowedGeometryClasses(Collection<Class> disallowedGeometryClasses) {
         disallowedGeometryClassNames.clear();
 
-        for (Iterator i = disallowedGeometryClasses.iterator(); i.hasNext();) {
-            Class c = (Class) i.next();
-            disallowedGeometryClassNames.add(c.getName());
+        for (Class clazz : disallowedGeometryClasses) {
+            disallowedGeometryClassNames.add(clazz.getName());
         }
     }
 
@@ -216,10 +202,10 @@ public class Validator {
      */
     public List validate(Collection features, TaskMonitor monitor) {
         monitor.allowCancellationRequests();
-        validatedFeatureCount = 0;
+        int validatedFeatureCount = 0;
         monitor.report(I18N.get("qa.Validator.validating"));
 
-        ArrayList validationErrors = new ArrayList();
+        List<Object> validationErrors = new ArrayList<>();
         int totalFeatures = features.size();
 
         for (Iterator i = features.iterator();
@@ -233,11 +219,10 @@ public class Validator {
         return validationErrors;
     }
 
-    protected void addIfNotNull(Object item, Collection collection) {
+    protected void addIfNotNull(Object item, Collection<Object> collection) {
         if (item == null) {
             return;
         }
-
         collection.add(item);
     }
 
@@ -247,8 +232,8 @@ public class Validator {
      * @param validationErrors a List of ValidationError's to add to if the feature
      * is not valid
      */
-    protected void validate(Feature feature, List validationErrors) {
-        addIfNotNull((validateGeometryClass(feature)), validationErrors);
+    protected void validate(Feature feature, List<Object> validationErrors) {
+        addIfNotNull(validateGeometryClass(feature), validationErrors);
 
         if (checkingBasicTopology) {
             addIfNotNull(validateBasicTopology(feature), validationErrors);
@@ -335,14 +320,14 @@ public class Validator {
                 public ValidationError validate(Geometry g, Feature f) {
                     Polygon polygon = (Polygon) g;
 
-                    if (cgAlgorithms.isCCW(polygon.getExteriorRing()
+                    if (CGAlgorithms.isCCW(polygon.getExteriorRing()
                                                       .getCoordinates())) {
                         return new ValidationError(ValidationErrorType.EXTERIOR_RING_CCW,
                             f, polygon);
                     }
 
                     for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-                        if (!cgAlgorithms.isCCW(polygon.getInteriorRingN(i)
+                        if (!CGAlgorithms.isCCW(polygon.getInteriorRingN(i)
                                                            .getCoordinates())) {
                             return new ValidationError(ValidationErrorType.INTERIOR_RING_CW,
                                 f, polygon);
@@ -411,13 +396,11 @@ public class Validator {
     }
 
     protected ValidationError validateMinSegmentLength(Feature feature) {
-        List arrays = CoordinateArrays.toCoordinateArrays(feature.getGeometry(),
-                false);
+        List<Coordinate[]> coordArrays =
+                CoordinateArrays.toCoordinateArrays(feature.getGeometry(), false);
 
-        for (Iterator i = arrays.iterator(); i.hasNext();) {
-            Coordinate[] coordinates = (Coordinate[]) i.next();
-            ValidationError error = validateMinSegmentLength(coordinates,
-                    feature);
+        for (Coordinate[] coordArray : coordArrays) {
+            ValidationError error = validateMinSegmentLength(coordArray, feature);
 
             if (error != null) {
                 return error;
@@ -428,12 +411,11 @@ public class Validator {
     }
 
     protected ValidationError validateMinAngle(Feature feature) {
-        List arrays = CoordinateArrays.toCoordinateArrays(feature.getGeometry(),
-                false);
+        List<Coordinate[]> coordArrays =
+                CoordinateArrays.toCoordinateArrays(feature.getGeometry(), false);
 
-        for (Iterator i = arrays.iterator(); i.hasNext();) {
-            Coordinate[] coordinates = (Coordinate[]) i.next();
-            ValidationError error = validateMinAngle(coordinates, feature);
+        for (Coordinate[] coordArray : coordArrays) {
+            ValidationError error = validateMinAngle(coordArray, feature);
 
             if (error != null) {
                 return error;
@@ -533,11 +515,11 @@ public class Validator {
          * @param f used when constructing a ValidationError
          * @return a ValidationError if the validation fails; otherwise, null
          */
-        public ValidationError validate(Geometry g, Feature f);
+        ValidationError validate(Geometry g, Feature f);
 
         /**
          * @return the Geometry class that this RecursiveValidation can validate.
          */
-        public Class getTargetGeometryClass();
+        Class getTargetGeometryClass();
     }
 }

@@ -186,7 +186,7 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
         validator.setMinAngle(dialog.getDouble(MIN_ANGLE));
         validator.setMinPolygonArea(dialog.getDouble(MIN_POLYGON_AREA));
 
-        ArrayList disallowedGeometryClasses = new ArrayList();
+        List<Class> disallowedGeometryClasses = new ArrayList<>();
 
         if (dialog.getBoolean(DISALLOW_POINTS)) {
             disallowedGeometryClasses.add(Point.class);
