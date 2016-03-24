@@ -662,6 +662,25 @@
                 <!--configuration> <archive> <manifest> <mainClass>com.vividsolutions.jump.workbench.JUMPWorkbench</mainClass> 
                 <addClasspath>true</addClasspath> </manifest> </archive> </configuration -->
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <id>add-junit-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/jumptest</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- remove redundant copy command <plugin> <groupId>org.codehaus.mojo</groupId> 
             <artifactId>build-helper-maven-plugin</artifactId> <version>1.5</version> 
             <executions> <execution> <id>attach-artifacts</id> <phase>package</phase> 
