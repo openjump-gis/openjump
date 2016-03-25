@@ -40,8 +40,8 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
 	    FeatureInstaller installer = new FeatureInstaller(workbenchContext);
 	    JPopupMenu popupMenu = workbenchContext.getWorkbench().getFrame()
 	        .getLayerNamePopupMenu();
-	        installer.addPopupMenuItem(popupMenu, this, new String[]{MenuNames.DATASTORE},
-		     getName(), false, ICON, enableCheck);		
+		installer.addPopupMenuPlugin(popupMenu, this, new String[]{MenuNames.DATASTORE},
+					getName(), false, ICON, enableCheck);
     }
 
     @Override
@@ -97,8 +97,6 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
     /**
      * Creates an EnableCheck object to enable the plugin if a project is active
      * and if only layers connected to a DataStoreQueryDataSource are selected.
-     * @param workbenchContext
-     * @return an enable check
      */
     public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
 	    final WorkbenchContext wc = workbenchContext;

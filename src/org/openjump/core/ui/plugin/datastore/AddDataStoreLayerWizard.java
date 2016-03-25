@@ -145,7 +145,7 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
 
   private List<Layer> createLayers(final AddDatastoreLayerPanel panel,
       TaskMonitor monitor) throws Exception {
-    ArrayList<Layer> ret = new ArrayList<Layer>();
+    ArrayList<Layer> ret = new ArrayList<>();
     List<DataStoreLayer> dsLayers = panel.getDatasetLayers();
     ConnectionDescriptor connectionDescriptor = panel.getConnectionDescriptor();
 

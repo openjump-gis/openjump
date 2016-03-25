@@ -7,7 +7,6 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection;
@@ -20,8 +19,6 @@ import org.openjump.core.ui.plugin.datastore.transaction.EvolutionOperationExcep
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
-import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -166,7 +163,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             @Override
             public FeatureCollection executeQuery(String query,
                                                   TaskMonitor monitor) throws Exception {
-                Collection exceptions = new ArrayList();
+                Collection<Throwable> exceptions = new ArrayList<>();
                 FeatureCollection featureCollection = executeQuery(query,
                         exceptions, monitor);
                 if (!exceptions.isEmpty()) {
@@ -329,8 +326,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         }
         sb.append(");");
         Logger.trace(sb.toString());
-        PreparedStatement pstmt = conn.getJdbcConnection().prepareStatement(sb.toString());
-        return pstmt;
+        return conn.getJdbcConnection().prepareStatement(sb.toString());
     }
 
 
@@ -374,7 +370,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     protected PreparedStatement setAttributeValues(PreparedStatement pstmt,
                 Feature feature, int srid, int dim) throws SQLException {
         FeatureSchema schema = feature.getSchema();
-        Set<String> excludedAttributes = new HashSet<String>();
+        Set<String> excludedAttributes = new HashSet<>();
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
             if (schema.isAttributeReadOnly(i)) {
                 excludedAttributes.add(schema.getAttributeName(i));
@@ -464,10 +460,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     /**
      * Return a map with modified features indexed by their database id.
      * WARNING : New features are excluded from this map.
-     * @return
+     * @return a Map containing evolutions indexed by id
      */
     public Map<Object,Evolution> getIndexedEvolutions() {
-        Map<Object,Evolution> index = new TreeMap<Object,Evolution>();
+        Map<Object,Evolution> index = new TreeMap<>();
         for (Evolution evolution : evolutions.values()) {
             Evolution.Type type = evolution.getType();
             if (type == Evolution.Type.MODIFICATION || type == Evolution.Type.SUPPRESSION) {
@@ -503,8 +499,6 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     /**
      * Execute a query against this connection to delete the reference to this
      * table in the PostGIS's geometry_columns table.
-     * @schemaName unquoted schema name
-     * @tableName unquoted table name
      */
     abstract protected void deleteTableQuery(SpatialDatabasesDSConnection conn) throws SQLException;
 

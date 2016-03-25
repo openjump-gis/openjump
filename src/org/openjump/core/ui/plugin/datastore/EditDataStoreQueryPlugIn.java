@@ -50,7 +50,7 @@ public class EditDataStoreQueryPlugIn extends RunDatastoreQueryPlugIn {
     FeatureInstaller installer = new FeatureInstaller(workbenchContext);
     JPopupMenu popupMenu = workbenchContext.getWorkbench().getFrame()
         .getLayerNamePopupMenu();
-    installer.addPopupMenuItem(popupMenu, this,
+    installer.addPopupMenuPlugin(popupMenu, this,
         new String[] { MenuNames.DATASTORE }, getName(), false, ICON,
         enableCheck);
   }
@@ -98,8 +98,6 @@ public class EditDataStoreQueryPlugIn extends RunDatastoreQueryPlugIn {
   }
 
   /**
-   * @param workbenchContext
-   * @return an enable check
    */
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
     final WorkbenchContext wc = workbenchContext;
