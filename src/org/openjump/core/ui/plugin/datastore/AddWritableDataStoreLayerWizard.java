@@ -117,7 +117,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
         WritableDataStoreDataSource ds =
                 DataStoreDataSourceFactory.createWritableDataStoreDataSource(
                         connectionDescriptor, datasetName, geometryAttributeName,
-                        identifierAttributeName, true);
+                        identifierAttributeName, true, workbenchContext);
         ds.setMaxFeature(limit);
         ds.setWhereClause(whereClause);
         ds.setLimitedToView(limitedToView);

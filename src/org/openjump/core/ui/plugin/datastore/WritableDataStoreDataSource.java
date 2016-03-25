@@ -7,9 +7,12 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection;
-import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager;
 import org.openjump.core.ui.plugin.datastore.transaction.Evolution;
 import org.openjump.core.ui.plugin.datastore.transaction.EvolutionOperationException;
@@ -64,7 +67,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
     // Ordered Map of evolutions
     // Map is indexed by FID in order to merge successive evolutions of a feature efficiently
-    final private LinkedHashMap<Integer,Evolution> evolutions = new LinkedHashMap<Integer,Evolution>();
+    final private LinkedHashMap<Integer,Evolution> evolutions = new LinkedHashMap<>();
 
     // See setTableAlreadyCreated()
     private boolean tableAlreadyCreated = true;
@@ -90,7 +93,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     public WritableDataStoreDataSource(ConnectionDescriptor connectionDescriptor,
                                        String datasetName,
                                        String geometryAttributeName,
-                                       String externalPKName) {
+                                       String externalPKName,
+                                       WorkbenchContext context) {
         setProperties(CollectionUtil.createMap(new Object[]{
                 CONNECTION_DESCRIPTOR_KEY, connectionDescriptor,
                 DATASET_NAME_KEY, datasetName,
@@ -107,6 +111,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         //getProperties().put(CREATE_TABLE, false);
         getProperties().put(CREATE_PK, false);
         getProperties().put(SRID_KEY, 0);
+        this.context = context;
     }
 
     public void setLimitedToView(boolean limitedToView) {
@@ -190,15 +195,16 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                         getGeometryDimension(featureCollection, 3) :
                         (Integer)getProperties().get(GEOM_DIM_KEY);
 
+                DataStoreDriver driver = ConnectionManager.instance(context)
+                        .getDriver(connectionDescriptor.getDataStoreDriverClassName());
                 SpatialDatabasesDSConnection conn =
-                        (PostgisDSConnection)new PostgisDataStoreDriver()
-                                .createConnection(connectionDescriptor.getParameterList());
+                        (SpatialDatabasesDSConnection)connectionDescriptor.createConnection(driver);
                 java.sql.Connection jdbcConn = conn.getJdbcConnection();
                 try {
                     jdbcConn.setAutoCommit(false);
                     if (!tableAlreadyCreated) {
                         Logger.debug("Update mode: create table");
-                        boolean exists = tableExists(conn);
+                        boolean exists = tableExists(jdbcConn);
                         if (exists && !confirmOverwrite()) return;
                         if (exists) {
                             deleteTableQuery(conn);
@@ -489,8 +495,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     /**
      * Check if this [schema.]table exists in this database.
      */
-    private boolean tableExists(SpatialDatabasesDSConnection conn) throws SQLException {
-        DatabaseMetaData metadata = conn.getJdbcConnection().getMetaData();
+    private boolean tableExists(java.sql.Connection conn) throws SQLException {
+        DatabaseMetaData metadata = conn.getMetaData();
         return metadata.getTables(null, schemaName, tableName, new String[]{"TABLE"}).next();
     }
 

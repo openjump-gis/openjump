@@ -55,4 +55,20 @@ public class H2DSMetadata extends SpatialDatabasesDSMetadata {
         String sql = this.getGeoColumnsQuery(datasetName);
         return getGeometryAttributes(sql, datasetName);
     }
+
+    @Override
+    public String getAddGeometryColumnStatement(String schemaName, String tableName,
+                                                String geometryColumn, int srid, String geometryType, int dim) {
+        String schematable = SQLUtil.compose(schemaName, tableName);
+        return "ALTER TABLE " + schematable + " ADD COLUMN \"" + geometryColumn + "\" GEOMETRY;";
+    }
+
+    @Override
+    public String getAddSpatialIndexStatement(String schemaName, String tableName, String geometryColumn) {
+        // Geometry index creation is different on different spatial databases
+        // Do not add if it is not defined
+        String schematable = SQLUtil.compose(schemaName, tableName);
+        String indexname = tableName + "_" + geometryColumn + "_idx";
+        return "CREATE SPATIAL INDEX " + indexname + " ON " + schematable + "(" + geometryColumn + ");";
+    }
 }

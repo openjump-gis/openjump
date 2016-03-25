@@ -1,6 +1,7 @@
 package org.openjump.core.ui.plugin.datastore;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import org.openjump.core.ui.plugin.datastore.postgis2.PostGISDataStoreDataSource;
 
@@ -17,12 +18,13 @@ public class DataStoreDataSourceFactory {
             String datasetName,
             String geometryAttributeName,
             String externalPKName,
-            boolean tableAlreadyCreated)  throws Exception {
+            boolean tableAlreadyCreated,
+            WorkbenchContext context)  throws Exception {
         WritableDataStoreDataSource source;
         String driverName = connectionDescriptor.getDataStoreDriverClassName();
         if (driverName.equals(com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver.class.getName())) {
             source = new PostGISDataStoreDataSource(
-                    connectionDescriptor, datasetName, geometryAttributeName, externalPKName);
+                    connectionDescriptor, datasetName, geometryAttributeName, externalPKName, context);
             source.setTableAlreadyCreated(tableAlreadyCreated);
         } else {
             throw new Exception(I18N.getMessage(KEY + ".no-writable-datastore-datasource", driverName));

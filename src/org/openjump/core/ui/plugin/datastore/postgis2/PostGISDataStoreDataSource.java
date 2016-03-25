@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -36,8 +37,9 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
             ConnectionDescriptor connectionDescriptor,
             String datasetName,
             String geometryAttributeName,
-            String identifierAttributeName) {
-        super(connectionDescriptor, datasetName, geometryAttributeName, identifierAttributeName);
+            String identifierAttributeName,
+            WorkbenchContext context) {
+        super(connectionDescriptor, datasetName, geometryAttributeName, identifierAttributeName, context);
     }
 
     /**
