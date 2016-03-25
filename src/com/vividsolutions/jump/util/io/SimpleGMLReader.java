@@ -36,8 +36,6 @@ package com.vividsolutions.jump.util.io;
 import java.io.*;
 import java.util.List;
 
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.io.*;
@@ -47,8 +45,11 @@ import com.vividsolutions.jump.io.*;
  * Provides an easy way to read spatial data from a GML document. Attributes
  * are not read. Simply pass in a Reader on the GML, and the names of the
  * various tags. A List of Geometries will be returned.
+ *
+ * Notice : currently, this class is only used in jumptest
  */
 public class SimpleGMLReader {
+
     public SimpleGMLReader() {
     }
 
@@ -60,7 +61,7 @@ public class SimpleGMLReader {
      * @return a List of Geometries
      */
     public List toGeometries(InputStream gml, String collectionElement,
-        String featureElement, String geometryElement)
+                String featureElement, String geometryElement)
         throws Exception {
         GMLInputTemplate template = template(collectionElement, featureElement,
                 geometryElement);
@@ -84,31 +85,24 @@ public class SimpleGMLReader {
         s += "</JCSGMLInputTemplate>";
 
         GMLInputTemplate template = new GMLInputTemplate();
-        //StringReader sr = new StringReader(s);
-        InputStream is = new ByteArrayInputStream(s.getBytes("UTF-8"));
-        try {
+
+        try (InputStream is = new ByteArrayInputStream(s.getBytes("UTF-8"))) {
             template.load(is);
-        } finally {
-            is.close();
         }
 
         return template;
     }
 
     /**
-     * @param gml
+     * @param gml inputStream of an XML document containing GML
      * @see #toGeometries(InputStream, String, String, String)
      */
     public List toGeometries(String gml, String collectionElement,
         String featureElement, String geometryElement)
         throws Exception {
-        //StringReader r = new StringReader(gml);
-        InputStream is = new ByteArrayInputStream(gml.getBytes("UTF-8"));
-        try {
+        try (InputStream is = new ByteArrayInputStream(gml.getBytes("UTF-8"))) {
             return toGeometries(is, collectionElement, featureElement,
                 geometryElement);
-        } finally {
-            is.close();
         }
     }
 
@@ -118,14 +112,9 @@ public class SimpleGMLReader {
      */
     public FeatureCollection readFMEFile(File file) throws Exception {
         FMEGMLReader fmeGMLReader = new FMEGMLReader();
-        //FileReader fileReader = new FileReader(file);
         GMLInputTemplate inputTemplate;
-        InputStream inputStream = null;
-        try {
-            inputStream = new BufferedInputStream(new FileInputStream(file));
+        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file))) {
             inputTemplate = fmeGMLReader.getGMLInputTemplate(inputStream, file.getPath());
-        } finally {
-            inputStream.close();
         }
 
         GMLReader gmlReader = new GMLReader();
@@ -133,11 +122,8 @@ public class SimpleGMLReader {
 
         FeatureCollection fc;
 
-        try {
-            inputStream = new BufferedInputStream(new FileInputStream(file));
+        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file))) {
             fc = gmlReader.read(inputStream);
-        } finally {
-            inputStream.close();
         }
 
         return fc;

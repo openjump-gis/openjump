@@ -52,8 +52,8 @@ import com.vividsolutions.jump.workbench.Logger;
 
 
 /**
- *  Takes two FeatureCollections and returns their overlay, which is a new
- *  FeatureCollection containing the intersections of all pairs of input features.
+ * Takes two FeatureCollections and returns their overlay, which is a new
+ * FeatureCollection containing the intersections of all pairs of input features.
  */
 public class OverlayEngine {
 
@@ -61,18 +61,18 @@ public class OverlayEngine {
     private boolean allowingPolygonsOnly = true;
 
     /**
-     *  Creates a new OverlayEngine.
+     * Creates a new OverlayEngine.
      */
     public OverlayEngine() {
     }
 
     /**
-     *  Creates the overlay of the two datasets. The attributes from both datasets
-     *  will be transferred to the overlay.
+     * Creates the overlay of the two datasets. The attributes from both datasets
+     * will be transferred to the overlay.
      *
-     *@param  a  the first dataset involved in the overlay
-     *@param  b  the second dataset involved in the overlay
-     *@return    intersections of all pairs of input features
+     *@param a  the first dataset involved in the overlay
+     *@param b  the second dataset involved in the overlay
+     *@return   intersections of all pairs of input features
      */
     public FeatureCollection overlay(FeatureCollection a, FeatureCollection b,
         TaskMonitor monitor) {
@@ -82,14 +82,14 @@ public class OverlayEngine {
     }
 
     /**
-         *  Creates the overlay of the two datasets. The attributes from the datasets
-         *  will be transferred as specified by the AttributeMapping.
-         *
-         *@param  a  the first dataset involved in the overlay
-         *@param  b  the second dataset involved in the overlay
-         *@param mapping specifies which attributes are transferred
-         *@return    intersections of all pairs of input features
-         */
+     * Creates the overlay of the two datasets. The attributes from the datasets
+     * will be transferred as specified by the AttributeMapping.
+     *
+     *@param a the first dataset involved in the overlay
+     *@param b the second dataset involved in the overlay
+     *@param mapping specifies which attributes are transferred
+     *@return intersections of all pairs of input features
+     */
     public FeatureCollection overlay(FeatureCollection a, FeatureCollection b,
         AttributeMapping mapping, TaskMonitor monitor) {
         monitor.allowCancellationRequests();
@@ -99,21 +99,18 @@ public class OverlayEngine {
         monitor.report(I18N.get("tools.OverlayEngine.overlaying-feature-collections"));
 
         FeatureDataset overlay = new FeatureDataset(mapping.createSchema("GEOMETRY"));
-        List aFeatures = a.getFeatures();
+        List<Feature> aFeatures = a.getFeatures();
 
-        for (int i = 0; (i < aFeatures.size()) && !monitor.isCancelRequested();
-                i++) {
-            Feature aFeature = (Feature) aFeatures.get(i);
+        int count = 0;
+        for (Feature aFeature : aFeatures) {
+            if (monitor.isCancelRequested()) break;
 
-            for (Iterator j = indexedB.query(aFeature.getGeometry()
-                                                     .getEnvelopeInternal())
-                                      .iterator();
-                    j.hasNext() && !monitor.isCancelRequested();) {
-                Feature bFeature = (Feature) j.next();
+            for (Feature bFeature : indexedB.query(aFeature.getGeometry().getEnvelopeInternal())) {
+                if (monitor.isCancelRequested()) break;
                 addIntersection(aFeature, bFeature, mapping, overlay, monitor);
             }
 
-            monitor.report(i + 1, a.size(), "features");
+            monitor.report(count++, a.size(), "features");
         }
 
         return overlay;
@@ -129,6 +126,7 @@ public class OverlayEngine {
         Geometry intersection = null;
 
         try {
+            //TODO check with MD if it is still relevant to use EnhancedPrecisionOp
             intersection = EnhancedPrecisionOp.intersection(a.getGeometry(),
                     b.getGeometry());
         } catch (Exception ex) {
@@ -145,9 +143,8 @@ public class OverlayEngine {
     }
 
     protected void addFeature(Geometry intersection, FeatureCollection overlay,
-        AttributeMapping mapping, Feature a, Feature b) {
-        if (splittingGeometryCollections &&
-                intersection instanceof GeometryCollection) {
+                AttributeMapping mapping, Feature a, Feature b) {
+        if (splittingGeometryCollections && intersection instanceof GeometryCollection) {
             GeometryCollection gc = (GeometryCollection) intersection;
 
             for (int i = 0; i < gc.getNumGeometries(); i++) {

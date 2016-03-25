@@ -44,7 +44,7 @@ public interface TaskMonitor {
      * Describes the status of the task.
      * @param description a description of the progress of the overall task
      */
-    public void report(String description);
+    void report(String description);
 
     /**
      * Reports the number of items processed.
@@ -53,25 +53,25 @@ public interface TaskMonitor {
      * total number is not known
      * @param itemDescription a one-word description of the items, such as "features"
      */
-    public void report(int itemsDone, int totalItems, String itemDescription);
+    void report(int itemsDone, int totalItems, String itemDescription);
 
     /**
      * Reports an Exception that occurred. The task may choose to carry on.
      * @param exception an Exception that occurred during the execution of the task.
      */
-    public void report(Exception exception);
+    void report(Exception exception);
 
     /**
      * Notifies parties that the task will accept requests for cancellation
      * (though the task is not obligated to cancel immediately, or at all
      * for that matter).
      */
-    public void allowCancellationRequests();
+    void allowCancellationRequests();
 
     /**
      * Checks whether a party has requested that the task be cancelled. However,
      * the task is not obligated to cancel immediately (or at all).
      * @return whether a party has requested that the task be cancelled
      */
-    public boolean isCancelRequested();
+    boolean isCancelRequested();
 }

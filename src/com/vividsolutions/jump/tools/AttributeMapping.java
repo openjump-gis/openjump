@@ -40,10 +40,11 @@ import com.vividsolutions.jump.feature.*;
 
 
 public class AttributeMapping {
-    private List aAttributeNames;
-    private List bAttributeNames;
-    private List aNewAttributeNames;
-    private List bNewAttributeNames;
+
+    private List<String> aAttributeNames;
+    private List<String> bAttributeNames;
+    private List<String> aNewAttributeNames;
+    private List<String> bNewAttributeNames;
     private FeatureSchema aSchema;
     private FeatureSchema bSchema;
 
@@ -76,16 +77,16 @@ public class AttributeMapping {
      * @param bAttributeNames non-spatial feature-collection-B attributes to transfer
      * @param bNewAttributeNames corresponding names in the feature collection receiving the attributes
      */
-    public AttributeMapping(FeatureSchema aSchema, List aAttributeNames,
-        List aNewAttributeNames, FeatureSchema bSchema, List bAttributeNames,
-        List bNewAttributeNames) {
+    public AttributeMapping(FeatureSchema aSchema, List<String> aAttributeNames,
+        List<String> aNewAttributeNames, FeatureSchema bSchema, List<String> bAttributeNames,
+        List<String> bNewAttributeNames) {
         init(aSchema, aAttributeNames, aNewAttributeNames, bSchema,
             bAttributeNames, bNewAttributeNames);
     }
 
-    private List nonSpatialAttributeNames(FeatureSchema schema,
+    private List<String> nonSpatialAttributeNames(FeatureSchema schema,
         FeatureSchema other, String postfix) {
-        ArrayList attributeNames = new ArrayList();
+        List<String> attributeNames = new ArrayList<>();
 
         for (int i = 0; i < schema.getAttributeCount(); i++) {
             if (schema.getAttributeType(i) == AttributeType.GEOMETRY) {
@@ -104,18 +105,18 @@ public class AttributeMapping {
         return attributeNames;
     }
 
-    private void init(FeatureSchema aSchema, List aAttributeNames,
-        List aNewAttributeNames, FeatureSchema bSchema, List bAttributeNames,
-        List bNewAttributeNames) {
+    private void init(FeatureSchema aSchema, List<String> aAttributeNames,
+        List<String> aNewAttributeNames, FeatureSchema bSchema, List<String> bAttributeNames,
+        List<String> bNewAttributeNames) {
         Assert.isTrue(isDisjoint(aNewAttributeNames, bNewAttributeNames));
         Assert.isTrue(aAttributeNames.size() == aNewAttributeNames.size());
         Assert.isTrue(bAttributeNames.size() == bNewAttributeNames.size());
         this.aSchema = aSchema;
         this.bSchema = bSchema;
-        this.aAttributeNames = new ArrayList(aAttributeNames);
-        this.bAttributeNames = new ArrayList(bAttributeNames);
-        this.aNewAttributeNames = new ArrayList(aNewAttributeNames);
-        this.bNewAttributeNames = new ArrayList(bNewAttributeNames);
+        this.aAttributeNames = new ArrayList<>(aAttributeNames);
+        this.bAttributeNames = new ArrayList<>(bAttributeNames);
+        this.aNewAttributeNames = new ArrayList<>(aNewAttributeNames);
+        this.bNewAttributeNames = new ArrayList<>(bNewAttributeNames);
     }
 
     /**
@@ -135,20 +136,26 @@ public class AttributeMapping {
     
     public static class CombinedSchema extends FeatureSchema {
         private static final long serialVersionUID = -8627306219650589202L;
-        private Map aNewToOldAttributeIndexMap = new HashMap();
-        private Map bNewToOldAttributeIndexMap = new HashMap();
-        public int toAOldAttributeIndex(int newAttributeIndex) { return ((Integer)aNewToOldAttributeIndexMap.get(new Integer(newAttributeIndex))).intValue(); } 
-        public int toBOldAttributeIndex(int newAttributeIndex) { return ((Integer)bNewToOldAttributeIndexMap.get(new Integer(newAttributeIndex))).intValue(); }
+        private Map<Integer,Integer> aNewToOldAttributeIndexMap = new HashMap<>();
+        private Map<Integer,Integer> bNewToOldAttributeIndexMap = new HashMap<>();
+        public int toAOldAttributeIndex(int newAttributeIndex) {
+            return aNewToOldAttributeIndexMap.get(newAttributeIndex);
+        }
+        public int toBOldAttributeIndex(int newAttributeIndex) {
+            return bNewToOldAttributeIndexMap.get(newAttributeIndex);
+        }
         private int lastNewAttributeIndexForA;
-        public boolean isFromA(int newAttributeIndex) { return newAttributeIndex <= lastNewAttributeIndexForA; };
+        public boolean isFromA(int newAttributeIndex) {
+            return newAttributeIndex <= lastNewAttributeIndexForA;
+        }
     }
 
     private void addAttributes(FeatureSchema newSchema,
-        FeatureSchema sourceSchema, List attributeNames, List newAttributeNames,
-        Map newToOldAttributeIndexMap) {
+                FeatureSchema sourceSchema, List<String> attributeNames,
+                List<String> newAttributeNames, Map<Integer,Integer> newToOldAttributeIndexMap) {
         for (int i = 0; i < attributeNames.size(); i++) {
-            String attributeName = (String) attributeNames.get(i);
-            String newAttributeName = (String) newAttributeNames.get(i);
+            String attributeName = attributeNames.get(i);
+            String newAttributeName = newAttributeNames.get(i);
             AttributeType type = sourceSchema.getAttributeType(attributeName);
 
             if (type == AttributeType.GEOMETRY) {
@@ -156,12 +163,12 @@ public class AttributeMapping {
             }
 
             newSchema.addAttribute(newAttributeName, type);
-            newToOldAttributeIndexMap.put(new Integer(newSchema.getAttributeCount()-1), new Integer(i));
+            newToOldAttributeIndexMap.put(newSchema.getAttributeCount()-1, i);
         }
     }
 
-    protected boolean isDisjoint(Collection a, Collection b) {
-        HashSet c = new HashSet();
+    protected boolean isDisjoint(Collection<String> a, Collection<String> b) {
+        HashSet<String> c = new HashSet<>();
         c.addAll(a);
         c.addAll(b);
 
@@ -176,29 +183,23 @@ public class AttributeMapping {
      * @param bFeature a feature from feature-collection B (can be null)
      * @param cFeature the feature to transfer the A and B attributes to
      */
-    public void transferAttributes(Feature aFeature, Feature bFeature,
-        Feature cFeature) {
+    public void transferAttributes(Feature aFeature, Feature bFeature, Feature cFeature) {
     	//-- [sstein: 27Mar2008] added check to avoid errors
     	if ((aFeature != null) && (cFeature != null)){
-	        transferAttributes(aFeature, cFeature, aAttributeNames,
-	            aNewAttributeNames);
+	        transferAttributes(aFeature, cFeature, aAttributeNames, aNewAttributeNames);
     	}
     	if ((bFeature != null) && (cFeature != null)){
-	        transferAttributes(bFeature, cFeature, bAttributeNames,
-	            bNewAttributeNames);
+	        transferAttributes(bFeature, cFeature, bAttributeNames, bNewAttributeNames);
     	}
     }
 
     private void transferAttributes(Feature source, Feature dest,
-        List attributeNames, List newAttributeNames) {
+        List<String> attributeNames, List<String> newAttributeNames) {
         for (int i = 0; i < attributeNames.size(); i++) {
-            String attributeName = (String) attributeNames.get(i);
-            String newAttributeName = (String) newAttributeNames.get(i);
-            AttributeType p = source.getSchema().getAttributeType(attributeName);
-            int b=1+1;
+            String attributeName = attributeNames.get(i);
+            String newAttributeName = newAttributeNames.get(i);
             Assert.isTrue(source.getSchema().getAttributeType(attributeName) != AttributeType.GEOMETRY);
-            dest.setAttribute(newAttributeName,
-                source.getAttribute(attributeName));
+            dest.setAttribute(newAttributeName, source.getAttribute(attributeName));
         }
     }
 }

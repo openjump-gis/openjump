@@ -64,8 +64,12 @@ public class FeatureSchema implements Cloneable, Serializable {
 
     /**
      * Return a deep copy of this FeatureSchema.
+     *
+     * Warning : FeatureSchema.clone() does not follow general contract of clone
+     * (which recommends using super.clone) but makes a deep copy of the original
+     * FeatureSchema using the constructor.
      */
-    public Object clone() {
+    public FeatureSchema clone() {
         try {
     		FeatureSchema fs = new FeatureSchema();
     		for (int i = 0; i < this.attributeCount; i++) {

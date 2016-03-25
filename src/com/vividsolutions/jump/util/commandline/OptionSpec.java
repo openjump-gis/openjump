@@ -49,12 +49,12 @@ public class OptionSpec {
   public final static int NARGS_ONE_OR_MORE = -2;
   public final static int NARGS_ZERO_OR_ONE = -3;
 
-  Vector<String> names = new Vector<String>();
+  Vector<String> names = new Vector<>();
   // number of arguments needed, will be checked
   int nNeededArgs = 0;
   String syntaxPattern;
   String doc = ""; // option description
-  Vector<Option> options = new Vector<Option>();
+  Vector<Option> options = new Vector<>();
 
   public OptionSpec(String[] optNames, int numberOfNeededArgs, String desc) {
     for (String name : optNames) {
@@ -82,7 +82,7 @@ public class OptionSpec {
 
   public Option getOption(int i) {
     if (options.size() > 0) {
-      return (Option) options.elementAt(i);
+      return options.elementAt(i);
     }
 
     return null;
@@ -90,15 +90,15 @@ public class OptionSpec {
 
   public Option getOption() {
     if (options.size() > 0) {
-      return (Option) options.lastElement();
+      return options.lastElement();
     }
 
     return null;
   }
 
   // merge all options into one list e.g. -param value1 -param value2
-  public Iterator getAllOptions() {
-    Vector all = new Vector();
+  public Iterator<String> getAllOptions() {
+    Vector<String> all = new Vector<>();
     for (Option option : options) {
       all.addAll(Arrays.asList(option.getArgs()));
     }
@@ -146,14 +146,11 @@ public class OptionSpec {
     }
   }
 
-  public Option addOption(Vector v) throws ParseException {
-    String[] args = (String[]) v.toArray(new String[] {});
+  public Option addOption(Vector<String> v) throws ParseException {
+    String[] args = v.toArray(new String[0]);
     checkNumArgs(args);
     String[] argsNeeded = new String[nNeededArgs];
-    for (int i = 0; i < nNeededArgs; i++) {
-      argsNeeded[i] = args[i];
-    }
-
+    System.arraycopy(args, 0, argsNeeded, 0, nNeededArgs);
     Option opt = new Option(this, argsNeeded);
     options.add(opt);
     return opt;

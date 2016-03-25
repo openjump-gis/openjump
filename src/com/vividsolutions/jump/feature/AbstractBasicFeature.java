@@ -187,10 +187,15 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
     }
 
     /**
-     * Clones this Feature. The geometry will also be cloned.
+     * Clones this Feature. Geometry and PrimaryKey will also be cloned.
+     *
+     * Warning : clone method does not follow general contract of clone (which
+     * recommends using super.clone) but makes a deep copy of the Object using
+     * BasicFeature constructor.
+     *
      * @return a new Feature with the same attributes as this Feature
      */
-    public Object clone() {
+    public Feature clone() {
         return clone(true);
     }
 

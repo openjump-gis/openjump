@@ -151,11 +151,15 @@ public interface Feature extends Cloneable, Comparable {
 	FeatureSchema getSchema();
 
 	/**
-	 * Clones this Feature. The geometry will also be cloned.
+	 * Clones this Feature. Geometry and Primary Key will also be cloned.
+	 *
+	 * Warning : Feature.clone() imlpementation does not follow general contract
+	 * of clone (which recommends using super.clone) but makes a deep copy of the
+	 * Object using BasicFeature constructor.
 	 *
 	 * @return a new Feature with the same attributes as this Feature
 	 */
-	Object clone();
+	Feature clone();
 
 	/**
 	 * Clones this Feature.

@@ -39,7 +39,7 @@ import java.util.Vector;
  */
 public class Option {
   OptionSpec optSpec;
-  Vector<String> args = new Vector<String>(); // the actual option args found
+  Vector<String> args = new Vector<>(); // the actual option args found
 
   public Option(OptionSpec spec, String[] _args) {
     optSpec = spec;

@@ -34,5 +34,7 @@
 package com.vividsolutions.jump.task;
 
 public interface TaskMonitorV2 extends TaskMonitor{
-  public void setTitle( String title );
+
+    void setTitle( String title );
+
 }

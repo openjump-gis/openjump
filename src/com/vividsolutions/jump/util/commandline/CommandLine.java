@@ -38,17 +38,18 @@ import java.util.Vector;
 
 import com.vividsolutions.jump.I18N;
 
-//<<TODO:NAMING>> MOve the command package under ui [Jon Aquino]
+//<<TODO:NAMING>> Move the command package under ui [Jon Aquino]
 
 /**
  * A class to parse Unix (and DOS/Win)-style application command-lines.
  */
 public class CommandLine {
+
   // store options defs
-  Vector optSpecs = new Vector<OptionSpec>();
+  Vector<OptionSpec> optSpecs = new Vector<>();
   // store optionless file parameters
-  Vector parVec = new Vector<String>(); // store plain params (e.g.
-                                        // projects/files to open)
+  Vector<String> parVec = new Vector<>(); // store plain params (e.g. projects/files to open)
+
   char optionChar; // the char that indicates an option. Default is '/', which
                    // is
                    // NT Standard, but this causes problems on Unix systems, so
@@ -70,10 +71,9 @@ public class CommandLine {
   }
 
   OptionSpec getOptionSpec(String name) {
-    for (Iterator opts = optSpecs.iterator(); opts.hasNext();) {
-      OptionSpec optspec = (OptionSpec) opts.next();
-      if (optspec.matches(name)) {
-        return optspec;
+    for (OptionSpec optionSpec : optSpecs) {
+      if (optionSpec.matches(name)) {
+        return optionSpec;
       }
     }
     return null;
@@ -84,29 +84,27 @@ public class CommandLine {
     return spec != null ? spec.getOption() : null;
   }
 
-  public Iterator getParams() {
+  public Iterator<String> getParams() {
     return parVec.iterator();
   }
 
   public boolean hasOption(String name) {
     OptionSpec spec = getOptionSpec(name);
-    return spec != null ? spec.hasOption() : false;
+    return spec != null  && spec.hasOption();
   }
 
   public String printDoc() {
-    OptionSpec os = null;
+
     String out = "Syntax:\n  oj_starter [-option [<parameter>]]... [<project_file>]... [<data_file>]...\n\nOptions:\n";
 
-    for (Iterator i = optSpecs.iterator(); i.hasNext();) {
-      os = (OptionSpec) i.next();
+    for (OptionSpec optionSpec : optSpecs) {
       String names = "";
-      for (String name : os.getNames()) {
-        names = names.isEmpty() ? optionChar + name : names + ", " + optionChar
-            + name;
+      for (String name : optionSpec.getNames()) {
+        names = names.isEmpty() ? optionChar + name : names + ", " + optionChar + name;
       }
-
-      out += "  " + names + "\n    " + os.getDesc() + "\n";
+      out += "  " + names + "\n    " + optionSpec.getDesc() + "\n";
     }
+
     return out;
   }
 
@@ -118,8 +116,6 @@ public class CommandLine {
       // check for valid option
       if (args[i].charAt(0) == optionChar
           && (optSpec = getOptionSpec(args[i].substring(1))) != null) {
-        int paramStart = i + 1;
-        int expectedArgCount = optSpec.getAllowedArgs();
 
         Option opt = optSpec.addOption(splitOptionParams(args, i));
 
@@ -139,7 +135,7 @@ public class CommandLine {
 
   // create list containing only the parameters up to the next valid parameter
   private Vector<String> splitOptionParams(String[] args, int i) {
-    Vector params = new Vector<String>();
+    Vector<String> params = new Vector<>();
     for (int j = ++i; j < args.length; j++) {
       String param = args[j];
       if (param.charAt(0) == optionChar

@@ -39,6 +39,7 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 
 /** 
  * Computes Feature Statistics for a {@link FeatureCollection}.
+ * See also {@link org.openjump.core.ui.plugin.tools.aggregate} package
  */
 public class FeatureStatistics {
     public static double[] minMaxValue(FeatureCollection fc, String col) {
