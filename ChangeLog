@@ -2,6 +2,10 @@
 # 1. for display continuity sake please use 2 spaces instead of tabs
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
+
+2016-03-26 mmichaud <m.michael.michaud@orange.fr>
+  * Update JDOM dependency to JDOM2 (used in java2xml)
+
 2016-03-26 Giuseppe Aruta  <giuseppe_aruta@yahoo.it>
   * Extended Sextante Raster Capabilities to read Bitmap (BMP) and JP2000 
    (JP2) raster files
