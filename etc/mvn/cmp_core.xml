@@ -18,7 +18,7 @@
         <!-- Exclude maven jts dependency : for OpenJUMP 1.7, it is replaced
         by a more recent build of jts which is not available in maven -->
         <exclude>com.vividsolutions:jts</exclude>
-        <!-- exclude batik and js which is a batil dependency from CORE build -->
+        <!-- exclude batik and js which is a batik dependency from CORE build -->
         <exclude>batik:*</exclude>
         <exclude>js:*</exclude>
         <!-- exclude junit and hamcrest from CORE build -->

@@ -69,6 +69,6 @@ public class H2DSMetadata extends SpatialDatabasesDSMetadata {
         // Do not add if it is not defined
         String schematable = SQLUtil.compose(schemaName, tableName);
         String indexname = tableName + "_" + geometryColumn + "_idx";
-        return "CREATE SPATIAL INDEX " + indexname + " ON " + schematable + "(" + geometryColumn + ");";
+        return "CREATE SPATIAL INDEX " + indexname + " ON " + schematable + "(\"" + geometryColumn + "\");";
     }
 }

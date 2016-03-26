@@ -37,15 +37,14 @@ import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jts.util.Assert;
 
 import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.io.ParseException;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.util.StringUtil;
 
-import org.jdom.Attribute;
-import org.jdom.Element;
-import org.jdom.JDOMException;
+import org.jdom2.Attribute;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
-import org.jdom.input.SAXBuilder;
+import org.jdom2.input.SAXBuilder;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -73,7 +72,7 @@ public class XMLBinder {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
-    private HashMap classToCustomConverterMap = new HashMap();
+    private HashMap<Class,CustomConverter> classToCustomConverterMap = new HashMap<>();
 
     public XMLBinder() {
         classToCustomConverterMap.put(Class.class,
@@ -95,22 +94,22 @@ public class XMLBinder {
         classToCustomConverterMap.put(Color.class,
             new CustomConverter() {
                 public Object toJava(String value) {
-                    List parameters = StringUtil.fromCommaDelimitedString(value);
+                    List<String> parameters = StringUtil.fromCommaDelimitedString(value);
 
-                    return new Color(Integer.parseInt(
-                            (String) parameters.get(0)),
-                        Integer.parseInt((String) parameters.get(1)),
-                        Integer.parseInt((String) parameters.get(2)),
-                        Integer.parseInt((String) parameters.get(3)));
+                    return new Color(
+                        Integer.parseInt(parameters.get(0)),
+                        Integer.parseInt(parameters.get(1)),
+                        Integer.parseInt(parameters.get(2)),
+                        Integer.parseInt(parameters.get(3)));
                 }
 
                 public String toXML(Object object) {
                     Color color = (Color) object;
-                    ArrayList parameters = new ArrayList();
-                    parameters.add(new Integer(color.getRed()));
-                    parameters.add(new Integer(color.getGreen()));
-                    parameters.add(new Integer(color.getBlue()));
-                    parameters.add(new Integer(color.getAlpha()));
+                    List<Object> parameters = new ArrayList<>();
+                    parameters.add(color.getRed());
+                    parameters.add(color.getGreen());
+                    parameters.add(color.getBlue());
+                    parameters.add(color.getAlpha());
 
                     return StringUtil.toCommaDelimitedString(parameters);
                 }
@@ -118,19 +117,19 @@ public class XMLBinder {
         classToCustomConverterMap.put(Font.class,
             new CustomConverter() {
                 public Object toJava(String value) {
-                    List parameters = StringUtil.fromCommaDelimitedString(value);
+                    List<String> parameters = StringUtil.fromCommaDelimitedString(value);
 
-                    return new Font((String) parameters.get(0),
-                        Integer.parseInt((String) parameters.get(1)),
-                        Integer.parseInt((String) parameters.get(2)));
+                    return new Font(parameters.get(0),
+                        Integer.parseInt(parameters.get(1)),
+                        Integer.parseInt(parameters.get(2)));
                 }
 
                 public String toXML(Object object) {
                     Font font = (Font) object;
-                    ArrayList parameters = new ArrayList();
+                    List<Object> parameters = new ArrayList<>();
                     parameters.add(font.getName());
-                    parameters.add(new Integer(font.getStyle()));
-                    parameters.add(new Integer(font.getSize()));
+                    parameters.add(font.getStyle());
+                    parameters.add(font.getSize());
 
                     return StringUtil.toCommaDelimitedString(parameters);
                 }
@@ -199,7 +198,7 @@ public class XMLBinder {
         classToCustomConverterMap.put(boolean.class,
             new CustomConverter() {
                 public Object toJava(String value) {
-                    return new Boolean(value);
+                    return Boolean.parseBoolean(value);
                 }
 
                 public String toXML(Object object) {
@@ -224,7 +223,7 @@ public class XMLBinder {
         classToCustomConverterMap.put(Boolean.class,
                 new CustomConverter() {
                     public Object toJava(String value) {
-                        return new Boolean(value);
+                        return Boolean.parseBoolean(value);
                     }
 
                     public String toXML(Object object) {
@@ -244,7 +243,7 @@ public class XMLBinder {
         classToCustomConverterMap.put(Character.class,
                 new CustomConverter() {
                     public Object toJava(String value) {
-                        return new Character(value.length()>0?value.charAt(0):'\u0000');
+                        return value.length()>0?value.charAt(0):'\u0000';
                     }
 
                     public String toXML(Object object) {
@@ -304,16 +303,16 @@ public class XMLBinder {
         ".java2xml";
     }
 
-    protected List specElements(Class c)
-        throws XMLBinderException, JDOMException, IOException {
-        InputStream stream = specResourceStream(c);
+    protected List<Element> specElements(Class c)
+                throws XMLBinderException, JDOMException, IOException {
 
-        if (stream == null) {
-            throw new XMLBinderException("Could not find java2xml file for " +
-                c.getName() + " or its interfaces or superclasses");
-        }
+        try (InputStream stream = specResourceStream(c)) {
 
-        try {
+            if (stream == null) {
+                throw new XMLBinderException("Could not find java2xml file for " +
+                        c.getName() + " or its interfaces or superclasses");
+            }
+
             Element root = new SAXBuilder().build(stream).getRootElement();
 
             if (!root.getAttributes().isEmpty()) {
@@ -327,18 +326,14 @@ public class XMLBinder {
             }
 
             return root.getChildren();
-        } finally {
-            stream.close();
         }
     }
 
     private InputStream specResourceStream(Class c) {
-        for (Iterator i = LangUtil.classesAndInterfaces(c).iterator();
-                i.hasNext();) {
-            Class type = (Class) i.next();
-            Assert.isTrue(type.isAssignableFrom(c));
+        for (Class<?> clazz : LangUtil.classesAndInterfaces(c)) {
+            Assert.isTrue(clazz.isAssignableFrom(c));
 
-            InputStream stream = type.getResourceAsStream(specFilename(type));
+            InputStream stream = clazz.getResourceAsStream(specFilename(clazz));
 
             if (stream != null) {
                 return stream;
@@ -355,10 +350,9 @@ public class XMLBinder {
     /**
      * @param c for error messages
      */
-    protected void visit(List specElements, SpecVisitor visitor, Class c)
+    protected void visit(List<Element> specElements, SpecVisitor visitor, Class c)
         throws Exception {
-        for (Iterator i = specElements.iterator(); i.hasNext();) {
-            Element specElement = (Element) i.next();
+        for (Element specElement : specElements) {
             Attribute xmlName = specElement.getAttribute("xml-name");
 
             if (xmlName == null) {
@@ -368,30 +362,27 @@ public class XMLBinder {
             }
 
             Attribute javaName = specElement.getAttribute("java-name");
-
+            String attributeValue = javaName == null ? null : javaName.getValue();
             //javaName is null if tag does nothing other than add a level to the
             //hierarchy [Jon Aquino]
             if (specElement.getName().equals("element")) {
-                visitor.tagSpecFound(xmlName.getValue(),
-                    (javaName != null) ? javaName.getValue() : null,
+                visitor.tagSpecFound(xmlName.getValue(), attributeValue,
                     specElement.getChildren());
             }
 
             if (specElement.getName().equals("attribute")) {
-                visitor.attributeSpecFound(xmlName.getValue(),
-                    javaName.getValue());
+                visitor.attributeSpecFound(xmlName.getValue(), attributeValue);
             }
         }
     }
 
     public Object toJava(String text, Class c) {
-        return (!text.equals("null"))
-        ? ((CustomConverter) classToCustomConverterMap.get(customConvertableClass(
-                c))).toJava(text) : null;
+        return (!text.equals("null")) ?
+                classToCustomConverterMap.get(customConvertableClass(c)).toJava(text) : null;
     }
 
     protected boolean specifyingTypeExplicitly(Class c)
-        throws XMLBinderException {
+                throws XMLBinderException {
         //The int and double classes are abstract. Filter them out. [Jon Aquino]
         if (hasCustomConverter(c)) {
             return false;
@@ -412,34 +403,34 @@ public class XMLBinder {
         Method[] methods = c.getMethods();
 
         //Exact match first [Jon Aquino]
-        for (int i = 0; i < methods.length; i++) {
-            if (!methods[i].getName().toUpperCase().equals("SET" +
+        for (Method method : methods) {
+            if (!method.getName().toUpperCase().equals("SET" +
                         field.toUpperCase()) &&
-                    !methods[i].getName().toUpperCase().equals("ADD" +
+                    !method.getName().toUpperCase().equals("ADD" +
                         field.toUpperCase())) {
                 continue;
             }
 
-            if (methods[i].getParameterTypes().length != 1) {
+            if (method.getParameterTypes().length != 1) {
                 continue;
             }
 
-            return methods[i];
+            return method;
         }
 
-        for (int i = 0; i < methods.length; i++) {
-            if (!methods[i].getName().toUpperCase().startsWith("SET" +
+        for (Method method : methods) {
+            if (!method.getName().toUpperCase().startsWith("SET" +
                         field.toUpperCase()) &&
-                    !methods[i].getName().toUpperCase().startsWith("ADD" +
+                    !method.getName().toUpperCase().startsWith("ADD" +
                         field.toUpperCase())) {
                 continue;
             }
 
-            if (methods[i].getParameterTypes().length != 1) {
+            if (method.getParameterTypes().length != 1) {
                 continue;
             }
 
-            return methods[i];
+            return method;
         }
 
         throw new XMLBinderException("Could not find setter named like '" +
@@ -447,8 +438,9 @@ public class XMLBinder {
     }
 
     protected String toXML(Object object) {
-        return ((CustomConverter) classToCustomConverterMap.get(customConvertableClass(
-                object.getClass()))).toXML(object);
+        return classToCustomConverterMap.get(
+                customConvertableClass(object.getClass())
+        ).toXML(object);
     }
 
     protected boolean hasCustomConverter(Class fieldClass) {
@@ -461,10 +453,7 @@ public class XMLBinder {
     private Class customConvertableClass(Class c) {
         //Use #isAssignableFrom rather than #contains because some classes
         //may be interfaces. [Jon Aquino]
-        for (Iterator i = classToCustomConverterMap.keySet().iterator();
-                i.hasNext();) {
-            Class customConvertableClass = (Class) i.next();
-
+        for (Class<?> customConvertableClass : classToCustomConverterMap.keySet()) {
             if (customConvertableClass.isAssignableFrom(c)) {
                 return customConvertableClass;
             }
@@ -474,10 +463,10 @@ public class XMLBinder {
     }
 
     protected interface SpecVisitor {
-        public void tagSpecFound(String xmlName, String javaName,
-            List specChildElements) throws Exception;
+        void tagSpecFound(String xmlName, String javaName,
+            List<Element> specChildElements) throws Exception;
 
-        public void attributeSpecFound(String xmlName, String javaName)
+        void attributeSpecFound(String xmlName, String javaName)
             throws Exception;
     }
 
@@ -487,9 +476,9 @@ public class XMLBinder {
      * can't add a .java2xml file to the jar.
      */
     public interface CustomConverter {
-        public Object toJava(String value);
+        Object toJava(String value);
 
-        public String toXML(Object object);
+        String toXML(Object object);
     }
 
     public static class XMLBinderException extends Exception {

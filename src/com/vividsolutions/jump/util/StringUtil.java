@@ -35,7 +35,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -52,6 +51,7 @@ public class StringUtil {
     public static String s(int n) {
         return (n != 1) ? "s" : "";
     }
+
     /**
      * Warning: hinders internationalization
      */
@@ -77,7 +77,7 @@ public class StringUtil {
     }
 
     public static String repeat(char c, int n) {
-        StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder();
 
         for (int i = 0; i < n; i++) {
             b.append(c);
@@ -91,7 +91,7 @@ public class StringUtil {
      *  column. Word-wraps.
      */
     public static String split(String s, int n) {
-        StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder();
         boolean wrapPending = false;
 
         for (int i = 0; i < s.length(); i++) {
@@ -133,13 +133,13 @@ public class StringUtil {
      * @param s a String with comma-delimited values
      * @return a List of the Strings that were delimited by commas
      */
-    public static List fromCommaDelimitedString(String s) {
-        if (s.trim().length() == 0) { return new ArrayList(); }
-        ArrayList result = new ArrayList();
+    public static List<String> fromCommaDelimitedString(String s) {
+        if (s.trim().length() == 0) { return new ArrayList<>(); }
+        List<String> result = new ArrayList<>();
         StringTokenizer tokenizer = new StringTokenizer(s, ",");
 
         while (tokenizer.hasMoreTokens()) {
-            result.add(tokenizer.nextToken().toString().trim());
+            result.add(tokenizer.nextToken().trim());
         }
 
         return result;
@@ -150,8 +150,8 @@ public class StringUtil {
      * @param size the size of the List to create
      * @return a List of blank Strings
      */
-    public static List blankStringList(int size) {
-        ArrayList list = new ArrayList();
+    public static List<String> blankStringList(int size) {
+        List<String> list = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
             list.add("");
@@ -213,7 +213,7 @@ public class StringUtil {
      * @param c a Collection of objects to convert to Strings and delimit by commas
      * @return a String containing c's elements, delimited by commas
      */
-    public static String toCommaDelimitedString(Collection c) {
+    public static String toCommaDelimitedString(Collection<?> c) {
         return toDelimitedString(c, ", ");
     }
 
@@ -312,23 +312,21 @@ public class StringUtil {
     public static boolean isNumber(String token) {
         try {
             Double.parseDouble(token);
-
             return true;
         } catch (NumberFormatException e) {
             return false;
         }
     }
 
-    public static String toDelimitedString(Collection c, String delimiter) {
+    public static String toDelimitedString(Collection<?> c, String delimiter) {
         if (c.isEmpty()) {
             return "";
         }
 
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
-        for (Iterator i = c.iterator(); i.hasNext();) {
-            Object o = i.next();
-            result.append(delimiter + ((o == null) ? "" : o.toString()));
+        for (Object object : c) {
+            result.append(delimiter).append(object == null ? "" : object.toString());
         }
 
         return result.substring(delimiter.length());
@@ -352,8 +350,7 @@ public class StringUtil {
             s += (days + " days ");
         }
 
-        s
-            += (Fmt.fmt(hours, 2, Fmt.ZF)
+        s += (Fmt.fmt(hours, 2, Fmt.ZF)
                 + ":"
                 + Fmt.fmt(minutes, 2, Fmt.ZF)
                 + ":"

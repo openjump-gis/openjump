@@ -34,72 +34,60 @@ import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 import com.vividsolutions.jump.workbench.Logger;
+
 public class Java2XML extends XMLBinder {
 
     public Java2XML() {
     }
+
     public String write(Object object, String rootTagName) throws Exception {
-        StringWriter writer = new StringWriter();
-        try {
+        try (StringWriter writer = new StringWriter()) {
             write(object, rootTagName, writer);
             return writer.toString();
-        } finally {
-            writer.close();
         }
     }
+
     public void write(Object object, String rootTagName, File file)
             throws Exception {
-        FileWriter fileWriter = new FileWriter(file, false);
-        try {
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            try {
-                new Java2XML().write(object, rootTagName, bufferedWriter);
-                bufferedWriter.flush();
-                fileWriter.flush();
-            } finally {
-                bufferedWriter.close();
-            }
-        } finally {
-            fileWriter.close();
+        try (FileWriter fileWriter = new FileWriter(file, false);
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            new Java2XML().write(object, rootTagName, bufferedWriter);
+            bufferedWriter.flush();
+            fileWriter.flush();
         }
     }
+
     public void write(Object object, String rootTagName, Writer writer)
             throws Exception {
         Document document = new Document(new Element(rootTagName));
-        write(object, document.getRootElement(),
-                specElements(object.getClass()));
+        write(object, document.getRootElement(), specElements(object.getClass()));
         XMLOutputter xmlOutputter = new XMLOutputter();
-        // replace old jdom syntax (version 1.0 beta from 2004)
-        //xmlOutputter.setNewlines(true);
-        //xmlOutputter.setIndent(true);
-        // by newer version syntax
         xmlOutputter.setFormat(Format.getPrettyFormat());
         xmlOutputter.output(document, writer);
     }
-    private void write(final Object object, final Element tag, List specElements)
+
+    private void write(final Object object, final Element tag, List<Element> specElements)
             throws Exception {
         try {
             visit(specElements, new SpecVisitor() {
                 public void tagSpecFound(String xmlName, String javaName,
-                        List specChildElements) throws Exception {
-                    Collection childTags = new ArrayList();
+                        List<Element> specChildElements) throws Exception {
+                    Collection<Element> childTags = new ArrayList<>();
                     if (javaName != null) {
                         childTags.addAll(writeChildTags(tag, xmlName, getter(
-                                object.getClass(), javaName).invoke(object,
-                                new Object[]{}),
+                                object.getClass(), javaName).invoke(object),
                                 specifyingTypeExplicitly(fieldClass(setter(
                                         object.getClass(), javaName)))));
                     } else {
@@ -109,15 +97,14 @@ public class Java2XML extends XMLBinder {
                     }
                     // The parent may specify additional tags for itself in the
                     // children. [Jon Aquino]
-                    for (Iterator i = childTags.iterator(); i.hasNext();) {
-                        Element childTag = (Element) i.next();
+                    for (Element childTag : childTags) {
                         write(object, childTag, specChildElements);
                     }
                 }
                 public void attributeSpecFound(String xmlName, String javaName)
                         throws Exception {
                     writeAttribute(tag, xmlName, getter(object.getClass(),
-                            javaName).invoke(object, new Object[]{}));
+                            javaName).invoke(object));
                 }
             }, object.getClass());
         } catch (Exception e) {
@@ -146,16 +133,14 @@ public class Java2XML extends XMLBinder {
         } else if (hasCustomConverter(value.getClass())) {
             childTag.setText(toXML(value));
         } else if (value instanceof Map) {
-            for (Iterator i = ((Map) value).keySet().iterator(); i.hasNext();) {
-                Object key = i.next();
+            for (Object key : ((Map)value).keySet()) {
                 Element mappingTag = new Element("mapping");
                 childTag.addContent(mappingTag);
                 writeChildTag(mappingTag, "key", key, true);
                 writeChildTag(mappingTag, "value", ((Map) value).get(key), true);
             }
         } else if (value instanceof Collection) {
-            for (Iterator i = ((Collection) value).iterator(); i.hasNext();) {
-                Object item = i.next();
+            for (Object item : (Collection)value) {
                 writeChildTag(childTag, "item", item, true);
             }
         } else if (value instanceof QName) {
@@ -166,14 +151,15 @@ public class Java2XML extends XMLBinder {
         tag.addContent(childTag);
         return childTag;
     }
-    private Collection writeChildTags(Element tag, String name, Object value,
+
+    private Collection<Element> writeChildTags(Element tag, String name, Object value,
             boolean specifyingType) throws Exception {
-        ArrayList childTags = new ArrayList();
+
+        ArrayList<Element> childTags = new ArrayList<>();
         if (value instanceof Collection) {
             // Might or might not need to specify type, depending on how
             // concrete the setter's parameter is. [Jon Aquino]
-            for (Iterator i = ((Collection) value).iterator(); i.hasNext();) {
-                Object item = i.next();
+            for (Object item : (Collection)value) {
                 childTags.add(writeChildTag(tag, name, item, specifyingType));
             }
         } else {
@@ -181,33 +167,34 @@ public class Java2XML extends XMLBinder {
         }
         return childTags;
     }
+
     private Method getter(Class fieldClass, String field)
             throws XMLBinderException {
         Method[] methods = fieldClass.getMethods();
         // Exact match first [Jon Aquino]
-        for (int i = 0; i < methods.length; i++) {
-            if (!methods[i].getName().toUpperCase().equals(
+        for (Method method : methods) {
+            if (!method.getName().toUpperCase().equals(
                     "GET" + field.toUpperCase())
-                    && !methods[i].getName().toUpperCase().equals(
+                    && !method.getName().toUpperCase().equals(
                             "IS" + field.toUpperCase())) {
                 continue;
             }
-            if (methods[i].getParameterTypes().length != 0) {
+            if (method.getParameterTypes().length != 0) {
                 continue;
             }
-            return methods[i];
+            return method;
         }
-        for (int i = 0; i < methods.length; i++) {
-            if (!methods[i].getName().toUpperCase().startsWith(
+        for (Method method : methods) {
+            if (!method.getName().toUpperCase().startsWith(
                     "GET" + field.toUpperCase())
-                    && !methods[i].getName().toUpperCase().startsWith(
+                    && !method.getName().toUpperCase().startsWith(
                             "IS" + field.toUpperCase())) {
                 continue;
             }
-            if (methods[i].getParameterTypes().length != 0) {
+            if (method.getParameterTypes().length != 0) {
                 continue;
             }
-            return methods[i];
+            return method;
         }
         throw new XMLBinderException("Could not find getter named like '"
                 + field + "' " + fieldClass);

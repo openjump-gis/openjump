@@ -31,12 +31,7 @@
  */
 package com.vividsolutions.jump.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import com.vividsolutions.jts.util.Assert;
 
@@ -44,8 +39,8 @@ import com.vividsolutions.jts.util.Assert;
  * Utilities to support the Java language.
  */
 public class LangUtil {
-    private static Map primitiveToWrapperMap = new HashMap() {
 
+    private static Map<Class,Class> primitiveToWrapperMap = new HashMap<Class,Class>() {
         {
             put(byte.class, Byte.class);
             put(char.class, Character.class);
@@ -95,18 +90,18 @@ public class LangUtil {
         }
     }
 
-    public static Collection classesAndInterfaces(Class c) {
-        ArrayList classesAndInterfaces = new ArrayList();
+    public static Collection<Class<?>> classesAndInterfaces(Class c) {
+        List<Class<?>> classesAndInterfaces = new ArrayList<>();
         classesAndInterfaces.add(c);
         superclasses(c, classesAndInterfaces);
-        for (Iterator i = new ArrayList(classesAndInterfaces).iterator(); i.hasNext(); ) {
-            Class x = (Class) i.next();
-            classesAndInterfaces.addAll(Arrays.asList(x.getInterfaces()));
+        // Create new ArrayList to avoid ConcurrentModificationException
+        for (Class clazz : new ArrayList<>(classesAndInterfaces)) {
+            classesAndInterfaces.addAll((Collection)Arrays.asList(clazz.getInterfaces()));
         }
         return classesAndInterfaces;
     }
 
-    private static void superclasses(Class c, Collection results) {
+    private static void superclasses(Class c, Collection<Class<?>> results) {
         if (c.getSuperclass() == null) {
             return;
         }

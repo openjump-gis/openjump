@@ -17,6 +17,8 @@
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
         <imageio-ext.version>1.1.7</imageio-ext.version>
+        <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
+        <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
     </properties>
     <profiles>
         <profile>
@@ -54,13 +56,14 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
+                        <version>${maven-assembly-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>make-core</id>
                                 <phase>package</phase>
                                 <configuration>
                                     <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${artifactId}-${version.number}-r${version.revision}-CORE</finalName>
+                                    <finalName>${project.artifactId}-${version.number}-r${version.revision}-CORE</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
                                     </descriptors>
@@ -84,14 +87,14 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
-                        <!--version>2.1</version -->
+                        <version>${maven-assembly-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>make-plus</id>
                                 <phase>package</phase>
                                 <configuration>
                                     <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${artifactId}-${version.number}-r${version.revision}-PLUS</finalName>
+                                    <finalName>${project.artifactId}-${version.number}-r${version.revision}-PLUS</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
                                     </descriptors>
@@ -111,12 +114,13 @@
                 <!-- has to be set on maven run with -D version.number=X.X.X -->
                 <version.number>${version.datestamp}</version.number>
                 <version.release>snapshot</version.release>
-                <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
+                        <version>${maven-assembly-plugin.version}</version>
                         <configuration>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
@@ -160,12 +164,13 @@
                 <!-- has to be set on maven run with -D version.number=X.X.X -->
                 <version.number>unknown</version.number>
                 <version.release>release</version.release>
-                <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
+                        <version>${maven-assembly-plugin.version}</version>
                         <configuration>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
@@ -205,14 +210,14 @@
         <profile>
             <id>portable</id>
             <properties>
-                <portable.filename>${artifactId}-Portable-${version.number}-r${version.revision}</portable.filename>
+                <portable.filename>${project.artifactId}-Portable-${version.number}-r${version.revision}</portable.filename>
                 <portable.filepath>${project.build.directory}/recompress</portable.filepath>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
+                        <version>${maven-antrun-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>recompress portable zip distros</id>
@@ -283,14 +288,14 @@
         <profile>
             <id>installer</id>
             <properties>
-                <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
-                <installer.filename>${artifactId}-Installer-${version.number}-r${version.revision}</installer.filename>
+                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
+                <installer.filename>${project.artifactId}-Installer-${version.number}-r${version.revision}</installer.filename>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
+                        <version>${maven-antrun-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>create installers</id>
@@ -413,7 +418,7 @@
             <properties>
                 <!-- by default datestamp, can be overwritten with -D version.number=X.X.X -->
                 <version.number>${version.datestamp}</version.number>
-                <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
             </properties>
             <build>
                 <plugins>
@@ -437,7 +442,7 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
+                        <version>${maven-antrun-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>create apidoc zip</id>
@@ -465,13 +470,13 @@
             <properties>
                 <!-- by default datestamp, can be overwritten with -D version.number=X.X.X -->
                 <version.number>${version.datestamp}</version.number>
-                <version.string>${artifactId}-${version.number}-r${version.revision}</version.string>
+                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
+                        <version>${maven-antrun-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>create src zip</id>
@@ -496,7 +501,7 @@
         </profile>
     </profiles>
     <build>
-        <finalName>${artifactId}-${version.number}-r${version.revision}</finalName>
+        <finalName>${project.artifactId}-${version.number}-r${version.revision}</finalName>
         <sourceDirectory>src/</sourceDirectory>
         <outputDirectory>target/classes</outputDirectory>
         <resources>
@@ -774,8 +779,8 @@
         </dependency-->
         <dependency>
             <groupId>org.jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <version>1.1.3</version>
+            <artifactId>jdom2</artifactId>
+            <version>2.0.6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
