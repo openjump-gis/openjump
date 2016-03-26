@@ -49,107 +49,119 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
-public class SelectRasterImageFilesPanel extends JFCWithEnterAction implements WizardPanel {
+public class SelectRasterImageFilesPanel extends JFCWithEnterAction implements
+		WizardPanel {
 
-  public static final String KEY = SelectRasterImageFilesPanel.class.getName();
-  
-  public static final String FILE_CHOOSER_DIRECTORY_KEY = KEY + " - FILE CHOOSER DIRECTORY";
+	public static final String KEY = SelectRasterImageFilesPanel.class
+			.getName();
 
-  public static final String TITLE = I18N.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.Select-Raster-Image");
+	public static final String FILE_CHOOSER_DIRECTORY_KEY = KEY
+			+ " - FILE CHOOSER DIRECTORY";
 
-  public static final String INSTRUCTIONS = I18N.get("org.openjump.core.ui.plugin.file.open.SelectFileOptionsPanel.instructions");
+	public static final String TITLE = I18N
+			.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.Select-Raster-Image");
 
-  public static final String ALL_FILES = I18N.get("org.openjump.core.ui.plugin.file.open.SelectFilesPanel.all-files");
+	public static final String INSTRUCTIONS = I18N
+			.get("org.openjump.core.ui.plugin.file.open.SelectFileOptionsPanel.instructions");
 
-  private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
+	public static final String ALL_FILES = I18N
+			.get("org.openjump.core.ui.plugin.file.open.SelectFilesPanel.all-files");
 
-  private Blackboard blackboard;
-  private ActionListener dialogActionListener;
+	private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
 
-  public SelectRasterImageFilesPanel(final WorkbenchContext context) {
-    setDialogType(JFileChooser.OPEN_DIALOG);
-    
-    if (PersistentBlackboardPlugIn.get(context).get(FILE_CHOOSER_DIRECTORY_KEY) != null) {
-      setCurrentDirectory(new File((String)PersistentBlackboardPlugIn
-                          .get(context)
-                          .get(FILE_CHOOSER_DIRECTORY_KEY)));
-    }
-    
-    setFileSelectionMode(JFileChooser.FILES_ONLY);
-    setMultiSelectionEnabled(true);
-    GUIUtil.removeChoosableFileFilters(this);
-    /*
-    FileFilter GEOTIFF_FILE_FILTER = GUIUtil.createFileFilter("GeoTIFF", new String[]{ "tif", "tiff" });
-    FileFilter GIF_FILE_FILTER = GUIUtil.createFileFilter("GIF", new String[]{ "gif"});
-    FileFilter JPG_FILE_FILTER = GUIUtil.createFileFilter("JPEG", new String[]{ "jpg"});
-    FileFilter PNG_FILE_FILTER = GUIUtil.createFileFilter("PNG", new String[]{ "png"});
-    addChoosableFileFilter(GEOTIFF_FILE_FILTER);
-    addChoosableFileFilter(GIF_FILE_FILTER);
-    addChoosableFileFilter(JPG_FILE_FILTER);
-    addChoosableFileFilter(PNG_FILE_FILTER);
-    */
-    FileFilter JAI_IMAGE_FILE_FILTER = GUIUtil.createFileFilter(I18N.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.supported-raster-image-formats"), 
-    		new String[]{ "tif", "tiff", "gif", "jpg", "png", "flt", "asc", "txt" });
-    addChoosableFileFilter(JAI_IMAGE_FILE_FILTER);
-    addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);
-    
-    setFileFilter(JAI_IMAGE_FILE_FILTER);
+	private Blackboard blackboard;
+	private ActionListener dialogActionListener;
 
-    setControlButtonsAreShown(false);
+	public SelectRasterImageFilesPanel(final WorkbenchContext context) {
+		setDialogType(JFileChooser.OPEN_DIALOG);
 
-    addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent evt) {
-        PersistentBlackboardPlugIn.get(context)
-            .put(FILE_CHOOSER_DIRECTORY_KEY, getCurrentDirectory().toString());
-        fireInputChanged();
-      }
-    });
-  }
+		if (PersistentBlackboardPlugIn.get(context).get(
+				FILE_CHOOSER_DIRECTORY_KEY) != null) {
+			setCurrentDirectory(new File((String) PersistentBlackboardPlugIn
+					.get(context).get(FILE_CHOOSER_DIRECTORY_KEY)));
+		}
 
-  public void setDialog(WizardDialog dialog) {
-    removeActionListener(dialogActionListener);
-    dialogActionListener = new InvokeMethodActionListener(dialog, "next");
-    addActionListener(dialogActionListener);
-    
-  }
-  public void enteredFromLeft(final Map dataMap) {
-    rescanCurrentDirectory();
-  }
+		setFileSelectionMode(JFileChooser.FILES_ONLY);
+		setMultiSelectionEnabled(true);
+		GUIUtil.removeChoosableFileFilters(this);
+		/*
+		 * FileFilter GEOTIFF_FILE_FILTER = GUIUtil.createFileFilter("GeoTIFF",
+		 * new String[]{ "tif", "tiff" }); FileFilter GIF_FILE_FILTER =
+		 * GUIUtil.createFileFilter("GIF", new String[]{ "gif"}); FileFilter
+		 * JPG_FILE_FILTER = GUIUtil.createFileFilter("JPEG", new String[]{
+		 * "jpg"}); FileFilter PNG_FILE_FILTER = GUIUtil.createFileFilter("PNG",
+		 * new String[]{ "png"}); addChoosableFileFilter(GEOTIFF_FILE_FILTER);
+		 * addChoosableFileFilter(GIF_FILE_FILTER);
+		 * addChoosableFileFilter(JPG_FILE_FILTER);
+		 * addChoosableFileFilter(PNG_FILE_FILTER);
+		 */
+		FileFilter JAI_IMAGE_FILE_FILTER = GUIUtil
+				.createFileFilter(
+						I18N.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.supported-raster-image-formats"),
+						new String[] { "tif", "tiff", "gif", "jpg", "jp2",
+								"png", "flt", "bmp", "asc", "txt" });
+		addChoosableFileFilter(JAI_IMAGE_FILE_FILTER);
+		addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);
 
-  public void exitingToRight() throws Exception {
-  }
+		setFileFilter(JAI_IMAGE_FILE_FILTER);
 
-  public String getID() {
-    return getClass().getName();
-  }
+		setControlButtonsAreShown(false);
 
-  public String getInstructions() {
-    return INSTRUCTIONS;
-  }
+		addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+				PersistentBlackboardPlugIn.get(context).put(
+						FILE_CHOOSER_DIRECTORY_KEY,
+						getCurrentDirectory().toString());
+				fireInputChanged();
+			}
+		});
+	}
 
-  public String getNextID() {
-    return null;
-  }
+	public void setDialog(WizardDialog dialog) {
+		removeActionListener(dialogActionListener);
+		dialogActionListener = new InvokeMethodActionListener(dialog, "next");
+		addActionListener(dialogActionListener);
 
-  public String getTitle() {
-    return TITLE;
-  }
+	}
 
-  public boolean isInputValid() {
-    return getSelectedFile() != null;
-  }
+	public void enteredFromLeft(final Map dataMap) {
+		rescanCurrentDirectory();
+	}
 
-  public void add(InputChangedListener listener) {
-    listeners.add(listener);
-  }
+	public void exitingToRight() throws Exception {
+	}
 
-  public void remove(InputChangedListener listener) {
-    listeners.remove(listener);
-  }
+	public String getID() {
+		return getClass().getName();
+	}
 
-  private void fireInputChanged() {
-    for (InputChangedListener listener : listeners) {
-      listener.inputChanged();
-    }
-  }
+	public String getInstructions() {
+		return INSTRUCTIONS;
+	}
+
+	public String getNextID() {
+		return null;
+	}
+
+	public String getTitle() {
+		return TITLE;
+	}
+
+	public boolean isInputValid() {
+		return getSelectedFile() != null;
+	}
+
+	public void add(InputChangedListener listener) {
+		listeners.add(listener);
+	}
+
+	public void remove(InputChangedListener listener) {
+		listeners.remove(listener);
+	}
+
+	private void fireInputChanged() {
+		for (InputChangedListener listener : listeners) {
+			listener.inputChanged();
+		}
+	}
 }

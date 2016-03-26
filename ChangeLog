@@ -2,6 +2,9 @@
 # 1. for display continuity sake please use 2 spaces instead of tabs
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
+2016-03-26 Giuseppe Aruta  <giuseppe_aruta@yahoo.it>
+  * Extended Sextante Raster Capabilities to read Bitmap (BMP) and JP2000 
+   (JP2) raster files
 
 2016-03-24 mmichaud <m.michael.michaud@orange.fr>
   * add build-helper-maven-plugin in maven to be able to run tests located
@@ -9,13 +12,13 @@
 
 2016-03-23 Giuseppe Aruta  <giuseppe_aruta@yahoo.it>
   * emhenced version of RasterImageLayerPropertiesPlugIn: 
-  * 1) New info HTML table "a la" GvSIG style
-  * 2) Faster info checker (all cell statistic related to Sextante raster image 
-  * have been removed as alredy embedded into Raster Statistic plugin
-  * 3) Added a limited projection checker < see other details into 
-  * org.openjump.core.ui.util.ProjUtils.class
-  * 4) Added a Raster Transparency panel
-  * 
+    1) New info HTML table "a la" GvSIG style
+    2) Faster info checker (all cell statistic related to Sextante raster 
+       image have been removed as alredy embedded into Raster Statistic 
+       plugin
+    3) Added a limited projection checker < see other details into 
+    org.openjump.core.ui.util.ProjUtils.class
+    4) Added a Raster Transparency panel
 
 2016-03-15 mmichaud <m.michael.michaud@orange.fr>
   * Switch compiler source and target to java 1.7
