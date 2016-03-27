@@ -45,16 +45,19 @@ import java.util.TreeSet;
 
 
 public class CollectionUtil {
+
     public CollectionUtil() {
     }
-    public static Collection concatenate(Collection a, Collection b) {
-        ArrayList result = new ArrayList();
+
+    public static <T> Collection<T> concatenate(Collection<T> a, Collection<T> b) {
+        List<T> result = new ArrayList<>();
         result.addAll(a);
         result.addAll(b);
         return result;
     }
-    public static List list(Object a, Object b) {
-        ArrayList list = new ArrayList();
+
+    public static <T> List<T> list(T a, T b) {
+        List<T> list = new ArrayList<>();
         list.add(a);
         list.add(b);
         return list;
@@ -68,25 +71,17 @@ public class CollectionUtil {
         return combinations(original, maxCombinationSize, null);
     }
 
-    public static Map inverse(Map map) {
-        Map inverse;
+    public static <U,V> Map<V,U> inverse(Map<U,V> map) {
+        Map<V,U> inverse;
         try {
-            inverse = (Map) map.getClass().newInstance();
-        } catch (InstantiationException e) {
+            inverse = map.getClass().newInstance();
+        } catch (InstantiationException|IllegalAccessException e) {
             Assert.shouldNeverReachHere(e.toString());
-
-            return null;
-        } catch (IllegalAccessException e) {
-            Assert.shouldNeverReachHere(e.toString());
-
             return null;
         }
-        for (Iterator i = map.keySet().iterator(); i.hasNext();) {
-            Object key = i.next();
-            Object value = map.get(key);
-            inverse.put(value, key);
+        for (Map.Entry<U,V> entry : map.entrySet()) {
+            inverse.put(entry.getValue(), entry.getKey());
         }
-
         return inverse;
     }
 
@@ -96,13 +91,14 @@ public class CollectionUtil {
      * @param mandatoryItem an item that all returned combinations must contain,
      * or null to leave unspecified
      */
-    public static List combinations(List original, int maxCombinationSize,
-        Object mandatoryItem) {
-        ArrayList combinations = new ArrayList();
+    public static <T> List<List<T>> combinations(List<T> original,
+                int maxCombinationSize, T mandatoryItem) {
+
+        List<List<T>> combinations = new ArrayList<>();
 
         //Combinations are given by the bits of each binary number from 1 to 2^N
         for (int i = 1; i <= ((int) Math.pow(2, original.size()) - 1); i++) {
-            ArrayList combination = new ArrayList();
+            List<T> combination = new ArrayList<>();
             for (int j = 0; j < original.size(); j++) {
                 if ((i & (int) Math.pow(2, j)) > 0) {
                     combination.add(original.get(j));
@@ -111,8 +107,7 @@ public class CollectionUtil {
             if (combination.size() > maxCombinationSize) {
                 continue;
             }
-            if ((mandatoryItem != null) &&
-                    !combination.contains(mandatoryItem)) {
+            if ((mandatoryItem != null) && !combination.contains(mandatoryItem)) {
                 continue;
             }
             combinations.add(combination);
@@ -124,13 +119,12 @@ public class CollectionUtil {
     /**
      * Returns a List of Lists: all combinations of the elements of the given List.
      */
-    public static List combinations(List original) {
+    public static <T> List<List<T>> combinations(List<T> original) {
         return combinations(original, original.size(), null);
     }
 
-    public static void removeKeys(Collection keys, Map map) {
-        for (Iterator i = keys.iterator(); i.hasNext();) {
-            Object key = (Object) i.next();
+    public static <U,V> void removeKeys(Collection<U> keys, Map<U,V> map) {
+        for (U key : keys) {
             map.remove(key);
         }
     }
@@ -139,23 +133,20 @@ public class CollectionUtil {
      * The nth key corresponds to the nth value
      */
     public static List[] keysAndCorrespondingValues(Map map) {
-        ArrayList keys = new ArrayList(map.keySet());
-        ArrayList values = new ArrayList();
-        for (Iterator i = keys.iterator(); i.hasNext();) {
-            Object key = i.next();
+        List keys = new ArrayList(map.keySet());
+        List values = new ArrayList();
+        for (Object key : keys) {
             values.add(map.get(key));
         }
 
         return new List[] { keys, values };
     }
 
-    public static Collection concatenate(Collection collections) {
-        ArrayList concatenation = new ArrayList();
-        for (Iterator i = collections.iterator(); i.hasNext();) {
-            Collection collection = (Collection) i.next();
+    public static <T> Collection<T> concatenate(Collection<Collection<T>> collections) {
+        List<T> concatenation = new ArrayList<>();
+        for (Collection<T> collection : collections) {
             concatenation.addAll(collection);
         }
-
         return concatenation;
     }
 
@@ -163,10 +154,10 @@ public class CollectionUtil {
         return list.get((int) Math.floor(Math.random() * list.size()));
     }
 
-    public static SortedSet reverseSortedSet(int[] ints) {
-        TreeSet sortedSet = new TreeSet(Collections.reverseOrder());
-        for (int i = 0; i < ints.length; i++) {
-            sortedSet.add(new Integer(ints[i]));
+    public static SortedSet<Integer> reverseSortedSet(int[] ints) {
+        TreeSet<Integer> sortedSet = new TreeSet<>(Collections.reverseOrder());
+        for (int i : ints) {
+            sortedSet.add(i);
         }
 
         return sortedSet;
@@ -181,12 +172,12 @@ public class CollectionUtil {
     /**
      * Data is evenly discarded or duplicated to attain the new size
      */
-    public static Collection stretch(Collection source, Collection destination,
-        int destinationSize) {
+    public static <T> Collection stretch(Collection<T> source,
+                Collection<T> destination, int destinationSize) {
         Assert.isTrue(destination.isEmpty());
 
-        List originalList = source instanceof List ? (List) source
-                                                   : new ArrayList(source);
+        List<T> originalList = source instanceof List ?
+                (List<T>) source : new ArrayList<T>(source);
         for (int i = 0; i < destinationSize; i++) {
             destination.add(originalList.get(
                     (int) Math.round(
@@ -200,7 +191,7 @@ public class CollectionUtil {
         return c.contains(o) ? o : alternative;
     }
 
-    public static void setIfNull(int i, List list, String value) {
+    public static void setIfNull(int i, List<String> list, String value) {
         if (i >= list.size()) {
             resize(list, i + 1);
         }
@@ -236,15 +227,13 @@ public class CollectionUtil {
      * Brute force, for when HashSet and TreeSet won't work (e.g. #hashCode
      * implementation isn't appropriate). The original Collection is not modified.
      */
-    public static Collection removeDuplicates(Collection original) {
-        ArrayList result = new ArrayList();
-        for (Iterator i = original.iterator(); i.hasNext();) {
-            Object item = i.next();
+    public static <T> Collection<T> removeDuplicates(Collection<T> original) {
+        List<T> result = new ArrayList<>();
+        for (T item : original) {
             if (!result.contains(item)) {
                 result.add(item);
             }
         }
-
         return result;
     }
 
@@ -272,19 +261,17 @@ public class CollectionUtil {
         return createMap(HashMap.class, alternatingKeysAndValues);
     }
 
-    public static Map createMap(Class mapClass,
+    public static Map<Object,Object> createMap(Class mapClass,
         Object[] alternatingKeysAndValues) {
-        Map map = null;
+        Map<Object,Object> map = null;
         try {
-            map = (Map) mapClass.newInstance();
+            map = (Map<Object,Object>) mapClass.newInstance();
+            for (int i = 0; i < alternatingKeysAndValues.length; i += 2) {
+                map.put(alternatingKeysAndValues[i], alternatingKeysAndValues[i + 1]);
+            }
         } catch (Exception e) {
             Assert.shouldNeverReachHere(e.toString());
         }
-        for (int i = 0; i < alternatingKeysAndValues.length; i += 2) {
-            map.put(alternatingKeysAndValues[i], alternatingKeysAndValues[i +
-                1]);
-        }
-
         return map;
     }
 
@@ -304,26 +291,22 @@ public class CollectionUtil {
      * The Smalltalk #select method.
      */
     public static Collection select(Collection collection, Block block) {
-        ArrayList result = new ArrayList();
-        for (Iterator i = collection.iterator(); i.hasNext();) {
-            Object item = i.next();
+        List<Object> result = new ArrayList<>();
+        for (Object item : collection) {
             if (Boolean.TRUE.equals(block.yield(item))) {
                 result.add(item);
             }
-            ;
         }
-
         return result;
     }
 
-    public static Object get(Class c, Map map) {
+    public static Object get(Class c, Map<Class,Object> map) {
         if (map.keySet().contains(c)) {
             return map.get(c);
         }
-        for (Iterator i = map.keySet().iterator(); i.hasNext();) {
-            Class candidateClass = (Class) i.next();
-            if (candidateClass.isAssignableFrom(c)) {
-                return map.get(candidateClass);
+        for (Class<?> clazz : map.keySet()) {
+            if (clazz.isAssignableFrom(c)) {
+                return map.get(clazz);
             }
         }
 

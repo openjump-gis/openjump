@@ -53,14 +53,12 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.util.Blackboard;
+import org.openjump.core.ui.util.ExceptionUtil;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -214,31 +212,15 @@ public class LoadDatasetPlugIn extends ThreadedBasePlugIn {
         }
     }
 
-    private void reportExceptions(ArrayList exceptions,
+    private void reportExceptions(List<Throwable> exceptions,
         DataSourceQuery dataSourceQuery, PlugInContext context) {
         context.getOutputFrame().addHeader(1,
             exceptions.size() + " " + I18N.get("datasource.LoadDatasetPlugIn.problem") + StringUtil.s(exceptions.size()) +
             " "+ I18N.get("datasource.LoadDatasetPlugIn.loading") +" "+ dataSourceQuery.toString() + "." +
             ((exceptions.size() > 10) ? I18N.get("datasource.LoadDatasetPlugIn.first-and-last-five") : ""));
         context.getOutputFrame().addText(I18N.get("datasource.LoadDatasetPlugIn.see-view-log"));
-        context.getOutputFrame().append("<ul>");
 
-        Collection exceptionsToReport = exceptions.size() <= 10 ? exceptions
-                                                                : CollectionUtil.concatenate(Arrays.asList(
-                    new Collection[] {
-                        exceptions.subList(0, 5),
-                        exceptions.subList(exceptions.size() - 5,
-                            exceptions.size())
-                    }));
-        for (Iterator j = exceptionsToReport.iterator(); j.hasNext();) {
-            Exception exception = (Exception) j.next();
-            context.getWorkbenchFrame().log(StringUtil.stackTrace(exception));
-            context.getOutputFrame().append("<li>");
-            context.getOutputFrame().append(GUIUtil.escapeHTML(
-                    WorkbenchFrame.toMessage(exception), true, true));
-            context.getOutputFrame().append("</li>");
-        }
-        context.getOutputFrame().append("</ul>");
+        ExceptionUtil.reportExceptions(context, exceptions);
     }
 
     private String chooseCategory(PlugInContext context) {

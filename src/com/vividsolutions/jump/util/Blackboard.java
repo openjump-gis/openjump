@@ -41,20 +41,22 @@ import java.util.Map;
 * it's stored on the Workbench Blackboard.
 */
 public class Blackboard implements Cloneable, Serializable {
+
     private static final long serialVersionUID = 6504993615735124204L;
-    private HashMap properties = new HashMap();
+
+    private HashMap<String,Object> properties = new HashMap<>();
 
     /**
      * Used by Java2XML
      */
-    public HashMap getProperties() {
+    public HashMap<String,Object> getProperties() {
         return properties;
     }
 
     /**
      * Used by Java2XML
      */
-    public void setProperties(HashMap properties) {
+    public void setProperties(HashMap<String,Object> properties) {
         this.properties = properties;
     }
 
@@ -68,24 +70,37 @@ public class Blackboard implements Cloneable, Serializable {
     }
 
     public Blackboard put(String key, boolean value) {
-        put(key, new Boolean(value));
+        properties.put(key, value);
         return this;
     }
-    public Blackboard putAll(Map properties) {
+
+    public Blackboard putAll(Map<String,Object> properties) {
         this.properties.putAll(properties);
         return this;
     }
 
+    /**
+     * If no value is yet defined for this key, map default value to the key
+     * in the blackboard and return it.
+     * @param key key of the value to retrieve
+     * @param defaultValue default boolean value for this key
+     * @return the value associated to the key or defaultValue if no value
+     * is yet defined for the key
+     */
     public boolean get(String key, boolean defaultValue) {
         if (get(key) == null) {
             put(key, defaultValue);
         }
-
         return getBoolean(key);
     }
 
+    /**
+     * Use getBoolean if you know that the value stored for key is an integer.
+     * @param key key of the value to retrieve
+     * @return the boolean value associated with this key
+     */
     public boolean getBoolean(String key) {
-        return ((Boolean) get(key)).booleanValue();
+        return (Boolean)get(key);
     }
 
     public Blackboard put(String key, int value) {
@@ -102,39 +117,67 @@ public class Blackboard implements Cloneable, Serializable {
       return properties.remove(key);
     }
 
+    /**
+     * If no value is yet defined for this key, map default value to the key
+     * in the blackboard and return it.
+     * @param key key of the value to retrieve
+     * @param defaultValue default double value for this key
+     * @return the value associated to the key or defaultValue if no value
+     * is yet defined for the key
+     */
     public double get(String key, double defaultValue) {
         if (get(key) == null) {
             put(key, defaultValue);
         }
-
         return getDouble(key);
     }
 
+    /**
+     * If no value is yet defined for this key, map default value to the key
+     * in the blackboard and return it.
+     * @param key key of the value to retrieve
+     * @param defaultValue default integer value for this key
+     * @return the value associated to the key or defaultValue if no value
+     * is yet defined for the key
+     */
     public int get(String key, int defaultValue) {
         if (get(key) == null) {
             put(key, defaultValue);
         }
-
         return getInt(key);
     }
 
+    /**
+     * Use getInt if you know that the value stored for key is an integer.
+     * @param key key of the value to retrieve
+     * @return the integer value associated with this key
+     */
     public int getInt(String key) {
-        return ((Integer) get(key)).intValue();
+        return (Integer)get(key);
     }
 
+    /**
+     * Use getDouble if you know that the value stored for key is a double.
+     * @param key key of the value to retrieve
+     * @return the double value associated with this key
+     */
     public double getDouble(String key) {
-        return ((Double) get(key)).doubleValue();
+        return (Double)get(key);
     }
 
     public Object get(String key, Object defaultValue) {
         if (get(key) == null) {
             put(key, defaultValue);
         }
-
         return get(key);
     }
-    
-    public Object clone() {
+
+    /**
+     * Warning : does not follow the clone contract (does not call super.clone())
+     * but uses a copy consructor instead.
+     * @return a new Blackboard containing the same properties
+     */
+    public Blackboard clone() {
         return new Blackboard().putAll(properties);
     }
 }

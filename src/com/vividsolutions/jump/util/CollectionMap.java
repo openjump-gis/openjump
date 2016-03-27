@@ -41,8 +41,9 @@ import com.vividsolutions.jts.util.Assert;
 /**
  *  A Map whose values are Collections.
  */
-public class CollectionMap implements Map {
-    private Map map;
+public class CollectionMap<U,V> implements Map<U,Collection<V>> {
+
+    private Map<U,Collection<V>> map;
     private Class collectionClass = ArrayList.class;
 
     /**
@@ -51,10 +52,8 @@ public class CollectionMap implements Map {
      */
     public CollectionMap(Class mapClass) {
         try {
-            map = (Map) mapClass.newInstance();
-        } catch (InstantiationException e) {
-            Assert.shouldNeverReachHere();
-        } catch (IllegalAccessException e) {
+            map = (Map<U,Collection<V>>)mapClass.newInstance();
+        } catch (InstantiationException|IllegalAccessException e) {
             Assert.shouldNeverReachHere();
         }
     }
@@ -62,10 +61,8 @@ public class CollectionMap implements Map {
     public CollectionMap(Class mapClass, Class collectionClass) {
         this.collectionClass = collectionClass;
         try {
-            map = (Map) mapClass.newInstance();
-        } catch (InstantiationException e) {
-            Assert.shouldNeverReachHere();
-        } catch (IllegalAccessException e) {
+            map = (Map<U,Collection<V>>) mapClass.newInstance();
+        } catch (InstantiationException|IllegalAccessException e) {
             Assert.shouldNeverReachHere();
         }
     }    
@@ -77,14 +74,12 @@ public class CollectionMap implements Map {
         this(HashMap.class);
     }
     
-    private Collection getItemsInternal(Object key) {
-        Collection collection = (Collection) map.get(key);
+    private Collection<V> getItemsInternal(U key) {
+        Collection<V> collection = map.get(key);
         if (collection == null) {
             try {
-                collection = (Collection) collectionClass.newInstance();
-            } catch (InstantiationException e) {
-                Assert.shouldNeverReachHere();
-            } catch (IllegalAccessException e) {
+                collection = (Collection<V>) collectionClass.newInstance();
+            } catch (InstantiationException|IllegalAccessException e) {
                 Assert.shouldNeverReachHere();
             }
             map.put(key, collection);
@@ -98,11 +93,11 @@ public class CollectionMap implements Map {
      * @param key the key to the Collection to which the item should be added
      * @param item the item to add
      */
-    public void addItem(Object key, Object item) {
+    public void addItem(U key, V item) {
         getItemsInternal(key).add(item);
     }
     
-    public void removeItem(Object key, Object item) {
+    public void removeItem(U key, V item) {
         getItemsInternal(key).remove(item);
     }
 
@@ -116,15 +111,14 @@ public class CollectionMap implements Map {
      * @param key the key to the Collection to which the items should be added
      * @param items the items to add
      */
-    public void addItems(Object key, Collection items) {
-        for (Iterator i = items.iterator(); i.hasNext();) {
-            addItem(key, i.next());
+    public void addItems(U key, Collection<V> items) {
+        for (V item : items) {
+            addItem(key, item);
         }
     }
     
-    public void addItems(CollectionMap other) {
-        for (Iterator i = other.keySet().iterator(); i.hasNext(); ) {
-            Object key = i.next();
+    public void addItems(CollectionMap<U,V> other) {
+        for (U key : other.keySet()) {
             addItems(key, other.getItems(key));
         }
     }
@@ -133,7 +127,7 @@ public class CollectionMap implements Map {
      * Returns the values.
      * @return a view of the values, backed by this CollectionMap
      */
-    public Collection values() {
+    public Collection<Collection<V>> values() {
         return map.values();
     }
 
@@ -141,7 +135,7 @@ public class CollectionMap implements Map {
      * Returns the keys.
      * @return a view of the keys, backed by this CollectionMap
      */
-    public Set keySet() {
+    public Set<U> keySet() {
         return map.keySet();
     }
 
@@ -153,15 +147,19 @@ public class CollectionMap implements Map {
         return map.size();
     }
 
-    public Object get(Object key) {
-        return getItems(key);
+    public Collection<V> get(Object key) {
+        try {
+            return getItems((U)key);
+        } catch(ClassCastException e) {
+            return null;
+        }
     }
 
-    public Collection getItems(Object key) {
+    public Collection<V> getItems(U key) {
         return Collections.unmodifiableCollection(getItemsInternal(key));
     }
 
-    public Object remove(Object key) {
+    public Collection<V> remove(Object key) {
         return map.remove(key);
     }
 
@@ -173,7 +171,7 @@ public class CollectionMap implements Map {
         return map.containsValue(value);
     }
 
-    public Set entrySet() {
+    public Set<Map.Entry<U,Collection<V>>> entrySet() {
         return map.entrySet();
     }
 
@@ -181,20 +179,19 @@ public class CollectionMap implements Map {
         return map.isEmpty();
     }
 
-    public Object put(Object key, Object value) {
-        Assert.isTrue(value instanceof Collection);
-
+    public Collection<V> put(U key, Collection<V> value) {
+        //Assert.isTrue(value instanceof Collection);
         return map.put(key, value);
     }
 
-    public void putAll(Map map) {
-        for (Iterator i = map.keySet().iterator(); i.hasNext();) {
-            Object key = i.next();
+    public void putAll(Map<? extends U, ? extends Collection<V>> map) {
+        for (U key : map.keySet()) {
             //Delegate to #put so that the assertion is made. [Jon Aquino]
             put(key, map.get(key));
         }
     }
-    public void removeItems(Object key, Collection items) {
+
+    public void removeItems(U key, Collection<V> items) {
         getItemsInternal(key).removeAll(items);
     }
 

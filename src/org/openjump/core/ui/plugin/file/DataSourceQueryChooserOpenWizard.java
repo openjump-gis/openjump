@@ -1,9 +1,6 @@
 package org.openjump.core.ui.plugin.file;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
@@ -24,6 +21,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
+import org.openjump.core.ui.util.ExceptionUtil;
 
 public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
 
@@ -74,7 +72,7 @@ public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
         boolean exceptionsEncountered = false;
         for (Iterator i = dataSourceQueries.iterator(); i.hasNext();) {
           DataSourceQuery dataSourceQuery = (DataSourceQuery)i.next();
-          ArrayList exceptions = new ArrayList();
+          List<Throwable> exceptions = new ArrayList<>();
           if (dataSourceQuery.getDataSource().isReadable()) {
             monitor.report("Loading " + dataSourceQuery.toString() + "...");
 
@@ -126,7 +124,7 @@ public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
         .toString();
   }
 
-  private void reportExceptions(ArrayList exceptions,
+  private void reportExceptions(List<Throwable> exceptions,
     DataSourceQuery dataSourceQuery, PlugInContext context) {
     context.getOutputFrame()
       .addHeader(
@@ -144,21 +142,7 @@ public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
             : ""));
     context.getOutputFrame().addText(
       I18N.get("datasource.LoadDatasetPlugIn.see-view-log"));
-    context.getOutputFrame().append("<ul>");
 
-    Collection exceptionsToReport = exceptions.size() <= 10 ? exceptions
-      : CollectionUtil.concatenate(Arrays.asList(new Collection[] {
-        exceptions.subList(0, 5),
-        exceptions.subList(exceptions.size() - 5, exceptions.size())
-      }));
-    for (Iterator j = exceptionsToReport.iterator(); j.hasNext();) {
-      Exception exception = (Exception)j.next();
-      context.getWorkbenchFrame().log(StringUtil.stackTrace(exception));
-      context.getOutputFrame().append("<li>");
-      context.getOutputFrame().append(
-        GUIUtil.escapeHTML(WorkbenchFrame.toMessage(exception), true, true));
-      context.getOutputFrame().append("</li>");
-    }
-    context.getOutputFrame().append("</ul>");
+    ExceptionUtil.reportExceptions(context, exceptions);
   }
 }

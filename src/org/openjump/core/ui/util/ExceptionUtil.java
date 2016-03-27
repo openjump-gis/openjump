@@ -1,21 +1,19 @@
 package org.openjump.core.ui.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
 public class ExceptionUtil {
 
-  public static void reportExceptions(ArrayList exceptions,
+  public static void reportExceptions(List<Throwable> exceptions,
     DataSourceQuery dataSourceQuery, WorkbenchFrame workbenchFrame,
     HTMLFrame outputFrame) {
     outputFrame.addHeader(
@@ -34,13 +32,12 @@ public class ExceptionUtil {
     outputFrame.addText(I18N.get("datasource.LoadDatasetPlugIn.see-view-log"));
     outputFrame.append("<ul>");
 
-    Collection exceptionsToReport = exceptions.size() <= 10 ? exceptions
-      : CollectionUtil.concatenate(Arrays.asList(new Collection[] {
-        exceptions.subList(0, 5),
-        exceptions.subList(exceptions.size() - 5, exceptions.size())
-      }));
-    for (Iterator j = exceptionsToReport.iterator(); j.hasNext();) {
-      Exception exception = (Exception)j.next();
+    Collection<Throwable> exceptionsToReport = exceptions.size() <= 10 ?
+            exceptions :
+            CollectionUtil.concatenate(
+                exceptions.subList(0, 5),
+                exceptions.subList(exceptions.size() - 5, exceptions.size()));
+    for (Throwable exception : exceptionsToReport) {
       workbenchFrame.log(StringUtil.stackTrace(exception));
       outputFrame.append("<li>");
       outputFrame.append(GUIUtil.escapeHTML(
@@ -49,6 +46,24 @@ public class ExceptionUtil {
       exception.printStackTrace();
     }
     outputFrame.append("</ul>");
+  }
+
+  public static void reportExceptions(PlugInContext context, List<Throwable> exceptions) {
+    context.getOutputFrame().append("<ul>");
+    int size = exceptions.size();
+    Collection<Throwable> exceptionsToReport = size <= 10 ?
+            exceptions :
+            CollectionUtil.concatenate(
+                    exceptions.subList(0, 5),
+                    exceptions.subList(size - 5, size));
+    for (Throwable exception : exceptionsToReport) {
+      context.getWorkbenchFrame().log(StringUtil.stackTrace(exception));
+      context.getOutputFrame().append("<li>");
+      context.getOutputFrame().append(GUIUtil.escapeHTML(
+              WorkbenchFrame.toMessage(exception), true, true));
+      context.getOutputFrame().append("</li>");
+    }
+    context.getOutputFrame().append("</ul>");
   }
 
 }

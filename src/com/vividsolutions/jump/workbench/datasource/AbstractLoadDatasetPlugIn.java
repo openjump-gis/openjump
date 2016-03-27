@@ -25,6 +25,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import org.openjump.core.ui.util.ExceptionUtil;
 
 public abstract class AbstractLoadDatasetPlugIn extends AbstractLoadSaveDatasetPlugIn { 
     public void run(TaskMonitor monitor, PlugInContext context)
@@ -70,31 +71,15 @@ public abstract class AbstractLoadDatasetPlugIn extends AbstractLoadSaveDatasetP
         }
     }
 
-    private void reportExceptions(ArrayList exceptions,
+    private void reportExceptions(ArrayList<Throwable> exceptions,
         DataSourceQuery dataSourceQuery, PlugInContext context) {
         context.getOutputFrame().addHeader(1,
             exceptions.size() + " "+I18N.get("datasource.LoadDatasetPlugIn.problem") + StringUtil.s(exceptions.size()) +
             " "+ I18N.get("datasource.LoadDatasetPlugIn.loading")  + " " + dataSourceQuery.toString() + "." +
             ((exceptions.size() > 10) ? " "+I18N.get("datasource.LoadDatasetPlugIn.first-and-last-five") : ""));
         context.getOutputFrame().addText(I18N.get("datasource.LoadDatasetPlugIn.see-view-log"));
-        context.getOutputFrame().append("<ul>");
 
-        Collection exceptionsToReport = exceptions.size() <= 10 ? exceptions
-                                                                : CollectionUtil.concatenate(Arrays.asList(
-                    new Collection[] {
-                        exceptions.subList(0, 5),
-                        exceptions.subList(exceptions.size() - 5,
-                            exceptions.size())
-                    }));
-        for (Iterator j = exceptionsToReport.iterator(); j.hasNext();) {
-            Exception exception = (Exception) j.next();
-            context.getWorkbenchFrame().log(StringUtil.stackTrace(exception));
-            context.getOutputFrame().append("<li>");
-            context.getOutputFrame().append(GUIUtil.escapeHTML(
-                    WorkbenchFrame.toMessage(exception), true, true));
-            context.getOutputFrame().append("</li>");
-        }
-        context.getOutputFrame().append("</ul>");
+        ExceptionUtil.reportExceptions(context, exceptions);
     }
 
     private String chooseCategory(PlugInContext context) {
