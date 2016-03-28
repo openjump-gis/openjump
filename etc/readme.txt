@@ -53,7 +53,7 @@ as (Component name - License name - License file in "licenses/" folder or link)
      - jmath_license.txt
  Javascript library RHINO - GPL2 - gpl-2.txt
  JTS Topology Suite - LGPL2 - lgpl-2.1.txt
- Junit - Common Public License v1.0 (CPL1) - cpl-1.0.txt
+ JUnit - Eclipse Public License v1.0 - epl-v10.txt
  Jython - Jython license - jython_license.txt
  Log4J - Apache License Version 2.0 - apache_license-2.0.txt
  Logo
