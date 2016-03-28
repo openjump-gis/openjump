@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-03-28 ede
+  * upgraded junit & imageio-ext to latest stable versions
+
 2016-03-26 mmichaud <m.michael.michaud@orange.fr>
   * Update JDOM dependency to JDOM2 (used in java2xml)
 
