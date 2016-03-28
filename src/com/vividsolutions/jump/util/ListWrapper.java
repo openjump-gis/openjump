@@ -4,20 +4,21 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
-public abstract class ListWrapper extends CollectionWrapper implements List {
-	public List getList() {
-		return (List) getCollection();
+public abstract class ListWrapper<T> extends CollectionWrapper<T> implements List<T> {
+
+	public List<T> getList() {
+		return (List<T>) getCollection();
 	}
 
-	public Object get(int index) {
+	public T get(int index) {
 		return getList().get(index);
 	}
 
-	public Object remove(int index) {
+	public T remove(int index) {
 		return getList().remove(index);
 	}
 
-	public void add(int index, Object element) {
+	public void add(int index, T element) {
 		getList().add(index, element);
 	}
 
@@ -29,23 +30,23 @@ public abstract class ListWrapper extends CollectionWrapper implements List {
 		return getList().lastIndexOf(o);
 	}
 
-	public boolean addAll(int index, Collection c) {
+	public boolean addAll(int index, Collection<? extends T> c) {
 		return getList().addAll(index, c);
 	}
 
-	public List subList(int fromIndex, int toIndex) {
+	public List<T> subList(int fromIndex, int toIndex) {
 		return getList().subList(fromIndex, toIndex);
 	}
 
-	public ListIterator listIterator() {
+	public ListIterator<T> listIterator() {
 		return getList().listIterator();
 	}
 
-	public ListIterator listIterator(int index) {
+	public ListIterator<T> listIterator(int index) {
 		return getList().listIterator(index);
 	}
 
-	public Object set(int index, Object element) {
+	public T set(int index, T element) {
 		return getList().set(index, element);
 	}
 }

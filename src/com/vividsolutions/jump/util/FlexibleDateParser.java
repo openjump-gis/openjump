@@ -32,7 +32,6 @@
 package com.vividsolutions.jump.util;
 
 import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jump.I18N;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -61,8 +60,8 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class FlexibleDateParser {
 
-    private static Collection lenientFormatters = null;
-    private static Collection unlenientFormatters = null;
+    private static Collection<SimpleDateFormat> lenientFormatters = null;
+    private static Collection<SimpleDateFormat> unlenientFormatters = null;
 
     //CellEditor used to be a static field CELL_EDITOR, but I was getting
     //problems calling it from ESETextField (it simply didn't appear).
@@ -114,7 +113,7 @@ public class FlexibleDateParser {
         public Object getCellEditorValue() {
             return value;
         }
-    };
+    }
     
     public static final class CellRenderer extends DefaultTableCellRenderer {
         
@@ -132,21 +131,21 @@ public class FlexibleDateParser {
 
     private boolean verbose = false;
 
-    private Collection sortByComplexity(Collection patterns) {
+    private Collection<DatePattern> sortByComplexity(Collection<DatePattern> patterns) {
         //Least complex to most complex. [Jon Aquino]
-        TreeSet sortedPatterns = new TreeSet(new Comparator() {
-            public int compare(Object o1, Object o2) {
-                int result = complexity(o1.toString()) - complexity(o2.toString());
+        TreeSet<DatePattern> sortedPatterns = new TreeSet<>(new Comparator<DatePattern>() {
+            public int compare(DatePattern o1, DatePattern o2) {
+                int result = complexity(o1.pattern) - complexity(o2.pattern);
                 if (result == 0) {
                     //The two patterns have the same level of complexity.
                     //Sort by order of appearance (e.g. to resolve
                     //MM/dd/yyyy vs dd/MM/yyyy [Jon Aquino]
-                    result = ((Pattern) o1).index - ((Pattern) o2).index;
+                    result = o1.index - o2.index;
                 }
                 return result;
             }
 
-            private TreeSet uniqueCharacters = new TreeSet();
+            private TreeSet<String> uniqueCharacters = new TreeSet<>();
 
             private int complexity(String pattern) {
                 uniqueCharacters.clear();
@@ -165,19 +164,17 @@ public class FlexibleDateParser {
         return sortedPatterns;
     }
 
-    private Collection lenientFormatters() {
+    private Collection<SimpleDateFormat> lenientFormatters() {
         if (lenientFormatters == null) {
             load();
         }
-
         return lenientFormatters;
     }
 
-    private Collection unlenientFormatters() {
+    private Collection<SimpleDateFormat> unlenientFormatters() {
         if (unlenientFormatters == null) {
             load();
         }
-
         return unlenientFormatters;
     }
 
@@ -211,11 +208,10 @@ public class FlexibleDateParser {
         }
     }
 
-    private Date parse(String s, Collection formatters) throws ParseException {
+    private Date parse(String s, Collection<SimpleDateFormat> formatters) throws ParseException {
         ParseException firstParseException = null;
 
-        for (Iterator i = formatters.iterator(); i.hasNext();) {
-            SimpleDateFormat formatter = (SimpleDateFormat) i.next();
+        for (SimpleDateFormat formatter : formatters) {
 
             if (verbose) {
                 System.out.println(
@@ -258,17 +254,19 @@ public class FlexibleDateParser {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
-        if ((calendar.get(Calendar.YEAR) == 1970) && (s.indexOf("70") == -1)) {
+        // If the parser found date is in year 1970 and 70 is not in the
+        // original String, set year to current year : why ???
+        if ((calendar.get(Calendar.YEAR) == 1970) && !s.contains("70")) {
             calendar.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
         }
 
         return calendar.getTime();
     }
 
-    private static class Pattern {
+    private static class DatePattern {
         private String pattern;
         private int index;
-        public Pattern(String pattern, int index) {
+        public DatePattern(String pattern, int index) {
             this.pattern = pattern;
             this.index = index;
         }
@@ -292,53 +290,38 @@ public class FlexibleDateParser {
             // Does not use 18N to be able to reload another language file dynamically
             // (with 18N, things seems to be started only once at the start of the application)
             ResourceBundle resourceBundle = ResourceBundle.getBundle("language/jump");
-            InputStream inputStream =
-                getClass().getResourceAsStream(resourceBundle
-                        .getString("com.vividsolutions.jump.util.FlexibleDateParser"));
 
-            try {
-                try {
-                    Collection patterns = new ArrayList();
-                    int index = 0;
-                    for (Iterator i = FileUtil.getContents(inputStream).iterator();
-                        i.hasNext();
-                        ) {
-                        String line = ((String) i.next()).trim();
+            try (InputStream inputStream =
+                         getClass().getResourceAsStream(resourceBundle.getString(
+                                 "com.vividsolutions.jump.util.FlexibleDateParser")
+                         )) {
+                Collection<DatePattern> patterns = new ArrayList<>();
+                int index = 0;
+                for (String line : FileUtil.getContents(inputStream)) {
 
-                        if (line.startsWith("#")) {
-                            continue;
-                        }
-
-                        if (line.length() == 0) {
-                            continue;
-                        }
-
-                        patterns.add(new Pattern(line, index));
+                    if (line.trim().length() > 0 && !line.startsWith("#")) {
+                        patterns.add(new DatePattern(line, index));
                         index++;
                     }
 
-                    unlenientFormatters = toFormatters(false, patterns);
-                    lenientFormatters = toFormatters(true, patterns);
-                } finally {
-                    inputStream.close();
                 }
+                unlenientFormatters = toFormatters(false, patterns);
+                lenientFormatters = toFormatters(true, patterns);
             } catch (IOException e) {
                 Assert.shouldNeverReachHere(e.toString());
             }
         }
     }
 
-    private Collection toFormatters(boolean lenient, Collection patterns) {
-        ArrayList formatters = new ArrayList();
+    private Collection<SimpleDateFormat> toFormatters(boolean lenient, Collection<DatePattern> patterns) {
+        List<SimpleDateFormat> formatters = new ArrayList<>();
         //Sort from least complex to most complex; otherwise, ddMMMyyyy 
         //instead of MMMd will match "May 15". [Jon Aquino]
-        for (Iterator i = sortByComplexity(patterns).iterator(); i.hasNext();) {
-            Pattern pattern = (Pattern) i.next();
+        for (DatePattern pattern : sortByComplexity(patterns)) {
             SimpleDateFormat formatter = new SimpleDateFormat(pattern.pattern);
             formatter.setLenient(lenient);
             formatters.add(formatter);
         }
-
         return formatters;
     }
 

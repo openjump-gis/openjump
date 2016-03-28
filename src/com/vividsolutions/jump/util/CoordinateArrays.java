@@ -36,7 +36,6 @@ package com.vividsolutions.jump.util;
 import java.util.*;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.Assert;
 

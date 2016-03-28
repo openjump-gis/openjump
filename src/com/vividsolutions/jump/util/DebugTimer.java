@@ -37,15 +37,17 @@ import com.vividsolutions.jts.util.Stopwatch;
 
 
 public class DebugTimer {
-    private static final int TIME_LEN = 10;
+
     private static DebugTimer timer = new DebugTimer();
+    private final String blankStr;
+    private final int TIME_LEN;
     private Stopwatch sw = null;
-    private String blankStr;
 
     public DebugTimer() {
         sw = new Stopwatch();
         sw.start();
-        blankStr = fillString(TIME_LEN, ' ');
+        blankStr = "          ";
+        TIME_LEN = blankStr.length();
     }
 
     public static void startStatic(String msg) {
@@ -74,18 +76,8 @@ public class DebugTimer {
 
             return filled.substring(start);
         }
-
         // don't pad if it's already longer
         return timeStr;
     }
 
-    public String fillString(int len, char ch) {
-        StringBuffer buf = new StringBuffer(len);
-
-        for (int i = 0; i < len; i++) {
-            buf.append(ch);
-        }
-
-        return buf.toString();
-    }
 }

@@ -61,26 +61,23 @@ public class FileUtil {
   /**
    * Gets the content of filename as a list of lines.
    *
-   * @param filename
-   *          name of the input file
+   * @param filename name of the input file
    * @return a list of strings representing the file's lines
    * @throws IOException
    */
-  public static List getContents(String filename) throws IOException {
+  public static List<String> getContents(String filename) throws IOException {
     return getContents(new FileInputStream(filename));
   }
 
   /**
    * Gets the content of filename as a list of lines.
    *
-   * @param filename
-   *          name of the input file
-   * @param encoding
-   *          charset to use to decode filename
+   * @param filename name of the input file
+   * @param encoding charset to use to decode filename
    * @return a list of strings representing the file's lines
    * @throws IOException
    */
-  public static List getContents(String filename, String encoding)
+  public static List<String> getContents(String filename, String encoding)
       throws IOException {
     return getContents(new FileInputStream(filename), encoding);
   }
@@ -88,23 +85,22 @@ public class FileUtil {
   /**
    * Gets the content a compressed file passed as an URI.
    *
-   * @param uri
-   *          uri of the input resource
+   * @param uri uri of the input resource
    * @return a list of strings representing the compressed file's lines
    * @throws IOException
    */
-  public static List getContents(URI uri) throws IOException {
+  public static List<String> getContents(URI uri) throws IOException {
     return getContents(CompressedFile.openFile(uri));
   }
 
   /**
    * Gets the content of an inputSteam as a list of lines.
    * 
-   * @param inputStream
+   * @param inputStream inputStream to read from
    * @return a list of lines
    * @throws IOException
    */
-  public static List getContents(InputStream inputStream) throws IOException {
+  public static List<String> getContents(InputStream inputStream) throws IOException {
     return getContents(inputStream, Charset.defaultCharset().name());
   }
 
@@ -112,28 +108,20 @@ public class FileUtil {
    * Gets the content of an inputSteam as a list of lines. inputStream is
    * decoded with the specified charset.
    * 
-   * @param inputStream
+   * @param inputStream inputStream to read from
+   * @param encoding encoding of the inputStream
    * @return a list of lines
    * @throws IOException
    */
-  public static List getContents(InputStream inputStream, String encoding)
+  public static List<String> getContents(InputStream inputStream, String encoding)
       throws IOException {
-    ArrayList contents = new ArrayList();
-    InputStreamReader inputStreamReader = new InputStreamReader(inputStream,
-        encoding);
-    try {
-      BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-      try {
-        String line = bufferedReader.readLine();
-        while (line != null) {
+    List<String> contents = new ArrayList<>();
+    try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream,encoding);
+         BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+        String line;
+        while (null != (line = bufferedReader.readLine())) {
           contents.add(line);
-          line = bufferedReader.readLine();
         }
-      } finally {
-        bufferedReader.close();
-      }
-    } finally {
-      inputStreamReader.close();
     }
     return contents;
   }
@@ -141,12 +129,9 @@ public class FileUtil {
   /**
    * Saves the String to a file with the given filename.
    * 
-   * @param filename
-   *          the pathname of the file to create (or overwrite)
-   * @param contents
-   *          the data to save
-   * @throws IOException
-   *           if an I/O error occurs.
+   * @param filename the pathname of the file to create (or overwrite)
+   * @param contents the data to save
+   * @throws IOException if an I/O error occurs.
    */
   public static void setContents(String filename, String contents)
       throws IOException {
@@ -156,14 +141,11 @@ public class FileUtil {
   /**
    * Saves the List of Strings to a file with the given filename.
    * 
-   * @param filename
-   *          the pathname of the file to create (or overwrite)
-   * @param lines
-   *          the Strings to save as lines in the file
-   * @throws IOException
-   *           if an I/O error occurs.
+   * @param filename the pathname of the file to create (or overwrite)
+   * @param lines the Strings to save as lines in the file
+   * @throws IOException if an I/O error occurs.
    */
-  public static void setContents(String filename, List lines)
+  public static void setContents(String filename, List<String> lines)
       throws IOException {
     setContents(filename, lines, Charset.defaultCharset().name());
   }
@@ -171,16 +153,13 @@ public class FileUtil {
   /**
    * Saves lines into a file named filename, using encoding charset.
    *
-   * @param filename
-   *          the pathname of the file to create (or overwrite)
-   * @param contents
-   *          the data to save
-   * @throws IOException
-   *           if an I/O error occurs.
+   * @param filename the pathname of the file to create (or overwrite)
+   * @param contents the data to save
+   * @throws IOException if an I/O error occurs.
    */
   public static void setContents(String filename, String contents,
       String encoding) throws IOException {
-    List<String> lines = new ArrayList<String>();
+    List<String> lines = new ArrayList<>();
     lines.add(contents);
     setContents(filename, lines, encoding);
   }
@@ -188,72 +167,41 @@ public class FileUtil {
   /**
    * Saves lines into a file named filename, using encoding charset.
    *
-   * @param filename
-   *          the pathname of the file to create (or overwrite)
-   * @param lines
-   *          the data to save
-   * @throws IOException
-   *           if an I/O error occurs.
+   * @param filename the pathname of the file to create (or overwrite)
+   * @param lines the data to save
+   * @throws IOException if an I/O error occurs.
    */
   public static void setContents(String filename, List<String> lines,
       String encoding) throws IOException {
-    OutputStreamWriter osw = null;
-    try {
-      osw = new OutputStreamWriter(new FileOutputStream(filename), encoding);
-      String lineSep = System.getProperty("line.separator");
+    try (FileOutputStream fos = new FileOutputStream(filename);
+         OutputStreamWriter osw = new OutputStreamWriter(fos, encoding)) {
+      String lineSep = System.lineSeparator();
       for (Iterator<String> it = lines.iterator(); it.hasNext();) {
         osw.write(it.next());
         if (it.hasNext()) {
           osw.write(lineSep);
         }
       }
-    } finally {
-      if (osw != null) {
-        try {
-          osw.close();
-        } catch (IOException e) {
-        }
-      }
     }
   }
 
-  public static void zip(Collection files, File zipFile) throws IOException {
-    FileOutputStream fos = new FileOutputStream(zipFile);
-    try {
-      BufferedOutputStream bos = new BufferedOutputStream(fos);
-      try {
-        ZipOutputStream zos = new ZipOutputStream(bos);
-        try {
-          for (Iterator i = files.iterator(); i.hasNext();) {
-            File file = (File) i.next();
-            zos.putNextEntry(new ZipEntry(file.getName()));
-            FileInputStream fis = new FileInputStream(file);
-            try {
-              BufferedInputStream bis = new BufferedInputStream(fis);
-              try {
-                while (true) {
-                  int j = bis.read();
-                  if (j == -1) {
-                    break;
-                  }
-                  zos.write(j);
-                }
-              } finally {
-                bis.close();
-              }
-            } finally {
-              fis.close();
-              zos.closeEntry();
+  public static void zip(Collection<File> files, File zipFile) throws IOException {
+    try (FileOutputStream fos = new FileOutputStream(zipFile);
+         BufferedOutputStream bos = new BufferedOutputStream(fos);
+         ZipOutputStream zos = new ZipOutputStream(bos)) {
+      for (File file : files) {
+        zos.putNextEntry(new ZipEntry(file.getName()));
+        try(FileInputStream fis = new FileInputStream(file);
+            BufferedInputStream bis = new BufferedInputStream(fis)) {
+          while (true) {
+            int j = bis.read();
+            if (j == -1) {
+              break;
             }
+            zos.write(j);
           }
-        } finally {
-          zos.close();
         }
-      } finally {
-        bos.close();
       }
-    } finally {
-      fos.close();
     }
   }
 
@@ -315,13 +263,11 @@ public class FileUtil {
    * utility method to copy an inputstream to a temp file for further processing
    * NOTE: prefix, suffix, monitor are optional and may be {@link <code>null</code>}
    * 
-   * @param in
-   * @param prefix
-   *          - default "openjump"
-   * @param suffix
-   *          - default ".tmp"
-   * @param monitor
-   * @return
+   * @param in inputSteam to copy
+   * @param prefix file name prefix - default "openjump"
+   * @param suffix file name suffix - default ".tmp"
+   * @param monitor to get feedback during the stream reading
+   * @return the temp file
    * @throws IOException
    */
   public static File copyInputStreamToTempFile(InputStream in, String prefix,
@@ -334,12 +280,12 @@ public class FileUtil {
         tempFile));
 
     long counter = 0;
-    int r = 0;
+    int r;
     byte[] b = new byte[1024];
     long startCounter = counter;
     long stopCounter = counter;
     long startTime = System.currentTimeMillis();
-    long stopTime = 0;
+    long stopTime;
     int i = 0;
     float speed = 0;
     while ((r = in.read(b)) != -1) {

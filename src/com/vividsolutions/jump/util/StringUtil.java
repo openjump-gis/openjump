@@ -363,4 +363,14 @@ public class StringUtil {
     public static boolean isEmpty(String value) {
         return (value == null || value.trim().length() == 0);
     }
+
+    public static String fillString(int len, char ch) {
+        StringBuilder buf = new StringBuilder(len);
+
+        for (int i = 0; i < len; i++) {
+            buf.append(ch);
+        }
+
+        return buf.toString();
+    }
 }
