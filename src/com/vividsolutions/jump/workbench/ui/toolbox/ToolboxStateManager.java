@@ -4,10 +4,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -20,7 +17,6 @@ import javax.swing.text.JTextComponent;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.LangUtil;
-import com.vividsolutions.jump.util.OrderedMap;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -42,8 +38,10 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
  * JToggleButton (including JCheckBox), JComboBox.
  */
 public class ToolboxStateManager {
+
     private static int keyIndex = 0;
-    private OrderedMap componentClassToStrategyMap = new OrderedMap() {
+
+    private Map<Class<?>,Strategy> componentClassToStrategyMap = new LinkedHashMap<Class<?>,Strategy>() {
 
             {
                 put(JTextComponent.class,
@@ -171,7 +169,7 @@ public class ToolboxStateManager {
         if (null != SwingUtilities.getAncestorOfClass(WorkbenchToolBar.class, component)) {
             return this;
         }
-        for (Iterator i = componentClassToStrategyMap.keyList().iterator();
+        for (Iterator i = componentClassToStrategyMap.keySet().iterator();
                 i.hasNext();) {
             Class componentClass = (Class) i.next();
 

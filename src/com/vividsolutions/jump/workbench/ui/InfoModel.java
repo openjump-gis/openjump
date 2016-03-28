@@ -33,14 +33,10 @@
 
 package com.vividsolutions.jump.workbench.ui;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-import com.vividsolutions.jump.util.OrderedMap;
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.Layerable;
 
 
 public class InfoModel {
@@ -65,7 +61,7 @@ public class InfoModel {
         //[Jon Aquino]
     }
 
-    private OrderedMap layerToTableModelMap = new OrderedMap();
+    private Map<Layerable,LayerTableModel> layerToTableModelMap = new LinkedHashMap<>();
     private ArrayList listeners = new ArrayList();
 
     public InfoModel() {
@@ -119,8 +115,8 @@ public class InfoModel {
         return (LayerTableModel) layerToTableModelMap.get(layer);
     }
 
-    public List getLayers() {
-        return Collections.unmodifiableList(layerToTableModelMap.keyList());
+    public List<Layer> getLayers() {
+        return Collections.unmodifiableList(new ArrayList(layerToTableModelMap.keySet()));
     }
 
     public void addListener(InfoModelListener listener) {

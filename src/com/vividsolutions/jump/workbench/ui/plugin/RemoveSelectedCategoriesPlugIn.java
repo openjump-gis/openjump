@@ -32,19 +32,13 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.OrderedMap;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -94,14 +88,11 @@ public class RemoveSelectedCategoriesPlugIn extends AbstractPlugIn {
         return true;
     }
 
-    private List toOrderedCategories(Collection unorderedCategories) {
-        ArrayList orderedCategories = new ArrayList(unorderedCategories);
+    private List<Category> toOrderedCategories(Collection<Category> unorderedCategories) {
+        ArrayList<Category> orderedCategories = new ArrayList(unorderedCategories);
         Collections.sort(orderedCategories,
-            new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    Category c1 = (Category) o1;
-                    Category c2 = (Category) o2;
-
+            new Comparator<Category>() {
+                public int compare(Category c1, Category c2) {
                     return new Integer(c1.getLayerManager().indexOf(c1)).compareTo(new Integer(
                             c2.getLayerManager().indexOf(c2)));
                 }
@@ -110,11 +101,11 @@ public class RemoveSelectedCategoriesPlugIn extends AbstractPlugIn {
         return orderedCategories;
     }
 
-    private OrderedMap toCategorySpecToLayerablesMap(
-        List selectedCategoriesInOrder) {
+    private Map<CategorySpec,List<Layerable>> toCategorySpecToLayerablesMap(
+        List<Category> selectedCategoriesInOrder) {
         //Need OrderedMap so that categories get re-inserted in the correct order.
         //[Jon Aquino]
-        OrderedMap map = new OrderedMap();
+        Map<CategorySpec,List<Layerable>> map = new LinkedHashMap<>();
 
         for (Iterator i = selectedCategoriesInOrder.iterator(); i.hasNext();) {
             Category category = (Category) i.next();
@@ -129,12 +120,12 @@ public class RemoveSelectedCategoriesPlugIn extends AbstractPlugIn {
         return map;
     }
 
-    private void execute(final OrderedMap originalCategorySpecToLayerablesMap,
+    private void execute(final Map originalCategorySpecToLayerablesMap,
         final Category newCategory, final PlugInContext context)
         throws Exception {
         execute(new UndoableCommand(getName()) {
                 public void execute() {
-                    for (Iterator i = originalCategorySpecToLayerablesMap.keyList()
+                    for (Iterator i = originalCategorySpecToLayerablesMap.keySet()
                                                                          .iterator();
                             i.hasNext();) {
                         final CategorySpec originalCategorySpec = (CategorySpec) i.next();
@@ -153,7 +144,7 @@ public class RemoveSelectedCategoriesPlugIn extends AbstractPlugIn {
                 }
 
                 public void unexecute() {
-                    for (Iterator i = originalCategorySpecToLayerablesMap.keyList()
+                    for (Iterator i = originalCategorySpecToLayerablesMap.keySet()
                                                                          .iterator();
                             i.hasNext();) {
                         final CategorySpec originalCategorySpec = (CategorySpec) i.next();

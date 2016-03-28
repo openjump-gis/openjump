@@ -38,7 +38,10 @@ import java.util.*;
 
 /**
  * A Map that preserves the order of its keys.
+ * @deprecated use LinkedHashMap to have predictable order and TreeMap
+ * to have a sorted map.
  */
+@Deprecated
 public class OrderedMap<U,V> implements Map<U,V> {
 
     private Map<U,V> map;

@@ -32,7 +32,6 @@
 
 package com.vividsolutions.jump.workbench.ui.renderer;
 
-import com.vividsolutions.jump.util.OrderedMap;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
@@ -75,11 +74,11 @@ public class RenderingManager {
   public static final String USE_MULTI_RENDERING_THREAD_QUEUE_KEY = RenderingManager.class.getName()
     + " - USE MULTI RENDERING THREAD QUEUE";
 
-  private Map contentIDToRendererMap = new OrderedMap();
+  private Map<Object,Renderer> contentIDToRendererMap = new LinkedHashMap<>();
 
-  private OrderedMap contentIDToLowRendererFactoryMap = new OrderedMap();
+  private Map<Object,Renderer.Factory> contentIDToLowRendererFactoryMap = new LinkedHashMap<>();
 
-  private OrderedMap contentIDToHighRendererFactoryMap = new OrderedMap();
+  private Map<Object,Renderer.Factory> contentIDToHighRendererFactoryMap = new LinkedHashMap<>();
 
   /**
    * There's no performance advantage to rendering dozens of non-WMS or
@@ -204,15 +203,15 @@ public class RenderingManager {
     }
   }
 
-  protected List contentIDs() {
-    ArrayList contentIDs = new ArrayList();
-    contentIDs.addAll(contentIDToLowRendererFactoryMap.keyList());
+  protected List<Object> contentIDs() {
+    List<Object> contentIDs = new ArrayList<>();
+    contentIDs.addAll(contentIDToLowRendererFactoryMap.keySet());
     for (Iterator i = panel.getLayerManager().reverseIterator(Layerable.class); i.hasNext();) {
       Layerable layerable = (Layerable)i.next();
       contentIDs.add(layerable);
     }
 
-    contentIDs.addAll(contentIDToHighRendererFactoryMap.keyList());
+    contentIDs.addAll(contentIDToHighRendererFactoryMap.keySet());
 
     return contentIDs;
   }
