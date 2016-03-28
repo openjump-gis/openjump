@@ -39,15 +39,16 @@ import java.util.*;
 /**
  * A Map that preserves the order of its keys.
  */
-public class OrderedMap implements Map {
-    private Map map;
-    private List keyList;
+public class OrderedMap<U,V> implements Map<U,V> {
+
+    private Map<U,V> map;
+    private List<U> keyList;
 
     /**
      * Creates an OrderedMap backed by the given map.
      * @param map a Map that will be this OrderedMap's underlying Map
      */
-    public OrderedMap(List keyList, Map map) {
+    public OrderedMap(List<U> keyList, Map<U,V> map) {
     	this.keyList = keyList;
         this.map = map;
     }
@@ -56,11 +57,11 @@ public class OrderedMap implements Map {
      * Creates an OrderedMap.
      */
     public OrderedMap() {
-        this(new HashMap());
+        this(new HashMap<U,V>());
     }
     
-    public OrderedMap(Map map) {
-    	this(new UniqueList(), map);
+    public OrderedMap(Map<U,V> map) {
+    	this(new UniqueList<U>(), map);
     }
 
     public int size() {
@@ -79,23 +80,21 @@ public class OrderedMap implements Map {
         return map.containsValue(value);
     }
 
-    public Object get(Object key) {
+    public V get(Object key) {
         return map.get(key);
     }
 
-    public Object put(Object key, Object value) {
+    public V put(U key, V value) {
         keyList.add(key);
-
         return map.put(key, value);
     }
 
-    public Object remove(Object key) {
+    public V remove(Object key) {
         keyList.remove(key);
-
         return map.remove(key);
     }
 
-    public void putAll(Map t) {
+    public void putAll(Map<? extends U, ? extends V> t) {
         keyList.addAll(t.keySet());
         map.putAll(t);
     }
@@ -105,7 +104,7 @@ public class OrderedMap implements Map {
         map.clear();
     }
 
-    public Set keySet() {
+    public Set<U> keySet() {
         return map.keySet();
     }
 
@@ -113,7 +112,7 @@ public class OrderedMap implements Map {
      * Returns the keys, in order.
      * @return the keys in the order they were (first) added
      */
-    public List keyList() {
+    public List<U> keyList() {
         return keyList;
     }
 
@@ -122,8 +121,8 @@ public class OrderedMap implements Map {
      * @return the values in the same order as the keys
      * @see #keyList()
      */
-    public List valueList() {
-        return (List) values();
+    public List<V> valueList() {
+        return (List<V>) values();
     }
 
     /**
@@ -131,22 +130,21 @@ public class OrderedMap implements Map {
      * @return the values in the same order as the keys
      * @see #keyList()
      */
-    public Collection values() {
-        ArrayList values = new ArrayList();
+    public Collection<V> values() {
+        List<V> values = new ArrayList<>();
 
-        for (Iterator i = keyList.iterator(); i.hasNext();) {
-            Object key = i.next();
+        for (U key : keyList) {
             values.add(map.get(key));
         }
 
         return values;
     }
 
-    public Set entrySet() {
+    public Set<Map.Entry<U,V>> entrySet() {
         return map.entrySet();
     }
 
     public boolean equals(Object o) {
-        return map.equals(o);
+        return (o instanceof OrderedMap) && map.equals(o);
     }
 }

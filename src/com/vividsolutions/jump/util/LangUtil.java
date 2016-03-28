@@ -70,7 +70,7 @@ public class LangUtil {
     }
 
     public static Class toPrimitiveWrapperClass(Class primitiveClass) {
-        return (Class) primitiveToWrapperMap.get(primitiveClass);
+        return primitiveToWrapperMap.get(primitiveClass);
     }
 
     public static boolean isPrimitive(Class c) {

@@ -3,9 +3,9 @@ package com.vividsolutions.jump.util;
 import java.util.Collection;
 import java.util.Iterator;
 
-public abstract class CollectionWrapper<T> implements Collection<T> {
+public abstract class CollectionWrapper<E> implements Collection<E> {
 
-	public abstract Collection<T> getCollection();
+	public abstract Collection<E> getCollection();
 
 	public int size() {
 		return getCollection().size();
@@ -23,7 +23,7 @@ public abstract class CollectionWrapper<T> implements Collection<T> {
 		return getCollection().toArray();
 	}
 
-	public boolean add(T o) {
+	public boolean add(E o) {
 		return getCollection().add(o);
 	}
 
@@ -35,7 +35,7 @@ public abstract class CollectionWrapper<T> implements Collection<T> {
 		return getCollection().remove(o);
 	}
 
-	public boolean addAll(Collection<? extends T> c) {
+	public boolean addAll(Collection<? extends E> c) {
 		return getCollection().addAll(c);
 	}
 
@@ -51,7 +51,7 @@ public abstract class CollectionWrapper<T> implements Collection<T> {
 		return getCollection().retainAll(c);
 	}
 
-	public Iterator<T> iterator() {
+	public Iterator<E> iterator() {
 		return getCollection().iterator();
 	}
 

@@ -41,11 +41,11 @@ import java.util.ListIterator;
 /**
  * Can't add, replace, or remove the first element in the list.
  */
-public class ImmutableFirstElementList<T> implements List<T> {
+public class ImmutableFirstElementList<E> implements List<E> {
 
-	private List<T> list = new ArrayList<T>();
+	private List<E> list = new ArrayList<>();
 	
-	public ImmutableFirstElementList(T firstElement) {
+	public ImmutableFirstElementList(E firstElement) {
 		list.add(firstElement);
 	}
 
@@ -61,7 +61,7 @@ public class ImmutableFirstElementList<T> implements List<T> {
         return list.contains(o);
     }
 
-    public Iterator<T> iterator() {
+    public Iterator<E> iterator() {
     	//Prevent Iterator#remove. [Jon Aquino]
         return Collections.unmodifiableList(list).iterator();
     }
@@ -74,7 +74,7 @@ public class ImmutableFirstElementList<T> implements List<T> {
         return list.toArray(a);
     }
 
-    public boolean add(T o) {
+    public boolean add(E o) {
         return list.add(o);
     }
 
@@ -87,16 +87,16 @@ public class ImmutableFirstElementList<T> implements List<T> {
         return list.containsAll(c);
     }
 
-    public boolean addAll(Collection<? extends T> c) {
+    public boolean addAll(Collection<? extends E> c) {
         return list.addAll(c);
     }
 
-    public boolean addAll(int index, Collection c) {
+    public boolean addAll(int index, Collection<? extends E> c) {
 		return list.addAll(index == 0 ? 1 : index, c);
     }
 
     public boolean removeAll(Collection<?> c) {
-		return list.subList(1, list.size()).remove(c);
+		return list.subList(1, list.size()).removeAll(c);
     }
 
     public boolean retainAll(Collection<?> c) {
@@ -107,22 +107,22 @@ public class ImmutableFirstElementList<T> implements List<T> {
 		list.subList(1, list.size()).clear();
     }
 
-    public T get(int index) {
+    public E get(int index) {
         return list.get(index);
     }
 
-    public T set(int index, T element) {
+    public E set(int index, E element) {
         if (index == 0) {
         	return get(0);
         }
         return list.set(index, element);
     }
 
-    public void add(int index, T element) {
+    public void add(int index, E element) {
 		list.add(index == 0 ? 1 : index, element);
     }
 
-    public T remove(int index) {
+    public E remove(int index) {
         if (index == 0) { return get(0);
         }
         return list.remove(index);
@@ -136,17 +136,17 @@ public class ImmutableFirstElementList<T> implements List<T> {
         return list.lastIndexOf(o);
     }
 
-    public ListIterator listIterator() {
+    public ListIterator<E> listIterator() {
 		//Prevent Iterator#remove. [Jon Aquino]
 		return Collections.unmodifiableList(list).listIterator();    	
     }
 
-    public ListIterator listIterator(int index) {
+    public ListIterator<E> listIterator(int index) {
 		//Prevent Iterator#remove. [Jon Aquino]
 		return Collections.unmodifiableList(list).listIterator(index);    	
     }
 
-    public List subList(int fromIndex, int toIndex) {
+    public List<E> subList(int fromIndex, int toIndex) {
     	if (fromIndex > 0) {
     		return list.subList(fromIndex, toIndex);
     	}

@@ -40,21 +40,21 @@ import java.util.*;
  * A List that ignores duplicates. Note: performance is not optimized - a simple linear
  * search is performed.
  */
-public class UniqueList implements List {
-    private List list;
+public class UniqueList<E> implements List<E> {
+    private List<E> list;
 
     /**
      * Creates a UniqueList.
      */
     public UniqueList() {
-        this(new ArrayList());
+        this(new ArrayList<E>());
     }
 
     /**
      * Creates a UniqueList backed by the given List.
      * @param list a List that will be this UniqueList's underlying List
      */
-    public UniqueList(List list) {
+    public UniqueList(List<E> list) {
         this.list = list;
     }
 
@@ -70,7 +70,7 @@ public class UniqueList implements List {
         return list.contains(o);
     }
 
-    public Iterator iterator() {
+    public Iterator<E> iterator() {
         return list.iterator();
     }
 
@@ -78,11 +78,11 @@ public class UniqueList implements List {
         return list.toArray();
     }
 
-    public Object[] toArray(Object[] a) {
+    public <T> T[] toArray(T[] a) {
         return list.toArray(a);
     }
 
-    public boolean add(Object o) {
+    public boolean add(E o) {
         if (list.contains(o)) {
             return false;
         }
@@ -94,25 +94,25 @@ public class UniqueList implements List {
         return list.remove(o);
     }
 
-    public boolean containsAll(Collection c) {
+    public boolean containsAll(Collection<?> c) {
         return list.containsAll(c);
     }
 
-    public boolean addAll(Collection c) {
+    public boolean addAll(Collection<? extends E> c) {
     	return addAll(size(), c);
     }
 
-    public boolean addAll(int index, Collection c) {
-		ArrayList itemsToAdd = new ArrayList(c);
+    public boolean addAll(int index, Collection<? extends E> c) {
+		List<E> itemsToAdd = new ArrayList<>(c);
 		itemsToAdd.removeAll(this);
 		return list.addAll(index, itemsToAdd);    	
     }
 
-    public boolean removeAll(Collection c) {
+    public boolean removeAll(Collection<?> c) {
         return list.removeAll(c);
     }
 
-    public boolean retainAll(Collection c) {
+    public boolean retainAll(Collection<?> c) {
         return list.retainAll(c);
     }
 
@@ -121,18 +121,18 @@ public class UniqueList implements List {
     }
 
     public boolean equals(Object o) {
-        return list.equals(o);
+        return o instanceof UniqueList && list.equals(o);
     }
 
-    public Object get(int index) {
+    public E get(int index) {
         return list.get(index);
     }
 
-    public Object set(int index, Object element) {
+    public E set(int index, E element) {
         return list.set(index, element);
     }
 
-    public void add(int index, Object element) {
+    public void add(int index, E element) {
         if (list.contains(element)) {
             return;
         }
@@ -140,7 +140,7 @@ public class UniqueList implements List {
         list.add(index, element);
     }
 
-    public Object remove(int index) {
+    public E remove(int index) {
         return list.remove(index);
     }
 
@@ -152,15 +152,15 @@ public class UniqueList implements List {
         return list.lastIndexOf(o);
     }
 
-    public ListIterator listIterator() {
+    public ListIterator<E> listIterator() {
         return list.listIterator();
     }
 
-    public ListIterator listIterator(int index) {
+    public ListIterator<E> listIterator(int index) {
         return list.listIterator(index);
     }
 
-    public List subList(int fromIndex, int toIndex) {
+    public List<E> subList(int fromIndex, int toIndex) {
         return list.subList(fromIndex, toIndex);
     }
 }
