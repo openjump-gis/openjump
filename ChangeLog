@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-04-01 mmichaud <m.michael.michaud@orange.fr>
+  * Upgrade cts plugin to 1.4.0 (add finnish projections, fix bugs)
+
 2016-03-28 ede
   * upgraded junit & imageio-ext to latest stable versions
 
