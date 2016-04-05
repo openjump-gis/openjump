@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-04-05 ede
+  * fix bug 414 "Image Layer Resizing lost after loading project"
+    jml save files for referenced images ignored their saved geometry on reopen
+
 2016-04-01 mmichaud <m.michael.michaud@orange.fr>
   * Upgrade cts plugin to 1.4.0 (add finnish projections, fix bugs)
 

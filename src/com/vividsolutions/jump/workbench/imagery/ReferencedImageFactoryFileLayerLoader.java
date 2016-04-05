@@ -38,6 +38,7 @@ import org.openjump.core.ui.io.file.AbstractFileLayerLoader;
 import org.openjump.core.ui.util.TaskUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -150,14 +151,17 @@ public class ReferencedImageFactoryFileLayerLoader extends
         ImageryLayerDataset.getSchema());
     // copy attribs over to new feature
     ImageryLayerDataset.saveFeatureImgAttribs(f_new, f_orig);
+    // reuse geometry if set
+    if (f_orig.getGeometry() instanceof Geometry)
+      f_new.setGeometry(f_orig.getGeometry());
 
     try {
       imageryLayerDataset.attachImage(f_new);
     } catch (Exception e) {
       e.printStackTrace();
       ImageryLayerDataset.saveFeatureError(f_new, e);
-      // save a dummy geometry
-      f_new.setGeometry(new GeometryFactory().createPoint(new Coordinate())); 
+      // save a dummy geometry to keep the error visible
+      f_new.setGeometry(new GeometryFactory().createPoint(new Coordinate()));
     }
     return f_new;
   }

@@ -38,6 +38,7 @@ import java.util.WeakHashMap;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
@@ -117,17 +118,24 @@ public class ImageryLayerDataset {
     ReferencedImage referencedImage = imageFactory.createImage(imageFilePath);
 
     ils.addImage(feature, referencedImage);
-    Envelope env = referencedImage.getEnvelope();
-    Geometry boundingBox = geometryFactory.toGeometry(env);
-    // set dummy geometry (used to manipulate image)
-    feature.setGeometry(boundingBox);
+    // create a geometry if there is no valid one already (from saved jml)
+    // valid is a 5 point (last coord same as first) closed polygon
+    if (!(feature.getGeometry() instanceof Polygon)
+        || feature.getGeometry().getNumPoints() != 5) {
+      Envelope env = referencedImage.getEnvelope();
+      Geometry boundingBox = geometryFactory.toGeometry(env);
+      // set a polygon geometry (used to manipulate image)
+      feature.setGeometry(boundingBox);
+    }
     // set an informational type value
     feature.setAttribute(ATTR_TYPE, referencedImage.getType());
   }
 
   public void dispose() {
-    featureToReferencedImageMap.clear();
-    featureToReferencedImageMap = null;
+    if (featureToReferencedImageMap != null) {
+      featureToReferencedImageMap.clear();
+      featureToReferencedImageMap = null;
+    }
   }
 
   public static Feature saveFeatureError(Feature feature, Throwable t) {
