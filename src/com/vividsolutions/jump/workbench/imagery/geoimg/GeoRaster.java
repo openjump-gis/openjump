@@ -372,10 +372,6 @@ public abstract class GeoRaster implements Disposable {
       rtf.flush();
   }
 
-  public void log(String msg) {
-    JUMPWorkbench.getInstance().getFrame().log(msg, this.getClass());
-  }
-
   // static protected boolean canDecode(ImageReaderSpi provider, URI uri)
   // throws IOException {
   // Object input = createInput(uri);

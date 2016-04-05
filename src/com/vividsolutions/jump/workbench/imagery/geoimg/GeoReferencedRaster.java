@@ -61,6 +61,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.imagery.graphic.WorldFile;
 
@@ -147,7 +148,7 @@ public class GeoReferencedRaster extends GeoRaster {
                                                        // -0,5));
       // setCoorModel_tiepointLT(new Coordinate(0, 0));
       // setAffineTransformation(new AffineTransform(tags));
-      log("gtiff trans: " + Arrays.toString(tags));
+      Logger.debug("gtiff trans: " + Arrays.toString(tags));
       setEnvelope(tags);
     }
     // use the tiepoints as defined
@@ -175,7 +176,7 @@ public class GeoReferencedRaster extends GeoRaster {
             + "\n" + MSG_GENERAL);
       }
 
-      log("gtiff tiepoints found.");
+      Logger.debug("gtiff tiepoints found.");
 
       setDblModelUnitsPerRasterUnit_X(fieldModelPixelScale.getAsDouble(0));
       setDblModelUnitsPerRasterUnit_Y(fieldModelPixelScale.getAsDouble(1));
@@ -206,23 +207,23 @@ public class GeoReferencedRaster extends GeoRaster {
           reader.setInput(input);
           metadata = reader.getImageMetadata(0);
         } catch (IllegalArgumentException e) {
-          log("fail " + readerSpi + "/" + input + " -> " + e);
+          Logger.debug("fail " + readerSpi + "/" + input + " -> " + e);
         } catch (RuntimeException e) {
-          log("fail " + readerSpi + "/" + input + " -> " + e);
+          Logger.debug("fail " + readerSpi + "/" + input + " -> " + e);
         } finally {
           reader.dispose();
           disposeInput(input);
         }
 
         if (!(metadata instanceof CoreCommonImageMetadata)) {
-          log("Unexpected error! Metadata should be an instance of the expected class: GDALCommonIIOImageMetadata.");
+          Logger.info("Unexpected error! Metadata should be an instance of the expected class: GDALCommonIIOImageMetadata.");
           continue;
         }
 
         double[] geoTransform = ((CoreCommonImageMetadata) metadata)
             .getGeoTransformation();
 
-        log("successfully retrieved gdal geo metadata: "
+        Logger.debug("successfully retrieved gdal geo metadata: "
             + Arrays.toString(geoTransform));
 
         // check transform array for validity
@@ -265,7 +266,7 @@ public class GeoReferencedRaster extends GeoRaster {
         tags[i] = Double.parseDouble(line);
       }
 
-      log("wf: " + Arrays.toString(tags));
+      Logger.debug("wf: " + Arrays.toString(tags));
 
       setEnvelope(tags);
 
@@ -291,10 +292,10 @@ public class GeoReferencedRaster extends GeoRaster {
     try {
       parseWorldFile();
       // still with us? must have succeeded
-      log("Worldfile geo metadata fetched.");
+      Logger.debug("Worldfile geo metadata fetched.");
       return;
     } catch (IOException e) {
-      log("Worldfile geo metadata unavailable: " + e.getMessage());
+      Logger.debug("Worldfile geo metadata unavailable: " + e.getMessage());
     }
 
     //if (false)
@@ -304,10 +305,10 @@ public class GeoReferencedRaster extends GeoRaster {
       // Object dir = src.getProperty("tiff.directory");
       parseGDALMetaData(uri);
       // still with us? must have succeeded
-      log("GDAL geo metadata fetched.");
+      Logger.debug("GDAL geo metadata fetched.");
       return;
     } catch (ReferencedImageException e) {
-      log("GDAL geo metadata unavailable: " + e.getMessage());
+      Logger.debug("GDAL geo metadata unavailable: " + e.getMessage());
     }
 
     try {
@@ -316,10 +317,10 @@ public class GeoReferencedRaster extends GeoRaster {
       // Object dir = src.getProperty("tiff.directory");
       parseGeoTIFFDirectory(uri);
       // still with us? must have succeeded
-      log("XTIFF geo metadata fetched.");
+      Logger.debug("XTIFF geo metadata fetched.");
       return;
     } catch (ReferencedImageException e) {
-      log("XTIFF geo metadata unavailable: " + e.getMessage());
+      Logger.debug("XTIFF geo metadata unavailable: " + e.getMessage());
     }
 
     double[] tags = new double[6];
@@ -337,7 +338,7 @@ public class GeoReferencedRaster extends GeoRaster {
                  // left pixel
     setEnvelope(tags);
 
-    log("No georeference found! Will use default 0,0 placement.");
+    Logger.info("No georeference found! Will use default 0,0 placement.");
     JUMPWorkbench.getInstance().getFrame()
         .warnUser(this.getClass().getName() + ".no-geo-reference-found");
 
