@@ -315,17 +315,20 @@ public class ShapefileReader extends AbstractJUMPReader {
         // if a cpg file is found, charset used is the one defined in the cpg file
         //BufferedReader cpgCharsetReader = null;
         try (InputStream cpgCharsetInputStream =
-                     getCpgInputStream(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
-             BufferedReader cpgCharsetReader =
-                     new BufferedReader(new InputStreamReader(cpgCharsetInputStream))){
-            String cpgCharset = cpgCharsetReader.readLine();
-            cpgCharset = esri_cp_2_java(cpgCharset);
-            try {
-                if (Charset.isSupported(cpgCharset)) {
-                    charsetName = cpgCharset;
+                     getCpgInputStream(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY))) {
+            if (cpgCharsetInputStream != null) {
+                try (BufferedReader cpgCharsetReader =
+                             new BufferedReader(new InputStreamReader(cpgCharsetInputStream))) {
+                    String cpgCharset = cpgCharsetReader.readLine();
+                    cpgCharset = esri_cp_2_java(cpgCharset);
+                    try {
+                        if (Charset.isSupported(cpgCharset)) {
+                            charsetName = cpgCharset;
+                        }
+                    } catch (IllegalCharsetNameException ice) {
+                        Logger.info("Could not interpret charset name " + cpgCharset + " : revert to default " + charsetName);
+                    }
                 }
-            } catch (IllegalCharsetNameException ice) {
-                Logger.info("Could not interpret charset name " + cpgCharset + " : revert to default " + charsetName);
             }
         }
         // if dp.getProperty("charset") contains a charset different from platform default,
@@ -382,7 +385,7 @@ public class ShapefileReader extends AbstractJUMPReader {
                 delete_this_tmp_cpg = file; // to be deleted later on
                 return cpgInputStream;
             } catch (Exception e) {
-                Logger.error(e);
+                Logger.warn(e.getMessage());
             }
         }
 

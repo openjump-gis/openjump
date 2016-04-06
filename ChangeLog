@@ -5,6 +5,7 @@
 
 2016-04-06 mmichaud <m.michael.michaud@orange.fr>
   * upgrade set-attribute plugin to v0.7.1
+  * fix a regression introduced after 1.9.1 release in shapefile (cpg) reader
 
 2016-04-05 ede
   * fix bug 414 "Image Layer Resizing lost after loading project"

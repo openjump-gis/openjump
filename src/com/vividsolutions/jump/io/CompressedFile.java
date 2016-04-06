@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -212,7 +213,8 @@ public class CompressedFile {
   public static InputStream openFile(String filePath, String compressedEntry)
       throws IOException {
 
-    System.out.println(filePath + " extract " + compressedEntry);
+    Logger.info(filePath + " extract " +
+            (compressedEntry==null?"":" (" + compressedEntry + ")"));
 
 //    if (isTar(filePath)) {
 //      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
@@ -256,7 +258,7 @@ public class CompressedFile {
     
     // if no compressedEntry was given we are supposed to open a plain file
     // return fileinputstream or compressorinputstream,
-    if (compressedEntry == null) {
+    if (compressedEntry == null && new File(filePath).exists()) {
       InputStream bis = new BufferedInputStream(new FileInputStream(filePath));
 
       // try if we are a plain compressed file
