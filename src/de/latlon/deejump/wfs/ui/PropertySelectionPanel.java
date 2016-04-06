@@ -9,10 +9,15 @@
 
 package de.latlon.deejump.wfs.ui;
 
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -53,7 +58,7 @@ public class PropertySelectionPanel extends JPanel {
      * @param parentDialog
      */
     public PropertySelectionPanel( WFSPanel parentDialog ) {
-        super();
+        super(new GridBagLayout());
         this.parentDialog = parentDialog;
         initGUI();
     }
@@ -69,13 +74,17 @@ public class PropertySelectionPanel extends JPanel {
 
         p.add( scrollPane );
 
+        p.add(Box.createRigidArea(new Dimension(5,5)));
+        
         geoPropsCombo = new JComboBox();
 
         geoPropsCombo.setBorder( BorderFactory.createTitledBorder( I18N.get( "SpatialResearchPanel.geometryName" ) ) );
 
         p.add( geoPropsCombo );
-        
-        add(p);
+
+        add(p, new GridBagConstraints(0, 0, 1, 1, 0.8, 0.8,
+            GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+            new Insets(10,10,10,10), 0, 0));
     }
 
     /**
