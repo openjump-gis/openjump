@@ -1,9 +1,4 @@
 /*
- * CompressedFile.java
- *
- * Created on December 12, 2002, 9:51 AM
- */
-/*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive
  * GUI for visualizing and manipulating spatial features with geometry
  * and attributes.
@@ -55,7 +50,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.vividsolutions.jump.workbench.Logger;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -67,12 +61,10 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * Utility class for dealing with compressed files.
@@ -213,49 +205,17 @@ public class CompressedFile {
   public static InputStream openFile(String filePath, String compressedEntry)
       throws IOException {
 
-    Logger.info(filePath + " extract " +
-            (compressedEntry==null?"":" (" + compressedEntry + ")"));
+    String extractMsg = compressedEntry != null ? "extract '" + compressedEntry
+        + "'" : "";
+    Logger.debug("open '" + filePath + "'" + extractMsg);
 
-//    if (isTar(filePath)) {
-//      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
-//      if (filePath.toLowerCase().endsWith("gz"))
-//        is = new GzipCompressorInputStream(is, true);
-//      else if (filePath.matches("(?i).*bz2?"))
-//        is = new BZip2CompressorInputStream(is, true);
-//      else if (filePath.matches("(?i).*xz"))
-//        is = new XZCompressorInputStream(is, true);
-//      
-//      TarArchiveInputStream tis = new TarArchiveInputStream(is);
-//      if (compressedEntry == null)
-//        return is;
-//      
-//      TarArchiveEntry entry;
-//      while ((entry = tis.getNextTarEntry()) != null) {
-//        if (entry.getName().equals(compressedEntry))
-//          return tis;
-//      }
-//
-//      throw createArchiveFNFE(filePath, compressedEntry);
-//    }
-//
-//    else 
-//    if (compressedEntry == null && isGZip(filePath)) {
-//      // gz compressed file -- easy
-//      InputStream is = new BufferedInputStream(new FileInputStream(filePath));
-//      return new GzipCompressorInputStream(is,true);
-//    }
-//    
-//    else if (compressedEntry == null && isBZip(filePath)) {
-//      // bz compressed file -- easy
-//      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
-//      return new BZip2CompressorInputStream(is,true);
-//    }
-//
-//    else if (compressedEntry == null && isXZ(filePath)) {
-//      InputStream is = new BufferedInputStream( new FileInputStream(filePath) );
-//      return new XZCompressorInputStream(is, true);
-//    }
-    
+    // check file accessibility beforehand
+    File file = new File(filePath);
+    if (!file.exists())
+      throw new FileNotFoundException("Couldn't find file '" + filePath + "'.");
+    if (!file.canRead())
+      throw new IOException("Couldn't access file '" + filePath + "'.");
+
     // if no compressedEntry was given we are supposed to open a plain file
     // return fileinputstream or compressorinputstream,
     if (compressedEntry == null) {
@@ -300,16 +260,7 @@ public class CompressedFile {
     // generic method for archives w/o special needs (e.g. zip)
     else {
       // open the file as such, even it is compressed beforehand eg. tar.gz & such
-      InputStream bis = openFile(filePath, null); //new BufferedInputStream( new FileInputStream(filePath) );
-
-//      // try if we are a plain compressed file
-//      CompressorInputStream cis = null;
-//      BufferedInputStream bcis = null;
-//      try {
-//        cis = new CompressorStreamFactory().createCompressorInputStream(bis);
-//        bcis = new BufferedInputStream(cis);
-//      } catch (CompressorException e) {
-//      }
+      InputStream bis = openFile(filePath, null);
 
       ArchiveInputStream in = null;
       try {
