@@ -205,7 +205,7 @@ public class CompressedFile {
   public static InputStream openFile(String filePath, String compressedEntry)
       throws IOException {
 
-    String extractMsg = compressedEntry != null ? "extract '" + compressedEntry
+    String extractMsg = compressedEntry != null ? " extract '" + compressedEntry
         + "'" : "";
     Logger.debug("open '" + filePath + "'" + extractMsg);
 
