@@ -258,7 +258,7 @@ public class CompressedFile {
     
     // if no compressedEntry was given we are supposed to open a plain file
     // return fileinputstream or compressorinputstream,
-    if (compressedEntry == null && new File(filePath).exists()) {
+    if (compressedEntry == null) {
       InputStream bis = new BufferedInputStream(new FileInputStream(filePath));
 
       // try if we are a plain compressed file
