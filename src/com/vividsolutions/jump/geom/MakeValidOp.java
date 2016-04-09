@@ -231,7 +231,7 @@ public class MakeValidOp {
         int count = 0;
         // Iterate through coordinates, skip points with x=NaN, y=NaN or duplicate
         for (int i = 0 ; i < sequence.size() ; i++) {
-            System.out.println("coordinate " + i + " " + sequence.getCoordinate(i));
+            //System.out.println("coordinate " + i + " " + sequence.getCoordinate(i));
             if (Double.isNaN(sequence.getOrdinate(i, 0)) || Double.isNaN(sequence.getOrdinate(i, 1))) {
                 modified = true;
                 continue;
