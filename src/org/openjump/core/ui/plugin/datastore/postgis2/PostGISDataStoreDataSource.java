@@ -33,6 +33,10 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         // Called by Java2XML [Jon Aquino 2005-03-16]
     }
 
+    public PostGISDataStoreDataSource(WorkbenchContext context) {
+        this.context = context;
+    }
+
     public PostGISDataStoreDataSource(
             ConnectionDescriptor connectionDescriptor,
             String datasetName,

@@ -63,7 +63,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         // It is very important to create a new PostGISDataStoreDataSource here,
         // otherwise, all layers saved as PostGIS table use the same PostGISDataStoreDataSource
         SaveToPostGISDataSourceQuery query = new SaveToPostGISDataSourceQuery(
-                new PostGISDataStoreDataSource(),
+                new PostGISDataStoreDataSource(context.getWorkbenchContext()),
                 updateQuery,
                 (String)properties.get(WritableDataStoreDataSource.DATASET_NAME_KEY)
         );
