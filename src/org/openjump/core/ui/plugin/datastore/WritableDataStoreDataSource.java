@@ -285,7 +285,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 // Attribute changes are updated individually, avoiding to replace
                 // values changed concurrently by another client if it is not needed
                 for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-                    if (schema.isAttributeReadOnly(i)) return;
+                    if (schema.isAttributeReadOnly(i)) continue;
                     if (oldFeature.getAttribute(i) == null && newFeature.getAttribute(i) != null ||
                         oldFeature.getAttribute(i) != null && newFeature.getAttribute(i) == null ||
                         oldFeature.getAttribute(i) != null && !oldFeature.getAttribute(i).equals(newFeature.getAttribute(i))) {
