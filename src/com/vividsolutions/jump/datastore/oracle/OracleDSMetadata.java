@@ -7,9 +7,15 @@ package com.vividsolutions.jump.datastore.oracle;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.SQLUtil;
+import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
+import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
 import com.vividsolutions.jump.datastore.spatialdatabases.*;
 import com.vividsolutions.jump.datastore.GeometryColumn;
+
+import java.sql.Array;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
@@ -92,6 +98,51 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
     public List<GeometryColumn> getGeometryAttributes(String datasetName) {
         String sql = this.getGeoColumnsQuery(datasetName);
         return getGeometryAttributes(sql, datasetName);
+    }
+
+    @Override
+    protected List<GeometryColumn> getGeometryAttributes(String sql, String datasetName) {
+        final List<GeometryColumn> geometryAttributes = new ArrayList<GeometryColumn>();
+        //System.out.println("getting geom Attribute for dataset: " + datasetName + " with query: " + sql);
+
+        JDBCUtil.execute(
+                conn.getJdbcConnection(), sql,
+                new ResultSetBlock() {
+                    public void yield(ResultSet resultSet) throws SQLException {
+                        while (resultSet.next()) {
+                            // TODO: escape single quotes in geo column name ?
+                            geometryAttributes.add(new GeometryColumn(
+                                    resultSet.getString(1),
+                                    ((Object[])resultSet.getArray(2).getArray()).length,
+                                    resultSet.getInt(3),
+                                    resultSet.getString(4)));
+                        }
+                    }
+                });
+        return geometryAttributes;
+    }
+
+    @Override
+    public int getCoordinateDimension(String datasetName, String colName) {
+        final StringBuffer coordDim = new StringBuffer();
+        String sql = this.getCoordinateDimensionQuery(this.getSchemaName(datasetName),
+                this.getTableName(datasetName), colName);
+        JDBCUtil.execute(conn.getJdbcConnection(), sql, new ResultSetBlock() {
+            public void yield(ResultSet resultSet) throws SQLException {
+                if (resultSet.next()) {
+                    // Nicolas Ribot: test if a null is returned
+                    // Michael Michaud: choose 2 rather than 0 as the default coordDim in case of failure
+                    Array array = resultSet.getArray(1);
+                    if (array == null) {
+                        coordDim.append("2");
+                    } else {
+                        coordDim.append(((Object[])array.getArray()).length);
+                    }
+                }
+            }
+        });
+
+        return Integer.parseInt(coordDim.toString());
     }
 
 }
