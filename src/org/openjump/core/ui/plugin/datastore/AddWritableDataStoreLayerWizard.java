@@ -123,6 +123,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
         ds.setLimitedToView(limitedToView);
         ds.setManageConflicts(manageConflicts);
         ds.setWorkbenchContext(workbenchContext);
+        ds.setCoordDimension(panel.getGeometryColumn().getCoordDimension());
         ds.setSRID(panel.getGeometryColumn().getSRID());
 
         DataSourceQuery dsq = new DataSourceQuery(ds, null, datasetName);
@@ -143,6 +144,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
 
             Logger.info("Add layer '" + layer.getName() + "' to '" + layerManager.getTask().getName() +  "' using WritableDataStoreDataSource with :");
             Logger.info("    geometry column    = " + geometryAttributeName);
+            Logger.info("    coord_dimension    = " + panel.getGeometryColumn().getCoordDimension());
             Logger.info("    srid               = " + sridStyle.getSRID());
             Logger.info("    external PK column = " + identifierAttributeName);
             Logger.info("    max features       = " + limit);

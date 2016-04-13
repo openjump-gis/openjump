@@ -119,6 +119,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         getProperties().put(MANAGE_CONFLICTS, manageConflicts);
     }
 
+    public void setCoordDimension(int dbCoordDim) {
+        getProperties().put(GEOM_DIM_KEY, dbCoordDim);
+    }
+
     public void setSRID(int srid) {
         getProperties().put(SRID_KEY, srid);
     }

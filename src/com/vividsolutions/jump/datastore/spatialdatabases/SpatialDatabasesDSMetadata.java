@@ -307,7 +307,8 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
               geometryAttributes.add(new GeometryColumn(
                       resultSet.getString(1),
                       resultSet.getInt(2),
-                      resultSet.getString(3)));
+                      resultSet.getInt(3),
+                      resultSet.getString(4)));
             }
           }
         });
@@ -478,8 +479,9 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
       public void yield(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
           // Nicolas Ribot: test if a null is returned
+          // Michael Michaud: choose 2 rather than 0 as the default coordDim in case of failure
           String s = resultSet.getString(1);
-          coordDim.append(s == null ? "0" : s);
+          coordDim.append(s == null ? "2" : s);
         }
       }
     });

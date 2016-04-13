@@ -49,10 +49,14 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
         // double quotes identifiers
         spatialExtentQuery2 = "select sdo_util.to_wktgeometry(sdo_aggr_mbr(%s)) as geom from \"%s\".\"%s\"";
         
-        geoColumnsQuery = "select t.column_name, t.srid, 'SDO_GEOMETRY' as type from ALL_SDO_GEOM_METADATA t "
+        geoColumnsQuery = "select t.column_name, t.diminfo, t.srid, 'SDO_GEOMETRY' as type from ALL_SDO_GEOM_METADATA t "
             + "where t.owner = '%s' and t.table_name = '%s'";
+
         sridQuery = "select t.srid from ALL_SDO_GEOM_METADATA t "
             + "where t.owner = '%s' and t.table_name = '%s' and t.COLUMN_NAME = '%s'";
+
+        coordDimQuery = "select t.diminfo from ALL_SDO_GEOM_METADATA t "
+                + "where t.owner = '%s' and t.table_name = '%s'";
     }
 
     @Override

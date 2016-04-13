@@ -71,10 +71,10 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
     spatialExtentQuery2 = spatialExtentQuery1;
     
     // query according to detected layout:
-    geoColumnsQuery = "SELECT f_geometry_column, srid, type FROM geometry_columns where f_table_name = '%s'";
+    geoColumnsQuery = "SELECT f_geometry_column, coord_dimension, srid, type FROM geometry_columns where f_table_name = '%s'";
     // TODO: not the same number of param to replace...
     if (geometryColumnsLayout == GeometryColumnsLayout.NO_LAYOUT) {
-      geoColumnsQuery = "select c.COLUMN_NAME, 0, 'geometry' \n"
+      geoColumnsQuery = "select c.COLUMN_NAME, 2, 0, 'geometry' \n"
         + "from information_schema.TABLES t join information_schema.COLUMNS C \n"
         + "  on t.TABLE_NAME = c.TABLE_NAME and t.TABLE_SCHEMA = c.TABLE_SCHEMA\n"
         + "where t.TABLE_TYPE not in ('SYSTEM VIEW')\n"
@@ -89,6 +89,12 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
       // quote identifiers
       sridQuery2 = "select case when min(st_srid(%s)) <> max(st_srid(%s)) then 0 else min(st_srid(%s)) end as srid\n"
         + "from `%s`.`%s`";
+    }
+
+    coordDimQuery = "SELECT coord_dimension FROM geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
+    if (geometryColumnsLayout == GeometryColumnsLayout.NO_LAYOUT) {
+      // quote identifiers
+      coordDimQuery = "select 2 as coord_dimension";
     }
     
   }

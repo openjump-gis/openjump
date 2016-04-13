@@ -87,6 +87,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     spatialExtentQuery1 = "SELECT %s from \"%s\"";
     // no second query for spatialite
     spatialExtentQuery2 = null;
+
     if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
       sridQuery = "SELECT srs_id FROM gpkg_geometry_columns where table_name = '%s' and column_name = '%s'";
     } else {
@@ -95,7 +96,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     // geo column query needs to be built occording to geometryColumnsLayout
     if (this.geometryColumnsLayout == GeometryColumnsLayout.FDO_LAYOUT
         || this.geometryColumnsLayout == GeometryColumnsLayout.OGC_OGR_LAYOUT) {
-      geoColumnsQuery = "SELECT f_geometry_column, srid,\n"
+      geoColumnsQuery = "SELECT f_geometry_column, coord_dimension, srid,\n"
           + "  case\n"
           + "    when geometry_type = 1 then 'POINT'\n"
           + "    when geometry_type = 2 then 'LINESTRING'\n"
@@ -107,11 +108,20 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
           + "    else geometry_type end as geometry_type\n"
           + "FROM geometry_columns where f_table_name = '%s'";
     } else if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_SPATIALITE_LAYOUT) {
-      geoColumnsQuery = "SELECT f_geometry_column, srid, type FROM geometry_columns where f_table_name = '%s'";
+      geoColumnsQuery = "SELECT f_geometry_column, coord_dimension, srid, type FROM geometry_columns where f_table_name = '%s'";
     } else if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
-      geoColumnsQuery = "SELECT column_name, srs_id, geometry_type_name FROM gpkg_geometry_columns where table_name = '%s'";
+      geoColumnsQuery = "SELECT column_name, " +
+              "case when z+m = 0 then 2 when z = 1 and m = 1 then 4 else 3 end as coord_dimension, " +
+              "srs_id, geometry_type_name FROM gpkg_geometry_columns where table_name = '%s'";
     } else {
       geoColumnsQuery = "SELECT '' ";
+    }
+
+    if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
+      coordDimQuery = "SELECT case when z+m = 0 then 2 when z = 1 and m = 1 then 4 else 3 end as coord_dimension " +
+              "FROM gpkg_geometry_columns where table_name = '%s' and column_name = '%s'";
+    } else {
+      coordDimQuery = "SELECT coord_dimension FROM geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
     }
   }
 
