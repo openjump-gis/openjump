@@ -19,6 +19,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -55,49 +56,71 @@ public class GDALPamDataset extends DefaultHandler {
         
     }
     
-    public void writeStatistics(File auxXmlFile, Stats stats) throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
+    public void writeStatistics(File auxXmlFile, Stats stats)
+            throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
         
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-        Document doc = docBuilder.newDocument();
-        Element rootElement = doc.createElement("PAMDataset");
+        Document doc;
         
-        for(int b=0; b<stats.getBandCount(); b++) {
+        Element pamDatasetElement;
+        NodeList pamRasterBandNodeList;
         
-            Element pamRasterBand = doc.createElement("PAMRasterBand");            
-
-            Attr attr = doc.createAttribute("band");
-            attr.setValue(Integer.toString(b+1));
-            pamRasterBand.setAttributeNode(attr);
-
-            Element metadata = doc.createElement("Metadata");
-
-            Element mdi = doc.createElement("MDI");
-            mdi.setAttribute("key", "STATISTICS_MINIMUM");
-            mdi.setTextContent(Double.toString(stats.getMin(b)));
-            metadata.appendChild(mdi);
-
-            mdi = doc.createElement("MDI");
-            mdi.setAttribute("key", "STATISTICS_MAXIMUM");
-            mdi.setTextContent(Double.toString(stats.getMax(b)));
-            metadata.appendChild(mdi);
-
-            mdi = doc.createElement("MDI");
-            mdi.setAttribute("key", "STATISTICS_MEAN");
-            mdi.setTextContent(Double.toString(stats.getMean(b)));
-            metadata.appendChild(mdi);
-
-            mdi = doc.createElement("MDI");
-            mdi.setAttribute("key", "STATISTICS_STDDEV");
-            mdi.setTextContent(Double.toString(stats.getStdDev(b)));
-            metadata.appendChild(mdi);
+        // Try to read the xml file
+        if(auxXmlFile.isFile()) {
+            try {
+                doc = docBuilder.parse(auxXmlFile);
+            } catch(SAXException | IOException ex) {
+                doc = docBuilder.newDocument();
+            }
+        } else {
+            doc = docBuilder.newDocument();
+        }
             
-            pamRasterBand.appendChild(metadata);
-            rootElement.appendChild(pamRasterBand);
+        // Check if PAMDataset element exists and, if not, create it
+        String pamDatasetTagName = "PAMDataset";
+        pamDatasetElement = (Element) doc.getElementsByTagName(pamDatasetTagName).item(0);
+        if(pamDatasetElement == null) {
+            pamDatasetElement = doc.createElement(pamDatasetTagName);
         }
         
-        doc.appendChild(rootElement);
+        String pamRasterBandTagName = "PAMRasterBand";
+        String bandAttribute = "band";
+        String metadataElementName = "Metadata";
         
+        pamRasterBandNodeList = pamDatasetElement.getElementsByTagName(pamRasterBandTagName);
+        if(pamRasterBandNodeList != null && pamRasterBandNodeList.getLength() > 0) {
+            for(int b=0; b<pamRasterBandNodeList.getLength(); b++) {
+                Element pamRasterBandElement = (Element) pamRasterBandNodeList.item(b);
+                int bandNr = Integer.parseInt(pamRasterBandElement.getAttribute(bandAttribute));
+                
+                if(bandNr == b+1) {
+                
+                    Element metadataElement = (Element) pamRasterBandElement.getElementsByTagName(metadataElementName).item(0);
+                    metadataElement = updateMetadataElement(doc, metadataElement, stats, band);
+                
+                    pamRasterBandElement.appendChild(metadataElement);
+                    pamDatasetElement.appendChild(pamRasterBandElement);
+                    
+                }
+            }            
+        } else {
+            for(int b=0; b<stats.getBandCount(); b++) {
+                
+                Element pamRasterBandElement = doc.createElement(pamRasterBandTagName);
+                Attr attr = doc.createAttribute(bandAttribute);
+                attr.setValue(Integer.toString(b+1));
+                pamRasterBandElement.setAttributeNode(attr);
+                
+                Element metadataElement = doc.createElement(metadataElementName);
+                metadataElement = updateMetadataElement(doc, metadataElement, stats, band);
+                pamRasterBandElement.appendChild(metadataElement);
+                pamDatasetElement.appendChild(pamRasterBandElement);
+            }
+            
+            doc.appendChild(pamDatasetElement);
+        }
+ 
         // write the content into xml file
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
@@ -108,7 +131,33 @@ public class GDALPamDataset extends DefaultHandler {
         transformer.transform(source, result);
         
     }
+    
+    private Element updateMetadataElement(Document doc, Element metadataElement, Stats stats, int band) {
+        
+        Element mdi = doc.createElement("MDI");
+        mdi.setAttribute("key", "STATISTICS_MINIMUM");
+        mdi.setTextContent(Double.toString(stats.getMin(band)));
+        metadataElement.appendChild(mdi);
 
+        mdi = doc.createElement("MDI");
+        mdi.setAttribute("key", "STATISTICS_MAXIMUM");
+        mdi.setTextContent(Double.toString(stats.getMax(band)));
+        metadataElement.appendChild(mdi);
+
+        mdi = doc.createElement("MDI");
+        mdi.setAttribute("key", "STATISTICS_MEAN");
+        mdi.setTextContent(Double.toString(stats.getMean(band)));
+        metadataElement.appendChild(mdi);
+
+        mdi = doc.createElement("MDI");
+        mdi.setAttribute("key", "STATISTICS_STDDEV");
+        mdi.setTextContent(Double.toString(stats.getStdDev(band)));
+        metadataElement.appendChild(mdi);
+        
+        return metadataElement;
+        
+    }
+    
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
@@ -129,14 +178,19 @@ public class GDALPamDataset extends DefaultHandler {
             for(int a=0; a<attributes.getLength(); a++) {
                 if(attributes.getQName(a).toLowerCase().equals("key")) {
                     attributeQName = "key";
-                    if(attributes.getValue(a).toUpperCase().equals("STATISTICS_MINIMUM")) {
-                        attributeValue = "STATISTICS_MINIMUM";
-                    } else if(attributes.getValue(a).toUpperCase().equals("STATISTICS_MAXIMUM")) {
-                        attributeValue = "STATISTICS_MAXIMUM";
-                    } else if(attributes.getValue(a).toUpperCase().equals("STATISTICS_MEAN")) {
-                        attributeValue = "STATISTICS_MEAN";
-                    } else if(attributes.getValue(a).toUpperCase().equals("STATISTICS_STDDEV")) {
-                        attributeValue = "STATISTICS_STDDEV";
+                    switch (attributes.getValue(a).toUpperCase()) {
+                        case "STATISTICS_MINIMUM":
+                            attributeValue = "STATISTICS_MINIMUM";
+                            break;
+                        case "STATISTICS_MAXIMUM":
+                            attributeValue = "STATISTICS_MAXIMUM";
+                            break;
+                        case "STATISTICS_MEAN":
+                            attributeValue = "STATISTICS_MEAN";
+                            break;
+                        case "STATISTICS_STDDEV":
+                            attributeValue = "STATISTICS_STDDEV";
+                            break;
                     }
                 }
             }
@@ -151,14 +205,19 @@ public class GDALPamDataset extends DefaultHandler {
         if(attributeValue == null || tmpValue.trim().equals("")) return;
         
         if(attributeQName.toLowerCase().equals("key")) {
-            if(attributeValue.toUpperCase().equals("STATISTICS_MINIMUM")) {
-                min_l.add(Double.parseDouble(tmpValue));
-            } else if(attributeValue.toUpperCase().equals("STATISTICS_MAXIMUM")) {
-                max_l.add(Double.parseDouble(tmpValue));
-            } else if(attributeValue.toUpperCase().equals("STATISTICS_MEAN")) {
-                mean_l.add(Double.parseDouble(tmpValue));
-            } else if(attributeValue.toUpperCase().equals("STATISTICS_STDDEV")) {
-                stdDev_l.add(Double.parseDouble(tmpValue));
+            switch (attributeValue.toUpperCase()) {
+                case "STATISTICS_MINIMUM":
+                    min_l.add(Double.parseDouble(tmpValue));
+                    break;
+                case "STATISTICS_MAXIMUM":
+                    max_l.add(Double.parseDouble(tmpValue));
+                    break;
+                case "STATISTICS_MEAN":
+                    mean_l.add(Double.parseDouble(tmpValue));
+                    break;
+                case "STATISTICS_STDDEV":
+                    stdDev_l.add(Double.parseDouble(tmpValue));
+                    break;
             }
         }
         
@@ -168,15 +227,14 @@ public class GDALPamDataset extends DefaultHandler {
     public void characters(char[] ac, int i, int j) throws SAXException {
         tmpValue = new String(ac, i, j);
     }
-
     
     private String tmpValue;
     private String attributeQName;
     private String attributeValue;
     private int bandCount = 0;
     private int band = 0;
-    private List<Double> min_l;
-    private List<Double> max_l;
+    private final List<Double> min_l;
+    private final List<Double> max_l;
     private List<Double> mean_l = null;
     private List<Double> stdDev_l = null;
     

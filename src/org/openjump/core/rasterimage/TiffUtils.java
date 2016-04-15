@@ -20,6 +20,7 @@ import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
@@ -251,7 +252,8 @@ public class TiffUtils {
         
     }
     
-    private static Stats createStatsXml(File tiffFile, double noDataValue, File auxXmlFile) throws ParserConfigurationException, TransformerException {
+    private static Stats createStatsXml(File tiffFile, double noDataValue, File auxXmlFile)
+            throws ParserConfigurationException, TransformerException, TransformerConfigurationException, SAXException, IOException {
     
         BufferedImage bufferedImage = readSubsampled(tiffFile, 1, 1).getAsBufferedImage();
         int bandCount = bufferedImage.getRaster().getNumBands();

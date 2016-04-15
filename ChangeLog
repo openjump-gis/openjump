@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-04-15 bertazza <bertazza@gmail>
+  * Handling of .aux.xml files associated to tiff files changed: now if the
+    .aux.xml file exists, the statistics are added to it, instead of just
+    replacing its content.
+
 2016-04-11 mmichaud <m.michael.michaud@orange.fr>
   * Fix a bug preventing updates with WritableDataSource in some cases
 
