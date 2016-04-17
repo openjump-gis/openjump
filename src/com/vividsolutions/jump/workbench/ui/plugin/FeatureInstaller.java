@@ -74,6 +74,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.WorkbenchProperties;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -404,10 +405,10 @@ public class FeatureInstaller {
   /**
    * The addMenu method. it adds a given menu item to a menu path
    * associates the given plugin and generally does everything so
-   * the pluging works as a menu entry.
+   * the plugin works as a menu entry.
    * additionally it consults the workbench properties for an order
    * to insert the menu item, icon to add, different name etc. and 
-   * runs updateSeperators() after each insert, so the menus are 
+   * runs updateSeparators() after each insert, so the menus are 
    * neatly separated according to the workbench props definitions.
    * 
    * @param menu
@@ -432,6 +433,14 @@ public class FeatureInstaller {
         WorkbenchProperties.ATTR_ICON);
     if (!iconSetting.isEmpty())
       icon = IconLoader.icon(iconSetting);
+
+    // check and add a default menu item name
+    String name = menuItem.getText();
+    if ( name == null || name.trim().equals("") ){
+      Logger.error("plugin '"+plugin.getClass().getCanonicalName()+"' does provide an invalid _empty_ menu item name."
+          + " it will be installed with it's classname instead!");
+      menuItem.setText(plugin.getClass().getSimpleName());
+    }
 
     // make sure the icon is max 16x16
     if (icon instanceof ImageIcon && icon.getIconHeight() > 16) {
@@ -547,7 +556,8 @@ public class FeatureInstaller {
     else
       itemRoot.insert(menuItem, pos);
 
-    // update separators
+    // update separators, for performance reason this can be disabled so it can
+    // be done once after installing a bunch of plugins only
     if (isSeparatingEnabled())
       updateSeparatorsFromProps(menu, menu);
 
