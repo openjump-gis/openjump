@@ -15,6 +15,7 @@ import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 
+import javax.management.RuntimeErrorException;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -963,7 +964,9 @@ public class QueryDialog extends BDialog {
                         progressBar.setProgressText(""+count+"/"+total);
                         progressBar.setValue(count);
                     }
-                    catch(Exception e) {e.printStackTrace();}
+                    catch(Exception e) {
+                        context.getErrorHandler().handleThrowable(e);
+                    }
                     if (cancelQuery) break;
                     
                     if (okFeatures.size()==0) continue;
