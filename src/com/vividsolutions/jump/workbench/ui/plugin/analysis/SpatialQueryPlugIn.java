@@ -72,7 +72,6 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   private GeometryPredicate functionToRun = null;
   private boolean complementResult = false;
   private boolean allowDups = false;
-  private boolean exceptionThrown = false;
   private JRadioButton updateSourceRB;
   private JRadioButton createNewLayerRB;
   private boolean createLayer = true;
@@ -167,8 +166,10 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
       selectionManager.getFeatureSelection().selectItems( srcLayer, resultFC.getFeatures() );
     }
 
-    if (exceptionThrown) {
-      context.getWorkbenchFrame().warnUser(I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Errors-found-while-executing-query"));
+    if (executer.isExceptionThrown()) {
+      context.getWorkbenchFrame().warnUser(
+              I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Errors-found-while-executing-query") +
+                      ":" + executer.getException());
     }
   }
 

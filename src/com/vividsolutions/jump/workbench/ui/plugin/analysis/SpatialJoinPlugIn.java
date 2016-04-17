@@ -132,9 +132,9 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
         context.getLayerManager().addCategory(categoryName);
         context.addLayer(categoryName, outputLayerName, resultFC);
     
-        if (exceptionThrown) {
+        if (executer.isExceptionThrown()) {
             context.getWorkbenchFrame()
-                   .warnUser("Errors found while executing query");
+                   .warnUser("Errors found while executing query: " + executer.getException());
         }
     }
 

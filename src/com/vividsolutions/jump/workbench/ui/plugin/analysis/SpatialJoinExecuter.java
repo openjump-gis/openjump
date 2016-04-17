@@ -23,6 +23,7 @@ public class SpatialJoinExecuter
   private FeatureCollection queryFC;
 
   private boolean isExceptionThrown = false;
+  private Exception exception;
 
   private Geometry geoms[] = new Geometry[2];
   private Set resultSet = new HashSet();
@@ -37,8 +38,7 @@ public class SpatialJoinExecuter
    * Gets the feature collection to query.
    * A spatial index may be created if this would improve performance.
    *
-   * @param func
-   * @return
+   * @param pred geometry predicate
    */
   private void createQueryFeatureCollection(GeometryPredicate pred)
   {
@@ -77,7 +77,13 @@ public class SpatialJoinExecuter
     return queryIt;
   }
 
-  public boolean isExceptionThrown() { return isExceptionThrown; }
+  public boolean isExceptionThrown() {
+    return isExceptionThrown;
+  }
+
+  public Exception getException() {
+    return exception;
+  }
 
   private FeatureSchema createResultSchema()
   {
@@ -191,6 +197,7 @@ public class SpatialJoinExecuter
     catch (RuntimeException ex) {
       // simply eat exceptions and report them by returning null
       isExceptionThrown = true;
+      exception = ex;
     }
     return false;
 

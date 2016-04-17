@@ -16,17 +16,17 @@ import com.vividsolutions.jump.feature.*;
  * @author Martin Davis
  * @version 1.0
  */
-public class SpatialQueryExecuter
-{
+public class SpatialQueryExecuter {
+
   private FeatureCollection maskFC;
   private FeatureCollection sourceFC;
-//  private GeometryPredicate predicate;
 
   private FeatureCollection queryFC;
 
   private boolean complementResult = false;
   private boolean allowDuplicatesInResult = false;
   private boolean isExceptionThrown = false;
+  private Exception exception;
 
 
   private Geometry geoms[] = new Geometry[2];
@@ -64,8 +64,7 @@ public class SpatialQueryExecuter
    * Gets the featurec collection to query.
    * This may be indexed if this would improve performance.
    *
-   * @param func
-   * @return
+   * @param pred geometry predicate
    */
   private void createQueryFeatureCollection(GeometryPredicate pred)
   {
@@ -104,7 +103,13 @@ public class SpatialQueryExecuter
     return queryIt;
   }
 
-  public boolean isExceptionThrown() { return isExceptionThrown; }
+  public boolean isExceptionThrown() {
+    return isExceptionThrown;
+  }
+
+  public Exception getException() {
+    return exception;
+  }
 
   public FeatureCollection getResultFC()
   {
@@ -126,11 +131,9 @@ public class SpatialQueryExecuter
    * @param resultFC
    */
   public void execute(TaskMonitor monitor,
-                                     GeometryPredicate func,
-                                     double[] params,
-                                     FeatureCollection resultFC
-                                     )
-  {
+                      GeometryPredicate func,
+                      double[] params,
+                      FeatureCollection resultFC) {
 
     createQueryFeatureCollection(func);
 
@@ -223,6 +226,7 @@ public class SpatialQueryExecuter
     catch (RuntimeException ex) {
       // simply eat exceptions and report them by returning null
       isExceptionThrown = true;
+      exception = ex;
     }
     return false;
 
