@@ -319,7 +319,10 @@ public class LayerManager {
     }
 
     /**
-     * convenience method
+     * Convenience method. Use dispose rather than remove if you want to free
+     * the memory.
+     * remove is only used to temporarily remove a layer from the layer (ex.
+     * in the MoveLayerPlugIn).
      * 
      * @param layerable
      */
