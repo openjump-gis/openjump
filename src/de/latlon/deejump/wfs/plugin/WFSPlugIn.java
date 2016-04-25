@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -214,13 +216,23 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
 			layer.setServerURL(this.wfsUrl);
 			layerManager.addLayer(StandardCategoryNames.SYSTEM, layer);
 			layer.setEditable(true);
-			// [Giuseppe Aruta 4/217/2016]
+			// [Giuseppe Aruta 4/21/2016, ede 25.4.2016]
 			// Workaround to record WFS Layer SRS as SRIDStyle
 			SRIDStyle sridStyle = (SRIDStyle) layer.getStyle(SRIDStyle.class);
-			String srsString = panel.getGMLGeometrySRS()
-					.replaceAll("[\\D]", "");
-			int srs = Integer.parseInt(srsString);
-			sridStyle.setSRID(srs);
+			Pattern p = Pattern.compile("^.*epsg:(?:[\\d\\.]*:)?(\\d+)$",
+					Pattern.CASE_INSENSITIVE);
+			Matcher m = p.matcher(crs != null ? crs : "");
+			int srid = 0;
+			// only set if we can interpret the given srs string
+			if (m.matches()) {
+				String epsgId = m.group(1);
+				try {
+					srid = Integer.parseInt(epsgId);
+				} catch (NumberFormatException e) {
+					Logger.error(e);
+				}
+			}
+			sridStyle.setSRID(srid);
 			// do not consider feature collection modified after just loading it
 			layer.setFeatureCollectionModified(false);
 		}
