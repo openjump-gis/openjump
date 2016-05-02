@@ -23,6 +23,7 @@ import org.deegree.datatypes.QualifiedName;
 import org.deegree.framework.util.StringTools;
 import org.deegree.model.spatialschema.JTSAdapter;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
+import org.openjump.util.metaData.MetaInformationHandler;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -228,6 +229,12 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
         }
       }
       sridStyle.setSRID(srid);
+      MetaInformationHandler metaInfHandler = new MetaInformationHandler(
+          layer);
+      metaInfHandler.addMetaInformation("wfs_server_url", panel
+          .getWfService().getBaseWfsURL());
+      metaInfHandler.addMetaInformation("wfs_feature_type",
+          panel.getFeatureType());
       // do not consider feature collection modified after just loading it
       layer.setFeatureCollectionModified(false);
     }
