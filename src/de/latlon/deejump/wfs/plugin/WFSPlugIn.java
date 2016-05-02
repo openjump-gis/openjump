@@ -229,12 +229,12 @@ public class WFSPlugIn extends ThreadedBasePlugIn {
         }
       }
       sridStyle.setSRID(srid);
-      MetaInformationHandler metaInfHandler = new MetaInformationHandler(
-          layer);
-      metaInfHandler.addMetaInformation("wfs_server_url", panel
-          .getWfService().getBaseWfsURL());
-      metaInfHandler.addMetaInformation("wfs_feature_type",
-          panel.getFeatureType());
+      
+      //[G.Aruta 02/05/2016 - Uncomment for new solution. But saved the code
+      // MetaInformationHandler metaInfHandler = new MetaInformationHandler(layer);
+     // metaInfHandler.addMetaInformation("wfs_server_url", panel.getWfService().getBaseWfsURL());
+     // metaInfHandler.addMetaInformation("wfs_feature_type",panel.getFeatureType());
+      
       // do not consider feature collection modified after just loading it
       layer.setFeatureCollectionModified(false);
     }
