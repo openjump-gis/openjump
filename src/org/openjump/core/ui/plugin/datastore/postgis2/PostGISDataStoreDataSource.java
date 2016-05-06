@@ -179,6 +179,8 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
                 SQLUtil.normalize(schema.getAttributeName(schema.getGeometryIndex()))
                 :schema.getAttributeName(schema.getGeometryIndex());
         try {
+            Logger.debug(conn.getMetadata()
+                    .getCreateTableStatement(fc.getFeatureSchema(), schemaName, tableName, normalizedColumnNames));
             conn.getJdbcConnection().createStatement().execute(conn.getMetadata()
                     .getCreateTableStatement(fc.getFeatureSchema(), schemaName, tableName, normalizedColumnNames));
         } catch (SQLException sqle) {
@@ -186,6 +188,8 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
                     .getCreateTableStatement(fc.getFeatureSchema(), schemaName, tableName, normalizedColumnNames), sqle);
         }
         try {
+            Logger.debug(conn.getMetadata()
+                    .getAddGeometryColumnStatement(schemaName, tableName, geometryColumn, srid, geometryType, dim));
             conn.getJdbcConnection().createStatement().execute(conn.getMetadata()
                     .getAddGeometryColumnStatement(schemaName, tableName, geometryColumn, srid, geometryType, dim));
         } catch (SQLException sqle) {

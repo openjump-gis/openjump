@@ -401,6 +401,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                     // but always have dimension = 2. This use case does not fit all !
                     int object_srid = ((Geometry)feature.getAttribute(i)).getSRID();
                     pstmt.setBytes(index++, SQLUtil.getByteArrayFromGeometry((Geometry)feature.getAttribute(i), object_srid, 2));
+                } else if (feature.getAttribute(i) instanceof String) {
+                    pstmt.setBytes(index++, feature.getAttribute(i).toString().getBytes());
                 }
                 else pstmt.setObject(index++, feature.getAttribute(i));
             }
