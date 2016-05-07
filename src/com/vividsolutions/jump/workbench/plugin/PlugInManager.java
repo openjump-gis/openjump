@@ -100,9 +100,11 @@ public class PlugInManager {
               Class c = findLoadedClass(name);
               if (c == null) {
                 try {
-                  // these have to be handled like external packages
-                  if (!name.startsWith("de.latlon.deejump.wfs")
-                      && !name.startsWith("org.deegree."))
+                // disabled but not removed: here is the place to enforce plugin
+                // cl for specific classes/paths
+                // // these have to be handled like external packages
+                // if (!name.startsWith("de.latlon.deejump.wfs")
+                // && !name.startsWith("org.deegree."))
                     c = getParent().loadClass(name);
                 } catch (ClassNotFoundException e) {
                 }
