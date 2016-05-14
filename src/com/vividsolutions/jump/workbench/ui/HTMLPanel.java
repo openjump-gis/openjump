@@ -7,7 +7,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -30,6 +32,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
     private JScrollPane scrollPane = new JScrollPane();
     private JEditorPane editorPane = new JEditorPane();
     private int currentIndex = -1;
+    private  JButton saveButton = new JButton();
 
 
     public HTMLPanel() {
@@ -46,7 +49,11 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
         return recordPanel;
     }
 
-    public int getCurrentIndex() {
+    public JButton getSaveButton() {
+      return saveButton;
+   }
+    
+     public int getCurrentIndex() {
         return currentIndex;
     }
 
@@ -121,7 +128,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
         editorPane.setContentType("text/html");
         southPanel.setLayout(gridBagLayout1);
         scrollPane
-                .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         okButton.setText("OK");
 
         add(scrollPane, BorderLayout.CENTER);
@@ -140,7 +147,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
          * Giuseppe Aruta 2015_01_03 
          * Add Button to save view as HTML
          */
-        JButton saveButton = new JButton(
+        saveButton = new JButton(
                 I18N.get("deejump.plugin.SaveLegendPlugIn.Save")); //$NON-NLS-1$
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -176,7 +183,10 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
 
             try {
                 String texto = history.get(currentIndex).toString();
-                FileUtil.setContents(archivo.getAbsolutePath(), texto);
+                String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+                .format(Calendar.getInstance().getTime());
+                String all = texto + "<B>" + timeStamp+"</B>";
+                FileUtil.setContents(archivo.getAbsolutePath(), all);
             } catch (Exception e1) {
                 Logger.error(e1);
                 JUMPWorkbench
