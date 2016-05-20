@@ -1209,10 +1209,17 @@
 		<menus>
 			<layername-popup install="true" />
 		</menus>
-	</plug-in>
+	<!-- commented out original LayerPropertyPlugIn -->
+	<!-- </plug-in> -->
+	<!-- <plug-in> -->
+	<!-- org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn -->
+	<!-- </plug-in> -->
 	<plug-in>
-		org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn
-	</plug-in>
+        org.openjump.core.ui.plugin.layer.NewLayerPropertiesPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn
 	</plug-in>
