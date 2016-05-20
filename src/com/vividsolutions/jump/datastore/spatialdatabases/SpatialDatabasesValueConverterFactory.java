@@ -85,6 +85,8 @@ public class SpatialDatabasesValueConverterFactory {
       Geometry geometry = null;
       if (bytes == null || bytes.length <= 0) {
         geometry = wktReader.read("GEOMETRYCOLLECTION EMPTY");
+      } else if (new String(new byte[]{bytes[0]}).matches("[GLMP]")) {
+        geometry = wktReader.read(new String(bytes));
       } else {
         //assume it's the actual bytes (from ST_AsBinary)
         byte[] realWkbBytes = bytes;

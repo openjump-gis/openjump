@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-05-20 mmichaud
+  * Rename LineSimplifyJTS15AlgorithmPlugIn to SimplifyWithJTSAlgorithm
+    Now works for every kind of geometry and always use PreserveTopology version
+  * SpatialDatabase : small patch to avoid trying to read wkt as wkb
+
 2016-04-25 ede, Giuseppe
   * featreq 422: wfs layer, add SRIDStyle using loading crs's epsg id
 

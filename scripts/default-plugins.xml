@@ -820,7 +820,7 @@
 
 	<!--- ========= Generalization ==================== / -->
 	<plug-in>
-		org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn
+		org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn

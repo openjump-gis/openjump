@@ -68,27 +68,24 @@ import java.util.Collection;
 
 /**
  * Simplifies a selected line, criterion is a maximal line displacement <p>
- * it is used the JTS 1.5 douglas peucker simplification with topology 
- * preservation for polygons and DouglasPeuckerSimplifier for linestrings
- * n.b.: the jts-algorithm handles all geometry types
+ * it uses JTS TopologyPreservingSimplifier.
+ * n.b.: since version > 1.9.1 the plugin handles all geometry types
  *
- * @author sstein
+ * @author sstein, mmichaud
  *
  **/
-public class LineSimplifyJTS15AlgorithmPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
+public class SimplifyWithJTSAlgorithmPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
 
-    private final static String sSimplifyJTSAlgorithm = I18N.get("org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn.Simplify-JTS-algorithm");
-    private final static String sGeometryNotLineOrPolygon=I18N.get("org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn.geometry-not-line-or-polygon");
-    private final static String sidebarText=I18N.get("org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn.Line-simplification-for-a-selected-line-or-polygon");
-    private final static String sItem=I18N.get("org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn.Item");
-    private final static String sSimplificationFinalized=I18N.get("org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn.simplification-finalized");
-    private static String T3=I18N.get("org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn.Maximum-point-displacement-in-model-units");    
+    private final static String sSimplifyJTSAlgorithm = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn");
+    private final static String sidebarText=I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Line-simplification-for-a-selected-line-or-polygon");
+    private final static String sItem=I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Item");
+    private final static String sSimplificationFinalized=I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.simplification-finalized");
+    private static String T3=I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Maximum-point-displacement-in-model-units");
     double maxPDisp = 0;
-    private int geomType = 0; // 1 = line, 2= polygon, 0 = others,
 
     public void initialize(PlugInContext context) throws Exception {
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    	featureInstaller.addMainMenuItem(
+    	featureInstaller.addMainMenuPlugin(
     	        this,								//exe
 				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERALIZATION }, 	//menu path
                 sSimplifyJTSAlgorithm , //name methode .getName recieved by AbstractPlugIn 
@@ -143,9 +140,7 @@ public class LineSimplifyJTS15AlgorithmPlugIn extends AbstractPlugIn implements 
 	
 
 	private boolean simplify(PlugInContext context, double maxDisp, TaskMonitor monitor) throws Exception{
-	    
-	    //System.gc(); //flush garbage collector
-	    // --------------------------	    
+
 	    //-- get selected items
 	    final Collection features = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
 
@@ -158,42 +153,13 @@ public class LineSimplifyJTS15AlgorithmPlugIn extends AbstractPlugIn implements 
 	    //--get single object in selection to analyse
       	for (Iterator iter = features.iterator(); iter.hasNext();) {
       		count++;
-      		//System.out.println("========= simplify item: " + count + " ============ ");
       		Feature f = (Feature)iter.next();
-	   		Geometry geom = f.getGeometry(); //= erste Geometrie   		
-	   		LineString line = null;
-	   		Polygon poly = null;
-	   		if(geom instanceof LineString){
-	   			line = (LineString)geom;
-	   			this.geomType = 1;
-	   		}
-	   		else if(geom instanceof Polygon){
-	   			poly = (Polygon)geom;
-	   			line = poly.getExteriorRing();
-	   			this.geomType = 2;
-	   		}
-	      	else{
-	      		this.geomType = 0;
-	      		context.getWorkbenchFrame().warnUser(sGeometryNotLineOrPolygon);
-	      	}
-		    /****************************************/
-	       	if (this.geomType > 0){
-		   	    //-- update geometry --------
-		   	    if (this.geomType == 1){	//linestring
-		   	    	resultgeom = DouglasPeuckerSimplifier.simplify(line, Math.abs(maxDisp));
-		   	    }
-		   	    else if (this.geomType == 2){ //polygon
-		   	    	//poly = (Polygon)geom.clone();
-		   	    	resultgeom = TopologyPreservingSimplifier.simplify(poly, Math.abs(maxDisp));
-		   	    }	   	     
-			    String mytext = sItem + ": " + count + " / " + noItems + " : " + sSimplificationFinalized;
-			    //context.getWorkbenchFrame().setStatusMessage(mytext);
-			    monitor.report(mytext);
-			    //-- commit changes to undo history
-				//transaction.setGeometry(count-1, resultgeom);
-				transaction.setGeometry(f, resultgeom);
-	       	}//end if : polygon or linestring
-      	} //end for loop over selected objects 
+			resultgeom = TopologyPreservingSimplifier.simplify(f.getGeometry(), Math.abs(maxDisp));
+			String mytext = sItem + ": " + count + " / " + noItems + " : " + sSimplificationFinalized;
+			monitor.report(mytext);
+			//-- commit changes to undo history
+			transaction.setGeometry(f, resultgeom);
+      	}
 		transaction.commit();
         return true;        
 	}
