@@ -1073,19 +1073,24 @@
 	</plug-in>
 
 	<separator />
-
-	<plug-in>
-		org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn
-		<menus>
-			<layername-popup install="true" />
-		</menus>
-	</plug-in>
-	<plug-in>
+    <!-- <plug-in> -->
+    <!-- org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn -->
+    <!-- <menus> -->
+    <!--    <layername-popup install="true" /> -->
+    <!-- </menus> -->
+    <!-- </plug-in> -->
+    <plug-in>
 		com.vividsolutions.jump.workbench.ui.zoom.ZoomToLayerPlugIn
 		<menus>
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
+	<plug-in>
+        org.openjump.core.ui.plugin.layer.NewLayerPropertiesPlugIn
+    <menus>
+            <layername-popup install="true" />
+    </menus>
+    </plug-in>
 	<plug-in initialize="false">
 		org.openjump.core.ui.plugin.layer.CTSPlugIn
 		<menus>
@@ -1210,16 +1215,11 @@
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
-	<!-- commented out original LayerPropertyPlugIn -->
-	<!-- <plug-in> -->
-	<!-- org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn -->
-	<!-- </plug-in> -->
+	
 	<plug-in>
-        org.openjump.core.ui.plugin.layer.NewLayerPropertiesPlugIn
-        <menus>
-            <layername-popup install="true" />
-        </menus>
-    </plug-in>
+	     org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn
+	</plug-in> 
+	
 	<plug-in>
 		org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn
 	</plug-in>
