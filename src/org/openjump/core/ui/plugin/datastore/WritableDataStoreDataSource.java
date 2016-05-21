@@ -215,7 +215,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                         // if createPrimaryKey=false, old gid will be considered as a normal attribute
                         featureCollection.getFeatureSchema().removeExternalPrimaryKey();
                         createAndPopulateTable(conn,
-                                featureCollection, srid, geometryColumn, dim, normalizedColumnNames);
+                                featureCollection, srid, "GEOMETRY", dim, normalizedColumnNames);
                         if (createPrimaryKey) {
                             addDBPrimaryKey(conn, DEFAULT_PK_NAME);
                             // @TODO reload part is kept out of the transaction because it uses

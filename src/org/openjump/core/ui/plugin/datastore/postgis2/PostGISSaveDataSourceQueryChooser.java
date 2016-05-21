@@ -108,7 +108,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
             Layer[] layers = context.getWorkbenchContext().getLayerNamePanel().getSelectedLayers();
             if (layers.length == 1) {
                 FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
-                if (schema.hasAttribute("gid")) {
+                if (schema.hasAttribute("gid") && panel.isCreatePrimaryKeyColumnSelected()) {
                     JOptionPane.showMessageDialog(panel,
                             GID_ALREADY_EXISTS,
                             ERROR, JOptionPane.ERROR_MESSAGE );
