@@ -434,6 +434,9 @@ public class ProjUtils {
      * @return <String> - SRS definition
      */
     private static String decodeProjDescription(String textProj) {
+      // Workaround if aux.xml has been download from web.
+      // convert HTML quotes [&quot;] to ["]
+      textProj = textProj.replaceAll("&quot;", "\"");
         int start = textProj.indexOf("[\"");
         int end = textProj.indexOf("\",", start);
         String prjname = "";
