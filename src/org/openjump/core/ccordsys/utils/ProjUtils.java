@@ -434,13 +434,14 @@ public class ProjUtils {
      * @return <String> - SRS definition
      */
     private static String decodeProjDescription(String textProj) {
+      String prjname = "";
+      try {
       // Workaround if aux.xml has been download from web.
       // convert HTML quotes [&quot;] to ["]
       textProj = textProj.replaceAll("&quot;", "\"");
         int start = textProj.indexOf("[\"");
         int end = textProj.indexOf("\",", start);
-        String prjname = "";
-        prjname = textProj.substring(start + 2, end);
+         prjname = textProj.substring(start + 2, end);
         // The following set of replacements allows to "harmonize" OGC, ESRI and
         // few other WKT projection definitions
         prjname = prjname.replaceAll("_", " ").replace(" / ", " ")
@@ -461,8 +462,12 @@ public class ProjUtils {
                 .replace("\\bParis\\b", "(Paris)")
                 .replace("\\bFerro\\b", "(Ferro)");
 
-        return prjname;
-    }
+      } catch (Exception ex) {
+          // If there is other info than a WKT definition in the aux file
+          prjname = NOT_RECOGNIZED;
+      }
+      return prjname;
+  }
 
     /**
      * returns OGC WKT string located between projection tags (<WKT> or <SRS>)
