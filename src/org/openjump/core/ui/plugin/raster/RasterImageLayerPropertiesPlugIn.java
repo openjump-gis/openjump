@@ -11,6 +11,7 @@ import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Dictionary;
@@ -31,12 +32,12 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.openjump.core.apitools.LayerTools;
+import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 import org.openjump.core.ui.swing.DetachableInternalFrame;
-import org.openjump.core.ui.util.ProjUtils;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -463,36 +464,41 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 		}
 	}
 
-	/*
-	 * Get Projection of selected raster. First it checks if selected raster is
-	 * a GeoTIF and scan tiff tags for projection. If selected file is not a
-	 * GeoTIF, it checks if <Filename>.AUX.XML exists and scans inside it. As
-	 * last choice it scans into <filename>.PRJ file
-	 */
-	private void setInfoProjection(RasterImageLayer layer) throws IOException {
-		String fileSourcePath = layer.getImageFileName();
-		String extension = FileUtil.getExtension(fileSourcePath);
-		if ((extension.equals("tif") || extension.equals("tiff")
-				|| extension.equals("TIF") || extension.equals("TIFF"))) {
-			if (ProjUtils.isGeoTIFF(fileSourcePath)) {
-				proj_file_path = GEO_METADATA;
-				proj_coordinate = ProjUtils
-						.getGeoTiffProjection(fileSourcePath);
-			} else {
-				proj_file_path = ProjUtils
-						.getFileProjectionPath(fileSourcePath);
-				proj_coordinate = ProjUtils.getFileProjection(fileSourcePath);
-			}
-		} else if ((extension.equals("asc") || extension.equals("ASC")
-				|| extension.equals("FLT") || extension.equals("flt"))) {
-			proj_file_path = ProjUtils.getFileProjectionPath(fileSourcePath);
-			proj_coordinate = ProjUtils.getFileProjection(fileSourcePath);
-		} else {
-			proj_file_path = ProjUtils.getFileProjectionPath(fileSourcePath);
-			proj_coordinate = ProjUtils.getFileProjection(fileSourcePath);
-		}
-	}
+  /*
+   * Get Projection of selected raster. First it checks if selected raster is
+   * a GeoTIF and scan tiff tags for projection. If selected file is not a
+   * GeoTIF, it checks if <Filename>.AUX.XML exists and scans inside it. As
+   * last choice it scans into <filename>.PRJ file
+   */
+  private void setInfoProjection(RasterImageLayer layer) throws IOException,
+          URISyntaxException {
+      String fileSourcePath = layer.getImageFileName();
+      String extension = FileUtil.getExtension(fileSourcePath);
+      if ((extension.equals("tif") || extension.equals("tiff")
+              || extension.equals("TIF") || extension.equals("TIFF"))) {
+          if (ProjUtils.isGeoTIFF(fileSourcePath)) {
+              proj_file_path = GEO_METADATA;
+              proj_coordinate = ProjUtils
+                      .readSRSFromGeoTiffFile(fileSourcePath);
+          } else {
 
+              proj_file_path = ProjUtils
+                      .getAuxiliaryProjFilePath(fileSourcePath);
+              proj_coordinate = ProjUtils
+                      .readSRSFromAuxiliaryFile(fileSourcePath);
+
+          }
+      } else if ((extension.equals("asc") || extension.equals("ASC")
+              || extension.equals("FLT") || extension.equals("flt"))) {
+          proj_file_path = ProjUtils.getAuxiliaryProjFilePath(fileSourcePath);
+          proj_coordinate = ProjUtils
+                  .readSRSFromAuxiliaryFile(fileSourcePath);
+      } else {
+          proj_file_path = ProjUtils.getAuxiliaryProjFilePath(fileSourcePath);
+          proj_coordinate = ProjUtils
+                  .readSRSFromAuxiliaryFile(fileSourcePath);
+      }
+  }
 	// //////////////////////////////////////////
 
 	private int datatype;
