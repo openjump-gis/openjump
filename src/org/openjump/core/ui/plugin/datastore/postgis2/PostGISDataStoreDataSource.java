@@ -50,7 +50,9 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
      * After a new postgis table has been create, it is useful to execute a VACUUM ANALYZE
      * in order to update indexes and get a precise estimated_extent.
      */
+    @Deprecated // maybe much time consuming, to be driven by the server, not the client
     public void finalizeUpdate(SpatialDatabasesDSConnection conn) throws Exception {
+        // Vacuum analyze takes too long to be performed after each update
         conn.getJdbcConnection().createStatement().execute("VACUUM ANALYZE " +
                                    SQLUtil.compose(schemaName, tableName));
         Logger.debug("VACUUM ANALYZE " + SQLUtil.compose(schemaName, tableName));

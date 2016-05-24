@@ -247,7 +247,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 }
                 // Adding vacuum analyze seems to be necessary to be able to use
                 // ST_Estimated_Extent on the newly created table
-                finalizeUpdate(conn);
+                //finalizeUpdate(conn);
             }
 
             @Override
@@ -264,6 +264,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * Example : perform a vacuum analyze in PostgreSQL to compact database and to
      * update statistics (needed by ST_Estimated_Extent function)
      */
+    @Deprecated // maybe much time consuming, to be driven by the server, not the client
     public abstract void finalizeUpdate(SpatialDatabasesDSConnection conn) throws Exception;
 
 

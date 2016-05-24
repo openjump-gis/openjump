@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-05-24
+  * Postgis writer : deprecate vacuum analyze as it may takes too much time,
+    must be driven by the server, not the client
+
 2016-05-21 mmichaud <m.michael.michaud@orange.fr>
   * Fix bugs in WritableDataStoreDataSource
 
