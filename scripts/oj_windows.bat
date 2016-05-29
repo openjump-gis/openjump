@@ -219,7 +219,7 @@ rem -- disconnect javaw from console by using start --
 rem -- note: title is needed or start won't accept quoted path to java binary (protect spaces in javapath) --
 if /i "%JAVA_BIN%"=="javaw" ( set START=start "" ) else ( set START= )
 if /i NOT "%JAVA_BIN%"=="javaw" echo ---Start OJ---
- %START% "%JAVA%" -cp "%CLASSPATH%" %JAVA_OPTS% com.vividsolutions.jump.workbench.JUMPWorkbench %JUMP_OPTS% %*
+ %START% "%JAVA%" -Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader -cp "%CLASSPATH%" %JAVA_OPTS% com.vividsolutions.jump.workbench.JUMPWorkbench %JUMP_OPTS% %*
 
 cd /D %OLD_DIR%
 

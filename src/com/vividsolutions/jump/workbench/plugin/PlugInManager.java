@@ -83,58 +83,70 @@ public class PlugInManager {
           files.add( plugInDirectory );
           files.addAll( findFilesRecursively( plugInDirectory,true) );
 
-          class ExtendedURLClassLoader extends URLClassLoader{
-
-            public ExtendedURLClassLoader(URL[] urls) {
-              super(urls);
-            }
-
-            /**
-             * not really necessary now, but we keep it for reference for a future
-             * classloader per extension for allowing extensions to use differently
-             * versioned dependency jars in separate subfolders under
-             * lib/ext/<extension_subfolder>/
-             */
-            @Override
-            public Class loadClass(String name) throws ClassNotFoundException {
-              Class c = findLoadedClass(name);
-              if (c == null) {
-                try {
-                // disabled but not removed: here is the place to enforce plugin
-                // cl for specific classes/paths
-                // // these have to be handled like external packages
-                // if (!name.startsWith("de.latlon.deejump.wfs")
-                // && !name.startsWith("org.deegree."))
-                    c = getParent().loadClass(name);
-                } catch (ClassNotFoundException e) {
-                }
-                if (c == null)
-                  c = findClass(name);
-              }
-              return c;
-            }
-            
-            /**
-             * allow adding urls, any time
-             * @param urls
-             */
-            public void addUrls( URL[] urls ){
-              for (URL url : urls) {
-                addURL(url);
-              }
-            }
-          };
+//          class ExtendedURLClassLoader extends URLClassLoader{
+//
+//            public ExtendedURLClassLoader(URL[] urls) {
+//              super(urls);
+//            }
+//
+//            /**
+//             * not really necessary now, but we keep it for reference for a future
+//             * classloader per extension for allowing extensions to use differently
+//             * versioned dependency jars in separate subfolders under
+//             * lib/ext/<extension_subfolder>/
+//             */
+//            @Override
+//            public Class loadClass(String name) throws ClassNotFoundException {
+//              Class c = findLoadedClass(name);
+//              if (c == null) {
+//                try {
+//                // disabled but not removed: here is the place to enforce plugin
+//                // cl for specific classes/paths
+//                // // these have to be handled like external packages
+//                  if (name.matches("(?i).*WFS.*"))
+//                    System.out.println(name);
+//                  if (!name.startsWith("de.latlon.deejump.wfs")
+//                      && !name.startsWith("org.deegree.")){
+////                  if (!name.matches(".*WFSExtension"))
+//                    c = getParent().loadClass(name);
+//                  }
+//                } catch (ClassNotFoundException e) {
+//                }
+//                if (c == null)
+//                  c = findClass(name);
+//              }
+//              return c;
+//            }
+//            
+//            /**
+//             * allow adding urls, any time
+//             * @param urls
+//             */
+//            public void addUrls( URL[] urls ){
+//              for (URL url : urls) {
+//                addURL(url);
+//              }
+//            }
+//          };
+//          
+//          ExtendedURLClassLoader mycl = new ExtendedURLClassLoader(new URL[]{});
           
-          ExtendedURLClassLoader mycl = new ExtendedURLClassLoader(new URL[]{});
-          // add system classpath (eg. org.deegree overrides classes in deegree.jar)
-          if (getClass().getClassLoader() instanceof URLClassLoader)
-            mycl.addUrls(((URLClassLoader) getClass().getClassLoader()).getURLs());
+//          System.out.println("A:"+ClassLoader.getSystemClassLoader().getClass().getClassLoader());
+//          System.out.println("B:"+PlugInClassLoader.class.getClassLoader());;
+          PlugInClassLoader mycl = (PlugInClassLoader) ClassLoader.getSystemClassLoader();
+//          
+//          // add system classpath (eg. org.deegree overrides classes in deegree.jar)
+//          System.out.println(Arrays.toString(((URLClassLoader) mycl.getParent()).getURLs()));
+//          System.out.println(mycl);
+//          System.out.println(mycl.getParent());
+//          if (getClass().getClassLoader() instanceof URLClassLoader)
+//            mycl.addUrls(((URLClassLoader) mycl.getParent()).getURLs());
           // add jars in lib/ext and subfolders
           mycl.addUrls(toURLs(files));
           classLoader = mycl;
           
           // debugging output of all urls in our classloader
-          //System.out.println(Arrays.toString(mycl.getURLs()));
+          Logger.debug(Arrays.toString(mycl.getURLs()));
         } else {
           classLoader = getClass().getClassLoader();
         }

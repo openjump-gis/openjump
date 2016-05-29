@@ -9,6 +9,7 @@
 package de.latlon.deejump.wfs;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.plugin.Extension;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
@@ -52,6 +53,7 @@ public class WFSExtension extends Extension {
       new UpdateWFSLayerPlugIn().initialize(context);
     } catch (ClassNotFoundException e) {
       disabled = true;
+      Logger.debug(e);
       context.getWorkbenchFrame().log(msg);
       return;
     }
