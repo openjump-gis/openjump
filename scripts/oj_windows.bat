@@ -276,8 +276,7 @@ rem --- detect ram size, values are in kB ---
 for /f "delims=" %%l in ('wmic os get FreePhysicalMemory^,TotalVisibleMemorySize /format:list') do >nul 2>&1 set "OS_%%l"
 if NOT DEFINED OS_TotalVisibleMemorySize goto mem_failed
 
-rem --- use 100% of ram as default limit (1.124 is a factor to make java64 really use that much) ---
-set /a "JAVA_XMX=%OS_TotalVisibleMemorySize%/1000*1124"
+set /a "JAVA_XMX=%OS_TotalVisibleMemorySize%"
 set /a "JAVA_RAM_QUARTER=%OS_TotalVisibleMemorySize%/4"
 rem --- a. cap to 1GB for 32bit jre ---
 rem --- b. use xmx value if it fits into free space ---
