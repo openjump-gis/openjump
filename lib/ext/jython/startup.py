@@ -106,7 +106,8 @@ roadTool.setFeedbackListener(RoadTool.ToolListenerFeedback())
 # this tool has Activation and DeActivation event listeners that fire when tool icons are clicked
 roadTool.setDeActivationListener(RoadTool.ToolListenerDeActivation())
 roadTool.setActivationListener(RoadTool.ToolListenerActivation())
-toolbox.add(featureDrawingUtil.prepare(roadTool, 1))
+# [Giuseppe Aruta 2016_06_02] RoadTool commented out as it crashes Jython console (and OpenJUMP)
+# toolbox.add(featureDrawingUtil.prepare(roadTool, 1))
 
 ovalTool = DrawCustomTool(featureDrawingUtil, fireClicks = 1, minClicks = 2, maxClicks = 2, toolName = "Oval Tool", icon = swing.ImageIcon(startuppath + "images" + sep + "DrawOval.gif"), geometryType = "polygon");
 import OvalTool
