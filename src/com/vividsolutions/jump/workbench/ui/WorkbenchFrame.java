@@ -59,11 +59,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultDesktopManager;
@@ -104,12 +104,18 @@ import org.openjump.core.ui.swing.DetachableInternalFrame;
 import org.openjump.core.ui.util.ScreenScale;
 import org.openjump.swing.factory.component.ComponentFactory;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
+import com.vividsolutions.jump.util.CoordinateArrays;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
@@ -132,6 +138,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.cursortool.Animations;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
@@ -373,7 +380,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     // <<TODO:NAMING>> This name is not clear [Jon Aquino]
     private int minimumFeatureExtentForAnyRenderingInPixels = 2;
 
-//    private StringBuffer log = new StringBuffer();
+    // private StringBuffer log = new StringBuffer();
 
     private int taskSequence = 1;
 
@@ -486,21 +493,25 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                         .getCurrentKeyboardFocusManager().getFocusOwner();
                 // traverse through parents, see if we are in a valid one
                 boolean valid = false;
-                //System.out.println("START");
+                // System.out.println("START");
                 Component c = focussed;
                 while (c != null) {
-                    //System.out.println(c.getClass());
+                    // System.out.println(c.getClass());
 
-                    // ignore statuspanel, 
-                    // copy/paste is available via textfield's own keyboard actions
+                    // ignore statuspanel,
+                    // copy/paste is available via textfield's own keyboard
+                    // actions
                     if (c.equals(statusPanel)) {
                         break;
                     }
 
-                    // ignore LayerTree textfields, we have currently no plugin w/ shortcuts
-                    // doing anything w/ it, preserving layer name editing shortcuts this way
-                    if (c instanceof TreeLayerNamePanel && focussed instanceof JTextComponent) {
-                      break;
+                    // ignore LayerTree textfields, we have currently no plugin
+                    // w/ shortcuts
+                    // doing anything w/ it, preserving layer name editing
+                    // shortcuts this way
+                    if (c instanceof TreeLayerNamePanel
+                            && focussed instanceof JTextComponent) {
+                        break;
                     }
 
                     if (c instanceof TaskFrame
@@ -521,13 +532,13 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     c = c.getParent();
                 }
 
-                // if we are not in one of the containers above 
+                // if we are not in one of the containers above
                 // we do not use global shortcuts
                 if (!valid) {
-                  return false; // nothing dispatched
+                    return false; // nothing dispatched
                 }
 
-                // TODO: eventually the whole filtering above should be 
+                // TODO: eventually the whole filtering above should be
                 // moved into ShortcutPluginExecuteKeyListener where plugins
                 // define focussed ui components they feel responsible for
                 switch (e.getID()) {
@@ -602,19 +613,19 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     }
 
     public void log(String message) {
-      log(message, null, new Exception().getStackTrace()[0]);
+        log(message, null, new Exception().getStackTrace()[0]);
     }
 
     public void log(String message, Class clazz) {
-      log(message, null, new Exception().getStackTrace()[0]);
+        log(message, null, new Exception().getStackTrace()[0]);
     }
 
     public void log(String message, Throwable t) {
-      log(message, t, new Exception().getStackTrace()[0]);
+        log(message, t, new Exception().getStackTrace()[0]);
     }
 
     private void log(String message, Throwable t, StackTraceElement calledFrom) {
-      Logger.log(message, null, Level.INFO, calledFrom);
+        Logger.log(message, null, Level.INFO, calledFrom);
     }
 
     public void setMinimumFeatureExtentForAnyRenderingInPixels(
@@ -1188,17 +1199,17 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     }
 
     public void handleThrowable(final Throwable t, final Component parent) {
-      final String stack = StringUtil.stackTrace(t);
-      // log it
-      log(stack);
-      // show it
-      SwingUtilities.invokeLater(new Runnable() {
-        public void run() {
-          ErrorDialog.show(parent,
-              StringUtil.toFriendlyName(t.getClass().getName()), toMessage(t),
-              stack);
-        }
-      });
+        final String stack = StringUtil.stackTrace(t);
+        // log it
+        log(stack);
+        // show it
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                ErrorDialog.show(parent,
+                        StringUtil.toFriendlyName(t.getClass().getName()),
+                        toMessage(t), stack);
+            }
+        });
     }
 
     private ArrayList lastFiveThrowableDates = new ArrayList() {
@@ -1344,8 +1355,10 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         for (Iterator i = getLayerManagers().iterator(); i.hasNext();) {
             LayerManager layerManager = (LayerManager) i.next();
             list.addAll(layerManager.getLayersWithNullDataSource());
-            //Giuseppe Aruta 2016_01_02. Adds also temporary raster image layers
-            list.addAll(layerManager.getTemporaryRasterImageLayers());;
+            // Giuseppe Aruta 2016_01_02. Adds also temporary raster image
+            // layers
+            list.addAll(layerManager.getTemporaryRasterImageLayers());
+            ;
         }
         return list;
     }
@@ -1443,6 +1456,37 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                 setStatusMessage(I18N
                         .get("ui.WorkbenchFrame.started-garbage-collection"),
                         2000);
+            }
+        });
+
+        // [Giuseppe Aruta 2016_6_4] doubleclick to open Zoom to Scale plugin
+        scaleLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() != 2)
+                    return;
+                try {
+                    zoomScale_actionPerformed(e);
+                } catch (Exception e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+
+            }
+        });
+
+        // [Giuseppe Aruta 2016_6_4] doubleclick to open Zoom to Coordinates
+        // plugin
+        coordinateLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() != 2)
+                    return;
+                try {
+                    zoomCoordinates_actionPerformed(e);
+                } catch (Exception e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+
             }
         });
 
@@ -2104,6 +2148,156 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                 }
             });
         }
+    }
+
+    // [Giuseppe Aruta 2016_6_4] the following method derives from ZoomToScale
+    // plugin
+    void zoomScale_actionPerformed(MouseEvent e) throws Exception {
+        Viewport port = getActiveTaskFrame().getLayerViewPanel().getViewport();
+
+        double oldHorizontalScale = ScreenScale.getHorizontalMapScale(port);
+        int scale = 25000;
+        String text = I18N
+                .get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.set-new-scale-to-zoom")
+                + ":  1 : ";
+
+        MultiInputDialog dialog = new MultiInputDialog(
+                this,
+                I18N.get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.zoom-to-scale"),
+                true);
+        dialog.addLabel(I18N
+                .get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.actual-scale-in-horizontal-direction")
+                + " 1 : " + (int) oldHorizontalScale);
+        dialog.addIntegerField(text, scale, 7, text);
+        GUIUtil.centreOnWindow(dialog);
+        dialog.setVisible(true);
+        if (!dialog.wasOKPressed()) {
+            return;
+        }
+        scale = dialog.getInteger(text);
+
+        // -- get zoom factor
+        double factor = scale / oldHorizontalScale;
+
+        // --calculating new screen using the envelope of the corner LineString
+        Envelope oldEnvelope = port.getEnvelopeInModelCoordinates();
+
+        double xc = 0.5 * (oldEnvelope.getMaxX() + oldEnvelope.getMinX());
+        double yc = 0.5 * (oldEnvelope.getMaxY() + oldEnvelope.getMinY());
+        double xmin = xc - 1 / 2.0 * factor * oldEnvelope.getWidth();
+        double xmax = xc + 1 / 2.0 * factor * oldEnvelope.getWidth();
+        double ymin = yc - 1 / 2.0 * factor * oldEnvelope.getHeight();
+        double ymax = yc + 1 / 2.0 * factor * oldEnvelope.getHeight();
+        Coordinate[] coords = new Coordinate[] { new Coordinate(xmin, ymin),
+                new Coordinate(xmax, ymax) };
+        Geometry g1 = new GeometryFactory().createLineString(coords);
+        port.zoom(g1.getEnvelopeInternal());
+        return;
+    }
+
+    // [Giuseppe Aruta 2016_6_4] the folowing code derives from
+    // ZoomToCoordinates plugin until the end of the class
+    void zoomCoordinates_actionPerformed(MouseEvent e) throws Exception {
+        Coordinate coordinate = prompt();
+        if (coordinate == null) {
+            return;
+        }
+        lastCoordinate = coordinate;
+        getActiveTaskFrame()
+                .getLayerViewPanel()
+                .getViewport()
+                .zoom(toEnvelope(coordinate, getActiveTaskFrame()
+                        .getLayerManager()));
+
+        Animations.drawExpandingRing(getActiveTaskFrame().getLayerViewPanel()
+                .getViewport().toViewPoint(lastCoordinate), false, Color.BLUE,
+                getActiveTaskFrame().getLayerViewPanel(),
+                new float[] { 20, 20 });
+
+        return;
+
+    }
+
+    private Coordinate lastCoordinate = new Coordinate(0, 0);
+
+    private Coordinate prompt() {
+        while (true) {
+            try {
+
+                return toCoordinate(
+
+                (String) JOptionPane
+                        .showInputDialog(
+                                this,
+                                I18N.get("ui.zoom.ZoomToCoordinatePlugIn.enter-coordinate-to-zoom-to"),
+                                I18N.get("com.vividsolutions.jump.workbench.ui.zoom.ZoomToCoordinatePlugIn"),
+                                JOptionPane.PLAIN_MESSAGE, null, null,
+                                lastCoordinate.x + ", " + lastCoordinate.y));
+
+            } catch (Exception e) {
+                JOptionPane
+                        .showMessageDialog(
+                                this,
+                                e.getMessage(),
+                                I18N.get("com.vividsolutions.jump.workbench.ui.zoom.ZoomToCoordinatePlugIn"),
+                                JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+    }
+
+    private Envelope toEnvelope(Coordinate coordinate, LayerManager layerManager) {
+        int segments = 0;
+        int segmentSum = 0;
+        outer: for (Iterator i = layerManager.iterator(); i.hasNext();) {
+            Layer layer = (Layer) i.next();
+            for (Iterator j = layer.getFeatureCollectionWrapper().iterator(); j
+                    .hasNext();) {
+                Feature feature = (Feature) j.next();
+                Collection coordinateArrays = CoordinateArrays
+                        .toCoordinateArrays(feature.getGeometry(), false);
+                for (Iterator k = coordinateArrays.iterator(); k.hasNext();) {
+                    Coordinate[] coordinates = (Coordinate[]) k.next();
+                    for (int a = 1; a < coordinates.length; a++) {
+                        segments++;
+                        segmentSum += coordinates[a]
+                                .distance(coordinates[a - 1]);
+                        if (segments > 100) {
+                            break outer;
+                        }
+                    }
+                }
+            }
+        }
+        Envelope envelope = new Envelope(coordinate);
+        // Choose a reasonable magnification [Jon Aquino 10/22/2003]
+        if (segmentSum > 0) {
+            envelope = EnvelopeUtil.expand(envelope, segmentSum
+                    / (double) segments);
+        } else {
+            envelope = EnvelopeUtil.expand(envelope, 50);
+        }
+        return envelope;
+    }
+
+    private Coordinate toCoordinate(String s) throws Exception {
+        if (s == null) {
+            return null;
+        }
+        if (s.trim().length() == 0) {
+            return null;
+        }
+        s = StringUtil.replaceAll(s, ", ", " ");
+        StringTokenizer tokenizer = new StringTokenizer(s);
+        String x = tokenizer.nextToken();
+        if (!StringUtil.isNumber(x)) {
+            throw new Exception("Not a number: " + x);
+        }
+        String y = tokenizer.nextToken();
+        if (!StringUtil.isNumber(y)) {
+            throw new Exception("Not a number: " + y);
+        }
+        return new Coordinate(Double.parseDouble(x), Double.parseDouble(y));
     }
 
 }
