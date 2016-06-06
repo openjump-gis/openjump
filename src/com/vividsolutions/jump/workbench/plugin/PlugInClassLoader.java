@@ -26,6 +26,15 @@ public class PlugInClassLoader extends URLClassLoader {
     // System.out.println("foo");
     Class c = findLoadedClass(name);
 
+    // skip the default classloader which we replace and
+    // try it's parent to load java system jars and such
+    if (c == null) {
+      try {
+        c = getParent().getParent().loadClass(name);
+      } catch (ClassNotFoundException e) {
+      }
+    }
+
     // we prefer this class loader to the sun.misc.Launcher one to have all OJ
     // classes within one classloader, advantages are: 
     // - instanceof does not work over different classloaders
@@ -43,14 +52,16 @@ public class PlugInClassLoader extends URLClassLoader {
       }
     }
 
-    // try the default classloader or it's parents which load java system jars
-    if (c == null) {
+    // this classloader is always loaded by the default cl, so find it there
+    if (c == null
+        && name
+            .equals("com.vividsolutions.jump.workbench.plugin.PlugInClassLoader")) {
       try {
         c = getParent().loadClass(name);
       } catch (ClassNotFoundException e) {
       }
     }
-
+    
     return c;
   }
 
