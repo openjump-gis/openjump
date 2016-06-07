@@ -117,6 +117,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     private ImageIcon multiRasterIcon = IconLoader.icon("maps_13.png");
     private ImageIcon rasterIcon = IconLoader.icon("map_13.png");
     private ImageIcon sextante_rasterIcon = IconLoader.icon("mapSv2_13.png");
+    private ImageIcon sextante_rasterIcon2 = IconLoader.icon("mapSv2_13bw.png");
     private final static String LAYER_NAME = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Name");
     private final static String FILE_NAME = I18N.get("ui.MenuNames.FILE");
@@ -385,10 +386,15 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         } else if (showImageLabel && layerable instanceof WMSLayer) {
             imageLabel.setIcon(wmsIcon);
             imageLabel.setVisible(true);
-        } else if (showImageLabel && layerable instanceof RasterImageLayer) {
-            imageLabel.setIcon(sextante_rasterIcon);
-            imageLabel.setVisible(true);
-        }
+        }     else if (showImageLabel && layerable instanceof RasterImageLayer) {
+
+          if (((RasterImageLayer) layerable).getNumBands() == 1) {
+              imageLabel.setIcon(sextante_rasterIcon2);
+          } else {
+              imageLabel.setIcon(sextante_rasterIcon);
+          }
+          imageLabel.setVisible(true);
+      }
 
         progressIconLabel.setVisible(false);
         // show the progress icon if allowed
