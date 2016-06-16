@@ -86,6 +86,7 @@ import javax.swing.MenuElement;
 import javax.swing.MenuSelectionManager;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.ToolTipManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.event.InternalFrameAdapter;
@@ -163,6 +164,18 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
             .get("ui.WorkbenchFrame.save-project-before-closing-openjump");
     private String PROJECT_SAVED = I18N
             .get("ui.WorkbenchFrame.save-project-saved");
+    // To translate
+    public static String MEMORY_GC = I18N
+            .get("ui.WorkbenchFrame.started-garbage-collection");
+    public static String MEMORY_TIPS = I18N
+            .get("ui.WorkbenchFrame.click-to-garbage-collector");
+    public static String COORDINATES = I18N
+            .get("ui.WorkbenchFrame.coordinates");
+    public static String COORDINATES_TIPS = I18N
+            .get("ui.WorkbenchFrame.click-to-zoom-to-coordinates");
+    public static String SCALE = I18N.get("ui.WorkbenchFrame.scale");
+    public static String SCALE_TIPS = I18N
+            .get("ui.WorkbenchFrame.click-to-change-view-scale");
 
     BorderLayout borderLayout1 = new BorderLayout();
 
@@ -359,7 +372,10 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
             positionStatusBuf.setLength(1);
             positionStatusBuf.append(x).append(" ; ").append(y).append(")");
             coordinateLabel.setText(positionStatusBuf.toString());
-            coordinateLabel.setToolTipText(positionStatusBuf.toString());
+            coordinateLabel.setToolTipText("<html><body>"
+                    + GUIUtil.escapeHTML(COORDINATES + ": "
+                            + positionStatusBuf.toString()) + "<br><br>"
+                    + GUIUtil.escapeHTML(COORDINATES_TIPS) + "</body></html>");
         }
 
         public void selectionChanged() {
@@ -447,7 +463,10 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                 String msg = getMBCommittedMemory() + " MB "
                         + I18N.get("ui.WorkbenchFrame.committed-memory");
                 memoryLabel.setText(msg);
-                memoryLabel.setToolTipText(msg);
+                memoryLabel.setToolTipText("<html><body>"
+                        + GUIUtil.escapeHTML(msg) + "<br><br>"
+                        + GUIUtil.escapeHTML(MEMORY_TIPS) + "</body></html>");
+
                 // memoryLabel.setToolTipText(LayerManager.layerManagerCount() +
                 // " "
                 // + I18N.get("ui.WorkbenchFrame.layer-manager")
@@ -707,7 +726,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         // Aquino]
         messageText.setForeground(highlighted ? Color.black : coordinateLabel
                 .getForeground());
-        messageText.setBackground(highlighted ? color : coordinateLabel
+        messageText.setBackground(highlighted ? Color.green : coordinateLabel
                 .getBackground());
     }
 
@@ -726,7 +745,9 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         // Aquino]
         message = (message == null || message.equals("")) ? " " : message;
         scaleLabel.setText(message);
-        scaleLabel.setToolTipText(message);
+        scaleLabel.setToolTipText("<html><body>"
+                + GUIUtil.escapeHTML(SCALE + " " + message) + "<br><br>"
+                + GUIUtil.escapeHTML(SCALE_TIPS) + "</body></html>");
     }
 
     // make really extra sure message textarea looks like the jlabel
@@ -1391,6 +1412,13 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         }
     }
 
+    private final int defaultDismissTimeout = ToolTipManager.sharedInstance()
+            .getDismissDelay();
+    private final int defaultInitialTimeout = ToolTipManager.sharedInstance()
+            .getInitialDelay();
+    private final int defaultReshowTimeout = ToolTipManager.sharedInstance()
+            .getReshowDelay();
+
     private void jbInit() throws Exception {
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
@@ -1453,9 +1481,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     return;
 
                 Runtime.getRuntime().gc();
-                setStatusMessage(I18N
-                        .get("ui.WorkbenchFrame.started-garbage-collection"),
-                        2000);
+                setStatusMessage(MEMORY_GC, 2000);
             }
         });
 
@@ -1490,6 +1516,65 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
             }
         });
 
+        // Tooltips can cover some labels avoiding the usage of
+        // double click to open plugins.
+        // I use TooltipManager to get a small delay and reduce the time of
+        // display
+        // From:
+        // http://stackoverflow.com/questions/1190290/set-the-tooltip-delay-time-for-a-particular-component-in-java-swing
+        // [Giuseppe Aruta 2016_06_16]
+        coordinateLabel.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent me) {
+                ToolTipManager.sharedInstance().setInitialDelay(1000);
+                ToolTipManager.sharedInstance().setDismissDelay(1800);
+                // ToolTipManager.sharedInstance().setReshowDelay(1500);
+
+            }
+
+            public void mouseExited(MouseEvent me) {
+                ToolTipManager.sharedInstance().setInitialDelay(
+                        defaultInitialTimeout);
+                ToolTipManager.sharedInstance().setDismissDelay(
+                        defaultDismissTimeout);
+                // ToolTipManager.sharedInstance().setReshowDelay(
+                // defaultReshowTimeout);
+            }
+        });
+        scaleLabel.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent me) {
+                ToolTipManager.sharedInstance().setInitialDelay(1000);
+                ToolTipManager.sharedInstance().setDismissDelay(1800);
+                // ToolTipManager.sharedInstance().setReshowDelay(1500);
+
+            }
+
+            public void mouseExited(MouseEvent me) {
+                ToolTipManager.sharedInstance().setInitialDelay(
+                        defaultInitialTimeout);
+                ToolTipManager.sharedInstance().setDismissDelay(
+                        defaultDismissTimeout);
+                // ToolTipManager.sharedInstance().setReshowDelay(
+                // defaultReshowTimeout);
+            }
+        });
+
+        memoryLabel.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent me) {
+                ToolTipManager.sharedInstance().setInitialDelay(1000);
+                ToolTipManager.sharedInstance().setDismissDelay(1800);
+                // ToolTipManager.sharedInstance().setReshowDelay(1500);
+
+            }
+
+            public void mouseExited(MouseEvent me) {
+                ToolTipManager.sharedInstance().setInitialDelay(
+                        defaultInitialTimeout);
+                ToolTipManager.sharedInstance().setDismissDelay(
+                        defaultDismissTimeout);
+                // ToolTipManager.sharedInstance().setReshowDelay(
+                // defaultReshowTimeout);
+            }
+        });
         // this is important, else resizing in the splitpane is buggy, can only
         // make it larger, see
         // https://forums.oracle.com/forums/thread.jspa?threadID=1361066
