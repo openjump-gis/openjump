@@ -292,7 +292,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                     if ((dim == 1 && line_processor == Processor.SPLIT) || 
                         (dim == 2 && polygon_processor == Processor.SPLIT)) {
                         SegmentStringsWithData2Features.buildGeometry(g, 
-                            entry.getValue(), true, interpolated_z_dp);
+                            entry.getValue(), true, interpolated_z_dp, gf);
                     }
                 }
             }
@@ -340,8 +340,8 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     }
     
     private Noder getScaledNoder() {
-        return new ScaledNoder(new MCIndexSnapRounder(new PrecisionModel(1.0)), 
-                               Math.pow(10.0, (double)snap_rounding_dp));
+        PrecisionModel pm = gf.getPrecisionModel();
+        return new ScaledNoder(new MCIndexSnapRounder(pm), pm.getScale());
     }
     
     private Noder getMCIndexNoder(SegmentIntersector intersector) {
@@ -448,7 +448,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         if (map == null) return null;
         Geometry g = SegmentStringsWithData2Features
                      .buildGeometry(feature.getGeometry(), map, 
-                         interpolate_z, interpolated_z_dp);
+                         interpolate_z, interpolated_z_dp, gf);
         Feature newFeature = feature.clone(false);
         newFeature.setGeometry(g);
         return newFeature;

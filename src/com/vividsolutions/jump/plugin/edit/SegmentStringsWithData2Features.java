@@ -71,9 +71,8 @@ public class SegmentStringsWithData2Features {
      */
     public static Geometry buildGeometry(Geometry source, 
             Map<Integer,Map<Integer,List<SegmentString>>> nodedSegmentStrings,
-            boolean interpolate_z, int interpolated_z_dp) {
+            boolean interpolate_z, int interpolated_z_dp, GeometryFactory gf) {
         // Use the same factory as source
-        GeometryFactory gf = source.getFactory();
         Geometry[] finalComponents = new Geometry[nodedSegmentStrings.size()];
         // For each component
         for (int i = 0 ; i < finalComponents.length ; i++) {
@@ -85,7 +84,7 @@ public class SegmentStringsWithData2Features {
                 // Merge SegmentStrings to create the new noded Geometry
                 finalComponents[i] = merge(lines.get(0), gf, false);
                 // Restore z values from the source geometry where possible
-                restoreZ(lines.get(0), (LineString)sourceComponent);
+                restoreZ(lines.get(0), (LineString)sourceComponent, gf);
                 // Interpolate z values for new nodes
                 if (interpolate_z) {
                     interpolate(lines.get(0), (LineString)finalComponents[i], interpolated_z_dp);
@@ -97,7 +96,7 @@ public class SegmentStringsWithData2Features {
                 // Merge SegmentStrings to create the new noded exterior ring
                 LinearRing exteriorRing = (LinearRing)merge(lines.get(0), gf, true);
                 // Restore z from source geometry where possible
-                restoreZ(lines.get(0), ((Polygon)sourceComponent).getExteriorRing());
+                restoreZ(lines.get(0), ((Polygon)sourceComponent).getExteriorRing(), gf);
                 // Interpolate z values for new nodes
                 if (interpolate_z) {
                     interpolate(lines.get(0), exteriorRing, interpolated_z_dp);
@@ -107,7 +106,7 @@ public class SegmentStringsWithData2Features {
                 List<LinearRing> holes = new ArrayList<>();
                 for (int j = 0 ; j < lines.size()-1 ; j++) {
                     LinearRing hole = (LinearRing)merge(lines.get(j+1), gf, true);
-                    restoreZ(lines.get(j+1), ((Polygon)sourceComponent).getInteriorRingN(j));
+                    restoreZ(lines.get(j+1), ((Polygon)sourceComponent).getInteriorRingN(j), gf);
                     if (hole.isEmpty()) continue;
                     holes.add(hole);
                     if (interpolate_z) {
@@ -157,9 +156,11 @@ public class SegmentStringsWithData2Features {
      * Otherwise, set it to NaN (this second operation is important to avoid
      * transferring a z from a feature to the other).
      */
-    private static void restoreZ(List<SegmentString> list, LineString g) {
+    private static void restoreZ(List<SegmentString> list, LineString g, GeometryFactory gf) {
         Map<Coordinate,Coordinate> map = new HashMap<>();
         for (Coordinate c : g.getCoordinates()) {
+            c = (Coordinate)c.clone();
+            gf.getPrecisionModel().makePrecise(c);
             map.put(c,c);
         }
         for (SegmentString ss : list) {
