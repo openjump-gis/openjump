@@ -147,7 +147,6 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements
        * SVGGraphics2D(ctx, true);
        */
       SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
-      Viewport viewport = context.getLayerViewPanel().getViewport();
 
       // --- Test with changed classes of Openjump and the new maxFeatures
       // field in FeatureCollectionRenderer.class
@@ -188,25 +187,17 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements
           myRnew.setMaxFeatures(10000000);
         }
       }
-      lvp.repaint();
       // Change drawing resolution to print to svg (0.5 pixel to 0.1 pixel)
-      Java2DConverter oldConverter = lvp.getViewport().getJava2DConverter();
-      lvp.getViewport().setJava2DConverter(
-          new Java2DConverter(lvp.getViewport(), 0.001));
-      double scale = ScreenScale.getHorizontalMapScale(lvp.getViewport());
-      int resolution = ScreenScale.getResolution();
+      Viewport viewport = lvp.getViewport();
+      Java2DConverter oldConverter = viewport.getJava2DConverter();
+      viewport.setJava2DConverter(new Java2DConverter(viewport, 0.001));
 
-      ScreenScale.setResolution(90);
-      ZoomToScalePlugIn zoomToScalePlugIn = new ZoomToScalePlugIn();
-      zoomToScalePlugIn.setScale(scale);
-      zoomToScalePlugIn.zoomToNewScale(context);
+      //svgGenerator.scale(0.746, 0.746); // rapport pour LibreOffice (0.72/0.96)
+      svgGenerator.scale(0.90/0.96, 0.90/0.96); // rapport pour Inkscape
       lvp.paintComponent(svgGenerator);
 
       // Restore previous rendering resolution
       lvp.getViewport().setJava2DConverter(oldConverter);
-      ScreenScale.setResolution(resolution);
-      zoomToScalePlugIn.setScale(scale);
-      zoomToScalePlugIn.zoomToNewScale(context);
       // ------------------------------
       // reset the old state of 100 features
       for (int i = 0; i < layers.size(); i++) {
