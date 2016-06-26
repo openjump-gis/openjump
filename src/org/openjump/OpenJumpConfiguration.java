@@ -83,7 +83,7 @@ public class OpenJumpConfiguration {
      **************************************************************************/
     FieldComponentFactoryRegistry.setFactory(workbenchContext, "FileString",
       new FileFieldComponentFactory(workbenchContext));
-	FieldComponentFactoryRegistry.setFactory(workbenchContext, "CharSetComboBoxField",
+    FieldComponentFactoryRegistry.setFactory(workbenchContext, "CharSetComboBoxField",
       new ComboBoxFieldComponentFactory(workbenchContext, null, Charset.availableCharsets().keySet().toArray()));
 
     /***************************************************************************
