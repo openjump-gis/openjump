@@ -169,6 +169,10 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
     addFileDataSourceQueryChoosers(new ShapefileReader(),
         new ShapefileWriter(), "ESRI Shapefile", context.getWorkbenchContext(),
         StandardReaderWriterFileDataSource.Shapefile.class);
+    
+    addFileDataSourceQueryChoosers(new GeoJSONReader(),
+        /*new GeoJSONWriter()*/ null, "GeoJSON", context.getWorkbenchContext(),
+        StandardReaderWriterFileDataSource.GeoJSON.class);
   }
 
   public static void addCompressedFileFilter(final String description,

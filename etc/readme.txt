@@ -52,6 +52,7 @@ as (Component name - License name - License file in "licenses/" folder or link)
  JMath and its successor projects JMathTools (IO,Plot,Array) - BSD license 
      - jmath_license.txt
  Javascript library RHINO - GPL2 - gpl-2.txt
+ JSON-simple - Apache License Version 2.0 - apache_license-2.0.txt
  JTS Topology Suite - LGPL2 - lgpl-2.1.txt
  JUnit - Eclipse Public License v1.0 - epl-v10.txt
  Jython - Jython license - jython_license.txt

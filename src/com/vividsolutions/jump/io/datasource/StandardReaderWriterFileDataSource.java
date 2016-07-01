@@ -132,6 +132,12 @@ public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFil
         }
     }
 
+    public static class GeoJSON extends ClassicReaderWriterFileDataSource {
+      public GeoJSON() {
+          super(new GeoJSONReader(), /*new GeoJSONWriter()*/ null, new String[] { "json" });
+      }
+    }
+
     public static class FMEGML extends ClassicReaderWriterFileDataSource {
         public FMEGML() {
             super(new FMEGMLReader(), new FMEGMLWriter(), new String[] { "gml", "xml", "fme" });
