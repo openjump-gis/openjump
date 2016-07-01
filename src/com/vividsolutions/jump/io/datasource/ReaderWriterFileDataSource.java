@@ -63,7 +63,7 @@ public class ReaderWriterFileDataSource extends DataSource {
                 try {
                     FeatureCollection fc = reader.read(getReaderDriverProperties());
                     exceptions.addAll(reader.getExceptions());
-					return fc;
+                    return fc;
                 } catch (Exception e) {
                     exceptions.add(e);
                     return null;
