@@ -50,43 +50,54 @@ public class FeatureSchema implements Cloneable, Serializable {
 
     private static final long serialVersionUID = -8627306219650589202L;
 
-    private CoordinateSystem coordinateSystem = CoordinateSystem.UNSPECIFIED;
-    private Map<String,Integer> attributeNameToIndexMap = new HashMap<>();
-    private int geometryIndex = -1;
-    private int externalPKIndex = -1;    // [mmichaud 2013-07-21] database id used in client-server environment
-    private int attributeCount = 0;
-    private List<String> attributeNames = new ArrayList<>();
-    private List<AttributeType> attributeTypes = new ArrayList<>();
-    private List<Boolean> attributeReadOnly = new ArrayList<>();
+    protected CoordinateSystem coordinateSystem = CoordinateSystem.UNSPECIFIED;
+    protected Map<String,Integer> attributeNameToIndexMap = new HashMap<>();
+    protected int geometryIndex = -1;
+    protected int externalPKIndex = -1;    // [mmichaud 2013-07-21] database id used in client-server environment
+    protected int attributeCount = 0;
+    protected List<String> attributeNames = new ArrayList<>();
+    protected List<AttributeType> attributeTypes = new ArrayList<>();
+    protected List<Boolean> attributeReadOnly = new ArrayList<>();
     // [mmichaud 2012-10-13] add Operation capability for dynamic attributes 
-    private ArrayList<Operation> operations = new ArrayList<>();
+    protected ArrayList<Operation> operations = new ArrayList<>();
 
-
+    public FeatureSchema() {
+    }
+    
+    public FeatureSchema( FeatureSchema fsIn ) {
+      cloneFromTo(fsIn, this);
+    }
+    
+  /**
+   * a deepcopy routine to copy one FeatureSchema values into another,
+   * preferrable freshly created
+   * 
+   * @param fsIn
+   * @param fsOut
+   */
+    public static void cloneFromTo( FeatureSchema fsIn, FeatureSchema fsOut ) {
+      for (int i = 0; i < fsIn.attributeCount; i++) {
+        AttributeType at = fsIn.attributeTypes.get(i);
+        String aname = fsIn.attributeNames.get(i);
+        fsOut.addAttribute(aname,at);
+        fsOut.setAttributeReadOnly(i, fsIn.isAttributeReadOnly(i));
+        fsOut.setOperation(i, fsIn.getOperation(i));
+      }
+      fsOut.setCoordinateSystem(fsIn.coordinateSystem);
+    }
+    
     /**
-     * Return a deep copy of this FeatureSchema.
+     * Creates a deep copy of this FeatureSchema.
      *
      * Warning : FeatureSchema.clone() does not follow general contract of clone
      * (which recommends using super.clone) but makes a deep copy of the original
      * FeatureSchema using the constructor.
      */
     public FeatureSchema clone() {
-        try {
-    		FeatureSchema fs = new FeatureSchema();
-    		for (int i = 0; i < this.attributeCount; i++) {
-    			AttributeType at = this.attributeTypes.get(i);
-    			String aname = this.attributeNames.get(i);
-    			fs.addAttribute(aname,at);
-    			fs.setAttributeReadOnly(i, isAttributeReadOnly(i));
-    			fs.setOperation(i, getOperation(i));
-    		}
-    		fs.setCoordinateSystem(this.coordinateSystem);
-    		return fs;
-        } 
-        catch (Exception ex) {
-            Assert.shouldNeverReachHere();
-            return null;
-        }
-    }  
+        FeatureSchema fsOut = new FeatureSchema();
+        cloneFromTo(this, fsOut);
+        return fsOut;
+    }
 
     /**
      * Returns the zero-based index of the attribute with the given name
