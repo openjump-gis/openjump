@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-07-03 ede
+  * GeoJSON reader supports native json data types now
+
 2016-07-01 ede
   * GeoJSON read support added, sponsored by Jukka Rahkonen
 
@@ -13,7 +16,7 @@
   * Update TopologyExtension to 0.9.0.
 
 2016-06-17 mmichaud <m.michael.michaud@orange.fr>
-  * Fix a problem with z interoplation in Noder plugin (note : there is still
+  * Fix a problem with z interpolation in Noder plugin (note : there is still
     a bug related to JTS when using a PrecisionModel of 0 decimal - scale=1)
 
 2016-06-12 mmichaud <m.michael.michaud@orange.fr>
