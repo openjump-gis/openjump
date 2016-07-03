@@ -79,59 +79,61 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
           }
         });
 
-    if (readerWriterDataSourceClass != StandardReaderWriterFileDataSource.Shapefile.class) {
-      chooserManager
-          .addSaveDataSourceQueryChooser(new SaveFileDataSourceQueryChooser(
-              readerWriterDataSourceClass, description,
-              extensions(readerWriterDataSourceClass), context));
-    } else {
-      // if we write ESRI Shapefiles, we add an option for the Charset
-      chooserManager
-          .addSaveDataSourceQueryChooser(new SaveFileDataSourceQueryChooser(
-              readerWriterDataSourceClass, description,
-              extensions(readerWriterDataSourceClass), context) {
+    // quick fix to not register readers only
+    if (writer != null) {
+      if (readerWriterDataSourceClass != StandardReaderWriterFileDataSource.Shapefile.class) {
+        chooserManager
+            .addSaveDataSourceQueryChooser(new SaveFileDataSourceQueryChooser(
+                readerWriterDataSourceClass, description,
+                extensions(readerWriterDataSourceClass), context));
+      } else {
+        // if we write ESRI Shapefiles, we add an option for the Charset
+        chooserManager
+            .addSaveDataSourceQueryChooser(new SaveFileDataSourceQueryChooser(
+                readerWriterDataSourceClass, description,
+                extensions(readerWriterDataSourceClass), context) {
 
-            private JComponent comboboxFieldComponent;
+              private JComponent comboboxFieldComponent;
 
-            protected Map toProperties(File file) {
-              HashMap properties = new HashMap(super.toProperties(file));
-              String charsetName = Charset.defaultCharset().name();
-              if (comboboxFieldComponent instanceof ComboBoxComponentPanel) {
-                charsetName = (String) ((ComboBoxComponentPanel) comboboxFieldComponent)
-                    .getSelectedItem();
+              protected Map toProperties(File file) {
+                HashMap properties = new HashMap(super.toProperties(file));
+                String charsetName = Charset.defaultCharset().name();
+                if (comboboxFieldComponent instanceof ComboBoxComponentPanel) {
+                  charsetName = (String) ((ComboBoxComponentPanel) comboboxFieldComponent)
+                      .getSelectedItem();
+                }
+                properties.put("charset", charsetName);
+
+                return properties;
               }
-              properties.put("charset", charsetName);
 
-              return properties;
-            }
-
-            protected Component getSouthComponent1() {
-              boolean showCharsetSelection = false;
-              Object showCharsetSelectionObject = PersistentBlackboardPlugIn
-                  .get(context.getBlackboard())
-                  .get(
-                      DatasetOptionsPanel.BB_DATASET_OPTIONS_SHOW_CHARSET_SELECTION);
-              if (showCharsetSelectionObject instanceof Boolean) {
-                showCharsetSelection = ((Boolean) showCharsetSelectionObject)
-                    .booleanValue();
+              protected Component getSouthComponent1() {
+                boolean showCharsetSelection = false;
+                Object showCharsetSelectionObject = PersistentBlackboardPlugIn
+                    .get(context.getBlackboard())
+                    .get(
+                        DatasetOptionsPanel.BB_DATASET_OPTIONS_SHOW_CHARSET_SELECTION);
+                if (showCharsetSelectionObject instanceof Boolean) {
+                  showCharsetSelection = ((Boolean) showCharsetSelectionObject)
+                      .booleanValue();
+                }
+                if (showCharsetSelection) {
+                  FieldComponentFactory fieldComponentFactory = new ComboBoxFieldComponentFactory(
+                      context,
+                      I18N.get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset")
+                          + ":", Charset.availableCharsets().keySet().toArray());
+                  comboboxFieldComponent = fieldComponentFactory
+                      .createComponent();
+                  fieldComponentFactory.setValue(comboboxFieldComponent,
+                      Charset.defaultCharset().name());
+                  return comboboxFieldComponent;
+                } else {
+                  return new Component() {
+                  };
+                }
               }
-              if (showCharsetSelection) {
-                FieldComponentFactory fieldComponentFactory = new ComboBoxFieldComponentFactory(
-                    context,
-                    I18N.get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset")
-                        + ":", Charset.availableCharsets().keySet().toArray());
-                comboboxFieldComponent = fieldComponentFactory
-                    .createComponent();
-                fieldComponentFactory.setValue(comboboxFieldComponent, Charset
-                    .defaultCharset().name());
-                return comboboxFieldComponent;
-              } else {
-                return new Component() {
-                };
-              }
-            }
-          });
-
+            });
+      }
     }
   }
 
@@ -169,9 +171,9 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
     addFileDataSourceQueryChoosers(new ShapefileReader(),
         new ShapefileWriter(), "ESRI Shapefile", context.getWorkbenchContext(),
         StandardReaderWriterFileDataSource.Shapefile.class);
-    
+
     addFileDataSourceQueryChoosers(new GeoJSONReader(),
-        /*new GeoJSONWriter()*/ null, "GeoJSON", context.getWorkbenchContext(),
+    /* new GeoJSONWriter() */null, "GeoJSON", context.getWorkbenchContext(),
         StandardReaderWriterFileDataSource.GeoJSON.class);
   }
 
