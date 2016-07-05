@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,6 +19,7 @@ import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageParser;
 import org.apache.commons.io.FilenameUtils;
+import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.rasterimage.GeoTiffConstants;
 
 import com.sun.media.jai.codec.FileSeekableStream;
@@ -26,7 +28,15 @@ import com.sun.media.jai.codec.TIFFField;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.io.datasource.DataSourceQuery;
+import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
 
 public class ProjUtils {
 
@@ -695,4 +705,337 @@ public class ProjUtils {
         }
     }
 
+    
+    /**
+     * - Read SRID from GeoTIFF tag - This method gets projection srid code from
+     * a geotiff file. It first scans GeoKeyDirectoryTag to get either
+     * geographic/geocentric (2048 - GeographicTypeGeoKey), projected (3072 -
+     * ProjectedCSTypeGeoKey) or vertical (4096 - VerticalCSTypeGeoKey) info. If
+     * no key ID is identified, it scans for GeoAsciiParamsTag projection
+     * definition. Last choice, it search for an auxiliary file
+     * 
+     * @param fileSourcePath
+     *            . eg. "c\documents\folder\image.tif"
+     * @return <String> projection srid code as string. eg "32632"
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @SuppressWarnings("static-access")
+    public static String readSRIDFromGeoTiffFile(String fileSourcePath)
+            throws IOException, URISyntaxException {
+        String GeoDirTag = "";
+        String GeoDirTag2 = "";
+        String prjname = "";
+        File tiffFile = new File(fileSourcePath);
+        try {
+            TiffImageParser parser = new TiffImageParser();
+            TiffImageMetadata metadata = (TiffImageMetadata) parser
+                    .getMetadata(tiffFile);
+            if (metadata != null) {
+                List<TiffField> tiffFields = metadata.getAllFields();
+                GeoTiffConstants constants = new GeoTiffConstants();
+
+                String ID = "";
+                int start;
+                for (TiffField tiffField : tiffFields) {
+                    if (tiffField.getTag() == constants.GeoKeyDirectoryTag) {
+                        GeoDirTag = tiffField.getValueDescription();
+                    }
+                    if (tiffField.getTag() == constants.GeoAsciiParamsTag) {
+                        GeoDirTag2 = tiffField.getStringValue().replaceAll(
+                                "[\\t\\n\\r\\_\\|]", " ");
+                    }
+                    if (tiffField.getTag() == constants.ModelTiepointTag) {
+                    }
+                }
+                if (GeoDirTag.contains("3072")) {
+                    start = GeoDirTag.indexOf("3072");
+                    ID = GeoDirTag.substring(start);
+                    String[] parts = ID.split(",");
+                    String part1 = parts[3];
+                    if (!part1.contains("32767")) {
+                        prjname = part1.replaceAll(" ", "");
+                    } else {
+                        prjname = "0";
+                    }
+                } else if (!GeoDirTag.contains("3072")
+                        & GeoDirTag.contains("4096")) {
+                    start = GeoDirTag.indexOf("4096");
+                    ID = GeoDirTag.substring(start);
+                    String[] parts = ID.split(",");
+                    String part1 = parts[3];
+                    if (!part1.contains("32767")) {
+                        prjname = part1.replaceAll(" ", "");
+                    } else {
+                        prjname = "0";
+                    }
+                } else if (!GeoDirTag.contains("3072")
+                        & !GeoDirTag.contains("4096")
+                        & GeoDirTag.contains("2048")) {
+                    start = GeoDirTag.indexOf("2048");
+                    ID = GeoDirTag.substring(start);
+                    String[] parts = ID.split(",");
+                    String part1 = parts[3];
+                    if (!part1.contains("32767")) {
+                        prjname = part1.replaceAll(" ", "");
+                    } else {
+                        prjname = "0";
+                    }
+
+                } else if (!GeoDirTag.contains("4096")
+                        & !GeoDirTag.contains("3072")
+                        & !GeoDirTag.contains("2048")) {
+                    if (!GeoDirTag2.isEmpty())
+                        // It gets "0" which is a non defined projection
+                        prjname = "0";
+                    else
+                        prjname = readSRIDFromAuxiliaryFile(fileSourcePath);
+
+                }
+            }
+
+        } catch (Exception ex) {
+            prjname = PROJECTION_UNSPECIFIED;
+        }
+        return prjname;
+    }
+
+    /**
+     * - Read SRID from auxiliary file - Method to get SRID code from auxiliary
+     * projection file (AUX.XML or PRJ file). It scans into the registry file
+     * (srid.txt) to find a correspondence between the search string (auxiliary
+     * layer) and lines of the srid.txt. If the source string corresponds as
+     * substring to a line, it returns its SRID. For instance, search strings
+     * like "NAD83 UTM zone 10N" returns "26910".
+     * 
+     * @param auxiliary
+     *            file path
+     * @return <String> SRID
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+
+    public static String readSRIDFromAuxiliaryFile(String fileSourcePath)
+            throws URISyntaxException, IOException {
+        InputStream is = ProjUtils.class.getResourceAsStream("srid.txt");
+        InputStreamReader isr = new InputStreamReader(is);
+        String projectSourceFilePrj = "";
+        String projectSourceRFilePrj = "";
+        String projectSourceRFileAux = "";
+        String textProj = "";
+        String prjname = "";
+        String SRSDef = PROJECTION_UNSPECIFIED;
+        Scanner scanner;
+        // --- it reads an auxiliary file and decode a possible proj
+        // --- definition to a simple string. Ex. "WGS 84 UTM Zone 32"
+        int pos = fileSourcePath.lastIndexOf('.');
+        // .shp, .dxf, .asc, .flt files
+        projectSourceFilePrj = fileSourcePath.substring(0, pos) + ".prj";
+        // image files
+        projectSourceRFilePrj = fileSourcePath + ".prj";
+        projectSourceRFileAux = fileSourcePath + ".aux.xml";
+        List<String> fileList = new ArrayList<String>();
+        fileList.add(projectSourceFilePrj);
+        fileList.add(projectSourceRFilePrj);
+        fileList.add(projectSourceRFileAux);
+
+        if (fileList.isEmpty())
+            SRSDef = PROJECTION_UNSPECIFIED;
+
+        String type = FilenameUtils.getExtension(fileSourcePath).toUpperCase();
+
+        if (type.equals("SHP") || type.equals("DXF") || type.equals("ASC")
+                || type.equals("FLT") || type.equals("ADF")
+                || type.equals("GRD") || type.equals("BIL")) {
+            if (new File(projectSourceFilePrj).exists()) {
+                scanner = new Scanner(new File(projectSourceFilePrj));
+                textProj = scanner.nextLine();
+                scanner.close();
+                prjname = decodeProjDescription(textProj);
+            } else {
+                SRSDef = PROJECTION_UNSPECIFIED;
+            }
+        }
+
+        else {
+            if ((new File(projectSourceRFileAux).exists())
+                    & (new File(projectSourceRFilePrj).exists())) {
+                scanner = new Scanner(new File(projectSourceRFileAux));
+                textProj = scanner.useDelimiter("\\A").next();
+                // scanner.close();
+                if (textProj.contains("<WKT>") || textProj.contains("<SRS>")) {
+
+                    prjname = decodeProjDescription(textProj);
+                } else {
+                    scanner = new Scanner(new File(projectSourceRFilePrj));
+                    textProj = scanner.nextLine();
+                    scanner.close();
+                    prjname = decodeProjDescription(textProj);
+                }
+            }
+            if ((new File(projectSourceRFileAux).exists())
+                    & !(new File(projectSourceRFilePrj).exists())) {
+                scanner = new Scanner(new File(projectSourceRFileAux));
+                textProj = scanner.useDelimiter("\\A").next();
+                // scanner.close();
+                if (textProj.contains("<WKT>") || textProj.contains("<SRS>")) {
+                    prjname = decodeProjDescription(textProj);
+                } else {
+                    SRSDef = PROJECTION_UNSPECIFIED;
+                }
+            } else if (!(new File(projectSourceRFileAux).exists())
+                    & (new File(projectSourceRFilePrj).exists())) {
+                scanner = new Scanner(new File(projectSourceRFilePrj));
+                textProj = scanner.nextLine();
+                // scanner.close();
+                prjname = decodeProjDescription(textProj);
+            }
+
+            else if (!(new File(projectSourceRFileAux).exists())
+                    & (!new File(projectSourceRFilePrj).exists())) {
+                SRSDef = "0";
+
+            }
+        }
+        // --- it extracts from proj register file all the info related
+        // --- to the previous string (SRSDef). Ex.
+        // --- "EPSG:32632 - WGS 84 UTM zone 32"
+        if (!prjname.isEmpty()) {
+            scanner = new Scanner(isr);
+            try {
+                while (scanner.hasNextLine()) {
+                    scanner.useDelimiter("\\n");
+                    String line = scanner.nextLine();
+                    if (line.toLowerCase().contains(
+                            "<" + prjname.toLowerCase() + ">")) {
+                        int start = line.indexOf('<');
+                        int end = line.indexOf('>', start);
+                        String def = line.substring(start + 1, end);
+                        SRSDef = def;
+                        break;
+                    } else {
+                        // --- If no SRSDef is recognized into the register, it
+                        // --- returns a proj string into a more readable text
+                        SRSDef = "0";
+                    }
+                }
+                scanner.close();
+            } catch (Exception e) {
+                SRSDef = "0";
+            }
+        } else {
+            SRSDef = "0";
+        }
+        return SRSDef;
+    }
+    
+    
+/**
+ * Method to get SRID from a layer. 
+ * First scans SRIDStyle, than auxiliary file or GeoTIFF tag.
+ * If SRID does not exist, it returns 0.
+ * @param layer
+ * @return SRID
+ * @throws Exception
+ */
+    public static int SRID(Layer layer) throws Exception {
+        String fileSourcePath = "";
+        int projection = 0;
+        String extension = "";
+        SRIDStyle sridStyle = (SRIDStyle) layer.getStyle(SRIDStyle.class);
+        final int oldSRID = sridStyle.getSRID();
+        // if (layers.length == 1) {
+        // First we check if a SRID (Spatial Reference Identifier)
+        // code has been recorded by OJ (eg. Spatialite)
+        // it excludes 0 from the range of search as it can
+        // be consider as "no SRID"
+        if (oldSRID > 0) {
+            projection = oldSRID;
+            // If no SRID has been identified. it checks
+            // projection info into external auxiliary files (.prj,
+            // aux.xml) or as Geotiff tag
+        } else {// Check if selected layer is related to an image file
+            if (isImageFileLayer(layer)) {
+                FeatureCollection featureCollection = layer
+                        .getFeatureCollectionWrapper();
+                String sourcePathImage = null;
+                for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
+                    Feature feature = (Feature) i.next();
+                    sourcePathImage = (String) feature
+                            .getString(ImageryLayerDataset.ATTR_URI);
+                    sourcePathImage = sourcePathImage.substring(5);
+                    File f = new File(sourcePathImage);
+                    String filePath = f.getAbsolutePath();
+                    String filePath1 = filePath.replace("%20", " ");
+                    fileSourcePath = filePath1;
+
+                }
+                extension = FileUtil.getExtension(fileSourcePath).toUpperCase();
+                if ((extension.equals("TIF") || extension.equals("TIFF"))) {
+                    // If TIFF file is a geotiff, it scans into
+                    // embedded tag
+                    if (ProjUtils.isGeoTIFF(fileSourcePath)) {
+
+                        projection = Integer.parseInt(ProjUtils
+                                .readSRIDFromGeoTiffFile(fileSourcePath));
+                        // If the TIF file is not a GeiTIFF it looks
+                        // for a proj code into aux files
+                    } else {
+                        projection = Integer.parseInt(ProjUtils
+                                .readSRIDFromAuxiliaryFile(fileSourcePath));
+                    }
+                } else {
+                    if (fileSourcePath != null) {
+                        projection = Integer.parseInt(ProjUtils
+                                .readSRIDFromAuxiliaryFile(fileSourcePath));
+                    }
+                }// Check if source file is is a file-based vector
+            } else { // Only Vector files
+                if (!isDataBaseLayer(layer)) {
+                    DataSourceQuery dsq = layer.getDataSourceQuery();
+                    String sourceClass = "";
+                    String sourcePath = "";
+                    String dsqSourceClass = dsq.getDataSource().getClass()
+                            .getName();
+                    if (sourceClass.equals("")) {
+                        sourceClass = dsqSourceClass;
+                    }
+                    Object fnameObj = dsq.getDataSource().getProperties()
+                            .get("File");
+                    sourcePath = fnameObj.toString();
+                    fileSourcePath = sourcePath;
+                    projection = Integer.parseInt(ProjUtils
+                            .readSRIDFromAuxiliaryFile(fileSourcePath));
+                } else {
+
+                    projection = 0;
+                }
+            }
+        }
+
+        return projection;
+
+    }
+    
+    // Boolean. Selected layer is related to an image file
+    private static boolean isImageFileLayer(Layer layer) {
+        if (layer.getStyle(ReferencedImageStyle.class) != null
+                && (layer.getDescription() != null)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // Boolean. Selected layer is related to a database
+    private static boolean isDataBaseLayer(Layer layer) {
+        DataSourceQuery dsq = layer.getDataSourceQuery();
+        if (dsq == null || dsq.getDataSource() instanceof DataStoreDataSource) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    
 }
