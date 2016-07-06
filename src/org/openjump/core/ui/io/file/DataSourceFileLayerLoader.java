@@ -38,6 +38,9 @@ import com.vividsolutions.jump.workbench.plugin.MacroManager;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.plugin.Recordable;
 import com.vividsolutions.jump.workbench.plugin.Macro;
+
+import org.openjump.core.ccordsys.srid.SRIDStyle;
+import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ui.util.ExceptionUtil;
 import org.openjump.core.ui.util.TaskUtil;
 import org.openjump.util.UriUtil;
@@ -217,6 +220,20 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
 
               layer.setDataSourceQuery(dataSourceQuery);
               layer.setFeatureCollectionModified(layer_changed);
+              
+              //[Giuseppe Aruta 2016_06_07]
+              //This small part should be able to detect and save as layer SRIDSTyle
+              //any SRID code (ESRI or EPSG) if a .prj/.aux file GeoTIFF tag is available              
+              SRIDStyle sridStyle = (SRIDStyle) layer
+                  .getStyle(SRIDStyle.class);
+             int prjSRID = 0;
+             try {
+                prjSRID = ProjUtils.SRID(layer);
+             } catch (Exception e) {
+                prjSRID = 0;
+            }
+             sridStyle.setSRID(prjSRID);
+             sridStyle.updateSRIDs(layer);
           }
       } finally {
           connection.close();
