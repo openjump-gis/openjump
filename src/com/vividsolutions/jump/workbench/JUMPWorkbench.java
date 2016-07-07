@@ -333,7 +333,7 @@ public class JUMPWorkbench {
   }
 
   public static void main(String[] args) {
-    long start = PlugInManager.secondsSince(0);
+    long start = PlugInManager.milliSecondsSince(0);
     try {
       // first fetch parameters, locale might be changed with -i18n switch
       parseCommandLine(args);

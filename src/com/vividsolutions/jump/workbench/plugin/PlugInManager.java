@@ -169,7 +169,7 @@ public class PlugInManager {
       // Find the configurations right away so they get reported to the splash
       // screen ASAP. [Jon Aquino]
       if (plugInDirectory != null) {
-        start = secondsSince(0);
+        start = milliSecondsSince(0);
         configurations.addAll(findConfigurations(plugInDirectory));
         Logger.info("Finding all OJ extensions took "
             + secondsSinceString(start) + "s");
@@ -178,7 +178,7 @@ public class PlugInManager {
       configurations.addAll(findConfigurations(context.getWorkbench()
           .getProperties().getConfigurationClassNames()));
   
-      start = secondsSince(0);
+      start = milliSecondsSince(0);
       loadConfigurations();
       Logger.info("Loading all OJ extensions took "
           + secondsSinceString(start) + "s");
@@ -196,7 +196,7 @@ public class PlugInManager {
         Configuration configuration = (Configuration) i.next();
         monitor.report(I18N.get(LOADING) + " " + name(configuration) + " "
             + version(configuration));
-        long start = secondsSince(0);
+        long start = milliSecondsSince(0);
         try {
           // we used the plugin classloader to instantiate extensions already above
           configuration.configure(pc);
@@ -231,7 +231,7 @@ public class PlugInManager {
 
         Class plugInClass = null;
         try {
-          long start = secondsSince(0);
+          long start = milliSecondsSince(0);
 
           // make sure we use the plugin classloader for plugins
           plugInClass = classLoader.loadClass(className);
@@ -293,12 +293,12 @@ public class PlugInManager {
     }
 
     // a helper method to measure time frames in milliseconds 
-    public static long secondsSince( long i ){
+    public static long milliSecondsSince( long i ){
       return System.currentTimeMillis() - i;
     }
     // a helper method to nicely format the above output e.g. 12046ms -> 12.05s
     public static String secondsSinceString( long i ){
-      return String.format("%.2f", secondsSince(i)/1000f);
+      return String.format("%.2f", milliSecondsSince(i)/1000f);
     }
 
     public static String name(Configuration configuration) {
@@ -373,7 +373,7 @@ public class PlugInManager {
       ArrayList configurations = new ArrayList();
       long start;
       for (Iterator i = findFilesRecursively( plugInDirectory, false ).iterator(); i.hasNext();) {
-        start = secondsSince(0);
+        start = milliSecondsSince(0);
         File file = (File) i.next();
         String msg = I18N.getMessage(
             "com.vividsolutions.jump.workbench.plugin.PlugInManager.scan",
