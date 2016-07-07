@@ -39,6 +39,7 @@ import com.vividsolutions.jump.io.DriverProperties;
 import com.vividsolutions.jump.io.JUMPReader;
 import com.vividsolutions.jump.io.JUMPWriter;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.task.TaskMonitorSupport;
 
 /**
  * Adapts the old JUMP I/O API (Readers and Writers) to the new JUMP I/O API
@@ -46,65 +47,84 @@ import com.vividsolutions.jump.task.TaskMonitor;
  */
 public class ReaderWriterFileDataSource extends DataSource {
 
-    protected JUMPReader reader;
-    protected JUMPWriter writer;
-    
-    public ReaderWriterFileDataSource(JUMPReader reader, JUMPWriter writer) {
-        this.reader = reader;
-        this.writer = writer;
-    }   
+  protected JUMPReader reader;
+  protected JUMPWriter writer;
 
-    public Connection getConnection() {
+  public ReaderWriterFileDataSource(JUMPReader reader, JUMPWriter writer) {
+    this.reader = reader;
+    this.writer = writer;
+  }
 
-        return new Connection() {
+  public Connection getConnection() {
 
-            @Override
-            public FeatureCollection executeQuery(String query, Collection<Throwable> exceptions, TaskMonitor monitor) {
-                try {
-                    FeatureCollection fc = reader.read(getReaderDriverProperties());
-                    exceptions.addAll(reader.getExceptions());
-                    return fc;
-                } catch (Exception e) {
-                    exceptions.add(e);
-                    return null;
-                    //<<TODO>> Modify Readers and Writers to store exceptions and continue
-                    //processing. [Jon Aquino]
-                }
-            }
+    return new Connection() {
 
-            @Override
-            public void executeUpdate(String update, FeatureCollection featureCollection, TaskMonitor monitor)
-                throws Exception {
-                writer.write(featureCollection, getWriterDriverProperties());
-            }
+      @Override
+      public FeatureCollection executeQuery(String query,
+          Collection<Throwable> exceptions, TaskMonitor monitor) {
+        try {
+          // make readers task monitor aware
+          if (reader instanceof TaskMonitorSupport)
+            ((TaskMonitorSupport) reader).setTaskMonitor(monitor);
+          FeatureCollection fc = reader.read(getReaderDriverProperties());
+          exceptions.addAll(reader.getExceptions());
+          return fc;
+        } catch (Exception e) {
+          exceptions.add(e);
+          return null;
+          // <<TODO>> Modify Readers and Writers to store exceptions and
+          // continue processing. [Jon Aquino]
+        }
+      }
 
-            @Override
-            public void close() {}
+      @Override
+      public void executeUpdate(String update,
+          FeatureCollection featureCollection, TaskMonitor monitor)
+          throws Exception {
+        writer.write(featureCollection, getWriterDriverProperties());
+      }
 
-            @Override
-            public FeatureCollection executeQuery(String query, TaskMonitor monitor) throws Exception {
-                ArrayList<Throwable> exceptions = new ArrayList<>();
-                FeatureCollection featureCollection = executeQuery(query, exceptions, monitor);
-                if (!exceptions.isEmpty()) {
-                    throw (Exception) exceptions.iterator().next();
-                }
-                return featureCollection;
-            }
-        };
-    }
+      @Override
+      public void close() {
+      }
 
-    protected DriverProperties getReaderDriverProperties() {
-        return getDriverProperties();
-    }
+      @Override
+      public FeatureCollection executeQuery(String query, TaskMonitor monitor)
+          throws Exception {
+        ArrayList<Throwable> exceptions = new ArrayList<>();
+        FeatureCollection featureCollection = executeQuery(query, exceptions,
+            monitor);
+        if (!exceptions.isEmpty()) {
+          throw (Exception) exceptions.iterator().next();
+        }
+        return featureCollection;
+      }
 
-    protected DriverProperties getWriterDriverProperties() {
-        return getDriverProperties();
-    }
+    };
+  }
 
-    private DriverProperties getDriverProperties() {
-        DriverProperties properties = new DriverProperties();
-        properties.putAll(getProperties());
-        return properties;
-    }
+  protected DriverProperties getReaderDriverProperties() {
+    return getDriverProperties();
+  }
+
+  protected DriverProperties getWriterDriverProperties() {
+    return getDriverProperties();
+  }
+
+  private DriverProperties getDriverProperties() {
+    DriverProperties properties = new DriverProperties();
+    properties.putAll(getProperties());
+    return properties;
+  }
+
+  @Override
+  public boolean isReadable() {
+    return reader instanceof JUMPReader;
+  }
+
+  @Override
+  public boolean isWritable() {
+    return writer instanceof JUMPWriter;
+  }
 
 }
