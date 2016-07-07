@@ -68,15 +68,15 @@ public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFil
     * compression outside of the Readers); this class uses a
     * DelegatingCompressedFileHandler to ensure that these JUMP Readers
     * receive the properties they need to do decompression.
-    */        
+    */
     private static class ClassicReaderWriterFileDataSource extends StandardReaderWriterFileDataSource {
         public ClassicReaderWriterFileDataSource(
             JUMPReader reader,
             JUMPWriter writer,
             String[] extensions) {
-            super(new DelegatingCompressedFileHandler(reader, toEndings(extensions)), writer, extensions);
+            super(reader, writer, extensions);
             this.extensions = extensions;
-        }        
+        }
     }
     
     //DataSources must have a parameterless constructor so they can be
@@ -90,20 +90,21 @@ public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFil
         return new GMLWriter();
     }
 
-    private static DelegatingCompressedFileHandler createGMLReader() {
-        return new DelegatingCompressedFileHandler(
-            new GMLReader(),
-            toEndings(StandardReaderWriterFileDataSource.GML_EXTENSIONS)) {
-            public FeatureCollection read(DriverProperties dp) throws Exception {
-                mangle(
-                    dp,
-                    "TemplateFile",
-                    "CompressedFileTemplate",
-                    Arrays.asList("_input.xml", ".input", ".template"));
-                return super.read(dp);
-            }
-    
-        };
+    private static JUMPReader createGMLReader() {
+        return new GMLReader();
+//        new DelegatingCompressedFileHandler(
+//            new GMLReader(),
+//            toEndings(StandardReaderWriterFileDataSource.GML_EXTENSIONS)) {
+//            public FeatureCollection read(DriverProperties dp) throws Exception {
+//                mangle(
+//                    dp,
+//                    "TemplateFile",
+//                    "CompressedFileTemplate",
+//                    Arrays.asList("_input.xml", ".input", ".template"));
+//                return super.read(dp);
+//            }
+//    
+//        };
     }
 
     public static Collection<String> toEndings(String[] extensions) {
