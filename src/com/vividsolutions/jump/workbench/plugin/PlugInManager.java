@@ -47,6 +47,7 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.util.Timer;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.WorkbenchProperties;
@@ -292,13 +293,24 @@ public class PlugInManager {
       }
     }
 
-    // a helper method to measure time frames in milliseconds 
+    /**
+     *  a helper method to measure time frames in milliseconds 
+     * @param i
+     * @deprecated use utility class Timer instead
+     */
+    @Deprecated
     public static long milliSecondsSince( long i ){
-      return System.currentTimeMillis() - i;
+      return Timer.milliSecondsSince(i);
     }
-    // a helper method to nicely format the above output e.g. 12046ms -> 12.05s
+
+    /**
+     * a helper method to nicely format the above output e.g. 12046ms -> 12.05s
+     * @param i
+     * @deprecated use utility class Timer instead
+     */
+    @Deprecated
     public static String secondsSinceString( long i ){
-      return String.format("%.2f", milliSecondsSince(i)/1000f);
+      return Timer.secondsSinceString(i);
     }
 
     public static String name(Configuration configuration) {
