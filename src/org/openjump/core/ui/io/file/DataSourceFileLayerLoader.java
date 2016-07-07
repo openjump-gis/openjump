@@ -164,7 +164,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
       DataSourceQuery dataSourceQuery = new DataSourceQuery(dataSource, null,
               layerName);
       ArrayList exceptions = new ArrayList();
-      monitor.report("Loading " + layerName + "...");
+      monitor.report(I18N.get("datasource.LoadDatasetPlugIn.loading")+" " + layerName + "...");
 
       Connection connection = dataSourceQuery.getDataSource().getConnection();
       try {
