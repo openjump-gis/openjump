@@ -386,7 +386,7 @@ public class CompressedFile {
     }
     return layerName;
   }
-  
+
   private static FileNotFoundException createArchiveFNFE( String archive, String entry ){
     return new FileNotFoundException("Couldn't find entry '" + entry + "' in compressed file: "
         + archive);
