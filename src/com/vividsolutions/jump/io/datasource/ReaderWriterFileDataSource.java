@@ -31,15 +31,21 @@
  */
 package com.vividsolutions.jump.io.datasource;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.openjump.util.UriUtil;
+
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.io.DriverProperties;
 import com.vividsolutions.jump.io.JUMPReader;
 import com.vividsolutions.jump.io.JUMPWriter;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorSupport;
+import com.vividsolutions.jump.task.TaskMonitorUtil;
 
 /**
  * Adapts the old JUMP I/O API (Readers and Writers) to the new JUMP I/O API
@@ -64,9 +70,18 @@ public class ReaderWriterFileDataSource extends DataSource {
           Collection<Throwable> exceptions, TaskMonitor monitor) {
         try {
           // make readers task monitor aware
-          if (reader instanceof TaskMonitorSupport)
+          DriverProperties dp = getReaderDriverProperties();
+          if (reader instanceof TaskMonitorSupport) {
             ((TaskMonitorSupport) reader).setTaskMonitor(monitor);
-          FeatureCollection fc = reader.read(getReaderDriverProperties());
+            TaskMonitorUtil
+                .setTitle(
+                    monitor,
+                    I18N.getMessage(
+                        "com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource.open-{0}",
+                        createDescriptiveName(new URI(dp
+                            .getProperty("Uri")))));
+          }
+          FeatureCollection fc = reader.read(dp);
           exceptions.addAll(reader.getExceptions());
           return fc;
         } catch (Exception e) {
@@ -101,6 +116,17 @@ public class ReaderWriterFileDataSource extends DataSource {
       }
 
     };
+  }
+
+  /**
+   * return 'file.ext (archive.ext)' for archive members and 'file.ext' for all others
+   */
+  private static String createDescriptiveName(URI uri) {
+    if (CompressedFile.isArchive(uri))
+      return UriUtil.getZipEntryName(uri) + " (" + UriUtil.getZipFileName(uri)
+          + ")";
+
+    return UriUtil.getFileName(uri);
   }
 
   protected DriverProperties getReaderDriverProperties() {
