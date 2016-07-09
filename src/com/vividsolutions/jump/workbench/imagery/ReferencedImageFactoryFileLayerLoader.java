@@ -34,6 +34,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.openjump.core.ccordsys.srid.SRIDStyle;
+import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ui.io.file.AbstractFileLayerLoader;
 import org.openjump.core.ui.util.TaskUtil;
 
@@ -109,6 +111,23 @@ public class ReferencedImageFactoryFileLayerLoader extends
     layer.getFeatureCollectionWrapper().add(feature);
     // setFeatureCollectionModified(false) to solve BUG ID: 3424399
     layer.setFeatureCollectionModified(false);
+    
+    // [Giuseppe Aruta 2016_09_07]
+    // This small part should be able to detect and save as layer
+    // SRIDSTyle
+    // any SRID code (ESRI or EPSG) if a .prj/.aux file or GeoTIFF tag
+    // is available
+    SRIDStyle sridStyle = (SRIDStyle) layer
+            .getStyle(SRIDStyle.class);
+    int prjSRID = 0;
+    try {
+        prjSRID = ProjUtils.SRID(layer);
+    } catch (Exception e) {
+        prjSRID = 0;
+    }
+    sridStyle.setSRID(prjSRID);
+    sridStyle.updateSRIDs(layer);
+    
     String imageFilePath = (String) feature
         .getAttribute(ImageryLayerDataset.ATTR_URI);
     if (imageFactory.isEditableImage(uri.toString())) {

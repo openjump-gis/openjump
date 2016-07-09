@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-07-09 Giuseppe Aruta  <giuseppe_aruta@yahoo.it>
+  * Extended coordinate reference system detection on loading files 
+    (vector and image) if these have an auxiliary .prj or .aux file.
+    The SRID code is saved as SRIDStyle
+
 2016-07-03 ede
   * GeoJSON reader supports native json data types now
 
