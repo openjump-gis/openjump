@@ -930,14 +930,15 @@ public class ProjUtils {
     }
     
     
-/**
- * Method to get SRID from a layer. 
- * First scans SRIDStyle, than auxiliary file or GeoTIFF tag.
- * If SRID does not exist, it returns 0.
- * @param layer
- * @return SRID
- * @throws Exception
- */
+    /**
+     * Method to get SRID of a layer from Layer SRIDStyle or from auxiliary file. First
+     * scans SRIDStyle, than auxiliary file or GeoTIFF tag. If SRID does not
+     * exist, it returns 0.
+     * 
+     * @param layer
+     * @return SRID
+     * @throws Exception
+     */
     public static int SRID(Layer layer) throws Exception {
         String fileSourcePath = "";
         int projection = 0;
@@ -1015,6 +1016,83 @@ public class ProjUtils {
 
         return projection;
 
+    }
+
+    /**
+     * Method to get SRID of a layer from auxiliary files (.prj or .aux)
+     * or GeoTIFFed tag. If the auxiliary file SRID does not exist, it returns
+     * 0.
+     * 
+     * @param layer
+     * @return SRID
+     * @throws Exception
+     */
+    public static int SRIDFromFile(Layer layer) throws Exception {
+        String fileSourcePath = "";
+        int SRID = 0;
+        String extension = "";
+        // First check if selected Layer has an image datasource file
+        if (isImageFileLayer(layer)) {
+            FeatureCollection featureCollection = layer
+                    .getFeatureCollectionWrapper();
+            String sourcePathImage = null;
+            for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
+                Feature feature = (Feature) i.next();
+                sourcePathImage = (String) feature
+                        .getString(ImageryLayerDataset.ATTR_URI);
+                sourcePathImage = sourcePathImage.substring(5);
+                File f = new File(sourcePathImage);
+                String filePath = f.getAbsolutePath();
+                String filePath1 = filePath.replace("%20", " ");
+                fileSourcePath = filePath1;
+
+            }
+            extension = FileUtil.getExtension(fileSourcePath).toUpperCase();
+            if ((extension.equals("TIF") || extension.equals("TIFF"))) {
+                // If TIFF file is a geotiff, it scans into
+                // embedded tag
+                if (ProjUtils.isGeoTIFF(fileSourcePath)) {
+
+                    SRID = Integer.parseInt(ProjUtils
+                            .readSRIDFromGeoTiffFile(fileSourcePath));
+                    // If the TIF file is not a GeiTIFF it looks
+                    // for a proj code into aux files
+                } else {
+                    SRID = Integer.parseInt(ProjUtils
+                            .readSRIDFromAuxiliaryFile(fileSourcePath));
+                }
+                // For all other image file types, not TIF
+            } else {
+                if (fileSourcePath != null) {
+                    SRID = Integer.parseInt(ProjUtils
+                            .readSRIDFromAuxiliaryFile(fileSourcePath));
+                }
+            }
+            // Than check if source file is is a file-based vector
+        } else {
+            // Only Vector files, excluding databases:
+            // OpenJUMP has different approches to detect
+            // SRIDs for them
+            if (!isDataBaseLayer(layer)) {
+                DataSourceQuery dsq = layer.getDataSourceQuery();
+                String sourceClass = "";
+                String sourcePath = "";
+                String dsqSourceClass = dsq.getDataSource().getClass()
+                        .getName();
+                if (sourceClass.equals("")) {
+                    sourceClass = dsqSourceClass;
+                }
+                Object fnameObj = dsq.getDataSource().getProperties()
+                        .get("File");
+                sourcePath = fnameObj.toString();
+                fileSourcePath = sourcePath;
+                SRID = Integer.parseInt(ProjUtils
+                        .readSRIDFromAuxiliaryFile(fileSourcePath));
+            } else {
+                SRID = 0;
+            }
+        }
+        return SRID;
     }
     
     // Boolean. Selected layer is related to an image file

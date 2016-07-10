@@ -729,38 +729,25 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             String extension = "";
             SRIDStyle sridStyle = (SRIDStyle) layers[0]
                     .getStyle(SRIDStyle.class);
-            final int oldSRID = sridStyle.getSRID();
+            final int oldSRID = sridStyle.getSRID(); // read SRID recorded as OJ
+                                                     // style
+            int prjSRID = ProjUtils.SRIDFromFile(layers[0]);// read SRID from
+                                                            // aux file or
+                                                            // geotiff tag
             if (layers.length == 1) {
-                // First we check if a SRID (Spatial Reference Identifier)
-                // code has been recorded by OJ (eg. Spatialite)
-                // it excludes 0 from the range of search as it can
-                // be consider as "no SRID"
-                if (oldSRID > 0) {
+                if (oldSRID != prjSRID) { // compare the 2 SRID. For non files
+                                          // Layer datasources (WFS, databases).
+                                          // Also if file based
+                                          // layer StyleSRID is different than
+                                          // ProjSRID than the layer might be
+                                          // reprojected
                     projection_file = SRID_CODE;
                     String srid = String.valueOf(oldSRID);
                     projection = ProjUtils.getSRSFromWkt(srid);
-                    // If no SRID has been identified. it checks
-                    // projection info into external auxiliary files (.prj,
-                    // aux.xml) or as Geotiff tag
                 } else {// Check if selected layer is related to an image file
                     if (isImageFileLayer(layers[0])) {
-                        FeatureCollection featureCollection = layers[0]
-                                .getFeatureCollectionWrapper();
-                        String sourcePathImage = null;
-                        for (Iterator<?> i = featureCollection.iterator(); i
-                                .hasNext();) {
-                            Feature feature = (Feature) i.next();
-                            sourcePathImage = (String) feature
-                                    .getString(ImageryLayerDataset.ATTR_URI);
-                            sourcePathImage = sourcePathImage.substring(5);
-                            File f = new File(sourcePathImage);
-                            String filePath = f.getAbsolutePath();
-                            String filePath1 = filePath.replace("%20", " ");
-                            fileSourcePath = filePath1;
-
-                        }
-                        extension = FileUtil.getExtension(fileSourcePath)
-                                .toUpperCase();
+                        extension = imageFileExtension(layers[0]);
+                        fileSourcePath = imageFileSourcePath(layers[0]);
                         if ((extension.equals("TIF") || extension
                                 .equals("TIFF"))) {
                             // If TIFF file is a geotiff, it scans into
@@ -769,7 +756,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                                 projection_file = GEO_METADATA;
                                 projection = ProjUtils
                                         .readSRSFromGeoTiffFile(fileSourcePath);
-                                // If the TIF file is not a GeiTIFF it looks
+                                // If the TIF file is not a GeoTIFF it looks
                                 // for a proj code into aux files
                             } else {
                                 projection_file = ProjUtils
@@ -777,41 +764,31 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                                 projection = ProjUtils
                                         .readSRSFromAuxiliaryFile(fileSourcePath);
                             }
-                        } else {
+                        } else {// For other image files than TIFF
                             if (fileSourcePath != null) {
                                 projection_file = ProjUtils
                                         .getAuxiliaryProjFilePath(fileSourcePath);
                                 projection = ProjUtils
                                         .readSRSFromAuxiliaryFile(fileSourcePath);
                             }
-                        }// Check if source file is is a file-based vector
-                    } else { // Only Vector files
-                        if (!isDataBaseLayer(layers[0])) {
-                            DataSourceQuery dsq = layers[0]
-                                    .getDataSourceQuery();
-                            String sourceClass = "";
-                            String sourcePath = "";
-                            String dsqSourceClass = dsq.getDataSource()
-                                    .getClass().getName();
-                            if (sourceClass.equals("")) {
-                                sourceClass = dsqSourceClass;
-                            }
-                            Object fnameObj = dsq.getDataSource()
-                                    .getProperties().get("File");
-                            sourcePath = fnameObj.toString();
-                            fileSourcePath = sourcePath;
+                        }
+                    } else { // Check if source file is is not an image file
+                        if (!isDataBaseLayer(layers[0])) {// than restricted
+                                                          // check to vector
+                                                          // files
+                            fileSourcePath = vectorFileSourcePath(layers[0]);
                             projection_file = ProjUtils
                                     .getAuxiliaryProjFilePath(fileSourcePath);
                             projection = ProjUtils
                                     .readSRSFromAuxiliaryFile(fileSourcePath);
-                        } else {
-
+                        } else { // Other situations not solved (?)
                             projection_file = "";
                             projection = PROJECTION_UNSPECIFIED;
                         }
                     }
                 }
-            } else {
+            } else {// For a multiple selection of layers, as they can have
+                    // different SRIDs
                 projection_file = "";
                 projection = "";
             }
@@ -820,6 +797,75 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         }
     }
 
+
+    
+    // Get source file path of a vector layer
+    // eg. c:\folder\vector.shp
+    public static String vectorFileSourcePath(Layer layer) {
+        String fileSourcePath = "";
+        DataSourceQuery dsq = layer.getDataSourceQuery();
+        String sourceClass = "";
+        String sourcePath = "";
+        String dsqSourceClass = dsq.getDataSource().getClass().getName();
+        if (sourceClass.equals("")) {
+            sourceClass = dsqSourceClass;
+        }
+        Object fnameObj = dsq.getDataSource().getProperties().get("File");
+        sourcePath = fnameObj.toString();
+        fileSourcePath = sourcePath;
+
+        return fileSourcePath;
+
+    }
+
+    // Get source file path of a image layer
+    // eg. c:\folder\image.tif
+    public static String imageFileSourcePath(Layer layer) {
+        String fileSourcePath = "";
+        FeatureCollection featureCollection = layer
+                .getFeatureCollectionWrapper();
+        String sourcePathImage = null;
+        for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
+            Feature feature = (Feature) i.next();
+            sourcePathImage = (String) feature
+                    .getString(ImageryLayerDataset.ATTR_URI);
+            sourcePathImage = sourcePathImage.substring(5);
+            File f = new File(sourcePathImage);
+            String filePath = f.getAbsolutePath();
+            String filePath1 = filePath.replace("%20", " ");
+            fileSourcePath = filePath1;
+
+        }
+
+        return fileSourcePath;
+
+    }
+
+    // Get file extension of a layer
+    // eg. shp, tif, ect
+    public static String imageFileExtension(Layer layer) {
+        String extension = "";
+        String fileSourcePath = "";
+        FeatureCollection featureCollection = layer
+                .getFeatureCollectionWrapper();
+        String sourcePathImage = null;
+        for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
+            Feature feature = (Feature) i.next();
+            sourcePathImage = (String) feature
+                    .getString(ImageryLayerDataset.ATTR_URI);
+            sourcePathImage = sourcePathImage.substring(5);
+            File f = new File(sourcePathImage);
+            String filePath = f.getAbsolutePath();
+            String filePath1 = filePath.replace("%20", " ");
+            fileSourcePath = filePath1;
+
+        }
+        extension = FileUtil.getExtension(fileSourcePath).toUpperCase();
+        return extension;
+
+    }
+    
+    
     public static abstract interface PropertyPanel {
         public abstract String getTitle();
 
