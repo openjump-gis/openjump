@@ -284,6 +284,104 @@ public class ProjUtils {
      * @throws IOException
      */
 
+    public static String readSRSFromAuxiliaryFile_1(String fileSourcePath)
+            throws URISyntaxException, IOException {
+        InputStream is = ProjUtils.class.getResourceAsStream("srid.txt");
+        InputStreamReader isr = new InputStreamReader(is);
+        String projectSourceFilePrj = "";
+        String projectSourceRFilePrj = "";
+        String projectSourceRFileAux = "";
+        String textProj = "";
+        String prjname = "";
+        String SRSDef = PROJECTION_UNSPECIFIED;
+        Scanner scanner;
+        // --- it reads an auxiliary file and decode a possible proj
+        // --- definition to a simple string. Ex. "WGS 84 UTM Zone 32"
+        int pos = fileSourcePath.lastIndexOf('.');
+
+        projectSourceFilePrj = fileSourcePath.substring(0, pos) + ".prj";
+        // image files
+        projectSourceRFilePrj = fileSourcePath + ".prj";
+        projectSourceRFileAux = fileSourcePath + ".aux.xml";
+        List<String> fileList = new ArrayList<String>();
+        fileList.add(projectSourceFilePrj);
+        fileList.add(projectSourceRFilePrj);
+        fileList.add(projectSourceRFileAux);
+
+        if (fileList.isEmpty())
+            SRSDef = PROJECTION_UNSPECIFIED;
+
+        if (new File(projectSourceFilePrj).exists()) {
+            scanner = new Scanner(new File(projectSourceFilePrj));
+            textProj = scanner.nextLine();
+            scanner.close();
+            prjname = decodeProjDescription(textProj);
+        }
+
+        else {
+            if (new File(projectSourceRFileAux).exists()) {
+                scanner = new Scanner(new File(projectSourceRFileAux));
+                textProj = scanner.useDelimiter("\\A").next();
+                // scanner.close();
+                if (textProj.contains("<WKT>") || textProj.contains("<SRS>")) {
+                    prjname = decodeProjDescription(textProj);
+                } else {
+                    SRSDef = PROJECTION_UNSPECIFIED;
+                }
+            } else {
+                SRSDef = PROJECTION_UNSPECIFIED;
+            }
+
+        }
+        // --- it extracts from proj register file all the info related
+        // --- to the previous string (SRSDef). Ex.
+        // --- "EPSG:32632 - WGS 84 UTM zone 32"
+        if (!prjname.isEmpty()) {
+            scanner = new Scanner(isr);
+            try {
+                while (scanner.hasNextLine()) {
+                    scanner.useDelimiter("\\n");
+                    String line = scanner.nextLine();
+                    String line2 = line.replaceAll("[\\t\\n\\r\\_]", "");
+                    if (line2.toLowerCase().contains(
+                            "<" + prjname.toLowerCase() + ">")) {
+                        int start = line2.indexOf('<');
+                        int end = line2.indexOf('>', start);
+                        String def = line2.substring(start + 1, end);
+                        int srid = Integer.parseInt(def);
+                        if (srid < 32768 || srid > 5999999) {
+                            // EPSG code between 0 and 32767
+                            SRSDef = "EPSG:"
+                                    + line2.replaceAll("[<\\>]", " ")
+                                            .replaceAll(";", " - ");
+                            // ESRI codes range
+                        } else if (srid > 37000 & srid < 202003) {
+                            SRSDef = "ESRI:"
+                                    + line2.replaceAll("[<\\>]", " ")
+                                            .replaceAll(";", " - ");
+                            // Other no EPSG or ESRI codes
+                        } else {
+                            SRSDef = "SRID:"
+                                    + line2.replaceAll("[<\\>]", " ")
+                                            .replaceAll(";", " - ");
+                        }
+                        break;
+                    } else {
+                        // --- If no SRSDef is recognized into the register, it
+                        // --- returns a proj string into a more readable text
+                        SRSDef = readableFormatWKTCode(getWktProjDefinition(textProj));
+                    }
+                }
+                scanner.close();
+            } catch (Exception e) {
+                SRSDef = PROJECTION_UNSPECIFIED;
+            }
+        } else {
+            SRSDef = PROJECTION_UNSPECIFIED;
+        }
+        return SRSDef;
+    }
+
     public static String readSRSFromAuxiliaryFile(String fileSourcePath)
             throws URISyntaxException, IOException {
         InputStream is = ProjUtils.class.getResourceAsStream("srid.txt");
@@ -401,7 +499,7 @@ public class ProjUtils {
                     } else {
                         // --- If no SRSDef is recognized into the register, it
                         // --- returns a proj string into a more readable text
-                        SRSDef = readableFormatWKTCode(getWktrojDefinition(textProj));
+                        SRSDef = readableFormatWKTCode(getWktProjDefinition(textProj));
                     }
                 }
                 scanner.close();
@@ -444,40 +542,43 @@ public class ProjUtils {
      * @return <String> - SRS definition
      */
     private static String decodeProjDescription(String textProj) {
-      String prjname = "";
-      try {
-      // Workaround if aux.xml has been download from web.
-      // convert HTML quotes [&quot;] to ["]
-      textProj = textProj.replaceAll("&quot;", "\"");
-        int start = textProj.indexOf("[\"");
-        int end = textProj.indexOf("\",", start);
-         prjname = textProj.substring(start + 2, end);
-        // The following set of replacements allows to "harmonize" OGC, ESRI and
-        // few other WKT projection definitions
-        prjname = prjname.replaceAll("_", " ").replace(" / ", " ")
-                .replaceAll("\\bft US\\b", "(ftUS)")
-                .replaceAll("\\bftUS\\b", "(ftUS)")
-                .replaceAll("\\bft\\b", "(ft)").replace("feet", "ft")
-                .replace("WGS 1984", "WGS 84")
-                .replace("NAD 1983 UTM", "NAD83 UTM").replace("HARN", "(HARN)")
-                .replace("\\bCSRS98\\b", "(CSRS98)").replace("CSRS", "(CSRS)")
-                .replace("\\bNSRS2007\\b", "(NSRS2007)")
-                .replace("\\bNAD27_76\\b", "NAD27(76)")
-                .replace("\\bCGQ77\\b", " (CGQ77)")
-                .replace("\\bED77\\b", "(ED77)")
-                .replace("\\b1942 83\\b", "1942(83)")
-                .replace("\\b1942 58\\b", "1942(58)")
-                .replace("\\bSegara Jakarta\\b", "Segara (Jakarta)")
-                .replace("\\bRome\\b", "(Rome)")
-                .replace("\\bParis\\b", "(Paris)")
-                .replace("\\bFerro\\b", "(Ferro)");
+        String prjname = "";
+        try {
+            // Workaround if aux.xml has been download from web.
+            // convert HTML quotes [&quot;] to ["]
+            textProj = textProj.replaceAll("&quot;", "\"");
+            int start = textProj.indexOf("[\"");
+            int end = textProj.indexOf("\",", start);
+            prjname = textProj.substring(start + 2, end);
+            // The following set of replacements allows to "harmonize" OGC, ESRI
+            // and
+            // few other WKT projection definitions
+            prjname = prjname.replaceAll("_", " ").replace(" / ", " ")
+                    .replaceAll("\\bft US\\b", "(ftUS)")
+                    .replaceAll("\\bftUS\\b", "(ftUS)")
+                    .replaceAll("\\bft\\b", "(ft)").replaceAll("feet", "ft")
+                    .replaceAll("WGS 1984", "WGS 84")
+                    .replaceAll("NAD 1983 UTM", "NAD83 UTM")
+                    .replaceAll("HARN", "(HARN)")
+                    .replaceAll("\\bCSRS98\\b", "(CSRS98)")
+                    .replaceAll("CSRS", "(CSRS)")
+                    .replaceAll("\\bNSRS2007\\b", "(NSRS2007)")
+                    .replaceAll("\\bNAD27_76\\b", "NAD27(76)")
+                    .replaceAll("\\bCGQ77\\b", " (CGQ77)")
+                    .replaceAll("\\bED77\\b", "(ED77)")
+                    .replaceAll("\\b1942 83\\b", "1942(83)")
+                    .replaceAll("\\b1942 58\\b", "1942(58)")
+                    .replaceAll("\\bSegara Jakarta\\b", "Segara (Jakarta)")
+                    .replaceAll("\\bRome\\b", "(Rome)")
+                    .replaceAll("\\bParis\\b", "(Paris)")
+                    .replaceAll("\\bFerro\\b", "(Ferro)");
 
-      } catch (Exception ex) {
-          // If there is other info than a WKT definition in the aux file
-          prjname = NOT_RECOGNIZED;
-      }
-      return prjname;
-  }
+        } catch (Exception ex) {
+            // If there is other info than a WKT definition in the aux file
+            prjname = NOT_RECOGNIZED;
+        }
+        return prjname;
+    }
 
     /**
      * returns OGC WKT string located between projection tags (<WKT> or <SRS>)
@@ -487,7 +588,7 @@ public class ProjUtils {
      *            string
      * @return OGC WKT string
      */
-    private static String getWktrojDefinition(String textProj) {
+    private static String getWktProjDefinition(String textProj) {
         String prjname = "";
         try {
             if (textProj.contains("<WKT>")) {
@@ -705,7 +806,6 @@ public class ProjUtils {
         }
     }
 
-    
     /**
      * - Read SRID from GeoTIFF tag - This method gets projection srid code from
      * a geotiff file. It first scans GeoKeyDirectoryTag to get either
@@ -928,10 +1028,9 @@ public class ProjUtils {
         }
         return SRSDef;
     }
-    
-    
+
     /**
-     * Method to get SRID of a layer from Layer SRIDStyle or from auxiliary file. First
+     * Method to get SRID from a layer from Style or from auxiliary file. First
      * scans SRIDStyle, than auxiliary file or GeoTIFF tag. If SRID does not
      * exist, it returns 0.
      * 
@@ -1019,7 +1118,7 @@ public class ProjUtils {
     }
 
     /**
-     * Method to get SRID of a layer from auxiliary files (.prj or .aux)
+     * Method to get SRID from a layer file from auxiliary files (.prj or .aux)
      * or GeoTIFFed tag. If the auxiliary file SRID does not exist, it returns
      * 0.
      * 
@@ -1094,7 +1193,7 @@ public class ProjUtils {
         }
         return SRID;
     }
-    
+
     // Boolean. Selected layer is related to an image file
     private static boolean isImageFileLayer(Layer layer) {
         if (layer.getStyle(ReferencedImageStyle.class) != null
@@ -1114,6 +1213,5 @@ public class ProjUtils {
             return false;
         }
     }
-    
-    
+
 }
