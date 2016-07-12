@@ -68,7 +68,7 @@ public class SaveDatasetAsPlugIn extends AbstractSaveDatasetAsPlugIn {
         }
 
         getDialog().setVisible(true);
-        return getDialog().wasOKPressed() ? getDialog().getCurrentChooser().getDataSourceQueries() : null;        
+        return getDialog().wasOKPressed() ? getDialog().getCurrentChooser().getDataSourceQueries() : null;
     }
     protected void setSelectedFormat(String format) {
         getDialog().setSelectedFormat(format);
