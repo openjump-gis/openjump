@@ -130,18 +130,26 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
         return super.getDataSourceQueries();
     }
     
-    public boolean isInputValid() { 
-        boolean isInputValid = super.isInputValid();
-        
-        //String path = getFileChooserPanel().getChooser().getSelectedFile().getPath();
-        //System.out.println("whould be writing to this location: " + path);
-        if (!fileNameRegex.matcher(getFileChooserPanel().getChooser().getSelectedFile().getPath()).matches()) {
-            context.getWorkbench()
-                   .getFrame()
-                   .warnUser(I18N.get("com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser.Invalid-file-name"));
-            isInputValid = false;
-        }
-        else context.getWorkbench().getFrame().setStatusMessage("");
-        return isInputValid;
+    public boolean isInputValid() {
+      JFileChooser jfc = getFileChooserPanel().getChooser();
+      
+      // explicitly check file exists, restes selection if overwrite not approved
+      jfc.approveSelection();
+      File file = jfc.getSelectedFile();
+      
+      // no file selected?
+      if (!(file instanceof File))
+        return false;
+  
+      if (!fileNameRegex.matcher(file.getPath()).matches()) {
+        context
+            .getWorkbench()
+            .getFrame()
+            .warnUser(
+                I18N.get("com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser.Invalid-file-name"));
+        return false;
+      }
+      
+      return super.isInputValid();
     }
 }
