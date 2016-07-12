@@ -166,7 +166,6 @@ public class DataSourceQueryChooserDialog extends JDialog {
         return okCancelPanel.wasOKPressed();
     }
 
-
     public void setOKPressed() {
         //
         // It is important to call setOKPressed before calling isInputValid
@@ -202,26 +201,26 @@ public class DataSourceQueryChooserDialog extends JDialog {
             setVisible(false);
         }
         else{ 
-        	if(this.getDialogTask() == DataSourceQueryChooserDialog.LOADDIALOG){
-	    		//--sstein: leave out validation - because it returns always "false" on Mac-OSX ?
-	        	//          because the getCurrentChooser() returns has a null pointer
-	    		//System.out.println("validate input:" + getCurrentChooser().isInputValid());
-	        	if ((okCancelPanel.wasOKPressed()) && (CheckOS.isMacOsx())){
-	        		//System.out.println("this is a mac and we load data");
-	        		okCancelPanel.setOKPressed(true);
-	        		setVisible(false);
-	        	}
-	        	else{ 
-	        		if (getCurrentChooser().isInputValid()) {
-	        			setVisible(false);
-	        		}
-	        	}
-        	}
-        	else{ //Now we use the dialog for saving
-        		if (getCurrentChooser().isInputValid()) {
-        			setVisible(false);
-        		}
-        	}
+          if (this.getDialogTask() == DataSourceQueryChooserDialog.LOADDIALOG) {
+            // --sstein: leave out validation - because it returns always "false" on
+            // Mac-OSX ?
+            // because the getCurrentChooser() returns has a null pointer
+            // System.out.println("validate input:" +
+            // getCurrentChooser().isInputValid());
+            if ((okCancelPanel.wasOKPressed()) && (CheckOS.isMacOsx())) {
+              // System.out.println("this is a mac and we load data");
+              okCancelPanel.setOKPressed(true);
+              setVisible(false);
+            } else {
+              if (getCurrentChooser().isInputValid()) {
+                setVisible(false);
+              }
+            }
+          } else { // Now we use the dialog for saving
+            if (getCurrentChooser().isInputValid()) {
+              setVisible(false);
+            }
+          }
         }
     }
     
