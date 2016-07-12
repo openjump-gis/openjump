@@ -47,7 +47,10 @@ import com.vividsolutions.jump.io.JUMPReader;
  * by a CompressedFileHandler (not yet written) which would decompress the 
  * data before handing it to the JUMPReader. Anyway, developers should now be
  * writing DataSources instead of JUMPReaders.
+ * 
+ * @Deprecated use CompressedFile instead [07.2016]
  */
+@Deprecated
 public class DelegatingCompressedFileHandler extends AbstractJUMPReader {
 
     private Collection<String> endings;
@@ -58,7 +61,10 @@ public class DelegatingCompressedFileHandler extends AbstractJUMPReader {
      * Constructs a DelegatingCompressedFileHandler that wraps a JUMPReader. 
      * @param endings strings found at the ends of filenames, used to identify
      * the file to extract from a .zip; does not apply to .gz files
+     * 
+     * @Deprecated use CompressedFile instead [07.2016]
      */
+    @Deprecated
     public DelegatingCompressedFileHandler(JUMPReader reader, Collection<String> endings) {
         this.reader = reader;
         this.endings = new ArrayList<>(endings);
@@ -70,9 +76,8 @@ public class DelegatingCompressedFileHandler extends AbstractJUMPReader {
 	 *                  .gz, the required "CompressedFile" property will be
 	 *                  determined automatically
 	 */
+    @Deprecated
     public FeatureCollection read(DriverProperties dp) throws Exception {
-      // TODO: write a clean zip datasource some time
-      //mangle(dp, "File", "CompressedFile", endings);
       FeatureCollection fc = reader.read(dp);
       getExceptions().addAll(reader.getExceptions());
       return fc;
@@ -82,17 +87,6 @@ public class DelegatingCompressedFileHandler extends AbstractJUMPReader {
     //  we keep this as stub as StandardReaderWriter seems to need the definition
     protected void mangle(DriverProperties dp, String fileProperty,
         String compressedFileProperty, Collection<String> myEndings) throws Exception {
-      
-//      if (FileUtil.getExtension(new File(dp.getProperty(fileProperty)))
-//          .equalsIgnoreCase("zip")) {
-//        String buf = dp.getProperty("File");
-//        dp.set("File", dp.getProperty("CompressedFile"));
-//        dp.set("CompressedFile", buf);
-//      }
-//      else if (FileUtil.getExtension(new File(dp.getProperty(fileProperty)))
-//          .equalsIgnoreCase("gz")) {
-//        dp.set(compressedFileProperty, dp.getProperty(fileProperty));
-//      }
     }
 
 }
