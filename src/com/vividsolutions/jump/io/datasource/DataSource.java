@@ -35,7 +35,6 @@ import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.feature.FeatureCollection;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,63 +47,76 @@ import java.util.Map;
  */
 public abstract class DataSource {
 
-    private Map properties;
+  private Map properties;
 
-    /**
-     * Sets properties required to open a DataSource, such as username, password,
-     * filename, coordinate system, etc. Called by DataSourceQueryChoosers.
-     */
-    public void setProperties(Map properties) {
-        this.properties = new HashMap(properties);
-    }
+  /**
+   * Sets properties required to open a DataSource, such as username, password,
+   * filename, coordinate system, etc. Called by DataSourceQueryChoosers.
+   */
+  public void setProperties(Map properties) {
+    this.properties = new HashMap(properties);
+  }
 
-    public Map getProperties() {
-        //This method needs to be public because it is called by Java2XML [Jon Aquino 11/13/2003]
-        
-        //I was returning a Collections.unmodifiableMap before, but
-        //Java2XML couldn't open it after saving it (can't instantiate
-        //java.util.Collections$UnmodifiableMap). [Jon Aquino]
-        return properties;
-    }
+  public Map getProperties() {
+    // This method needs to be public because it is called by Java2XML [Jon
+    // Aquino 11/13/2003]
 
-    /**
-     * Creates a new Connection to this DataSource.
-     */
-    public abstract Connection getConnection();
+    // I was returning a Collections.unmodifiableMap before, but
+    // Java2XML couldn't open it after saving it (can't instantiate
+    // java.util.Collections$UnmodifiableMap). [Jon Aquino]
+    return properties;
+  }
 
-    /**
-     * Filename property, used for file-based DataSources
-     */
-    public static final String FILE_KEY = "File";
-    
-	/**
-	 * Coordinate-system property, used for files and other DataSources that
-	 * have a single CoordinateSystem
-	 */    
-	public static final String COORDINATE_SYSTEM_KEY = "Coordinate System";
-    
-    public boolean isReadable() { 
-        return true;
+  /**
+   * Creates a new Connection to this DataSource.
+   */
+  public abstract Connection getConnection();
+
+  /**
+   * Filename property, used for file-based DataSources
+   */
+  public static final String FILE_KEY = "File";
+
+  /**
+   * Uri property, a more generic datasource source description
+   */
+  public static final String URI_KEY = "Uri";
+
+  /**
+   * Coordinate-system property, used for files and other DataSources that have
+   * a single CoordinateSystem
+   */
+  public static final String COORDINATE_SYSTEM_KEY = "Coordinate System";
+
+  public boolean isReadable() {
+    return true;
+  }
+
+  public boolean isWritable() {
+    return true;
+  }
+
+  public FeatureCollection installCoordinateSystem(
+      FeatureCollection queryResult, CoordinateSystemRegistry registry) {
+    if (queryResult == null) {
+      return null;
     }
-    
-    public boolean isWritable() {
-        return true;
+    String coordinateSystemName;
+    try {
+      coordinateSystemName = (String) getProperties()
+          .get(COORDINATE_SYSTEM_KEY);
+    } catch (NullPointerException e) {
+      return queryResult;
     }
-    
-    public FeatureCollection installCoordinateSystem(FeatureCollection queryResult, 
-            										CoordinateSystemRegistry registry) {
-        if (queryResult == null) { return null; }
-        String coordinateSystemName;
-        try {
-            coordinateSystemName = (String) getProperties().get(COORDINATE_SYSTEM_KEY);
-        } catch (NullPointerException e){
-            return queryResult;
-        }
-        if (coordinateSystemName == null) { return queryResult; }
-        CoordinateSystem coordinateSystem = registry.get(coordinateSystemName);
-        if (coordinateSystem == null) { return queryResult; }
-        queryResult.getFeatureSchema().setCoordinateSystem(coordinateSystem);
-        return queryResult;
+    if (coordinateSystemName == null) {
+      return queryResult;
     }
+    CoordinateSystem coordinateSystem = registry.get(coordinateSystemName);
+    if (coordinateSystem == null) {
+      return queryResult;
+    }
+    queryResult.getFeatureSchema().setCoordinateSystem(coordinateSystem);
+    return queryResult;
+  }
 
 }

@@ -213,6 +213,7 @@ public abstract class FileDataSourceQueryChooser implements DataSourceQueryChoos
     protected Map<?,?> toProperties(File file) {
         HashMap<String,String> properties = new HashMap<>();
         properties.put(DataSource.FILE_KEY, file.getPath());
+        properties.put(DataSource.URI_KEY, file.toURI().toString());
         properties.put(DataSource.COORDINATE_SYSTEM_KEY,
             getFileChooserPanel().getSelectedCoordinateSystem().getName());
 
