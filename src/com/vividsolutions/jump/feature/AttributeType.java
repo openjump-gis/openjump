@@ -164,7 +164,7 @@ public class AttributeType implements Serializable {
    * @param name of the new AttributeType
    * @param javaClass java class used to store attributes of this type
    */
-  private AttributeType(String name, Class<?> javaClass) {
+  protected AttributeType(String name, Class<?> javaClass) {
     this.name = name;
     this.javaClass = javaClass;
     nameToAttributeTypeMap.put(name, this);
