@@ -1,15 +1,14 @@
-package com.vividsolutions.jump.io;
+package com.vividsolutions.jump.io.geojson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,22 +24,25 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.geojson.GeoJsonReader;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.io.AbstractJUMPReader;
+import com.vividsolutions.jump.io.CompressedFile;
+import com.vividsolutions.jump.io.DriverProperties;
+import com.vividsolutions.jump.io.IllegalParametersException;
+import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorUtil;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.util.Timer;
+import com.vividsolutions.jump.workbench.Logger;
 
 public class GeoJSONReader extends AbstractJUMPReader {
 
   @Override
   public FeatureCollection read(DriverProperties dp) throws Exception {
 
-    String inputUri = dp.getProperty("Uri");
+    String inputUri = dp.getProperty(DataSource.URI_KEY);
     if (inputUri == null) {
       throw new IllegalParametersException(
           "call to GeoJSONReader.read() has DataProperties w/o an InputUri specified");
@@ -49,12 +51,13 @@ public class GeoJSONReader extends AbstractJUMPReader {
     InputStream in = null;
     InputStreamReader inReader = null;
     Reader bufReader = null;
+    // create a new geojson capable feature collection
     GeoJSONFeatureCollectionWrapper fcwrap = new GeoJSONFeatureCollectionWrapper();
     try {
       URI uri = new URI(inputUri);
 
       in = CompressedFile.openFile(uri);
-      inReader = new InputStreamReader(in, "UTF-8");
+      inReader = new InputStreamReader(in, GeoJSONConstants.CHARSET);
       bufReader = new BufferedReader(inReader);
 
       // parse and create features via content handler
@@ -98,6 +101,11 @@ public class GeoJSONReader extends AbstractJUMPReader {
       return !getTaskMonitor().isCancelRequested();
     }
 
+    /**
+     * create JTS features from a json-simple map
+     * 
+     * @param featureMapList
+     */
     private void addFeatures(List<Map> featureMapList) {
       TaskMonitor monitor = getTaskMonitor();
 
@@ -108,9 +116,9 @@ public class GeoJSONReader extends AbstractJUMPReader {
           // show status every 1s
           if (now - 1000 >= milliSeconds) {
             milliSeconds = now;
-            TaskMonitorUtil.report(monitor,
-                I18N.getMessage("com.vividsolutions.jump.io.GeoJSONReader.parsed-{0}-features",
-                    String.format("%,10d", fcwrap.size())));
+            TaskMonitorUtil.report(monitor, I18N.getMessage(
+                "com.vividsolutions.jump.io.GeoJSONReader.parsed-{0}-features",
+                String.format("%,10d", fcwrap.size())));
           }
         } catch (Exception e) {
           addException(e);
@@ -167,11 +175,11 @@ public class GeoJSONReader extends AbstractJUMPReader {
     public void endJSON() throws ParseException, IOException {
       // add rest of features
       for (Object object : valueStack) {
-        List<Map> featureList = (List) ((Map) object).get("features");
+        List<Map> featureList = (List) ((Map) object)
+            .get(GeoJSONConstants.FEATURES);
         addFeatures(featureList);
         featureList.clear();
       }
-
     }
 
     public boolean startObject() throws ParseException, IOException {
@@ -226,10 +234,13 @@ public class GeoJSONReader extends AbstractJUMPReader {
 }
 
 /**
- * utility class to allow creating geometries directly from simple-json maps
+ * utility class to allow creating geometries directly from simple-json maps for
+ * performance reasons.
+ * TODO: this should probably be implemented directly in JTS-io's GeoJsonReader
  */
-class MapGeoJsonGeometryReader extends GeoJsonReader {
-  GeometryFactory gf = null;
+class MapGeoJsonGeometryReader extends
+    com.vividsolutions.jts.io.geojson.GeoJsonReader {
+  GeometryFactory geometryFactory = null;
   Method m, m2;
 
   /**
@@ -259,11 +270,8 @@ class MapGeoJsonGeometryReader extends GeoJsonReader {
    */
   public Geometry read(Map geometryMap) throws IllegalAccessException,
       IllegalArgumentException, InvocationTargetException {
-    GeometryFactory geometryFactory = null;
-    if (this.gf == null) {
+    if (this.geometryFactory == null) {
       geometryFactory = (GeometryFactory) m2.invoke(this, geometryMap);
-    } else {
-      geometryFactory = this.gf;
     }
 
     return (Geometry) m.invoke(this, geometryMap, geometryFactory);
@@ -275,6 +283,9 @@ class MapGeoJsonGeometryReader extends GeoJsonReader {
  * cloning the whole schema first
  */
 class FlexibleFeatureSchema extends FeatureSchema {
+  Class geometryClass = null;
+  GeometryFactory geometryFactory = new GeometryFactory();
+
   public FlexibleFeatureSchema() {
   }
 
@@ -289,146 +300,40 @@ class FlexibleFeatureSchema extends FeatureSchema {
   public void setAttributeType(String name, AttributeType type) {
     setAttributeType(super.getAttributeIndex(name), type);
   }
-}
 
-/**
- * a wrapper for a feature collection to do funky geojson stuff to/with
- *
- */
-class GeoJSONFeatureCollectionWrapper {
-  MapGeoJsonGeometryReader geomReader = null;
-  FlexibleFeatureSchema featureSchema = null;
-  FeatureCollection featureCollection = null;
-  List<String> columnsWithMixedValues = new LinkedList<String>();
+  public void setGeometryType(Class clazz) {
+    geometryClass = clazz;
+  }
 
-  /**
-   * create a new empty FeatureCollection wrapper
-   */
-  public GeoJSONFeatureCollectionWrapper() {
-    this.featureSchema = new FlexibleFeatureSchema();
-    this.featureCollection = new FeatureDataset(featureSchema);
+  public Class getGeometryType() {
+    return geometryClass;
   }
 
   /**
-   * create a wrapper for an existing FeatureCollection
+   * creates an empty geometry matching the geom type set already or an empty
+   * geom collection if that fails
+   * 
+   * @return geometry
    */
-  public GeoJSONFeatureCollectionWrapper(FeatureCollection fc) {
-    this.featureSchema = new FlexibleFeatureSchema(fc.getFeatureSchema());
-    this.featureCollection = fc;
-  }
-
-  /**
-   * add a Feature defined by given JSON-simple map the to the collection
-   */
-  public void add(Map featureMap) throws Exception {
-
-    // this type of feature "autoextends" by returning null for undefined
-    // attribs
-    Feature feature = new BasicFeature(featureSchema) {
-      @Override
-      public Object getAttribute(int i) {
-        Object[] attributes = getAttributes();
-        if (i >= attributes.length)
-          return null;
-
-        return attributes[i];
-      }
-
-      /**
-       * setting an attribute, fixing the underlying array in case the schema
-       * changed inbetween
-       */
-      public void setAttribute(int attributeIndex, Object newAttribute) {
-        FeatureSchema schema = getSchema();
-        Object[] oldAttribs = getAttributes();
-        // add fields if schema changed in between
-        int diffCount = schema.getAttributeCount() - oldAttribs.length;
-        if (diffCount > 0) {
-          List attributes = new ArrayList(Arrays.asList(oldAttribs));
-          attributes.addAll(Arrays.asList(new Object[diffCount]));
-          super.setAttributes(attributes.toArray());
+  public Geometry createEmptyGeometry() {
+    if (geometryClass != null) {
+      try {
+        for (Constructor<Geometry> c : geometryClass.getConstructors()) {
+          Class[] paramTypes = c.getParameterTypes();
+          int paramCount = paramTypes.length;
+          if (paramCount > 0
+              && paramTypes[paramCount - 1] == GeometryFactory.class) {
+            Object[] params = new Object[paramCount];
+            params[paramCount - 1] = geometryFactory;
+            return c.newInstance(params);
+          }
         }
-        super.setAttribute(attributeIndex, newAttribute);
-      }
-
-      /**
-       * setting the geometry by explicitly using the flexible setAttribute()
-       * method above
-       */
-      public void setGeometry(Geometry geometry) {
-        setAttribute(getSchema().getGeometryIndex(), geometry);
-      }
-    };
-
-    // parse geometry
-    Geometry geom = null;
-    if (featureMap.containsKey(GeoJSONConstants.GEOMETRY)
-        && featureMap.get(GeoJSONConstants.GEOMETRY) instanceof Map) {
-      Map geometryMap = (Map) featureMap.get(GeoJSONConstants.GEOMETRY);
-
-      if (geomReader == null)
-        geomReader = new MapGeoJsonGeometryReader();
-
-      if (featureSchema.getGeometryIndex() < 0) {
-        featureSchema.addAttribute("Geometry", AttributeType.GEOMETRY);
-      }
-
-      geom = geomReader.read(geometryMap);
-      feature.setGeometry(geom);
-    }
-
-    // parse attributes
-    Map<String, Object> attribsMap = null;
-    if (featureMap.containsKey(GeoJSONConstants.PROPERTIES)
-        && featureMap.get(GeoJSONConstants.PROPERTIES) instanceof Map) {
-      attribsMap = (Map) featureMap.get(GeoJSONConstants.PROPERTIES);
-      // iterate over this feature's attribs
-      for (String key : attribsMap.keySet()) {
-        Object value = attribsMap.get(key);
-        // System.out.println(value+"/"+(value!=null?value.getClass():""));
-        String attribName = key.toString();
-        // extend schema if attrib is unknown
-        if (!featureSchema.hasAttribute(attribName)) {
-          Class clazz = value != null ? value.getClass() : Object.class;
-          featureSchema.addAttribute(attribName,
-              AttributeType.toAttributeType(clazz));
-          ;
-        }
-        // detect mixedType columns to fixup Schema later
-        else if (value != null
-            && !columnsWithMixedValues.contains(key)
-            && featureSchema.getAttributeType(key).toJavaClass() != value
-                .getClass()) {
-
-          // Object class columns are still undecided, because it was null until
-          // now. set the first concrete class provided as type
-          if (featureSchema.getAttributeType(key).toJavaClass() == Object.class)
-            featureSchema.setAttributeType(
-                featureSchema.getAttributeIndex(key),
-                AttributeType.toAttributeType(value.getClass()));
-          // all other obviously are mixed value columns
-          else
-            columnsWithMixedValues.add(key);
-        }
-
-        feature.setAttribute(attribName, value);
+      } catch (Exception e) {
+        Logger.debug(e);
       }
     }
 
-    featureCollection.add(feature);
+    return geometryFactory.createGeometryCollection(null);
   }
 
-  public int size() {
-    return featureCollection.size();
-  }
-
-  public FeatureCollection getFeatureCollection() {
-    // set type to String for mixed columns
-    for (String key : columnsWithMixedValues) {
-      featureSchema.setAttributeType(featureSchema.getAttributeIndex(key),
-          AttributeType.STRING);
-      columnsWithMixedValues.remove(key);
-    }
-    return featureCollection;
-  }
 }

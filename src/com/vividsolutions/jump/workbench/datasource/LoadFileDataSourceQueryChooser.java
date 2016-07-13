@@ -31,24 +31,16 @@
  */
 package com.vividsolutions.jump.workbench.datasource;
 
-import com.vividsolutions.jump.coordsys.CoordinateSystem;
+import java.io.File;
+import java.util.Collection;
+
+import javax.swing.JFileChooser;
+
 import com.vividsolutions.jump.coordsys.CoordinateSystemSupport;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.io.File;
-
-import java.util.Collection;
-
-import javax.swing.JFileChooser;
-import javax.swing.SwingUtilities;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-
 
 /**
  * UI for picking a file-based dataset to load.
@@ -117,4 +109,23 @@ public class LoadFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
 
         return super.getDataSourceQueries();
     }
+
+    /**
+     * selected files get the default (first) file extension appended if they do
+     * not exist as named (user might have entered just the filename w/o ext into
+     * the filechooser) but exist with the extension at the given location
+     */
+      public File[] getSelectedFiles() {
+        String extension = getExtensions().length > 0 ? getExtensions()[0] : null;
+        File[] files = getFileChooserPanel().getChooser().getSelectedFiles();
+
+        for (int i = 0; i < files.length && extension != null; i++) {
+          File file = files[i];
+          File file2 = new File(file.getAbsolutePath() + "." + extension);
+          if (!file.exists() && file2.exists()) {
+            files[i] = file2;
+          }
+        }
+        return files;
+      }
 }

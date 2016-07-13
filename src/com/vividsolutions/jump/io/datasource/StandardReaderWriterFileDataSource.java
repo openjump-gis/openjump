@@ -36,6 +36,8 @@ import java.util.Collection;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.*;
+import com.vividsolutions.jump.io.geojson.GeoJSONReader;
+import com.vividsolutions.jump.io.geojson.GeoJSONWriter;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
 
@@ -135,7 +137,7 @@ public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFil
 
     public static class GeoJSON extends ClassicReaderWriterFileDataSource {
       public GeoJSON() {
-          super(new GeoJSONReader(), /*new GeoJSONWriter()*/ null, new String[] { "json" });
+          super(new GeoJSONReader(), new GeoJSONWriter(), new String[] { "json" });
       }
     }
 

@@ -587,28 +587,36 @@ public class GUIUtil {
         return;
       }
 
-      if (file.exists()
-          || (ext != null && (!file.toString().endsWith(ext)) && new File(
-              file.toString() + "." + ext).exists())) {
-        int response = JOptionPane.showConfirmDialog(this, I18N.getMessage(
-            "ui.GUIUtil.overwrite-prompting",
-            new Object[] { file.getName() }), "JUMP",
-            JOptionPane.YES_NO_OPTION);
+      // add extension if set and still missing
+      if (ext != null && !file.toString().toLowerCase().endsWith(ext.toLowerCase()))
+        file = new File( file.toString() + "." + ext );
 
-        if (response != JOptionPane.YES_OPTION) {
-          setSelectedFile(new File(""));
-          setSelectedFiles(new File[0]);
+      if (file.exists()) {
+        if (!showConfirmOverwriteDialog(this, file, ext))
           return;
-        }
       }
 
       super.approveSelection();
     }
 
+    @Deprecated
     protected File selectedFile() {
-      File[] files = selectedFiles(this);
-      return files.length > 0 ? files[0] : null ;
+      return getSelectedFile();
     }
+
+}
+
+  /**
+   * utility method to show an overwrite confirmation yes/no dialog
+   * @return boolean yes/no
+   */
+  public static boolean showConfirmOverwriteDialog(Component parent, File file, String ext) {
+    int response = JOptionPane
+        .showConfirmDialog(parent, I18N.getMessage(
+            "ui.GUIUtil.overwrite-prompting", new Object[] { file.getName() }),
+            "JUMP", JOptionPane.YES_NO_OPTION);
+
+    return response == JOptionPane.YES_OPTION;
   }
 
   public static void doNotRoundDoubles(JTable table) {

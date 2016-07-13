@@ -31,6 +31,9 @@
  */
 package com.vividsolutions.jump.workbench.datasource;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Collection;
 import java.util.regex.Pattern;
@@ -39,8 +42,9 @@ import javax.swing.JFileChooser;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
+
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -92,7 +96,9 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
         //work is not lost when he switches data-source types. The JFileChooser options
         //are set once because setting them freezes the GUI for a few seconds. [Jon Aquino]
         if (blackboard().get(FILE_CHOOSER_PANEL_KEY) == null) {
-            final JFileChooser fileChooser = GUIUtil.createJFileChooserWithOverwritePrompting();
+            // the overwrite check is implemented below in isInputValid()
+            // because we want it to be checked when OK is pressed also
+            final JFileChooser fileChooser = new JFCWithEnterAction();
             // enforce the type to have mac java show the file name input field
             fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
             fileChooser.setMultiSelectionEnabled(false);
@@ -113,6 +119,20 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
                 public void ancestorMoved(AncestorEvent event) { }
                 public void ancestorRemoved(AncestorEvent event) { }
             });
+            // user doubleclicked/pressed enter in jfc should confirm dialog
+            fileChooser.addActionListener(new ActionListener() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                Component c = fileChooser.getParent();
+                while ( c != null ){
+                  if ( c instanceof DataSourceQueryChooserDialog ){
+                    ((DataSourceQueryChooserDialog)c).setOKPressed();
+                    break;
+                  }
+                  c = c.getParent();
+                }
+              }
+            });
         }
 
         return (FileChooserPanel) blackboard().get(FILE_CHOOSER_PANEL_KEY);
@@ -129,18 +149,47 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
 
         return super.getDataSourceQueries();
     }
-    
+
+  /**
+   * selected files get the default (first) file extension appended if they do
+   * not carry a valid extension already, as save file chooser is supposed to
+   */
+    public File[] getSelectedFiles() {
+      File[] files = getFileChooserPanel().getChooser().getSelectedFiles();
+      
+      String extension = getExtensions().length > 0 ? getExtensions()[0] : null;
+      // no extensions? nothing to do here
+      if (extension == null || extension.isEmpty())
+        return files;
+
+      for (int i = 0; i < files.length; i++) {
+        File file = files[i];
+        // only treat files w/ missing extension here
+        if (!file.isDirectory() && !hasValidExtension(file)) {
+          files[i] = new File(file.getPath() + "." + extension);
+        }
+      }
+      return files;
+    }
+
+    private boolean hasValidExtension( File file ){
+      String[] validExtensions = getExtensions();
+      String fileName = file.getName();
+      for (String validExt : validExtensions) {
+        if (fileName.toLowerCase().endsWith("."+validExt.toLowerCase())) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     public boolean isInputValid() {
-      JFileChooser jfc = getFileChooserPanel().getChooser();
-      
-      // explicitly check file exists, restes selection if overwrite not approved
-      jfc.approveSelection();
-      File file = jfc.getSelectedFile();
-      
+      File file = getSelectedFiles().length > 0 ? getSelectedFiles()[0] : null;
+
       // no file selected?
       if (!(file instanceof File))
         return false;
-  
+
       if (!fileNameRegex.matcher(file.getPath()).matches()) {
         context
             .getWorkbench()
@@ -149,7 +198,13 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
                 I18N.get("com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser.Invalid-file-name"));
         return false;
       }
-      
+
+      if (file.exists()){
+        boolean overwrite = GUIUtil.showConfirmOverwriteDialog(null, file, null);
+        if (!overwrite)
+          return false;
+      }
+
       return super.isInputValid();
     }
 }

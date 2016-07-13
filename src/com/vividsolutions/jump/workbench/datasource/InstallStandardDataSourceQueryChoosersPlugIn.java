@@ -32,23 +32,26 @@
 package com.vividsolutions.jump.workbench.datasource;
 
 import com.vividsolutions.jts.util.Assert;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.*;
 import com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource;
+import com.vividsolutions.jump.io.geojson.GeoJSONReader;
+import com.vividsolutions.jump.io.geojson.GeoJSONWriter;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+
 import java.awt.Component;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.JComponent;
 
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+
 import org.openjump.core.ui.DatasetOptionsPanel;
 import org.openjump.core.ui.swing.ComboBoxComponentPanel;
 import org.openjump.core.ui.swing.factory.field.ComboBoxFieldComponentFactory;
@@ -172,8 +175,8 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
         new ShapefileWriter(), "ESRI Shapefile", context.getWorkbenchContext(),
         StandardReaderWriterFileDataSource.Shapefile.class);
 
-    addFileDataSourceQueryChoosers(new GeoJSONReader(),
-    /* new GeoJSONWriter() */null, "GeoJSON", context.getWorkbenchContext(),
+    addFileDataSourceQueryChoosers(new GeoJSONReader(), new GeoJSONWriter(),
+        "GeoJSON", context.getWorkbenchContext(),
         StandardReaderWriterFileDataSource.GeoJSON.class);
   }
 

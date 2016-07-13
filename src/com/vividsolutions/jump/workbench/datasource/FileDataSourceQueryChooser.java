@@ -88,65 +88,42 @@ public abstract class FileDataSourceQueryChooser implements DataSourceQueryChoos
     }
 
     public boolean isInputValid() {
-    	//[sstein 6 Nov 2011] replace the code below as it does not work for MacOSX
-    	/*
-        //Trick to allow inner class to modify an outside variable:
-        //stick the variable in an array. [Jon Aquino]
-        final Boolean[] actionPerformed = new Boolean[] { Boolean.FALSE };
-        ActionListener listener = new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    actionPerformed[0] = Boolean.TRUE;
-                }
-            };
-
-        getFileChooserPanel().getChooser().addActionListener(listener);
-
-        try {
-            //Workaround for Java Bug 4528663 "JFileChooser doesn't return what is
-            //typed in the file name text field." [Jon Aquino]
-            if (getFileChooserPanel().getChooser().getUI() instanceof BasicFileChooserUI) {
-                BasicFileChooserUI ui = (BasicFileChooserUI) getFileChooserPanel()
-                                                                 .getChooser()
-                                                                 .getUI();
-                ui.getApproveSelectionAction().actionPerformed(null);
-            }
-        } finally {
-            getFileChooserPanel().getChooser().removeActionListener(listener);
-        }
-
-        return actionPerformed[0] == Boolean.TRUE;
-        */
-        //[sstein 6 Nov 2011] the previous does not work for MacOSX, but I found the code below here:
-        //                    http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4528663
-    	boolean gotFileName = true;
-        try {
-        	JFileChooser chooser = getFileChooserPanel().getChooser();
-        	Method getFileName = chooser.getUI().getClass().getDeclaredMethod("getFileName");
-        	String fn = (String)getFileName.invoke(chooser.getUI());
-                chooser.setSelectedFile(new File(chooser.getCurrentDirectory(), fn));
-            } 
-        catch (Exception e) { 
-            	/* log warning */ 
-            	gotFileName = false;
-            }
-        return gotFileName;
+      // [sstein 6 Nov 2011] the previous does not work for MacOSX, but I found
+      // the code below here:
+      // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4528663
+      boolean gotFileName = true;
+      try {
+        JFileChooser chooser = getFileChooserPanel().getChooser();
+        Method getFileName = chooser.getUI().getClass()
+            .getDeclaredMethod("getFileName");
+        String fn = (String) getFileName.invoke(chooser.getUI());
+        chooser.setSelectedFile(new File(chooser.getCurrentDirectory(), fn));
+      } catch (Exception e) {
+        /* log warning */
+        gotFileName = false;
+      }
+      return gotFileName;
     }
 
     public Collection<DataSourceQuery> getDataSourceQueries() {
         List<DataSourceQuery> queries = new ArrayList<>();
-        File[] files = GUIUtil.selectedFiles(getFileChooserPanel().getChooser());
+        File[] files = getSelectedFiles();
 
         for (File file : files) {
-            //LDB: mod to append standard extension to save file names
-          String fname = file.getAbsolutePath();
-            if (fname.lastIndexOf(".") == -1) {
-              fname = fname + "." + extensions[0];  //first extension (i.e. shp)
-            }
-            queries.addAll(toDataSourceQueries(new File(fname)));
+            queries.addAll(toDataSourceQueries(file));
         }
 
         return queries;
     }
+    
+  /**
+   * override in implementations to postprocess the selected filenames eg. add
+   * extensions for saving or such
+   * should be used in isInputValid(), getDataSourceQueries() ...
+   * 
+   * @return array of file objects
+   */
+    public abstract File[] getSelectedFiles();
 
     //Overridden by IGDSDataSourceQueryChooser [Jon Aquino]
     protected Collection<DataSourceQuery> toDataSourceQueries(File file) {
