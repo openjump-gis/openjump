@@ -195,7 +195,7 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanelV
         fireInputChanged();
       }
     };
-    addPropertyChangeListener(changeListener);    
+    addPropertyChangeListener(changeListener);
 
     addActionListener(new InvokeMethodActionListener(dialog, "next"));
   }
