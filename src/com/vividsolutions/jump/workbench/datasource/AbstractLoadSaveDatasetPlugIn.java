@@ -27,7 +27,7 @@ public abstract class AbstractLoadSaveDatasetPlugIn extends ThreadedBasePlugIn {
             }
         });
     }
-    protected abstract void setSelectedFormat(String format);   
+    protected abstract void setSelectedFormat(String format);
     protected abstract String getSelectedFormat();
     protected WorkbenchContext getContext() {
         return context;
