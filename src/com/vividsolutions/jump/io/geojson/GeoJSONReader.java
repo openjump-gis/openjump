@@ -113,11 +113,11 @@ public class GeoJSONReader extends AbstractJUMPReader {
         try {
           fcwrap.add(featureMap);
           long now = Timer.milliSecondsSince(0);
-          // show status every 1s
-          if (now - 1000 >= milliSeconds) {
+          // show status every .5s
+          if (now - 500 >= milliSeconds) {
             milliSeconds = now;
             TaskMonitorUtil.report(monitor, I18N.getMessage(
-                "com.vividsolutions.jump.io.GeoJSONReader.parsed-{0}-features",
+                "GeoJSONReader.parsed-{0}-features",
                 String.format("%,10d", fcwrap.size())));
           }
         } catch (Exception e) {
