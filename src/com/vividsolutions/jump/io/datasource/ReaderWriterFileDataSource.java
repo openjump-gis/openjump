@@ -68,6 +68,10 @@ public class ReaderWriterFileDataSource extends DataSource {
       @Override
       public FeatureCollection executeQuery(String query,
           Collection<Throwable> exceptions, TaskMonitor monitor) {
+        
+        if (!isReadable())
+          throw new UnsupportedOperationException("reading is not supported");
+        
         try {
           // make readers task monitor aware
           DriverProperties dp = getReaderDriverProperties();
@@ -81,6 +85,7 @@ public class ReaderWriterFileDataSource extends DataSource {
                         createDescriptiveName(new URI(dp
                             .getProperty("Uri")))));
           }
+
           FeatureCollection fc = reader.read(dp);
           exceptions.addAll(reader.getExceptions());
           return fc;
@@ -96,7 +101,24 @@ public class ReaderWriterFileDataSource extends DataSource {
       public void executeUpdate(String update,
           FeatureCollection featureCollection, TaskMonitor monitor)
           throws Exception {
-        writer.write(featureCollection, getWriterDriverProperties());
+        
+        if (!isWritable())
+          throw new UnsupportedOperationException("writing is not supported");
+        
+        // make readers task monitor aware
+        DriverProperties dp = getWriterDriverProperties();
+        if (writer instanceof TaskMonitorSupport) {
+          ((TaskMonitorSupport) writer).setTaskMonitor(monitor);
+          TaskMonitorUtil
+              .setTitle(
+                  monitor,
+                  I18N.getMessage(
+                      "com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource.write-{0}",
+                      createDescriptiveName(new URI(dp
+                          .getProperty("Uri")))));
+        }
+
+        writer.write(featureCollection, dp);
       }
 
       @Override
@@ -121,7 +143,7 @@ public class ReaderWriterFileDataSource extends DataSource {
   /**
    * return 'file.ext (archive.ext)' for archive members and 'file.ext' for all others
    */
-  private static String createDescriptiveName(URI uri) {
+  protected static String createDescriptiveName(URI uri) {
     if (CompressedFile.isArchive(uri))
       return UriUtil.getZipEntryName(uri) + " (" + UriUtil.getZipFileName(uri)
           + ")";
@@ -137,7 +159,7 @@ public class ReaderWriterFileDataSource extends DataSource {
     return getDriverProperties();
   }
 
-  private DriverProperties getDriverProperties() {
+  protected DriverProperties getDriverProperties() {
     DriverProperties properties = new DriverProperties();
     properties.putAll(getProperties());
     return properties;
