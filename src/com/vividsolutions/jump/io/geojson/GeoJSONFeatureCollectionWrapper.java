@@ -11,16 +11,19 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONStreamAware;
-import org.json.simple.JSONValue;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.geojson.GeoJsonWriter;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.task.TaskMonitorUtil;
+import com.vividsolutions.jump.util.Timer;
 
 /**
  * a wrapper for a feature collection to do funky geojson stuff to/with
@@ -157,7 +160,7 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
           // this column had null until now
           if (featureSchema.getAttributeType(key) == ATTRIBUTETYPE_NULL) {
             featureSchema.setAttributeType(key, type);
-          } 
+          }
           // this column hosts mixed attrib types
           else {
             columnsWithMixedValues.add(key);
@@ -171,7 +174,7 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
     featureCollection.add(feature);
   }
 
-  static class Null extends Object{
+  static class Null extends Object {
   };
 
   static class NullAttributeType extends AttributeType {
@@ -182,13 +185,14 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
 
   public static final AttributeType ATTRIBUTETYPE_NULL = new NullAttributeType();
 
-  public static AttributeType toAttributeType(Object value){
-    // for null values we use temporarily a custom attrib type which get's fixed in getFeatCol()
-    if ( value == null )
+  public static AttributeType toAttributeType(Object value) {
+    // for null values we use temporarily a custom attrib type which get's fixed
+    // in getFeatCol()
+    if (value == null)
       return ATTRIBUTETYPE_NULL;
     AttributeType type = AttributeType.toAttributeType(value.getClass());
     // unknown mappings return null, we assume Object then
-    if ( type == null )
+    if (type == null)
       type = AttributeType.OBJECT;
     return type;
   }
@@ -213,7 +217,7 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
     // set type to String for the internal ATTRIBUTETYPE_NULL columns
     for (int i = 0; i < featureSchema.getAttributeCount(); i++) {
       AttributeType type = featureSchema.getAttributeType(i);
-      if ( type == ATTRIBUTETYPE_NULL )
+      if (type == ATTRIBUTETYPE_NULL)
         featureSchema.setAttributeType(i, AttributeType.STRING);
     }
     return featureCollection;
@@ -221,15 +225,28 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
 
   @Override
   public void writeJSONString(Writer out) throws IOException {
+    writeJSONString(out, null);
+  }
+
+  public void writeJSONString(Writer out, TaskMonitor monitor)
+      throws IOException {
     out.write("{\n");
     out.write("\"type\": \"" + GeoJSONConstants.TYPE_FEATURECOLLECTION
         + "\",\n\n");
     out.write("\"" + GeoJSONConstants.FEATURES + "\": [\n");
 
+    long milliSeconds = 0;
+    int count = 0;
     boolean first = true;
     String[] featureFields = new String[] { GeoJSONConstants.TYPE,
         GeoJSONConstants.PROPERTIES, GeoJSONConstants.GEOMETRY };
+    TaskMonitorUtil.report(monitor,
+        I18N.getMessage("GeoJSONWriter.writing-features"));
     for (Feature feature : featureCollection.getFeatures()) {
+
+      if (TaskMonitorUtil.isCancelRequested(monitor))
+        break;
+
       if (first)
         first = false;
       else
@@ -237,24 +254,19 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
 
       String featureJson = toJSONString(feature);
       out.write(featureJson);
+
+      long now = Timer.milliSecondsSince(0);
+      count++;
+      // show status every .5s
+      if (now - 500 >= milliSeconds) {
+        milliSeconds = now;
+        TaskMonitorUtil.report(monitor, count, size(), "");
+      }
+
     }
     out.write("\n]");
 
     out.write("\n\n}");
-  }
-
-  /**
-   * Escape quotes, \, /, \r, \n, \b, \f, \t and other control characters
-   * (U+0000 through U+001F). It's the same as JSONValue.escape() only for
-   * compatibility here.
-   * 
-   * @see org.json.simple.JSONValue#escape(String)
-   * 
-   * @param s
-   * @return
-   */
-  public static String escape(String s) {
-    return JSONValue.escape(s);
   }
 
   public static String toJSONString(Feature feature) {

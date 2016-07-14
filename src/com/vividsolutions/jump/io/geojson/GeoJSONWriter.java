@@ -7,13 +7,13 @@ import java.io.Writer;
 import java.net.URI;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.io.AbstractJUMPWriter;
 import com.vividsolutions.jump.io.DriverProperties;
 import com.vividsolutions.jump.io.IllegalParametersException;
-import com.vividsolutions.jump.io.JUMPWriter;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.util.FileUtil;
 
-public class GeoJSONWriter implements JUMPWriter {
+public class GeoJSONWriter extends AbstractJUMPWriter {
 
   @Override
   public void write(FeatureCollection featureCollection, DriverProperties dp)
@@ -35,7 +35,7 @@ public class GeoJSONWriter implements JUMPWriter {
       fileStream = new FileOutputStream(new File(uri));
       w = new OutputStreamWriter(fileStream, GeoJSONConstants.CHARSET);
 
-      fcw.writeJSONString(w);
+      fcw.writeJSONString(w,getTaskMonitor());
     } finally {
       FileUtil.close(w);
       FileUtil.close(fileStream);
