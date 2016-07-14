@@ -19,7 +19,8 @@ public abstract class AbstractSaveDatasetAsPlugIn
         Assert.isTrue(getDataSourceQueries().size() == 1);
 
         DataSourceQuery dataSourceQuery = (DataSourceQuery) getDataSourceQueries().iterator().next();
-        Assert.isTrue(dataSourceQuery.getDataSource().isWritable());
+
+        monitor.allowCancellationRequests();
         monitor.report(I18N.get("datasource.SaveDatasetAsPlugIn.saving") + " "
                 + dataSourceQuery.toString() + "...");
 
