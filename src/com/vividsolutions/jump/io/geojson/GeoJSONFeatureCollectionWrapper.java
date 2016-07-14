@@ -145,12 +145,8 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
       // iterate over this feature's attribs
       for (String key : attribsMap.keySet()) {
         Object value = attribsMap.get(key);
-        System.out.println(value+"/"+(value!=null?value.getClass():"")+"/");
         AttributeType type = toAttributeType(value);
 
-        if(key.equals("G_Code"))
-          System.out.println();;
-        
         // extend schema if attrib is unknown
         if (!featureSchema.hasAttribute(key)) {
           featureSchema.addAttribute(key, type);
