@@ -33,6 +33,8 @@
 
 package com.vividsolutions.jump.workbench.ui.task;
 
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -43,11 +45,14 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.text.JTextComponent;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitorV2;
@@ -56,18 +61,20 @@ import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 
 
 public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
-    JPanel mainPanel = new JPanel();
-    private GridBagLayout gridBagLayout1 = new GridBagLayout();
+    private JPanel mainPanel = new JPanel();
     private JPanel labelPanel = new JPanel();
+
     private JButton cancelButton = new JButton();
-    private GridBagLayout gridBagLayout2 = new GridBagLayout();
+    boolean allowCancellation = false;
+
     private ErrorHandler errorHandler;
     private boolean cancelled;
-    private GridBagLayout gridBagLayout3 = new GridBagLayout();
-    private JLabel taskProgressLabel = new JLabel();
-    private JLabel subtaskProgressLabel = new JLabel();
-    private String taskProgress = "";
-    private String subtaskProgress = "";
+ 
+    private JTextComponent taskProgressLabel;
+    private Component separator;
+    private JTextComponent subtaskProgressLabel;
+    public String taskProgress = "";
+    public String subtaskProgress = "";
     private Timer timer = new Timer(500,
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -92,7 +99,6 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
             ex.printStackTrace();
         }
 
-        setSize(400, 100);
         addWindowListener(new WindowAdapter() {
                 public void windowOpened(WindowEvent e) {
                     cancelButton.setEnabled(true);
@@ -102,7 +108,7 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
     }
 
     private void jbInit() throws Exception {
-        mainPanel.setLayout(gridBagLayout1);
+        mainPanel.setLayout(new GridBagLayout());
         cancelButton.setText(I18N.get("ui.task.TaskMonitorDialog.cancel"));
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -118,38 +124,53 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
                     this_componentHidden(e);
                 }
             });
-        this.getContentPane().setLayout(new GridBagLayout());
-        labelPanel.setLayout(gridBagLayout3);
-        subtaskProgressLabel.setText(I18N.get("ui.task.TaskMonitorDialog.subtask-progress-goes-here"));
+
+        labelPanel.setLayout(new GridBagLayout());
+
+        taskProgressLabel = createWrapLabel("");
         taskProgressLabel.setText(I18N.get("ui.task.TaskMonitorDialog.task-progress-goes-here"));
+
+        separator = Box.createRigidArea(new Dimension(10,10));
+        
+        subtaskProgressLabel = createWrapLabel("");
+        subtaskProgressLabel.setText(I18N.get("ui.task.TaskMonitorDialog.subtask-progress-goes-here"));
+
         mainPanel.add(labelPanel,
             new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,
-                GridBagConstraints.WEST, GridBagConstraints.BOTH,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));
         labelPanel.add(taskProgressLabel,
-            new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+            new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                new Insets(0, 0, 0, 0), 0, 0));
+        labelPanel.add(separator,
+            new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));
         labelPanel.add(subtaskProgressLabel,
-            new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
-                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+            new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));
-        mainPanel.add(cancelButton,
-            new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
-        
+
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.add(clockPanel,
-            new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+            new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(4, 4, 4, 4), 0, 0));
+                new Insets(0, 0, 0, 0), 10, 0));
         centerPanel.add(mainPanel,
             new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(15, 0, 15, 15), 0, 0));
-        
-        this.getContentPane().add(centerPanel);
+                new Insets(0, 0, 0, 0), 0, 0));
+
+        setLayout(new GridBagLayout());
+        add(centerPanel,
+            new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,
+                GridBagConstraints.NORTH, GridBagConstraints.BOTH,
+                new Insets(10, 10, 10, 10), 0, 0));
+        add(cancelButton,
+            new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+                GridBagConstraints.SOUTH, GridBagConstraints.NONE,
+                new Insets(0, 0, 10, 0), 0, 0));
     }
 
     void cancelButton_actionPerformed(ActionEvent e) {
@@ -164,15 +185,28 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
 
     void this_componentShown(ComponentEvent e) {
         cancelled = false;
-        updateLabels();
-        cancelButton.setVisible(false);
+        cancelButton.setVisible(allowCancellation);
         timer.start();
         clockPanel.start();
+        updateLabels();
     }
 
     private void updateLabels() {
+        if (cancelled)
+          return;
+
         taskProgressLabel.setText(taskProgress);
+        taskProgressLabel.setVisible(!taskProgress.isEmpty());
+        
+        separator.setVisible(!taskProgress.isEmpty() && !subtaskProgress.isEmpty());
+        
         subtaskProgressLabel.setText(subtaskProgress);
+        subtaskProgressLabel.setVisible(!subtaskProgress.isEmpty());
+        pack();
+    }
+
+    public int getRefreshRate() {
+      return timer.getDelay();
     }
 
     public void setRefreshRate(int millisecondDelay) {
@@ -198,6 +232,7 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
     }
 
     public void allowCancellationRequests() {
+        allowCancellation = true;
         cancelButton.setVisible(true);
     }
 
@@ -211,5 +246,55 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
 
     public void setTitle(String title){
       super.setTitle(title);
+    }
+
+    /**
+     * a wrapping label workaround
+     * @param text
+     * @return
+     */
+    protected JTextComponent createWrapLabel(String text) {
+      // set a default col width to break at
+      JTextArea textArea = new JTextArea(0,30);
+      textArea.setText(text);
+      textArea.setWrapStyleWord(true);
+      textArea.setLineWrap(true);
+      textArea.setOpaque(false);
+      textArea.setEditable(false);
+      textArea.setFocusable(false);
+      textArea.setBackground(UIManager.getColor("Label.background"));
+      textArea.setFont(UIManager.getFont("Label.font"));
+      textArea.setBorder(UIManager.getBorder("Label.border"));
+      return textArea;
+    }
+
+    /**
+     * testing layout and overall functionality
+     */
+    public static void main(String[] args) {
+      final TaskMonitorDialog d = new TaskMonitorDialog(null, null);
+      d.report("This is what we are doing.");
+      //d.allowCancellationRequests();
+      new Thread(new Runnable() {
+        
+        @Override
+        public void run() {
+          d.pack();
+          d.show();
+        }
+      }).start();
+      for (int i = 0; i < 1000; i++) {
+
+        try {
+          Thread.sleep(3000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        
+        d.report(i, 1000, "irgendwas");
+        String t = d.taskProgress;
+        d.taskProgress += "palimipalim";
+      }
     }
 }
