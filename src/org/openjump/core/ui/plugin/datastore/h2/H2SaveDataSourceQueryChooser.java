@@ -1,4 +1,4 @@
-package org.openjump.core.ui.plugin.datastore.postgis2;
+package org.openjump.core.ui.plugin.datastore.h2;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.SQLUtil;
@@ -10,27 +10,31 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.plugin.datastore.SaveToDataStoreDataSourceQuery;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
+import org.openjump.core.ui.plugin.datastore.postgis2.PostGISSaveDriverPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A DataSourceQueryChooser to write to a PostGIS DataSource.
  */
-public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser {
+public class H2SaveDataSourceQueryChooser implements DataSourceQueryChooser {
 
-    public static final String KEY = PostGISSaveDataSourceQueryChooser.class.getName();
+    public static final String KEY = H2SaveDataSourceQueryChooser.class.getName();
 
     static final String ERROR = I18N.get(KEY + ".error");
     static final String NO_CONNECTION_CHOOSEN     = I18N.get(KEY + ".no-connection-choosen");
     static final String NO_TABLE_CHOOSEN          = I18N.get(KEY + ".no-table-choosen");
-    static final String CONNECTION_IS_NOT_POSTGIS = I18N.get(KEY + ".selected-connection-is-not-postgis");
+    static final String CONNECTION_IS_NOT_H2      = I18N.get(KEY + ".selected-connection-is-not-h2");
     static final String GID_ALREADY_EXISTS        = I18N.get(KEY + ".gid-already-exists");
 
     private PlugInContext context;
-    private PostGISSaveDriverPanel panel;
+    // We can reuse the PostGISSaveDriverPanel as UI for PostGIS and H2GIS are similar
+    private H2SaveDriverPanel panel;
     private WritableDataStoreDataSource dataSource;
     private Map<String,Object> properties;
 
@@ -38,11 +42,11 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
      * Creates a new query chooser.
      * @param dataSource DataSource object to be queried against.
      */
-    public PostGISSaveDataSourceQueryChooser(WritableDataStoreDataSource dataSource, PlugInContext context) {
+    public H2SaveDataSourceQueryChooser(WritableDataStoreDataSource dataSource, PlugInContext context) {
         this.dataSource = dataSource;
         this.context = context;
-        panel = new PostGISSaveDriverPanel(context);
-        properties = new HashMap<String,Object>();
+        panel = new H2SaveDriverPanel(context);
+        properties = new HashMap<>();
     }
 
     /**
@@ -64,7 +68,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         // It is very important to create a new PostGISDataStoreDataSource here,
         // otherwise, all layers saved as PostGIS table use the same PostGISDataStoreDataSource
         SaveToDataStoreDataSourceQuery query = new SaveToDataStoreDataSourceQuery(
-                new PostGISDataStoreDataSource(context.getWorkbenchContext()),
+                new H2DataStoreDataSource(context.getWorkbenchContext()),
                 updateQuery,
                 (String)properties.get(WritableDataStoreDataSource.DATASET_NAME_KEY)
         );
@@ -72,7 +76,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         ((WritableDataStoreDataSource)query.getDataSource()).setTableAlreadyCreated(false);
         query.getDataSource().getProperties().put(
                 WritableDataStoreDataSource.NORMALIZED_COLUMN_NAMES, panel.isNormalizedColumnNames());
-        List<DataSourceQuery> queries = new ArrayList<DataSourceQuery>();
+        java.util.List<DataSourceQuery> queries = new ArrayList<DataSourceQuery>();
         queries.add(query);
 
         return queries;
@@ -92,9 +96,9 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         }
         else if (!panel.getConnectionDescriptor()
                 .getDataStoreDriverClassName()
-                .equals(com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver.class.getName())) {
+                .equals(com.vividsolutions.jump.datastore.h2.H2DataStoreDriver.class.getName())) {
             JOptionPane.showMessageDialog(null,
-                    CONNECTION_IS_NOT_POSTGIS,
+                    CONNECTION_IS_NOT_H2,
                     ERROR, JOptionPane.ERROR_MESSAGE );
             return false;
         }
@@ -143,9 +147,9 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         if (layers.length == 1) {
             FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
             properties.put(WritableDataStoreDataSource.GEOMETRY_ATTRIBUTE_NAME_KEY,
-                panel.isNormalizedColumnNames()?
-                        SQLUtil.normalize(schema.getAttributeName(schema.getGeometryIndex()))
-                    :schema.getAttributeName(schema.getGeometryIndex()));
+                    panel.isNormalizedColumnNames()?
+                            SQLUtil.normalize(schema.getAttributeName(schema.getGeometryIndex()))
+                            :schema.getAttributeName(schema.getGeometryIndex()));
 
             // OpenJUMP has now a better support of Coordinate System at
             // FeatureCollection and FeatureSchema level, but this one is simple
@@ -169,6 +173,6 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
      * Returns the String displayed in the Format Chooser.
      */
     public String toString() {
-        return I18N.get(KEY + ".PostGIS-Table");
+        return I18N.get(KEY + ".H2-Table");
     }
 }

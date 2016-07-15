@@ -1,16 +1,15 @@
-package org.openjump.core.ui.plugin.datastore.postgis2;
+package org.openjump.core.ui.plugin.datastore;
 
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
-import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A query performed against a PostGIS data source.
+ * A query performed against a WritableDataStoreDataSource.
  */
-public class SaveToPostGISDataSourceQuery extends DataSourceQuery {
+public class SaveToDataStoreDataSourceQuery extends DataSourceQuery {
 
     private Map properties = null;
 
@@ -20,8 +19,8 @@ public class SaveToPostGISDataSourceQuery extends DataSourceQuery {
      * @param query The "sql" of the query.
      * @param name Name of the query.
      */
-    public SaveToPostGISDataSourceQuery(DataSource dataSource, String query,
-                                        String name) {
+    public SaveToDataStoreDataSourceQuery(DataSource dataSource, String query,
+                                   String name) {
         super(dataSource, query, name);
     }
 

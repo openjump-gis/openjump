@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-07-15 mmichaud <m.michael.michaud@orange.fr>
+  * Extends WritableDataStoreDataSource capabilities to H2 DataStore
+
 2016-07-12 ede
   * added GeoJSON write capability
   * bufix: save dataset warns before overwriting an existing file now also 

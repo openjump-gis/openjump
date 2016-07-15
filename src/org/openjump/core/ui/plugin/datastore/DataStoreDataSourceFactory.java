@@ -3,6 +3,7 @@ package org.openjump.core.ui.plugin.datastore;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
+import org.openjump.core.ui.plugin.datastore.h2.H2DataStoreDataSource;
 import org.openjump.core.ui.plugin.datastore.postgis2.PostGISDataStoreDataSource;
 
 /**
@@ -24,6 +25,10 @@ public class DataStoreDataSourceFactory {
         String driverName = connectionDescriptor.getDataStoreDriverClassName();
         if (driverName.equals(com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver.class.getName())) {
             source = new PostGISDataStoreDataSource(
+                    connectionDescriptor, datasetName, geometryAttributeName, externalPKName, context);
+            source.setTableAlreadyCreated(tableAlreadyCreated);
+        } else if (driverName.equals(com.vividsolutions.jump.datastore.h2.H2DataStoreDriver.class.getName())) {
+            source = new H2DataStoreDataSource(
                     connectionDescriptor, datasetName, geometryAttributeName, externalPKName, context);
             source.setTableAlreadyCreated(tableAlreadyCreated);
         } else {
