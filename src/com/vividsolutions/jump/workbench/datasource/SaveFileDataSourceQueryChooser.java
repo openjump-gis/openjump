@@ -155,7 +155,8 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
    * not carry a valid extension already, as save file chooser is supposed to
    */
     public File[] getSelectedFiles() {
-      File[] files = getFileChooserPanel().getChooser().getSelectedFiles();
+      // this is a one file chooser, so we ask jfc to give us the one selected
+      File[] files = new File[]{getFileChooserPanel().getChooser().getSelectedFile()};
       
       String extension = getExtensions().length > 0 ? getExtensions()[0] : null;
       // no extensions? nothing to do here
@@ -184,6 +185,13 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
     }
 
     public boolean isInputValid() {
+      // this must be run FIRST!!!
+      // it is IMPORTANT! as we are not using the fc's buttons it re-runs approve
+      // selection on the filechooser to make sure that the value from the
+      // filename textfield is properly filled into selected files for us to fetch
+      if (!super.isInputValid())
+        return false;
+
       File file = getSelectedFiles().length > 0 ? getSelectedFiles()[0] : null;
 
       // no file selected?

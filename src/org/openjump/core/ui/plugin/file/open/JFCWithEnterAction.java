@@ -45,6 +45,16 @@ public class JFCWithEnterAction extends JFileChooser {
   }
 
   public File getSelectedFile() {
+//    FileChooserUI ui = getUI();
+//    // fetch a filename if manually entered in file name text field of chooser
+//    if (ui instanceof BasicFileChooserUI) {
+//      BasicFileChooserUI bui = (BasicFileChooserUI) ui;
+//      String filename = ((BasicFileChooserUI) ui).getFileName();
+//      if (!filename.isEmpty()){
+//        return new File(getCurrentDirectory(),filename);
+//      }
+//    }
+
     File[] files = getSelectedFiles();
     return files.length > 0 ? files[0] : null;
   }

@@ -36,17 +36,26 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.io.File;
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.plaf.FileChooserUI;
+import javax.swing.plaf.basic.BasicFileChooserUI;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
@@ -88,21 +97,33 @@ public abstract class FileDataSourceQueryChooser implements DataSourceQueryChoos
     }
 
     public boolean isInputValid() {
-      // [sstein 6 Nov 2011] the previous does not work for MacOSX, but I found
-      // the code below here:
-      // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4528663
-      boolean gotFileName = true;
-      try {
-        JFileChooser chooser = getFileChooserPanel().getChooser();
-        Method getFileName = chooser.getUI().getClass()
-            .getDeclaredMethod("getFileName");
-        String fn = (String) getFileName.invoke(chooser.getUI());
-        chooser.setSelectedFile(new File(chooser.getCurrentDirectory(), fn));
-      } catch (Exception e) {
-        /* log warning */
-        gotFileName = false;
+//      // [sstein 6 Nov 2011] the previous does not work for MacOSX, but I found
+//      // the code below here:
+//      // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4528663
+//      boolean gotFileName = true;
+//      try {
+//        JFileChooser chooser = getFileChooserPanel().getChooser();
+//        Method getFileName = chooser.getUI().getClass()
+//            .getDeclaredMethod("getFileName");
+//        String fn = (String) getFileName.invoke(chooser.getUI());
+//        chooser.setSelectedFile(new File(chooser.getCurrentDirectory(), fn));
+//      } catch (Exception e) {
+//        /* log warning */
+//        gotFileName = false;
+//      }
+//      return gotFileName;
+      // [2016.07 ede] the following should be more generic as it runs the 
+      // filechoosers own routine to fill up the internal selected files vars
+      // properly
+      JFileChooser jfc = getFileChooserPanel().getChooser();
+      FileChooserUI fcui = jfc.getUI();
+      if (fcui instanceof BasicFileChooserUI) {
+        BasicFileChooserUI bfcui = (BasicFileChooserUI) fcui;
+        bfcui.getApproveSelectionAction().actionPerformed(
+            new ActionEvent(new JButton(), 0, "nix"));
       }
-      return gotFileName;
+
+      return jfc.getSelectedFile() instanceof File;
     }
 
     public Collection<DataSourceQuery> getDataSourceQueries() {

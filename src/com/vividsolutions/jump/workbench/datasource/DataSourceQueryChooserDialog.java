@@ -167,14 +167,18 @@ public class DataSourceQueryChooserDialog extends JDialog {
     }
 
     public void setOKPressed() {
-        //
+        // we just process this one time
+        if (okCancelPanel.wasOKPressed())
+          return;
+
         // It is important to call setOKPressed before calling isInputValid
         // otherwise we run into an infinite loop of actionPerformed calls.
-        //
         okCancelPanel.setOKPressed(true);
 
         if ( getCurrentChooser().isInputValid() ) {
             setVisible(false);
+        } else {
+            okCancelPanel.setOKPressed(false);
         }
     }
 
@@ -219,6 +223,8 @@ public class DataSourceQueryChooserDialog extends JDialog {
           } else { // Now we use the dialog for saving
             if (getCurrentChooser().isInputValid()) {
               setVisible(false);
+            }else{
+              okCancelPanel.setOKPressed(false);
             }
           }
         }
