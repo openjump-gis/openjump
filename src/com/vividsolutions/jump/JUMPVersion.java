@@ -37,20 +37,14 @@ package com.vividsolutions.jump;
  * Versions consist of a 3-part version number: <code>major.minor.patch</code>
  * An optional release status string may be present in the string version of the
  * version.
- * 
- * @version 1.5.0
  */
 public class JUMPVersion {
 
   /**
-   * The current version number of the OJ.
+   * The current version string of the OJ.
    */
-  public static final String CURRENT_VERSION = I18N
-      .get("JUMPWorkbench.version.number")
-      + " "
-      + I18N.get("JUMPWorkbench.version.release")
-      + " rev."
-      + I18N.get("JUMPWorkbench.version.revision");
+  public static final String CURRENT_VERSION = getVersionNumber() + " "
+      + getRelease() + " rev." + getRevision();
 
   /**
    * Gets the full version number, suitable for display.
@@ -61,4 +55,15 @@ public class JUMPVersion {
     return CURRENT_VERSION;
   }
 
+  public static String getVersionNumber() {
+    return I18N.get("JUMPWorkbench.version.number");
+  }
+
+  public static String getRelease() {
+    return I18N.get("JUMPWorkbench.version.release");
+  }
+
+  public static String getRevision() {
+    return I18N.get("JUMPWorkbench.version.revision");
+  }
 }
