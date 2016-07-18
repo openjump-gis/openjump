@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -15,12 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ContentHandler;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.openjump.core.ui.util.GeometryUtils;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.geojson.GeoJsonConstants;
 import com.vividsolutions.jts.io.geojson.GeoJsonReader;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -116,12 +118,13 @@ public class GeoJSONReader extends AbstractJUMPReader {
           // show status every .5s
           if (now - 500 >= milliSeconds) {
             milliSeconds = now;
-            TaskMonitorUtil.report(monitor, I18N.getMessage(
-                "GeoJSONReader.parsed-{0}-features",
-                String.format("%,10d", fcwrap.size())));
+            TaskMonitorUtil.report(
+                monitor,
+                I18N.getMessage("GeoJSONReader.parsed-{0}-features",
+                    String.format("%,10d", fcwrap.size())));
           }
         } catch (Exception e) {
-          addException(e);
+          addException(new IOException(JSONObject.toJSONString(featureMap), e));
         }
       }
     }
@@ -235,8 +238,8 @@ public class GeoJSONReader extends AbstractJUMPReader {
 
 /**
  * utility class to allow creating geometries directly from simple-json maps for
- * performance reasons.
- * TODO: this should probably be implemented directly in JTS-io's GeoJsonReader
+ * performance reasons. TODO: this should probably be implemented directly in
+ * JTS-io's GeoJsonReader
  */
 class MapGeoJsonGeometryReader extends
     com.vividsolutions.jts.io.geojson.GeoJsonReader {
@@ -267,13 +270,28 @@ class MapGeoJsonGeometryReader extends
    * @throws IllegalAccessException
    * @throws IllegalArgumentException
    * @throws InvocationTargetException
+   * @throws com.vividsolutions.jts.io.ParseException
+   * @throws ClassNotFoundException 
    */
   public Geometry read(Map geometryMap) throws IllegalAccessException,
-      IllegalArgumentException, InvocationTargetException {
+      IllegalArgumentException, InvocationTargetException,
+      com.vividsolutions.jts.io.ParseException, ClassNotFoundException {
     if (this.geometryFactory == null) {
       geometryFactory = (GeometryFactory) m2.invoke(this, geometryMap);
     }
 
+    Object coords = geometryMap.get(GeoJsonConstants.NAME_COORDINATES);
+    // are we a list of objects?
+    if (!(coords instanceof List))
+      throw new com.vividsolutions.jts.io.ParseException(
+          GeoJsonConstants.NAME_COORDINATES + " is not a list: "
+              + JSONObject.toJSONString(geometryMap));
+    // are we an empty list? OJ allows empty geometries, so do we
+    if (((List)coords).isEmpty()){
+      String type = (String) geometryMap.get(GeoJsonConstants.NAME_TYPE);
+        return GeometryUtils.createEmptyGeometry(type, geometryFactory);
+    }
+    
     return (Geometry) m.invoke(this, geometryMap, geometryFactory);
   }
 }
@@ -318,16 +336,8 @@ class FlexibleFeatureSchema extends FeatureSchema {
   public Geometry createEmptyGeometry() {
     if (geometryClass != null) {
       try {
-        for (Constructor<Geometry> c : geometryClass.getConstructors()) {
-          Class[] paramTypes = c.getParameterTypes();
-          int paramCount = paramTypes.length;
-          if (paramCount > 0
-              && paramTypes[paramCount - 1] == GeometryFactory.class) {
-            Object[] params = new Object[paramCount];
-            params[paramCount - 1] = geometryFactory;
-            return c.newInstance(params);
-          }
-        }
+        return GeometryUtils
+            .createEmptyGeometry(geometryClass, geometryFactory);
       } catch (Exception e) {
         Logger.debug(e);
       }
