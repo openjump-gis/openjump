@@ -209,12 +209,12 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
    */
   public FeatureCollection getFeatureCollection() {
     // set type to String for mixed columns
-    for (String key : columnsWithMixedValues) {
+    for (String key : new LinkedList<String>(columnsWithMixedValues) ) {
       featureSchema.setAttributeType(featureSchema.getAttributeIndex(key),
           AttributeType.STRING);
       columnsWithMixedValues.remove(key);
     }
-    // set type to String for the internal ATTRIBUTETYPE_NULL columns
+    // set type to String for the temporary internal ATTRIBUTETYPE_NULL columns
     for (int i = 0; i < featureSchema.getAttributeCount(); i++) {
       AttributeType type = featureSchema.getAttributeType(i);
       if (type == ATTRIBUTETYPE_NULL)
