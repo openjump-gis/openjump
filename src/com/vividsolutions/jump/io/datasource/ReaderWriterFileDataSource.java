@@ -34,6 +34,7 @@ package com.vividsolutions.jump.io.datasource;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import org.openjump.util.UriUtil;
 
@@ -51,14 +52,21 @@ import com.vividsolutions.jump.task.TaskMonitorUtil;
  * Adapts the old JUMP I/O API (Readers and Writers) to the new JUMP I/O API
  * (DataSources).
  */
-public class ReaderWriterFileDataSource extends DataSource {
+public class ReaderWriterFileDataSource extends FileDataSource {
 
-  protected JUMPReader reader;
-  protected JUMPWriter writer;
+  protected JUMPReader reader = null;
+  protected JUMPWriter writer = null;
+  protected String[] extensions = new String[0];
 
+  @Deprecated
   public ReaderWriterFileDataSource(JUMPReader reader, JUMPWriter writer) {
+    this(reader, writer, new String[0]);
+  }
+
+  public ReaderWriterFileDataSource(JUMPReader reader, JUMPWriter writer, String[] extensions) {
     this.reader = reader;
     this.writer = writer;
+    this.extensions = extensions;
   }
 
   public Connection getConnection() {
@@ -75,6 +83,7 @@ public class ReaderWriterFileDataSource extends DataSource {
         try {
           // make readers task monitor aware
           DriverProperties dp = getReaderDriverProperties();
+          URI uri = new URI(dp.getProperty(DataSource.URI_KEY));
           if (reader instanceof TaskMonitorSupport) {
             ((TaskMonitorSupport) reader).setTaskMonitor(monitor);
             TaskMonitorUtil
@@ -82,8 +91,7 @@ public class ReaderWriterFileDataSource extends DataSource {
                     monitor,
                     I18N.getMessage(
                         "com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource.open-{0}",
-                        createDescriptiveName(new URI(dp
-                            .getProperty("Uri")))));
+                        createDescriptiveName(uri)));
           }
 
           FeatureCollection fc = reader.read(dp);
@@ -107,6 +115,7 @@ public class ReaderWriterFileDataSource extends DataSource {
         
         // make readers task monitor aware
         DriverProperties dp = getWriterDriverProperties();
+        URI uri = new URI(dp.getProperty(DataSource.URI_KEY));
         if (writer instanceof TaskMonitorSupport) {
           ((TaskMonitorSupport) writer).setTaskMonitor(monitor);
           TaskMonitorUtil
@@ -114,8 +123,7 @@ public class ReaderWriterFileDataSource extends DataSource {
                   monitor,
                   I18N.getMessage(
                       "com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource.write-{0}",
-                      createDescriptiveName(new URI(dp
-                          .getProperty("Uri")))));
+                      createDescriptiveName(uri)));
         }
 
         writer.write(featureCollection, dp);
@@ -161,7 +169,11 @@ public class ReaderWriterFileDataSource extends DataSource {
 
   protected DriverProperties getDriverProperties() {
     DriverProperties properties = new DriverProperties();
-    properties.putAll(getProperties());
+    Map<Object,Object> map = getProperties();
+    // explicitely copy into properties object or getProperty() returns null
+    for (Map.Entry entry : map.entrySet()){
+      properties.setProperty(String.valueOf(entry.getKey()), (String.valueOf(entry.getValue())));
+    }
     return properties;
   }
 
@@ -173,6 +185,11 @@ public class ReaderWriterFileDataSource extends DataSource {
   @Override
   public boolean isWritable() {
     return writer instanceof JUMPWriter;
+  }
+
+  @Override
+  public String[] getExtensions() {
+    return extensions;
   }
 
 }

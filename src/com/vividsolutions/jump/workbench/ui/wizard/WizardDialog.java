@@ -91,6 +91,9 @@ public class WizardDialog extends JDialog implements WizardContext,
   private boolean finishPressed = false;
 
   private HashMap dataMap = new HashMap();
+  
+  public final static String DATAKEY_CURRENTPANELID = WizardDialog.class
+      .getName() + ".currentPanelId";
 
   public WizardDialog(Frame frame, String title, ErrorHandler errorHandler) {
     super(frame, title, true);
@@ -137,6 +140,8 @@ public class WizardDialog extends JDialog implements WizardContext,
     updateButtons();
     currentWizardPanel.add(this);
     instructionTextArea.setText(currentWizardPanel.getInstructions());
+    
+    setData(DATAKEY_CURRENTPANELID, wizardPanel.getID());
   }
 
   public WizardPanel setCurrentWizardPanel(String id) {

@@ -48,8 +48,6 @@ import com.vividsolutions.jump.util.CollectionUtil;
  */
 public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFileDataSource {
 
-    protected String[] extensions;
-
     public static final String[] GML_EXTENSIONS = new String[] { "gml", "xml" };
 
     public static final String OUTPUT_TEMPLATE_FILE_KEY = "Output Template File";
@@ -60,8 +58,7 @@ public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFil
         JUMPReader reader,
         JUMPWriter writer,
         String[] extensions) {
-        super(reader, writer);
-        this.extensions = extensions;
+        super(reader, writer, extensions);
     }
     
    /**
@@ -169,7 +166,7 @@ public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFil
         
         public boolean isWritable() {
             return getProperties().containsKey(StandardReaderWriterFileDataSource.OUTPUT_TEMPLATE_FILE_KEY);
-        }        
+        }
 
     }    
         

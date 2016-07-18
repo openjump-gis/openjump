@@ -208,7 +208,7 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
       }
 
       if (file.exists()){
-        boolean overwrite = GUIUtil.showConfirmOverwriteDialog(null, file, null);
+        boolean overwrite = GUIUtil.showConfirmOverwriteDialog(null, file);
         if (!overwrite)
           return false;
       }

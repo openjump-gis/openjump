@@ -592,7 +592,7 @@ public class GUIUtil {
         file = new File( file.toString() + "." + ext );
 
       if (file.exists()) {
-        if (!showConfirmOverwriteDialog(this, file, ext))
+        if (!showConfirmOverwriteDialog(this, file))
           return;
       }
 
@@ -610,7 +610,7 @@ public class GUIUtil {
    * utility method to show an overwrite confirmation yes/no dialog
    * @return boolean yes/no
    */
-  public static boolean showConfirmOverwriteDialog(Component parent, File file, String ext) {
+  public static boolean showConfirmOverwriteDialog(Component parent, File file) {
     int response = JOptionPane
         .showConfirmDialog(parent, I18N.getMessage(
             "ui.GUIUtil.overwrite-prompting", new Object[] { file.getName() }),

@@ -3,6 +3,12 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-07-18 ede
+  * add brand new shiny SaveWizardPlugin, which is supposed to eventually
+    replace the outdated SaveDatasetAsPlugIn adding the possibility to install
+    further datasource writers allowing to save easily to different datasource
+    stores, hopefully databases, WFS, archives or the likes in the future
+
 2016-07-15 mmichaud <m.michael.michaud@orange.fr>
   * Extends WritableDataStoreDataSource capabilities to H2 DataStore
 

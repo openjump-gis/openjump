@@ -156,6 +156,9 @@
 			<main-menu menupath="MenuNames.FILE" install="true" />
 		</menus>
 	</plug-in>
+ 	<plug-in>
+		org.openjump.core.ui.plugin.file.SaveWizardPlugIn
+	</plug-in>
 
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn
