@@ -1,9 +1,14 @@
 package org.openjump.core.ui.util;
 
+import java.lang.reflect.Constructor;
+import java.security.InvalidParameterException;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.geom.CoordUtil;
+import com.vividsolutions.jump.workbench.Logger;
 
 public class GeometryUtils {
 
@@ -88,4 +93,41 @@ public class GeometryUtils {
     });
   }
 
+  /**
+   * creates an empty geometry matching the geom type set already or an empty
+   * geom collection if that fails
+   * 
+   * @return geometry
+   */
+  public static Geometry createEmptyGeometry(Class geometryClass,
+      GeometryFactory geometryFactory) {
+    if (geometryClass == null)
+      throw new InvalidParameterException("Class must not be null");
+    if (geometryFactory == null)
+      geometryFactory = new GeometryFactory();
+    
+    try {
+      for (Constructor<Geometry> c : geometryClass.getConstructors()) {
+        Class[] paramTypes = c.getParameterTypes();
+        int paramCount = paramTypes.length;
+        if (paramCount > 0
+            && paramTypes[paramCount - 1] == GeometryFactory.class) {
+          Object[] params = new Object[paramCount];
+          params[paramCount - 1] = geometryFactory;
+          return c.newInstance(params);
+        }
+      }
+    } catch (Exception e) {
+      Logger.debug(e);
+    }
+
+    return null;
+  }
+
+  public static Geometry createEmptyGeometry(String geometryName,
+      GeometryFactory geometryFactory) throws ClassNotFoundException {
+    
+    Class geometryClass = Class.forName("com.vividsolutions.jts.geom."+geometryName);
+    return createEmptyGeometry(geometryClass, geometryFactory);
+  }
 }
