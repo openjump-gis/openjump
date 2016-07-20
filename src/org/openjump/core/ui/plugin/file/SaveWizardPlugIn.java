@@ -78,6 +78,13 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
         }
       }
     }
+    
+    // legalize selected layer name (to be used by contained wizards)
+    String layerName = workbenchContext.getLayerNamePanel().getSelectedLayers()[0].
+        getName().replaceAll("[/:\\\\><\\|]","_");
+    dialog.setData(SaveFileWizard.DATAKEY_LAYERNAME, layerName);
+    
+    // activate initial wizard
     if (lastWizard != null)
       dialog.setSelectedWizard(lastWizard);
     else if (wizards.size() > 0)

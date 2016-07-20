@@ -118,10 +118,17 @@ public class SelectFilePanel extends JFCWithEnterAction implements
       setCurrentDirectory(new File(lastFilePath).getParentFile());
     // update file view
     rescanCurrentDirectory();
+    
     // reset selection
     setData(SaveFileWizard.DATAKEY_DATASOURCEQUERYCHOOSER, null);
     setData(SaveFileWizard.DATAKEY_FILE, null);
     setSelectedFile(new File(""));
+    
+    // preset selected layer name, if set
+    String dataSetName = (String) getData(SaveFileWizard.DATAKEY_LAYERNAME);
+    if (dataSetName != null && !dataSetName.isEmpty()) {
+      setSelectedFile(new File(dataSetName));
+    }
   }
 
   @Override
