@@ -29,7 +29,7 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
   private static final String KEY = SaveWizardPlugIn.class.getName();
   private static final String LASTWIZARDCLASSNAME = KEY + ".lastwizard";
 
-  private WizardGroupDialog dialog;
+  private static WizardGroupDialog dialog = null;
   private WizardGroup lastWizard;
   private Blackboard blackboard;
 
@@ -66,7 +66,7 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
     String name = getName();
     List<WizardGroup> wizards = registry.getEntries(KEY);
     WizardGroup lastwizard = null;
-    dialog = null;
+    //dialog = null;
     if (dialog == null) {
       dialog = new WizardGroupDialog(workbenchContext, workbenchFrame, name);
 

@@ -2,6 +2,7 @@ package org.openjump.core.ui.plugin.file.save;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -25,6 +26,7 @@ import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooserManage
 import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
+import com.vividsolutions.jump.workbench.ui.RecursiveKeyListener;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.CancelNextException;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
@@ -42,7 +44,6 @@ public class SelectFilePanel extends JFCWithEnterAction implements
   private WizardDialog dialog;
 
   private boolean isInputValidApproveRun = false;
-  private boolean isButtonRefresh = false;
 
   public SelectFilePanel(final WorkbenchContext workbenchContext) {
     super();
@@ -62,28 +63,39 @@ public class SelectFilePanel extends JFCWithEnterAction implements
         addChoosableFileFilter(filter);
       }
     }
-
+    // we want to know if a file gets selected
     PropertyChangeListener changeListener = new PropertyChangeListener() {
-
       // user selected something in the fc
       public void propertyChange(PropertyChangeEvent evt) {
-        // only listen to fc changes while we're on _this_ panel
-        // OSX fc weirdly fires events even when we're on the next panel
-        if (dialog == null
-            || dialog.getData(WizardDialog.DATAKEY_CURRENTPANELID) != KEY) {
-          return;
-        }
-
-        isButtonRefresh = true;
         fireInputChanged();
-        isButtonRefresh = false;
       }
     };
     addPropertyChangeListener(changeListener);
 
+    // we want to be informed if the user enters stuff
+    addKeyListener(new RecursiveKeyListener(this) {
+      @Override
+      public void keyTyped(KeyEvent e) {
+      }
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+        fireInputChanged();
+      }
+
+      @Override
+      public void keyPressed(KeyEvent e) {
+      }
+    });
+
+    // if the
     ActionListener actionListener = new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        // we only listen for approve actions
+        if (!JFileChooser.APPROVE_SELECTION.equals(e.getActionCommand()))
+          return;
+
         // we ignore the isInputValid() call, as it is only
         // meant to fixup the selectedfile value for us
         if (isInputValidApproveRun)
@@ -101,23 +113,32 @@ public class SelectFilePanel extends JFCWithEnterAction implements
   public void enteredFromLeft(Map dataMap) {
     // restore last folder
     Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-    String lastFilePath = (String)blackboard.get(LASTFILE);
-    if (lastFilePath != null)
+    String lastFilePath = (String) blackboard.get(LASTFILE);
+    if (lastFilePath != null && !lastFilePath.isEmpty())
       setCurrentDirectory(new File(lastFilePath).getParentFile());
     // update file view
     rescanCurrentDirectory();
     // reset selection
     setData(SaveFileWizard.DATAKEY_DATASOURCEQUERYCHOOSER, null);
     setData(SaveFileWizard.DATAKEY_FILE, null);
+    setSelectedFile(new File(""));
   }
 
   @Override
   public void exitingToRight() throws Exception {
     if (!isInputValid())
       throw new CancelNextException();
+
+    File file = (File) getData(SaveFileWizard.DATAKEY_FILE);
+    // file overwriting is only checked when the selection is finally approved
+    if (file.exists()) {
+      boolean overwrite = GUIUtil.showConfirmOverwriteDialog(getDialog(), file);
+      if (!overwrite)
+        throw new CancelNextException();
+    }
     // save last folder visited
     Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-    blackboard.put(LASTFILE, ((File)getData(SaveFileWizard.DATAKEY_FILE)).getPath());
+    blackboard.put(LASTFILE, file.getPath());
   }
 
   public void add(InputChangedListener listener) {
@@ -129,6 +150,12 @@ public class SelectFilePanel extends JFCWithEnterAction implements
   }
 
   private void fireInputChanged() {
+    // only fire fc changes while we're on _this_ panel
+    // OSX fc weirdly fires events even when we're on the next panel
+    if (dialog == null
+        || dialog.getData(WizardDialog.DATAKEY_CURRENTPANELID) != KEY) {
+      return;
+    }
     for (InputChangedListener listener : listeners) {
       listener.inputChanged();
     }
@@ -159,8 +186,13 @@ public class SelectFilePanel extends JFCWithEnterAction implements
     // the internal selected files vars properly
     JFileChooser jfc = this;
     FileChooserUI fcui = jfc.getUI();
-    if (fcui instanceof BasicFileChooserUI) {
+    if (!isInputValidApproveRun && fcui instanceof BasicFileChooserUI) {
       BasicFileChooserUI bfcui = (BasicFileChooserUI) fcui;
+      // we insist on some filename in the textfield
+      String filename = bfcui.getFileName();
+      if (!(filename instanceof String) || filename.length() < 1)
+        return false;
+
       isInputValidApproveRun = true;
       bfcui.getApproveSelectionAction().actionPerformed(
           new ActionEvent(new JButton(), 0, "nix"));
@@ -172,8 +204,13 @@ public class SelectFilePanel extends JFCWithEnterAction implements
     if (!(file instanceof File) || file.getName().isEmpty())
       return false;
 
-    FileDataSourceQueryChooserExtensionFilter filter = (FileDataSourceQueryChooserExtensionFilter) getFileFilter();
-    String[] extensions = filter.getExtensions();
+    FileFilter filter = getFileFilter();
+    // no valid filter selected
+    if (!(filter instanceof FileDataSourceQueryChooserExtensionFilter))
+      return false;
+    FileDataSourceQueryChooserExtensionFilter datasourcefilter = (FileDataSourceQueryChooserExtensionFilter) filter;
+    String[] extensions = ((FileDataSourceQueryChooserExtensionFilter) filter)
+        .getExtensions();
     if (extensions.length > 0) {
       // only treat files w/ missing extension here
       if (!file.isDirectory() && !hasValidExtension(file, extensions)) {
@@ -184,16 +221,9 @@ public class SelectFilePanel extends JFCWithEnterAction implements
     if (file.isDirectory() || file.getName().isEmpty())
       return false;
 
-    // file overwriting is only checked when the selection is finally approved
-    if (!isButtonRefresh && file.exists()) {
-      boolean overwrite = GUIUtil.showConfirmOverwriteDialog(getDialog(), file);
-      if (!overwrite)
-        return false;
-    }
-
     // save successful selection
     setData(SaveFileWizard.DATAKEY_DATASOURCEQUERYCHOOSER,
-        filter.getFileDataSourceQueryChooser());
+        datasourcefilter.getFileDataSourceQueryChooser());
     setData(SaveFileWizard.DATAKEY_FILE, file);
     return true;
   }
