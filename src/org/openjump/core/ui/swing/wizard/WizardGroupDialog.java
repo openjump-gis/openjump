@@ -101,6 +101,14 @@ public class WizardGroupDialog extends WizardDialog implements WizardContext,
     }
   }
 
+  public int getWizardCount(){
+    return groupSelectList.getModel().getSize();
+  }
+
+  public WizardGroup getWizardAt(int i){
+    return (WizardGroup) groupSelectList.getModel().getElementAt(i);
+  }
+
 //  /**
 //   * @override this method to return all "contained" ui components for
 //   * SkinOptinsPanel to SwingUtilities.updateComponentTreeUI() them after
