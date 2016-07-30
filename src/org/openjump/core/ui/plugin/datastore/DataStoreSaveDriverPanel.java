@@ -235,6 +235,10 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
         return connectionPanel.getConnectionDescriptor();
     }
 
+    public void setConnectionDescriptor(ConnectionDescriptor cd) {
+        connectionPanel.setConnectionDescriptor(cd);
+    }
+
 
     public String getTableName() {
         layer2TableMap.put(lastUsedLayerName, tableComboBox.getSelectedItem().toString());

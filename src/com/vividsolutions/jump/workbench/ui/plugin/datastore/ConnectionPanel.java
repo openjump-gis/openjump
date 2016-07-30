@@ -62,6 +62,10 @@ public class ConnectionPanel extends JPanel {
         return ( ConnectionDescriptor ) connectionComboBox.getSelectedItem();
     }
 
+    public void setConnectionDescriptor(ConnectionDescriptor cd) {
+        connectionComboBox.setSelectedItem(cd);
+    }
+
     public WorkbenchContext getContext() {
         return context;
     }
