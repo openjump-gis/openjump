@@ -45,18 +45,22 @@ public class JFCWithEnterAction extends JFileChooser {
   }
 
   public File getSelectedFile() {
-//    FileChooserUI ui = getUI();
-//    // fetch a filename if manually entered in file name text field of chooser
-//    if (ui instanceof BasicFileChooserUI) {
-//      BasicFileChooserUI bui = (BasicFileChooserUI) ui;
-//      String filename = ((BasicFileChooserUI) ui).getFileName();
-//      if (!filename.isEmpty()){
-//        return new File(getCurrentDirectory(),filename);
-//      }
-//    }
+    File[] files = super.getSelectedFiles();
+    if (files.length > 0)
+      return files[0];
 
-    File[] files = getSelectedFiles();
-    return files.length > 0 ? files[0] : null;
+    // if none was selected but there is text in the filename field
+    FileChooserUI ui = getUI();
+    // fetch a filename if manually entered in file name text field of chooser
+    if (ui instanceof BasicFileChooserUI) {
+      BasicFileChooserUI bui = (BasicFileChooserUI) ui;
+      String filename = ((BasicFileChooserUI) ui).getFileName();
+      if (!filename.isEmpty()) {
+        return new File(getCurrentDirectory(), filename);
+      }
+    }
+    
+    return super.getSelectedFile();
   }
 
   /**
@@ -64,8 +68,7 @@ public class JFCWithEnterAction extends JFileChooser {
    * nothing when a file is selected" [Jon Aquino]
    */
   public File[] getSelectedFiles() {
-    return ((super.getSelectedFiles().length == 0) && (super.getSelectedFile() != null)) ? new File[] { super
-        .getSelectedFile() } : super.getSelectedFiles();
+    return ((super.getSelectedFiles().length == 0) && (super.getSelectedFile() != null)) ? new File[] { getSelectedFile() } : super.getSelectedFiles();
   }
 
 }
