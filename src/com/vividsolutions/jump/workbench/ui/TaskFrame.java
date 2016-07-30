@@ -35,29 +35,29 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import javax.swing.JInternalFrame;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.Timer;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.*;
-import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
-import com.vividsolutions.jump.workbench.ui.cursortool.DummyTool;
-import com.vividsolutions.jump.workbench.ui.renderer.ImageCachingRenderer;
+import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
+import com.vividsolutions.jump.workbench.model.LayerTreeModel;
+import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.renderer.Renderer;
 
-import com.vividsolutions.jump.workbench.ui.zoom.ZoomBar;
-import java.io.IOException;
-
 public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
-        CloneableInternalFrame, LayerViewPanelProxy, LayerNamePanelProxy,
-        LayerManagerProxy, SelectionManagerProxy, Task.NameListener {
+    CloneableInternalFrame, LayerViewPanelProxy, LayerNamePanelProxy,
+    LayerableNamePanelProxy, LayerManagerProxy, SelectionManagerProxy,
+    Task.NameListener {
 
     public TaskFrame getTaskFrame() {
         return this;
@@ -68,7 +68,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
 
     private InfoFrame infoFrame = null;
 
-    private LayerNamePanel layerNamePanel = new DummyLayerNamePanel();
+    private LayerableNamePanel layerNamePanel = new DummyLayerNamePanel();
 
     private LayerViewPanel layerViewPanel;
 
@@ -171,7 +171,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         installAnimator();
     }
 
-    protected LayerNamePanel createLayerNamePanel() {
+    protected LayerableNamePanel createLayerNamePanel() {
         TreeLayerNamePanel treeLayerNamePanel = new TreeLayerNamePanel(this,
                 new LayerTreeModel(this), this.layerViewPanel
                         .getRenderingManager(), new HashMap());
@@ -233,6 +233,10 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
 
     public LayerNamePanel getLayerNamePanel() {
         return layerNamePanel;
+    }
+
+    public LayerableNamePanel getLayerableNamePanel() {
+      return layerNamePanel;
     }
 
     public LayerViewPanel getLayerViewPanel() {

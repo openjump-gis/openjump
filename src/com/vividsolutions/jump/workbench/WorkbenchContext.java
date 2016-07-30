@@ -52,26 +52,24 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
  * or leave them unimplemented, depending on their needs.
  */
 public abstract class WorkbenchContext implements LayerViewPanelProxy,
-        LayerNamePanelProxy, LayerManagerProxy {
+        LayerNamePanelProxy, LayerableNamePanelProxy, LayerManagerProxy {
     public DriverManager getDriverManager() {
         return null;
     }
 
-    public JUMPWorkbench getWorkbench() {
-        return null;
-    }
+    abstract public JUMPWorkbench getWorkbench();
 
-    public ErrorHandler getErrorHandler() {
-        return null;
-    }
+    abstract public ErrorHandler getErrorHandler();
 
-    public Blackboard getBlackboard() {
-        return null;
-    }
+    abstract public Blackboard getBlackboard();
 
-    public LayerNamePanel getLayerNamePanel() {
-        return null;
-    }
+    /**
+     * @Deprecated in favor of getLayerableNamePanel()
+     */
+    @Deprecated
+    abstract public LayerNamePanel getLayerNamePanel();
+
+    abstract public LayerableNamePanel getLayerableNamePanel();
 
     public LayerViewPanel getLayerViewPanel() {
         return null;

@@ -72,6 +72,11 @@ public class JUMPWorkbenchContext extends WorkbenchContext {
         .getTask() : null;
   }
 
+  public LayerableNamePanel getLayerableNamePanel() {
+    return getActiveTaskFrame() instanceof LayerableNamePanelProxy ? ((LayerableNamePanelProxy) getActiveTaskFrame())
+        .getLayerableNamePanel() : null;
+  }
+
   public LayerNamePanel getLayerNamePanel() {
     return getActiveTaskFrame() instanceof LayerNamePanelProxy ? ((LayerNamePanelProxy) getActiveTaskFrame())
         .getLayerNamePanel() : null;
