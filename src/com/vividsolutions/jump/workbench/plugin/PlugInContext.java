@@ -51,22 +51,25 @@ import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
+import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerableNamePanel;
+import com.vividsolutions.jump.workbench.ui.LayerableNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  * Passed to PlugIns to enable them to access the rest of the JUMP Workbench.
+ * contains preselected task, 
  * @see PlugIn
  */
-public class PlugInContext implements LayerManagerProxy {
+public class PlugInContext implements LayerViewPanelProxy,
+        LayerNamePanelProxy, LayerableNamePanelProxy, LayerManagerProxy {
     private Task task;
     private LayerNamePanel layerNamePanel;
     private LayerViewPanel layerViewPanel;
     private WorkbenchContext workbenchContext;
-    private EnableCheckFactory checkFactory;
-    private FeatureInstaller featureInstaller;
     private LayerManagerProxy layerManagerProxy;
 
     public PlugInContext(
@@ -80,8 +83,6 @@ public class PlugInContext implements LayerManagerProxy {
         this.layerManagerProxy = layerManagerProxy;
         this.layerNamePanel = layerNamePanel;
         this.layerViewPanel = layerViewPanel;
-        checkFactory = new EnableCheckFactory(workbenchContext);
-        featureInstaller = new FeatureInstaller(workbenchContext);
     }
 
     public DriverManager getDriverManager() {
@@ -148,7 +149,13 @@ public class PlugInContext implements LayerManagerProxy {
     }
 
     public LayerNamePanel getLayerNamePanel() {
-        return layerNamePanel;
+     return layerNamePanel;
+    }
+
+    public LayerableNamePanel getLayerableNamePanel() {
+      if ( layerNamePanel instanceof LayerableNamePanel )
+        return (LayerableNamePanel) layerNamePanel;
+      return null;
     }
 
     public LayerManager getLayerManager() {
@@ -185,11 +192,11 @@ public class PlugInContext implements LayerManagerProxy {
     }
 
     public EnableCheckFactory getCheckFactory() {
-        return checkFactory;
+        return EnableCheckFactory.getInstance();
     }
 
     public FeatureInstaller getFeatureInstaller() {
-        return featureInstaller;
+        return FeatureInstaller.getInstance();
     }
 
 }
