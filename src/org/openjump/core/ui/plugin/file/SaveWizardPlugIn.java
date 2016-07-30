@@ -3,6 +3,7 @@ package org.openjump.core.ui.plugin.file;
 import java.util.List;
 
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
+import org.openjump.core.ui.plugin.datastore.SaveToDataStoreWizard;
 import org.openjump.core.ui.plugin.file.save.SaveFileWizard;
 import org.openjump.core.ui.swing.wizard.WizardGroup;
 import org.openjump.core.ui.swing.wizard.WizardGroupDialog;
@@ -28,6 +29,7 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
 
   private static final String KEY = SaveWizardPlugIn.class.getName();
   private static final String LASTWIZARDCLASSNAME = KEY + ".lastwizard";
+  public static final String DATAKEY_LAYERNAME = KEY+".layername";
 
   private static WizardGroupDialog dialog = null;
   private WizardGroup lastWizard;
@@ -57,6 +59,7 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
     // setWizard(new SaveFileWizard(context));
     // add file wiz
     addWizard(context.getWorkbenchContext(), new SaveFileWizard(context));
+    addWizard(context.getWorkbenchContext(), new SaveToDataStoreWizard(context));
   }
 
   public boolean execute(PlugInContext context) throws Exception {
@@ -82,7 +85,7 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
     // legalize selected layer name (to be used by contained wizards)
     String layerName = workbenchContext.getLayerNamePanel().getSelectedLayers()[0].
         getName().replaceAll("[/:\\\\><\\|]","_");
-    dialog.setData(SaveFileWizard.DATAKEY_LAYERNAME, layerName);
+    dialog.setData(DATAKEY_LAYERNAME, layerName);
     
     // activate initial wizard
     if (lastWizard != null)

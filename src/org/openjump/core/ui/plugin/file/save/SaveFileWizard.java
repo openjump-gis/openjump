@@ -20,7 +20,7 @@ public class SaveFileWizard extends AbstractWizardGroup {
   public static final String DATAKEY_DATASOURCEQUERYCHOOSER = KEY
       + ".selected-datasourcequerychooser";
   public static final String DATAKEY_FOLDER = KEY + ".last-folder";
-  public static final String DATAKEY_LAYERNAME = KEY + ".layername";
+  //public static final String DATAKEY_LAYERNAME = KEY + ".layername";
 
   /** The plugin context. */
   private PlugInContext context;

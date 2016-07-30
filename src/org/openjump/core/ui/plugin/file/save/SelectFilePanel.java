@@ -17,6 +17,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
 
+import org.openjump.core.ui.plugin.file.SaveWizardPlugIn;
 import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
 
 import com.vividsolutions.jump.I18N;
@@ -125,7 +126,7 @@ public class SelectFilePanel extends JFCWithEnterAction implements
     setSelectedFile(new File(""));
     
     // preset selected layer name, if set
-    String dataSetName = (String) getData(SaveFileWizard.DATAKEY_LAYERNAME);
+    String dataSetName = (String) getData(SaveWizardPlugIn.DATAKEY_LAYERNAME);
     if (dataSetName != null && !dataSetName.isEmpty()) {
       setSelectedFile(new File(dataSetName));
     }
