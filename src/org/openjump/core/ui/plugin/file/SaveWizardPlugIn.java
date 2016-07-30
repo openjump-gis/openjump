@@ -1,10 +1,11 @@
 package org.openjump.core.ui.plugin.file;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 import org.openjump.core.ui.plugin.datastore.SaveToDataStoreWizard;
-import org.openjump.core.ui.plugin.file.save.SaveFileWizard;
+import org.openjump.core.ui.plugin.file.save.SaveToFileWizard;
 import org.openjump.core.ui.swing.wizard.WizardGroup;
 import org.openjump.core.ui.swing.wizard.WizardGroupDialog;
 
@@ -14,6 +15,7 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -29,14 +31,17 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
 
   private static final String KEY = SaveWizardPlugIn.class.getName();
   private static final String LASTWIZARDCLASSNAME = KEY + ".lastwizard";
-  public static final String DATAKEY_LAYERNAME = KEY+".layername";
+  public static final String DATAKEY_SIMPLIFIED_LAYERNAME = KEY
+      + ".simplified-layername";
+  public static final String DATAKEY_SELECTED_LAYERABLES = KEY
+      + ".selected-layerables";
 
   private static WizardGroupDialog dialog = null;
   private WizardGroup lastWizard;
   private Blackboard blackboard;
 
   public SaveWizardPlugIn() {
-    super(I18N.get(KEY)+" (experimental)");
+    super(I18N.get(KEY) + " (experimental)");
   }
 
   public static void addWizard(final WorkbenchContext workbenchContext,
@@ -56,21 +61,20 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
       FeatureInstaller.getInstance().addMainMenuPlugin(this,
           new String[] { MenuNames.FILE });
 
-    // setWizard(new SaveFileWizard(context));
-    // add file wiz
-    addWizard(context.getWorkbenchContext(), new SaveFileWizard(context));
+    // add each wiz one by one
+    addWizard(context.getWorkbenchContext(), new SaveToFileWizard(context));
     addWizard(context.getWorkbenchContext(), new SaveToDataStoreWizard(context));
   }
 
-  public boolean execute(PlugInContext context) throws Exception {
+  public boolean execute(PlugInContext pluginContext) throws Exception {
     Registry registry = workbenchContext.getRegistry();
 
-    WorkbenchFrame workbenchFrame = context.getWorkbenchFrame();
-    String name = getName();
     List<WizardGroup> wizards = registry.getEntries(KEY);
     WizardGroup lastwizard = null;
-    //dialog = null;
+    // dialog = null;
     if (dialog == null) {
+      WorkbenchFrame workbenchFrame = pluginContext.getWorkbenchFrame();
+      String name = getName();
       dialog = new WizardGroupDialog(workbenchContext, workbenchFrame, name);
 
       String lastwizardid = String.valueOf(blackboard.get(LASTWIZARDCLASSNAME));
@@ -81,17 +85,23 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
         }
       }
     }
-    
-    // legalize selected layer name (to be used by contained wizards)
-    String layerName = workbenchContext.getLayerNamePanel().getSelectedLayers()[0].
-        getName().replaceAll("[/:\\\\><\\|]","_");
-    dialog.setData(DATAKEY_LAYERNAME, layerName);
-    
+
+    // fetch the selected layer from the plugincontext
+    Collection<Layerable> layers = pluginContext.getSelectedLayerables();
+    // save it to dialog context for use in subsequent wizards
+    dialog.setData(DATAKEY_SELECTED_LAYERABLES, layers);
+
+    // legalize selected layer's name (to be used by contained wizards)
+    Layerable layer = layers.iterator().next();
+    String layerName = layer.getName().replaceAll("[/:\\\\><\\|]", "_");
+    dialog.setData(DATAKEY_SIMPLIFIED_LAYERNAME, layerName);
+
     // activate initial wizard
     if (lastWizard != null)
       dialog.setSelectedWizard(lastWizard);
-    else if (wizards.size() > 0)
-      dialog.setSelectedWizard(wizards.get(0));
+    // or activate first
+    else if (dialog.getWizardCount() > 0)
+      dialog.setSelectedWizard(dialog.getWizardAt(0));
 
     dialog.pack();
     GUIUtil.centreOnWindow(dialog);

@@ -121,12 +121,12 @@ public class SelectFilePanel extends JFCWithEnterAction implements
     rescanCurrentDirectory();
     
     // reset selection
-    setData(SaveFileWizard.DATAKEY_DATASOURCEQUERYCHOOSER, null);
-    setData(SaveFileWizard.DATAKEY_FILE, null);
+    setData(SaveToFileWizard.DATAKEY_DATASOURCEQUERYCHOOSER, null);
+    setData(SaveToFileWizard.DATAKEY_FILE, null);
     setSelectedFile(new File(""));
     
     // preset selected layer name, if set
-    String dataSetName = (String) getData(SaveWizardPlugIn.DATAKEY_LAYERNAME);
+    String dataSetName = (String) getData(SaveWizardPlugIn.DATAKEY_SIMPLIFIED_LAYERNAME);
     if (dataSetName != null && !dataSetName.isEmpty()) {
       setSelectedFile(new File(dataSetName));
     }
@@ -137,7 +137,7 @@ public class SelectFilePanel extends JFCWithEnterAction implements
     if (!isInputValid())
       throw new CancelNextException();
 
-    File file = (File) getData(SaveFileWizard.DATAKEY_FILE);
+    File file = (File) getData(SaveToFileWizard.DATAKEY_FILE);
     // file overwriting is only checked when the selection is finally approved
     if (file.exists()) {
       boolean overwrite = GUIUtil.showConfirmOverwriteDialog(getDialog(), file);
@@ -187,8 +187,8 @@ public class SelectFilePanel extends JFCWithEnterAction implements
   @Override
   public boolean isInputValid() {
     // reset selection
-    setData(SaveFileWizard.DATAKEY_DATASOURCEQUERYCHOOSER, null);
-    setData(SaveFileWizard.DATAKEY_FILE, null);
+    setData(SaveToFileWizard.DATAKEY_DATASOURCEQUERYCHOOSER, null);
+    setData(SaveToFileWizard.DATAKEY_FILE, null);
 
     // [2016.07 ede] the following runs the filechoosers own routine to fill up
     // the internal selected files vars properly
@@ -230,9 +230,9 @@ public class SelectFilePanel extends JFCWithEnterAction implements
       return false;
 
     // save successful selection
-    setData(SaveFileWizard.DATAKEY_DATASOURCEQUERYCHOOSER,
+    setData(SaveToFileWizard.DATAKEY_DATASOURCEQUERYCHOOSER,
         datasourcefilter.getFileDataSourceQueryChooser());
-    setData(SaveFileWizard.DATAKEY_FILE, file);
+    setData(SaveToFileWizard.DATAKEY_FILE, file);
     return true;
   }
 

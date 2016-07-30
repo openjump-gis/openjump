@@ -9,33 +9,29 @@ import java.util.Map;
 import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.io.DriverProperties;
 import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.LangUtil;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
 public class DataSourceFileLayerSaver extends AbstractFileLayerSaver {
 
   private Class dataSourceClass;
-  private PlugInContext context;
+  private Layer layer;
 
-  public DataSourceFileLayerSaver(WorkbenchContext workbenchContext,
+  public DataSourceFileLayerSaver(Layer layer,
       Class dataSourceClass, String description, List<String> extensions) {
     super(description, extensions);
-    this.context = workbenchContext.createPlugInContext();
     this.dataSourceClass = dataSourceClass;
+    this.layer = layer;
   }
 
-  public DataSourceFileLayerSaver(WorkbenchContext workbenchContext,
+  public DataSourceFileLayerSaver(Layer layer,
       FileDataSourceQueryChooser fdsqc) {
-    this(workbenchContext, fdsqc.getDataSourceClass(), fdsqc.getDescription(),
+    this(layer, fdsqc.getDataSourceClass(), fdsqc.getDescription(),
         Arrays.asList(fdsqc.getExtensions()));
   }
 
@@ -43,7 +39,6 @@ public class DataSourceFileLayerSaver extends AbstractFileLayerSaver {
   public boolean write(TaskMonitor monitor, URI uri, Map<String, Object> options)
       throws Exception {
     DataSource dataSource = (DataSource) LangUtil.newInstance(dataSourceClass);
-    Layer layer = context.getSelectedLayer(0);
     FeatureCollection fc = layer.getFeatureCollectionWrapper();
 
     monitor.allowCancellationRequests();
