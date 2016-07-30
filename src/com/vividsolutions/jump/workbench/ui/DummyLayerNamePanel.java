@@ -33,21 +33,25 @@ package com.vividsolutions.jump.workbench.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.JPanel;
 
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.Layerable;
 
 /**
  *  Implements a minimal LayerNamePanel in a JPanel.
  */
 
-public class DummyLayerNamePanel extends JPanel implements LayerNamePanel {
+public class DummyLayerNamePanel extends JPanel implements LayerableNamePanel {
 
     private ArrayList selectedCategories = new ArrayList();
     private ArrayList selectedNodes = new ArrayList();
     private Layer[] selectedLayers = new Layer[] {};
+    private List<Layerable> selectedLayerables = Collections.emptyList();
 
     public Collection getSelectedCategories() {
         return selectedCategories;
@@ -72,6 +76,11 @@ public class DummyLayerNamePanel extends JPanel implements LayerNamePanel {
 
     public LayerManager getLayerManager() {
         return null;
+    }
+
+    @Override
+    public Collection<Layerable> getSelectedLayerables() {
+      return selectedLayerables;
     }
 
 }

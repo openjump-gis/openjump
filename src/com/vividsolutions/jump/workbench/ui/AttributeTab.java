@@ -56,7 +56,7 @@ import java.util.List;
  * Implements an Attribute Tab.
  */
 
-public class AttributeTab extends JPanel implements LayerNamePanel, LayerableNamePanel {
+public class AttributeTab extends JPanel implements LayerableNamePanel {
     private BorderLayout borderLayout1 = new BorderLayout();
     private ErrorHandler errorHandler;
     private TaskFrame taskFrame;

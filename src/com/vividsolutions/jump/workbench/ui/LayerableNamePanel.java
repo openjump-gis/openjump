@@ -33,13 +33,13 @@
 package com.vividsolutions.jump.workbench.ui;
 
 import java.util.Collection;
-import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
+
 import com.vividsolutions.jump.workbench.model.Layerable;
 
 /**
  * This is implemented as an extra interface to keep legacy compatibility for
  * LayerNamePanel.
  */
-public interface LayerableNamePanel extends LayerManagerProxy {
+public interface LayerableNamePanel extends LayerNamePanel {
     public Collection<Layerable> getSelectedLayerables();
 }

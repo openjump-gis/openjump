@@ -88,7 +88,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import org.openjump.core.rasterimage.RasterSymbology;
 
 public class TreeLayerNamePanel extends JPanel implements LayerListener,
-    LayerNamePanel, LayerableNamePanel, LayerNamePanelProxy, PopupNodeProxy {
+    LayerableNamePanel, LayerNamePanelProxy, PopupNodeProxy {
   private Map nodeClassToPopupMenuMap = new HashMap();
 
   BorderLayout borderLayout1 = new BorderLayout();
