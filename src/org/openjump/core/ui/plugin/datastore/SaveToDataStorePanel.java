@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by UMichael on 26/07/2016.
+ * Wrapper class to include DataStoreSaveDriverPanel into the new SaveWizardPlugIn
  */
 public class SaveToDataStorePanel extends DataStoreSaveDriverPanel implements WizardPanelV2 {
 
@@ -39,13 +39,8 @@ public class SaveToDataStorePanel extends DataStoreSaveDriverPanel implements Wi
     Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
     Object connectionDescriptor = blackboard.get(LASTCONNECTION);
     if (connectionDescriptor != null) {
-      System.out.println(connectionDescriptor);
-      System.out.println(connectionDescriptor.getClass());
       setConnectionDescriptor((ConnectionDescriptor)connectionDescriptor);
     }
-    //  setCurrentDirectory(new File(lastFilePath).getParentFile());
-    //// update file view
-    //rescanCurrentDirectory();
 
 //
     //// reset selection
