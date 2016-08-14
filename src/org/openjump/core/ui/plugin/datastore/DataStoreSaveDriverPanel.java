@@ -245,6 +245,10 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
         return tableComboBox.getSelectedItem().toString();
     }
 
+    public void setTableName(String tableName) {
+        tableComboBox.setSelectedItem(tableName);
+    }
+
     public boolean isCreatePrimaryKeyColumnSelected() {
         return createPrimaryKeyCheckBox.isSelected();
     }

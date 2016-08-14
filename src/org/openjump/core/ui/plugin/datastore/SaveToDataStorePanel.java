@@ -41,18 +41,7 @@ public class SaveToDataStorePanel extends DataStoreSaveDriverPanel implements Wi
     if (connectionDescriptor != null) {
       setConnectionDescriptor((ConnectionDescriptor)connectionDescriptor);
     }
-
-//
-    //// reset selection
-    //setData(SaveFileWizard.DATAKEY_DATASOURCEQUERYCHOOSER, null);
-    //setData(SaveFileWizard.DATAKEY_FILE, null);
-    //setSelectedFile(new File(""));
-//
-    //// preset selected layer name, if set
-    //String dataSetName = (String) getData(SaveFileWizard.DATAKEY_LAYERNAME);
-    //if (dataSetName != null && !dataSetName.isEmpty()) {
-    //  setSelectedFile(new File(dataSetName));
-    //}
+    setTableName(getData(SaveWizardPlugIn.DATAKEY_SIMPLIFIED_LAYERNAME).toString());
   }
 
   @Override
@@ -60,16 +49,8 @@ public class SaveToDataStorePanel extends DataStoreSaveDriverPanel implements Wi
     if (!isInputValid())
       throw new CancelNextException();
 
-    //File file = (File) getData(SaveFileWizard.DATAKEY_FILE);
-    //// file overwriting is only checked when the selection is finally approved
-    //if (file.exists()) {
-    //  boolean overwrite = GUIUtil.showConfirmOverwriteDialog(getDialog(), file);
-    //  if (!overwrite)
-    //    throw new CancelNextException();
-    //}
-    //// save last folder visited
-    //Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-    //blackboard.put(LASTFILE, file.getPath());
+    Blackboard blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+    blackboard.put(LASTCONNECTION, WritableDataStoreDataSource.CONNECTION_DESCRIPTOR_KEY);
   }
 
   @Override
@@ -107,52 +88,11 @@ public class SaveToDataStorePanel extends DataStoreSaveDriverPanel implements Wi
     setData(WritableDataStoreDataSource.CREATE_PK, null);
     //setData(WritableDataStoreDataSource.DATAKEY_NORMALIZE_TABLE_NAME, null);
     setData(WritableDataStoreDataSource.NORMALIZED_COLUMN_NAMES, null);
-    //setData(SaveToDataStoreWizard.DATAKEY_DATASOURCEQUERYCHOOSER, null);
-    //setData(SaveToDataStoreWizard.DATAKEY_FILE, null);
 
-    // [2016.07 ede] the following runs the filechoosers own routine to fill up
-    // the internal selected files vars properly
-    //JFileChooser jfc = this;
-    //FileChooserUI fcui = jfc.getUI();
-    //if (!isInputValidApproveRun && fcui instanceof BasicFileChooserUI) {
-    //  BasicFileChooserUI bfcui = (BasicFileChooserUI) fcui;
-    //  // we insist on some filename in the textfield
-    //  String filename = bfcui.getFileName();
-    //  if (!(filename instanceof String) || filename.length() < 1)
-    //    return false;
-//
-    //  isInputValidApproveRun = true;
-    //  bfcui.getApproveSelectionAction().actionPerformed(
-    //          new ActionEvent(new JButton(), 0, "nix"));
-    //  isInputValidApproveRun = false;
-    //}
-//
-    //// no file selected
-    //File file = jfc.getSelectedFile();
-    //if (!(file instanceof File) || file.getName().isEmpty())
-    //  return false;
-//
-    //FileFilter filter = getFileFilter();
-    //// no valid filter selected
-    //if (!(filter instanceof FileDataSourceQueryChooserExtensionFilter))
-    //  return false;
-    //FileDataSourceQueryChooserExtensionFilter datasourcefilter = (FileDataSourceQueryChooserExtensionFilter) filter;
-    //String[] extensions = ((FileDataSourceQueryChooserExtensionFilter) filter)
-    //        .getExtensions();
-    //if (extensions.length > 0) {
-    //  // only treat files w/ missing extension here
-    //  if (!file.isDirectory() && !hasValidExtension(file, extensions)) {
-    //    file = new File(file.getPath() + "." + extensions[0]);
-    //  }
-    //}
-//
-    //if (file.isDirectory() || file.getName().isEmpty())
-    //  return false;
-//
-    //// save successful selection
-    //setData(SaveFileWizard.DATAKEY_DATASOURCEQUERYCHOOSER,
-    //        datasourcefilter.getFileDataSourceQueryChooser());
-    //setData(SaveFileWizard.DATAKEY_FILE, file);
+    if (getConnectionDescriptor() == null ||
+            getTableName() == null || getTableName().trim().length() == 0) {
+      return false;
+    }
 
     setData(WritableDataStoreDataSource.CONNECTION_DESCRIPTOR_KEY, getConnectionDescriptor());
     setData(WritableDataStoreDataSource.DATASET_NAME_KEY, getData(SaveWizardPlugIn.DATAKEY_SIMPLIFIED_LAYERNAME));
