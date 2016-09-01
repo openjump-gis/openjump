@@ -4,7 +4,7 @@
 #[05_22_2016 - Giuseppe Aruta]
 #   * First realize
 #[09_01_2016 - Giuseppe Aruta] 
-#   * Added INGF and ING Gèoportail codes
+#   * Added IGNF and IGN Géoportail codes
 #   * Added measure units
 #The srid codes are organized in the following way
 #<COORD_REF_SYS_CODE>;<COORD_REF_SYS_NAME>;[COORD_REF_SYS_UNIT]

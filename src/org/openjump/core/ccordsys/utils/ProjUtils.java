@@ -277,8 +277,7 @@ public class ProjUtils {
      * strings like "NAD83 UTM zone 10N" or "26910" both return
      * "SRID:26910 - NAD83 UTM zone 10N".
      * 
-     * @param auxiliary
-     *            file path
+     * @param fileSourcePath auxiliary file path
      * @return <String> SRID and Projection definition
      * @throws URISyntaxException
      * @throws IOException
@@ -364,7 +363,7 @@ public class ProjUtils {
                                         + line2.replaceAll("[<\\>]", " ")
                                                 .replaceAll(";", " - ");
                                 // ESRI codes range
-                            } else if (srid > 32999 & srid < 200000) {
+                            } else if (srid > 32999 && srid < 200000) {
                                 SRSDef = "ESRI:"
                                         + line2.replaceAll("[<\\>]", " ")
                                                 .replaceAll(";", " - ");
@@ -374,7 +373,7 @@ public class ProjUtils {
                                         + line2.replaceAll("[<\\>]", " ")
                                                 .replaceAll(";", " - ");
                             }
-                            // Non numeral SRID like INGF
+                            // Non numeral SRID like IGNF
                         } catch (NumberFormatException e) {
                             SRSDef = "SRID:"
                                     + line2.replaceAll("[<\\>]", " ")
@@ -509,7 +508,7 @@ public class ProjUtils {
                                         + line2.replaceAll("[<\\>]", " ")
                                                 .replaceAll(";", " - ");
                                 // ESRI codes range
-                            } else if (srid > 32999 & srid < 200000) {
+                            } else if (srid > 32999 && srid < 200000) {
                                 SRSDef = "ESRI:"
                                         + line2.replaceAll("[<\\>]", " ")
                                                 .replaceAll(";", " - ");
@@ -519,7 +518,7 @@ public class ProjUtils {
                                         + line2.replaceAll("[<\\>]", " ")
                                                 .replaceAll(";", " - ");
                             }
-                            // Non numeral SRID like INGF
+                            // Non numeral SRID like IGNF
                         } catch (NumberFormatException e) {
                             SRSDef = "SRID:"
                                     + line2.replaceAll("[<\\>]", " ")
@@ -545,8 +544,7 @@ public class ProjUtils {
     /**
      * Method to show an OGC WKT string in a more readable style
      * 
-     * @param String
-     *            OGC WKT from auxiliary proj file
+     * @param WKT OGC WKT from auxiliary proj file
      * @return Readable string
      */
     public static String readableFormatWKTCode(String WKT) {
@@ -641,8 +639,7 @@ public class ProjUtils {
      * It returns the path name of the auxiliary file (AUX.XML or PRJ file)
      * where a projection code is located
      * 
-     * @param auxiliary
-     *            file path
+     * @param fileSourcePath auxiliary file path
      * @return <String> path name of projection auxiliary file
      * @throws IOException
      */
@@ -711,8 +708,7 @@ public class ProjUtils {
      * searche querries like "NAD83 UTM zone 10N" or "26910" both return
      * "SRID:26910 - NAD83 UTM zone 10N".
      * 
-     * @param <String>
-     *            searchQuery
+     * @param searchQuery search quaery
      * @return <String> SRID and Projection definition
      * @throws URISyntaxException
      * @throws IOException
@@ -752,7 +748,7 @@ public class ProjUtils {
                                     + line2.replaceAll("[<\\>]", " ")
                                             .replaceAll(";", " - ");
                             // ESRI codes range
-                        } else if (srid > 32999 & srid < 200000) {
+                        } else if (srid > 32999 && srid < 200000) {
                             SRSDef = "ESRI:"
                                     + line2.replaceAll("[<\\>]", " ")
                                             .replaceAll(";", " - ");
@@ -762,7 +758,7 @@ public class ProjUtils {
                                     + line2.replaceAll("[<\\>]", " ")
                                             .replaceAll(";", " - ");
                         }
-                        // Non numeral SRID like INGF
+                        // Non numeral SRID like IGNF
                     } catch (NumberFormatException e) {
                         SRSDef = "SRID:"
                                 + line2.replaceAll("[<\\>]", " ").replaceAll(
@@ -960,9 +956,8 @@ public class ProjUtils {
      * substring to a line, it returns its SRID. For instance, search strings
      * like "NAD83 UTM zone 10N" returns "26910".
      * 
-     * @param auxiliary
-     *            file path
-     * @return <String> SRID
+     * @param fileSourcePath auxiliary file path
+     * @return SRID as String
      * @throws URISyntaxException
      * @throws IOException
      */
