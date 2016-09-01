@@ -342,25 +342,40 @@ public class ProjUtils {
                 while (scanner.hasNextLine()) {
                     scanner.useDelimiter("\\n");
                     String line = scanner.nextLine();
-                    String line2 = line.replaceAll("[\\t\\n\\r\\_]", "");
+                    String line2 = line.replaceAll("[\\t\\n\\r\\_]", "")
+                            .replace(";[", " [");
                     if (line2.toLowerCase().contains(
                             "<" + prjname.toLowerCase() + ">")) {
                         int start = line2.indexOf('<');
                         int end = line2.indexOf('>', start);
                         String def = line2.substring(start + 1, end);
-                        int srid = Integer.parseInt(def);
-                        if (srid < 32768 || srid > 5999999) {
-                            // EPSG code between 0 and 32767
-                            SRSDef = "EPSG:"
-                                    + line2.replaceAll("[<\\>]", " ")
-                                            .replaceAll(";", " - ");
-                            // ESRI codes range
-                        } else if (srid > 37000 & srid < 202003) {
-                            SRSDef = "ESRI:"
-                                    + line2.replaceAll("[<\\>]", " ")
-                                            .replaceAll(";", " - ");
-                            // Other no EPSG or ESRI codes
-                        } else {
+                        try {
+                            int srid = Integer.parseInt(def);// get WKID
+                            // 1) WKID <32768 or >5999999
+                            // will result in an AUTHORITY name of "EPSG".
+                            // 2) A WKID in range between 33000 and 199999
+                            // will result in an AUTHORITY name of "ESRI".
+                            // 3) A WKID in range between 200000 and 209199
+                            // will result in an AUTHORITY name of "CUSTOM".
+                            // (http://help.arcgis.com/en/arcgisserver/10.0/apis/soap/whnjs.htm#SOAP_Geometry_FindSRByWKID.htm)
+                            if (srid < 32768 || srid > 5999999) {
+                                // EPSG code between 0 and 32767
+                                SRSDef = "EPSG:"
+                                        + line2.replaceAll("[<\\>]", " ")
+                                                .replaceAll(";", " - ");
+                                // ESRI codes range
+                            } else if (srid > 32999 & srid < 200000) {
+                                SRSDef = "ESRI:"
+                                        + line2.replaceAll("[<\\>]", " ")
+                                                .replaceAll(";", " - ");
+                                // Other no EPSG or ESRI codes
+                            } else {
+                                SRSDef = "CUSTOM:"
+                                        + line2.replaceAll("[<\\>]", " ")
+                                                .replaceAll(";", " - ");
+                            }
+                            // Non numeral SRID like INGF
+                        } catch (NumberFormatException e) {
                             SRSDef = "SRID:"
                                     + line2.replaceAll("[<\\>]", " ")
                                             .replaceAll(";", " - ");
@@ -472,25 +487,40 @@ public class ProjUtils {
                 while (scanner.hasNextLine()) {
                     scanner.useDelimiter("\\n");
                     String line = scanner.nextLine();
-                    String line2 = line.replaceAll("[\\t\\n\\r\\_]", "");
+                    String line2 = line.replaceAll("[\\t\\n\\r\\_]", "")
+                            .replace(";[", " [");
                     if (line2.toLowerCase().contains(
                             "<" + prjname.toLowerCase() + ">")) {
                         int start = line2.indexOf('<');
                         int end = line2.indexOf('>', start);
                         String def = line2.substring(start + 1, end);
-                        int srid = Integer.parseInt(def);
-                        if (srid < 32768 || srid > 5999999) {
-                            // EPSG code between 0 and 32767
-                            SRSDef = "EPSG:"
-                                    + line2.replaceAll("[<\\>]", " ")
-                                            .replaceAll(";", " - ");
-                            // ESRI codes range
-                        } else if (srid > 37000 & srid < 202003) {
-                            SRSDef = "ESRI:"
-                                    + line2.replaceAll("[<\\>]", " ")
-                                            .replaceAll(";", " - ");
-                            // Other no EPSG or ESRI codes
-                        } else {
+                        try {
+                            int srid = Integer.parseInt(def);// get WKID
+                            // 1) WKID <32768 or >5999999
+                            // will result in an AUTHORITY name of "EPSG".
+                            // 2) A WKID in range between 33000 and 199999
+                            // will result in an AUTHORITY name of "ESRI".
+                            // 3) A WKID in range between 200000 and 209199
+                            // will result in an AUTHORITY name of "CUSTOM".
+                            // (http://help.arcgis.com/en/arcgisserver/10.0/apis/soap/whnjs.htm#SOAP_Geometry_FindSRByWKID.htm)
+                            if (srid < 32768 || srid > 5999999) {
+                                // EPSG code between 0 and 32767
+                                SRSDef = "EPSG:"
+                                        + line2.replaceAll("[<\\>]", " ")
+                                                .replaceAll(";", " - ");
+                                // ESRI codes range
+                            } else if (srid > 32999 & srid < 200000) {
+                                SRSDef = "ESRI:"
+                                        + line2.replaceAll("[<\\>]", " ")
+                                                .replaceAll(";", " - ");
+                                // Other no EPSG or ESRI codes
+                            } else {
+                                SRSDef = "CUSTOM:"
+                                        + line2.replaceAll("[<\\>]", " ")
+                                                .replaceAll(";", " - ");
+                            }
+                            // Non numeral SRID like INGF
+                        } catch (NumberFormatException e) {
                             SRSDef = "SRID:"
                                     + line2.replaceAll("[<\\>]", " ")
                                             .replaceAll(";", " - ");
@@ -700,19 +730,41 @@ public class ProjUtils {
             while (scanner.hasNextLine()) {
                 scanner.useDelimiter("\\n");
                 String line = scanner.nextLine();
-                String line2 = line.replaceAll("[\\t\\n\\r\\_]", "");
+                String line2 = line.replaceAll("[\\t\\n\\r\\_]", "").replace(
+                        ";[", " [");
                 if (line2.toLowerCase().contains(
                         "<" + searchQuery.toLowerCase() + ">")) {
                     int start = line2.indexOf('<');
                     int end = line2.indexOf('>', start);
                     String def = line2.substring(start + 1, end);
-                    int srid = Integer.parseInt(def);
-                    if (srid < 37201) {
-                        SRSDef = "EPSG:"
-                                + line2.replaceAll("[<\\>]", " ").replaceAll(
-                                        ";", " - ");
-                    } else {
-                        SRSDef = "ESRI:"
+                    try {
+                        int srid = Integer.parseInt(def);// get WKID
+                        // 1) WKID <32768 or >5999999
+                        // will result in an AUTHORITY name of "EPSG".
+                        // 2) A WKID in range between 33000 and 199999
+                        // will result in an AUTHORITY name of "ESRI".
+                        // 3) A WKID in range between 200000 and 209199
+                        // will result in an AUTHORITY name of "CUSTOM".
+                        // (http://help.arcgis.com/en/arcgisserver/10.0/apis/soap/whnjs.htm#SOAP_Geometry_FindSRByWKID.htm)
+                        if (srid < 32768 || srid > 5999999) {
+                            // EPSG code between 0 and 32767
+                            SRSDef = "EPSG:"
+                                    + line2.replaceAll("[<\\>]", " ")
+                                            .replaceAll(";", " - ");
+                            // ESRI codes range
+                        } else if (srid > 32999 & srid < 200000) {
+                            SRSDef = "ESRI:"
+                                    + line2.replaceAll("[<\\>]", " ")
+                                            .replaceAll(";", " - ");
+                            // Other no EPSG or ESRI codes
+                        } else {
+                            SRSDef = "CUSTOM:"
+                                    + line2.replaceAll("[<\\>]", " ")
+                                            .replaceAll(";", " - ");
+                        }
+                        // Non numeral SRID like INGF
+                    } catch (NumberFormatException e) {
+                        SRSDef = "SRID:"
                                 + line2.replaceAll("[<\\>]", " ").replaceAll(
                                         ";", " - ");
                     }
