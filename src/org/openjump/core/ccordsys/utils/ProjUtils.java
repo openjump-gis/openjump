@@ -283,119 +283,6 @@ public class ProjUtils {
      * @throws IOException
      */
 
-    public static String readSRSFromAuxiliaryFile_1(String fileSourcePath)
-            throws URISyntaxException, IOException {
-        InputStream is = ProjUtils.class.getResourceAsStream("srid.txt");
-        InputStreamReader isr = new InputStreamReader(is);
-        String projectSourceFilePrj = "";
-        String projectSourceRFilePrj = "";
-        String projectSourceRFileAux = "";
-        String textProj = "";
-        String prjname = "";
-        String SRSDef = PROJECTION_UNSPECIFIED;
-        Scanner scanner;
-        // --- it reads an auxiliary file and decode a possible proj
-        // --- definition to a simple string. Ex. "WGS 84 UTM Zone 32"
-        int pos = fileSourcePath.lastIndexOf('.');
-
-        projectSourceFilePrj = fileSourcePath.substring(0, pos) + ".prj";
-        // image files
-        projectSourceRFilePrj = fileSourcePath + ".prj";
-        projectSourceRFileAux = fileSourcePath + ".aux.xml";
-        List<String> fileList = new ArrayList<String>();
-        fileList.add(projectSourceFilePrj);
-        fileList.add(projectSourceRFilePrj);
-        fileList.add(projectSourceRFileAux);
-
-        if (fileList.isEmpty())
-            SRSDef = PROJECTION_UNSPECIFIED;
-
-        if (new File(projectSourceFilePrj).exists()) {
-            scanner = new Scanner(new File(projectSourceFilePrj));
-            textProj = scanner.nextLine();
-            scanner.close();
-            prjname = decodeProjDescription(textProj);
-        }
-
-        else {
-            if (new File(projectSourceRFileAux).exists()) {
-                scanner = new Scanner(new File(projectSourceRFileAux));
-                textProj = scanner.useDelimiter("\\A").next();
-                // scanner.close();
-                if (textProj.contains("<WKT>") || textProj.contains("<SRS>")) {
-                    prjname = decodeProjDescription(textProj);
-                } else {
-                    SRSDef = PROJECTION_UNSPECIFIED;
-                }
-            } else {
-                SRSDef = PROJECTION_UNSPECIFIED;
-            }
-
-        }
-        // --- it extracts from proj register file all the info related
-        // --- to the previous string (SRSDef). Ex.
-        // --- "EPSG:32632 - WGS 84 UTM zone 32"
-        if (!prjname.isEmpty()) {
-            scanner = new Scanner(isr);
-            try {
-                while (scanner.hasNextLine()) {
-                    scanner.useDelimiter("\\n");
-                    String line = scanner.nextLine();
-                    String line2 = line.replaceAll("[\\t\\n\\r\\_]", "")
-                            .replace(";[", " [");
-                    if (line2.toLowerCase().contains(
-                            "<" + prjname.toLowerCase() + ">")) {
-                        int start = line2.indexOf('<');
-                        int end = line2.indexOf('>', start);
-                        String def = line2.substring(start + 1, end);
-                        try {
-                            int srid = Integer.parseInt(def);// get WKID
-                            // 1) WKID <32768 or >5999999
-                            // will result in an AUTHORITY name of "EPSG".
-                            // 2) A WKID in range between 33000 and 199999
-                            // will result in an AUTHORITY name of "ESRI".
-                            // 3) A WKID in range between 200000 and 209199
-                            // will result in an AUTHORITY name of "CUSTOM".
-                            // (http://help.arcgis.com/en/arcgisserver/10.0/apis/soap/whnjs.htm#SOAP_Geometry_FindSRByWKID.htm)
-                            if (srid < 32768 || srid > 5999999) {
-                                // EPSG code between 0 and 32767
-                                SRSDef = "EPSG:"
-                                        + line2.replaceAll("[<\\>]", " ")
-                                                .replaceAll(";", " - ");
-                                // ESRI codes range
-                            } else if (srid > 32999 && srid < 200000) {
-                                SRSDef = "ESRI:"
-                                        + line2.replaceAll("[<\\>]", " ")
-                                                .replaceAll(";", " - ");
-                                // Other no EPSG or ESRI codes
-                            } else {
-                                SRSDef = "CUSTOM:"
-                                        + line2.replaceAll("[<\\>]", " ")
-                                                .replaceAll(";", " - ");
-                            }
-                            // Non numeral SRID like IGNF
-                        } catch (NumberFormatException e) {
-                            SRSDef = "SRID:"
-                                    + line2.replaceAll("[<\\>]", " ")
-                                            .replaceAll(";", " - ");
-                        }
-                        break;
-                    } else {
-                        // --- If no SRSDef is recognized into the register, it
-                        // --- returns a proj string into a more readable text
-                        SRSDef = readableFormatWKTCode(getWktProjDefinition(textProj));
-                    }
-                }
-                scanner.close();
-            } catch (Exception e) {
-                SRSDef = PROJECTION_UNSPECIFIED;
-            }
-        } else {
-            SRSDef = PROJECTION_UNSPECIFIED;
-        }
-        return SRSDef;
-    }
-
     public static String readSRSFromAuxiliaryFile(String fileSourcePath)
             throws URISyntaxException, IOException {
         InputStream is = ProjUtils.class.getResourceAsStream("srid.txt");
@@ -494,7 +381,7 @@ public class ProjUtils {
                         int end = line2.indexOf('>', start);
                         String def = line2.substring(start + 1, end);
                         try {
-                            int srid = Integer.parseInt(def);// get WKID
+                            int srid = Integer.parseInt(def);
                             // 1) WKID <32768 or >5999999
                             // will result in an AUTHORITY name of "EPSG".
                             // 2) A WKID in range between 33000 and 199999
