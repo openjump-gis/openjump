@@ -1,10 +1,10 @@
-#This is a list of SRID code available
+ï»¿#This is a list of SRID code available
 #It derives from GeoToolkit EPSG srid list with added extra ESRI and IGNF codes
 #History
 #[05_22_2016 - Giuseppe Aruta]
 #   * First realize
 #[09_01_2016 - Giuseppe Aruta] 
-#   * Added IGNF and IGN Géoportail codes
+#   * Added INGF and ING GÃ¨oportail codes
 #   * Added measure units
 #The srid codes are organized in the following way
 #<COORD_REF_SYS_CODE>;<COORD_REF_SYS_NAME>;[COORD_REF_SYS_UNIT]
@@ -4961,28 +4961,28 @@
 <VAITAPEUTM5S>;<>;[]
 <WALL76UTM1S>;<>;[]
 <WALL78UTM1S>;<Wallis-Uvea 1978 (MOP78) UTM 1 SUD>;[metre] 
-#Coordinate Systems of Géoportail de l'IGN (France) - http://www.wms.lautre.net/projgp.html
+#Coordinate Systems of GÃ©oportail de l'IGN (France) - http://www.wms.lautre.net/projgp.html
 <310024802>;<Geoportail - France metropolitaine>;[metre]
 <310915814>;<Geoportail - Antilles francaises>;[metre]
-<310700806>;<Geoportail – Réunion>;[metre]
-<310702807>;<Geoportail– Mayotte>;[metre]
-<310486805>;<Geoportail– Guyane>;[metre]
+<310700806>;<Geoportail â€“ RÃ©union>;[metre]
+<310702807>;<Geoportailâ€“ Mayotte>;[metre]
+<310486805>;<Geoportailâ€“ Guyane>;[metre]
 <310706808>;<Geoportail- Saint-Pierre et Miquelon>;[metre]
-<310642810>;<Geoportail – Wallis et Futuna>;[metre]
-<310032811>;<Geoportail – Polynesie Francaise>;[metre]
+<310642810>;<Geoportail â€“ Wallis et Futuna>;[metre]
+<310032811>;<Geoportail â€“ Polynesie Francaise>;[metre]
 <310547809>;<Geoportail - Nouvelle Caledonie>;[metre]
-<310642801>;<Geoportail– Iles de Crozet>;[metre]
-<310642812>;<Geoportail– Iles Kerguelen>;[metre]
-<310642813>;<Geoportail – Iles St Paul et Amsterdam>;[metre]
+<310642801>;<Geoportailâ€“ Iles de Crozet>;[metre]
+<310642812>;<Geoportailâ€“ Iles Kerguelen>;[metre]
+<310642813>;<Geoportail â€“ Iles St Paul et Amsterdam>;[metre]
 <GEOPORTALFXX>;<Geoportail - France metropolitaine>;[metre]
 <GEOPORTALFXX>;<Geoportail - Antilles francaises>;[metre]
-<GEOPORTALREU>;<Geoportail – Réunion>;[metre]
-<GEOPORTALFXX>;<Geoportail– Mayotte>;[metre]
-<GEOPORTALFXX>;<Geoportail– Guyane>;[metre]
+<GEOPORTALREU>;<Geoportail â€“ RÃ©union>;[metre]
+<GEOPORTALFXX>;<Geoportailâ€“ Mayotte>;[metre]
+<GEOPORTALFXX>;<Geoportailâ€“ Guyane>;[metre]
 <GEOPORTALSPM>;<Geoportail- Saint-Pierre et Miquelon>;[metre]
-<GEOPORTALWLF>;<Geoportail – Wallis et Futuna>;[metre]
-<GEOPORTALPYF>;<Geoportail – Polynesie Francaise>;[metre]
+<GEOPORTALWLF>;<Geoportail â€“ Wallis et Futuna>;[metre]
+<GEOPORTALPYF>;<Geoportail â€“ Polynesie Francaise>;[metre]
 <GEOPORTALNCL>;<Geoportail - Nouvelle Caledonie>;[metre]
-<GEOPORTALCRZ>;<Geoportail– Iles de Crozet>;[metre]
-<GEOPORTALKER>;<Geoportail– Iles Kerguelen>;[metre]
-<GEOPORTALASP>;<Geoportail – Iles St Paul et Amsterdam>;[metre]
+<GEOPORTALCRZ>;<Geoportailâ€“ Iles de Crozet>;[metre]
+<GEOPORTALKER>;<Geoportailâ€“ Iles Kerguelen>;[metre]
+<GEOPORTALASP>;<Geoportail â€“ Iles St Paul et Amsterdam>;[metre]
