@@ -1850,6 +1850,8 @@
 <3852>;<RSRGD2000 DGLC2000>;[metre]
 <3854>;<County ST74>;[metre]
 <3857>;<WGS 84 Pseudo Mercator>;[metre]
+# Add for compatibility with MOBAC raster output
+<3857>;<WGS 84 Pseudo-Mercator>;[metre]
 <3857>;<WGS 1984 Web Mercator Auxiliary Sphere>;[metre]
 <3874>;<ETRS89 ETRS-GK20FIN>;[metre]
 <3875>;<ETRS89 ETRS-GK21FIN>;[metre]
