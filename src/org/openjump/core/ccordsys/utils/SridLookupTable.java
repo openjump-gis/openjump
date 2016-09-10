@@ -4,10 +4,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.openjump.core.ccordsys.utils.SRSInfo.Unit;
 
 /**
  * A class to lookup in srid.txt.
@@ -20,103 +21,99 @@ public class SridLookupTable {
             .compile("<([^<>]*)>\\s*;\\s*<([^<>]*)>\\s*;\\s*\\[([^\\[\\]]*)\\]");
 
     /** Test the class*/
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        System.out.println("4326       -> " + Arrays.toString(getSrsAndUnitFromCode("4326")));
-        System.out.println("WGS 84     -> " + Arrays.toString(getSrsAndUnitFromName("WGS 84")));
-        System.out.println("LAMB93     -> " + Arrays.toString(getSrsAndUnitFromCode("LAMB93")));
-        System.out.println("Lambert 93 -> " + Arrays.toString(getSrsAndUnitFromName("Lambert 93")));
-        System.out.println("Geoportail - Reunion -> " + Arrays.toString(getSrsAndUnitFromName("Geoportail - Reunion")));
+    public static void main(String[] args) {
+        System.out.println("4326       -> " + getSrsAndUnitFromCode("4326"));
+        System.out.println("WGS 84     -> " + getSrsAndUnitFromName("WGS 84"));
+        System.out.println("LAMB93     -> " + getSrsAndUnitFromCode("LAMB93"));
+        System.out.println("Lambert 93 -> " + getSrsAndUnitFromName("Lambert 93"));
+        System.out.println("Geoportail - Reunion -> " + getSrsAndUnitFromName("Geoportail - Reunion"));
         System.out.println("4326       -> " + getSrsNameFromCode("4326"));
         System.out.println("WGS 84     -> " + getSrsCodeFromName("WGS 84"));
         System.out.println("4326       -> " + getUnitFromCode("4326"));
         System.out.println("WGS 84     -> " + getUnitFromName("WGS 84"));
     }
 
-    private static Scanner getScanner() throws UnsupportedEncodingException {
-        InputStream is = ProjUtils.class.getResourceAsStream("srid.txt");
-        InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-        Scanner scanner = new Scanner(isr);
-        scanner.useDelimiter("\\n");
+    private static Scanner getScanner() {
+        Scanner scanner = null;
+        try {
+            InputStream is = ProjUtils.class.getResourceAsStream("srid.txt");
+            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+            scanner = new Scanner(isr);
+            scanner.useDelimiter("\\n");
+        } catch(UnsupportedEncodingException e) {
+            // It is safe to use UTF-8
+        }
         return scanner;
     }
 
-    public static String[] getSrsAndUnitFromCode(String code) throws UnsupportedEncodingException {
-        Scanner scanner = getScanner();
-        String[] srsAndUnit = null;
-        try {
+    public static SRSInfo getSrsAndUnitFromCode(String code) {
+        SRSInfo srsInfo = new SRSInfo();
+        try (Scanner scanner = getScanner()) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
                 Matcher m = pattern.matcher(line);
                 if (m.matches()) {
                     if (m.group(1).equals(code)) {
-                        srsAndUnit = new String[]{m.group(1), m.group(2), m.group(3)};
+                        srsInfo.setCode(m.group(1)).setDescription(m.group(2)).setUnit(m.group(3));
                     }
                 }
             }
-        } finally {
-            scanner.close();
-            return srsAndUnit;
+            return srsInfo;
         }
     }
 
-    public static String[] getSrsAndUnitFromName(String name) throws UnsupportedEncodingException {
-        Scanner scanner = getScanner();
-        String[] srsAndUnit = null;
-        try {
+    public static SRSInfo getSrsAndUnitFromName(String name) {
+        SRSInfo srsInfo = new SRSInfo();
+        try (Scanner scanner = getScanner()) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
                 Matcher m = pattern.matcher(line);
                 if (m.matches()) {
                     if (normalize(m.group(2)).equals(normalize(name))) {
-                        srsAndUnit = new String[]{m.group(1), m.group(2), m.group(3)};
+                        srsInfo.setCode(m.group(1)).setDescription(m.group(2)).setUnit(m.group(3));
                     }
                 }
             }
-        } finally {
-            scanner.close();
-            return srsAndUnit;
+            return srsInfo;
         }
     }
 
-    public static String[] getSrsAndUnitFromCodeOrName(String codeOrName) throws UnsupportedEncodingException {
-        Scanner scanner = getScanner();
-        String[] srsAndUnit = null;
-        try {
+    public static SRSInfo getSrsAndUnitFromCodeOrName(String codeOrName) {
+        SRSInfo srsInfo = new SRSInfo();
+        try (Scanner scanner = getScanner()) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
                 Matcher m = pattern.matcher(line);
                 if (m.matches()) {
                     if (m.group(1).equals(codeOrName) ||
                             normalize(m.group(2)).equals(normalize(codeOrName))) {
-                        srsAndUnit = new String[]{m.group(1), m.group(2), m.group(3)};
+                        srsInfo.setCode(m.group(1)).setDescription(m.group(2)).setUnit(m.group(3));
                     }
                 }
             }
-        } finally {
-            scanner.close();
-            return srsAndUnit;
+            return srsInfo;
         }
     }
 
 
-    public static String getSrsCodeFromName(String name) throws UnsupportedEncodingException {
-        String[] srsAndUnit = getSrsAndUnitFromName(name);
-        return srsAndUnit == null ? null : srsAndUnit[0];
+    public static String getSrsCodeFromName(String name) {
+        SRSInfo srsInfo = getSrsAndUnitFromName(name);
+        return srsInfo == null ? null : srsInfo.getCode();
     }
 
-    public static String getSrsNameFromCode(String code) throws UnsupportedEncodingException {
-        String[] srsAndUnit = getSrsAndUnitFromCode(code);
-        return srsAndUnit == null ? null : srsAndUnit[1];
+    public static String getSrsNameFromCode(String code) {
+        SRSInfo srsInfo = getSrsAndUnitFromCode(code);
+        return srsInfo == null ? null : srsInfo.getDescription();
     }
 
-    public static String getUnitFromName(String name) throws UnsupportedEncodingException {
-        String[] srsAndUnit = getSrsAndUnitFromName(name);
-        return srsAndUnit == null ? null : srsAndUnit[2];
+    public static Unit getUnitFromName(String name) {
+        SRSInfo srsInfo = getSrsAndUnitFromName(name);
+        return srsInfo == null ? null : srsInfo.getUnit();
     }
 
-    public static String getUnitFromCode(String code) throws UnsupportedEncodingException {
-        String[] srsAndUnit = getSrsAndUnitFromCode(code);
-        return srsAndUnit == null ? null : srsAndUnit[2];
+    public static Unit getUnitFromCode(String code) {
+        SRSInfo srsInfo = getSrsAndUnitFromCode(code);
+        return srsInfo == null ? null : srsInfo.getUnit();
     }
 
     /**
