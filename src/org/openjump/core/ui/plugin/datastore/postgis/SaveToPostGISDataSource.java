@@ -206,7 +206,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                         jdbcConn.commit();
                         jdbcConn.setAutoCommit(true);
                         if (featureSchema.getExternalPrimaryKeyIndex() > -1) {
-                            reloadDataFromDataStore(this, connectionDescriptor, schemaName, tableName, DEFAULT_PK_NAME, monitor);
+                            reloadDataFromDataStore(this, connectionDescriptor, schemaName, tableName, primary_key, monitor);
                         }
                     } catch(Exception e) {
                         throw e;
@@ -229,7 +229,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                         jdbcConn.commit();
                         jdbcConn.setAutoCommit(true);
                         if (featureSchema.getExternalPrimaryKeyIndex() > -1) {
-                            reloadDataFromDataStore(this, connectionDescriptor, schemaName, tableName, DEFAULT_PK_NAME, monitor);
+                            reloadDataFromDataStore(this, connectionDescriptor, schemaName, tableName, primary_key, monitor);
                         }
                     } catch(Exception e) {
                         throw e;
@@ -253,7 +253,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                         jdbcConn.commit();
                         jdbcConn.setAutoCommit(true);
                         if (featureSchema.getExternalPrimaryKeyIndex() > -1) {
-                            reloadDataFromDataStore(this, connectionDescriptor, schemaName, tableName, DEFAULT_PK_NAME, monitor);
+                            reloadDataFromDataStore(this, connectionDescriptor, schemaName, tableName, primary_key, monitor);
                         }
                     } catch(SQLException e) {
                         throw e;
