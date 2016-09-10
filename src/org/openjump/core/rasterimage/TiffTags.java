@@ -3,8 +3,8 @@ package org.openjump.core.rasterimage;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.List;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
@@ -12,10 +12,11 @@ import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageParser;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.libtiff.jai.codec.XTIFF;
+import org.openjump.core.ccordsys.utils.SRSInfo;
 
 public class TiffTags {
     
-    public static TiffMetadata readMetadata(File tiffFile) throws FileNotFoundException, IOException, TiffReadingException, ImageReadException {
+    public static TiffMetadata readMetadata(File tiffFile) throws IOException, TiffReadingException, ImageReadException {
         
         Integer colCount = null;
         Integer rowCount = null;
@@ -24,10 +25,14 @@ public class TiffTags {
         Coordinate tiePoint = null;
         Resolution pixelScale = null;
         Envelope envelope = null;
+        SRSInfo srsInfo = new SRSInfo().setSource(tiffFile.getPath());
         
         TiffImageParser parser = new TiffImageParser();
         TiffImageMetadata metadata = (TiffImageMetadata) parser.getMetadata(tiffFile);
         List<TiffField> tiffFields = metadata.getAllFields();
+        int[] geoKeyDirectoryTag = null;
+        double[] geoDoubleParams = null;
+        String geoAsciiParams = null;
         for(TiffField tiffField : tiffFields) {
             
             switch(tiffField.getTag()) {
@@ -62,6 +67,17 @@ public class TiffTags {
                         pixelScale = new Resolution(pixelSCaleValues[0],pixelSCaleValues[1],pixelSCaleValues[2]);
                     }
                     break;
+                case GeoTiffConstants.GeoKeyDirectoryTag:
+                    geoKeyDirectoryTag = tiffField.getIntArrayValue();
+                    break;
+                case GeoTiffConstants.GeoDoubleParamsTag:
+                    geoDoubleParams = tiffField.getDoubleArrayValue();
+                    break;
+                case GeoTiffConstants.GeoAsciiParamsTag:
+                    geoAsciiParams = tiffField.getStringValue();
+                    geoAsciiParams = geoAsciiParams.replaceAll("[\\s\\|_;]+", " ");
+                    srsInfo.setDescription(geoAsciiParams);
+                    System.out.println(geoAsciiParams);
             }
             
         }
@@ -80,12 +96,99 @@ public class TiffTags {
             envelope = new Envelope(upperLeft, lowerRight);
                   
         }
+
+        if (geoKeyDirectoryTag != null && geoKeyDirectoryTag.length >= 4) {
+            readGeoKeys(geoKeyDirectoryTag, geoDoubleParams, geoAsciiParams, srsInfo);
+        }
+        srsInfo.complete();
         
-        return new TiffTags().new TiffMetadata(colCount, rowCount, pixelScale, noData, envelope);
+        return new TiffTags().new TiffMetadata(colCount, rowCount, pixelScale, noData, envelope, srsInfo);
         
     }
+
+
+    private static void readGeoKeys(int[] geoKeys, double[] geoDoubleParams, String geoAsciiParams, SRSInfo srsInfo) {
+        int numberOfKeys = geoKeys[3];
+        for (int i = 1 ; i <= numberOfKeys ; i++) {
+            int keyID = geoKeys[i*4];
+            int location = geoKeys[i*4+1];
+            int count = geoKeys[i*4+2];
+            int offset = geoKeys[i*4+3];
+            Object value;
+            System.out.println("    GeoKey " + keyID + " " + location + " " + count + " " + offset);
+            switch(keyID) {
+                case GeoTiffConstants.GTModelTypeGeoKey:
+                    int coordSystemType = offset;
+                    // default unit for geographic CRS
+                    if (coordSystemType == GeoTiffConstants.ModelTypeGeographic)
+                        srsInfo.setUnit(SRSInfo.Unit.DEGREE);
+                    // default unit for projected CRS
+                    else if (coordSystemType == GeoTiffConstants.ModelTypeProjected)
+                        srsInfo.setUnit(SRSInfo.Unit.METER);
+                    break;
+                //case GeoTiffConstants.GTRasterTypeGeoKey:
+                //    srsInfo.rasterType = offset;
+                //    break;
+                case GeoTiffConstants.GTCitationGeoKey:
+                    break;
+                case GeoTiffConstants.GeographicTypeGeoKey:
+                case GeoTiffConstants.ProjectedCSTypeGeoKey:
+                    value = getGeoValue(location, count, offset, geoDoubleParams, geoAsciiParams);
+                    if (value instanceof String)
+                        srsInfo.setDescription((String)value);
+                    else if (value instanceof Integer) {
+                        if ((Integer)value < 32767) {
+                            srsInfo.setRegistry(SRSInfo.Registry.EPSG).setCode(value.toString());
+                        } else if ((Integer)value == 32767) {
+                            srsInfo.setRegistry(SRSInfo.Registry.SRID).setCode(SRSInfo.UNDEFINED);
+                        }
+                    }
+                    break;
+                case GeoTiffConstants.GeogCitationGeoKey:
+                    break;
+                case GeoTiffConstants.PCSCitationGeoKey:
+                    break;
+                case GeoTiffConstants.VerticalCSTypeGeoKey:
+                    break;
+                case GeoTiffConstants.GeogLinearUnitsGeoKey:
+                case GeoTiffConstants.GeogAngularUnitsGeoKey:
+                    if (offset == GeoTiffConstants.Angular_Degree) srsInfo.setUnit(SRSInfo.Unit.DEGREE);
+                    if (offset == GeoTiffConstants.Angular_Radian) srsInfo.setUnit(SRSInfo.Unit.RADIAN);
+                    if (offset == GeoTiffConstants.Angular_Grad) srsInfo.setUnit(SRSInfo.Unit.GRADE);
+                    if (offset == GeoTiffConstants.Angular_DMS) srsInfo.setUnit(SRSInfo.Unit.DMS);
+                    if (offset == GeoTiffConstants.Angular_DMS_Hemisphere) srsInfo.setUnit(SRSInfo.Unit.DMSH);
+                case GeoTiffConstants.ProjLinearUnitsGeoKey:
+                    if (offset == GeoTiffConstants.Linear_Meter) srsInfo.setUnit(SRSInfo.Unit.METER);
+                    if (offset == GeoTiffConstants.Linear_Foot) srsInfo.setUnit(SRSInfo.Unit.FOOT);
+                    if (offset == GeoTiffConstants.Linear_Foot_Clarke) srsInfo.setUnit(SRSInfo.Unit.FOOT);
+                    if (offset == GeoTiffConstants.Linear_Foot_Indian) srsInfo.setUnit(SRSInfo.Unit.FOOT);
+                    if (offset == GeoTiffConstants.Linear_Foot_US_Survey) srsInfo.setUnit(SRSInfo.Unit.FOOT);
+                    if (offset == GeoTiffConstants.Linear_Foot_Modified_American) srsInfo.setUnit(SRSInfo.Unit.FOOT);
+                    if (offset == GeoTiffConstants.Linear_Yard_Indian) srsInfo.setUnit(SRSInfo.Unit.YARD);
+                    if (offset == GeoTiffConstants.Linear_Yard_Sears) srsInfo.setUnit(SRSInfo.Unit.YARD);
+                    if (offset == GeoTiffConstants.Linear_Mile_International_Nautical) srsInfo.setUnit(SRSInfo.Unit.MILE);
+            }
+        }
+    }
+
+    private static Object getGeoValue(int location, int count, int offset,
+                                      double[] geoDoubleParams, String geoAsciiParams) {
+        if (location == 0) return offset;
+        else if (location == GeoTiffConstants.GeoDoubleParamsTag) {
+            if (count == 0) return new double[0];
+            double[] dd = new double[count];
+            System.arraycopy(geoDoubleParams, offset, dd, 0, count);
+            return dd;
+        }
+        else if (location == GeoTiffConstants.GeoAsciiParamsTag) {
+            if (geoAsciiParams == null || geoAsciiParams.length() == 0) return "";
+            String substring = geoAsciiParams.substring(offset, offset + count);
+            return substring.endsWith("|") ? substring.substring(0, substring.length()-1) : substring;
+        }
+        else return "";
+    }
     
-    public static TiffField readField(File tiffFile, int tagCode) throws ImageReadException, IOException {
+    static TiffField readField(File tiffFile, int tagCode) throws ImageReadException, IOException {
      
         TiffImageParser parser = new TiffImageParser();
         TiffImageMetadata metadata = (TiffImageMetadata) parser.getMetadata(tiffFile);
@@ -129,12 +232,14 @@ public class TiffTags {
     
     public class TiffMetadata {
 
-        public TiffMetadata(Integer colsCount, Integer rowsCount, Resolution resolution, Double noData, Envelope envelope) {
+        public TiffMetadata(Integer colsCount, Integer rowsCount, Resolution resolution, Double noData,
+                            Envelope envelope, SRSInfo srsInfo) {
             this.colsCount = colsCount;
             this.rowsCount = rowsCount;
             this.resolution = resolution;
             this.noData = noData;
             this.envelope = envelope;
+            this.srsInfo = srsInfo;
         }
 
         public Integer getColsCount() {
@@ -156,12 +261,17 @@ public class TiffTags {
         public Envelope getEnvelope() {
             return envelope;
         }
+
+        public SRSInfo getSRSInfo() {
+            return srsInfo;
+        }
         
         private Integer colsCount;
         private Integer rowsCount;
         private Resolution resolution;
         private Double noData;
         private Envelope envelope;
+        private SRSInfo srsInfo;
         
     }
     
