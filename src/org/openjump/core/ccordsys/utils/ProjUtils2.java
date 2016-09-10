@@ -43,77 +43,6 @@ public class ProjUtils2 {
     private static final String NOT_RECOGNIZED = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not_recognized");
 
-    public static void main(String[] args) throws Exception {
-        File src1 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\gdal_eg\\cea.tif");
-        File src2 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\GeogToWGS84GeoKey\\GeogToWGS84GeoKey5.tif");
-        File src3 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\intergraph\\albers27.tif");
-        File src4 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\intergraph\\lamb_conf.tif");
-        File src5 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\intergraph\\utm.tif");
-        File src6 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\made_up\\bogota.tif");
-        File src7 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\made_up\\ilatlon_float.tif");
-        File src8 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\made_up\\lcc-datum.tif");
-        File src9 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\misc\\tjpeg.tif");
-        File src10 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\other\\erdas_spnad83.tif");
-        File src11 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\pci_eg\\oblqmerc.tif");
-        File src12 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\usgs\\ilatlon.tif");
-        File src13 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\usgs\\o41078a1.tif");
-        File src14 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\zi_imaging\\image0.tif");
-        File src15 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\zi_imaging\\tp_image0.tif");
-
-        SRSInfo info1 = TiffTags.readMetadata(src1).getSRSInfo();
-        System.out.printf("%s%n%n", info1);
-
-        System.out.println("");
-        SRSInfo info2 = TiffTags.readMetadata(src2).getSRSInfo();
-        System.out.printf("%s%n%n", info2);
-
-        System.out.println("");
-        SRSInfo info3 = TiffTags.readMetadata(src3).getSRSInfo();
-        System.out.printf("%s%n%n", info3);
-
-        System.out.println("");
-        SRSInfo info4 = TiffTags.readMetadata(src4).getSRSInfo();
-        System.out.printf("%s%n%n", info4);
-
-        System.out.println("");
-        SRSInfo info5 = TiffTags.readMetadata(src5).getSRSInfo();
-        System.out.printf("%s%n%n", info5);
-
-        System.out.println("");
-        SRSInfo info6 = TiffTags.readMetadata(src6).getSRSInfo();
-        System.out.printf("%s%n%n", info6);
-
-        SRSInfo info7 = TiffTags.readMetadata(src7).getSRSInfo();
-        System.out.printf("%s%n%n", info7);
-
-        SRSInfo info8 = TiffTags.readMetadata(src8).getSRSInfo();
-        System.out.printf("%s%n%n", info8);
-
-        SRSInfo info9 = TiffTags.readMetadata(src9).getSRSInfo();
-        System.out.printf("%s%n%n", info9);
-
-        SRSInfo info10 = TiffTags.readMetadata(src10).getSRSInfo();
-        System.out.printf("%s%n%n", info10);
-
-        SRSInfo info11 = TiffTags.readMetadata(src11).getSRSInfo();
-        System.out.printf("%s%n%n", info11);
-
-        SRSInfo info12 = TiffTags.readMetadata(src12).getSRSInfo();
-        System.out.printf("%s%n%n", info12);
-
-        SRSInfo info13 = TiffTags.readMetadata(src13).getSRSInfo();
-        System.out.printf("%s%n%n", info13);
-
-        SRSInfo info14 = TiffTags.readMetadata(src14).getSRSInfo();
-        System.out.printf("%s%n%n", info14);
-
-        SRSInfo info15 = TiffTags.readMetadata(src15).getSRSInfo();
-        System.out.printf("%s%n%n", info15);
-        //System.out.printf("%s%n", md.getEnvelope());
-
-    }
-
-
 
     /**
      * - Read SRS from GeoTIFF tag - This method gets projection srid code and
@@ -130,7 +59,7 @@ public class ProjUtils2 {
      * @throws URISyntaxException
      */
     @SuppressWarnings("static-access")
-    public static SRSInfo readSRSFromGeoTiffFile(String fileSourcePath)
+    public static SRSInfo getSRSInfoFromGeoTiff(String fileSourcePath)
             throws IOException, URISyntaxException, TiffTags.TiffReadingException, ImageReadException {
         return TiffTags.readMetadata(new File(fileSourcePath)).getSRSInfo();
     }
@@ -152,7 +81,7 @@ public class ProjUtils2 {
      * @throws IOException
      */
 
-    public static SRSInfo readSRSFromAuxiliaryFile(String fileSourcePath)
+    public static SRSInfo getSRSInfoFromAuxiliaryFile(String fileSourcePath)
             throws URISyntaxException, IOException {
 
         // --- it reads an auxiliary file and decode a possible proj
@@ -303,7 +232,7 @@ public class ProjUtils2 {
      * @return SRID
      * @throws Exception
      */
-    public static SRSInfo SRSInfoFromStyleOrFile(Layer layer) throws Exception {
+    public static SRSInfo getSRSInfoFromLayerStyleOrSource(Layer layer) throws Exception {
         SRSInfo srsInfo = new SRSInfo();
 
         // First we check if a SRID != 0 has already been recorded for this Layer
@@ -315,7 +244,7 @@ public class ProjUtils2 {
             // If no SRID has been identified, search for a SRID in geotiff tagg
             // or into an auxiliary file
         } else {
-            srsInfo = SRSInfoFromFile(layer);
+            srsInfo = getSRSInfoFromLayerSource(layer);
         }
 
         return srsInfo;
@@ -331,7 +260,7 @@ public class ProjUtils2 {
      * @return SRID
      * @throws Exception
      */
-    public static SRSInfo SRSInfoFromFile(Layer layer) throws Exception {
+    public static SRSInfo getSRSInfoFromLayerSource(Layer layer) throws Exception {
         String fileSourcePath = "";
         SRSInfo srsInfo = new SRSInfo();
         // Raster layer case
@@ -359,10 +288,10 @@ public class ProjUtils2 {
                     // If the TIF file is not a GeoTIFF it looks
                     // for a proj code into aux files
                 } else {
-                    srsInfo = readSRSFromAuxiliaryFile(fileSourcePath);
+                    srsInfo = getSRSInfoFromAuxiliaryFile(fileSourcePath);
                 }
             } else {
-                srsInfo = readSRSFromAuxiliaryFile(fileSourcePath);
+                srsInfo = getSRSInfoFromAuxiliaryFile(fileSourcePath);
             }
         }
         // Vector layer case
@@ -371,7 +300,7 @@ public class ProjUtils2 {
                 DataSourceQuery dsq = layer.getDataSourceQuery();
                 Object fnameObj = dsq.getDataSource().getProperties().get("File");
                 fileSourcePath = fnameObj.toString();
-                srsInfo = readSRSFromAuxiliaryFile(fileSourcePath);
+                srsInfo = getSRSInfoFromAuxiliaryFile(fileSourcePath);
             }
         }
         return srsInfo;

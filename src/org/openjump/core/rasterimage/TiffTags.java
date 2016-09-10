@@ -75,7 +75,7 @@ public class TiffTags {
                     break;
                 case GeoTiffConstants.GeoAsciiParamsTag:
                     geoAsciiParams = tiffField.getStringValue();
-                    geoAsciiParams = geoAsciiParams.replaceAll("[\\s\\|_;]+", " ");
+                    geoAsciiParams = geoAsciiParams.replaceAll("[\\s\\|_;]+", " ").trim();
                     srsInfo.setDescription(geoAsciiParams);
                     System.out.println(geoAsciiParams);
             }

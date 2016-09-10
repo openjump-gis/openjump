@@ -57,7 +57,9 @@ public class SridLookupTable {
                 Matcher m = pattern.matcher(line);
                 if (m.matches()) {
                     if (m.group(1).equals(code)) {
-                        srsInfo.setCode(m.group(1)).setDescription(m.group(2)).setUnit(m.group(3));
+                        srsInfo .setCode(m.group(1))
+                                .setDescription(m.group(2))
+                                .setUnit(getUnitFromString(m.group(3)));
                     }
                 }
             }
@@ -76,7 +78,9 @@ public class SridLookupTable {
                 Matcher m = pattern.matcher(line);
                 if (m.matches()) {
                     if (normalize(m.group(2)).equals(normalize(name))) {
-                        srsInfo.setCode(m.group(1)).setDescription(m.group(2)).setUnit(m.group(3));
+                        srsInfo .setCode(m.group(1))
+                                .setDescription(m.group(2))
+                                .setUnit(getUnitFromString(m.group(3)));
                     }
                 }
             }
@@ -96,7 +100,9 @@ public class SridLookupTable {
                 if (m.matches()) {
                     if (m.group(1).equals(codeOrName) ||
                             normalize(m.group(2)).equals(normalize(codeOrName))) {
-                        srsInfo.setCode(m.group(1)).setDescription(m.group(2)).setUnit(m.group(3));
+                        srsInfo .setCode(m.group(1))
+                                .setDescription(m.group(2))
+                                .setUnit(getUnitFromString(m.group(3)));
                     }
                 }
             }
@@ -123,6 +129,10 @@ public class SridLookupTable {
     public static Unit getUnitFromCode(String code) {
         SRSInfo srsInfo = getSrsAndUnitFromCode(code);
         return srsInfo == null ? null : srsInfo.getUnit();
+    }
+
+    private static Unit getUnitFromString(String u){
+        return Unit.valueOf(u.toUpperCase().replaceAll("METRE","METER"));
     }
 
     /**
