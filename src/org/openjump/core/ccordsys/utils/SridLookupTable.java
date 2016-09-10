@@ -48,6 +48,9 @@ public class SridLookupTable {
 
     public static SRSInfo getSrsAndUnitFromCode(String code) {
         SRSInfo srsInfo = new SRSInfo();
+        if (code == null || code.isEmpty() || code.equals(SRSInfo.UNDEFINED)) {
+            return srsInfo;
+        }
         try (Scanner scanner = getScanner()) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
@@ -64,6 +67,9 @@ public class SridLookupTable {
 
     public static SRSInfo getSrsAndUnitFromName(String name) {
         SRSInfo srsInfo = new SRSInfo();
+        if (name == null || name.isEmpty()) {
+            return srsInfo;
+        }
         try (Scanner scanner = getScanner()) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
@@ -80,6 +86,9 @@ public class SridLookupTable {
 
     public static SRSInfo getSrsAndUnitFromCodeOrName(String codeOrName) {
         SRSInfo srsInfo = new SRSInfo();
+        if (codeOrName == null || codeOrName.isEmpty() || codeOrName.equals(SRSInfo.UNDEFINED)) {
+            return srsInfo;
+        }
         try (Scanner scanner = getScanner()) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();

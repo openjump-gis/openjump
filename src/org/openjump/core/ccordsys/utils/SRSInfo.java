@@ -94,11 +94,14 @@ public class SRSInfo {
     }
 
     public void complete() throws UnsupportedEncodingException {
-        if (description.isEmpty()) {
-            setDescription(SridLookupTable.getSrsNameFromCode(code));
+        SRSInfo sridTableInfo = SridLookupTable.getSrsAndUnitFromCode(code);
+        if (sridTableInfo.getCode().equals(UNDEFINED)) {
+            sridTableInfo = SridLookupTable.getSrsAndUnitFromName(description);
         }
-        if (code.isEmpty() || code.equals(UNDEFINED)) {
-            setCode(SridLookupTable.getSrsCodeFromName(description));
+        if (!sridTableInfo.getCode().equals(UNDEFINED)) {
+            code = sridTableInfo.getCode();
+            description = sridTableInfo.getDescription();
+            unit = sridTableInfo.getUnit();
         }
         registry = guessRegistry(code);
     }
