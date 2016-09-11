@@ -12,6 +12,7 @@ import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageParser;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.libtiff.jai.codec.XTIFF;
+import org.openjump.core.ccordsys.Unit;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 
 public class TiffTags {
@@ -121,19 +122,20 @@ public class TiffTags {
                     int coordSystemType = offset;
                     // default unit for geographic CRS
                     if (coordSystemType == GeoTiffConstants.ModelTypeGeographic)
-                        srsInfo.setUnit(SRSInfo.Unit.DEGREE);
+                        srsInfo.setUnit(Unit.DEGREE);
                     // default unit for projected CRS
                     else if (coordSystemType == GeoTiffConstants.ModelTypeProjected)
-                        srsInfo.setUnit(SRSInfo.Unit.METER);
+                        srsInfo.setUnit(Unit.METRE);
                     break;
                 //case GeoTiffConstants.GTRasterTypeGeoKey:
                 //    srsInfo.rasterType = offset;
                 //    break;
                 case GeoTiffConstants.GTCitationGeoKey:
                     break;
-                case GeoTiffConstants.GeographicTypeGeoKey:
-                case GeoTiffConstants.ProjectedCSTypeGeoKey:
+                case GeoTiffConstants.GeographicTypeGeoKey:  // 2048
+                case GeoTiffConstants.ProjectedCSTypeGeoKey: // 3072
                     value = getGeoValue(location, count, offset, geoDoubleParams, geoAsciiParams);
+                    System.out.println("!!!!!" + value);
                     if (value instanceof String)
                         srsInfo.setDescription((String)value);
                     else if (value instanceof Integer) {
@@ -152,21 +154,22 @@ public class TiffTags {
                     break;
                 case GeoTiffConstants.GeogLinearUnitsGeoKey:
                 case GeoTiffConstants.GeogAngularUnitsGeoKey:
-                    if (offset == GeoTiffConstants.Angular_Degree) srsInfo.setUnit(SRSInfo.Unit.DEGREE);
-                    if (offset == GeoTiffConstants.Angular_Radian) srsInfo.setUnit(SRSInfo.Unit.RADIAN);
-                    if (offset == GeoTiffConstants.Angular_Grad) srsInfo.setUnit(SRSInfo.Unit.GRADE);
-                    if (offset == GeoTiffConstants.Angular_DMS) srsInfo.setUnit(SRSInfo.Unit.DMS);
-                    if (offset == GeoTiffConstants.Angular_DMS_Hemisphere) srsInfo.setUnit(SRSInfo.Unit.DMSH);
+                    //if (offset == GeoTiffConstants.Angular_Degree) srsInfo.setUnit(Unit.DEGREE);
+                    //if (offset == GeoTiffConstants.Angular_Radian) srsInfo.setUnit(Unit.RADIAN);
+                    //if (offset == GeoTiffConstants.Angular_Grad) srsInfo.setUnit(Unit.GRAD);
+                    //if (offset == GeoTiffConstants.Angular_DMS) srsInfo.setUnit(Unit.DMS);
+                    //if (offset == GeoTiffConstants.Angular_DMS_Hemisphere) srsInfo.setUnit(Unit.DMSH);
                 case GeoTiffConstants.ProjLinearUnitsGeoKey:
-                    if (offset == GeoTiffConstants.Linear_Meter) srsInfo.setUnit(SRSInfo.Unit.METER);
-                    if (offset == GeoTiffConstants.Linear_Foot) srsInfo.setUnit(SRSInfo.Unit.FOOT);
-                    if (offset == GeoTiffConstants.Linear_Foot_Clarke) srsInfo.setUnit(SRSInfo.Unit.FOOT);
-                    if (offset == GeoTiffConstants.Linear_Foot_Indian) srsInfo.setUnit(SRSInfo.Unit.FOOT);
-                    if (offset == GeoTiffConstants.Linear_Foot_US_Survey) srsInfo.setUnit(SRSInfo.Unit.FOOT);
-                    if (offset == GeoTiffConstants.Linear_Foot_Modified_American) srsInfo.setUnit(SRSInfo.Unit.FOOT);
-                    if (offset == GeoTiffConstants.Linear_Yard_Indian) srsInfo.setUnit(SRSInfo.Unit.YARD);
-                    if (offset == GeoTiffConstants.Linear_Yard_Sears) srsInfo.setUnit(SRSInfo.Unit.YARD);
-                    if (offset == GeoTiffConstants.Linear_Mile_International_Nautical) srsInfo.setUnit(SRSInfo.Unit.MILE);
+                    srsInfo.setUnit(Unit.find(Integer.toString(offset)));
+                    //if (offset == GeoTiffConstants.Linear_Meter) srsInfo.setUnit(Unit.METRE);
+                    //if (offset == GeoTiffConstants.Linear_Foot) srsInfo.setUnit(Unit.FOOT);
+                    //if (offset == GeoTiffConstants.Linear_Foot_Clarke) srsInfo.setUnit(Unit.CLARKE_S_FOOT);
+                    //if (offset == GeoTiffConstants.Linear_Foot_Indian) srsInfo.setUnit(Unit.INDIAN_FOOT);
+                    //if (offset == GeoTiffConstants.Linear_Foot_US_Survey) srsInfo.setUnit(Unit.US_SURVEY_FOOT);
+                    //if (offset == GeoTiffConstants.Linear_Foot_Modified_American) srsInfo.setUnit(Unit.US);
+                    //if (offset == GeoTiffConstants.Linear_Yard_Indian) srsInfo.setUnit(SRSInfo.Unit.YARD);
+                    //if (offset == GeoTiffConstants.Linear_Yard_Sears) srsInfo.setUnit(SRSInfo.Unit.YARD);
+                    //if (offset == GeoTiffConstants.Linear_Mile_International_Nautical) srsInfo.setUnit(SRSInfo.Unit.MILE);
             }
         }
     }

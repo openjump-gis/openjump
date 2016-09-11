@@ -1,11 +1,12 @@
 package org.openjump.core.ccordsys.utils;
 
+import org.openjump.core.ccordsys.Unit;
+
 import java.io.UnsupportedEncodingException;
 
 import static org.openjump.core.ccordsys.utils.SRSInfo.Registry.EPSG;
 import static org.openjump.core.ccordsys.utils.SRSInfo.Registry.ESRI;
 import static org.openjump.core.ccordsys.utils.SRSInfo.Registry.SRID;
-import static org.openjump.core.ccordsys.utils.SRSInfo.Unit.UNKNOWN;
 
 /**
  * Small container for SRS information.
@@ -19,13 +20,22 @@ public class SRSInfo {
 
     public enum Registry{SRID, EPSG, ESRI, IGNF, SRORG}
 
-    public enum Unit {UNKNOWN, METER, FOOT, YARD, MILE, RADIAN, DEGREE, GRADE, DMS, DMSH}
+    //public enum Unit {
+    //    UNKNOWN,
+    //    METRE,
+    //    FOOT, FOOT_US_SURVEY, FOOT_MODIFIED_AMERICAN, FOOT_CLARKE, FOOT_INDIAN,
+    //    LINK, LINK_BENOIT, LINK_SEARS,
+    //    CHAIN_BENOIT, CHAIN_SEARS,
+    //    YARD_SEARS, YARD_INDIAN,
+    //    FATHOM,
+    //    MILE_INTERNATIONAL_NAUTICAL,
+    //    RADIAN, DEGREE, ARC_MINUTE, ARC_SECOND, GRAD, GON, DMS, DMS_HEMISPHERE}
 
     private String source;            // The source of SRS information (ex. prj file path)
     private Registry registry = EPSG; // The registry in which this SRS is referenced
     private String code = UNDEFINED;  // The code of the SRS
     private String description = "";  // The name or description of the SRS
-    private Unit unit = UNKNOWN;      // The unit used by this SRS
+    private Unit unit = Unit.UNKNOWN; // The unit used by this SRS
 
     public SRSInfo() {}
 

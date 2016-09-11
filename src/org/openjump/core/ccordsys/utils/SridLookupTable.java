@@ -8,7 +8,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openjump.core.ccordsys.utils.SRSInfo.Unit;
+import org.openjump.core.ccordsys.Unit;
 
 /**
  * A class to lookup in srid.txt.
@@ -59,7 +59,7 @@ public class SridLookupTable {
                     if (m.group(1).equals(code)) {
                         srsInfo .setCode(m.group(1))
                                 .setDescription(m.group(2))
-                                .setUnit(getUnitFromString(m.group(3)));
+                                .setUnit(Unit.find(m.group(3)));
                     }
                 }
             }
@@ -80,7 +80,7 @@ public class SridLookupTable {
                     if (normalize(m.group(2)).equals(normalize(name))) {
                         srsInfo .setCode(m.group(1))
                                 .setDescription(m.group(2))
-                                .setUnit(getUnitFromString(m.group(3)));
+                                .setUnit(Unit.find(m.group(3)));
                     }
                 }
             }
@@ -102,7 +102,7 @@ public class SridLookupTable {
                             normalize(m.group(2)).equals(normalize(codeOrName))) {
                         srsInfo .setCode(m.group(1))
                                 .setDescription(m.group(2))
-                                .setUnit(getUnitFromString(m.group(3)));
+                                .setUnit(Unit.find(m.group(3)));
                     }
                 }
             }
@@ -129,10 +129,6 @@ public class SridLookupTable {
     public static Unit getUnitFromCode(String code) {
         SRSInfo srsInfo = getSrsAndUnitFromCode(code);
         return srsInfo == null ? null : srsInfo.getUnit();
-    }
-
-    private static Unit getUnitFromString(String u){
-        return Unit.valueOf(u.toUpperCase().replaceAll("METRE","METER"));
     }
 
     /**
