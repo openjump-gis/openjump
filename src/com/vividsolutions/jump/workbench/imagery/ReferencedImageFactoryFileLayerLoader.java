@@ -121,7 +121,12 @@ public class ReferencedImageFactoryFileLayerLoader extends
             .getStyle(SRIDStyle.class);
     int prjSRID = 0;
     try {
-        prjSRID = ProjUtils.SRID(layer);
+      String prjSRIDString = ProjUtils.getSRSInfoFromLayerStyleOrSource(layer).getCode();
+      if (prjSRIDString.matches("\\d+")) {
+        prjSRID = Integer.parseInt(prjSRIDString);
+      } else {
+        prjSRID = 0;
+      }
     } catch (Exception e) {
         prjSRID = 0;
     }

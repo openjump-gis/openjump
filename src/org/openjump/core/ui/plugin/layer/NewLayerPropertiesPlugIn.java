@@ -62,8 +62,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.io.FilenameUtils;
-import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ccordsys.utils.ProjUtils;
+import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.ui.swing.DetachableInternalFrame;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -721,7 +721,17 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             }
         }
 
+
+        private void setInfoProjection(Layer[] layers) throws Exception {
+            SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerStyleOrSource(layers[0]);
+            label_Coordinate_file = srsInfo.getSource();
+            label_Coordinate = String.format("%s:%s - %s",
+                    srsInfo.getRegistry(), srsInfo.getCode(), srsInfo.getDescription());
+
+        }
+
         // Get Projection info from the layer
+        /*
         private void setInfoProjection(Layer[] layers) throws Exception {
             String fileSourcePath = "";
             String projection = "";
@@ -795,7 +805,9 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             label_Coordinate_file = projection_file;
             label_Coordinate = projection;
         }
+        */
     }
+
 
 
     

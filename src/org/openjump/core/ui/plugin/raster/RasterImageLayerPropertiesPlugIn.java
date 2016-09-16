@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
@@ -33,8 +32,9 @@ import javax.swing.event.ChangeListener;
 
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.ccordsys.utils.ProjUtils;
+import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
+import org.openjump.core.rasterimage.TiffTags;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 import org.openjump.core.ui.swing.DetachableInternalFrame;
@@ -239,10 +239,8 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 		return propiedad;
 	}
 
-	public String infoText(RasterImageLayer rLayer)
-			throws NoninvertibleTransformException, TiffReadingException,
-			Exception {
-		String infotext = null;
+	public String infoText(RasterImageLayer rLayer) throws Exception {
+		String infotext;
 		setInfo(rLayer);
 		setInfoProjection(rLayer);
 		int numBands = rLayer.getNumBands();
@@ -406,7 +404,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 	/*
 	 * Gets all data info
 	 */
-	private void setInfo(RasterImageLayer rLayer) throws IOException {
+	private void setInfo(RasterImageLayer rLayer) throws Exception {
 		Locale locale = new Locale("en", "UK");
 		String pattern = "###.####";
 		DecimalFormat df = (DecimalFormat) NumberFormat
@@ -415,16 +413,24 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 		layer_name = rLayer.getName();// Get name of layer
 		file_path = rLayer.getImageFileName();// get file path
 		String fileSourcePath = rLayer.getImageFileName();
-		String extension = FileUtil.getExtension(fileSourcePath);
-		if ((extension.equals("tif") || extension.equals("tiff")
-				|| extension.equals("TIF") || extension.equals("TIFF"))
-				&& ProjUtils.isGeoTIFF(fileSourcePath)) {
-			file_type = "GeoTIFF" + " - " + SEXTANTE;// Get GeoTIF
-														// description
-		} else {
-			file_type = fileExtension(rLayer) + " - " + SEXTANTE;// Get file
-																	// description
+		String extension = FileUtil.getExtension(fileSourcePath).toLowerCase();
+		if (extension.equals("tif") || extension.equals("tiff")) {
+			TiffTags.TiffMetadata metadata = TiffTags.readMetadata(new File(fileSourcePath));
+			if (metadata.isGeoTiff()) {
+				file_type = "GeoTIFF" + " - " + SEXTANTE;
+			} else {
+				file_type = fileExtension(rLayer) + " - " + SEXTANTE;
+			}
 		}
+		//if ((extension.equals("tif") || extension.equals("tiff")
+		//		|| extension.equals("TIF") || extension.equals("TIFF"))
+		//		&& ProjUtilsOld.isGeoTIFF(fileSourcePath)) {
+		//	file_type = "GeoTIFF" + " - " + SEXTANTE;// Get GeoTIF
+		//												// description
+		//} else {
+		//	file_type = fileExtension(rLayer) + " - " + SEXTANTE;// Get file
+		//															// description
+		//}
 		file_size = getFileSizeBytes(rLayer); // Get file size in byte
 		file_sizeMB = getFileSizeMegaBytes(file_size); // Get file size in Mega
 														// Bytes
@@ -470,34 +476,26 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
    * GeoTIF, it checks if <Filename>.AUX.XML exists and scans inside it. As
    * last choice it scans into <filename>.PRJ file
    */
-  private void setInfoProjection(RasterImageLayer layer) throws IOException,
+  private void setInfoProjection(RasterImageLayer layer) throws Exception,
           URISyntaxException {
       String fileSourcePath = layer.getImageFileName();
-      String extension = FileUtil.getExtension(fileSourcePath);
-      if ((extension.equals("tif") || extension.equals("tiff")
-              || extension.equals("TIF") || extension.equals("TIFF"))) {
-          if (ProjUtils.isGeoTIFF(fileSourcePath)) {
-              proj_file_path = GEO_METADATA;
-              proj_coordinate = ProjUtils
-                      .readSRSFromGeoTiffFile(fileSourcePath);
-          } else {
-
-              proj_file_path = ProjUtils
-                      .getAuxiliaryProjFilePath(fileSourcePath);
-              proj_coordinate = ProjUtils
-                      .readSRSFromAuxiliaryFile(fileSourcePath);
-
-          }
-      } else if ((extension.equals("asc") || extension.equals("ASC")
-              || extension.equals("FLT") || extension.equals("flt"))) {
-          proj_file_path = ProjUtils.getAuxiliaryProjFilePath(fileSourcePath);
-          proj_coordinate = ProjUtils
-                  .readSRSFromAuxiliaryFile(fileSourcePath);
+      String extension = FileUtil.getExtension(fileSourcePath).toLowerCase();
+	  SRSInfo srsInfo;
+      if (extension.equals("tif") || extension.equals("tiff")) {
+		  TiffTags.TiffMetadata metadata = TiffTags.readMetadata(new File(fileSourcePath));
+		  if (metadata.isGeoTiff()) {
+			  proj_file_path = GEO_METADATA;
+			  srsInfo = metadata.getSRSInfo();
+		  } else {
+			  srsInfo = ProjUtils.getSRSInfoFromAuxiliaryFile(fileSourcePath);
+			  proj_file_path = srsInfo.getSource();
+		  }
       } else {
-          proj_file_path = ProjUtils.getAuxiliaryProjFilePath(fileSourcePath);
-          proj_coordinate = ProjUtils
-                  .readSRSFromAuxiliaryFile(fileSourcePath);
+		  srsInfo = ProjUtils.getSRSInfoFromAuxiliaryFile(fileSourcePath);
+		  proj_file_path = srsInfo.getSource();
       }
+	  proj_coordinate = String.format("%s:%s - %s",
+			  srsInfo.getRegistry(), srsInfo.getCode(), srsInfo.getDescription());
   }
 	// //////////////////////////////////////////
 

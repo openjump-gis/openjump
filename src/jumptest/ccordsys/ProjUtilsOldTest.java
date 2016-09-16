@@ -9,7 +9,7 @@ import java.io.File;
 /**
  * Created by UMichael on 10/09/2016.
  */
-public class ProjUtilsTest extends TestCase {
+public class ProjUtilsOldTest extends TestCase {
     public static void main(String[] args) throws Exception {
         /*
         File src1 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\gdal_eg\\cea.tif");

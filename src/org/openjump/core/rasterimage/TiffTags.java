@@ -78,7 +78,6 @@ public class TiffTags {
                     geoAsciiParams = tiffField.getStringValue();
                     geoAsciiParams = geoAsciiParams.replaceAll("[\\s\\|_;]+", " ").trim();
                     srsInfo.setDescription(geoAsciiParams);
-                    System.out.println(geoAsciiParams);
             }
             
         }
@@ -100,8 +99,10 @@ public class TiffTags {
 
         if (geoKeyDirectoryTag != null && geoKeyDirectoryTag.length >= 4) {
             readGeoKeys(geoKeyDirectoryTag, geoDoubleParams, geoAsciiParams, srsInfo);
+            srsInfo.complete();
+        } else {
+            srsInfo = null;
         }
-        srsInfo.complete();
         
         return new TiffTags().new TiffMetadata(colCount, rowCount, pixelScale, noData, envelope, srsInfo);
         
@@ -116,7 +117,6 @@ public class TiffTags {
             int count = geoKeys[i*4+2];
             int offset = geoKeys[i*4+3];
             Object value;
-            System.out.println("    GeoKey " + keyID + " " + location + " " + count + " " + offset);
             switch(keyID) {
                 case GeoTiffConstants.GTModelTypeGeoKey:
                     int coordSystemType = offset;
@@ -135,14 +135,13 @@ public class TiffTags {
                 case GeoTiffConstants.GeographicTypeGeoKey:  // 2048
                 case GeoTiffConstants.ProjectedCSTypeGeoKey: // 3072
                     value = getGeoValue(location, count, offset, geoDoubleParams, geoAsciiParams);
-                    System.out.println("!!!!!" + value);
                     if (value instanceof String)
                         srsInfo.setDescription((String)value);
                     else if (value instanceof Integer) {
                         if ((Integer)value < 32767) {
                             srsInfo.setRegistry(SRSInfo.Registry.EPSG).setCode(value.toString());
                         } else if ((Integer)value == 32767) {
-                            srsInfo.setRegistry(SRSInfo.Registry.SRID).setCode(SRSInfo.UNDEFINED);
+                            srsInfo.setRegistry(SRSInfo.Registry.SRID).setCode(SRSInfo.USERDEFINED);
                         }
                     }
                     break;
@@ -154,22 +153,8 @@ public class TiffTags {
                     break;
                 case GeoTiffConstants.GeogLinearUnitsGeoKey:
                 case GeoTiffConstants.GeogAngularUnitsGeoKey:
-                    //if (offset == GeoTiffConstants.Angular_Degree) srsInfo.setUnit(Unit.DEGREE);
-                    //if (offset == GeoTiffConstants.Angular_Radian) srsInfo.setUnit(Unit.RADIAN);
-                    //if (offset == GeoTiffConstants.Angular_Grad) srsInfo.setUnit(Unit.GRAD);
-                    //if (offset == GeoTiffConstants.Angular_DMS) srsInfo.setUnit(Unit.DMS);
-                    //if (offset == GeoTiffConstants.Angular_DMS_Hemisphere) srsInfo.setUnit(Unit.DMSH);
                 case GeoTiffConstants.ProjLinearUnitsGeoKey:
                     srsInfo.setUnit(Unit.find(Integer.toString(offset)));
-                    //if (offset == GeoTiffConstants.Linear_Meter) srsInfo.setUnit(Unit.METRE);
-                    //if (offset == GeoTiffConstants.Linear_Foot) srsInfo.setUnit(Unit.FOOT);
-                    //if (offset == GeoTiffConstants.Linear_Foot_Clarke) srsInfo.setUnit(Unit.CLARKE_S_FOOT);
-                    //if (offset == GeoTiffConstants.Linear_Foot_Indian) srsInfo.setUnit(Unit.INDIAN_FOOT);
-                    //if (offset == GeoTiffConstants.Linear_Foot_US_Survey) srsInfo.setUnit(Unit.US_SURVEY_FOOT);
-                    //if (offset == GeoTiffConstants.Linear_Foot_Modified_American) srsInfo.setUnit(Unit.US);
-                    //if (offset == GeoTiffConstants.Linear_Yard_Indian) srsInfo.setUnit(SRSInfo.Unit.YARD);
-                    //if (offset == GeoTiffConstants.Linear_Yard_Sears) srsInfo.setUnit(SRSInfo.Unit.YARD);
-                    //if (offset == GeoTiffConstants.Linear_Mile_International_Nautical) srsInfo.setUnit(SRSInfo.Unit.MILE);
             }
         }
     }
@@ -263,6 +248,10 @@ public class TiffTags {
         
         public Envelope getEnvelope() {
             return envelope;
+        }
+
+        public boolean isGeoTiff() {
+            return srsInfo != null;
         }
 
         public SRSInfo getSRSInfo() {

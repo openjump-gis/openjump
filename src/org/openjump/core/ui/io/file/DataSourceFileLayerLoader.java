@@ -41,6 +41,7 @@ import com.vividsolutions.jump.workbench.plugin.Macro;
 
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ccordsys.utils.ProjUtils;
+import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.ui.util.ExceptionUtil;
 import org.openjump.core.ui.util.TaskUtil;
 import org.openjump.util.UriUtil;
@@ -228,7 +229,12 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
                   .getStyle(SRIDStyle.class);
              int prjSRID = 0;
              try {
-                prjSRID = ProjUtils.SRID(layer);
+                String prjSRIDString = ProjUtils.getSRSInfoFromLayerStyleOrSource(layer).getCode();
+                if (prjSRIDString.matches("\\d+")) {
+                    prjSRID = Integer.parseInt(prjSRIDString);
+                } else {
+                    prjSRID = 0;
+                }
              } catch (Exception e) {
                 prjSRID = 0;
             }
