@@ -5,6 +5,7 @@
 
 2016-09-17 mmichaud <m.michael.michaud@orange.fr>
   * FR #235 : Improved ExtractLayersByGeometryPlugIn
+  * Fix bug happening when modifying schema two times with InfoPanel opened
 
 2016-09-10 mmichaud <m.michael.michaud@orange.fr>
   * bugfix : old postgis driver could not save layer with pk != dbid

@@ -40,6 +40,7 @@ import com.vividsolutions.jump.workbench.model.Layerable;
 
 
 public class InfoModel {
+
     /**
      * Releases references to the data, to facilitate garbage collection.
      * Important for MDI apps like the JCS Workbench.
@@ -87,6 +88,7 @@ public class InfoModel {
     }
 
     public void remove(Layer layer) {
+        if (!layerToTableModelMap.containsKey(layer)) return;
         LayerTableModel layerTableModel = getTableModel(layer);
 
         for (Iterator i = listeners.iterator(); i.hasNext();) {
@@ -94,7 +96,7 @@ public class InfoModel {
             listener.layerRemoved(layerTableModel);
         }
 
-        ((LayerTableModel) layerToTableModelMap.get(layer)).dispose();
+        layerToTableModelMap.get(layer).dispose();
         layerToTableModelMap.remove(layer);
     }
 
@@ -112,7 +114,7 @@ public class InfoModel {
             layerToTableModelMap.put(layer, new LayerTableModel(layer));
         }
 
-        return (LayerTableModel) layerToTableModelMap.get(layer);
+        return layerToTableModelMap.get(layer);
     }
 
     public List<Layer> getLayers() {

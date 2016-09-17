@@ -30,6 +30,7 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -45,6 +46,7 @@ import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.ui.zoom.PanToSelectedItemsPlugIn;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn;
 
@@ -56,7 +58,7 @@ public class AttributePanel extends JPanel implements InfoModelListener {
 
     //private SelectionManager selectionManager;
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
-    private HashMap layerToTablePanelMap = new HashMap();
+    private HashMap<Layerable,AttributeTablePanel> layerToTablePanelMap = new HashMap();
     private InfoModel model;
     private WorkbenchContext workbenchContext;
     private ZoomToSelectedItemsPlugIn zoomToSelectedItemsPlugIn =
@@ -116,7 +118,7 @@ public class AttributePanel extends JPanel implements InfoModelListener {
         }
     }
     public AttributeTablePanel getTablePanel(Layer layer) {
-        return (AttributeTablePanel) layerToTablePanelMap.get(layer);
+        return layerToTablePanelMap.get(layer);
     }
     public InfoModel getModel() {
         return model;
@@ -391,11 +393,11 @@ public class AttributePanel extends JPanel implements InfoModelListener {
             return getTablePanel(nextLayer());
         }
         private Layer previousLayer() {
-            return (Layer) getModel().getLayers().get(
+            return getModel().getLayers().get(
                 getModel().getLayers().indexOf(panel.getModel().getLayer()) - 1);
         }
         private Layer nextLayer() {
-            return (Layer) getModel().getLayers().get(
+            return getModel().getLayers().get(
                 getModel().getLayers().indexOf(panel.getModel().getLayer()) + 1);
         }
         public Feature getFeature() {
