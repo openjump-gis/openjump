@@ -66,7 +66,7 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 
 	//static final String GEOMETRY_COLUMN = I18N.get(KEY + ".geometry-Column");
 	static final String CHOOSE_PK    = I18N.get(KEY + ".primary_key");
-	static final String CREATE_DB_PK = I18N.get(KEY + ".create-database-primary-key");
+	static final String CREATE_DB_PK = I18N.get("org.openjump.core.ui.plugin.datastore.DataStoreSaveDriverPanel.create-database-primary-key");
 	
 	// UI elements
     private ButtonGroup methodButtons;
