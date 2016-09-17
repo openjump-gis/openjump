@@ -173,6 +173,7 @@ public class ProjUtils {
                     .replaceAll("\\bftUS\\b", "(ftUS)")
                     .replaceAll("\\bft\\b", "(ft)").replaceAll("feet", "ft")
                     .replaceAll("WGS 1984", "WGS 84")
+                    .replaceAll("ED 1950", "ED50")
                     .replaceAll("NAD 1983 UTM", "NAD83 UTM")
                     .replaceAll("HARN", "(HARN)")
                     .replaceAll("\\bCSRS98\\b", "(CSRS98)")
