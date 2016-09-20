@@ -10,6 +10,7 @@ import java.io.File;
  * Created by UMichael on 10/09/2016.
  */
 public class ProjUtilsOldTest extends TestCase {
+
     public static void main(String[] args) throws Exception {
         /*
         File src1 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\gdal_eg\\cea.tif");
@@ -82,12 +83,14 @@ public class ProjUtilsOldTest extends TestCase {
 
     }
 
+    /*
     public void testGetSRSInfoFromGeoTiff() throws Exception {
         File src1 = new File("D:\\DATA\\FORMATS\\GeoTIFF\\gdal_eg\\cea.tif");
         SRSInfo info1 = TiffTags.readMetadata(src1).getSRSInfo();
         System.out.printf("%s%n%n", info1);
         assertEquals("cea.tiff contains unnamed NAD27", "unnamed NAD27", info1.getDescription());
     }
+    */
 
 
 }
