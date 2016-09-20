@@ -185,8 +185,7 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("Polygonize.png")));
     dialog.setSideBarDescription(I18N.get("jump.plugin.edit.LineNoderPlugIn.Nodes-the-lines-in-a-layer"));
-    String fieldName = SRC_LAYER;
-    dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
+    dialog.addLayerComboBox(SRC_LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
     dialog.addCheckBox(SELECTED_ONLY, useSelected);
   }
 

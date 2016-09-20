@@ -262,8 +262,7 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
 			+ " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.If-desired-the-input-data-may-be-noded-before-polygonizing-is-performed")
 			+ " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.Dangles-Cutlines-and-Invalid-Rings-are-identified")
     );
-    String fieldName = SRC_LAYER;
-    dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
+    dialog.addLayerComboBox(SRC_LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
     dialog.addCheckBox(SELECTED_ONLY, useSelected);
     dialog.addCheckBox(NODE_INPUT, nodeInputLines, NODE_INPUT);
   }

@@ -127,7 +127,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private Processor polygon_processor = Processor.NODE;
     
     private boolean snap_rounding = false;
-    int snap_rounding_dp = 6;
+    private int snap_rounding_dp = 6;
     
     private boolean interpolate_z = false;
     private int interpolated_z_dp  = 3;
@@ -638,7 +638,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
 
     
     private void commitUpdate(PlugInContext context, final Layer layer,
-                 final Collection inputFeatures, final Collection newFeatures) {
+                 final Collection<Feature> inputFeatures, final Collection<Feature> newFeatures) {
         context.getLayerManager().getUndoableEditReceiver().reportNothingToUndoYet();
         UndoableCommand cmd = new UndoableCommand(getName()) {
             public void execute() {

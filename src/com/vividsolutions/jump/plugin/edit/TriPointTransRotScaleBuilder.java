@@ -58,10 +58,8 @@ class TriPointTransRotScaleBuilder extends TransRotScaleBuilder {
 
   protected void compute(Coordinate[] srcPt, Coordinate[] destPt)
   {
-    /**
-     * For now just extract a Y scale from the third pt.
-     * In future could do shear too.
-     */
+    //For now just extract a Y scale from the third pt.
+    //In future could do shear too.
 
     originX = srcPt[1].x;
     originY = srcPt[1].y;

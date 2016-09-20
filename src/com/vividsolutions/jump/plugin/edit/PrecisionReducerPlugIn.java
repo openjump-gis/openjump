@@ -173,8 +173,7 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("PrecisionReducer.png")));
     dialog.setSideBarDescription(I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Reduces-the-precision-of-the-coordinates-in-a-layer"));
-    String fieldName = LAYER;
-    dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
+    dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
 
     scaleFactorField = dialog.addIntegerField(SCALE_FACTOR, scaleFactor, 8,
     		I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.The-scale-factor-to-multiply-by-before-rounding-(-Negative-for-left-of-decimal-point-,-0-if-not-used-)"));
@@ -229,7 +228,7 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
     scaleFactor = dialog.getInteger(SCALE_FACTOR);
   }
 
-  class DecimalPlacesDocumentListener implements DocumentListener {
+  private class DecimalPlacesDocumentListener implements DocumentListener {
     public void insertUpdate(DocumentEvent e) {
       decimalPlacesChanged();
     }
@@ -240,7 +239,7 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
       decimalPlacesChanged();
     }
   }
-  class ScaleFactorDocumentListener implements DocumentListener {
+  private class ScaleFactorDocumentListener implements DocumentListener {
     public void insertUpdate(DocumentEvent e) {
       scaleFactorChanged();
     }

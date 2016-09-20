@@ -95,9 +95,8 @@ public class DiffGeometry {
       Feature f = (Feature) i.next();
       Geometry geom = f.getGeometry();
 
-      Collection list = DiffGeometryIndex.splitGeometry(geom, splitIntoComponents);
-      for (Iterator j = list.iterator(); j.hasNext(); ) {
-        Geometry g = (Geometry) j.next();
+      Collection<Geometry> list = DiffGeometryIndex.splitGeometry(geom, splitIntoComponents);
+      for (Geometry g : list) {
         if (! diffIndex.hasMatch(g))
           noMatch.add(f);
       }
