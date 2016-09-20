@@ -387,10 +387,10 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                                String dbTable, String primaryKey) throws SQLException {
         String tableFullName = SQLUtil.compose(dbSchema, dbTable);
         String sql_test_seq = "SELECT * FROM information_schema.sequences\n" +
-                "    WHERE sequence_schema = 'public' AND sequence_name = 'openjump_dbid_sequence';";
-        String sql_create_seq = "CREATE SEQUENCE openjump_dbid_sequence;";
+                "    WHERE sequence_schema = '" + dbSchema + "' AND sequence_name = 'openjump_dbid_sequence';";
+        String sql_create_seq = "CREATE SEQUENCE \"" + dbSchema + "\".openjump_dbid_sequence;";
         String sql_create_dbid = "ALTER TABLE " + tableFullName + " ADD COLUMN \"" +
-                primaryKey + "\" BIGINT DEFAULT nextval('openjump_dbid_sequence') PRIMARY KEY;";
+                primaryKey + "\" BIGINT DEFAULT nextval('\"" + dbSchema + "\".openjump_dbid_sequence') PRIMARY KEY;";
         boolean sequence_already_exists;
         // check if openjump_dbid_sequence already exists
         try {

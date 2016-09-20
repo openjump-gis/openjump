@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-09-21 mmichaud <m.michael.michaud@orange.fr>
+  * Postgis writer : create the sequence in the same schema as the table
+
 2016-09-17 mmichaud <m.michael.michaud@orange.fr>
   * FR #235 : Improved ExtractLayersByGeometryPlugIn
   * Fix bug happening when modifying schema two times with InfoPanel opened
