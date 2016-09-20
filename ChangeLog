@@ -5,6 +5,7 @@
 
 2016-09-21 mmichaud <m.michael.michaud@orange.fr>
   * Postgis writer : create the sequence in the same schema as the table
+  * Postgis writer : normalize index name
 
 2016-09-17 mmichaud <m.michael.michaud@orange.fr>
   * FR #235 : Improved ExtractLayersByGeometryPlugIn

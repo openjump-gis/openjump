@@ -6,6 +6,7 @@ import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.feature.AttributeType;
 
+import java.text.Normalizer;
 import java.util.List;
 
 public class PostgisDSMetadata extends SpatialDatabasesDSMetadata {
@@ -95,9 +96,14 @@ public class PostgisDSMetadata extends SpatialDatabasesDSMetadata {
      */
     @Override
     public String getAddSpatialIndexStatement(String schemaName, String tableName, String geometryColumn) {
-        return "CREATE INDEX \"" +
-                SQLUtil.compose(schemaName, tableName).replaceAll("\"","") + "_" + geometryColumn + "_idx\"\n" +
-                "ON " + SQLUtil.compose(schemaName, tableName) + " USING GIST ( \"" + geometryColumn + "\" );";
+        String name = schemaName + "_" + tableName + "_" + geometryColumn + "_idx";
+        name = Normalizer.normalize(name, Normalizer.Form.NFD); // separe base character from accent
+        name = name.replaceAll("\\p{M}", ""); // remove accents
+        name = name.toLowerCase();
+        name = name.replaceAll("[^\\x5F\\x30-\\x39\\x41-\\x5A\\x61-\\x7A]", "_");
+        name = name.replaceAll("_+", "_");
+        return "CREATE INDEX " + name + " ON " +
+                SQLUtil.compose(schemaName, tableName) + " USING GIST ( \"" + geometryColumn + "\" );";
     }
 
 }
