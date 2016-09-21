@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Basic implementation of Aggregator interface.
  */
-public abstract class AbstractAggregator<T> implements Aggregator<T> {
+abstract class AbstractAggregator<T> implements Aggregator<T> {
 
     final private AttributeType outputType;
     private boolean ignoreNull;
@@ -20,14 +20,15 @@ public abstract class AbstractAggregator<T> implements Aggregator<T> {
         this.ignoreNull = ignoreNull;
         if (kv != null) {
             if (kv.length % 2 == 1) {
-                throw new IllegalArgumentException("Aggregator constructor should have an even number of arguments representing successively keys and values");
+                throw new IllegalArgumentException("Aggregator constructor should have " +
+                        "an even number of arguments representing successively keys and values");
             }
-            this.parameters = new LinkedHashMap<String,Object>();
+            this.parameters = new LinkedHashMap<>();
             for (int i = 0 ; i < kv.length/2 ; i += 2) {
                 this.parameters.put(kv[i].toString(), kv[i+1]);
             }
         }
-        values = new ArrayList<T>();
+        values = new ArrayList<>();
     }
 
     public Set<String> getParameters() {
@@ -36,7 +37,7 @@ public abstract class AbstractAggregator<T> implements Aggregator<T> {
 
     public void setParameter(String name, Object value) {
         if (parameters == null) {
-            parameters = new LinkedHashMap<String, Object>();
+            parameters = new LinkedHashMap<>();
         }
         parameters.put(name, value);
     }

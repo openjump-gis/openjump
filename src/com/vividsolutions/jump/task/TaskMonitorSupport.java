@@ -1,6 +1,6 @@
 package com.vividsolutions.jump.task;
 
 public interface TaskMonitorSupport {
-  public void setTaskMonitor(TaskMonitor taskMonitor);
-  public TaskMonitor getTaskMonitor();
+  void setTaskMonitor(TaskMonitor taskMonitor);
+  TaskMonitor getTaskMonitor();
 }

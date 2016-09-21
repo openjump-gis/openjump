@@ -30,7 +30,7 @@ public interface Aggregator<T> {
 
     /**
      * Return parameter names used by this aggregator
-     * @return
+     * @return the set of parameters
      */
     Set<String> getParameters();
 
@@ -53,7 +53,7 @@ public interface Aggregator<T> {
     String getName();
 
     /**
-     * Returns AttributeType of the aggregated value.
+     * @Return the AttributeType of the aggregated value.
      */
     AttributeType getOutputAttributeType();
 
@@ -64,13 +64,12 @@ public interface Aggregator<T> {
     void addValue(T value);
 
     /**
-     * Returns all the values accumulated by this aggregator.
-     * @return
+     * @return the values accumulated by this aggregator.
      */
     List<T> getValues();
 
     /**
-     * Returns the aggregated value.
+     * @return the aggregated value.
      */
     Object getResult();
 

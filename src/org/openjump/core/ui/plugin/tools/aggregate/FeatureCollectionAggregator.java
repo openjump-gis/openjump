@@ -19,7 +19,7 @@ public class FeatureCollectionAggregator {
 
     private FeatureCollection fc;
     private List<String> keyAttributes;
-    List<AttributeAggregator> aggregators;
+    private List<AttributeAggregator> aggregators;
 
     public FeatureCollectionAggregator(FeatureCollection fc, List<String> keyAttributes, List<AttributeAggregator> aggregators)
             throws AggregatorException {
@@ -27,9 +27,9 @@ public class FeatureCollectionAggregator {
         this.keyAttributes = keyAttributes;
         this.aggregators = aggregators;
         // Check validity of input attribute names
-        for (int i = 0 ; i < keyAttributes.size() ; i++) {
-            if (!fc.getFeatureSchema().hasAttribute(keyAttributes.get(i))) {
-                throw new AggregatorException(I18N.getMessage(KEY + ".attribute-does-not-exists", keyAttributes.get(i)));
+        for (String attributeName : keyAttributes) {
+            if (!fc.getFeatureSchema().hasAttribute(attributeName)) {
+                throw new AggregatorException(I18N.getMessage(KEY + ".attribute-does-not-exists", attributeName));
             }
         }
         for (AttributeAggregator aggregator : aggregators) {
@@ -44,17 +44,17 @@ public class FeatureCollectionAggregator {
      * aggregated on features having the same key.
      * Feature's key are defined by one or more attributes from the source
      * featureCollection.
-     * @return
+     * @return the featureCollection with aggregated attributes
      */
     public FeatureCollection getAggregatedFeatureCollection() {
-        Map<Key,List<AttributeAggregator>> map = new HashMap<Key, List<AttributeAggregator>>();
+        Map<Key,List<AttributeAggregator>> map = new HashMap<>();
         // Add attributes values to features with teh same key
         for (Object object : fc.getFeatures()) {
             Feature feature = (Feature)object;
             Key key = new Key(feature, keyAttributes);
             List<AttributeAggregator> featureAggregators = map.get(key);
             if (featureAggregators == null) {
-                featureAggregators = new ArrayList<AttributeAggregator>();
+                featureAggregators = new ArrayList<>();
                 for (AttributeAggregator agg : aggregators) {
 
                     featureAggregators.add(new AttributeAggregator(
@@ -87,9 +87,9 @@ public class FeatureCollectionAggregator {
     private FeatureSchema getFeatureSchema() {
         FeatureSchema oldSchema = fc.getFeatureSchema();
         FeatureSchema newSchema = new FeatureSchema();
-        for (int i = 0 ; i < keyAttributes.size() ; i++) {
-            newSchema.addAttribute(keyAttributes.get(i),
-                    oldSchema.getAttributeType(oldSchema.getAttributeIndex(keyAttributes.get(i))));
+        for (String attributeName : keyAttributes) {
+            newSchema.addAttribute(attributeName,
+                    oldSchema.getAttributeType(oldSchema.getAttributeIndex(attributeName)));
         }
         for (AttributeAggregator agg : aggregators) {
             newSchema.addAttribute(agg.getOutputName(), agg.getAggregator().getOutputAttributeType());
@@ -99,7 +99,7 @@ public class FeatureCollectionAggregator {
 
     public static class Key {
 
-        private Map<String,Object> map = new HashMap<String, Object>();
+        private Map<String,Object> map = new HashMap<>();
 
         Key(Feature feature, List<String> attributes) {
             for (String name : attributes) {
@@ -122,8 +122,8 @@ public class FeatureCollectionAggregator {
 
     }
 
-    public static class AggregatorException extends Exception {
-        public AggregatorException(String message) {
+    private static class AggregatorException extends Exception {
+        AggregatorException(String message) {
             super(message);
         }
     }

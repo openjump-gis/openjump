@@ -47,14 +47,13 @@ public class CommandLine {
 
   // store options defs
   Vector<OptionSpec> optSpecs = new Vector<>();
+
   // store optionless file parameters
   Vector<String> parVec = new Vector<>(); // store plain params (e.g. projects/files to open)
 
-  char optionChar; // the char that indicates an option. Default is '/', which
-                   // is
+  char optionChar; // the char that indicates an option. Default is '/', which is
                    // NT Standard, but this causes problems on Unix systems, so
-                   // '-' should
-                   // be used for cross-platform apps
+                   // '-' is used by JUMPWorkbench (better for cross-platform apps)
 
   public CommandLine() {
     this('/');

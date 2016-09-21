@@ -20,7 +20,7 @@ public class AttributeAggregator {
         this.outputName = outputName;
     }
 
-    public String getInputName() {
+    String getInputName() {
         return inputName;
     }
 
@@ -28,7 +28,7 @@ public class AttributeAggregator {
         return aggregator;
     }
 
-    public String getOutputName() {
+    String getOutputName() {
         return outputName;
     }
 }

@@ -142,7 +142,7 @@ public class OverlayEngine {
         addFeature(intersection, overlay, mapping, a, b);
     }
 
-    protected void addFeature(Geometry intersection, FeatureCollection overlay,
+    private void addFeature(Geometry intersection, FeatureCollection overlay,
                 AttributeMapping mapping, Feature a, Feature b) {
         if (splittingGeometryCollections && intersection instanceof GeometryCollection) {
             GeometryCollection gc = (GeometryCollection) intersection;

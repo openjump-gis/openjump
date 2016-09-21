@@ -38,7 +38,7 @@ public class Aggregators {
         aggregatorsByName.put(aggregator.getName(), aggregator);
         Map<String,Aggregator> map = aggregatorsByType.get(inputType);
         if (map == null) {
-            map = new HashMap<String, Aggregator>();
+            map = new HashMap<>();
             aggregatorsByType.put(inputType, map);
         }
         map.put(aggregator.getName(), aggregator);
