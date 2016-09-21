@@ -78,11 +78,11 @@ public class ExtractCommonBoundaryBetweenPolysPlugIn extends AbstractPlugIn impl
         
     public void initialize(PlugInContext context) throws Exception {
     	
-    		this.sName = I18N.get("org.openjump.core.ui.plugin.tools.ExtractCommonBoundaryBetweenPolysPlugIn.Extract-Common-Boundary-Between-Polygons");
-	        this.sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.ExtractCommonBoundaryBetweenPolysPlugIn.Classifies-the-boundaries-of-a-polygon-by-using-a-neighbourhood-graph");
-	        this.sCreateGraph = I18N.get("org.openjump.core.ui.plugin.tools.ExtractCommonBoundaryBetweenPolysPlugIn.create-graph");
-    		this.sBoundaries = I18N.get("org.openjump.core.ui.plugin.tools.ExtractCommonBoundaryBetweenPolysPlugIn.boundaries");	        
-	        this.LAYERREGIONS = I18N.get("org.openjump.core.ui.plugin.tools.ExtractCommonBoundaryBetweenPolysPlugIn.select-layer-with-polygons");
+    		this.sName = I18N.get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn");
+	        this.sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.Classifies-the-boundaries-of-a-polygon-by-using-a-neighbourhood-graph");
+	        this.sCreateGraph = I18N.get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.create-graph");
+    		this.sBoundaries = I18N.get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.boundaries");
+	        this.LAYERREGIONS = I18N.get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.select-layer-with-polygons");
     		
     		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 	    	featureInstaller.addMainMenuItem(
