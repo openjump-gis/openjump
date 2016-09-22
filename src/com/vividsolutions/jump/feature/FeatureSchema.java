@@ -37,10 +37,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Metadata for a FeatureCollection: attribute names and types.
@@ -162,6 +159,15 @@ public class FeatureSchema implements Cloneable, Serializable {
      */
     public int getAttributeCount() {
         return attributeCount;
+    }
+
+    /**
+     * Returns an unmodifiable list containing all attribute names.
+     * Method added to facilitate foreach iteration over attributes
+     * @return
+     */
+    public List<String> getAttributeNames() {
+       return Collections.unmodifiableList(attributeNames);
     }
 
     /**
