@@ -61,6 +61,8 @@ import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.vividsolutions.jump.io.datasource.DataSource;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataSource;
 import org.apache.commons.io.FilenameUtils;
 import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ccordsys.utils.SRSInfo;
@@ -505,7 +507,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         private boolean isDataBaseLayer(Layer layer) {
             DataSourceQuery dsq = layer.getDataSourceQuery();
             if (dsq == null
-                    || dsq.getDataSource() instanceof DataStoreDataSource) {
+                    || dsq.getDataSource() instanceof DataStoreQueryDataSource) {
                 return true;
             } else {
                 return false;
@@ -582,10 +584,10 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                         multipleSourceTypes = true;
                     }
                     Object fnameObj = dsq.getDataSource().getProperties()
-                            .get("File");
+                            .get(DataSource.FILE_KEY);
                     if (fnameObj == null) {
                         fnameObj = dsq.getDataSource().getProperties()
-                                .get("Connection Descriptor");
+                                .get(DataStoreQueryDataSource.CONNECTION_DESCRIPTOR_KEY);
                     }
                     if (fnameObj != null) {
                         sourcePath = fnameObj.toString();
@@ -725,8 +727,11 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         private void setInfoProjection(Layer[] layers) throws Exception {
             SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerStyleOrSource(layers[0]);
             label_Coordinate_file = srsInfo.getSource();
-            label_Coordinate = String.format("%s:%s - %s",
-                    srsInfo.getRegistry(), srsInfo.getCode(), srsInfo.getDescription());
+            label_Coordinate = String.format("%s:%s",
+                    srsInfo.getRegistry(), srsInfo.getCode());
+            if (srsInfo.getDescription() != null && srsInfo.getDescription().length() > 0) {
+                label_Coordinate = label_Coordinate + " - " + srsInfo.getDescription();
+            }
 
         }
 

@@ -3,12 +3,13 @@ package org.openjump.core.ccordsys.utils;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataSource;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.io.FilenameUtils;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
@@ -300,7 +301,7 @@ public class ProjUtils {
         else {
             if (!isDataBaseLayer(layer)) {
                 DataSourceQuery dsq = layer.getDataSourceQuery();
-                Object fnameObj = dsq.getDataSource().getProperties().get("File");
+                Object fnameObj = dsq.getDataSource().getProperties().get(DataSource.FILE_KEY);
                 fileSourcePath = fnameObj.toString();
                 srsInfo = getSRSInfoFromAuxiliaryFile(fileSourcePath);
             }
@@ -321,7 +322,7 @@ public class ProjUtils {
     // Boolean. Selected layer is related to a database
     private static boolean isDataBaseLayer(Layer layer) {
         DataSourceQuery dsq = layer.getDataSourceQuery();
-        if (dsq == null || dsq.getDataSource() instanceof DataStoreDataSource) {
+        if (dsq == null || dsq.getDataSource() instanceof DataStoreQueryDataSource) {
             return true;
         } else {
             return false;

@@ -36,7 +36,7 @@ public class DataStoreDataSource extends DataStoreQueryDataSource implements
 
     public static final String CACHING_KEY = "Caching";
 
-    public static final String CONNECTION_DESCRIPTOR_KEY = "Connection Descriptor";
+    //public static final String CONNECTION_DESCRIPTOR_KEY = "Connection Descriptor";
 
     protected WorkbenchContext context;
 
