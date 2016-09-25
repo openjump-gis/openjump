@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-09-25 mmichaud <m.michael.michaud@orange.fr>
+  * Fix in H2 Database Writer
+
 2016-09-22 mmichaud <m.michael.michaud@orange.fr>
   * Add getAttributeNames() to FeatureSchema
 

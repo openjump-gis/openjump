@@ -5,6 +5,7 @@ import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.h2.H2DSConnection;
 import com.vividsolutions.jump.datastore.h2.H2DataStoreDriver;
+import com.vividsolutions.jump.datastore.h2.H2ServerDataStoreDriver;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -59,9 +60,20 @@ public class H2DataStoreDataSource extends WritableDataStoreDataSource {
         ConnectionDescriptor connectionDescriptor =
                 (ConnectionDescriptor)getProperties().get(CONNECTION_DESCRIPTOR_KEY);
 
-        H2DSConnection h2Connection =
-                (H2DSConnection)new H2DataStoreDriver()
-                        .createConnection(connectionDescriptor.getParameterList());
+
+        H2DSConnection h2Connection;
+        if (connectionDescriptor.getDataStoreDriverClassName()
+                .equals(com.vividsolutions.jump.datastore.h2.H2DataStoreDriver.class.getName())) {
+            h2Connection = (H2DSConnection)new H2DataStoreDriver()
+                    .createConnection(connectionDescriptor.getParameterList());
+        } else if (connectionDescriptor.getDataStoreDriverClassName()
+                .equals(com.vividsolutions.jump.datastore.h2.H2ServerDataStoreDriver.class.getName())) {
+            h2Connection = (H2DSConnection)new H2ServerDataStoreDriver()
+                    .createConnection(connectionDescriptor.getParameterList());
+        } else {
+            throw new IllegalArgumentException("The connection does not use a H2 Driver");
+        }
+
 
         boolean hasPK = getProperties().get(EXTERNAL_PK_KEY) != null;
         String PK = (String)getProperties().get(EXTERNAL_PK_KEY);

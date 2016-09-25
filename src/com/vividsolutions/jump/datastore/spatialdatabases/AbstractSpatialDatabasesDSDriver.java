@@ -166,6 +166,7 @@ public abstract class AbstractSpatialDatabasesDSDriver implements
       Properties connProps) throws Exception {
 
     String url = createJdbcUrl(params);
+    Logger.info("Target database URL : " + url);
 
     // only register once per driver
     if (jdbcDriver == null)

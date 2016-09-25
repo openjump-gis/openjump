@@ -10,7 +10,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.plugin.datastore.SaveToDataStoreDataSourceQuery;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
-import org.openjump.core.ui.plugin.datastore.postgis2.PostGISSaveDriverPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,7 +95,10 @@ public class H2SaveDataSourceQueryChooser implements DataSourceQueryChooser {
         }
         else if (!panel.getConnectionDescriptor()
                 .getDataStoreDriverClassName()
-                .equals(com.vividsolutions.jump.datastore.h2.H2DataStoreDriver.class.getName())) {
+                .equals(com.vividsolutions.jump.datastore.h2.H2DataStoreDriver.class.getName()) &&
+                !panel.getConnectionDescriptor()
+                        .getDataStoreDriverClassName()
+                        .equals(com.vividsolutions.jump.datastore.h2.H2ServerDataStoreDriver.class.getName())) {
             JOptionPane.showMessageDialog(null,
                     CONNECTION_IS_NOT_H2,
                     ERROR, JOptionPane.ERROR_MESSAGE );
