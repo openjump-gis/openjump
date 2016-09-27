@@ -24,7 +24,8 @@ public class PostgisValueConverterFactory extends SpatialDatabasesValueConverter
 
     // manages 2 cases: type retrieved from Database metadata (DataStore Panel)
     // and from direct Adhoc query (type of the column resultset).
-    if ("bytea".equalsIgnoreCase(dbTypeName) || "geometry".equalsIgnoreCase(dbTypeName)) {
+    // Finally, converting bytea to geometry is a bad idea
+    if (/*"bytea".equalsIgnoreCase(dbTypeName) ||*/ "geometry".equalsIgnoreCase(dbTypeName)) {
       return WKB_GEOMETRY_MAPPER;
     }
 
