@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-10-01 mmichaud <m.michael.michaud@orange.fr>
+  * Dxf writer has been broken for a while. It is fixed with 0.8.1
+    but it can no more save several files at a time
+
 2016-09-25 mmichaud <m.michael.michaud@orange.fr>
   * Fix in H2 Database Writer
 
