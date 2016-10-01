@@ -96,7 +96,8 @@ public class PostgisDSMetadata extends SpatialDatabasesDSMetadata {
      */
     @Override
     public String getAddSpatialIndexStatement(String schemaName, String tableName, String geometryColumn) {
-        String name = schemaName + "_" + tableName + "_" + geometryColumn + "_idx";
+        String name = schemaName == null ? "" : schemaName + "_";
+        name = name + tableName + "_" + geometryColumn + "_idx";
         name = Normalizer.normalize(name, Normalizer.Form.NFD); // separe base character from accent
         name = name.replaceAll("\\p{M}", ""); // remove accents
         name = name.toLowerCase();
