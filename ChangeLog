@@ -6,6 +6,7 @@
 2016-10-01 mmichaud <m.michael.michaud@orange.fr>
   * Dxf writer has been broken for a while. It is fixed with 0.8.1
     but it can no more save several files at a time
+  * Fix bug introduced in r5032 in postgis reader
 
 2016-09-25 mmichaud <m.michael.michaud@orange.fr>
   * Fix in H2 Database Writer
