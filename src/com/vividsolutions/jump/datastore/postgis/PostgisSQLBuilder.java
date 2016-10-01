@@ -82,7 +82,9 @@ public class PostgisSQLBuilder extends SpatialDatabasesSQLBuilder {
     StringBuilder buf = new StringBuilder();
     // fixed by mmichaud using a patch from jaakko [2008-05-21]
     // query geomColName as geomColName instead of geomColName as geomColName + "_wkb"
-    buf.append("ST_AsEWKB(\"").append(geomColName).append("\") as ").append("\"").append(geomColName).append("\"");
+
+    // [mmichaud 2016-10-01] ST_AsEWKB is no more util and is not compatible with r5032
+    buf.append("\"").append(geomColName).append("\"");
     for (String colName : colNames) {
       if (! geomColName.equalsIgnoreCase(colName)) {
         buf.append(",\"").append(colName).append("\"");
