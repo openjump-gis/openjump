@@ -255,7 +255,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
       //datasetTreeModel = new DataStoreLayerTreeModel(root);
       datasetOutlineModel = DefaultOutlineModel.createOutlineModel(
           datasetTreeModel, new DataStoreLayerRowModel(), true,
-          I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Layer"));
+          I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Dataset"));
       datasetOutline.setModel(datasetOutlineModel);
       setTableColWidth();
       datasetOutline.setDefaultEditor(String.class, new DataStoreLayerWhereEditor());
