@@ -726,7 +726,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         // Aquino]
         messageText.setForeground(highlighted ? Color.black : coordinateLabel
                 .getForeground());
-        messageText.setBackground(highlighted ? Color.green : coordinateLabel
+        messageText.setBackground(highlighted ? color : coordinateLabel
                 .getBackground());
     }
 
