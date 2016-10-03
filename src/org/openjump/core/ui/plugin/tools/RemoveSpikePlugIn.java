@@ -109,7 +109,6 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
             Feature feature = ((Feature)o).clone(true, true);
             List<Geometry> spikes = new ArrayList<Geometry>();
             Geometry newGeom = null;
-            Feature spike = new BasicFeature(spikeSchema);
             if (feature.getGeometry() instanceof GeometryCollection) {
                 newGeom = removeSpike((GeometryCollection) feature.getGeometry(),
                         distTolerance, angleTolerance, spikes);
@@ -118,7 +117,7 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
                         distTolerance, angleTolerance, spikes);
             }
             boolean isValid = false;
-            if (newGeom.isValid()) {
+            if (newGeom != null && newGeom.isValid()) {
                 feature.setGeometry(newGeom);
                 isValid = true;
             }
@@ -160,7 +159,7 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
         for (int i = 0 ; i < poly.getNumInteriorRing() ; i++) {
             holes[i] = removeSpike((LinearRing)poly.getInteriorRingN(i), distTolerance, angleTolerance, spikes);
         }
-        return poly.getFactory().createPolygon(shell,  holes);
+        return poly.getFactory().createPolygon(shell, holes);
     }
 
 
