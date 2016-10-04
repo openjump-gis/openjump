@@ -55,7 +55,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 /**
  * Implements an {@link OptionsPanel} for Edit.
  * 
- * [2015-1-4] added option for advanced layer tooltip
+ * [2015-1-4] added option for advanced layer tooltip [2016-4-10] Giuseppe Aruta
+ * [2016-4-10] Giuseppe Aruta - added option to select the geometry after it has
+ * been drawn
  */
 
 public class EditOptionsPanel extends JPanel implements OptionsPanel {
@@ -67,10 +69,17 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
     private Blackboard blackboard;
     private JPanel tooltipPanel;
     private JCheckBox tooltipCheck;
+    public static JCheckBox geometryCheck;
 
     /** Opciones de tooltip */
     public static final String LAYER_TOOLTIPS_ON = ConfigTooltipPanel.class
             .getName() + " - LAYER_TOOLTIPS"; //$NON-NLS-1$
+
+    /** Option selected geometry */
+    /*
+     * public static final String SELECTED_GEOMETRY = ConfigTooltipPanel.class
+     * .getName() + " - SELECTED_GEOMETRY"; //$NON-NLS-1$
+     */
 
     public EditOptionsPanel(final Blackboard blackboard,
             JDesktopPane desktopPane) {
@@ -86,8 +95,8 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
 
         // Anyadimos los paneles
         FormUtils.addRowInGBL(this, 1, 0, getEditPanel());
-        FormUtils.addRowInGBL(this, 2, 0, getTooltipPanel());
-        FormUtils.addFiller(this, 3, 0);
+        FormUtils.addRowInGBL(this, 3, 0, getTooltipPanel());
+        FormUtils.addFiller(this, 4, 0);
     }
 
     /**
@@ -104,7 +113,6 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
             tooltipPanel.setBorder(titledBorder1); //$NON-NLS-1$
             tooltipCheck = new JCheckBox(
                     I18N.get("ui.EditOptionsPanel.enable-JUMP-basic-tooltips")); //$NON-NLS-1$
-
             FormUtils.addRowInGBL(tooltipPanel, 0, 0, tooltipCheck);
         }
         return tooltipPanel;
@@ -119,6 +127,10 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
                 preventEditsCheckBox.isSelected());
         PersistentBlackboardPlugIn.get(blackboard).put(LAYER_TOOLTIPS_ON,
                 tooltipCheck.isSelected());
+        /*
+         * PersistentBlackboardPlugIn.get(blackboard).put(SELECTED_GEOMETRY,
+         * geometryCheck.isSelected());
+         */
 
     }
 
@@ -130,6 +142,11 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
         if (layerTooltipsOn) {
             tooltipCheck.setSelected(true);
         }
+        /*
+         * boolean geometryOn = PersistentBlackboardPlugIn.get(blackboard).get(
+         * SELECTED_GEOMETRY, false); if (geometryOn) {
+         * geometryCheck.setSelected(true); }
+         */
     }
 
     private void jbInit() throws Exception {
@@ -138,15 +155,19 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
         preventEditsCheckBox
                 .setText(I18N
                         .get("ui.EditOptionsPanel.prevent-edits-resulting-in-invalid-geometries"));
+        geometryCheck = new JCheckBox(
+                I18N.get("ui.EditOptionsPanel.select-geometry")); //$NON-NLS-1$
+        geometryCheck
+                .setToolTipText("ui.EditOptionsPanel.select-geometry-warning");
         this.add(jPanel1, BorderLayout.EAST);
         TitledBorder titledBorder2 = new TitledBorder(
                 BorderFactory.createEtchedBorder(Color.white, new Color(148,
                         145, 140)), I18N.get("ui.EditOptionsPanel.edit"));
         jPanel1.setBorder(titledBorder2); //$NON-NLS-1$
-        jPanel1.add(preventEditsCheckBox, new GridBagConstraints(0, 0, 1, 1,
-                0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-                new Insets(10, 10, 4, 0), 0, 0));
-        jPanel1.add(jPanel2, new GridBagConstraints(100, 100, 1, 1, 1.0, 1.0,
+
+        FormUtils.addRowInGBL(jPanel1, 0, 0, preventEditsCheckBox);
+        FormUtils.addRowInGBL(jPanel1, 1, 0, geometryCheck);
+        jPanel1.add(jPanel2, new GridBagConstraints(200, 200, 1, 1, 1.0, 1.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
                         0, 0, 0, 0), 0, 0));
         // FormUtils.addRowInGBL( jPanel1, 0, 0, preventEditsCheckBox);
@@ -157,13 +178,22 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
             jPanel1 = new JPanel(new GridBagLayout());
             TitledBorder titledBorder2 = new TitledBorder(
                     BorderFactory.createEtchedBorder(Color.white, new Color(
-                            148, 145, 140)), I18N.get("ui.EditOptionsPanel.edit"));
+                            148, 145, 140)),
+                    I18N.get("ui.EditOptionsPanel.edit"));
             jPanel1.setBorder(titledBorder2); //$NON-NLS-1$
             preventEditsCheckBox = new JCheckBox(
                     "ui.EditOptionsPanel.prevent-edits-resulting-in-invalid-geometries");
-            jPanel1.add(preventEditsCheckBox, new GridBagConstraints(0, 0, 1,
-                    1, 0.0, 0.0, GridBagConstraints.WEST,
-                    GridBagConstraints.NONE, new Insets(10, 10, 4, 0), 0, 0));
+            geometryCheck = new JCheckBox(
+                    "Select the geometry after it has been drawn"); //$NON-NLS-1$
+            FormUtils.addRowInGBL(jPanel1, 0, 0, preventEditsCheckBox);
+            FormUtils.addRowInGBL(jPanel1, 1, 0, geometryCheck);
+            /*
+             * jPanel1.add(preventEditsCheckBox, new GridBagConstraints(0, 0, 1,
+             * 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+             * new Insets(10, 10, 4, 0), 0, 0)); jPanel1.add(geometryCheck, new
+             * GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+             * GridBagConstraints.NONE, new Insets(10, 10, 4, 0), 0, 0));
+             */
 
             // FormUtils.addRowInGBL(tooltipPanel, 0, 0, tooltipCheck);
         }
