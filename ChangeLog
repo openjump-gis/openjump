@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-10-05 mmichaud <m.michael.michaud@orange.fr>
+  * Fix #431 : Save project with unsaved layers
+
 2016-10-04 Giuseppe Aruta  <giuseppe_aruta@yahoo.it>
   * Added checkbox to EditOptionPanel that select the geometry after 
     it has been drawn

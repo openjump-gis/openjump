@@ -33,6 +33,7 @@
 package org.openjump.core.ui.plugin.file;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -166,11 +167,11 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
         
         DriverProperties dp = new DriverProperties();
         dp.set("File", path);
+        dp.set(DataSource.URI_KEY, new File(path).toURI().toURL().toExternalForm());
         dataSource.setProperties(dp);
                 
         DataSourceQuery dsq = new DataSourceQuery(dataSource, path, path);
         layer.setDataSourceQuery(dsq).setFeatureCollectionModified(false);
-                
         dataSource.getConnection().executeUpdate("", layer.getFeatureCollectionWrapper(), new DummyTaskMonitor());
     } 
 
