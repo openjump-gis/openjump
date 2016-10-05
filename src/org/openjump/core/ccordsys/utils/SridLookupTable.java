@@ -1,8 +1,10 @@
 package org.openjump.core.ccordsys.utils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.text.Normalizer;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -131,6 +133,37 @@ public class SridLookupTable {
         return srsInfo == null ? null : srsInfo.getUnit();
     }
 
+ 
+    public static String getOGCWKTFromWkidCode(String code)
+        throws URISyntaxException, IOException {
+    InputStream is = ProjUtils.class
+            .getResourceAsStream("srid2prj.txt");
+    InputStreamReader isr = new InputStreamReader(is);
+    String OGCWKT = "";
+    String search = "<" + code.toLowerCase() + ">";
+    Scanner scanner = null;
+    try {
+        scanner = new Scanner(isr);
+        while (scanner.hasNextLine()) {
+            scanner.useDelimiter("\\n");
+            String line = scanner.nextLine();
+            if (line.toLowerCase().contains(search)) {
+                OGCWKT = line.replaceAll(search, "");
+                break;
+            }
+        }
+    } finally {
+        try {
+            if (scanner != null)
+                scanner.close();
+        } catch (Exception e) {
+            System.err.println("Exception while closing scanner "
+                    + e.toString());
+        }
+    }
+    return OGCWKT;
+}
+    
     /**
      * Use this function to normalize srs name and get a chance to match it
      * with the one in srid.txt
