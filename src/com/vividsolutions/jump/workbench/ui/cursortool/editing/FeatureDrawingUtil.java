@@ -172,32 +172,31 @@ public class FeatureDrawingUtil {
                 .getFeatureCollectionWrapper().getFeatureSchema());
 
         // selectGeometry(layerViewPanel, geometry);
-        final SelectionManager selectionManager = layerViewPanel
-                .getSelectionManager();
+      
         featsToAdd = new ArrayList<Feature>();
-        featsToAdd.add(FeatureUtil.toFeature(geometry, layer(layerViewPanel)
-                .getFeatureCollectionWrapper().getFeatureSchema()));
+        featsToAdd.add(feature);
+        
         return new UndoableCommand(tool.getName(), layer) {
-            public void execute() {
-                getLayer().getFeatureCollectionWrapper().add(feature);
-                if (EditOptionsPanel.geometryCheck.isSelected()) {
+          public void execute() {
+              getLayer().getFeatureCollectionWrapper().add(feature);
 
-                    selectionManager.getFeatureSelection().unselectItems();
-                    selectionManager.getFeatureSelection().selectItems(
-                            layer(layerViewPanel), featsToAdd);
+              if (EditOptionsPanel.geometryCheck.isSelected()) {
+                  featsToAdd = new ArrayList<Feature>();
+                  featsToAdd.add(feature);
+                  SelectionManager selectionManager = layerViewPanel
+                          .getSelectionManager();
+                  selectionManager.clear();
+                  selectionManager.getFeatureSelection().selectItems(
+                          layer(layerViewPanel), featsToAdd);
+              }
+          }
 
-                }
-            }
+          public void unexecute() {
+              getLayer().getFeatureCollectionWrapper().remove(feature);
+          }
+      };
 
-            public void unexecute() {
-                getLayer().getFeatureCollectionWrapper().remove(feature);
-               selectionManager.getFeatureSelection().unselectItems(
-                        layer(layerViewPanel), featsToAdd);
-
-            }
-        };
-
-    }
+  }
 
     private GeometryEditor editor = new GeometryEditor();
 
