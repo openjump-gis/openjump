@@ -6,6 +6,7 @@
 2016-10-06 mmichaud <m.michael.michaud@orange.fr>
   * Use URI_KEY and FILE_KEY properties for file based datasources
     in order to keep compatibility with legacy plugins
+  * fix #428 (introduced during ProjUtil refactoring)
 
 2016-10-05 mmichaud <m.michael.michaud@orange.fr>
   * Fix #431 : Save project with unsaved layers

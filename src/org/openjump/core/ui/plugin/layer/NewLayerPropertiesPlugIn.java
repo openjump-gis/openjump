@@ -723,7 +723,8 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
 
 
         private void setInfoProjection(Layer[] layers) throws Exception {
-            SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerStyleOrSource(layers[0]);
+            //SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerStyleOrSource(layers[0]);
+            SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerSource(layers[0]);
             label_Coordinate_file = srsInfo.getSource();
             label_Coordinate = String.format("%s:%s",
                     srsInfo.getRegistry(), srsInfo.getCode());
