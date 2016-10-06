@@ -31,6 +31,7 @@
  */
 package com.vividsolutions.jump.io.datasource;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -90,7 +91,7 @@ public class ReaderWriterFileDataSource extends FileDataSource {
                 .setTitle(
                     monitor,
                     I18N.getMessage(
-                        "com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource.open-{0}",
+                        "com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource.open",
                         createDescriptiveName(uri)));
           }
 
@@ -115,14 +116,21 @@ public class ReaderWriterFileDataSource extends FileDataSource {
         
         // make readers task monitor aware
         DriverProperties dp = getWriterDriverProperties();
-        URI uri = new URI(dp.getProperty(DataSource.URI_KEY));
+        URI uri = null;
+        if (dp.getProperty(DataSource.URI_KEY) != null) {
+          uri = new URI(dp.getProperty(DataSource.URI_KEY));
+        }
+        // for legacy plugins
+        else if (dp.getProperty(DataSource.FILE_KEY) != null) {
+          uri = new File(dp.getProperty(DataSource.FILE_KEY)).toURI();
+        }
         if (writer instanceof TaskMonitorSupport) {
           ((TaskMonitorSupport) writer).setTaskMonitor(monitor);
           TaskMonitorUtil
               .setTitle(
                   monitor,
                   I18N.getMessage(
-                      "com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource.write-{0}",
+                      "com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource.write",
                       createDescriptiveName(uri)));
         }
 

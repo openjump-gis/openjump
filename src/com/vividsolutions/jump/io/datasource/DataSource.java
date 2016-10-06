@@ -75,6 +75,7 @@ public abstract class DataSource {
   /**
    * Filename property, used for file-based DataSources
    */
+  @Deprecated
   public static final String FILE_KEY = "File";
 
   /**

@@ -18,8 +18,10 @@ import org.openjump.core.rasterimage.TiffTags;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -301,9 +303,14 @@ public class ProjUtils {
         else {
             if (!isDataBaseLayer(layer)) {
                 DataSourceQuery dsq = layer.getDataSourceQuery();
-                Object fnameObj = dsq.getDataSource().getProperties().get(DataSource.FILE_KEY);
-                fileSourcePath = fnameObj.toString();
-                srsInfo = getSRSInfoFromAuxiliaryFile(fileSourcePath);
+                Map properties = dsq.getDataSource().getProperties();
+                if (properties.get(DataSource.URI_KEY) != null) {
+                    fileSourcePath = new URI(properties.get(DataSource.URI_KEY).toString()).getPath();
+                    srsInfo = getSRSInfoFromAuxiliaryFile(fileSourcePath);
+                } else if (properties.get(DataSource.FILE_KEY) != null) {
+                    fileSourcePath = properties.get(DataSource.FILE_KEY).toString();
+                    srsInfo = getSRSInfoFromAuxiliaryFile(fileSourcePath);
+                }
             }
         }
         return srsInfo;

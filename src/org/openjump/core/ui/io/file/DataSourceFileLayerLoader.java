@@ -27,6 +27,7 @@
 package org.openjump.core.ui.io.file;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -396,6 +397,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
       file = new File(uri);
     }
     String filePath = file.getAbsolutePath();
+    properties.put(DataSource.URI_KEY, uri.toString());
     properties.put(DataSource.FILE_KEY, filePath);
     properties.putAll(options);
     return properties;

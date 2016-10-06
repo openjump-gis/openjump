@@ -37,6 +37,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -440,8 +442,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                         info = info
                                 + property(SOURCE_PATH, label_Path_R, bgColor1);
                         // Add charset if selected vector layer is a shapefile
-                        if ((layers.length == 1)
-                                && (layers[0].getDataSourceQuery() != null)) {
+                        if (layers[0].getDataSourceQuery() != null) {
                             if (layers[0]
                                     .getDataSourceQuery()
                                     .getDataSource()
@@ -460,8 +461,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                 info = info + header("", COORDINATE_SYSTEM);
                 setInfoProjection(layers);
                 info = info + property(CRS, label_Coordinate, bgColor0);
-                info = info
-                        + property(SOURCE_PATH, label_Coordinate_file, bgColor1);
+                info = info + property(SOURCE_PATH, label_Coordinate_file, bgColor1);
             }
             // if more than one layer.class is selected
             else {
@@ -526,7 +526,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         }
 
         // Set Info layer (excluded projection)
-        private void setInfo(Layer[] layers) throws IOException {
+        private void setInfo(Layer[] layers) throws IOException, URISyntaxException {
             if (layers.length == 1) {
                 // If only one layer is selected
                 if (layers[0].getName().startsWith("wfs")) {
@@ -568,7 +568,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                         }
                         String geoClassName = geo.getClass().getName();
                         int count = geometryModes.get(geoClassName) == null ? 0
-                                : ((Integer) geometryModes.get(geoClassName))
+                                : (geometryModes.get(geoClassName))
                                         .intValue();
                         geometryModes.put(new String(geoClassName),
                                 new Integer(count + 1));
@@ -576,21 +576,19 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                 }
                 DataSourceQuery dsq = layers[l].getDataSourceQuery();
                 if (dsq != null) {
-                    String dsqSourceClass = dsq.getDataSource().getClass()
-                            .getName();
+                    String dsqSourceClass = dsq.getDataSource().getClass().getName();
                     if (sourceClass.equals("")) {
                         sourceClass = dsqSourceClass;
                     } else if (!sourceClass.equals(dsqSourceClass)) {
                         multipleSourceTypes = true;
                     }
-                    Object fnameObj = dsq.getDataSource().getProperties()
-                            .get(DataSource.FILE_KEY);
-                    if (fnameObj == null) {
-                        fnameObj = dsq.getDataSource().getProperties()
-                                .get(DataStoreQueryDataSource.CONNECTION_DESCRIPTOR_KEY);
-                    }
-                    if (fnameObj != null) {
-                        sourcePath = fnameObj.toString();
+                    Map properties = dsq.getDataSource().getProperties();
+                    if (properties.get(DataSource.URI_KEY) != null) {
+                        sourcePath = new URI(properties.get(DataSource.URI_KEY).toString()).getPath();
+                    } else if (properties.get(DataSource.FILE_KEY) != null) {
+                        sourcePath = properties.get(DataSource.FILE_KEY).toString();
+                    } else if (properties.get(DataStoreQueryDataSource.CONNECTION_DESCRIPTOR_KEY) != null) {
+                        sourcePath = properties.get(DataStoreQueryDataSource.CONNECTION_DESCRIPTOR_KEY).toString();
                     }
                 }
             }

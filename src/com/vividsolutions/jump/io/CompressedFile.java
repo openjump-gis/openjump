@@ -207,7 +207,7 @@ public class CompressedFile {
 
     String extractMsg = compressedEntry != null ? " extract '" + compressedEntry
         + "'" : "";
-    Logger.debug("open '" + filePath + "'" + extractMsg);
+    Logger.debug("Open '" + filePath + "'" + extractMsg);
 
     // check file accessibility beforehand
     File file = new File(filePath);

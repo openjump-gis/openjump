@@ -166,8 +166,8 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
         String path = new File(dir, fileName.getName()).getAbsolutePath();
         
         DriverProperties dp = new DriverProperties();
-        dp.set("File", path);
-        dp.set(DataSource.URI_KEY, new File(path).toURI().toURL().toExternalForm());
+        dp.set(DataSource.URI_KEY, new File(path).toURI().toString());
+        dp.set(DataSource.FILE_KEY, path);
         dataSource.setProperties(dp);
                 
         DataSourceQuery dsq = new DataSourceQuery(dataSource, path, path);

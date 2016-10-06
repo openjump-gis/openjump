@@ -237,7 +237,8 @@ public class OpenProjectPlugIn extends ThreadedBasePlugIn {
                         {
                             //set the new source for this layer
                         	Map properties = layer.getDataSourceQuery().getDataSource().getProperties();
-                        	properties.put(DataSource.FILE_KEY, filename);
+                            properties.put(DataSource.URI_KEY, new File(filename).toURI().toString());
+                            properties.put(DataSource.FILE_KEY, filename);
                         	layer.getDataSourceQuery().getDataSource().setProperties(properties);                       
                         	load(layer, registry, monitor);
                         }
