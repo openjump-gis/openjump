@@ -10,7 +10,6 @@ import com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource;
 import com.vividsolutions.jump.task.DummyTaskMonitor;
 
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

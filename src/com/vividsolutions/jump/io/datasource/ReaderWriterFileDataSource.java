@@ -31,7 +31,6 @@
  */
 package com.vividsolutions.jump.io.datasource;
 
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -119,10 +118,6 @@ public class ReaderWriterFileDataSource extends FileDataSource {
         URI uri = null;
         if (dp.getProperty(DataSource.URI_KEY) != null) {
           uri = new URI(dp.getProperty(DataSource.URI_KEY));
-        }
-        // for legacy plugins
-        else if (dp.getProperty(DataSource.FILE_KEY) != null) {
-          uri = new File(dp.getProperty(DataSource.FILE_KEY)).toURI();
         }
         if (writer instanceof TaskMonitorSupport) {
           ((TaskMonitorSupport) writer).setTaskMonitor(monitor);

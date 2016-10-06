@@ -627,7 +627,7 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn {
           String newFileName = path + newLayer.getName() + ".shp";
           HashMap properties = new HashMap();
           properties.put(DataSource.COORDINATE_SYSTEM_KEY, "Unspecified");
-          properties.put(DataSource.URI_KEY, new File(newFileName).toURI().toString());
+          properties.put(DataSource.URI_KEY, new File(newFileName).toURI().toURL().toExternalForm());
           properties.put(DataSource.FILE_KEY, newFileName);
           DataSource dataSource = StandardReaderWriterFileDataSource.Shapefile.class
               .newInstance();

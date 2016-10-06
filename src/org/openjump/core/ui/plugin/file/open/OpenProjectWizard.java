@@ -301,22 +301,17 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                             DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
                             DataSource dataSource = dataSourceQuery.getDataSource();
                             Map properties = dataSource.getProperties();
-                            String fname = null;
-                            if (properties.get(DataSource.URI_KEY) != null && properties.get(DataSource.URI_KEY).toString().length()>0) {
-                                fname = new URI(properties.get(DataSource.URI_KEY).toString()).getPath();
-                            }
-                            //if (fname == null) {
-                            //    fname = properties.get(DataSource.FILE_KEY).toString();
-                            //}
-                            String filename = findFile.getFileName(fname);
-                            if (filename.length() > 0) {
-                                // set the new source for this layer
-                                //properties.put(DataSource.FILE_KEY, filename);
-                                properties.put(DataSource.URI_KEY, new File(filename).toURI().toString());
-                                dataSource.setProperties(properties);
-                                load(layer, registry, monitor);
-                            } else {
-                                break;
+                            if (properties.get(DataSource.FILE_KEY) != null) {
+                                String fname = properties.get(DataSource.FILE_KEY).toString();
+                                String filename = findFile.getFileName(fname);
+                                if (filename.length() > 0) {
+                                    // set the new source for this layer
+                                    properties.put(DataSource.FILE_KEY, filename);
+                                    dataSource.setProperties(properties);
+                                    load(layer, registry, monitor);
+                                } else {
+                                    break;
+                                }
                             }
                         }
                     } else if (layerable instanceof RasterImageLayer) {
@@ -438,9 +433,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
       DataSource dataSource = dataSourceQuery.getDataSource();
       Map properties = dataSource.getProperties();
       File layerFile = null;
-      if (properties.get(DataSource.URI_KEY) != null && properties.get(DataSource.URI_KEY).toString().length() > 0) {
-          layerFile = new File(URI.create(properties.get(DataSource.URI_KEY).toString()).toURL().toExternalForm());
-      } else if (properties.get(DataSource.FILE_KEY) != null && properties.get(DataSource.FILE_KEY).toString().length() > 0) {
+      if (properties.get(DataSource.FILE_KEY) != null) {
           layerFile = new File(properties.get(DataSource.FILE_KEY).toString());
       }
       return layerFile;
@@ -450,7 +443,6 @@ public class OpenProjectWizard extends AbstractWizardGroup {
       DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
       DataSource dataSource = dataSourceQuery.getDataSource();
       Map properties = dataSource.getProperties();
-      properties.put(DataSource.URI_KEY, file.toURI().toString());
       properties.put(DataSource.FILE_KEY, file.getAbsolutePath());
    }
   
