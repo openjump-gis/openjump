@@ -118,6 +118,9 @@ public class ReaderWriterFileDataSource extends FileDataSource {
         URI uri = null;
         if (dp.getProperty(DataSource.URI_KEY) != null) {
           uri = new URI(dp.getProperty(DataSource.URI_KEY));
+          if (dp.getProperty(DataSource.FILE_KEY) == null) {
+            dp.setProperty(DataSource.FILE_KEY, uri.getPath());
+          }
         }
         if (writer instanceof TaskMonitorSupport) {
           ((TaskMonitorSupport) writer).setTaskMonitor(monitor);
