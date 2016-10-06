@@ -75,7 +75,7 @@ import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.SeekableStream;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.util.FileUtil;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.model.Disposable;
 import com.vividsolutions.jump.workbench.model.Prioritized;
@@ -100,9 +100,9 @@ public abstract class GeoRaster implements Disposable {
     // System.setProperty("com.sun.media.jai.disableMediaLib", "true");
     // we reroute JAI error messages to OJ log here
     JAI.getDefaultInstance().setImagingListener(new ImagingListener() {
-      public boolean errorOccurred(String arg0, Throwable arg1, Object arg2,
-          boolean arg3) throws RuntimeException {
-        JUMPWorkbench.getInstance().getFrame().log("JAI Error: " + arg0);
+      public boolean errorOccurred(String msg, Throwable thrown, Object where,
+          boolean isRetryable) throws RuntimeException {
+        Logger.error(thrown);
         return false;
       }
     });
