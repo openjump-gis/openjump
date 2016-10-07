@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-10-07 mmichaud <m.michael.michaud@orange.fr>
+  * Fix SaveLayersWithoutDataSourcePlugIn by using JFileChooser instead of
+    JFCWithEnterAction
+
 2016-10-06 ede
   * PLUS: update ImageIO-Ext to 1.1.15, GDAL binding to 2.1.0 
 
