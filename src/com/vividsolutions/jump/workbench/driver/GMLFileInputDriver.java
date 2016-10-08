@@ -45,8 +45,8 @@ import com.vividsolutions.jump.workbench.ui.AbstractDriverPanel;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.GMLFileDriverPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFileFilter;
 
+import static com.vividsolutions.jump.io.datasource.DataSource.*;
 
 public class GMLFileInputDriver extends AbstractInputDriver {
     private GMLFileDriverPanel panel;
@@ -74,28 +74,25 @@ public class GMLFileInputDriver extends AbstractInputDriver {
         if (extension_gml.equalsIgnoreCase("zip")) {
             String internalName;
 
-            dp.set("CompressedFile", fname);
+            dp.set(COMPRESSED_KEY, fname);
 
-            internalName = CompressedFile.getInternalZipFnameByExtension(".gml",
-                    fname);
+            internalName = CompressedFile.getInternalZipFnameByExtension(".gml", fname);
 
             if (internalName == null) {
-                internalName = CompressedFile.getInternalZipFnameByExtension(".xml",
-                        fname);
+                internalName = CompressedFile.getInternalZipFnameByExtension(".xml", fname);
             }
 
             if (internalName == null) {
                 throw new Exception(
-                    "Couldnt find a .xml or .gml file inside the .zip file: " +
-                    fname);
+                    "Couldnt find a .xml or .gml file inside the .zip file: " + fname);
             }
 
-            dp.set("File", internalName);
+            dp.set(FILE_KEY, internalName);
         } else if (extension_gml.equalsIgnoreCase(".gz")) {
-            dp.set("CompressedFile", fname);
-            dp.set("File", fname); // not useed
+            dp.set(COMPRESSED_KEY, fname);
+            dp.set(FILE_KEY, fname); // not useed
         } else {
-            dp.set("File", fname);
+            dp.set(FILE_KEY, fname);
         }
 
         if (extension_template.equalsIgnoreCase("zip")) {

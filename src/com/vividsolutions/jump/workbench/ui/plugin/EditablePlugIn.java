@@ -38,7 +38,9 @@ import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.CheckBoxed;
@@ -75,7 +77,9 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
     boolean makeEditable = !layers[0].isEditable();
     // set states for each
     for (Layerable layerable : layers) {
-      layerable.setEditable(makeEditable);
+      if (isWritable(layerable)) {
+        layerable.setEditable(makeEditable);
+      }
     }
 
     // show EditToolBox if we switched to editable
@@ -84,6 +88,19 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
       editingPlugIn.execute(context);
     }
     return true;
+  }
+
+  private boolean isWritable(Layerable layerable) {
+    if (layerable instanceof Layer) {
+      Layer layer = (Layer)layerable;
+      if (layer.getDataSourceQuery() == null ||
+              layer.getDataSourceQuery().getDataSource() == null) {
+        return true;
+      } else {
+        DataSource source = layer.getDataSourceQuery().getDataSource();
+        return (source.isWritable() && source.getProperties().get("CompressedFile") == null);
+      }
+    } else return false;
   }
 
   public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
@@ -126,12 +143,12 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
     JInternalFrame frame = wbc.getWorkbench().getFrame()
         .getActiveInternalFrame();
     if (frame instanceof LayerNamePanelProxy) {
-      LayerNamePanel lnp = ((LayerNamePanelProxy) frame).getLayerNamePanel();
-      if (lnp instanceof LayerableNamePanel)
-        layers = ((LayerableNamePanel) lnp).getSelectedLayerables().toArray(
+      LayerNamePanel layerNamePanel = ((LayerNamePanelProxy) frame).getLayerNamePanel();
+      if (layerNamePanel instanceof LayerableNamePanel)
+        layers = ((LayerableNamePanel) layerNamePanel).getSelectedLayerables().toArray(
             new Layerable[] {});
       else
-        layers = lnp.getSelectedLayers();
+        layers = layerNamePanel.getSelectedLayers();
     }
 
     return layers;

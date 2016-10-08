@@ -42,6 +42,9 @@ import com.vividsolutions.jump.workbench.ui.AbstractDriverPanel;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.GMLFileDriverPanel;
 
+import static com.vividsolutions.jump.io.datasource.DataSource.*;
+
+
 
 public class GMLFileOutputDriver extends AbstractOutputDriver {
     private GMLFileDriverPanel panel;
@@ -55,7 +58,7 @@ public class GMLFileOutputDriver extends AbstractOutputDriver {
         String fname = selectedFile.getAbsolutePath();
 
         DriverProperties dp = new DriverProperties();
-        dp.set("File", fname);
+        dp.set(FILE_KEY, fname);
         dp.set("TemplateFile", panel.getTemplateFile().getAbsolutePath());
         writer.write(layer.getFeatureCollectionWrapper(), dp);
 

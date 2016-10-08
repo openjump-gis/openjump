@@ -34,21 +34,19 @@
 package com.vividsolutions.jump.workbench.driver;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.io.DriverProperties;
-import com.vividsolutions.jump.io.ParseException;
 import com.vividsolutions.jump.io.WKTReader;
-import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.ui.AbstractDriverPanel;
 import com.vividsolutions.jump.workbench.ui.BasicFileDriverPanel;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFileFilter;
+
+import static com.vividsolutions.jump.io.datasource.DataSource.*;
 
 
 public class WKTFileInputDriver extends AbstractInputDriver {
@@ -66,10 +64,7 @@ public class WKTFileInputDriver extends AbstractInputDriver {
         return panel;
     }
 
-    public void input(LayerManager layerManager, String categoryName)
-        throws FileNotFoundException, IOException, ParseException, 
-            com.vividsolutions.jts.io.ParseException, 
-            com.vividsolutions.jump.io.IllegalParametersException, Exception {
+    public void input(LayerManager layerManager, String categoryName) throws Exception {
         String extension;
         File selectedFile = panel.getSelectedFile();
         String layerName = GUIUtil.nameWithoutExtension(selectedFile);
@@ -83,32 +78,28 @@ public class WKTFileInputDriver extends AbstractInputDriver {
         if (extension.equalsIgnoreCase("zip")) {
             String internalName;
 
-            dp.set("CompressedFile", fname);
-            internalName = CompressedFile.getInternalZipFnameByExtension(".wkt",
-                    fname);
+            dp.set(COMPRESSED_KEY, fname);
+            internalName = CompressedFile.getInternalZipFnameByExtension(".wkt", fname);
 
             if (internalName == null) {
-                internalName = CompressedFile.getInternalZipFnameByExtension(".txt",
-                        fname);
+                internalName = CompressedFile.getInternalZipFnameByExtension(".txt", fname);
             }
 
             if (internalName == null) {
                 throw new Exception(
-                    "Couldnt find a .wkt, or .txt file inside the .zip file: " +
-                    fname);
+                    "Couldnt find a .wkt, or .txt file inside the .zip file: " + fname);
             }
 
-            dp.set("File", internalName);
+            dp.set(FILE_KEY, internalName);
         } else if (extension.equalsIgnoreCase(".gz")) {
-            dp.set("CompressedFile", fname);
-            dp.set("File", fname); // not useed
+            dp.set(COMPRESSED_KEY, fname);
+            dp.set(FILE_KEY, fname); // not used
         } else {
-            dp.set("File", fname);
+            dp.set(FILE_KEY, fname);
         }
 
         FeatureCollection featureCollection = reader.read(dp);
-        Layer layer = layerManager.addLayer(categoryName, layerName,
-                featureCollection);
+        layerManager.addLayer(categoryName, layerName, featureCollection);
     }
 
     public void initialize(DriverManager driverManager,

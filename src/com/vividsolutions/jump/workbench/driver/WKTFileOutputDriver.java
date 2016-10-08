@@ -35,13 +35,15 @@ package com.vividsolutions.jump.workbench.driver;
 import java.io.File;
 
 import com.vividsolutions.jump.io.DriverProperties;
-import com.vividsolutions.jump.io.WKTReader;
 import com.vividsolutions.jump.io.WKTWriter;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
+import static com.vividsolutions.jump.io.datasource.DataSource.*;
+
 
 public class WKTFileOutputDriver extends AbstractOutputDriver {
+
     private WKTWriter writer = new WKTWriter();
 
     public WKTFileOutputDriver() {
@@ -57,7 +59,7 @@ public class WKTFileOutputDriver extends AbstractOutputDriver {
         String fname = selectedFile.getAbsolutePath();
 
         DriverProperties dp = new DriverProperties();
-        dp.set("File", fname);
+        dp.set(FILE_KEY, fname);
         writer.write(layer.getFeatureCollectionWrapper(), dp);
     }
 }

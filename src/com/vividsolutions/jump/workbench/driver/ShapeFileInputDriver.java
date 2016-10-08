@@ -34,21 +34,19 @@
 package com.vividsolutions.jump.workbench.driver;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.io.DriverProperties;
-import com.vividsolutions.jump.io.ParseException;
 import com.vividsolutions.jump.io.ShapefileReader;
-import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.ui.AbstractDriverPanel;
 import com.vividsolutions.jump.workbench.ui.BasicFileDriverPanel;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFileFilter;
+
+import static com.vividsolutions.jump.io.datasource.DataSource.*;
 
 
 public class ShapeFileInputDriver extends AbstractInputDriver {
@@ -66,10 +64,7 @@ public class ShapeFileInputDriver extends AbstractInputDriver {
         return panel;
     }
 
-    public void input(LayerManager layerManager, String categoryName)
-        throws FileNotFoundException, IOException, ParseException, 
-            com.vividsolutions.jump.io.ParseException, 
-            com.vividsolutions.jump.io.IllegalParametersException, Exception {
+    public void input(LayerManager layerManager, String categoryName) throws Exception {
         String extension;
         File selectedFile = panel.getSelectedFile();
         String name = GUIUtil.nameWithoutExtension(selectedFile);
@@ -82,23 +77,21 @@ public class ShapeFileInputDriver extends AbstractInputDriver {
         if (extension.equalsIgnoreCase("zip")) {
             String internalName;
 
-            dp.set("CompressedFile", fname);
-            internalName = CompressedFile.getInternalZipFnameByExtension(".shp",
-                    fname);
+            dp.set(COMPRESSED_KEY, fname);
+            internalName = CompressedFile.getInternalZipFnameByExtension(".shp", fname);
 
             if (internalName == null) {
                 throw new Exception(
                     "Couldnt find a .shp file inside the .zip file: " + fname);
             }
 
-            dp.set("File", internalName);
+            dp.set(FILE_KEY, internalName);
         } else {
-            dp.set("File", fname);
+            dp.set(FILE_KEY, fname);
         }
 
         FeatureCollection featureCollection = reader.read(dp);
-        Layer layer = layerManager.addLayer(categoryName, name,
-                featureCollection);
+        layerManager.addLayer(categoryName, name, featureCollection);
     }
 
     public void initialize(DriverManager driverManager,

@@ -84,6 +84,11 @@ public abstract class DataSource {
   public static final String URI_KEY = "Uri";
 
   /**
+   * A property used when the datasource is wrapped into a compressed file
+   */
+  public static final String COMPRESSED_KEY = "CompressedFile";
+
+  /**
    * Coordinate-system property, used for files and other DataSources that have
    * a single CoordinateSystem
    */

@@ -34,21 +34,20 @@
 package com.vividsolutions.jump.workbench.driver;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.io.DriverProperties;
 import com.vividsolutions.jump.io.JMLReader;
-import com.vividsolutions.jump.io.ParseException;
-import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.ui.AbstractDriverPanel;
 import com.vividsolutions.jump.workbench.ui.BasicFileDriverPanel;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFileFilter;
+
+import static com.vividsolutions.jump.io.datasource.DataSource.*;
+
 
 
 /**
@@ -89,10 +88,7 @@ public class JMLFileInputDriver extends AbstractInputDriver {
         panel.setFileMustExist(true);
     }
 
-    public void input(LayerManager layerManager, String categoryName)
-        throws FileNotFoundException, IOException, ParseException, 
-            com.vividsolutions.jts.io.ParseException, 
-            com.vividsolutions.jump.io.IllegalParametersException, Exception {
+    public void input(LayerManager layerManager, String categoryName) throws Exception {
         String extension;
         File selectedFile = panel.getSelectedFile();
         FeatureCollection featureCollection;
@@ -105,38 +101,34 @@ public class JMLFileInputDriver extends AbstractInputDriver {
         if (extension.equalsIgnoreCase("zip")) {
             String internalName;
 
-            dp.set("CompressedFile", name);
-            internalName = CompressedFile.getInternalZipFnameByExtension(".jml",
-                    name);
+            dp.set(COMPRESSED_KEY, name);
+            internalName = CompressedFile.getInternalZipFnameByExtension(".jml", name);
 
             if (internalName == null) {
-                internalName = CompressedFile.getInternalZipFnameByExtension(".gml",
-                        name);
+                internalName = CompressedFile.getInternalZipFnameByExtension(".gml", name);
             }
 
             if (internalName == null) {
-                internalName = CompressedFile.getInternalZipFnameByExtension(".xml",
-                        name);
+                internalName = CompressedFile.getInternalZipFnameByExtension(".xml", name);
             }
 
             if (internalName == null) {
                 throw new Exception(
-                    "Couldnt find a .jml, .xml, or .gml file inside the .zip file: " +
-                    name);
+                    "Couldnt find a .jml, .xml, or .gml file inside the .zip file: " + name);
             }
 
-            dp.set("File", internalName);
+            dp.set(FILE_KEY, internalName);
         } else if (extension.equalsIgnoreCase(".gz")) {
-            dp.set("CompressedFile", name);
-            dp.set("File", name); // not useed
+            dp.set(COMPRESSED_KEY, name);
+            dp.set(FILE_KEY, name); // not used
         } else {
-            dp.set("File", name);
+            dp.set(FILE_KEY, name);
         }
 
         // no "TemplateFile" specified, so read it from the top of the "File"
         featureCollection = jmlReader.read(dp);
 
-        Layer layer = layerManager.addLayer(categoryName,
+        layerManager.addLayer(categoryName,
                 GUIUtil.nameWithoutExtension(selectedFile), featureCollection);
     }
 }

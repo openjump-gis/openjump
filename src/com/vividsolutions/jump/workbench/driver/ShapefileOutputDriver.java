@@ -34,15 +34,13 @@
 package com.vividsolutions.jump.workbench.driver;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import com.vividsolutions.jump.io.DriverProperties;
-import com.vividsolutions.jump.io.ParseException;
-import com.vividsolutions.jump.io.ShapefileReader;
 import com.vividsolutions.jump.io.ShapefileWriter;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+
+import static com.vividsolutions.jump.io.datasource.DataSource.*;
 
 
 public class ShapefileOutputDriver extends AbstractOutputDriver {
@@ -51,15 +49,13 @@ public class ShapefileOutputDriver extends AbstractOutputDriver {
     public ShapefileOutputDriver() {
     }
 
-    public void output(Layer layer)
-        throws FileNotFoundException, IOException, ParseException, 
-            com.vividsolutions.jts.io.ParseException, Exception {
+    public void output(Layer layer) throws Exception {
         File selectedFile = driverManager.getSharedSaveBasicFileDriverPanel()
                                          .getSelectedFile();
         String fname = selectedFile.getAbsolutePath();
 
         DriverProperties dp = new DriverProperties();
-        dp.set("File", fname);
+        dp.set(FILE_KEY, fname);
         shapeWriter.write(layer.getFeatureCollectionWrapper(), dp);
     }
 

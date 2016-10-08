@@ -3,8 +3,17 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-10-08
+  * Fix bug #433 throwing exception when applying scale limits in bad order
+  * Optimization : changeStyle was applying the new style two times
+  * Fix #432 Zipped datasource should be unmodifiable
+
 2016-10-08 Giuseppe Aruta  <giuseppe_aruta@yahoo.it>
   * Upgraded Sextante (Correct bug #410. Added Sextante Data Explorer)
+
+2016-10-07 mmichaud <m.michael.michaud@orange.fr>
+  * Fix SaveLayersWithoutDataSourcePlugIn by using JFileChooser instead of
+    JFCWithEnterAction
 
 2016-10-06 ede
   * PLUS: update ImageIO-Ext to 1.1.15, GDAL binding to 2.1.0 
