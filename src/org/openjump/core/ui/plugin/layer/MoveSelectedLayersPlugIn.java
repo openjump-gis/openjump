@@ -1,7 +1,5 @@
 package org.openjump.core.ui.plugin.layer;
 
-
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -11,70 +9,42 @@ import javax.swing.JPopupMenu;
 import javax.swing.JComboBox;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
-import com.vividsolutions.jump.workbench.ui.TreeLayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.model.Category;
 
+/**
+ * Move selected layer to category plugin
+ * @author Giuseppe Aruta 2013-11-24
+ */
+public class MoveSelectedLayersPlugIn extends AbstractPlugIn {
 
-public class MoveSelectedLayersPlugIn extends AbstractPlugIn
-{    
-	 
-	
-	
-	/**
-	 * 
-	 * @author Giuseppe Aruta 2013-11-24
-	 * Move selected layer to category plugin
-	 * Adapted from Skyjump MoveSelectedLayers PlugIn to OpenJUMP
-	 * (2013-11-24)
-	 * - Internationalized
-	 * - Extended the Plugin to WMS layers and Sextante Raster layers
-	 * TODO: make undoable
-	 * 
-	 */
+	// Adapted from Skyjump MoveSelectedLayers PlugIn to OpenJUMP (2013-11-24)
+	// - Internationalized
+	// - Extended the Plugin to WMS layers and Sextante Raster layers
+	// TODO: make undoable
 	
 	private final static String CATEGORIES = I18N
 		      .get("ui.plugin.MoveLayerablePlugIn.destination-category");
-	private boolean moveToTop = true;
-	public static final ImageIcon ICON = IconLoader.icon("bullet_arrow_up_down.png"); 
-	public String getName() {
-	            return I18N
-	            	      .get("ui.plugin.MoveLayerablePlugIn.move-to-category");
-	        }
-	
-    public void initialize(PlugInContext context) throws Exception
-    {
-        WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
-        @SuppressWarnings("unused")
-		JPopupMenu layerNamePopupMenu = workbenchContext.getWorkbench()
-                                                        .getFrame()
-                                                        .getLayerNamePopupMenu();
-        
-       
-	       	        
-	    ///Deactivated as it loads through Default-Plugins.xml   
-	  /*     
-        featureInstaller.addPopupMenuPlugin(layerNamePopupMenu,
-            this, getName(),
-            false, null,
-            createEnableCheck(workbenchContext));     */    
-    }
-    
 
-    protected Layerable selectedLayerable(LayerNamePanel layerNamePanel) {
-        return (Layerable) layerNamePanel.selectedNodes(Layerable.class).iterator().next();
-    }
+	private boolean moveToTop = true;
+
+	public static final ImageIcon ICON = IconLoader.icon("bullet_arrow_up_down.png");
+
+	public String getName() {
+		return I18N.get("ui.plugin.MoveLayerablePlugIn.move-to-category");
+	}
+
+	// Initialized through through Default-Plugins.xml
 
     public boolean execute(PlugInContext context) throws Exception
     {
@@ -96,8 +66,8 @@ public class MoveSelectedLayersPlugIn extends AbstractPlugIn
         		      .get("ui.plugin.MoveLayerablePlugIn.move-to-top"), "position", moveToTop, "Insert at top of category");
         	dialog.addRadioButton(I18N
         		      .get("ui.plugin.MoveLayerablePlugIn.move-to-bottom"), "position", !moveToTop, "Insert at bottom of category");
-     		dialog.setVisible(true);
-    		
+			GUIUtil.centreOnWindow(dialog);
+			dialog.setVisible(true);
     		if (! dialog.wasOKPressed()) 
     		{ 
     			return false; 
@@ -113,19 +83,15 @@ public class MoveSelectedLayersPlugIn extends AbstractPlugIn
     			
     			
 	            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-	            Collection layerCollection = (Collection) context.getWorkbenchContext().getLayerNamePanel().selectedNodes(Layerable.class);
-	            //Layer[] selectedLayers = (Layer[]) layerCollection.toArray(new Layer[]{});
+	            Collection layerCollection = context.getWorkbenchContext()
+						.getLayerNamePanel().selectedNodes(Layerable.class);
 	            Layerable[] selectedLayers = (Layerable[]) layerCollection.toArray(new Layerable[]{});
-	            
-	            
-	            
+
 	            if (moveToTop)
 	            {
 		            for (int i = selectedLayers.length - 1; i >= 0; i--)
 		            {
-		            	
-		            	
-		            	Layerable layerable = (Layerable) selectedLayers[i];
+		            	Layerable layerable = selectedLayers[i];
 		            	layerManager.remove(layerable);
 		            	layerManager.addLayerable(categoryName, layerable);
 		            }
@@ -137,7 +103,7 @@ public class MoveSelectedLayersPlugIn extends AbstractPlugIn
 	            	
 		            for (int i = selectedLayers.length - 1; i >= 0; i--)
 		            {
-		            	Layerable layerable = (Layerable) selectedLayers[i];
+		            	Layerable layerable = selectedLayers[i];
 		            	Category layerCat = layerManager.getCategory(layerable);
 		            	layerManager.remove(layerable);
 		            	if (layerCat == destCat) 
@@ -146,8 +112,8 @@ public class MoveSelectedLayersPlugIn extends AbstractPlugIn
 		            }
 	            }
 	            //Deactivate as setCelectedLayers dosn't work with Sextante Raster Layer
-	           // TreeLayerNamePanel lnp = (TreeLayerNamePanel)context.getWorkbenchContext().getLayerNamePanel();
-	           // lnp.setSelectedLayers( selectedLayers);
+	            // TreeLayerNamePanel lnp = (TreeLayerNamePanel)context.getWorkbenchContext().getLayerNamePanel();
+	            // lnp.setSelectedLayers( selectedLayers);
 	            return true;
     		}
         }
