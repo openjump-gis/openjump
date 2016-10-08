@@ -32,10 +32,7 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JInternalFrame;
+import javax.swing.*;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.datasource.DataSource;
@@ -51,12 +48,21 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerableNamePanel;
+import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
+import java.awt.*;
+
+import static javafx.scene.control.Alert.AlertType.CONFIRMATION;
 
 public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
 
   private EditingPlugIn editingPlugIn;
+
+  private static final String CONFIRMATION_TITLE = EditablePlugIn.class.getName() + ".make-read-only-layer-editable";
+  private static final String CONFIRMATION_1 = EditablePlugIn.class.getName() + ".detach-layer-from-source-1";
+  private static final String CONFIRMATION_2 = EditablePlugIn.class.getName() + ".detach-layer-from-source-2";
 
   public static final ImageIcon ICON = IconLoader.icon("edit.gif");
 
@@ -76,9 +82,34 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
     // assume what to do by status of first selected layer
     boolean makeEditable = !layers[0].isEditable();
     // set states for each
+
     for (Layerable layerable : layers) {
       if (isWritable(layerable)) {
         layerable.setEditable(makeEditable);
+      } else {
+        String message = "<html><br>" + I18N.getMessage(CONFIRMATION_1, "<i>'"+layerable.getName()+"'</i>");
+        message += "<br><br>" + I18N.get(CONFIRMATION_2) + "<br></html>";
+        JLabel label = new JLabel(message);
+        JPanel panel = new JPanel();
+        panel.add(label);
+        OKCancelDialog okCancelPanel = new OKCancelDialog(
+                context.getWorkbenchFrame(),
+                I18N.getMessage(CONFIRMATION_TITLE),
+                true,
+                panel,
+                new OKCancelDialog.Validator() {
+                  @Override
+                  public String validateInput(Component component) {
+                    return null;
+                  }
+                });
+        okCancelPanel.setVisible(true);
+        if (okCancelPanel.wasOKPressed()) {
+          layerable.setEditable(makeEditable);
+          if (layerable instanceof Layer) {
+            ((Layer)layerable).setDataSourceQuery(null);
+          }
+        }
       }
     }
 
@@ -98,7 +129,7 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
         return true;
       } else {
         DataSource source = layer.getDataSourceQuery().getDataSource();
-        return (source.isWritable() && source.getProperties().get("CompressedFile") == null);
+        return (source.isWritable() && source.getProperties().get(DataSource.COMPRESSED_KEY) == null);
       }
     } else return false;
   }

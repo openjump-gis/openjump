@@ -6,7 +6,8 @@
 2016-10-08
   * Fix bug #433 throwing exception when applying scale limits in bad order
   * Optimization : changeStyle was applying the new style two times
-  * Fix #432 Zipped datasource should be unmodifiable
+  * Fix #432 Non-writable datasource (zipped, datastore...) :
+    add prompt to detach the source in EditablePlugIn
   * Improve MoveSelectedLayerable to another category
 
 2016-10-08 Giuseppe Aruta  <giuseppe_aruta@yahoo.it>
