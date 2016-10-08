@@ -60,6 +60,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.OKCancelApplyPanel;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
@@ -160,7 +161,16 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         dialog.addOKCancelApplyPanelActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
                 if (dialog.wasApplyPressed()) {
-                    testStyles(layer, stylePanels, context);
+                    for (final StylePanel stylePanel : stylePanels) {
+                        if (stylePanel.validateInput() != null) {
+                            context.getWorkbenchFrame().handleThrowable(
+                                    new Exception(stylePanel.validateInput()), dialog);
+                            return;
+                        }
+                    }
+                    if (dialog.wasApplyPressed()) {
+                        testStyles(layer, stylePanels, context);
+                    }
                 }
             }
         }
@@ -194,7 +204,6 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
     
     private void applyStyles(final Layer layer, final ArrayList<StylePanel> stylePanels, 
             final Collection<?> oldStyles, final PlugInContext context) {
-
         layer.getLayerManager().deferFiringEvents(new Runnable() {
             public void run() {
                 for (final StylePanel stylePanel : stylePanels) {
