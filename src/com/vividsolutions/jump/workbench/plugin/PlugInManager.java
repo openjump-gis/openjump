@@ -346,11 +346,19 @@ public class PlugInManager {
       ArrayList configurations = new ArrayList();
       for (Iterator i = classNames.iterator(); i.hasNext();) {
         String name = (String) i.next();
-        // find class using the plugin classloader
-        Class clazz = Class.forName(name, false, classLoader);
-        if ( Configuration.class.isAssignableFrom(clazz) ) {
-          Configuration configuration = (Configuration) clazz.newInstance();
-          configurations.add(configuration);
+        
+        try {
+          // find class using the plugin classloader
+          Class clazz = Class.forName(name, false, classLoader);
+          if ( Configuration.class.isAssignableFrom(clazz) ) {
+            Configuration configuration = (Configuration) clazz.newInstance();
+            configurations.add(configuration);
+          }
+        } 
+        // make sure ClassVersionErrors or such do not break OJ startup
+        catch (Throwable t) {
+          context.getErrorHandler().handleThrowable(t,context.getWorkbench().getFrame());
+          continue;
         }
       }
       return configurations;

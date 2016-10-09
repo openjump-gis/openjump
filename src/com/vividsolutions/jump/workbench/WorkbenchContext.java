@@ -59,7 +59,7 @@ public abstract class WorkbenchContext implements LayerViewPanelProxy,
 
     abstract public JUMPWorkbench getWorkbench();
 
-    abstract public ErrorHandler getErrorHandler();
+    abstract public ErrorHandlerV2 getErrorHandler();
 
     abstract public Blackboard getBlackboard();
 
