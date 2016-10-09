@@ -54,8 +54,6 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 import java.awt.*;
 
-import static javafx.scene.control.Alert.AlertType.CONFIRMATION;
-
 public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
 
   private EditingPlugIn editingPlugIn;
