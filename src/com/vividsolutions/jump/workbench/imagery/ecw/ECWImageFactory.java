@@ -38,6 +38,7 @@ import java.nio.charset.Charset;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.io.CompressedFile;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
@@ -130,10 +131,12 @@ public class ECWImageFactory implements ReferencedImageFactory {
     try {
       System.loadLibrary("jecw");
     } catch (Error e) {
-      context.getWorkbench().getFrame().log("ECW/JP2 native libs " + sNotInstalled, this.getClass());
+      Logger.error("ECW/JP2 native libs " + sNotInstalled + " reason: " + e.getMessage());
+      Logger.debug(e);
       return false;
     }
 
+    Logger.info("ECW/JP2 native support loaded.");
     return true;
   }
 }
