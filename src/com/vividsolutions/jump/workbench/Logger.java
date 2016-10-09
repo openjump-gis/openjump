@@ -125,6 +125,10 @@ public class Logger {
     if (element != null && !loggerLevel.isGreaterOrEqual(Level.INFO))
       msgAppend = " at " + element + "";
 
+    // use t message if null given
+    if (msg == null)
+      msg = t.getMessage();
+
     logger.log(logLevel, msg + msgAppend, t);
   }
 
