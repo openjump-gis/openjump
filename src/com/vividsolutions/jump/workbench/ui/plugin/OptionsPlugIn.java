@@ -81,8 +81,7 @@ public class OptionsPlugIn extends AbstractPlugIn {
     dialog(context).addTab(
         I18N.get("ui.plugin.OptionsPlugIn.view-edit"),
         new EditOptionsPanel(context.getWorkbenchContext().getWorkbench()
-            .getBlackboard(), context.getWorkbenchContext().getWorkbench()
-            .getFrame().getDesktopPane()));
+            .getBlackboard()));
     dialog(context).addTab(
         I18N.get("ui.plugin.OptionsPlugIn.snap-vertices-tools"),
         GUIUtil.resize(IconLoader.icon("QuickSnap.gif"), 16),

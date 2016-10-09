@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-10-09 mmichaud <m.michael.michaud@orange.fr>
+  * Refactoring of EditOptionsPanel + add single editable layer option
+
 2016-10-08
   * Fix bug #433 throwing exception when applying scale limits in bad order
   * Optimization : changeStyle was applying the new style two times

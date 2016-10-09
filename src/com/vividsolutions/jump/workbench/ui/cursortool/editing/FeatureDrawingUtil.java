@@ -180,7 +180,9 @@ public class FeatureDrawingUtil {
           public void execute() {
               getLayer().getFeatureCollectionWrapper().add(feature);
 
-              if (EditOptionsPanel.geometryCheck.isSelected()) {
+              if (layerViewPanel.getWorkBenchFrame().getContext().getWorkbench()
+                      .getBlackboard().get(EditOptionsPanel.SELECT_NEW_GEOMETRY_KEY, false)) {
+              //if (EditOptionsPanel.geometryCheck.isSelected()) {
                   featsToAdd = new ArrayList<Feature>();
                   featsToAdd.add(feature);
                   SelectionManager selectionManager = layerViewPanel
@@ -380,7 +382,12 @@ public class FeatureDrawingUtil {
 
     public void selectGeometry(LayerViewPanel panel, Geometry geom) {
         SelectionManager selectionManager = panel.getSelectionManager();
-        if (EditOptionsPanel.geometryCheck.isSelected()) {
+        if (panel.getWorkBenchFrame()
+                .getContext()
+                .getWorkbench()
+                .getBlackboard()
+                .get(EditOptionsPanel.SELECT_NEW_GEOMETRY_KEY, false)) {
+        //if (EditOptionsPanel.geometryCheck.isSelected()) {
 
             this.featsToAdd = new ArrayList();
             this.featsToAdd.add(FeatureUtil.toFeature(geom, layer(panel)

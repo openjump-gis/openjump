@@ -41,11 +41,14 @@ import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.EditOptionsPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
@@ -67,18 +70,27 @@ public class AddNewLayerPlugIn extends AbstractPlugIn {
     reportNothingToUndoYet(context);
     Collection selectedCategories = context.getLayerNamePanel()
         .getSelectedCategories();
-    context
-        .addLayer(
+    Layer layer = context.addLayer(
             selectedCategories.isEmpty() ? StandardCategoryNames.WORKING
                 : selectedCategories.iterator().next().toString(),
             I18N.get("ui.plugin.AddNewLayerPlugIn.new"),
-            createBlankFeatureCollection()).setFeatureCollectionModified(false)
-        .setEditable(true);
+            createBlankFeatureCollection());
+    layer.setFeatureCollectionModified(false);
+    if (context.getWorkbenchContext().getBlackboard().get(EditOptionsPanel.SINGLE_EDITABLE_LAYER_KEY, false)) {
+      setAllLayersToUneditable(context);
+    }
+    layer.setEditable(true);
     ((EditingPlugIn) context.getWorkbenchContext().getBlackboard()
         .get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext())
         .setVisible(true);
 
     return true;
+  }
+
+  private void setAllLayersToUneditable(PlugInContext context) {
+    for (Object object : context.getLayerNamePanel().getLayerManager().getLayerables(Layerable.class))  {
+      ((Layerable)object).setEditable(false);
+    }
   }
 
   @Override

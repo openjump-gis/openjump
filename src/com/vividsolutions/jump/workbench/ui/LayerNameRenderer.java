@@ -310,9 +310,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
          * Giuseppe Aruta [2015-01-04] Generated tooltip text [2015-03-29] Made
          * tooltip optional (original/enhanced)
          */
-        boolean layerTooltipsOn = PersistentBlackboardPlugIn.get(
-                JUMPWorkbench.getInstance().getBlackboard()).get(
-                EditOptionsPanel.LAYER_TOOLTIPS_ON, false);
+        boolean layerTooltipsOn = JUMPWorkbench.getInstance().getBlackboard()
+                .get(EditOptionsPanel.LAYER_TOOLTIPS_KEY, false);
         if (layerTooltipsOn) {
             setToolTipText(generateMinimalToolTipText(layerable));
 

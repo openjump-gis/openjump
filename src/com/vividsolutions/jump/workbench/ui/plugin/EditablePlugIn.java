@@ -65,12 +65,12 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
   public static final ImageIcon ICON = IconLoader.icon("edit.gif");
 
   public EditablePlugIn(EditingPlugIn editingPlugIn) {
+    super();
     this.editingPlugIn = editingPlugIn;
   }
 
   public EditablePlugIn() {
-    super();
-    this.editingPlugIn = EditingPlugIn.getInstance();
+    this(EditingPlugIn.getInstance());
   }
 
   public boolean execute(PlugInContext context) throws Exception {
@@ -83,6 +83,7 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
 
     for (Layerable layerable : layers) {
       if (isWritable(layerable)) {
+        if (makeEditable) setAllLayersToUneditable(context);
         layerable.setEditable(makeEditable);
       } else {
         String message = "<html><br>" + I18N.getMessage(CONFIRMATION_1, "<i>'"+layerable.getName()+"'</i>");
@@ -103,6 +104,7 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
                 });
         okCancelPanel.setVisible(true);
         if (okCancelPanel.wasOKPressed()) {
+          if (makeEditable) setAllLayersToUneditable(context);
           layerable.setEditable(makeEditable);
           if (layerable instanceof Layer) {
             ((Layer)layerable).setDataSourceQuery(null);
@@ -164,6 +166,12 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
     });
 
     return mec;
+  }
+
+  private void setAllLayersToUneditable(PlugInContext context) {
+    for (Object object : context.getLayerNamePanel().getLayerManager().getLayerables(Layerable.class))  {
+      ((Layerable)object).setEditable(false);
+    }
   }
 
   private static Layerable[] getSelectedLayerables(WorkbenchContext wbc) {
