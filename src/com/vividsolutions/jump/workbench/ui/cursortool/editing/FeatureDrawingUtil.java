@@ -73,6 +73,7 @@ import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.DelegatingTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public class FeatureDrawingUtil {
     protected List<Feature> featsToAdd;
@@ -180,8 +181,9 @@ public class FeatureDrawingUtil {
           public void execute() {
               getLayer().getFeatureCollectionWrapper().add(feature);
 
-              if (layerViewPanel.getWorkBenchFrame().getContext().getWorkbench()
-                      .getBlackboard().get(EditOptionsPanel.SELECT_NEW_GEOMETRY_KEY, false)) {
+              if (PersistentBlackboardPlugIn
+                      .get(layerViewPanel.getWorkBenchFrame().getContext())
+                      .get(EditOptionsPanel.SELECT_NEW_GEOMETRY_KEY, false)) {
               //if (EditOptionsPanel.geometryCheck.isSelected()) {
                   featsToAdd = new ArrayList<Feature>();
                   featsToAdd.add(feature);
@@ -382,10 +384,8 @@ public class FeatureDrawingUtil {
 
     public void selectGeometry(LayerViewPanel panel, Geometry geom) {
         SelectionManager selectionManager = panel.getSelectionManager();
-        if (panel.getWorkBenchFrame()
-                .getContext()
-                .getWorkbench()
-                .getBlackboard()
+        if (PersistentBlackboardPlugIn
+                .get(panel.getWorkBenchFrame().getContext())
                 .get(EditOptionsPanel.SELECT_NEW_GEOMETRY_KEY, false)) {
         //if (EditOptionsPanel.geometryCheck.isSelected()) {
 

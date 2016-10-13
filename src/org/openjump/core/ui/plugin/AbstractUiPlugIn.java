@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import javax.swing.Icon;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -14,12 +13,12 @@ import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 
 /**
@@ -102,7 +101,7 @@ public abstract class AbstractUiPlugIn extends AbstractPlugIn implements ActionL
   }
 
   protected boolean isRollingBackInvalidEdits(PlugInContext context) {
-    return context.getWorkbenchContext().getWorkbench().getBlackboard().get(
+    return PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).get(
       EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false);
   }
 

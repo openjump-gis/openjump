@@ -45,6 +45,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import java.util.Iterator;
 
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import org.python.core.Py;
 import org.python.core.PyException;
 import org.python.core.PyString;
@@ -280,7 +281,8 @@ public class DrawCustomTool extends ConstrainedNClickTool {
         if (!isValidOp.isValid()) 
         {
         	getPanel().getContext().warnUser(isValidOp.getValidationError().getMessage());
-        	if (getWorkbench().getBlackboard().get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) 
+        	if (PersistentBlackboardPlugIn.get(getWorkbench().getContext())
+					.get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false))
         	{
         		return null;
         	}

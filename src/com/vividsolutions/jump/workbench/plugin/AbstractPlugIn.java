@@ -47,7 +47,6 @@ import javax.swing.undo.UndoableEdit;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
@@ -63,7 +62,7 @@ import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 
 /**
@@ -157,7 +156,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
   }
 
   protected boolean isRollingBackInvalidEdits(PlugInContext context) {
-    return context.getWorkbenchContext().getWorkbench().getBlackboard()
+    return PersistentBlackboardPlugIn.get(context.getWorkbenchContext())
         .get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false);
   }
 

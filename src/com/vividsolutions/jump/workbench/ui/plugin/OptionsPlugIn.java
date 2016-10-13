@@ -43,7 +43,6 @@ import com.vividsolutions.jump.workbench.ui.EditOptionsPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
 import com.vividsolutions.jump.workbench.ui.OptionsDialog;
-import com.vividsolutions.jump.workbench.ui.OptionsPanel;
 import com.vividsolutions.jump.workbench.ui.OptionsPanelV2;
 import com.vividsolutions.jump.workbench.ui.SnapVerticesToolsOptionsPanel;
 import com.vividsolutions.jump.workbench.ui.network.ProxySettingsOptionsPanel;
@@ -80,8 +79,7 @@ public class OptionsPlugIn extends AbstractPlugIn {
   public void initialize(PlugInContext context) throws Exception {
     dialog(context).addTab(
         I18N.get("ui.plugin.OptionsPlugIn.view-edit"),
-        new EditOptionsPanel(context.getWorkbenchContext().getWorkbench()
-            .getBlackboard()));
+        new EditOptionsPanel(PersistentBlackboardPlugIn.get(context.getWorkbenchContext())));
     dialog(context).addTab(
         I18N.get("ui.plugin.OptionsPlugIn.snap-vertices-tools"),
         GUIUtil.resize(IconLoader.icon("QuickSnap.gif"), 16),

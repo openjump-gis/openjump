@@ -67,7 +67,7 @@ import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUtil;
-//import org.openjump.core.ui.MultiInputDialogWithoutCancel;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public class DrawCircleWithGivenRadiusTool extends NClickTool{
 	
@@ -152,7 +152,8 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
             getPanel().getContext().warnUser(isValidOp.getValidationError()
                                                       .getMessage());
 
-            if (getWorkbench().getBlackboard().get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
+            if (PersistentBlackboardPlugIn.get(getWorkbench().getContext())
+					.get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
                 return false;
             }
         }

@@ -110,7 +110,7 @@ public class OpenJumpConfiguration {
      **************************************************************************/
     // -- disable drawing of invalid polygons by default (can be changed during
     // work in EditOptionsPanel)
-    workbenchContext.getBlackboard().put(
+    PersistentBlackboardPlugIn.get(workbenchContext).put(
       EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, true);
 
     

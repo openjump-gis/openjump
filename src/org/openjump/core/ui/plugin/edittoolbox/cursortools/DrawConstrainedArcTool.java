@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import org.openjump.core.geomutils.Arc;
 import org.openjump.core.geomutils.MathVector;
 
@@ -125,7 +126,8 @@ public class DrawConstrainedArcTool extends ConstrainedMultiClickArcTool {
             getPanel().getContext().warnUser(isValidOp.getValidationError()
                                                       .getMessage());
 
-            if (getWorkbench().getBlackboard().get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
+            if (PersistentBlackboardPlugIn.get(getWorkbench().getContext())
+                    .get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
                 return false;
             }
         }

@@ -41,6 +41,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public abstract class ConstrainedPolygonTool extends ConstrainedMultiClickTool {
     public ConstrainedPolygonTool() 
@@ -75,8 +76,7 @@ public abstract class ConstrainedPolygonTool extends ConstrainedMultiClickTool {
         if (!isValidOp.isValid()) {
             getPanel().getContext().warnUser(isValidOp.getValidationError().getMessage());
 
-            if (getWorkbench()
-                .getBlackboard()
+            if (PersistentBlackboardPlugIn.get(getWorkbench().getContext())
                 .get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
                 return false;
             }

@@ -296,7 +296,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 	}
 
 	protected boolean isRollingBackInvalidEdits() {
-		return getWorkbench().getBlackboard().get(
+		return PersistentBlackboardPlugIn.get(getWorkbench().getContext()).get(
 				EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false);
 	}
 

@@ -41,6 +41,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public abstract class PolygonTool extends MultiClickTool {
     public PolygonTool()
@@ -76,8 +77,7 @@ public abstract class PolygonTool extends MultiClickTool {
         if (!isValidOp.isValid()) {
             getPanel().getContext().warnUser(isValidOp.getValidationError().getMessage());
 
-            if (getWorkbench()
-                .getBlackboard()
+            if (PersistentBlackboardPlugIn.get(getWorkbench().getContext())
                 .get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
                 return false;
             }

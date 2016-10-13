@@ -10,13 +10,13 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
 import com.vividsolutions.jump.workbench.ui.cursortool.CoordinateListMetrics;
 import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -151,7 +151,7 @@ import javax.swing.JOptionPane;
 
     protected boolean isRollingBackInvalidEdits(WorkbenchContext context) {
       return
-              context.getWorkbench().getBlackboard().get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false);
+              PersistentBlackboardPlugIn.get(context).get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false);
     }
 
     protected boolean checkLineString() throws NoninvertibleTransformException {
@@ -170,7 +170,8 @@ import javax.swing.JOptionPane;
                 isValidOp.getValidationError().getMessage());
 
 
-        if (getWorkbench().getBlackboard().get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
+        if (PersistentBlackboardPlugIn.get(getWorkbench().getContext())
+                .get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
           return false;
         }
       }

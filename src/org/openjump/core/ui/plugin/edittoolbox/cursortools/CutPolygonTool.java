@@ -19,6 +19,7 @@ import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.PolygonTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUtil;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -134,7 +135,7 @@ public class CutPolygonTool extends PolygonTool {
 	}
 	
 	protected boolean isRollingBackInvalidEdits(WorkbenchContext context) {
-		return context.getWorkbench().getBlackboard()
+		return PersistentBlackboardPlugIn.get(context)
 				.get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false);
 	}
 }

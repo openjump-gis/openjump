@@ -32,15 +32,11 @@
 
 package com.vividsolutions.jump.workbench.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
-import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
@@ -50,7 +46,6 @@ import org.saig.jump.widgets.config.ConfigTooltipPanel;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 /**
  * Implements an {@link OptionsPanel} for Edit.
@@ -120,17 +115,13 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
     }
 
     public void init() {
-        System.out.println("persistence " + PersistentBlackboardPlugIn.get(blackboard).get(
-                SINGLE_EDITABLE_LAYER_KEY, true));
-        System.out.println("blackboard " + blackboard.get(
-                SINGLE_EDITABLE_LAYER_KEY, true));
-        preventEditsCheckBox.setSelected(PersistentBlackboardPlugIn.get(blackboard).get(
+        preventEditsCheckBox.setSelected(blackboard.get(
                 EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false));
-        selectNewGeometryCheckBox.setSelected(PersistentBlackboardPlugIn.get(blackboard).get(
+        selectNewGeometryCheckBox.setSelected(blackboard.get(
                 SELECT_NEW_GEOMETRY_KEY, false));
-        singleEditableLayerCheckBox.setSelected(PersistentBlackboardPlugIn.get(blackboard).get(
+        singleEditableLayerCheckBox.setSelected(blackboard.get(
                 SINGLE_EDITABLE_LAYER_KEY, true));
-        tooltipCheckBox.setSelected(PersistentBlackboardPlugIn.get(blackboard).get(
+        tooltipCheckBox.setSelected(blackboard.get(
                 LAYER_TOOLTIPS_KEY, false));
 
         blackboard.put(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, preventEditsCheckBox.isSelected());
@@ -152,15 +143,6 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
                 singleEditableLayerCheckBox.isSelected());
         blackboard.put(LAYER_TOOLTIPS_KEY,
                 tooltipCheckBox.isSelected());
-
-        PersistentBlackboardPlugIn.get(blackboard).
-                put(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, preventEditsCheckBox.isSelected());
-        PersistentBlackboardPlugIn.get(blackboard).
-                put(SELECT_NEW_GEOMETRY_KEY, selectNewGeometryCheckBox.isSelected());
-        PersistentBlackboardPlugIn.get(blackboard).
-                put(SINGLE_EDITABLE_LAYER_KEY, singleEditableLayerCheckBox.isSelected());
-        PersistentBlackboardPlugIn.get(blackboard).
-                put(LAYER_TOOLTIPS_KEY, tooltipCheckBox.isSelected());
     }
 
 

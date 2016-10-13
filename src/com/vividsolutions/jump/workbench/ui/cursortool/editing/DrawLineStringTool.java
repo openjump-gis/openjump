@@ -48,6 +48,7 @@ import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.cursortool.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.snap.SnapToLineStringBeingEditedPolicy;
 import com.vividsolutions.jump.workbench.ui.snap.SnapToFeaturesPolicy;
 import com.vividsolutions.jump.workbench.ui.snap.SnapToGridPolicy;
@@ -119,7 +120,8 @@ public class DrawLineStringTool extends MultiClickTool {
             getPanel().getContext().warnUser(isValidOp.getValidationError()
                                                       .getMessage());
 
-            if (getWorkbench().getBlackboard().get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
+            if (PersistentBlackboardPlugIn.get(getWorkbench().getContext())
+                    .get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
                 return false;
             }
         }

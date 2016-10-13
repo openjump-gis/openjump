@@ -66,10 +66,7 @@ public abstract class WKTPlugIn extends AbstractPlugIn {
             Feature f = (Feature) i.next();
             IsValidOp op = new IsValidOp(f.getGeometry());
             if (!op.isValid()) {
-                if (context
-                    .getWorkbenchContext()
-                    .getWorkbench()
-                    .getBlackboard()
+                if (PersistentBlackboardPlugIn.get(context.getWorkbenchContext())
                     .get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)
                     ) {
                     throw new WorkbenchException(op.getValidationError().getMessage());

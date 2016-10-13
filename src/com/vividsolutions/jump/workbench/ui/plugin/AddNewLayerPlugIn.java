@@ -76,7 +76,8 @@ public class AddNewLayerPlugIn extends AbstractPlugIn {
             I18N.get("ui.plugin.AddNewLayerPlugIn.new"),
             createBlankFeatureCollection());
     layer.setFeatureCollectionModified(false);
-    if (context.getWorkbenchContext().getBlackboard().get(EditOptionsPanel.SINGLE_EDITABLE_LAYER_KEY, false)) {
+    if (PersistentBlackboardPlugIn.get(context.getWorkbenchContext())
+            .get(EditOptionsPanel.SINGLE_EDITABLE_LAYER_KEY, false)) {
       setAllLayersToUneditable(context);
     }
     layer.setEditable(true);
