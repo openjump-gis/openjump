@@ -131,8 +131,8 @@ public abstract class AbstractLayerable implements Layerable {
     if (this.visible == visible) {
       return;
     }
-
     this.visible = visible;
+    editable = visible && editable;
     fireLayerChanged(LayerEventType.VISIBILITY_CHANGED);
   }
 

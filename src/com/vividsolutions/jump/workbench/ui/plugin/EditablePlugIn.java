@@ -45,10 +45,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
-import com.vividsolutions.jump.workbench.ui.LayerableNamePanel;
-import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
+import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
@@ -76,16 +73,20 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
   public boolean execute(PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
 
+    boolean single = PersistentBlackboardPlugIn.get(context.getWorkbenchContext())
+            .get(EditOptionsPanel.SINGLE_EDITABLE_LAYER_KEY, true);
+
     Layerable[] layers = getSelectedLayerables(context.getWorkbenchContext());
     // assume what to do by status of first selected layer
     boolean makeEditable = !layers[0].isEditable();
     // set states for each
 
     for (Layerable layerable : layers) {
-      if (isWritable(layerable)) {
-        if (makeEditable) setAllLayersToUneditable(context);
+      if (isWritable(layerable) && layerable.isVisible()) {
+        if (single) setAllLayersToUneditable(context);
+        //if (makeEditable) setAllLayersToUneditable(context);
         layerable.setEditable(makeEditable);
-      } else {
+      } else if (layerable.isVisible()) {
         String message = "<html><br>" + I18N.getMessage(CONFIRMATION_1, "<i>'"+layerable.getName()+"'</i>");
         message += "<br><br>" + I18N.get(CONFIRMATION_2) + "<br></html>";
         JLabel label = new JLabel(message);
@@ -104,7 +105,8 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
                 });
         okCancelPanel.setVisible(true);
         if (okCancelPanel.wasOKPressed()) {
-          if (makeEditable) setAllLayersToUneditable(context);
+          if (single) setAllLayersToUneditable(context);
+          //if (makeEditable) setAllLayersToUneditable(context);
           layerable.setEditable(makeEditable);
           if (layerable instanceof Layer) {
             ((Layer)layerable).setDataSourceQuery(null);
