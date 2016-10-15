@@ -32,6 +32,7 @@
 package com.vividsolutions.jump.workbench.ui;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
@@ -41,6 +42,8 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -386,7 +389,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    //panel.selectInLayerViewPanel();
+                    panel.selectInLayerViewPanel();
                 } catch (Throwable t) {
                     errorHandler.handleThrowable(t);
                 }

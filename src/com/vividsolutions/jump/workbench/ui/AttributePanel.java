@@ -267,7 +267,7 @@ public class AttributePanel extends JPanel implements InfoModelListener {
         for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
             AttributeTablePanel tablePanel = (AttributeTablePanel) i.next();
             if (tablePanel.getModel().getRowCount() == 0) {
-            	return selectedFeatures;
+                continue;
             }
             int[] selectedRows = tablePanel.getTable().getSelectedRows();
             for (int j = 0; j < selectedRows.length; j++) {
@@ -278,7 +278,7 @@ public class AttributePanel extends JPanel implements InfoModelListener {
     }
 
     // [mmichaud 2015-06-13] moved to AttributeTablePanel
-    /*
+    //
     public void selectInLayerViewPanel() {
         taskFrame.getLayerViewPanel().getSelectionManager().clear();
         for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
@@ -297,7 +297,7 @@ public class AttributePanel extends JPanel implements InfoModelListener {
                 selectedFeatures);
         }
     }
-    */
+
 
     public Row topSelectedRow() {
         for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {

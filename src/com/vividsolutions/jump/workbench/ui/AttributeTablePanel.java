@@ -48,7 +48,6 @@ import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.FlexibleDateParser;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -73,17 +72,18 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 	/**
 	 * The property name of the columns width map in the project file (resides in the data-source subtree).
 	 */
-	public static final String ATTRIBUTE_COLUMNS_WIDTH_MAP = "AttributeColumnsWidthMap";
-    public static final String DATE_FORMAT_KEY = ViewOptionsPlugIn.DATE_FORMAT_KEY;
+	private static final String ATTRIBUTE_COLUMNS_WIDTH_MAP = "AttributeColumnsWidthMap";
+    private static final String DATE_FORMAT_KEY = ViewOptionsPlugIn.DATE_FORMAT_KEY;
+    private static final String SELECTION_SYNC_KEY = ViewOptionsPlugIn.SELECTION_SYNCHRONIZATION_KEY;
 
     private static SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
 
     private Blackboard blackboard;
 
-    ImageIcon nullObject = IconLoader.icon("null1.png");
-    ImageIcon nullString = IconLoader.icon("null1.png");
+    private ImageIcon nullObject = IconLoader.icon("null1.png");
+    private ImageIcon nullString = IconLoader.icon("null1.png");
 
-    public interface FeatureEditor {
+    interface FeatureEditor {
 
         void edit(PlugInContext context, Feature feature, Layer layer)
                 throws Exception;
@@ -113,7 +113,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 
     private class MyTable extends JTable {
 
-        public MyTable() {
+        MyTable() {
             //We want table-size changes to be absorbed by the last column.
             //By default, AUTO_RESIZE_LAST_COLUMN will not achieve this
             //(it works for column-size changes only). But I am overriding
@@ -279,14 +279,13 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         }
     }
 
-    class NullableCheckBox extends JCheckBox implements TableCellRenderer {
-        public NullableCheckBox() {
+    private class NullableCheckBox extends JCheckBox implements TableCellRenderer {
+        NullableCheckBox() {
             super();
             setHorizontalAlignment(SwingConstants.CENTER);
         }
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             if (value == null) {
-                //this.setBackground(Color.LIGHT_GRAY);
                 this.setIcon(nullObject);
             } else {
                 super.setSelected((Boolean)value);
@@ -296,9 +295,9 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     }
 
     // A popup menu item to set a value to null
-    class PopUpNullifyCell extends JPopupMenu {
+    private class PopUpNullifyCell extends JPopupMenu {
         JMenuItem anItem;
-        public PopUpNullifyCell(){
+        PopUpNullifyCell(){
             anItem = new JMenuItem(nullString);
             add(anItem);
         }
@@ -307,7 +306,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     // A mouse listener to display a PopUpNullifyCell
     // The popup is display after a left mouse pressed and disappear after the mouse release
     // To nullify a value, click the PopUpNullifyCell between mouse press and mouse release
-    class NullifyMouseAdapter extends MouseAdapter {
+    private class NullifyMouseAdapter extends MouseAdapter {
         JTable table;
         PopUpNullifyCell menu;
 
@@ -496,17 +495,17 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     private Layer layer;
     private HashMap<Object,Integer> columnsWidthMap;
 
-    private boolean selectionSynchronized = true;
+    //private boolean selectionSynchronized = true;
 
-    private void setSelectionSynchronized(boolean selectionSynchronized) {
-        this.selectionSynchronized = selectionSynchronized;
-    }
+    //private void setSelectionSynchronized(boolean selectionSynchronized) {
+    //    this.selectionSynchronized = selectionSynchronized;
+    //}
 
-    private boolean isSelectionSynchronized() {
-        return selectionSynchronized;
-    }
+    //private boolean isSelectionSynchronized() {
+    //    return selectionSynchronized;
+    //}
 
-    AttributeTableLayerViewPanelListener layerViewPanelListener = null;
+    private AttributeTableLayerViewPanelListener layerViewPanelListener = null;
 
     public AttributeTablePanel(final LayerTableModel model, boolean addScrollPane,
             final WorkbenchContext workbenchContext) {
@@ -517,9 +516,10 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         final DefaultListSelectionModel defaultSelectionModel = new DefaultListSelectionModel();
         table.setSelectionModel(selectionModel);
         selectionModel.setSelectionMode(SelectionModelWrapper.MULTIPLE_INTERVAL_SELECTION);
-        selectionModel.setFireSelectionReplaced(true);
+        //selectionModel.setFireSelectionReplaced(true);
 
         // A LayerViewPanel listener to reflect layerView selection into the AttributeTablePanel
+        // (if selection synchronization is on)
         layerViewPanelListener = new AttributeTableLayerViewPanelListener(
                 workbenchContext, this, selectionModel, defaultSelectionModel);
 
@@ -821,16 +821,16 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
      * columns will be stored in the datasource properties. Later this can be
      * saved within the projectfile.
      * 
-     * @param columnModel
-     * @param override
-     *          ignore datasource defaults, e.g. if user manually resizes col in
-     *          gui
+     * @param columnModel the table column model
+     * @param override ignore datasource defaults, e.g. if user manually resizes
+     *                 col in gui
      */
     private void changeColumnWidths(TableColumnModel columnModel, boolean override) {
   
       // init col widths memory map
-      if (!(columnsWidthMap instanceof HashMap))
-        columnsWidthMap = new HashMap<>(columnModel.getColumnCount());
+      if (columnsWidthMap == null) {
+          columnsWidthMap = new HashMap<>(columnModel.getColumnCount());
+      }
       // loop over table cols and restore if entry found
       for (int i = 0; i < columnModel.getColumnCount(); i++) {
         Integer savedWidth = (Integer) columnsWidthMap.get(columnModel.getColumn(
@@ -874,19 +874,25 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         }
     }
 
-    private static class SelectionModelWrapper implements ListSelectionModel {
+    private class SelectionModelWrapper implements ListSelectionModel {
 
         private AttributeTablePanel panel;
 
         private ListSelectionModel selectionModel;
 
-        private boolean fireSelectionReplaced = true;
+        //private boolean fireSelectionReplaced = true;
 
-        public void setFireSelectionReplaced(boolean b) {
-            this.fireSelectionReplaced = b;
+        private boolean isSynchronized() {
+            Object sync = blackboard
+                    .get(SELECTION_SYNC_KEY);
+            return sync != null && Boolean.parseBoolean(sync.toString());
         }
 
-        public SelectionModelWrapper(AttributeTablePanel panel) {
+        //public void setFireSelectionReplaced(boolean b) {
+        //    this.fireSelectionReplaced = b;
+        //}
+
+        SelectionModelWrapper(AttributeTablePanel panel) {
             this.panel = panel;
             selectionModel = panel.table.getSelectionModel();
         }
@@ -901,7 +907,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 
         public void setSelectionInterval(int index0, int index1) {
             selectionModel.setSelectionInterval(index0, index1);
-            if (fireSelectionReplaced) panel.fireSelectionReplaced();
+            if (isSynchronized()) panel.fireSelectionReplaced();
         }
 
         public void setSelectionMode(int selectionMode) {
@@ -950,22 +956,22 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 
         public void addSelectionInterval(int index0, int index1) {
             selectionModel.addSelectionInterval(index0, index1);
-            if (fireSelectionReplaced) panel.fireSelectionReplaced();
+            if (isSynchronized()) panel.fireSelectionReplaced();
         }
 
         public void clearSelection() {
             selectionModel.clearSelection();
-            if (fireSelectionReplaced) panel.fireSelectionReplaced();
+            if (isSynchronized()) panel.fireSelectionReplaced();
         }
 
         public void insertIndexInterval(int index, int length, boolean before) {
             selectionModel.insertIndexInterval(index, length, before);
-            if (fireSelectionReplaced) panel.fireSelectionReplaced();
+            if (isSynchronized()) panel.fireSelectionReplaced();
         }
 
         public void removeIndexInterval(int index0, int index1) {
             selectionModel.removeIndexInterval(index0, index1);
-            if (fireSelectionReplaced) panel.fireSelectionReplaced();
+            if (isSynchronized()) panel.fireSelectionReplaced();
         }
 
         public void removeListSelectionListener(ListSelectionListener x) {
@@ -974,7 +980,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 
         public void removeSelectionInterval(int index0, int index1) {
             selectionModel.removeSelectionInterval(index0, index1);
-            if (fireSelectionReplaced) panel.fireSelectionReplaced();
+            if (isSynchronized()) panel.fireSelectionReplaced();
         }
     }
 
@@ -990,7 +996,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         return selectedFeatures;
     }
 
-    public LayerNameRenderer getLayerNameRenderer() {
+    LayerNameRenderer getLayerNameRenderer() {
         return layerListCellRenderer;
     }
 
@@ -1004,10 +1010,18 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
      */
     public void selectionReplaced() {
 
+        Object syncObject = PersistentBlackboardPlugIn.get(workbenchContext)
+                .get(SELECTION_SYNC_KEY);
+        boolean sync = syncObject != null && Boolean.parseBoolean(syncObject.toString());
+        if (!sync) return;
+
         int[] selectedRows = table.getSelectedRows();
         // After selectedRows have been memorized, clear the layer selection,
         // other wise OpenJUMP will add the selectedRows to the already selected features
+        //PersistentBlackboardPlugIn.get(workbenchContext).put(SELECTION_SYNC_KEY, false);
         workbenchContext.getLayerViewPanel().getSelectionManager().unselectItems(getModel().getLayer());
+        //PersistentBlackboardPlugIn.get(workbenchContext).put(SELECTION_SYNC_KEY, sync);
+
         Map<Feature,List<Geometry>> map = new HashMap<>();
         for (int j = 0; j < selectedRows.length; j++) {
             Feature feature = getModel().getFeature(selectedRows[j]);
@@ -1022,7 +1036,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 
     // A LayerViewListener to synchronized selection in AttributeTablePanel every time
     // the selection change in LayerViewPanel
-    static class AttributeTableLayerViewPanelListener implements LayerViewPanelListener {
+    private static class AttributeTableLayerViewPanelListener implements LayerViewPanelListener {
 
         final WorkbenchContext workbenchContext;
         final AttributeTablePanel attributeTablePanel;
@@ -1041,12 +1055,19 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 
         @Override
         public void selectionChanged() {
+
+            Object syncObject = PersistentBlackboardPlugIn.get(workbenchContext)
+                    .get(SELECTION_SYNC_KEY);
+            boolean sync = syncObject != null && Boolean.parseBoolean(syncObject.toString());
+
             try {
 
                 if (workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
                         .isAncestorOf(attributeTablePanel)) return;
                 if (workbenchContext.getWorkbench().getFrame().getActiveInternalFrame()
                         .isAncestorOf(attributeTablePanel)) return;
+
+                if (!sync) return;
 
                 // Get selected features :
                 // For AttributeTable, selected features are highlighted
@@ -1056,17 +1077,19 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                         .getLayerViewPanel().getSelectionManager()
                         .getFeaturesWithSelectedItems(attributeTablePanel.layer);
 
-                // From now on (2015-06-13), LayerViewSelection is propagated to
-                // AttributeTablePanel and the other way.
+                // From now on (2015-06-13), the LayerViewSelection can be propagated
+                // to AttributeTablePanel and the other way.
                 // This assertion will avoid recursive updates between LayerView and
                 // AttributeTable
-                selectionModel.setFireSelectionReplaced(false);
+                //selectionModel.setFireSelectionReplaced(false);
 
+                PersistentBlackboardPlugIn.get(workbenchContext)
+                        .put(ViewOptionsPlugIn.SELECTION_SYNCHRONIZATION_KEY, false);
                 attributeTablePanel.table.clearSelection();
-                if (selection.size() == 0) {
-                    selectionModel.setFireSelectionReplaced(true);
-                    return;
-                }
+                //if (selection.size() == 0) {
+                //    selectionModel.setFireSelectionReplaced(sync);
+                //    return;
+                //}
 
                 // Map feature ids to row ids
                 Map<Integer, Integer> mapIdRow = new HashMap<>();
@@ -1119,7 +1142,9 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                 attributeTablePanel.table.setSelectionModel(selectionModel);
 
             } finally {
-                selectionModel.setFireSelectionReplaced(true);
+                //selectionModel.setFireSelectionReplaced(sync);
+                PersistentBlackboardPlugIn.get(workbenchContext)
+                        .put(ViewOptionsPlugIn.SELECTION_SYNCHRONIZATION_KEY, sync);
             }
         }
 
