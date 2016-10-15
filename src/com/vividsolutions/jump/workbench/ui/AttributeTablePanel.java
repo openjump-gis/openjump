@@ -74,7 +74,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 	 */
 	private static final String ATTRIBUTE_COLUMNS_WIDTH_MAP = "AttributeColumnsWidthMap";
     private static final String DATE_FORMAT_KEY = ViewOptionsPlugIn.DATE_FORMAT_KEY;
-    private static final String SELECTION_SYNC_KEY = ViewOptionsPlugIn.SELECTION_SYNCHRONIZATION_KEY;
+    private static final String SELECTION_SYNC_KEY = ViewOptionsPlugIn.SELECTION_SYNC_KEY;
 
     private static SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
 
@@ -833,8 +833,8 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
       }
       // loop over table cols and restore if entry found
       for (int i = 0; i < columnModel.getColumnCount(); i++) {
-        Integer savedWidth = (Integer) columnsWidthMap.get(columnModel.getColumn(
-            i).getHeaderValue());
+        Integer savedWidth = columnsWidthMap.get(columnModel.getColumn(i)
+                .getHeaderValue());
         Integer curWidth = columnModel.getColumn(i).getWidth();
         // get or add new entry, override signal user resizes
         if (savedWidth != null && !override)
@@ -989,9 +989,8 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         if (getModel().getRowCount() == 0) {
         	return selectedFeatures;
         }
-        int[] selectedRows = table.getSelectedRows();
-        for (int i = 0; i < selectedRows.length; i++) {
-            selectedFeatures.add(getModel().getFeature(selectedRows[i]));
+        for (int index : table.getSelectedRows()) {
+            selectedFeatures.add(getModel().getFeature(index));
         }
         return selectedFeatures;
     }
@@ -1015,7 +1014,6 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         boolean sync = syncObject != null && Boolean.parseBoolean(syncObject.toString());
         if (!sync) return;
 
-        int[] selectedRows = table.getSelectedRows();
         // After selectedRows have been memorized, clear the layer selection,
         // other wise OpenJUMP will add the selectedRows to the already selected features
         //PersistentBlackboardPlugIn.get(workbenchContext).put(SELECTION_SYNC_KEY, false);
@@ -1023,8 +1021,8 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         //PersistentBlackboardPlugIn.get(workbenchContext).put(SELECTION_SYNC_KEY, sync);
 
         Map<Feature,List<Geometry>> map = new HashMap<>();
-        for (int j = 0; j < selectedRows.length; j++) {
-            Feature feature = getModel().getFeature(selectedRows[j]);
+        for (int index : table.getSelectedRows()) {
+            Feature feature = getModel().getFeature(index);
             map.put(feature, Collections.singletonList(feature.getGeometry()));
         }
         workbenchContext
@@ -1084,7 +1082,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                 //selectionModel.setFireSelectionReplaced(false);
 
                 PersistentBlackboardPlugIn.get(workbenchContext)
-                        .put(ViewOptionsPlugIn.SELECTION_SYNCHRONIZATION_KEY, false);
+                        .put(ViewOptionsPlugIn.SELECTION_SYNC_KEY, false);
                 attributeTablePanel.table.clearSelection();
                 //if (selection.size() == 0) {
                 //    selectionModel.setFireSelectionReplaced(sync);
@@ -1144,7 +1142,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
             } finally {
                 //selectionModel.setFireSelectionReplaced(sync);
                 PersistentBlackboardPlugIn.get(workbenchContext)
-                        .put(ViewOptionsPlugIn.SELECTION_SYNCHRONIZATION_KEY, sync);
+                        .put(ViewOptionsPlugIn.SELECTION_SYNC_KEY, sync);
             }
         }
 

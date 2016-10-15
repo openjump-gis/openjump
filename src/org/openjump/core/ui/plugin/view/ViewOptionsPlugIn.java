@@ -20,15 +20,20 @@ import java.text.SimpleDateFormat;
  */
 public class ViewOptionsPlugIn extends AbstractPlugIn {
 
-    private static String VIEW_OPTIONS = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn");
+
 
     public static final String DATE_FORMAT_KEY = ViewOptionsPlugIn.class.getName() + " - DATE_FORMAT_KEY";
 
-    public static final String SELECTION_SYNCHRONIZATION_KEY = ViewOptionsPlugIn.class.getName() + " - SELECTION_SYNCHRONIZATION";
+    public static final String SELECTION_SYNC_KEY = ViewOptionsPlugIn.class.getName() + " - SELECTION_SYNCHRONIZATION";
 
+    private static final String VIEW_OPTIONS = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn");
+
+    private static final String ATTRIBUTES_FORMAT = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Attributes-format-in-attribute-table");
     private static final String DATE_FORMAT = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Date-format");
     private JComboBox dateFormatChooser;
-    private static final String SELECTION_SYNC = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Selection-syncronization");
+
+    private static final String SELECTION_SYNCHRONIZATION = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Selection-synchronization");
+    private static final String SYNC = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Synchronize");
     private JCheckBox synchronizationCheckBox;
 
     private Blackboard blackBoard;
@@ -58,24 +63,50 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
         c.gridx = 0;
         c.gridy = 0;
         c.ipadx = 10;
+        c.ipady = 10;
         c.weighty = 0;
 
-        c.anchor = GridBagConstants.EAST;
+        c.gridx = 0;
+        c.gridwidth = 2;
+        viewOptionsPanel.add(new JPanel(), c);
+        c.gridy++;
 
+        c.gridwidth = 2;
+        c.anchor = GridBagConstants.WEST;
+        viewOptionsPanel.add(new JLabel(ATTRIBUTES_FORMAT), c);
+        c.gridy++;
+
+        c.gridx = 0;
+        c.gridwidth = 1;
+        c.anchor = GridBagConstants.EAST;
         viewOptionsPanel.add(new JLabel(DATE_FORMAT), c);
+
         c.gridx = 1;
         c.anchor = GridBagConstants.WEST;
         viewOptionsPanel.add(dateFormatChooser, c);
+        c.gridy++;
 
         c.gridx = 0;
-        c.gridy = 1;
+        c.gridwidth = 2;
+        viewOptionsPanel.add(new JPanel(), c);
+        c.gridy++;
+
+        c.gridx = 0;
+        c.gridwidth = 2;
+        c.anchor = GridBagConstants.WEST;
+        viewOptionsPanel.add(new JLabel(SELECTION_SYNCHRONIZATION), c);
+        c.gridy++;
+
+        c.gridx = 0;
+        c.gridwidth = 1;
         c.anchor = GridBagConstants.EAST;
-        viewOptionsPanel.add(new JLabel(SELECTION_SYNC), c);
+        viewOptionsPanel.add(new JLabel(SYNC), c);
         c.gridx = 1;
         c.anchor = GridBagConstants.WEST;
         viewOptionsPanel.add(synchronizationCheckBox, c);
+        c.gridy++;
 
-        c.gridy = 2;
+        c.gridx = 0;
         c.weighty = 1;
         c.fill = GridBagConstants.VERTICAL;
         viewOptionsPanel.add(new JPanel(), c);
@@ -111,7 +142,7 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
                     frame.repaint();
                 }
             }
-            blackBoard.put(SELECTION_SYNCHRONIZATION_KEY, synchronizationCheckBox.isSelected());
+            blackBoard.put(SELECTION_SYNC_KEY, synchronizationCheckBox.isSelected());
         }
 
         public void init() {
@@ -125,7 +156,7 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
             } else {
                 dateFormatChooser.setSelectedIndex(0);
             }
-            Object sync = blackBoard.get(SELECTION_SYNCHRONIZATION_KEY);
+            Object sync = blackBoard.get(SELECTION_SYNC_KEY);
             if (sync != null) {
                 synchronizationCheckBox.setSelected(
                         Boolean.parseBoolean(sync.toString()));
