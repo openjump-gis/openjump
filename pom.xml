@@ -16,7 +16,7 @@
         <version.number>0.0.0</version.number>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
-        <imageio-ext.version>1.1.13</imageio-ext.version>
+        <imageio-ext.version>1.1.16</imageio-ext.version>
         <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
     </properties>
