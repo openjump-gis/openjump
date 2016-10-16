@@ -97,7 +97,7 @@
     </fileSet>
     <fileSet>
       <directory>lib/imageio-ext</directory>
-      <outputDirectory>/lib</outputDirectory>
+      <outputDirectory>/lib/ext/imageio-ext</outputDirectory>
       <includes>
         <include>*</include>
       </includes>
