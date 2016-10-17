@@ -53,8 +53,11 @@ toolbox.pack()
 
 #install toolbox custom cursor tools
 #tools can be defined in java only - as in this orphaned JUMP Note tool
-import com.vividsolutions.jump.workbench.ui.cursortool.NoteTool as NoteTool
-toolbox.add(NoteTool())  #surprise!  Deselect before changing tools to avoid bug
+# [Jukka Rahkonen 2016_10_17] Tool commented out because it does not work
+# Label box is listening to key shortcuts and letters A, X, V, M, and R are
+# unusable in labels. Code left here as an example.
+#import com.vividsolutions.jump.workbench.ui.cursortool.NoteTool as NoteTool
+#toolbox.add(NoteTool())  #surprise!  Deselect before changing tools to avoid bug
 #Custom Tools can be defined with only a constructor
 lineTool = DrawCustomTool(featureDrawingUtil, maxClicks = 2, toolName = "Line Tool", geometryType = "linestring")
 toolbox.add(featureDrawingUtil.prepare(lineTool, 1))
