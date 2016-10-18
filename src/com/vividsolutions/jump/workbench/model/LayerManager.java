@@ -787,8 +787,8 @@ public class LayerManager {
      * Editability is not enforced; all parties are responsible for heeding the
      * editability of a layer.
      */
-    public Collection getEditableLayers() {
-        ArrayList editableLayers = new ArrayList();
+    public Collection<Layer> getEditableLayers() {
+        ArrayList<Layer> editableLayers = new ArrayList<>();
 
         for (Iterator i = getLayers().iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();

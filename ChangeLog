@@ -6,6 +6,7 @@
 2016-10-15 mmichaud <m.michael.michaud@orange.fr>
   * FR #237 : add an option in ViewOptionsPlugIn to synchronize/desynchronize
     selection in LayerView AttributePanel (synchronized by default)
+  * Fix #436 : make invisible layers not editable.
 
 2016-10-13 mmichaud <m.michael.michaud@orange.fr>
   * EditOptions are now persistent except rolling back invalid edits which is

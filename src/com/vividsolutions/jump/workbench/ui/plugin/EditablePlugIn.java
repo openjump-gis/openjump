@@ -82,11 +82,11 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
     // set states for each
 
     for (Layerable layerable : layers) {
-      if (isWritable(layerable) && layerable.isVisible()) {
+      if (isWritable(layerable)) {
         if (single) setAllLayersToUneditable(context);
         //if (makeEditable) setAllLayersToUneditable(context);
         layerable.setEditable(makeEditable);
-      } else if (layerable.isVisible()) {
+      } else {
         String message = "<html><br>" + I18N.getMessage(CONFIRMATION_1, "<i>'"+layerable.getName()+"'</i>");
         message += "<br><br>" + I18N.get(CONFIRMATION_2) + "<br></html>";
         JLabel label = new JLabel(message);

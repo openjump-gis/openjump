@@ -900,21 +900,17 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   }
 
   public static Layer chooseEditableLayer(LayerNamePanel panel) {
-    for (Iterator i = Arrays.asList(panel.getSelectedLayers()).iterator(); i
-        .hasNext();) {
-      Layer layer = (Layer) i.next();
-
-      if (layer.isEditable()) {
+    for (Layer layer : panel.getSelectedLayers()) {
+      if (layer.isEditable() && layer.isVisible()) {
         return layer;
       }
     }
-
-    if (panel.getLayerManager().getEditableLayers().isEmpty()) {
-      return null;
+    for (Layer layer : panel.getLayerManager().getEditableLayers()) {
+      if (layer.isVisible()) {
+        return layer;
+      }
     }
-
-    return (Layer) panel.getLayerManager().getEditableLayers().iterator()
-        .next();
+    return null;
   }
 
   public Layer chooseEditableLayer() {
