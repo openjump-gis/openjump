@@ -5,7 +5,8 @@
 
 2016-10.16 ede
   * update ImageIO-Ext to 1.1.16
-  * downgrade ImageIO-Ext TIFF plugin to 0.1.13 because of a persisting bug from 0.1.14-0.1.16 described on jpp-devel
+  * downgrade ImageIO-Ext TIFF plugin to 0.1.13 because of a persisting bug 
+    from 0.1.14-0.1.16 described on jpp-devel
     https://sourceforge.net/p/jump-pilot/mailman/message/35425922/
 
 2016-10-15 mmichaud <m.michael.michaud@orange.fr>
