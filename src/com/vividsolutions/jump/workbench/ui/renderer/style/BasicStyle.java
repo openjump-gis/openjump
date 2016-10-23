@@ -51,13 +51,11 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 
 
 public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
-	/* Giuseppe Aruta 11-june-2012
-	 * Added code from SkyJUMP BasicStyle to enable color chooser plugin
-	 */
+
+    // Giuseppe Aruta 11-june-2012
+    // Added code from SkyJUMP BasicStyle to enable color chooser plugin
 	public static final String RGB_ATTRIBUTE_NAME = "R_G_B";
-	/*
-	 * 
-	 */
+
     private boolean renderingFill = true;
     private boolean renderingLine = true;
     private boolean renderingLinePattern = false;
@@ -80,7 +78,7 @@ public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
     
     //Set fill pattern to something, so that the BasicStylePanel combobox won't
     //start empty. [Jon Aquino]
-		// Fixing the GUI is a better idea! [s-l-teichmann]
+    // Fixing the GUI is a better idea! [s-l-teichmann]
     private Paint fillPattern;
 
     public BasicStyle(Color fillColor) {
@@ -153,9 +151,8 @@ public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
 
     public void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception {
 
-    	/* Giuseppe Aruta 11-june-2012
-    	 * Added code from SkyJUMP BasicStyle to enable color chooser plugin
-    	 */
+    	// Giuseppe Aruta 11-june-2012
+    	// Added code from SkyJUMP BasicStyle to enable color chooser plugin
     	Color fillColor = this.fillColor;
     	Color lineColor = this.lineColor;
     	Color featureColor = getFeatureColor(f);
@@ -165,9 +162,6 @@ public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
     		fillColor = featureColor;
     		lineColor = featureColor.darker();
     	}
-    	/*
-    	 * End of code 1
-    	*/
     	
         if (!renderingVertices && f.getGeometry() instanceof Point) {
             return;
@@ -306,7 +300,7 @@ public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
      * - Giuseppe Aruta 11-June - 2012 - added code from SkyJUMP to enable color chooser plugIn -
      * - Original comments from SkyJUMP developers -
      * 
-     * Looks for an Attriubte field that contains the RGB color code and returns
+     * Looks for an Attribute field that contains the RGB color code and returns
      * it or null if the RGB hex string is empty or ill-formed. 
      * @param    f   the <code>Feature</code> containing the RGB 
      * 			Attribute to be parsed.
