@@ -86,7 +86,7 @@ public class XBasicStyle extends BasicStyle {
     }
 
     @Override public Color getFeatureColor(Feature feature) {
-        return null;
+        return super.getFeatureColor(feature);
     }
 
 }
