@@ -37,6 +37,7 @@ import java.util.Collection;
 import javax.swing.JFileChooser;
 
 import com.vividsolutions.jump.coordsys.CoordinateSystemSupport;
+import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -100,7 +101,7 @@ public class LoadFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
     }
 
 
-    public Collection getDataSourceQueries() {
+    public Collection<DataSourceQuery> getDataSourceQueries() {
         //User has pressed OK, so persist the directory. [Jon Aquino]
         PersistentBlackboardPlugIn.get(context).put(FILE_CHOOSER_DIRECTORY_KEY,
             getFileChooserPanel().getChooser().getCurrentDirectory().toString());

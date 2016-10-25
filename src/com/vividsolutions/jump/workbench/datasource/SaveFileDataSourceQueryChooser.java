@@ -42,6 +42,7 @@ import javax.swing.JFileChooser;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
 
 import com.vividsolutions.jump.I18N;
@@ -142,7 +143,7 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
         return context.getBlackboard();
     }
 
-    public Collection getDataSourceQueries() {
+    public Collection<DataSourceQuery> getDataSourceQueries() {
         //User has pressed OK, so persist the directory. [Jon Aquino]
         PersistentBlackboardPlugIn.get(context).put(FILE_CHOOSER_DIRECTORY_KEY,
             getFileChooserPanel().getChooser().getCurrentDirectory().toString());

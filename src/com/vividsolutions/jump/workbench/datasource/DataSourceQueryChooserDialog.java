@@ -32,7 +32,6 @@
 package com.vividsolutions.jump.workbench.datasource;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser.FileChooserPanel;
 import com.vividsolutions.jump.workbench.ui.OKCancelPanel;
 
 import java.awt.*;
@@ -57,6 +56,7 @@ import org.openjump.core.CheckOS;
  * first combobox.
  */
 public class DataSourceQueryChooserDialog extends JDialog {
+
     private CardLayout cardLayout = new CardLayout();
     private BorderLayout borderLayout2 = new BorderLayout();
     private JPanel mainPanel = new JPanel(cardLayout);
@@ -195,12 +195,7 @@ public class DataSourceQueryChooserDialog extends JDialog {
     }
 
     void okCancelPanel_actionPerformed(ActionEvent e) {
-    	/*
-        if (!okCancelPanel.wasOKPressed() ||
-                getCurrentChooser().isInputValid()) {
-            setVisible(false);
-        }
-        */
+
         if (!okCancelPanel.wasOKPressed()) { //cancel case
             setVisible(false);
         }

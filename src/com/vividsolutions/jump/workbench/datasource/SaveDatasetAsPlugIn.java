@@ -38,6 +38,7 @@ import java.util.Collection;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
+import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser.FileChooserPanel;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -56,7 +57,7 @@ public class SaveDatasetAsPlugIn extends AbstractSaveDatasetAsPlugIn {
       this.setShortcutModifiers(KeyEvent.ALT_MASK+KeyEvent.SHIFT_MASK);
     }
     
-    protected Collection showDialog(WorkbenchContext context) {
+    protected Collection<DataSourceQuery> showDialog(WorkbenchContext context) {
         GUIUtil.centreOnWindow(getDialog());
         
         // initialize the FileChooser with the layer name [mmichaud 2007-08-25]

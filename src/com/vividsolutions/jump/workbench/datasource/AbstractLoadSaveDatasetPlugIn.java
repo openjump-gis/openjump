@@ -4,6 +4,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collection;
 
+import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
@@ -35,7 +36,7 @@ public abstract class AbstractLoadSaveDatasetPlugIn extends ThreadedBasePlugIn {
     protected WorkbenchContext getContext() {
         return context;
     }
-    private Collection dataSourceQueries;
+    private Collection<DataSourceQuery> dataSourceQueries;
 
     public boolean execute(PlugInContext context) throws Exception {
         dataSourceQueries = showDialog(context.getWorkbenchContext());
@@ -48,7 +49,7 @@ public abstract class AbstractLoadSaveDatasetPlugIn extends ThreadedBasePlugIn {
 
     protected abstract Collection showDialog(WorkbenchContext context);
 
-    protected Collection getDataSourceQueries() {
+    protected Collection<DataSourceQuery> getDataSourceQueries() {
         return dataSourceQueries;
     }
 }

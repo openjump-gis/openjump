@@ -39,7 +39,6 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.*;
 import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.datasource.FileDataSourceQueryChooser.FileChooserPanel;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -49,13 +48,11 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.util.Blackboard;
 import org.openjump.core.ui.util.ExceptionUtil;
 
-import java.awt.event.ComponentAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.*;
@@ -172,14 +169,13 @@ public class LoadDatasetPlugIn extends ThreadedBasePlugIn {
         //Seamus Thomas Carroll [mailto:carrolls@cpsc.ucalgary.ca]
         //was concerned when he noticed that #getDataSourceQueries
         //was being called twice. So call it once only. [Jon Aquino 2004-02-05]
-        Collection dataSourceQueries = getDialog(context).getCurrentChooser()
+        Collection<DataSourceQuery> dataSourceQueries = getDialog(context).getCurrentChooser()
                               .getDataSourceQueries();
         Assert.isTrue(!dataSourceQueries.isEmpty());
 
         boolean exceptionsEncountered = false;
-        for (Iterator i = dataSourceQueries.iterator(); i.hasNext();) {
-            DataSourceQuery dataSourceQuery = (DataSourceQuery) i.next();
-            ArrayList exceptions = new ArrayList();
+        for (DataSourceQuery dataSourceQuery : dataSourceQueries) {
+            ArrayList<Throwable> exceptions = new ArrayList<>();
             Assert.isTrue(dataSourceQuery.getDataSource().isReadable());
             monitor.report("Loading " + dataSourceQuery.toString() + "...");
 

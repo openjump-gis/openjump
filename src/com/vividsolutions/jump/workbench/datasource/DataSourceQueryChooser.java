@@ -31,6 +31,8 @@
  */
 package com.vividsolutions.jump.workbench.datasource;
 
+import com.vividsolutions.jump.io.datasource.DataSourceQuery;
+
 import java.awt.Component;
 import java.util.Collection;
 
@@ -44,14 +46,17 @@ import java.util.Collection;
  *
  */
 public interface DataSourceQueryChooser {
-    public Component getComponent();
-    public Collection getDataSourceQueries();
+
+    Component getComponent();
+    Collection<DataSourceQuery> getDataSourceQueries();
+
     /**
      * @return a brief description of the dataset type, suitable for display in a combo box.
      */
-    public String toString();
+    String toString();
+
     /**
      * The user has pressed the OK button.
      */
-    public boolean isInputValid();
+    boolean isInputValid();
 }

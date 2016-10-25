@@ -11,14 +11,11 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import org.openjump.core.ui.util.ExceptionUtil;
@@ -66,12 +63,11 @@ public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
     if (chooser.isInputValid()) {
       chooseProjectPanel.activateSelectedProject();
       PlugInContext context = workbenchContext.createPlugInContext();
-      Collection dataSourceQueries = chooser.getDataSourceQueries();
+      Collection<DataSourceQuery> dataSourceQueries = chooser.getDataSourceQueries();
       if (!dataSourceQueries.isEmpty()) {
 
         boolean exceptionsEncountered = false;
-        for (Iterator i = dataSourceQueries.iterator(); i.hasNext();) {
-          DataSourceQuery dataSourceQuery = (DataSourceQuery)i.next();
+        for (DataSourceQuery dataSourceQuery : dataSourceQueries) {
           List<Throwable> exceptions = new ArrayList<>();
           if (dataSourceQuery.getDataSource().isReadable()) {
             monitor.report("Loading " + dataSourceQuery.toString() + "...");
