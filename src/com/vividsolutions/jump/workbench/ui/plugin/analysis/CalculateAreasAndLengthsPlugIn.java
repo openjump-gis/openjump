@@ -188,23 +188,18 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
         return getClass().getName() + " - ";
     }
     private void initEnableChecks(final MultiInputDialog dialog) {
-        dialog
-            .addEnableChecks(
-                LENGTH_COMBO_BOX,
-                Arrays
-                    .asList(
-                        new Object[] {
-                            new EnableCheck() {
-                                public String check(JComponent component) {
-                                return dialog.getBoolean(AREA_CHECK_BOX)
-                                    && dialog.getBoolean(LENGTH_CHECK_BOX)
-                                    && dialog.getText(AREA_COMBO_BOX).equals(
-                                        dialog.getText(LENGTH_COMBO_BOX))
+        dialog.addEnableChecks(
+                LENGTH_COMBO_BOX, new EnableCheck() {
+                    public String check(JComponent component) {
+                        return dialog.getBoolean(AREA_CHECK_BOX)
+                                && dialog.getBoolean(LENGTH_CHECK_BOX)
+                                && dialog.getText(AREA_COMBO_BOX).equals(
+                                    dialog.getText(LENGTH_COMBO_BOX))
                                         ? I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.area-and-length-attribute-names-must-be-different")
                                         : null;
                 }
             }
-        }));
+        );
     }
     private String attributeName(List attributeNames, int preferredIndex) {
         return (String) attributeNames.get(
@@ -248,19 +243,15 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
         dialog
             .addEnableChecks(
                 comboBoxFieldName,
-                Arrays
-                    .asList(
-                        new Object[] {
-                            new EnableCheck() {
-                                public String check(JComponent component) {
-                                return dialog.getBoolean(checkBoxFieldName)
-                                    && dialog.getComboBox(comboBoxFieldName).getItemCount()
-                                        == 0
+                    new EnableCheck() {
+                        public String check(JComponent component) {
+                            return dialog.getBoolean(checkBoxFieldName)
+                                    && dialog.getComboBox(comboBoxFieldName).getItemCount() == 0
                                         ? "Layer has no string, integer, or double attributes"
                                         : null;
                 }
             }
-        }));
+        );
         dialog.indentLabel(comboBoxFieldName);
     }
     private Layer candidateLayer(PlugInContext context) {

@@ -96,11 +96,11 @@ public class WMSStylePlugIn extends AbstractPlugIn {
         dialog.setApplyVisible(true);
 
         dialog.addEnableChecks(panel.getTitle(),
-                Arrays.asList(new EnableCheck() {
+                new EnableCheck() {
                     public String check(JComponent component) {
                         return panel.validateInput();
                     }
-                }));
+                });
 
         dialog.addOKCancelApplyPanelActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

@@ -726,7 +726,7 @@ public class LayerManager {
         return null;
     }
 
-    public List getLayers() {
+    public List<Layer> getLayers() {
         return getLayerables(Layer.class);
     }
 

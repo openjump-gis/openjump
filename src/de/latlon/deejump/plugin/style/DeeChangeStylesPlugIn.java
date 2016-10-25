@@ -146,11 +146,11 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
 
         for (final StylePanel stylePanel : stylePanels) {
             tabbedPane.add((Component) stylePanel, stylePanel.getTitle());
-            dialog.addEnableChecks(stylePanel.getTitle(), Arrays.asList(new EnableCheck() {
+            dialog.addEnableChecks(stylePanel.getTitle(), new EnableCheck() {
                 public String check(JComponent component) {
                     return stylePanel.validateInput();
                 }
-            }));
+            });
         }
 
         dialog.addRow(tabbedPane);

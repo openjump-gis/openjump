@@ -127,11 +127,11 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
                         ((StylePanel) tabbedPane.getSelectedComponent())
                                 .getTitle());
         dialog.addEnableChecks(rasterScalepanel.getTitle(),
-                Arrays.asList(new EnableCheck() {
+                new EnableCheck() {
                     public String check(JComponent component) {
                         return rasterScalepanel.validateInput();
                     }
-                }));
+                });
   /*      dialog.addOKCancelApplyPanelActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (dialog.wasApplyPressed()) {

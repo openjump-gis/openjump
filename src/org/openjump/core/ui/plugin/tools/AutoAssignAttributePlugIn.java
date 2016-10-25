@@ -268,7 +268,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     
     private void initEnableChecks(final MultiInputDialog dialog) {
         dialog.addEnableChecks(SOURCE_COMBO_BOX,
-            Arrays.asList(new Object[] {new EnableCheck() {
+            Arrays.asList(new EnableCheck[] {new EnableCheck() {
                 public String check(JComponent component) {
                     return assignFromSource && 
                            dialog.getText(TARGET_ATTRIBUTE_COMBO_BOX)

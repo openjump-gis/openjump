@@ -43,9 +43,7 @@ import org.openjump.core.rasterimage.RasterImageLayer;
 import com.vividsolutions.jts.util.Assert;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -180,7 +178,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     protected HashMap<String,JComponent> fieldNameToComponentMap = new HashMap<String,JComponent>();
     
     // Map containing associations between field names and their label
-    protected HashMap fieldNameToLabelMap = new HashMap();
+    protected HashMap<String,JComponent> fieldNameToLabelMap = new HashMap<>();
     
     // Map containing associations between field names and ButtonGroup
     protected Map buttonGroupMap = new HashMap();
@@ -189,7 +187,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     protected CollectionMap fieldNameToEnableCheckListMap = new CollectionMap();
 
     private JComponent getComponent(String fieldName) {
-        return (JComponent) fieldNameToComponentMap.get(fieldName);
+        return fieldNameToComponentMap.get(fieldName);
     }
     
     
@@ -203,7 +201,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      * Gets JLabel matching this fieldName.
      */
     public JComponent getLabel(String fieldName) {
-        return (JComponent) fieldNameToLabelMap.get(fieldName);
+        return fieldNameToLabelMap.get(fieldName);
     }
     
     /**
@@ -239,7 +237,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      * Gets the string value of a control
      * @param fieldName control to read
      * @return the string value of the control
-     * @return null if the control is not in a valid state (e.g. not selected)
+     *         null if the control is not in a valid state (e.g. not selected)
      */
     public String getText(String fieldName) {
         Component component = fieldNameToComponentMap.get(fieldName);
@@ -339,8 +337,12 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      * @param fieldName fieldName of the control
      * @param enableChecks EnableCheck array to validate this control input
      */
-    public void addEnableChecks(String fieldName, Collection enableChecks) {
+    public void addEnableChecks(String fieldName, Collection<? extends EnableCheck> enableChecks) {
         fieldNameToEnableCheckListMap.addItems(fieldName, enableChecks);
+    }
+
+    public void addEnableChecks(String fieldName, EnableCheck...enableChecks) {
+        fieldNameToEnableCheckListMap.addItems(fieldName, Arrays.asList(enableChecks));
     }
     
     
@@ -381,11 +383,11 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      * @param toolTipText tool tip to help the user
      * @return the JComboBox control added to this dialog
      */
-    public JComboBox addComboBox(String fieldName,
+    public <T> JComboBox<T> addComboBox(String fieldName,
                                  Object selectedItem,
-                                 Collection items,
+                                 Collection<T> items,
                                  String toolTipText) {
-        final JComboBox comboBox = new JComboBox(new Vector(items));
+        final JComboBox<T> comboBox = new JComboBox<>(new Vector<>(items));
         comboBox.setSelectedItem(selectedItem);
         addRow(fieldName, new JLabel(fieldName), comboBox, null, toolTipText, LEFT_LABEL, NONE);
         return comboBox;
@@ -425,7 +427,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      * Action associated to this JButton must be defined.
      * @param fieldName will be used for the label text on the left of the button 
      * @param text text to display in the JButton
-     * @param toolTipText
+     * @param toolTipText tooltip text associated to the JButton
      * @return the JButton added to this dialog
      */
     public JButton addButton(String fieldName, String text, String toolTipText) {
@@ -661,17 +663,18 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      * @param layers layers to be proposed in the combo box
      * @return the JComboBox
      */
-    public JComboBox addLayerComboBox(String fieldName,
+    public JComboBox<Layer> addLayerComboBox(String fieldName,
                                       Layer initialValue,
                                       String toolTipText,
-                                      Collection layers) {
-        JComboBox comboBox = addComboBox(fieldName, initialValue, layers, toolTipText);
+                                      Collection<Layer> layers) {
+        JComboBox<Layer> comboBox = addComboBox(fieldName, initialValue, layers, toolTipText);
         LayerNameRenderer layerListCellRenderer = new LayerNameRenderer();
         layerListCellRenderer.setCheckBoxVisible(false);
         layerListCellRenderer.setProgressIconLabelVisible(false);
         comboBox.setRenderer(layerListCellRenderer);
         comboBox.invalidate();
-        return getComboBox(fieldName);
+        //return getComboBox(fieldName);
+        return comboBox;
     }
     
     
@@ -738,8 +741,8 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                                       String toolTipText,
                                       LayerManager layerManager,
                                       AttributeTypeFilter filter) {
-        List<Layer> layerList = new ArrayList<Layer>();
-        for (Layer layer : (List<Layer>)layerManager.getLayers()) {
+        List<Layer> layerList = new ArrayList<>();
+        for (Layer layer : layerManager.getLayers()) {
             FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
             if (filter.filter(schema).size() > 0) layerList.add(layer);
         }
@@ -753,19 +756,20 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      * @param fieldName field name for the attribute
      * @param layerFieldName field name of the ComboBox used to choose the layer
      * @param filter filter valid attributes from their type
-     * @param toolTipText
+     * @param toolTipText a toolTip for this JComboBox
      * @return the JComboBox
      */
-    public JComboBox addAttributeComboBox(final String fieldName,
+    public JComboBox<String> addAttributeComboBox(final String fieldName,
                                           final String layerFieldName,
                                           final AttributeTypeFilter filter,
                                           final String toolTipText) {
         
         final JComboBox layerComboBox = getComboBox(layerFieldName);
         
-        final JComboBox attributeComboBox = addComboBox(fieldName, null, new ArrayList(), toolTipText);
+        final JComboBox<String> attributeComboBox =
+                addComboBox(fieldName, null, new ArrayList<String>(), toolTipText);
         
-        final ComboBoxModel DEFAULT = new DefaultComboBoxModel(new String[]{
+        final ComboBoxModel<String> DEFAULT = new DefaultComboBoxModel<>(new String[]{
             NO_VALID_ATTRIBUTE
         });
         
@@ -774,7 +778,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
             FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
             List<String> attributes = filter.filter(schema);
             if (attributes.size() > 0) {
-                attributeComboBox.setModel(new DefaultComboBoxModel(
+                attributeComboBox.setModel(new DefaultComboBoxModel<>(
                     attributes.toArray(new String[attributes.size()])));
             }
             else attributeComboBox.setModel(DEFAULT);
@@ -788,7 +792,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                 List<String> attributes = filter.filter(schema);
                 if (attributes.size() > 0) {
                     String oldAttr = (String)attributeComboBox.getSelectedItem();
-                    attributeComboBox.setModel(new DefaultComboBoxModel(
+                    attributeComboBox.setModel(new DefaultComboBoxModel<>(
                         attributes.toArray(new String[attributes.size()])));
                     if (attributes.contains(oldAttr)) {
                         attributeComboBox.setSelectedItem(oldAttr);
