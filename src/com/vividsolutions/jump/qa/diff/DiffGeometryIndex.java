@@ -108,7 +108,7 @@ public class DiffGeometryIndex {
         }
     }
 
-    private Collection<Feature> getUnmatchedFeatures() {
+    public Collection<Feature> getUnmatchedFeatures() {
         Set<Feature> unmatchedFeatureSet = new TreeSet<>(new FeatureUtil.IDComparator());
         for (FeatureGeometry featureGeom : featureList) {
             if (! featureGeom.isMatched()) {
