@@ -34,7 +34,6 @@
 package org.openjump.core.ui.plugin.layer;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +41,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -86,7 +84,6 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute._EMPTY_");
 	
 	private Layer sourceLayer = null;
-	private JComboBox layerAttributeComboBox = null;
 	private boolean textAttributeFound = false;
 	private String textAttribute = null;
 	 	 
@@ -104,9 +101,9 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
     {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);      
         return new MultiEnableCheck()
-        .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-        .add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1))
-        .add(new EnableCheck() {
+            .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
+            .add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1))
+            .add(new EnableCheck() {
                 // At one point, this EnableCheck should be added to
                 // EnableCheckFactory with it's own I18N key string
                 public String check(JComponent component) {
@@ -125,8 +122,8 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
 		sourceLayer = context.getSelectedLayer(0);
-		MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
-				getName(), true);
+		MultiInputDialog dialog =
+				new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
 		setDialogFields(dialog);
 
 		GUIUtil.centreOnWindow(dialog);
@@ -141,13 +138,13 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 	
     private void setDialogFields( final MultiInputDialog dialog) {
 		dialog.setSideBarDescription(DIALOGMSG);
-		layerAttributeComboBox = dialog.addComboBox(LAYER_ATTRIBUTE, null, new ArrayList(), null);
-		List names = attributeNames();
-		layerAttributeComboBox.setModel(new DefaultComboBoxModel(new Vector(names)));
+		JComboBox<String> layerAttributeComboBox =
+				dialog.addComboBox(LAYER_ATTRIBUTE, null, new ArrayList<String>(), null);
+		List<String> names = attributeNames();
+		layerAttributeComboBox.setModel(new DefaultComboBoxModel<>(new Vector<>(names)));
 		String layerName = null;
 		textAttributeFound = false;
-        for (Iterator i = names.iterator(); i.hasNext();) {
-            String attribute = (String) i.next();
+        for (String attribute : names) {
             if (attribute.equalsIgnoreCase(LAYER)) {
             	layerName = attribute;
             } else if (attribute.equalsIgnoreCase(TEXT)) {
@@ -161,8 +158,8 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 		}
     }
 
-    private List attributeNames() {
-        ArrayList candidateAttributeNames = new ArrayList();
+    private List<String> attributeNames() {
+        ArrayList<String> candidateAttributeNames = new ArrayList<>();
         FeatureSchema schema = sourceLayer.getFeatureCollectionWrapper().getFeatureSchema();
         for (int i = 0; i < schema.getAttributeCount(); i++) {
         	String name = schema.getAttributeName(i);

@@ -29,7 +29,8 @@
  * USA
  *
  * (850)862-7321
- */package org.openjump.core.ui.plugin.layer;
+ */
+package org.openjump.core.ui.plugin.layer;
 
 import java.util.*;
 
@@ -39,13 +40,6 @@ import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -87,7 +81,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
 
   private final static String EXTRACT_LAYERS_BY_GEOMETRY_TYPE = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-Layers-by-Geometry-Type");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-Layers-by-Geometry-Type");
 
   private final static String EXTRACT_BY_GEOMETRY_TYPE = I18N
           .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Type");
@@ -100,7 +94,7 @@ public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
           .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Shapefile-Type-Tooltip");
 
   private final static String EXTRACT_BY_GEOMETRY_DIMENSION = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Dimension");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Dimension");
   private final static String EXTRACT_BY_GEOMETRY_DIMENSION_TT = I18N
           .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Dimension-Tooltip");
 
@@ -116,46 +110,44 @@ public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
 
 
   private final static String ONLY_ONE_GEOMETRY_TYPE_FOUND = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Only-one-geometry-type-found");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Only-one-geometry-type-found");
   private final static String EMPTY = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.empty");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.empty");
   private final static String POINT = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.point");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.point");
   private final static String MULTIPOINT = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multipoint");
-  //private final static String ZERODIM = I18N
-  //    .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.zerodim");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multipoint");
   private final static String ZERODIM = I18N
           .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.point");
   private final static String LINESTRING = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.linestring");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.linestring");
   private final static String MULTILINESTRING = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multilinestring");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multilinestring");
   private final static String POLYLINE = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polyline");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polyline");
   private final static String ONEDIM = I18N
           .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.line");
   private final static String POLYGON = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polygon");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polygon");
   private final static String MULTIPOLYGON = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multipolygon");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multipolygon");
   private final static String TWODIM = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.area");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.area");
   private final static String GEOMETRYCOLLECTION = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.geometrycollection");
+          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.geometrycollection");
 
   private final static String LAYER = GenericNames.SELECT_LAYER;
 
   public Layer layer = null;
-  boolean extractByGeometryType      = true;
-  boolean extractByShapefileType     = false;
-  boolean extractByGeometryDimension = false;
+  private boolean extractByGeometryType      = true;
+  private boolean extractByShapefileType     = false;
+  private boolean extractByGeometryDimension = false;
 
-  boolean doNotExplodeGeometryCollections = true;
-  boolean explodePureGeometryCollections  = false;
-  boolean explodeAllGeometryCollections   = false;
+  private boolean doNotExplodeGeometryCollections = true;
+  private boolean explodePureGeometryCollections  = false;
+  private boolean explodeAllGeometryCollections   = false;
 
-  boolean keepEmptyGeometryAppart = true;
+  private boolean keepEmptyGeometryAppart = true;
 
   public ExtractLayersByGeometry() {
 
@@ -178,11 +170,9 @@ public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
   }
 
   public boolean execute(PlugInContext context) throws Exception {
-    MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
-        getName(), true);
-    if (layer == null) {
-      layer = context.getCandidateLayer(0);
-    }
+    MultiInputDialog dialog =
+            new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
+    layer = context.getCandidateLayer(0);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
     dialog.setVisible(true);
