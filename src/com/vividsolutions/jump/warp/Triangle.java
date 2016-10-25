@@ -37,7 +37,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -143,8 +143,6 @@ public class Triangle {
         return toLinearRing().toString();
     }
 
-    private static RobustCGAlgorithms cga = new RobustCGAlgorithms();
-
     /**
      * Returns whether this Triangle contains the given coordinate
      * @param p the point to test for containment
@@ -159,11 +157,11 @@ public class Triangle {
         //is not robust (see TriangulatorTestCase#testContains2) [Jon Aquino]
         
         //Can't simply use != because if one is 1 and the other is 0 that's OK. [Jon Aquino]
-        if (cga.computeOrientation(p1, p2, p) == - cga.computeOrientation(p2, p3, p)) {
+        if (CGAlgorithms.computeOrientation(p1, p2, p) == - CGAlgorithms.computeOrientation(p2, p3, p)) {
             return false;
         }
         
-        if (cga.computeOrientation(p1, p2, p) == - cga.computeOrientation(p3, p1, p)) {
+        if (CGAlgorithms.computeOrientation(p1, p2, p) == - CGAlgorithms.computeOrientation(p3, p1, p)) {
             return false;
         }        
         
@@ -208,7 +206,7 @@ public class Triangle {
      * given Coordinate
      */
     public List subTriangles(Coordinate newVertex) {
-        ArrayList triangles = new ArrayList();
+        ArrayList<Triangle> triangles = new ArrayList<>();
         triangles.add(new Triangle(p1, p2, newVertex));
         triangles.add(new Triangle(p2, p3, newVertex));
         triangles.add(new Triangle(p3, p1, newVertex));
@@ -301,11 +299,11 @@ public class Triangle {
     }
 
     private class SaalfeldCoefficients {
-        public double A1;
-        public double B1;
-        public double C1;
-        public double A2;
-        public double B2;
-        public double C2;
+        double A1;
+        double B1;
+        double C1;
+        double A2;
+        double B2;
+        double C2;
     }
 }

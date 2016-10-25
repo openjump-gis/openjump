@@ -11,8 +11,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
 public abstract class AbstractSaveDatasetAsPlugIn
-        extends
-            AbstractLoadSaveDatasetPlugIn {
+        extends AbstractLoadSaveDatasetPlugIn {
 
     public void run(TaskMonitor monitor, PlugInContext context)
             throws Exception {

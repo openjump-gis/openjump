@@ -10,9 +10,11 @@ import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public abstract class AbstractLoadSaveDatasetPlugIn extends ThreadedBasePlugIn {
+
     private WorkbenchContext context;
     protected String getLastFormatKey() { return getClass().getName() + " - LAST FORMAT"; }    
     protected String getLastDirectoryKey() { return getClass().getName() + " - LAST DIRECTORY"; }    
+
     public void initialize(final PlugInContext context) throws Exception {
         this.context = context.getWorkbenchContext();
         //Give other plug-ins a chance to add DataSourceQueryChoosers
@@ -27,12 +29,14 @@ public abstract class AbstractLoadSaveDatasetPlugIn extends ThreadedBasePlugIn {
             }
         });
     }
+
     protected abstract void setSelectedFormat(String format);
     protected abstract String getSelectedFormat();
     protected WorkbenchContext getContext() {
         return context;
     }
     private Collection dataSourceQueries;
+
     public boolean execute(PlugInContext context) throws Exception {
         dataSourceQueries = showDialog(context.getWorkbenchContext());
         if (dataSourceQueries != null) {
@@ -41,7 +45,9 @@ public abstract class AbstractLoadSaveDatasetPlugIn extends ThreadedBasePlugIn {
         }
         return dataSourceQueries != null;
     }
+
     protected abstract Collection showDialog(WorkbenchContext context);
+
     protected Collection getDataSourceQueries() {
         return dataSourceQueries;
     }

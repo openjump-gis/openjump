@@ -1,10 +1,6 @@
 package com.vividsolutions.jump.workbench.datasource;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 
 
@@ -16,20 +12,18 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import org.openjump.core.ui.util.ExceptionUtil;
 
-public abstract class AbstractLoadDatasetPlugIn extends AbstractLoadSaveDatasetPlugIn { 
-    public void run(TaskMonitor monitor, PlugInContext context)
-        throws Exception {
+public abstract class AbstractLoadDatasetPlugIn extends AbstractLoadSaveDatasetPlugIn {
+
+    public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+
         //Seamus Thomas Carroll [mailto:carrolls@cpsc.ucalgary.ca]
         //was concerned when he noticed that #getDataSourceQueries
         //was being called twice. So call it once only. [Jon Aquino 2004-02-05]
@@ -38,7 +32,7 @@ public abstract class AbstractLoadDatasetPlugIn extends AbstractLoadSaveDatasetP
         boolean exceptionsEncountered = false;
         for (Iterator i = getDataSourceQueries().iterator(); i.hasNext();) {
             DataSourceQuery dataSourceQuery = (DataSourceQuery) i.next();
-            ArrayList exceptions = new ArrayList();
+            ArrayList<Throwable> exceptions = new ArrayList<>();
             Assert.isTrue(dataSourceQuery.getDataSource().isReadable());
             monitor.report(I18N.get("datasource.LoadDatasetPlugIn.loading")+" " + dataSourceQuery.toString() + "...");
 

@@ -68,7 +68,7 @@ public abstract class CoordinateTransform {
         for (Iterator i = featureCollection.iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
             Geometry newGeometry = transform(feature.getGeometry());
-            Feature newFeature = (Feature) feature.clone(false);
+            Feature newFeature = feature.clone(false);
             newFeature.setGeometry(newGeometry);
             newCollection.add(newFeature);
         }
