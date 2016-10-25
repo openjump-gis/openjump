@@ -72,8 +72,10 @@ public class SegmentStringsWithData2Features {
     public static Geometry buildGeometry(Geometry source, 
             Map<Integer,Map<Integer,List<SegmentString>>> nodedSegmentStrings,
             boolean interpolate_z, int interpolated_z_dp, GeometryFactory gf) {
+
         // Use the same factory as source
         Geometry[] finalComponents = new Geometry[nodedSegmentStrings.size()];
+
         // For each component
         for (int i = 0 ; i < finalComponents.length ; i++) {
             Geometry sourceComponent = source.getGeometryN(i);
@@ -102,7 +104,6 @@ public class SegmentStringsWithData2Features {
                     interpolate(lines.get(0), exteriorRing, interpolated_z_dp);
                 }
                 // Now process holes the same way
-                //LinearRing[] holes = new LinearRing[lines.size()-1];
                 List<LinearRing> holes = new ArrayList<>();
                 for (int j = 0 ; j < lines.size()-1 ; j++) {
                     LinearRing hole = (LinearRing)merge(lines.get(j+1), gf, true);

@@ -54,8 +54,8 @@ import com.vividsolutions.jump.feature.FeatureCollection;
  * @author Martin Davis
  * @version 1.0
  */
-public class AffineTransControlPointExtracter
-{
+public class AffineTransControlPointExtracter {
+
   public static final int TYPE_UNKNOWN = 0;
   public static final int TYPE_VECTOR = 1;
   public static final int TYPE_LINE_3 = 2;
@@ -66,11 +66,9 @@ public class AffineTransControlPointExtracter
   private int inputType = TYPE_UNKNOWN;
   private String parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Unrecognized-control-point-geometry");
 
-  private int numGeoms;
   private Geometry[] geomSrc = new Geometry[3];
   private Geometry[] geomDest = new Geometry[3];
 
-  private int numControlPts;
   private Coordinate[] controlPtSrc;
   private Coordinate[] controlPtDest;
 
@@ -80,19 +78,18 @@ public class AffineTransControlPointExtracter
     init();
   }
 
-  public int getInputType() { return inputType; }
-  public String getParseErrorMessage() { return parseErrMsg; }
+  int getInputType() { return inputType; }
+  String getParseErrorMessage() { return parseErrMsg; }
 
-  public Coordinate[] getSrcControlPoints() { return controlPtSrc; }
-  public Coordinate[] getDestControlPoints() { return controlPtDest; }
+  Coordinate[] getSrcControlPoints() { return controlPtSrc; }
+  Coordinate[] getDestControlPoints() { return controlPtDest; }
 
   private void init()
   {
     parseInput();
   }
 
-  private void parseInput()
-  {
+  private void parseInput() {
     inputType = TYPE_UNKNOWN;
     int fcSrcSize = fcSrc.size();
     int fcDestSize = fcDest.size();
@@ -102,14 +99,15 @@ public class AffineTransControlPointExtracter
       parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Control-point-collections-must-be-same-size");
       return;
     }
+
     // for now only handling pair of geoms to define control points
     if (fcSrcSize != 1) {
       parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Control-points-must-be-a-single-geometry");
       return;
     }
 
-    geomSrc[0] = ((Feature) fcSrc.iterator().next()).getGeometry();
-    geomDest[0] = ((Feature) fcDest.iterator().next()).getGeometry();
+    geomSrc[0] = fcSrc.iterator().next().getGeometry();
+    geomDest[0] = fcDest.iterator().next().getGeometry();
 
     if (geomSrc[0].getClass() != geomDest[0].getClass()) {
       parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Control-points-must-be-LineStrings");
@@ -123,11 +121,9 @@ public class AffineTransControlPointExtracter
     }
 
     parseLines();
-    return;
   }
 
-  private void parseLines()
-  {
+  private void parseLines() {
     controlPtSrc = geomSrc[0].getCoordinates();
     controlPtDest = geomDest[0].getCoordinates();
 

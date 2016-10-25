@@ -46,12 +46,12 @@ import com.vividsolutions.jump.I18N;
 public class CommandLine {
 
   // store options defs
-  Vector<OptionSpec> optSpecs = new Vector<>();
+  private Vector<OptionSpec> optSpecs = new Vector<>();
 
   // store optionless file parameters
-  Vector<String> parVec = new Vector<>(); // store plain params (e.g. projects/files to open)
+  private Vector<String> parVec = new Vector<>(); // store plain params (e.g. projects/files to open)
 
-  char optionChar; // the char that indicates an option. Default is '/', which is
+  private char optionChar; // the char that indicates an option. Default is '/', which is
                    // NT Standard, but this causes problems on Unix systems, so
                    // '-' is used by JUMPWorkbench (better for cross-platform apps)
 
@@ -69,7 +69,7 @@ public class CommandLine {
 
   }
 
-  OptionSpec getOptionSpec(String name) {
+  private OptionSpec getOptionSpec(String name) {
     for (OptionSpec optionSpec : optSpecs) {
       if (optionSpec.matches(name)) {
         return optionSpec;

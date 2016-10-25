@@ -33,7 +33,6 @@
 
 package com.vividsolutions.jump.tools;
 
-import java.util.Iterator;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Geometry;

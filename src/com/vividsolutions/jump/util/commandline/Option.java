@@ -38,8 +38,8 @@ import java.util.Vector;
  * The parameters for an instance of an option occurring in a command.
  */
 public class Option {
-  OptionSpec optSpec;
-  Vector<String> args = new Vector<>(); // the actual option args found
+  private OptionSpec optSpec;
+  private Vector<String> args = new Vector<>(); // the actual option args found
 
   public Option(OptionSpec spec, String[] _args) {
     optSpec = spec;

@@ -45,16 +45,17 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
  * Specifies the syntax for a single option on a command line.
  */
 public class OptionSpec {
-  public final static int NARGS_ZERO_OR_MORE = -1;
-  public final static int NARGS_ONE_OR_MORE = -2;
-  public final static int NARGS_ZERO_OR_ONE = -3;
 
-  Vector<String> names = new Vector<>();
+  private final static int NARGS_ZERO_OR_MORE = -1;
+  private final static int NARGS_ONE_OR_MORE = -2;
+  private final static int NARGS_ZERO_OR_ONE = -3;
+
+  private Vector<String> names = new Vector<>();
   // number of arguments needed, will be checked
-  int nNeededArgs = 0;
-  String syntaxPattern;
-  String doc = ""; // option description
-  Vector<Option> options = new Vector<>();
+  private int nNeededArgs = 0;
+  private String syntaxPattern;
+  private String doc = ""; // option description
+  private Vector<Option> options = new Vector<>();
 
   public OptionSpec(String[] optNames, int numberOfNeededArgs, String desc) {
     for (String name : optNames) {
@@ -121,7 +122,7 @@ public class OptionSpec {
     return nNeededArgs;
   }
 
-  void checkNumArgs(String[] args) throws ParseException {
+  private void checkNumArgs(String[] args) throws ParseException {
     if (nNeededArgs == NARGS_ZERO_OR_MORE) {
       // this is senseless as it allows everything
     } else if (nNeededArgs == NARGS_ONE_OR_MORE) {

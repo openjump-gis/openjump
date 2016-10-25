@@ -45,7 +45,7 @@ import com.vividsolutions.jump.util.StringUtil;
  */
 public class PrintStreamTaskMonitor implements TaskMonitor {
     private PrintStream stream;
-    boolean isLoggingSubtasks = false;
+    private boolean isLoggingSubtasks = false;
 
     public PrintStreamTaskMonitor(PrintStream stream) {
         this.stream = stream;

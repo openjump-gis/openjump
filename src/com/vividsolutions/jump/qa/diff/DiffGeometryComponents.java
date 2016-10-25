@@ -44,8 +44,8 @@ public class DiffGeometryComponents {
   private DiffGeometryMatcher diffMatcher = new ExactGeometryMatcher();
   private boolean splitIntoComponents = true;
   
-  final static String sMatchingfeatures = I18N.get("com.vividsolutions.jump.qa.diff.DiffGeometry.Matching-features");
-  final static String sGeometries = I18N.get("com.vividsolutions.jump.qa.diff.DiffGeometryComponents.geometries");
+  private final static String sMatchingfeatures = I18N.get("com.vividsolutions.jump.qa.diff.DiffGeometry.Matching-features");
+  private final static String sGeometries = I18N.get("com.vividsolutions.jump.qa.diff.DiffGeometryComponents.geometries");
 
   public DiffGeometryComponents(FeatureCollection fc0,
                                 FeatureCollection fc1,

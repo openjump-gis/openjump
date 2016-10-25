@@ -42,10 +42,12 @@ public class ExactGeometryMatcher implements DiffGeometryMatcher {
   {
     queryGeom = geom;
   }
+
   public Geometry getQueryGeometry()
   {
     return queryGeom;
   }
+
   public boolean isMatch(Geometry geom)
   {
     return queryGeom.equalsExact(geom);

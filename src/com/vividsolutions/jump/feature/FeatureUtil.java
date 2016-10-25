@@ -34,7 +34,6 @@ package com.vividsolutions.jump.feature;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -78,10 +77,8 @@ public class FeatureUtil {
      * Compares two Features for order based on their feature ID.
      * @see Feature#getID()
      */
-	public static class IDComparator implements Comparator {
-		public int compare(Object o1, Object o2) {
-			Feature f1 = (Feature) o1;
-			Feature f2 = (Feature) o2;
+	public static class IDComparator implements Comparator<Feature> {
+		public int compare(Feature f1, Feature f2) {
 
 			if (f1.getID() < f2.getID()) {
 				return -1;
@@ -101,7 +98,7 @@ public class FeatureUtil {
      * Increments and returns the feature-ID counter
      * @see Feature#getID()
      */
-	public static int nextID() { return ++lastID; }
+	static int nextID() { return ++lastID; }
 
     /**
      * Although Feature implements Cloneable, this method is useful

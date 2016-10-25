@@ -35,6 +35,7 @@ package com.vividsolutions.jump.qa.diff;
 import com.vividsolutions.jump.feature.*;
 
 public class MatchFeature {
+
   private Feature feature;
   private boolean isMatched;
 
@@ -42,8 +43,17 @@ public class MatchFeature {
   {
     this.feature = feature;
   }
-  public Feature getFeature() { return feature; }
-  public void setMatched(boolean isMatched) { this.isMatched = isMatched; }
-  public boolean isMatched() { return isMatched; }
+
+  public Feature getFeature() {
+    return feature;
+  }
+
+  public void setMatched(boolean isMatched) {
+    this.isMatched = isMatched;
+  }
+
+  public boolean isMatched() {
+    return isMatched;
+  }
 
 }
