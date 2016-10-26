@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -48,11 +47,11 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 
 public abstract class AbstractPalettePanel extends JPanel {
 
-    protected ArrayList listeners = new ArrayList();
+    protected ArrayList<Listener> listeners = new ArrayList<>();
 
     public static class BasicStyleList {
-        private ArrayList basicStyles = new ArrayList();
-        public List getBasicStyles() {
+        private ArrayList<BasicStyle> basicStyles = new ArrayList<>();
+        public List<BasicStyle> getBasicStyles() {
             return Collections.unmodifiableList(basicStyles);
         }
         public void addBasicStyle(BasicStyle basicStyle) {
@@ -60,8 +59,8 @@ public abstract class AbstractPalettePanel extends JPanel {
         }
     }
 
-    public static interface Listener {
-        public void basicStyleChosen(BasicStyle basicStyle);
+    public interface Listener {
+        void basicStyleChosen(BasicStyle basicStyle);
     }
 
     public void add(Listener listener) {
@@ -71,37 +70,25 @@ public abstract class AbstractPalettePanel extends JPanel {
     public abstract void setAlpha(int alpha);
 
     protected void fireBasicStyleChosen(BasicStyle basicStyle) {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            Listener listener = (Listener) i.next();
+        for (Listener listener : listeners) {
             listener.basicStyleChosen(basicStyle);
         }
     }
 
-    public static List basicStyles() {
-        try {
-            if (basicStyleList == null) {
-                InputStream stream =
-                    AbstractPalettePanel.class.getResourceAsStream(
-                        StringUtil.classNameWithoutQualifiers(
-                            AbstractPalettePanel.class.getName())
-                            + ".xml");
-                try {
-                    InputStreamReader reader = new InputStreamReader(stream);
-                    try {
-                        basicStyleList =
-                            ((BasicStyleList) new XML2Java()
-                                .read(reader, BasicStyleList.class));
-                    } finally {
-                        reader.close();
-                    }
-                } finally {
-                    stream.close();
-                }
+    public static List<BasicStyle> basicStyles() {
+        if (basicStyleList == null) {
+            try (InputStream stream = AbstractPalettePanel.class.
+                    getResourceAsStream(StringUtil.classNameWithoutQualifiers(
+                            AbstractPalettePanel.class.getName()) + ".xml");
+                 InputStreamReader reader = new InputStreamReader(stream)){
+
+                basicStyleList = ((BasicStyleList) new XML2Java().read(reader, BasicStyleList.class));
+
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                Assert.shouldNeverReachHere();
+                return null;
             }
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            Assert.shouldNeverReachHere();
-            return null;
         }
         return basicStyleList.getBasicStyles();
     }

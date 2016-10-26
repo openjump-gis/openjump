@@ -74,16 +74,16 @@ public class LayerManager {
     // ConcurrentModificationExceptions can occur. [Jon Aquino]
     // Go with List rather than name-to-category map, because category names can
     // now change. [Jon Aquino]
-    private ArrayList categories = new ArrayList();
+    private ArrayList<Category> categories = new ArrayList<>();
 
     // Store weak references to layers rather than the layers themselves -- if a
     // layer
     // is lucky enough to have all its strong references released, let it
     // dispose of
     // itself immediately [Jon Aquino]
-    private ArrayList layerReferencesToDispose = new ArrayList();
+    private ArrayList<WeakReference> layerReferencesToDispose = new ArrayList<>();
     private boolean firingEvents = true;
-    private ArrayList layerListeners = new ArrayList();
+    private ArrayList<LayerListener> layerListeners = new ArrayList<>();
     private Iterator firstColors;
     private Blackboard blackboard = new Blackboard();
 
@@ -114,12 +114,10 @@ public class LayerManager {
         }
     }
 
-    private Collection firstColors() {
-        ArrayList firstColors = new ArrayList();
+    private Collection<Color> firstColors() {
+        ArrayList<Color> firstColors = new ArrayList<>();
 
-        for (Iterator i = AbstractPalettePanel.basicStyles().iterator(); i
-                .hasNext();) {
-            BasicStyle basicStyle = (BasicStyle) i.next();
+        for (BasicStyle basicStyle : AbstractPalettePanel.basicStyles()) {
 
             if (!basicStyle.isRenderingFill()) {
                 continue;
@@ -150,16 +148,16 @@ public class LayerManager {
     }
 
     public void addLayerable(String categoryName, Layerable layerable) {
+
         if (layerable instanceof Layer) {
-            if (size() == 0
-                    && getCoordinateSystem() == CoordinateSystem.UNSPECIFIED) {
+            if (size() == 0 && getCoordinateSystem() == CoordinateSystem.UNSPECIFIED) {
                 setCoordinateSystem(((Layer) layerable)
                         .getFeatureCollectionWrapper().getFeatureSchema()
                         .getCoordinateSystem());
             } else {
                 reproject((Layer) layerable, coordinateSystem);
             }
-            layerReferencesToDispose.add(new WeakReference(layerable));
+            layerReferencesToDispose.add(new WeakReference<>(layerable));
         }
         addCategory(categoryName);
   
@@ -198,8 +196,7 @@ public class LayerManager {
             }
         } finally {
             // Even if #isReprojectionNecessary returned false, we still need to
-            // set
-            // the CoordinateSystem to the new value [Jon Aquino]
+            // set the CoordinateSystem to the new value [Jon Aquino]
             layer.getFeatureCollectionWrapper().getFeatureSchema()
                     .setCoordinateSystem(coordinateSystem);
         }
@@ -234,14 +231,11 @@ public class LayerManager {
     }
 
     public Category getCategory(String name) {
-        for (Iterator i = categories.iterator(); i.hasNext();) {
-            Category category = (Category) i.next();
-
+        for (Category category : categories) {
             if (category.getName().equals(name)) {
                 return category;
             }
         }
-
         return null;
     }
 
@@ -307,9 +301,8 @@ public class LayerManager {
     }
 
     private boolean isExistingLayerableName(String name) {
-        for (Iterator i = getLayerables(Layerable.class).iterator(); i
-                .hasNext();) {
-            Layerable layerable = (Layerable) i.next();
+        for (Object object : getLayerables(Layerable.class)) {
+            Layerable layerable = (Layerable) object;
 
             if (layerable.getName().equals(name)) {
                 return true;
@@ -325,7 +318,7 @@ public class LayerManager {
      * remove is only used to temporarily remove a layer from the layer (ex.
      * in the MoveLayerPlugIn).
      * 
-     * @param layerable
+     * @param layerable Layerable to remove
      */
     public void remove(Layerable layerable) {
         remove(new Layerable[] { layerable }, false);
@@ -344,15 +337,15 @@ public class LayerManager {
     private void remove(Layerable[] layerables, boolean dispose) {
         for (Layerable layerable : layerables) {
             // iterate over cats to find layer
-            for (Iterator j = categories.iterator(); j.hasNext();) {
-                Category c = (Category) j.next();
-                int index = c.indexOf(layerable);
+            for (Category category : categories) {
+                int index = category.indexOf(layerable);
 
                 if (index != -1) {
-                    c.remove(layerable);
-                    if (dispose && layerable instanceof Disposable)
+                    category.remove(layerable);
+                    if (dispose && layerable instanceof Disposable) {
                         ((Disposable) layerable).dispose();
-                    fireLayerChanged(layerable, LayerEventType.REMOVED, c,
+                    }
+                    fireLayerChanged(layerable, LayerEventType.REMOVED, category,
                             index);
                 }
             }
@@ -372,8 +365,7 @@ public class LayerManager {
 
     public void dispose() {
         this.setFiringEvents(false);
-        for (Iterator i = layerReferencesToDispose.iterator(); i.hasNext();) {
-            WeakReference reference = (WeakReference) i.next();
+        for (WeakReference reference : layerReferencesToDispose) {
             Layer layer = (Layer) reference.get();
 
             if (layer != null) {
@@ -415,9 +407,8 @@ public class LayerManager {
         // ConcurrentModificationException
         // for (Iterator i = layerListeners.iterator(); i.hasNext();) {
         // [sstein 2.Feb.2007] new line by Larry
-        for (Iterator i = new ArrayList(layerListeners).iterator(); i.hasNext();) {// LDB
+        for (final LayerListener layerListener : new ArrayList<>(layerListeners)) {// LDB
                                                                                    // added
-            final LayerListener layerListener = (LayerListener) i.next();
             fireLayerEvent(new Runnable() {
                 public void run() {
                     layerListener.categoryChanged(new CategoryEvent(category,
@@ -448,8 +439,7 @@ public class LayerManager {
         }
 
         // New ArrayList to avoid ConcurrentModificationException [Jon Aquino]
-        for (Iterator i = new ArrayList(layerListeners).iterator(); i.hasNext();) {
-            final LayerListener layerListener = (LayerListener) i.next();
+        for (final LayerListener layerListener : new ArrayList<>(layerListeners)) {
             fireLayerEvent(new Runnable() {
                 public void run() {
                     layerListener.featuresChanged(new FeatureEvent(features,
@@ -497,8 +487,7 @@ public class LayerManager {
         }
 
         // New ArrayList to avoid ConcurrentModificationException [Jon Aquino]
-        for (Iterator i = new ArrayList(layerListeners).iterator(); i.hasNext();) {
-            final LayerListener layerListener = (LayerListener) i.next();
+        for (final LayerListener layerListener : new ArrayList<>(layerListeners)) {
             fireLayerEvent(new Runnable() {
                 public void run() {
                     layerListener.layerChanged(new LayerEvent(layerable,
@@ -605,7 +594,7 @@ public class LayerManager {
     }
 
     public Layer getLayer(int index) {
-        return (Layer) getLayers().get(index);
+        return getLayers().get(index);
     }
 
     public int size() {
@@ -628,50 +617,28 @@ public class LayerManager {
     public Envelope getEnvelopeOfAllLayers(boolean visibleLayersOnly) {
         Envelope envelope = new Envelope();
 
-        /*
-         * for (Iterator<Layerable> i = iterator(); i.hasNext();) { Layerable
-         * layerable = (Layer) i.next();
-         * 
-         * if (visibleLayersOnly && !layerable.isVisible()) { continue; }
-         * 
-         * if (layerable instanceof Layer) {
-         * 
-         * envelope.expandToInclude(((Layer) layerable)
-         * .getFeatureCollectionWrapper().getEnvelope()); }
-         * 
-         * }
-         */
-
         // Add Layer.class envelopes
-        List<Layer> layers = getVectorImageLayers();
-        for (Iterator<Layer> iter = layers.iterator(); iter.hasNext();) {
-            Layer layer = iter.next();
+        for (Layer layer : getLayers()) {
             if (visibleLayersOnly && !layer.isVisible()) {
                 continue;
             }
-            envelope.expandToInclude(layer.getFeatureCollectionWrapper()
-                    .getEnvelope());
+            envelope.expandToInclude(layer.getFeatureCollectionWrapper().getEnvelope());
         }
 
         // Add WMS.class envelopes
-        List<WMSLayer> wmslayers = getWMSLayers();
-
-        for (Iterator<WMSLayer> iter = wmslayers.iterator(); iter.hasNext();) {
-            WMSLayer wlayer = iter.next();
-            if (visibleLayersOnly && !wlayer.isVisible()) {
+        for (WMSLayer wLayer : getWMSLayers()) {
+            if (visibleLayersOnly && !wLayer.isVisible()) {
                 continue;
             }
-            envelope.expandToInclude(wlayer.getEnvelope());
+            envelope.expandToInclude(wLayer.getEnvelope());
         }
-        // Add RasterIMageLayer.class envelopes
-        List<RasterImageLayer> rlayers = getRasterImageLayers();
-        for (Iterator<RasterImageLayer> iter = rlayers.iterator(); iter
-                .hasNext();) {
-            RasterImageLayer rlayer = iter.next();
-            if (visibleLayersOnly && !rlayer.isVisible()) {
+
+        // Add RasterImageLayer.class envelopes
+        for (RasterImageLayer rLayer : getRasterImageLayers()) {
+            if (visibleLayersOnly && !rLayer.isVisible()) {
                 continue;
             }
-            envelope.expandToInclude(rlayer.getWholeImageEnvelope());
+            envelope.expandToInclude(rLayer.getWholeImageEnvelope());
         }
 
         return envelope;
@@ -680,8 +647,6 @@ public class LayerManager {
     /**
      * [Giuseppe Aruta] July 8 2015
      * Gets the list of WMSLayer.class registered in this manager
-     * 
-     * @return
      */
     public List<WMSLayer> getWMSLayers() {
         return (List<WMSLayer>) getLayerables(WMSLayer.class);
@@ -690,22 +655,11 @@ public class LayerManager {
     /**
      * [Giuseppe Aruta] July 8 2015
      * Gets the list of RasterImageLayer.class registered in this manager
-     * 
-     * @return
      */
     public List<RasterImageLayer> getRasterImageLayers() {
         return (List<RasterImageLayer>) getLayerables(RasterImageLayer.class);
     }
 
-    /**
-     * [Giuseppe Aruta] July 8 2015
-     * Gets the list of Layer.class class registered in this manager
-     * 
-     * @return
-     */
-    public List<Layer> getVectorImageLayers() {
-        return (List<Layer>) getLayerables(Layer.class);
-    }
 
     /**
      * @return -1 if the layer does not exist
@@ -715,9 +669,7 @@ public class LayerManager {
     }
 
     public Category getCategory(Layerable layerable) {
-        for (Iterator i = categories.iterator(); i.hasNext();) {
-            Category category = (Category) i.next();
-
+        for (Category category : categories) {
             if (category.contains(layerable)) {
                 return category;
             }
@@ -738,14 +690,12 @@ public class LayerManager {
 
         ArrayList layers = new ArrayList();
 
-        // Create new ArrayLists to avoid ConcurrentModificationExceptions. [Jon
-        // Aquino]
-        for (Iterator i = new ArrayList(categories).iterator(); i.hasNext();) {
-            Category c = (Category) i.next();
+        // Create new ArrayLists to avoid ConcurrentModificationExceptions.
+        // [Jon Aquino]
+        for (Category category : categories) {
 
-            for (Iterator j = new ArrayList(c.getLayerables()).iterator(); j
-                    .hasNext();) {
-                Layerable l = (Layerable) j.next();
+            for (Object object : new ArrayList(category.getLayerables())) {
+                Layerable l = (Layerable) object;
 
                 if (!(layerableClass.isInstance(l))) {
                     continue;
@@ -758,8 +708,8 @@ public class LayerManager {
         return layers;
     }
 
-    public List getVisibleLayers(boolean includeFence) {
-        ArrayList visibleLayers = new ArrayList(getLayers());
+    public List<Layer> getVisibleLayers(boolean includeFence) {
+        ArrayList<Layer> visibleLayers = new ArrayList<>(getLayers());
 
         for (Iterator i = visibleLayers.iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();
@@ -824,7 +774,7 @@ public class LayerManager {
      */
       public LinkedList<String> getTemporaryRasterImageLayers() {
        	LinkedList<String> list = new LinkedList<String>();
-       	Collection<Layer>  rlayers =  getLayerables(RasterImageLayer.class);
+       	Collection<Layerable>  rlayers =  getLayerables(RasterImageLayer.class);
            for (Iterator i = rlayers.iterator(); i.hasNext();) {
            	
                RasterImageLayer layer = (RasterImageLayer) i.next();
@@ -857,19 +807,6 @@ public class LayerManager {
         // not
         // available to this LayerManager (but would be available to a plug-in)
         // [Jon Aquino]
-    }
-
-    public static void main(String[] args) throws ParseException {
-        System.out.println(Line2D.linesIntersect(708248.882609455,
-                2402253.07294874, 708249.523621829, 2402244.3124463,
-                708247.896591321, 2402252.48269854, 708261.854734465,
-                2402182.39086576));
-        System.out
-                .println(new WKTReader()
-                        .read("LINESTRING(708248.882609455 2402253.07294874, 708249.523621829 2402244.3124463)")
-                        .intersects(
-                                new WKTReader()
-                                        .read("LINESTRING(708247.896591321 2402252.48269854, 708261.854734465 2402182.39086576)")));
     }
 
     public CoordinateSystem getCoordinateSystem() {
