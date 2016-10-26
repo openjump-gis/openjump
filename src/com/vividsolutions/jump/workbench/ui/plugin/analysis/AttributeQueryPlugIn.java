@@ -42,8 +42,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
-import javax.swing.JRadioButton;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -83,20 +81,14 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   private static String ATTR_GEOMETRY_TYPE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Type");
   private static String ATTR_GEOMETRY_DIMENSION = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Dimension");
 
-  // MD - could easily add this later
-  //private final static String DIALOG_COMPLEMENT = "Complement Result";
 
-  private Collection functionNames;
-  private MultiInputDialog dialog;
+  private Collection<String> functionNames;
   private Layer srcLayer;
   private String attrName;
   private String funcNameToRun;
   private String value = "";
   private boolean complementResult = false;
   private boolean caseInsensitive = false;
-  private boolean exceptionThrown = false;
-  private JRadioButton updateSourceRB;
-  private JRadioButton createNewLayerRB;
   private boolean createLayer = true;
 
   public AttributeQueryPlugIn() {
@@ -111,10 +103,11 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
 
   public void initialize(PlugInContext context) throws Exception {
       	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		featureInstaller.addMainMenuItem(
+  		featureInstaller.addMainMenuPlugin(
   	        this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
-            new JMenuItem(this.getName() + "..."),
+            this.getName() + "...",
+            false, null,
             createEnableCheck(context.getWorkbenchContext()));
   }
   
@@ -136,7 +129,7 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
 
   public boolean execute(PlugInContext context) throws Exception {
 
-    dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
+    MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
     dialog.setVisible(true);
@@ -177,10 +170,6 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
       selectionManager.clear();
       selectionManager.getFeatureSelection().selectItems( srcLayer, resultFC.getFeatures() );
     }
-
-    if (exceptionThrown) {
-      context.getWorkbenchFrame().warnUser(I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Errors-found-while-executing-query"));
-    }
   }
 
   private FeatureCollection executeQuery(
@@ -213,27 +202,23 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
 
 
   private Object getValue(Feature f, String attrName) {
-    if (attrName == ATTR_GEOMETRY_AREA) {
+    if (attrName.equals(ATTR_GEOMETRY_AREA)) {
       Geometry g = f.getGeometry();
-      double area = (g == null) ? 0.0 : g.getArea();
-      return new Double(area);
+      return (g == null) ? 0.0 : g.getArea();
     }
-    if (attrName == ATTR_GEOMETRY_LENGTH) {
+    if (attrName.equals(ATTR_GEOMETRY_LENGTH)) {
       Geometry g = f.getGeometry();
-      double len = (g == null) ? 0.0 : g.getLength();
-      return new Double(len);
+      return (g == null) ? 0.0 : g.getLength();
     }
-    if (attrName == ATTR_GEOMETRY_NUMPOINTS) {
+    if (attrName.equals(ATTR_GEOMETRY_NUMPOINTS)) {
       Geometry g = f.getGeometry();
-      double len = (g == null) ? 0.0 : g.getNumPoints();
-      return new Double(len);
+      return (g == null) ? 0.0 : g.getNumPoints();
     }
-    if (attrName == ATTR_GEOMETRY_NUMCOMPONENTS) {
+    if (attrName.equals(ATTR_GEOMETRY_NUMCOMPONENTS)) {
       Geometry g = f.getGeometry();
-      double len = (g == null) ? 0.0 : g.getNumGeometries();
-      return new Double(len);
+      return (g == null) ? 0.0 : g.getNumGeometries();
     }
-    if (attrName == ATTR_GEOMETRY_NUMHOLES) {
+    if (attrName.equals(ATTR_GEOMETRY_NUMHOLES)) {
       Geometry g = f.getGeometry();
       int numHoles = 0;
       for (int i = 0 ; i < g.getNumGeometries() ; i++) {
@@ -243,35 +228,31 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
       }
       return numHoles;
     }
-    if (attrName == ATTR_GEOMETRY_ISCLOSED) {
+    if (attrName.equals(ATTR_GEOMETRY_ISCLOSED)) {
       Geometry g = f.getGeometry();
       if (g instanceof LineString)
-        return new Boolean( ((LineString) g).isClosed());
+        return ((LineString) g).isClosed();
       if (g instanceof MultiLineString)
-        return new Boolean( ((MultiLineString) g).isClosed());
-      return new Boolean(false);
+        return ((MultiLineString) g).isClosed();
+      return false;
     }
-    if (attrName == ATTR_GEOMETRY_ISEMPTY) {
+    if (attrName.equals(ATTR_GEOMETRY_ISEMPTY)) {
       Geometry g = f.getGeometry();
-      boolean bool = g.isEmpty();
-      return new Boolean(bool);
+      return g.isEmpty();
     }
-    if (attrName == ATTR_GEOMETRY_ISSIMPLE) {
+    if (attrName.equals(ATTR_GEOMETRY_ISSIMPLE)) {
       Geometry g = f.getGeometry();
-      boolean bool = g.isSimple();
-      return new Boolean(bool);
+      return g.isSimple();
     }
-    if (attrName == ATTR_GEOMETRY_ISVALID) {
+    if (attrName.equals(ATTR_GEOMETRY_ISVALID)) {
       Geometry g = f.getGeometry();
-      boolean bool = g.isValid();
-      return new Boolean(bool);
+      return g.isValid();
     }
-    if (attrName == ATTR_GEOMETRY_TYPE) {
+    if (attrName.equals(ATTR_GEOMETRY_TYPE)) {
       Geometry g = f.getGeometry();
-      String type = StringUtil.classNameWithoutQualifiers(g.getClass().getName());
-      return type;
+      return StringUtil.classNameWithoutQualifiers(g.getClass().getName());
     }
-    if (attrName == ATTR_GEOMETRY_DIMENSION) {
+    if (attrName.equals(ATTR_GEOMETRY_DIMENSION)) {
         Geometry g = f.getGeometry();
         return g.getDimension();
     }
@@ -288,7 +269,7 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   private static String UPDATE_SRC = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
   private static String CREATE_LYR = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
 
-  private JComboBox attrComboBox;
+  private JComboBox<String> attrComboBox;
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context){
     dialog.setSideBarDescription(
@@ -296,7 +277,7 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
 
     //Set initial layer values to the first and second layers in the layer list.
     //In #initialize we've already checked that the number of layers >= 1. [Jon Aquino]
-    Layer initLayer = (srcLayer == null)? context.getCandidateLayer(0) : srcLayer;
+    Layer initLayer = context.getCandidateLayer(0);
 
     JComboBox lyrCombo = dialog.addLayerComboBox(LAYER, initLayer, context.getLayerManager());
     lyrCombo.addItemListener(new LayerItemListener());
@@ -318,8 +299,8 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
     dialog.addCheckBox(DIALOG_COMPLEMENT, complementResult);
     
     final String OUTPUT_GROUP = "OUTPUT_GROUP";
-    createNewLayerRB = dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, createLayer,CREATE_LYR);
-    updateSourceRB = dialog.addRadioButton(UPDATE_SRC, OUTPUT_GROUP, !createLayer, UPDATE_SRC);
+    dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, createLayer,CREATE_LYR);
+    dialog.addRadioButton(UPDATE_SRC, OUTPUT_GROUP, !createLayer, UPDATE_SRC);
 
     updateUI(initLayer);
   }
@@ -335,16 +316,16 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   }
 
   private void updateUI(Layer lyr) {
-    List attrNames = null;
+    List<String> attrNames;
     if (lyr != null) {
       FeatureCollection fc = lyr.getFeatureCollectionWrapper();
       FeatureSchema fs = fc.getFeatureSchema();
 
       attrNames = getAttributeNames(fs);
     } else {
-      attrNames = new ArrayList();
+      attrNames = new ArrayList<>();
     }
-    attrComboBox.setModel(new DefaultComboBoxModel(new Vector(attrNames)));
+    attrComboBox.setModel(new DefaultComboBoxModel<>(new Vector<>(attrNames)));
     attrComboBox.setSelectedItem(attrName);
   }
 
@@ -361,8 +342,8 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
     return enabled;
   }
   
-  private static List getAttributeNames(FeatureSchema fs) {
-    List names = new ArrayList();
+  private static List<String> getAttributeNames(FeatureSchema fs) {
+    List<String> names = new ArrayList<>();
     for (int i = 0; i < fs.getAttributeCount(); i++) {
       if (fs.getAttributeType(i) != AttributeType.GEOMETRY)
         names.add(fs.getAttributeName(i));

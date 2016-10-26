@@ -65,15 +65,12 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 
   private JTextField paramField;
   private Collection functionNames;
-  private MultiInputDialog dialog;
   private Layer maskLyr;
   private Layer srcLayer;
   private String funcNameToRun;
   private GeometryPredicate functionToRun = null;
   private boolean complementResult = false;
   private boolean allowDups = false;
-  private JRadioButton updateSourceRB;
-  private JRadioButton createNewLayerRB;
   private boolean createLayer = true;
 
   private double[] params = new double[2];
@@ -111,7 +108,7 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   }
   
   public boolean execute(PlugInContext context) throws Exception {
-    dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
+    MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
     dialog.setVisible(true);
@@ -133,8 +130,6 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 
     FeatureCollection maskFC = maskLyr.getFeatureCollectionWrapper();
     FeatureCollection sourceFC = srcLayer.getFeatureCollectionWrapper();
-
-    int nArgs = functionToRun.getGeometryArgumentCount();
 
     SpatialQueryExecuter executer = new SpatialQueryExecuter(maskFC, sourceFC);
     executer.setAllowDuplicates(allowDups);
@@ -183,13 +178,13 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 
     //Set initial layer values to the first and second layers in the layer list.
     //In #initialize we've already checked that the number of layers >= 1. [Jon Aquino]
-    Layer initLayer = (srcLayer == null)? context.getCandidateLayer(0) : srcLayer;
+    Layer initLayer = context.getCandidateLayer(0);
 
     dialog.addLayerComboBox(SRC_LAYER, initLayer, context.getLayerManager());
     JComboBox functionComboBox = dialog.addComboBox(PREDICATE, funcNameToRun, functionNames, null);
     functionComboBox.addItemListener(new MethodItemListener());
 
-    if (maskLyr == null) maskLyr = context.getLayerManager().size() > 1 ? context.getCandidateLayer(1) : srcLayer;
+    maskLyr = context.getLayerManager().size() > 1 ? context.getCandidateLayer(1) : initLayer;
     dialog.addLayerComboBox(MASK_LAYER, maskLyr, context.getLayerManager());
 
     paramField = dialog.addDoubleField(PARAM, params[0], 10);
@@ -197,8 +192,8 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
     dialog.addCheckBox(DIALOG_COMPLEMENT, complementResult);
 
     final String OUTPUT_GROUP = "OUTPUT_GROUP";
-    createNewLayerRB = dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, createLayer,CREATE_LYR);
-    updateSourceRB = dialog.addRadioButton(UPDATE_SRC, OUTPUT_GROUP, !createLayer, UPDATE_SRC);
+    dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, createLayer,CREATE_LYR);
+    dialog.addRadioButton(UPDATE_SRC, OUTPUT_GROUP, !createLayer, UPDATE_SRC);
 
     updateUIForFunction(funcNameToRun);
   }
