@@ -32,7 +32,6 @@
 package com.vividsolutions.jump.workbench.model;
 
 import java.awt.Color;
-import java.awt.geom.Line2D;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -45,8 +44,6 @@ import java.util.List;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.coordsys.Reprojector;

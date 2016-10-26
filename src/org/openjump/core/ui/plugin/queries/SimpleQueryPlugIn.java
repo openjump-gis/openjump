@@ -1,7 +1,6 @@
 package org.openjump.core.ui.plugin.queries;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -24,7 +23,8 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  * @version 0.2 (16 Oct 2005)
  */ 
 public class SimpleQueryPlugIn extends AbstractPlugIn {
-    static QueryDialog queryDialog;
+
+    private static QueryDialog queryDialog;
 
     public void initialize(PlugInContext context) throws Exception {
 

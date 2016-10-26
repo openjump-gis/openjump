@@ -1,7 +1,9 @@
 package org.openjump.core.ui.plugin.queries;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.util.FlexibleDateParser;
@@ -16,7 +18,9 @@ import java.util.regex.Pattern;
 /**
  * Condition
  * @author Michael MICHAUD
- * @version 0.3.0
+ * @version 0.4.0
+ * version 0.4.0 (2016-10-26)
+ *     big optimization for spatial queries
  * version 0.3.0 (2013-06-28)
  *     add relate operator
  * version 0.2.3 (2012-03-05)
@@ -45,11 +49,12 @@ public class Condition  {
 
     private static final FlexibleDateParser FLEXIBLE_DATE_PARSER = new FlexibleDateParser();
     
-    QueryDialog query;
-    Function ft;
-    Operator op;
-    Pattern pattern;   // only used for match & find functions
-    PlugInContext context;
+    private QueryDialog query;
+    private Function ft;
+    private Operator op;
+    private Pattern pattern;   // only used for match & find functions
+    private PlugInContext context;
+    private Map<String,STRtree> spatialIndices;
     
      public Condition(QueryDialog query, PlugInContext context) {
         this.query = query;
@@ -61,6 +66,7 @@ public class Condition  {
             else 
                 pattern = Pattern.compile((String)query.valueCB.getSelectedValue(), Pattern.CASE_INSENSITIVE);
         }
+        if (op.type == 'G') spatialIndices = new HashMap<>();
         this.context = context;
     }
     
@@ -72,7 +78,7 @@ public class Condition  {
     }
     
     public boolean test(Feature feature) throws Exception {
-        Object o = null;
+        Object o;
         if(query.attributeType=='G') {
             o = feature.getGeometry();
             if(ft.type=='G') return test(gfunction((Geometry)o));
@@ -121,7 +127,7 @@ public class Condition  {
     }
     
     private boolean test(boolean b) throws Exception {
-        boolean value = query.valueCB.getSelectedIndex()==0?true:false;
+        boolean value = query.valueCB.getSelectedIndex()==0;
         if (b==value && op==Operator.BEQ) return true;
         else if (b!=value && op==Operator.BNE) return true;
         else return false;
@@ -192,7 +198,9 @@ public class Condition  {
         // System.out.println("position de la valeur selectionnee : " + pos);
         // pos 1 = selected features case
         if (pos == QueryDialog.SELECTION) {
-            for (Iterator it = query.selection.iterator() ; it.hasNext() ;) {
+            // [mmichaud 2016] optimization with spatial index
+            Collection candidates = candidates(g, "$SELECTION", query.selection);
+            for (Iterator it = candidates.iterator() ; it.hasNext() ;) {
                 Geometry p = (Geometry)it.next();
                 if (op==Operator.INTER && g.intersects(p)) return true;
                 else if (op==Operator.CONTA && g.contains(p)) return true;
@@ -213,7 +221,9 @@ public class Condition  {
             Layer[] ll = context.getLayerNamePanel().getSelectedLayers();
             for (int i = 0 ; i < ll.length ; i++) {
                 FeatureCollection fc = ll[i].getFeatureCollectionWrapper();
-                for (Iterator it = fc.iterator() ; it.hasNext() ;) {
+                // [mmichaud 2016] optimization with spatial index
+                Collection candidates = candidates(g, ll[i].getName(), fc);
+                for (Iterator it = candidates.iterator() ; it.hasNext() ;) {
                     Geometry p = ((Feature)it.next()).getGeometry();
                     if (op==Operator.INTER && g.intersects(p)) return true;
                     else if (op==Operator.CONTA && g.contains(p)) return true;
@@ -235,7 +245,9 @@ public class Condition  {
             List ll = context.getLayerManager().getLayers();
             for (int i = 0 ; i < ll.size() ; i++) {
                 FeatureCollection fc = ((Layer)ll.get(i)).getFeatureCollectionWrapper();
-                for (Iterator it = fc.iterator() ; it.hasNext() ;) {
+                // [mmichaud 2016] optimization with spatial index
+                Collection candidates = candidates(g, ((Layer)ll.get(i)).getName(), fc);
+                for (Iterator it = candidates.iterator() ; it.hasNext() ;) {
                     Geometry p = ((Feature)it.next()).getGeometry();
                     if (op==Operator.INTER && g.intersects(p)) return true;
                     else if (op==Operator.CONTA && g.contains(p)) return true;
@@ -255,7 +267,9 @@ public class Condition  {
         else {
             Layer layer = context.getLayerManager().getLayer((String)query.valueCB.getSelectedValue());
             FeatureCollection fc = layer.getFeatureCollectionWrapper();
-            for (Iterator it = fc.iterator() ; it.hasNext() ;) {
+            // [mmichaud 2016] optimization with spatial index
+            Collection candidates = candidates(g, layer.getName(), fc);
+            for (Iterator it = candidates.iterator() ; it.hasNext() ;) {
                 Geometry p = ((Feature)it.next()).getGeometry();
                 if (op==Operator.INTER && g.intersects(p)) return true;
                 else if (op==Operator.CONTA && g.contains(p)) return true;
@@ -272,6 +286,56 @@ public class Condition  {
             return false;
         }
         return false;
+    }
+
+    private STRtree createIndex(Collection geometries) {
+        STRtree index = new STRtree();
+        for (Object geometry : geometries) {
+            index.insert(((Geometry)geometry).getEnvelopeInternal(), geometry);
+        }
+        return index;
+    }
+
+    private STRtree createIndex(FeatureCollection fc) {
+        STRtree index = new STRtree();
+        for (Feature f : fc.getFeatures()) {
+            index.insert(f.getGeometry().getEnvelopeInternal(), f);
+        }
+        return index;
+    }
+
+    private Collection candidates(Geometry g, String collectionName, Collection collection) {
+        if (collection.size() > 256 &&
+                Arrays.asList(Operator.INTER, Operator.CONTA, Operator.WITHI, Operator.WSTRI,
+                        Operator.WDIST, Operator.TOUCH, Operator.CROSS, Operator.OVERL).contains(op)) {
+            STRtree index = spatialIndices.get(collectionName);
+            if (index == null) {
+                index = createIndex(collection);
+                spatialIndices.put(collectionName, index);
+            }
+            Envelope e = g.getEnvelopeInternal();
+            if (op == Operator.WDIST) e.expandBy(Double.parseDouble(op.arg.toString()));
+            return index.query(e);
+        } else {
+            return collection;
+        }
+    }
+
+    private Collection candidates(Geometry g, String collectionName, FeatureCollection collection) {
+        if (collection.size() > 256 &&
+                Arrays.asList(Operator.INTER, Operator.CONTA, Operator.WITHI, Operator.WSTRI,
+                        Operator.WDIST, Operator.TOUCH, Operator.CROSS, Operator.OVERL).contains(op)) {
+            STRtree index = spatialIndices.get(collectionName);
+            if (index == null) {
+                index = createIndex(collection);
+                spatialIndices.put(collectionName, index);
+            }
+            Envelope e = g.getEnvelopeInternal();
+            if (op == Operator.WDIST) e.expandBy(Double.parseDouble(op.arg.toString()));
+            return index.query(e);
+        } else {
+            return collection.getFeatures();
+        }
     }
     
     //**************************************************************************
@@ -296,7 +360,6 @@ public class Condition  {
     }
     
     private Geometry gfunction(Geometry g) {
-        //System.out.println("geometric function");
         if (ft==Function.GNOF) return g;
         else if (ft==Function.CENT) return g.getInteriorPoint();
         else if (ft==Function.BUFF) return g.buffer(ft.arg);
@@ -304,7 +367,6 @@ public class Condition  {
     }
     
     private Date dfunction(Date d) {
-        //System.out.println("date function");
         if (ft==Function.DNOF) return d;
         else if (ft==Function.DDAY || ft==Function.DYEA) {
             Calendar cal = new GregorianCalendar();

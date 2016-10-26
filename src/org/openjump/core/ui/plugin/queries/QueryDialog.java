@@ -10,12 +10,8 @@ import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.util.CollectionMap;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.FeatureSelection;
-import com.vividsolutions.jump.workbench.ui.InfoFrame;
-import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
-import com.vividsolutions.jump.workbench.ui.TaskFrame;
+import com.vividsolutions.jump.workbench.ui.*;
 
-import javax.management.RuntimeErrorException;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -23,8 +19,6 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,15 +39,15 @@ public class QueryDialog extends BDialog {
     public static final int ALL_LAYERS = 0;
     public static final int SELECTION = 1;
     public static final int SELECTED_LAYERS = 2;
-    
-    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat();
+
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat();
     
     private PlugInContext context;
     
     // List of layers to search
-    List layers = new ArrayList();
+    List<Layer> layers = new ArrayList<>();
     // List of available attributes
-    Set attributes = new TreeSet();
+    Set<String> attributes = new TreeSet<>();
     // Selected attribute name
     String attribute;
     // Selected attribute type
@@ -65,14 +59,14 @@ public class QueryDialog extends BDialog {
     // Selected value
     String value;
     // Map attributes with lists of available values read in the fc
-    Map enumerations = new HashMap();
+    private Map enumerations = new HashMap();
     // Flag indicating a query is running
-    static boolean runningQuery = false;
-    static boolean cancelQuery = false;
+    private static boolean runningQuery = false;
+    private static boolean cancelQuery = false;
     
     // selected features initialized in execute query if "select" option is true
-    Collection selection; 
-    
+    Collection selection;
+
     BCheckBox charFilter;
     BCheckBox caseSensitive;
     BCheckBox numFilter;
@@ -82,21 +76,21 @@ public class QueryDialog extends BDialog {
     BCheckBox display;
     BCheckBox select;
     BCheckBox create;
-            
+
     BComboBox layerCB;
     BComboBox attributeCB;
     BComboBox functionCB;
     BComboBox operatorCB;
     BComboBox valueCB;
 
-    BLabel comments;
-    BLabel progressBarTitle;
-    BProgressBar progressBar;
+    private BLabel comments;
+    private BLabel progressBarTitle;
+    private BProgressBar progressBar;
 
-    BButton okButton;
-    BButton refreshButton;
-    BButton cancelButton;
-    BButton stopButton;
+    private BButton okButton;
+    private BButton refreshButton;
+    private BButton cancelButton;
+    private BButton stopButton;
 
     
    /**
@@ -115,7 +109,7 @@ public class QueryDialog extends BDialog {
    /**
     * User Interface Initialization
     */
-    protected void initUI(PlugInContext context) {
+    private void initUI(PlugInContext context) {
         // LAYOUT DEFINITIONS
         LayoutInfo centerNone6 =
             new LayoutInfo(LayoutInfo.CENTER, LayoutInfo.NONE,
@@ -306,9 +300,9 @@ public class QueryDialog extends BDialog {
         southPanel.add(refreshButton, 3, 0);
         southPanel.add(stopButton, 4, 0);
         
-        dialogContainer.add(northPanel, dialogContainer.NORTH);
-        dialogContainer.add(centerPanel, dialogContainer.CENTER);
-        dialogContainer.add(southPanel, dialogContainer.SOUTH);
+        dialogContainer.add(northPanel, BorderContainer.NORTH);
+        dialogContainer.add(centerPanel, BorderContainer.CENTER);
+        dialogContainer.add(southPanel, BorderContainer.SOUTH);
         
         // added on 2007-08-22 to synchronize the UI with layerNamePanel changes
         context.getLayerManager().addLayerListener(new LayerListener() {
@@ -330,7 +324,7 @@ public class QueryDialog extends BDialog {
     BButton getCancelButton() {return cancelButton;} 
     
     
-    void initVariables() {
+    private void initVariables() {
         runningQuery = false;
         cancelQuery = false;
         progressBarTitle.setText("");
@@ -351,9 +345,8 @@ public class QueryDialog extends BDialog {
         layerCB.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.selection"));
         layerCB.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.selected-layers"));
         
-        List layers = context.getLayerManager().getLayers();
-        for (int i = 0 ; i < layers.size() ; i++) {
-            Layer layer = (Layer)layers.get(i);
+        List<Layer> layers = context.getLayerManager().getLayers();
+        for (Layer layer : layers) {
             layerCB.add(layer);
         }
         ((javax.swing.JComboBox)layerCB.getComponent()).setRenderer(layerListCellRenderer);
@@ -398,8 +391,7 @@ public class QueryDialog extends BDialog {
         }
         // selected layer
         else {
-            //layers.add(context.getLayerManager().getLayer((String)layerCB.getSelectedValue()));
-            layers.add(layerCB.getSelectedValue());
+            layers.add((Layer)layerCB.getSelectedValue());
         }
         attributes.addAll(authorizedAttributes(layers));
         attributeCB.setContents(attributes);
@@ -418,16 +410,15 @@ public class QueryDialog extends BDialog {
         else return false;
     }
     
-    private Set authorizedAttributes(List layers) {
+    private Set<String> authorizedAttributes(List<Layer> layers) {
         // set of authorized Attributes
-        Set set = new TreeSet();
+        Set<String> set = new TreeSet<>();
         // map of enumerations
         enumerations = new HashMap();
         // Geometry is processed separetely in order to always have it first
         if (geoFilter.getState()) set.add(" (GEOMETRY)");
         attribute = "";
-        for (int i = 0 ; i < layers.size() ; i++) {
-            Layer layer = (Layer)layers.get(i);
+        for (Layer layer : layers) {
             FeatureSchema fs = layer.getFeatureCollectionWrapper().getFeatureSchema();
             for (int j = 0 ; j < fs.getAttributeCount() ; j++) {
                 String att = fs.getAttributeName(j);
@@ -457,13 +448,13 @@ public class QueryDialog extends BDialog {
     private void booFilterChanged() {
         layerChanged();
     }
-    
-    public void attributeChanged() {
+
+    private void attributeChanged() {
         String att = (String)attributeCB.getSelectedValue();
         attribute = att.substring(0, att.lastIndexOf(' '));
         String attType = att.substring(att.lastIndexOf('(')+1,
                                        att.lastIndexOf(')'));
-        char newat = 'S';
+        char newat;
         if (attType.equals("INTEGER")) newat = 'N';
         else if (attType.equals("LONG")) newat = 'N';
         else if (attType.equals("DATE")) newat = 'D';
@@ -471,7 +462,7 @@ public class QueryDialog extends BDialog {
         else if (attType.equals("STRING")) newat = 'S';
         else if (attType.equals("GEOMETRY")) newat = 'G';
         else if (attType.equals("BOOLEAN")) newat = 'B';
-        else;
+        else newat = 'S';;
         // No type change
         if (newat==attributeType) {
             if (newat=='S') updateValues();
@@ -508,10 +499,10 @@ public class QueryDialog extends BDialog {
         }
     }
     
-    public void functionChanged() {
+    private void functionChanged() {
         // if function is edited to change the parameter value by hand (buffer),
         // functionCB.getSelectedValue() class changes from Function to String
-        String ft = functionCB.getSelectedValue().toString();
+        //String ft = functionCB.getSelectedValue().toString();
         try {
             if (functionCB.getSelectedValue() instanceof Function) {
                 Function newfunction = (Function)functionCB.getSelectedValue();
@@ -551,7 +542,7 @@ public class QueryDialog extends BDialog {
                 }
             }
         } catch(Exception e) {
-            context.getWorkbenchFrame().toMessage(e);
+            context.getWorkbenchFrame().warnUser(WorkbenchFrame.toMessage(e));
         }
     }
     
@@ -576,9 +567,8 @@ public class QueryDialog extends BDialog {
         }
     }
     
-    public boolean operatorChanged() {
-        //Operator newop = (Operator)operatorCB.getSelectedValue();
-        String newopstring = operatorCB.getSelectedValue().toString();
+    private boolean operatorChanged() {
+
         try {
             if (operatorCB.getSelectedValue() instanceof Operator) {
                 Operator newop = (Operator)operatorCB.getSelectedValue();
@@ -637,7 +627,7 @@ public class QueryDialog extends BDialog {
             }
         }
         catch(Exception e) {
-            context.getWorkbenchFrame().toMessage(e);
+            context.getWorkbenchFrame().warnUser(WorkbenchFrame.toMessage(e));
             return false;
         }
         return true;
@@ -690,29 +680,28 @@ public class QueryDialog extends BDialog {
         value = (String)valueCB.getSelectedValue();
     }
     
-    private List availableTargets() {
-        List list = new ArrayList();
+    private List<String> availableTargets() {
+        List<String> list = new ArrayList<>();
         list.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.all-layers"));
         list.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.selection"));
         list.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.selected-layers"));
-        List layers = context.getLayerManager().getLayers();
-        for (int i = 0 ; i < layers.size() ; i++) {
-            list.add(((Layer)layers.get(i)).getName());
+        for (Layer layer : context.getLayerManager().getLayers()) {
+            list.add(layer.getName());
         }
         return list;
     }
-    
+
+    // attribute must be f type String
     private Set availableStrings(String attribute, int maxsize) {
-        Set set = new TreeSet();
+        Set<String> set = new TreeSet<>();
         set.add("");
-        for (int i = 0 ; i < layers.size() ; i++) {
-            FeatureCollection fc = ((Layer)layers.get(i)).getFeatureCollectionWrapper();
+        for (Layer layer : layers) {
+            FeatureCollection fc = layer.getFeatureCollectionWrapper();
             if (!fc.getFeatureSchema().hasAttribute(attribute)) continue;
             Iterator it = fc.iterator();
             while (it.hasNext() && set.size()<maxsize) {
                 Feature f = (Feature)it.next();
-                Object val = f.getAttribute(attribute);
-                if (val != null) set.add(val);
+                set.add(f.getString(attribute));
             }
         }
         return set;
@@ -732,14 +721,14 @@ public class QueryDialog extends BDialog {
             }
         }
         else {return;}
-        charFilter.setState(new Boolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.string")).booleanValue());
-        caseSensitive.setState(new Boolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.case-sensitive")).booleanValue());
-        numFilter.setState(new Boolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.numeric")).booleanValue());
-        geoFilter.setState(new Boolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.geometric")).booleanValue());
+        charFilter.setState(Boolean.parseBoolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.string")));
+        caseSensitive.setState(Boolean.parseBoolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.case-sensitive")));
+        numFilter.setState(Boolean.parseBoolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.numeric")));
+        geoFilter.setState(Boolean.parseBoolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.geometric")));
 
-        display.setState(new Boolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.display-the-table")).booleanValue());
-        select.setState(new Boolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.select-the-result")).booleanValue());
-        create.setState(new Boolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.create-a-new-layer")).booleanValue());
+        display.setState(Boolean.parseBoolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.display-the-table")));
+        select.setState(Boolean.parseBoolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.select-the-result")));
+        create.setState(Boolean.parseBoolean(prop.getProperty("org.openjump.core.ui.plugin.queries.SimpleQuery.create-a-new-layer")));
         
         initComboBoxes();
         
@@ -833,9 +822,6 @@ public class QueryDialog extends BDialog {
                 File f = bfc.getSelectedFile();
                 prop.store(new FileOutputStream(f), "Query file for Sqi4jump");
             }
-            catch(FileNotFoundException e) {
-                context.getWorkbenchFrame().warnUser(e.getMessage());
-            }
             catch(IOException e) {
                 context.getWorkbenchFrame().warnUser(e.getMessage());
             }
@@ -844,12 +830,12 @@ public class QueryDialog extends BDialog {
     }
     
     
-    void executeQuery() {
+    private void executeQuery() {
         final QueryDialog queryDialog = this;
         // dirty patch to avoid executing query if the operator combobox is in an invalid state
         // some operators are editable. If the user enter an invalid operator parameter, and then
         // click execute, the new user edited operator is evaluated before execution
-        // @TODO improve semantic of operatorChange retrun value
+        // @TODO improve semantic of operatorChange return value
         if (!operatorChanged()) return;
         Runnable runnable = new Runnable() {
             public void run() {
@@ -875,20 +861,19 @@ public class QueryDialog extends BDialog {
                                                            
                 // srcFeaturesMap keys are layers to query
                 // srcFeaturesMap values are collection of features to query
-                CollectionMap srcFeaturesMap = new CollectionMap();
+                CollectionMap<Layer,Feature> srcFeaturesMap = new CollectionMap<>();
         
                 int total = 0; // total number of objects to scan
                 int featuresfound = 0;
                 if (layerCB.getSelectedIndex() == SELECTION) {
-                    for (Iterator it = selectedFeatures.getLayersWithSelectedItems().iterator() ; it.hasNext() ; ) {
-                        Layer layer = (Layer)it.next();
+                    for (Layer layer : selectedFeatures.getLayersWithSelectedItems()) {
                         srcFeaturesMap.put(layer, selectedFeatures.getFeaturesWithSelectedItems(layer));
                     }
                     total = srcFeaturesMap.size();
                 }
                 else {
-                    for (int i = 0 ; i < layers.size() ; i++) {
-                        total += ((Layer)layers.get(i)).getFeatureCollectionWrapper().size();
+                    for (Layer layer : layers) {
+                        total += layer.getFeatureCollectionWrapper().size();
                     }
                 }
                 
@@ -904,15 +889,13 @@ public class QueryDialog extends BDialog {
                 // initialization for infoframe
                 InfoFrame info = null;
                 if(display.getState()) {
-                    info = new InfoFrame(context.getWorkbenchContext(),
-                            (LayerManagerProxy)context,
+                    info = new InfoFrame(context.getWorkbenchContext(), context,
                             (TaskFrame)context.getWorkbenchFrame().getActiveInternalFrame());
                 }
                 
                 // Loop on the requested layers
                 int count = 0;
-                for (int i = 0 ; i < layers.size() ; i++) {
-                    Layer layer = (Layer)layers.get(i);
+                for (Layer layer : layers) {
                     FeatureCollection fc = layer.getFeatureCollectionWrapper();
                     
                     // When the user choose all layers, some attributes are not
@@ -920,10 +903,10 @@ public class QueryDialog extends BDialog {
                     if(attributeType!='G' && !fc.getFeatureSchema().hasAttribute(attribute)) continue;
                     
                     //monitor.report(layer.getName());
-                    Collection features = null;
+                    Collection<Feature> features;
                     // case 1 : query only selected features
                     if (layerCB.getSelectedIndex()==1) {
-                        features = (Collection)srcFeaturesMap.get(layer);
+                        features = srcFeaturesMap.get(layer);
                     }
                     // other cases : query the whole layer
                     else {
@@ -941,21 +924,20 @@ public class QueryDialog extends BDialog {
                     FeatureCollection dataset = new FeatureDataset(fc.getFeatureSchema());
                     
                     // initialize a new list for the new selection
-                    List<Feature> okFeatures = new ArrayList<Feature>();
+                    List<Feature> okFeatures = new ArrayList<>();
                     int mod = 1;
                     if (total > 1000) mod = 10;
                     if (total > 33000) mod = 100;
                     if (total > 1000000) mod = 1000;
                     try {
-                        for (Iterator it = features.iterator() ; it.hasNext() ; ) {
+                        for (Feature feature : features) {
                             count++;
                             if (count%mod==0) {
                                 progressBar.setProgressText(""+count+"/"+total);
                                 progressBar.setValue(count);
                             }
-                            Feature f = (BasicFeature)it.next();
-                            if (condition.test(f)) {
-                                okFeatures.add(f);
+                            if (condition.test(feature)) {
+                                okFeatures.add(feature);
                                 featuresfound++;
                             }
                             Thread.yield();
@@ -970,15 +952,14 @@ public class QueryDialog extends BDialog {
                     if (cancelQuery) break;
                     
                     if (okFeatures.size()==0) continue;
-                    
-                    // 
+
                     if(select.getState()) {
                         selectedFeatures.selectItems(layer, okFeatures);
                     }
 
                     if(create.getState()) {
                         for (Feature f : okFeatures) {
-                            dataset.add((Feature)f.clone());
+                            dataset.add(f.clone());
                         }
                         String outputLayerName = layer.getName() + "_";
                         if (attributeType != 'G') {
