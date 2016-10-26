@@ -64,6 +64,7 @@ import com.vividsolutions.jump.workbench.ui.style.AbstractPalettePanel;
  * @see Layer
  */
 public class LayerManager {
+
     private static int layerManagerCount = 0;
     private UndoableEditReceiver undoableEditReceiver = new UndoableEditReceiver();
     private CoordinateSystem coordinateSystem = CoordinateSystem.UNSPECIFIED;
@@ -341,8 +342,7 @@ public class LayerManager {
      * remove a layer, optionally dispose it and it's features
      */
     private void remove(Layerable[] layerables, boolean dispose) {
-        for (int i = 0; i < layerables.length; i++) {
-            Layerable layerable = layerables[i];
+        for (Layerable layerable : layerables) {
             // iterate over cats to find layer
             for (Iterator j = categories.iterator(); j.hasNext();) {
                 Category c = (Category) j.next();
@@ -549,8 +549,8 @@ public class LayerManager {
         return layerablesCopy.iterator();
     }
 
-    private void moveLayersDrawnLastToEnd(List layerables) {
-        ArrayList layersDrawnLast = new ArrayList();
+    private void moveLayersDrawnLastToEnd(List<Layerable> layerables) {
+        ArrayList<Layerable> layersDrawnLast = new ArrayList<>();
 
         for (Iterator i = layerables.iterator(); i.hasNext();) {
             Layerable layerable = (Layerable) i.next();
@@ -790,9 +790,7 @@ public class LayerManager {
     public Collection<Layer> getEditableLayers() {
         ArrayList<Layer> editableLayers = new ArrayList<>();
 
-        for (Iterator i = getLayers().iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
-
+        for (Layer layer : getLayers()) {
             if (layer.isEditable()) {
                 editableLayers.add(layer);
             }
@@ -805,8 +803,8 @@ public class LayerManager {
         return blackboard;
     }
 
-    public Collection getLayersWithModifiedFeatureCollections() {
-        ArrayList layersWithModifiedFeatureCollections = new ArrayList();
+    public Collection<Layer> getLayersWithModifiedFeatureCollections() {
+        ArrayList<Layer> layersWithModifiedFeatureCollections = new ArrayList<>();
 
         for (Iterator i = iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();
@@ -838,8 +836,8 @@ public class LayerManager {
            return list;
        }
     
-    public LinkedList getLayersWithNullDataSource() {
-        LinkedList list = new LinkedList();
+    public LinkedList<Layer> getLayersWithNullDataSource() {
+        LinkedList<Layer> list = new LinkedList<>();
 
         for (Iterator i = iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();
