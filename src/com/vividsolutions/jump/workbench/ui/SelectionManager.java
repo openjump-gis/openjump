@@ -326,8 +326,8 @@ public class SelectionManager {
         updatePanel();
     }
 
-    public Collection getFeaturesWithSelectedItems() {
-        ArrayList featuresWithSelectedItems = new ArrayList();
+    public Collection<Feature> getFeaturesWithSelectedItems() {
+        ArrayList<Feature> featuresWithSelectedItems = new ArrayList<>();
         for (Layer layer : getLayersWithSelectedItems()) {
             featuresWithSelectedItems.addAll(getFeaturesWithSelectedItems(layer));
         }

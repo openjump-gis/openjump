@@ -4,6 +4,9 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2016-10-26 mmichaud <m.michael.michaud@orange.fr>
+  * GeometryFunctions : add Visvalingam-Whyatt simplifier
+
+2016-10-26 mmichaud <m.michael.michaud@orange.fr>
   * SimpleQuery : spatial queries are now very fast (use of spatial indexes)
 
 2016-10-25 mmichaud <m.michael.michaud@orange.fr>

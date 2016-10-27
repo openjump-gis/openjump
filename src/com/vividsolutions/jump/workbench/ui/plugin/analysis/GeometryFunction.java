@@ -42,6 +42,7 @@ import com.vividsolutions.jts.operation.linemerge.LineSequencer;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
+import com.vividsolutions.jts.simplify.VWSimplifier;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.algorithm.Densifier;
 
@@ -71,7 +72,7 @@ public abstract class GeometryFunction
   
   private static final String sFunction = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.function");
   */  
-  private static GeometryFunction[] method = {
+  private static GeometryFunction[] methods = {
     new IntersectionFunction(),
     new UnionFunction(),
     new DifferenceABFunction(),
@@ -82,6 +83,7 @@ public abstract class GeometryFunction
     new BufferFunction(),
     new SimplifyFunction(),
     new SimplifyTopologyFunction(),
+    new SimplifyVWFunction(),
     new DensifyFunction(),
     new ConvexHullFunction(),
     new BoundaryFunction(),
@@ -95,38 +97,36 @@ public abstract class GeometryFunction
     new MinimumBoundingRectangleFunction()
   };
 
-  public static List getNames()
+  public static List<String> getNames()
   {
-    List methodNames = new ArrayList();
-    for (int i = 0; i < method.length; i++) {
-      methodNames.add(method[i].name);
+    List<String> methodNames = new ArrayList<>();
+    for (GeometryFunction method : methods) {
+      methodNames.add(method.name);
     }
     return methodNames;
   }
 
-  public static List getNames(Collection functions)
+  public static List<String> getNames(Collection<GeometryFunction> functions)
   {
-    List names = new ArrayList();
-    for (Iterator i = functions.iterator(); i.hasNext(); ) {
-    	GeometryFunction func = (GeometryFunction) i.next();
-    	names.add(func.name);
+    List<String> names = new ArrayList<>();
+    for (GeometryFunction fun : functions) {
+    	names.add(fun.name);
     }
     return names;
   }
 
   public static GeometryFunction getFunction(String name)
   {
-    for (int i = 0; i < method.length; i++) {
-      if (method[i].name.equals(name))
-        return method[i];
+    for (GeometryFunction method : methods) {
+      if (method.name.equals(name))
+        return method;
     }
     return null;
   }
 
-  public static GeometryFunction getFunction(Collection functions, String name)
+  public static GeometryFunction getFunction(Collection<GeometryFunction> functions, String name)
   {
-	  for (Iterator i = functions.iterator(); i.hasNext(); ) {
-		  GeometryFunction func = (GeometryFunction) i.next();
+	  for (GeometryFunction func : functions) {
 		  if (func.name.equals(name))
 			  return func;
 	  }
@@ -135,7 +135,7 @@ public abstract class GeometryFunction
 
   public static GeometryFunction[] getFunctions()
   {
-	  return method;
+	  return methods;
   }
 
   private String name;
@@ -283,6 +283,17 @@ public abstract class GeometryFunction
     public Geometry execute(Geometry[] geom, double[] param)
     {
       return TopologyPreservingSimplifier.simplify(geom[0], param[0]);
+    }
+  }
+  private static class SimplifyVWFunction extends GeometryFunction {
+    public SimplifyVWFunction() {
+      super(I18N.get("ui.plugin.analysis.GeometryFunction.Simplify-(Visvalingam-Whyatt)"), 1, 1,
+              I18N.get("ui.plugin.analysis.GeometryFunction.Simplifies-a-geometry-using-the-Visvalingam-Whyatt-algorithm"));
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      return VWSimplifier.simplify(geom[0], param[0]);
     }
   }
   private static class ConvexHullFunction extends GeometryFunction {

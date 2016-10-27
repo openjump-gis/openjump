@@ -41,7 +41,6 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.plugin.util.LayerNameGenerator;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
@@ -57,7 +56,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 /**
@@ -74,18 +72,18 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
   public static final String GEOMETRY_FUNCTION_REG_KEY = "Geometry Function Registry Key";
   
   //-- [sstein 15.02.2006]
-  private String sErrorsFound = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.errors-found-while-executing-function");
-  private String sFunction = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.function");
-  private String sFeatures = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.features");
+  private static String sErrorsFound = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.errors-found-while-executing-function");
+  private static String sFunction = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.function");
+  private static String sFeatures = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.features");
   
-  private String SRC_LAYER = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Source");
-  private String MASK_LAYER = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Mask");
-  private String METHODS = sFunction;
-  private String PARAM = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Parameter");
-  private String SELECTED_ONLY = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Use-selected-features-only");
-  private String UPDATE_SRC = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Update-Source-features-with-result");
-  private String ADD_TO_SRC = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Add-result-to-Source-layer");
-  private String CREATE_LYR = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-new-layer-for-result");
+  private static String SRC_LAYER = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Source");
+  private static String MASK_LAYER = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Mask");
+  private static String METHODS = sFunction;
+  private static String PARAM = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Parameter");
+  private static String SELECTED_ONLY = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Use-selected-features-only");
+  private static String UPDATE_SRC = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Update-Source-features-with-result");
+  private static String ADD_TO_SRC = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Add-result-to-Source-layer");
+  private static String CREATE_LYR = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-new-layer-for-result");
 
   private Collection functions;
   private MultiInputDialog dialog;
@@ -130,9 +128,9 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
     // register standard functions
     GeometryFunction[] functions = GeometryFunction.getFunctions();
     context.getWorkbenchContext().getRegistry().createClassification(GEOMETRY_FUNCTION_REG_KEY,GeometryFunction.class);
-    for (int i = 0; i < functions.length; i++) {
+    for (GeometryFunction function : functions) {
       context.getWorkbenchContext().getRegistry()
-               .createEntry(GEOMETRY_FUNCTION_REG_KEY, functions[i]);
+               .createEntry(GEOMETRY_FUNCTION_REG_KEY, function);
     }
   }
 
@@ -145,20 +143,6 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
   }
   
   public boolean execute(PlugInContext context) throws Exception {
-    //-- [sstein 16.07.2006] put here again for language settings
-    sErrorsFound = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.errors-found-while-executing-function");
-    sFunction = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.function");
-    sFeatures = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.features");
-    
-    SRC_LAYER = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Source");
-    MASK_LAYER = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Mask");
-    METHODS = sFunction;
-    PARAM = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Parameter");
-    SELECTED_ONLY = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Use-selected-features-only");
-    UPDATE_SRC = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Update-Source-features-with-result");
-    ADD_TO_SRC = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Add-result-to-Source-layer");
-    CREATE_LYR = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-new-layer-for-result");
-
     functions = context.getWorkbenchContext().getRegistry()
               .getEntries(GEOMETRY_FUNCTION_REG_KEY);
     dialog = new MultiInputDialog(
@@ -181,29 +165,32 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
     if (srcLayer == null) return;
     if ((updateSource || addToSource)
           && !srcLayer.isEditable()) {
-      context.getWorkbenchFrame().warnUser(srcLayer.getName() + " " + I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.is-not-editable"));
+      context.getWorkbenchFrame().warnUser(srcLayer.getName() + " " +
+              I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.is-not-editable"));
       return;
     }
 
-    monitor.report(I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Executing-function") + " " + functionToRun.getName() + "...");
+    monitor.report(I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Executing-function") +
+            " " + functionToRun.getName() + "...");
 
-    Collection resultFeatures;
+    Collection<Feature> resultFeatures;
     int nArgs = functionToRun.getGeometryArgumentCount();
 
-    Collection fc1 = getFeaturesToProcess(srcLayer, context);
-    EditTransaction transaction = new EditTransaction(new LinkedHashSet<Feature>(), "Geometry function", srcLayer, true, true, context.getLayerViewPanel().getContext());
+    Collection<Feature> fc1 = getFeaturesToProcess(srcLayer, context);
+    EditTransaction transaction = new EditTransaction(new LinkedHashSet<Feature>(),
+            "Geometry function", srcLayer, true, true, context.getLayerViewPanel().getContext());
 
     if (nArgs == 2) {
       if (maskLayer == null) return;
 
-      Collection fc2 = getFeaturesToProcess(maskLayer, context);
+      Collection<Feature> fc2 = getFeaturesToProcess(maskLayer, context);
 
       // check for valid size of input
       if (fc2.size() != 1) {
         context.getWorkbenchFrame().warnUser(I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Mask-must-contain-exactly-one-geometry"));
         return;
       }
-      Geometry geomMask = ((Feature) fc2.iterator().next()).getGeometry();
+      Geometry geomMask = fc2.iterator().next().getGeometry();
       resultFeatures = runGeometryMethodWithMask(monitor, fc1, geomMask, functionToRun, transaction);
     } else {
       resultFeatures = runGeometryMethod(monitor, fc1, functionToRun, transaction);
@@ -238,25 +225,13 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
   }
 
 
-  private Feature getSelectedFeature(Layer lyr, PlugInContext context){
-    Collection selected = context
-                        .getLayerViewPanel()
-                        .getSelectionManager().getFeaturesWithSelectedItems(lyr);
-    if (selected.size() != 1)
-      return null;
-    return (Feature) selected.iterator().next();
+  private Collection<Feature> getSelectedFeatures(Layer lyr, PlugInContext context){
+    return context.getLayerViewPanel()
+            .getSelectionManager().getFeaturesWithSelectedItems(lyr);
   }
 
 
-  private Collection getSelectedFeatures(Layer lyr, PlugInContext context){
-    Collection selected = context
-                        .getLayerViewPanel()
-                        .getSelectionManager().getFeaturesWithSelectedItems(lyr);
-    return selected;
-  }
-
-
-  private Collection getFeaturesToProcess(Layer lyr, PlugInContext context){
+  private Collection<Feature> getFeaturesToProcess(Layer lyr, PlugInContext context){
     if (useSelected && lyr.equals(srcLayer)) {
       return context.getLayerViewPanel()
                         .getSelectionManager().getFeaturesWithSelectedItems(lyr);
@@ -266,21 +241,20 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
 
 
 
-  private Collection runGeometryMethodWithMask(TaskMonitor monitor,
-                                       Collection fcA,
+  private Collection<Feature> runGeometryMethodWithMask(TaskMonitor monitor,
+                                       Collection<Feature> fcA,
                                        Geometry geomB,
                                        GeometryFunction func,
                                        EditTransaction transaction) {
     exceptionThrown = false;
-    Collection resultColl = new ArrayList();
+    Collection<Feature> resultColl = new ArrayList<>();
     int total = fcA.size();
     int count = 0;
-    for (Iterator ia = fcA.iterator(); ia.hasNext(); ) {
+    for (Feature fa : fcA) {
 
       monitor.report(count++, total, sFeatures);
       if (monitor.isCancelRequested()) return null;
 
-      Feature fa = (Feature) ia.next();
       Geometry ga = fa.getGeometry();
       geoms[0] = ga;
       geoms[1] = geomB;
@@ -293,20 +267,19 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
   }
 
 
-  private Collection runGeometryMethod(TaskMonitor monitor,
-                                       Collection fc,
+  private Collection<Feature> runGeometryMethod(TaskMonitor monitor,
+                                       Collection<Feature> fc,
                                        GeometryFunction func,
                                        EditTransaction transaction){
     exceptionThrown = false;
-    Collection resultColl = new ArrayList();
+    Collection<Feature> resultColl = new ArrayList<>();
     int total = fc.size();
     int count = 0;
-    for (Iterator iSrc = fc.iterator(); iSrc.hasNext(); ) {
+    for (Feature fSrc : fc) {
 
       monitor.report(count++, total, sFeatures);
       if (monitor.isCancelRequested()) return null;
 
-      Feature fSrc = (Feature) iSrc.next();
       Geometry gSrc = fSrc.getGeometry();
       if (gSrc == null) continue;
 
@@ -319,7 +292,8 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
     return resultColl;
   }
 
-  private void saveResult(Feature srcFeat, Geometry resultGeom, Collection resultColl, EditTransaction transaction) {
+  private void saveResult(Feature srcFeat, Geometry resultGeom,
+                          Collection<Feature> resultColl, EditTransaction transaction) {
       if (createLayer || addToSource) {
         // [mmichaud 2013-10-25] change deep parameter from true to false
         // as the geometry will be changed anyway
@@ -352,9 +326,6 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
 
   private JComboBox layer2ComboBox;
   private JTextField paramField;
-  private JRadioButton updateSourceRB;
-  private JRadioButton createNewLayerRB;
-  private JRadioButton addToSourceRB;
 
 
   private void setDialogValues(final MultiInputDialog dialog, PlugInContext context)
@@ -367,7 +338,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
 
     //Set initial layer values to the first and second layers in the layer list.
     //In #initialize we've already checked that the number of layers >= 1. [Jon Aquino]
-    if (srcLayer == null) srcLayer = context.getCandidateLayer(0);
+    srcLayer = context.getCandidateLayer(0);
     editSourceAllowed = srcLayer.isEditable();
     final JComboBox srcLayerComboBox = dialog.addLayerComboBox(SRC_LAYER, srcLayer,
     		I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.The-Source-layer-features-provide-the-first-operand-for-the-chosen-function"),
@@ -393,14 +364,14 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
     useSelectedCheckBox.setEnabled(getSelectedFeatures((Layer)srcLayerComboBox.getSelectedItem(), context).size() > 0);
 
     final String OUTPUT_GROUP = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Match-Type");
-    createNewLayerRB = dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, true,
+    JRadioButton createNewLayerRB = dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, true,
     		I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-a-new-layer-for-the-results"));
-    updateSourceRB = dialog.addRadioButton(UPDATE_SRC, OUTPUT_GROUP, false,
+    JRadioButton updateSourceRB = dialog.addRadioButton(UPDATE_SRC, OUTPUT_GROUP, false,
     		I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Replace-the-geometry-of-Source-features-with-the-result-geometry") + "  ");
     updateSourceRB.setEnabled(editSourceAllowed);
 
     //if ( addToSourceAllowed && editSourceAllowed) {
-    addToSourceRB = dialog.addRadioButton(ADD_TO_SRC, OUTPUT_GROUP, false,
+    JRadioButton addToSourceRB = dialog.addRadioButton(ADD_TO_SRC, OUTPUT_GROUP, false,
             I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Add-the-result-geometry-to-the-Source-layer")+"  ");
     addToSourceRB.setEnabled(addToSourceAllowed && editSourceAllowed);
     //}
