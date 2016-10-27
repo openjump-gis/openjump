@@ -98,8 +98,8 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
 
               private JComponent comboboxFieldComponent;
 
-              protected Map toProperties(File file) {
-                HashMap properties = new HashMap(super.toProperties(file));
+              protected Map<String,Object> toProperties(File file) {
+                HashMap<String,Object> properties = new HashMap<>(super.toProperties(file));
                 String charsetName = Charset.defaultCharset().name();
                 if (comboboxFieldComponent instanceof ComboBoxComponentPanel) {
                   charsetName = (String) ((ComboBoxComponentPanel) comboboxFieldComponent)
@@ -114,8 +114,7 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
                 boolean showCharsetSelection = false;
                 Object showCharsetSelectionObject = PersistentBlackboardPlugIn
                     .get(context.getBlackboard())
-                    .get(
-                        DatasetOptionsPanel.BB_DATASET_OPTIONS_SHOW_CHARSET_SELECTION);
+                    .get(DatasetOptionsPanel.BB_DATASET_OPTIONS_SHOW_CHARSET_SELECTION);
                 if (showCharsetSelectionObject instanceof Boolean) {
                   showCharsetSelection = ((Boolean) showCharsetSelectionObject)
                       .booleanValue();
@@ -180,8 +179,7 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
         StandardReaderWriterFileDataSource.GeoJSON.class);
   }
 
-  public static void addCompressedFileFilter(final String description,
-      JFileChooser chooser) {
+  static void addCompressedFileFilter(final String description, JFileChooser chooser) {
     chooser
         .addChoosableFileFilter(GUIUtil.createFileFilter(
             I18N.get("datasource.InstallStandardDataSourceQueryChoosersPlugIn.compressed")

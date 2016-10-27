@@ -1,9 +1,6 @@
 package com.vividsolutions.jump.workbench.datasource;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
-
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
@@ -30,8 +27,7 @@ public abstract class AbstractLoadDatasetPlugIn extends AbstractLoadSaveDatasetP
         Assert.isTrue(!getDataSourceQueries().isEmpty());
 
         boolean exceptionsEncountered = false;
-        for (Iterator i = getDataSourceQueries().iterator(); i.hasNext();) {
-            DataSourceQuery dataSourceQuery = (DataSourceQuery) i.next();
+        for (DataSourceQuery dataSourceQuery : getDataSourceQueries()) {
             ArrayList<Throwable> exceptions = new ArrayList<>();
             Assert.isTrue(dataSourceQuery.getDataSource().isReadable());
             monitor.report(I18N.get("datasource.LoadDatasetPlugIn.loading")+" " + dataSourceQuery.toString() + "...");

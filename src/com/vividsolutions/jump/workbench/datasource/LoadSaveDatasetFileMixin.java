@@ -20,6 +20,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public abstract class LoadSaveDatasetFileMixin {
+
     protected void setSelectedFormat(String selectedFormat) {
         this.selectedFormat = selectedFormat;
     }

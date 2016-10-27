@@ -196,7 +196,7 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
       File file = getSelectedFiles().length > 0 ? getSelectedFiles()[0] : null;
 
       // no file selected?
-      if (!(file instanceof File))
+      if (file == null)
         return false;
 
       if (!fileNameRegex.matcher(file.getPath()).matches()) {

@@ -70,15 +70,15 @@ public class DataSourceQueryChooserDialog extends JDialog {
             }
         };
 
-    private HashMap componentToNameMap = new HashMap();
+    private HashMap<Component,String> componentToNameMap = new HashMap<>();
     private OKCancelPanel okCancelPanel = new OKCancelPanel();
     
-    public static int  LOADDIALOG = 1;
-    public static int SAVEDIALOG = 2;
+    static int  LOADDIALOG = 1;
+    static int SAVEDIALOG = 2;
     private int dialogTask = 0;
 
     public DataSourceQueryChooserDialog(Collection dataSourceQueryChoosers,
-        Frame frame, String title, boolean modal) {
+            Frame frame, String title, boolean modal) {
         super(frame, title, modal);
         init(dataSourceQueryChoosers);
         try {
@@ -104,19 +104,16 @@ public class DataSourceQueryChooserDialog extends JDialog {
         formatComboBox.setSelectedItem(formatComboBox.getItemAt(0));
     }
 
-    private void init(Collection dataSourceQueryChoosers) {
+    private void init(Collection<DataSourceQueryChooser> dataSourceQueryChoosers) {
         //Some components may be shared, so use a Set. [Jon Aquino]
-        HashSet components = new HashSet();
-        for (Iterator i = dataSourceQueryChoosers.iterator(); i.hasNext();) {
-            DataSourceQueryChooser chooser = (DataSourceQueryChooser) i.next();
+        HashSet<Component> components = new HashSet<>();
+        for (DataSourceQueryChooser chooser : dataSourceQueryChoosers) {
             formatComboBox.addItem(chooser);
             components.add(chooser.getComponent());
         }
 
         int j = 0;
-        for (Iterator i = components.iterator(); i.hasNext();) {
-            Component component = (Component) i.next();
-
+        for (Component component : components) {
             //Can't use DataSourceQueryChooser name because several DataSourceQueryChoosers may
             //share a component (e.g. FileDataSourceQueryChooser). [Jon Aquino]
             j++;
@@ -126,7 +123,7 @@ public class DataSourceQueryChooserDialog extends JDialog {
     }
 
     private String name(Component component) {
-        return (String) componentToNameMap.get(component);
+        return componentToNameMap.get(component);
     }
 
     private void jbInit() throws Exception {
@@ -182,7 +179,7 @@ public class DataSourceQueryChooserDialog extends JDialog {
         }
     }
 
-    void formatComboBox_actionPerformed(ActionEvent e) {
+    private void formatComboBox_actionPerformed(ActionEvent e) {
         showFormat();
     }
 
@@ -194,7 +191,7 @@ public class DataSourceQueryChooserDialog extends JDialog {
         return (DataSourceQueryChooser) formatComboBox.getSelectedItem();
     }
 
-    void okCancelPanel_actionPerformed(ActionEvent e) {
+    private void okCancelPanel_actionPerformed(ActionEvent e) {
 
         if (!okCancelPanel.wasOKPressed()) { //cancel case
             setVisible(false);

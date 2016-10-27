@@ -70,8 +70,8 @@ public class GMLDataSourceQueryChooserInstaller {
                     super.isInputValid();
                 }
 
-                protected Map toProperties(File file) {
-                    HashMap properties = new HashMap(super.toProperties(file));
+                protected Map<String,Object> toProperties(File file) {
+                    HashMap<String,Object> properties = new HashMap<>(super.toProperties(file));
                     properties.put(StandardReaderWriterFileDataSource.OUTPUT_TEMPLATE_FILE_KEY,
                         getTemplateFileNamePanel().getSelectedFile().getPath());
 
@@ -129,8 +129,8 @@ public class GMLDataSourceQueryChooserInstaller {
                     super.isInputValid();
                 }
 
-                protected Map toProperties(File file) {
-                    HashMap properties = new HashMap(super.toProperties(file));
+                protected Map<String,Object> toProperties(File file) {
+                    HashMap<String,Object> properties = new HashMap<>(super.toProperties(file));
                     properties.put(StandardReaderWriterFileDataSource.INPUT_TEMPLATE_FILE_KEY,
                         getTemplateFileNamePanel().getSelectedFile().getPath());
 

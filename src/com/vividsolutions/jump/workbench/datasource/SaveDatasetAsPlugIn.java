@@ -61,11 +61,12 @@ public class SaveDatasetAsPlugIn extends AbstractSaveDatasetAsPlugIn {
         GUIUtil.centreOnWindow(getDialog());
         
         // initialize the FileChooser with the layer name [mmichaud 2007-08-25]
-        FileChooserPanel fcp = (FileChooserPanel)context.getBlackboard().get(SaveFileDataSourceQueryChooser.FILE_CHOOSER_PANEL_KEY);
+        FileChooserPanel fcp = (FileChooserPanel)context.getBlackboard()
+                .get(SaveFileDataSourceQueryChooser.FILE_CHOOSER_PANEL_KEY);
         if (fcp != null) {
             JFileChooser jfc = fcp.getChooser();
             jfc.setSelectedFile(new File(jfc.getCurrentDirectory(),
-                context.getLayerNamePanel().getSelectedLayers()[0].getName().replaceAll("[/:\\\\><\\|]","_")));
+                context.getLayerableNamePanel().getSelectedLayers()[0].getName().replaceAll("[/:\\\\><\\|]","_")));
         }
 
         getDialog().setVisible(true);

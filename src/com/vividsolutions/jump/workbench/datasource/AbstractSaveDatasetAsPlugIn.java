@@ -13,11 +13,11 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 public abstract class AbstractSaveDatasetAsPlugIn
         extends AbstractLoadSaveDatasetPlugIn {
 
-    public void run(TaskMonitor monitor, PlugInContext context)
-            throws Exception {
+    public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+
         Assert.isTrue(getDataSourceQueries().size() == 1);
 
-        DataSourceQuery dataSourceQuery = (DataSourceQuery) getDataSourceQueries().iterator().next();
+        DataSourceQuery dataSourceQuery = getDataSourceQueries().iterator().next();
 
         monitor.allowCancellationRequests();
         monitor.report(I18N.get("datasource.SaveDatasetAsPlugIn.saving") + " "
@@ -25,10 +25,10 @@ public abstract class AbstractSaveDatasetAsPlugIn
 
         Connection connection = dataSourceQuery.getDataSource().getConnection();
         try {
-            connection
-                    .executeUpdate(dataSourceQuery.getQuery(), context
-                            .getSelectedLayer(0).getFeatureCollectionWrapper(),
-                            monitor);
+            connection.executeUpdate(
+                    dataSourceQuery.getQuery(),
+                    context.getSelectedLayer(0).getFeatureCollectionWrapper(),
+                    monitor);
         } finally {
             connection.close();
         }
@@ -36,10 +36,8 @@ public abstract class AbstractSaveDatasetAsPlugIn
                 .setFeatureCollectionModified(false);
     }
 
-    public static MultiEnableCheck createEnableCheck(
-            final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+    public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 
         return new MultiEnableCheck().add(
                 checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())

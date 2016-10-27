@@ -199,7 +199,7 @@ public abstract class FileDataSourceQueryChooser implements DataSourceQueryChoos
         chooser.addChoosableFileFilter(chooser.getAcceptAllFileFilter());
     }
 
-    public DataSourceQuery toDataSourceQuery(File file) {
+    protected DataSourceQuery toDataSourceQuery(File file) {
         DataSource dataSource = (DataSource) LangUtil.newInstance(dataSourceClass);
         if (dataSource != null) {
             dataSource.setProperties(toProperties(file));
@@ -208,8 +208,8 @@ public abstract class FileDataSourceQueryChooser implements DataSourceQueryChoos
             GUIUtil.nameWithoutExtension(file));
     }
 
-    protected Map<?,?> toProperties(File file) {
-        HashMap<String,String> properties = new HashMap<>();
+    protected Map<String,Object> toProperties(File file) {
+        HashMap<String,Object> properties = new HashMap<>();
         properties.put(DataSource.URI_KEY, file.toURI().toString());
         properties.put(DataSource.FILE_KEY, file.getPath());
         properties.put(DataSource.COORDINATE_SYSTEM_KEY,
@@ -226,7 +226,7 @@ public abstract class FileDataSourceQueryChooser implements DataSourceQueryChoos
         f.setVisible(true);
     }
 
-    public FileFilter getFileFilter() {
+    protected FileFilter getFileFilter() {
         return fileFilter;
     }
 

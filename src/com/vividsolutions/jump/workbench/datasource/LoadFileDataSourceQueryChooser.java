@@ -47,6 +47,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
  * UI for picking a file-based dataset to load.
  */
 public class LoadFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
+
     public static final String FILE_CHOOSER_DIRECTORY_KEY = LoadFileDataSourceQueryChooser.class.getName() +
         " - FILE CHOOSER DIRECTORY";
     public static final String FILE_CHOOSER_COORDINATE_SYSTEM_KEY = LoadFileDataSourceQueryChooser.class.getName() +
