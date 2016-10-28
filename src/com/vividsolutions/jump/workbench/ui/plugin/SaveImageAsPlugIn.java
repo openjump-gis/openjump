@@ -1,6 +1,5 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
@@ -14,11 +13,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Icon;
 import javax.swing.filechooser.FileFilter;
 
 import org.openjump.core.ui.plugin.file.LayerPrinter2;
@@ -31,7 +28,6 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -53,11 +49,11 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     //ImageIO can probably write gif images from java 6, but we do we really 
     // need that ? [mmichaud 2012-09-02]
     
-    private List myFileFilters = Arrays.asList(new Object[]{
+    private List<MyFileFilter> myFileFilters = Arrays.asList(
         createFileFilter("PNG - Portable Network Graphics", "png",
                 BufferedImage.TYPE_INT_ARGB),
         createFileFilter("JPEG - Joint Photographic Experts Group", "jpg",
-                BufferedImage.TYPE_INT_RGB)});
+                BufferedImage.TYPE_INT_RGB));
                 
                 
     private JFileChooser fileChooser = null;
@@ -66,8 +62,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     private JLabel pixelSizeLabel = new JLabel(I18N.get("ui.plugin.SaveImageAsPlugIn.width-in-pixels"));
     private final ImageIcon icon = IconLoader.icon("Box.gif");
     private Geometry fence = null;
-    private boolean fenceFound = false;
-    
+
     private ValidatingTextField pixelSizeField = new ValidatingTextField("9999",5,
     		new ValidatingTextField.Validator() {
     	public boolean isValid(String text) {
@@ -90,18 +85,17 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     private JFileChooser getFileChooser() {
         if (fileChooser == null) {
             fileChooser = new GUIUtil.FileChooserWithOverwritePrompting() {
-                protected File selectedFile() {
+                public File getSelectedFile() {
                     return new File(addExtension(
-                            super.selectedFile().getPath(),
+                            super.getSelectedFile().getPath(),
                             ((MyFileFilter) getFileFilter()).getFormat()));
                 }
             };
             fileChooser.setDialogTitle(I18N.get("ui.plugin.SaveImageAsPlugIn.save-image"));
             //Remove *.* [Jon Aquino 11/6/2003]
             GUIUtil.removeChoosableFileFilters(fileChooser);
-            Map formatToFileFilterMap = new HashMap();
-            for (Iterator i = myFileFilters.iterator(); i.hasNext(); ) {
-                MyFileFilter fileFilter = (MyFileFilter) i.next();
+            Map<String,MyFileFilter> formatToFileFilterMap = new HashMap<>();
+            for (MyFileFilter fileFilter : myFileFilters) {
                 fileChooser.addChoosableFileFilter(fileFilter);
                 formatToFileFilterMap.put(fileFilter.getFormat(), fileFilter);
             }
@@ -110,7 +104,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
             if (lastFilename != null) {
                 fileChooser.setSelectedFile(new File(lastFilename));
             }
-            fileChooser.setFileFilter((FileFilter) formatToFileFilterMap.get(
+            fileChooser.setFileFilter(formatToFileFilterMap.get(
                     PersistentBlackboardPlugIn.get(workbenchContext)
                             .get(FORMAT_KEY, "png")));
             
@@ -152,7 +146,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     private static class MyFileFilter extends FileFilter {
         private FileFilter fileFilter;
         private String format;
-        public MyFileFilter(String description, String format) {
+        MyFileFilter(String description, String format) {
             fileFilter = GUIUtil.createFileFilter(description,
                     new String[]{format});
             this.format = format;
@@ -179,28 +173,34 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
       super.initialize(context);
       context.getFeatureInstaller().addMainMenuPlugin(this, new String[] {
           MenuNames.FILE, MenuNames.FILE_SAVEVIEW },
-              I18N.get(this.getClass().getName())+"...",false,null,null);
+              I18N.get(this.getClass().getName())+"...",false,null,
+              createEnableCheck(context.getWorkbenchContext()));
     }
 
+    @Override
     public boolean execute(PlugInContext context) throws Exception {
+
         this.workbenchContext = context.getWorkbenchContext();
-   		fence = context.getLayerViewPanel().getFence();	
-   		fenceFound = (fence != null);
+
+        fence = context.getLayerViewPanel().getFence();
+   		boolean fenceFound = fence != null;
    		if (fenceFound){
    			pixelSizeField.setText("800");
    		}
    		else {
-   			pixelSizeField.setText(context.getLayerViewPanel().getWidth() + "");}
+   			pixelSizeField.setText(context.getLayerViewPanel().getWidth() + "");
+   		}
+
         if (JFileChooser.APPROVE_OPTION != getFileChooser()
                 .showSaveDialog(context.getWorkbenchFrame())) {
            fileChooser = null; //rebuild next invocation
            return false;
         }
-        MyFileFilter fileFilter = (MyFileFilter) getFileChooser()
-                .getFileFilter();
+        MyFileFilter fileFilter = (MyFileFilter) getFileChooser().getFileFilter();
         BufferedImage image;
-        LayerViewPanel viewPanel =context.getLayerViewPanel();
-		Envelope envelope = null;
+        LayerViewPanel viewPanel = context.getLayerViewPanel();
+
+        Envelope envelope;
         if (!fenceFound && (getPixelSize() == context.getLayerViewPanel().getWidth())) {
             image = image(viewPanel);        	
         }
@@ -210,15 +210,19 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
 			{
  				envelope = fence.getEnvelopeInternal(); 
  				String fenceLayerName = I18N.get("model.FenceLayerFinder.fence");
- 				Layer fenceLayer = workbenchContext.getLayerNamePanel().getLayerManager().getLayer(fenceLayerName);
+ 				Layer fenceLayer = workbenchContext.getLayerableNamePanel()
+                        .getLayerManager().getLayer(fenceLayerName);
 				fenceLayer.setVisible(false);
 			}
 			else {
-				envelope = workbenchContext.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates();
+				envelope = workbenchContext.getLayerViewPanel()
+                        .getViewport().getEnvelopeInModelCoordinates();
 			}
-			image = layerPrinter.print(context.getLayerManager().getLayerables(Layerable.class), envelope, getPixelSize());
+			image = layerPrinter.print(context.getLayerManager()
+                    .getLayerables(Layerable.class), envelope, getPixelSize());
         	viewPanel = layerPrinter.getLayerViewPanel();
         }
+
         String filename = addExtension(getFileChooser().getSelectedFile()
                 .getPath(), fileFilter.getFormat());
         File imageFile = new File(filename);
@@ -240,14 +244,11 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
         Assert.isTrue( writerFound, I18N.get("ui.plugin.SaveImageAsPlugIn.cannot-find-writer-for-image-format")+" '"
                 + format + "'");
     }
-    
-    
-    public static MultiEnableCheck createEnableCheck(
-            WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
-        return new MultiEnableCheck()
-                .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
+
+
+    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        return new MultiEnableCheck().add(checkFactory.createTaskWindowMustBeActiveCheck());
     }
     
     

@@ -7,12 +7,10 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -54,22 +52,8 @@ public class CopyImagePlugIn extends ExportImagePlugIn {
     };
   }
 
-  public static MultiEnableCheck createEnableCheck(
-      WorkbenchContext workbenchContext) {
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
     EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-    return new MultiEnableCheck().add(
-        checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck()).add(
-        new EnableCheck() {
-          public String check(JComponent component) {
-            // Need Java 1.4's ability to auto-convert DataFlavor.imageFlavor to
-            // the native image format for the platform
-            // (see
-            // http://access1.sun.com/tutorials/Swing_Tutorial/Dnd-Merlin-Tutorial/3.html).
-            // [Jon Aquino 11/6/2003]
-            return !java14OrNewer() ? I18N
-                .get("ui.plugin.clipboard.CopyImagePlugIn.this-feature-requires-Java-1.4-or-newer")
-                : null;
-          }
-        });
+    return new MultiEnableCheck().add(checkFactory.createTaskWindowMustBeActiveCheck());
   }
 }

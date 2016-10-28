@@ -17,7 +17,9 @@ import com.vividsolutions.jump.workbench.ui.renderer.LayerRenderer;
 
 /**
  * Renders layers as an Image, which can then be saved to a file or printed.
+ * @See LayerPrinter2 (created in 2007)
  */
+@Deprecated
 public class LayerPrinter {
 
     /**

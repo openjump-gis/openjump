@@ -18,6 +18,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.openjump.core.ui.plugin.view.ZoomToScalePlugIn;
@@ -51,10 +52,9 @@ import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
  * 
  * @author neun and sstein
  */
-public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements
-    ThreadedPlugIn {
+public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
-  File selFile = null;
+  private File selFile = null;
 
   public SaveImageAsSVGPlugIn() {
   }
@@ -66,7 +66,9 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements
       c = cl.loadClass("org.apache.batik.dom.GenericDOMImplementation");
       c2 = cl.loadClass("org.apache.batik.svggen.SVGGraphics2D");
     }
-    catch (ClassNotFoundException e) {}
+    catch (ClassNotFoundException e) {
+      Logger.warn("Could not load class from batik", e);
+    }
     if (c == null || c2 == null) {
       context.getWorkbenchFrame().log(
           this.getClass().getName()
@@ -75,7 +77,8 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements
     }
 
     context.getFeatureInstaller().addMainMenuPlugin(this,
-        new String[] { MenuNames.FILE, MenuNames.FILE_SAVEVIEW });
+        new String[] { MenuNames.FILE, MenuNames.FILE_SAVEVIEW },
+            getName(), false, null, createEnableCheck(context.getWorkbenchContext()));
   }
 
   public String getName() {
@@ -91,8 +94,7 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements
     try {
       String name = file.getPath();
       name = this.addExtension(name, "svg");
-      File newFile = new File(name);
-      this.selFile = newFile;
+      this.selFile = new File(name);
       return true;
     }
     catch (Exception e) {
@@ -104,13 +106,9 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements
     Runner.run(monitor, context, this.selFile);
   }
 
-  public static MultiEnableCheck createEnableCheck(
-      WorkbenchContext workbenchContext) {
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
     EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-
-    return new MultiEnableCheck().add(
-        checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck()).add(
-        checkFactory.createAtLeastNLayersMustBeSelectedCheck(0));
+    return new MultiEnableCheck().add(checkFactory.createTaskWindowMustBeActiveCheck());
   }
 
   private String addExtension(String path, String extension) {
@@ -153,14 +151,13 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements
 
       LayerViewPanel lvp = context.getLayerViewPanel();
       RenderingManager rms = lvp.getRenderingManager();
-      List layers = context.getLayerManager().getVisibleLayers(false);
+      List<Layer> layers = context.getLayerManager().getVisibleLayers(false);
       // Check if there are many features to draw and warn the user
       int totalNumberOfFeatures = 0;
       Envelope view = context.getLayerViewPanel().getViewport()
           .getEnvelopeInModelCoordinates();
-      for (int i = 0; i < layers.size(); i++) {
-        FeatureCollection fc = ((Layer) layers.get(i))
-            .getFeatureCollectionWrapper();
+      for (Layer layer : layers) {
+        FeatureCollection fc = layer.getFeatureCollectionWrapper();
         totalNumberOfFeatures += fc.query(view).size();
       }
       if (totalNumberOfFeatures > 100000) {
@@ -179,8 +176,7 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements
         if (!dialog.wasOKPressed())
           return;
       }
-      for (int i = 0; i < layers.size(); i++) {
-        Layer layer = (Layer) layers.get(i);
+      for (Layer layer : layers) {
         Renderer myR = rms.getRenderer(layer);
         if (myR instanceof LayerRenderer) {
           LayerRenderer myRnew = (LayerRenderer) myR;
@@ -200,8 +196,7 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements
       lvp.getViewport().setJava2DConverter(oldConverter);
       // ------------------------------
       // reset the old state of 100 features
-      for (int i = 0; i < layers.size(); i++) {
-        Layer layer = (Layer) layers.get(i);
+      for (Layer layer : layers) {
         Renderer myR = rms.getRenderer(layer);
         if (myR instanceof LayerRenderer) {
           LayerRenderer myRnew = (LayerRenderer) myR;
