@@ -46,6 +46,7 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
+import com.vividsolutions.jump.workbench.ui.*;
 import org.openjump.core.apitools.FeatureSchemaTools;
 
 import com.vividsolutions.jump.I18N;
@@ -63,15 +64,9 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.GenericNames;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
-    
-    private MultiInputDialog dialog;
     
     private String sidetext = "Calculates mean and variance for a specified attribute " +
             "in accordance with the classes, which need to be given";
@@ -134,9 +129,9 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
      */
     public boolean execute(PlugInContext context) throws Exception{
     	    	
-        this.reportNothingToUndoYet(context);         
-        
-            dialog = new MultiInputDialog(
+        this.reportNothingToUndoYet(context);
+
+            MultiInputDialog dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(), sName, true);
             this.setDialogValues(dialog, context);
             GUIUtil.centreOnWindow(dialog);
@@ -152,11 +147,11 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
 		
 	}
     
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
+    private void setDialogValues(final MultiInputDialog dialog, final PlugInContext context) {
         dialog.setSideBarDescription(this.sidetext);
         dialog.addLayerComboBox(OLAYER, context.getCandidateLayer(0), context.getLayerManager());
         
-        List<String> listO = FeatureSchemaTools.getFieldsFromLayerWithoutGeometry(context.getCandidateLayer(0));
+        final List<String> listO = AttributeTypeFilter.NO_GEOMETRY_FILTER.filter(context.getCandidateLayer(0));
         Object valA = listO.size()>0?listO.iterator().next():null;
         Object valB = listO.size()>0?listO.iterator().next():null;
         final JComboBox<String> jcb_attributeA = dialog.addComboBox(ATTRIBUTEA, valA, listO,ATTRIBUTEA);
@@ -166,30 +161,29 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
         
         dialog.getComboBox(OLAYER).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                List list = getFieldsFromLayerWithoutGeometryO();
+                List<String> list = AttributeTypeFilter.NO_GEOMETRY_FILTER.filter(dialog.getLayer(OLAYER));
                 if (list.size() == 0) {
-                    jcb_attributeA.setModel(new DefaultComboBoxModel(new String[0]));
+                    jcb_attributeA.setModel(new DefaultComboBoxModel<>(new String[0]));
                     jcb_attributeA.setEnabled(false);
                 }
-                jcb_attributeA.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                jcb_attributeA.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
             }            
         });
 
         dialog.getComboBox(OLAYER).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                List list = getFieldsFromLayerWithoutGeometryO();
+                List<String> list = AttributeTypeFilter.NO_GEOMETRY_FILTER.filter(dialog.getLayer(OLAYER));
                 if (list.size() == 0) {
-                    jcb_attributeB.setModel(new DefaultComboBoxModel(new String[0]));
+                    jcb_attributeB.setModel(new DefaultComboBoxModel<>(new String[0]));
                     jcb_attributeB.setEnabled(false);
                 }
-                jcb_attributeB.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                jcb_attributeB.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
             }            
         });
               
       }
 
     private void getDialogValues(MultiInputDialog dialog) {
-        //this.itemlayer = dialog.getLayer(this.CLAYER);
         this.selLayerO = dialog.getLayer(OLAYER);
         this.selAttributeA = dialog.getText(ATTRIBUTEA);
         this.selAttributeB = dialog.getText(ATTRIBUTEB);  
@@ -203,8 +197,8 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
         FeatureCollection fcO = orgLayer.getFeatureCollectionWrapper();
         FeatureSchema fsO = fcO.getFeatureSchema();  
         //assuming that all classes are stored with same type
-        AttributeType typeA = null;        
-        AttributeType typeB = null;
+        AttributeType typeA;
+        AttributeType typeB;
         if ((fsO.getAttributeType(this.selAttributeA) == AttributeType.DOUBLE) || 
                 (fsO.getAttributeType(this.selAttributeA) == AttributeType.INTEGER))
                 {
@@ -230,17 +224,17 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
             Object valA = f.getAttribute(this.selAttributeA); // get ratio attribute 
             Object valB = f.getAttribute(this.selAttributeB); // get class nr
             if (typeA == AttributeType.DOUBLE){
-                data[i] = ((Double)valA).doubleValue();
+                data[i] = (Double)valA;
             }
             else if (typeA == AttributeType.INTEGER){
-                data[i] = ((Integer)valA).intValue();
+                data[i] = ((Integer)valA).doubleValue();
             }
             //-- class nr
             if (typeB == AttributeType.DOUBLE){
                 classes[i] = ((Double)valB).intValue();
             }
             else if (typeB == AttributeType.INTEGER){
-                classes[i] = ((Integer)valB).intValue();
+                classes[i] = (Integer)valB;
             }             
             //-- set global for now (maybe refine it later to exclude specific values)
             exists[i] = 1;
@@ -262,9 +256,9 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
             double[] vals = getValuesToIndex(data,existingIdxVals);
             double meanC = org.math.array.StatisticSample.mean(vals); 
             double varC = org.math.array.StatisticSample.variance(vals);
-            for (int k = 0; k < existingIdxVals.length; k++) {
-                var[existingIdxVals[k]]= varC;
-                mean[existingIdxVals[k]]= meanC;
+            for (int existingIdxVal : existingIdxVals) {
+                var[existingIdxVal]= varC;
+                mean[existingIdxVal]= meanC;
             }
         }        
         
@@ -273,8 +267,8 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
         // create layer with new field for results
         // ======================================================
         
-        FeatureDataset fd = null;
-        ArrayList outData = new ArrayList();
+        FeatureDataset fd;
+        ArrayList<Feature> outData = new ArrayList<>();
         FeatureSchema targetFSnew = null;
         int count=0;        
         Iterator iterp = fcO.iterator();     
@@ -289,26 +283,35 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
             if (count == 1){
                 FeatureSchema targetFs = p.getSchema();
                 targetFSnew = FeatureSchemaTools.copyFeatureSchema(targetFs);
-                if (targetFSnew.hasAttribute(attnameB)){
+                if (targetFSnew.hasAttribute(attnameB) &&
+                        targetFSnew.getAttributeType(attnameB) == AttributeType.DOUBLE){
                     //attribute will be overwriten
                 }
-                else{
+                else if (!targetFSnew.hasAttribute(attnameB)) {
                     //add attribute                    
                     targetFSnew.addAttribute(attnameB, AttributeType.DOUBLE);
                 }
-                if (targetFSnew.hasAttribute(attname)){
+                else {
+                    throw new Exception("Attribute " + attnameB + " is not of type Double");
+                }
+
+                if (targetFSnew.hasAttribute(attname) &&
+                        targetFSnew.getAttributeType(attname) == AttributeType.DOUBLE){
                     //attribute will be overwriten
                 }
-                else{
+                else if(!targetFSnew.hasAttribute(attname)){
                     //add attribute                    
                     targetFSnew.addAttribute(attname, AttributeType.DOUBLE);
-                }                
+                }
+                else {
+                    throw new Exception("Attribute " + attname + " is not of type Double");
+                }
             }
             //-- evaluate value for every polygon           
             Feature fcopy = FeatureSchemaTools.copyFeature(p, targetFSnew);
             //fcopy.setAttribute(this.selClassifier, new Integer(classes[count-1]));
-            fcopy.setAttribute(attnameB, new Double(mean[count-1]));
-            fcopy.setAttribute(attname, new Double(var[count-1]));
+            fcopy.setAttribute(attnameB, mean[count-1]);
+            fcopy.setAttribute(attname, var[count-1]);
             outData.add(fcopy);
         }
         fd = new FeatureDataset(targetFSnew);  
@@ -320,7 +323,7 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
         return true;
     }
 
-    public double[] getValuesToIndex(double[] data, int[] existingIdxVals) {
+    private double[] getValuesToIndex(double[] data, int[] existingIdxVals) {
         double[] vals = new double[existingIdxVals.length];
         for (int i = 0; i < existingIdxVals.length; i++) {
             vals[i] = data[existingIdxVals[i]];
@@ -331,21 +334,19 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
     /**
      * 
      * @param idxValsOfSameClass
-     * @param exists containing values of 0 = not existing, 1= existing 
-     * @return
+     * @param exists containing values of 0 = not existing, 1= existing
      */
     private int[] reduceToExisting(int[] idxValsOfSameClass, int[] exists) {
-        int[] idxVals = null;
-        ArrayList<Integer> vals = new ArrayList<Integer>(); 
+        int[] idxVals;
+        ArrayList<Integer> vals = new ArrayList<>();
         for (int i = 0; i < idxValsOfSameClass.length; i++) {
             if (exists[i] == 1){
-                vals.add(new Integer(idxValsOfSameClass[i]));
+                vals.add(idxValsOfSameClass[i]);
             }
         }        
         idxVals = new int[vals.size()];
         int i = 0; 
-        for (Iterator iter = vals.iterator(); iter.hasNext();) {
-            Integer idx = (Integer) iter.next();            
+        for (Integer idx : vals) {
             idxVals[i] = idx;
             i++;
         }
@@ -358,18 +359,17 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
      * @param actualClass the reference class value to search for
      * @return all position index values for items that belong to the "actualClass"
      */
-    public int[] getIndexValuesOfSameClass(int[] classes, int actualClass) {
-        int[] idxVals = null;
-        ArrayList<Integer> vals = new ArrayList<Integer>(); 
+    private int[] getIndexValuesOfSameClass(int[] classes, int actualClass) {
+        int[] idxVals;
+        ArrayList<Integer> vals = new ArrayList<>();
         for (int i = 0; i < classes.length; i++) {
             if (classes[i] == actualClass){
-                vals.add(new Integer(i));
+                vals.add(i);
             }
         }        
         idxVals = new int[vals.size()];
         int i = 0; 
-        for (Iterator iter = vals.iterator(); iter.hasNext();) {
-            Integer idx = (Integer) iter.next();            
+        for (Integer idx : vals) {
             idxVals[i] = idx;
             i++;
         }
@@ -377,47 +377,40 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
     }
    
     /**
-     * 
+     *
      * @param classes
      * @return all classes that are found in the array
      */
-    public int[] getDifferentClassValues(int[] classes) {
-        int[] classVals = null;
-        ArrayList<Integer> vals = new ArrayList<Integer>(); 
+    private int[] getDifferentClassValues(int[] classes) {
+        int[] classVals;
+        ArrayList<Integer> vals = new ArrayList<>();
         for (int i = 0; i < classes.length; i++) {
             if (i==0){ 
                 //-- add first class directly
-                vals.add(new Integer(classes[i]));
+                vals.add(classes[i]);
             }
             else{
                 //-- search if already added
                 //   TODO: make while loop to avoid parsing always the full list
                 boolean found = false; 
-                for (Iterator iter = vals.iterator(); iter.hasNext();) {
-                    Integer existingClass = (Integer) iter.next();
-                    if(classes[i] == existingClass.intValue()){
+                for (Integer existingClass : vals) {
+                    if(classes[i] == existingClass){
                         found = true;
                     }
                 }
-                if (found == false){
-                    vals.add(new Integer(classes[i]));
+                if (!found){
+                    vals.add(classes[i]);
                 }
             }
                 
         }        
         classVals = new int[vals.size()];
         int i = 0; 
-        for (Iterator iter = vals.iterator(); iter.hasNext();) {
-            Integer idx = (Integer) iter.next();            
+        for (Integer idx : vals) {
             classVals[i] = idx;
             i++;
         }
         return classVals;
     }
-    
-    private List getFieldsFromLayerWithoutGeometryO() {
-        return FeatureSchemaTools.getFieldsFromLayerWithoutGeometry(dialog.getLayer(OLAYER));
-    }
-    
 
 }

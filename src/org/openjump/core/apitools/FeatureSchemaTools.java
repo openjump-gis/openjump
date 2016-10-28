@@ -146,16 +146,4 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
         return fields;
     }
     
-    public static List<String> getFieldsFromLayerWithoutGeometry(Layer lyr) {
-        List<String> fields = new ArrayList<>();
-        FeatureSchema schema = lyr.getFeatureCollectionWrapper().getFeatureSchema();
-        for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
-            if (schema.getAttributeType(i) != AttributeType.GEOMETRY)
-            {
-                fields.add(schema.getAttributeName(i));  
-           }
-        }
-        return fields;
-    }
-    
 }

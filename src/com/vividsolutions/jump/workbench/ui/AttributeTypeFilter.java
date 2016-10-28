@@ -94,10 +94,16 @@ public class AttributeTypeFilter {
     public static final AttributeTypeFilter ALL_FILTER      = new AttributeTypeFilter(255);
     
     private int filterType = 0;
+
     
     /** Create a new Filter filtering objects according to the filter type.*/
     public AttributeTypeFilter(int filterType) {
         this.filterType = filterType;
+    }
+
+    /** Inverse the filter.*/
+    public AttributeTypeFilter getInverseFilter() {
+        return new AttributeTypeFilter(~filterType);
     }
     
     /**
@@ -108,8 +114,8 @@ public class AttributeTypeFilter {
      * @return a List of Layers
      */
     public List<Layer> filter(LayerManager layerManager) {
-        List<Layer> layerList = new ArrayList<Layer>();
-        for (Layer layer : (List<Layer>)layerManager.getLayers()) {
+        List<Layer> layerList = new ArrayList<>();
+        for (Layer layer : layerManager.getLayers()) {
             FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
             if (filter(schema).size() > 0) layerList.add(layer);
         }
@@ -123,7 +129,7 @@ public class AttributeTypeFilter {
      * @return a List of attributes matching the filter criteria
      */
     public List<String> filter(FeatureSchema schema) {
-        List<String> attributes = new ArrayList<String>();
+        List<String> attributes = new ArrayList<>();
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
             AttributeType type = schema.getAttributeType(i);
             if ((type == AttributeType.GEOMETRY && (filterType & 1)==1) ||
@@ -139,6 +145,10 @@ public class AttributeTypeFilter {
             }
         }
         return attributes;
+    }
+
+    public List<String> filter(Layer layer) {
+        return filter(layer.getFeatureCollectionWrapper().getFeatureSchema());
     }
     
     public String toString() {

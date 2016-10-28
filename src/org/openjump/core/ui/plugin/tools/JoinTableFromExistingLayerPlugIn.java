@@ -26,18 +26,6 @@
  * perriger@gmx.de
  */
 
-/*****************************************************
- * created:  		1.Oct.2012
- * last modified:			
- * 					
- * 
- * @author sstein
- * 
- * description: Plugin that performs a table join, i.e. attaches attributes
- * 				from an one layer to another layer
- * 	
- *****************************************************/
-
 package org.openjump.core.ui.plugin.tools;
 
 import java.awt.event.ActionEvent;
@@ -46,23 +34,17 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
 
-import org.openjump.core.apitools.FeatureSchemaTools;
+import com.vividsolutions.jump.workbench.ui.AttributeTypeFilter;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.tools.AttributeMapping;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -76,11 +58,12 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 /**
- * @description: table join - attaches attributes from an one layer to another layer 
- *	
+ * Table join - attaches attributes from one layer to another layer
+ *
+ * created: 1.Oct.2012
  * @author sstein
  *
- **/
+ */
 public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 
 	private String sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.description");   
@@ -90,14 +73,15 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 	private final String sTableLayerAttributeID = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Attribute-with-unique-IDs");
 	private final String sDisplayUnmatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.display-unmatched-items-from-base-layer");
 	private final String sAllMatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.All-items-matched-no-layer-with-unmatched-features");
+
 	//-- for output of layers
 	private final String sJoinResult =  I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.join-result");
 	private final String sUnmatchedItems = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.unmatched-items");
 	private final String sTooManyItems = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches");
 	private final String sMultiMatchesMsg = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches-for-feature-FID");
 	
-	private FeatureCollection base = null;
-	private FeatureCollection tabletojoin = null;
+	//private FeatureCollection base = null;
+	//private FeatureCollection tabletojoin = null;
 	private Layer inputBaseLayer = null;
 	private Layer inputTableLayer = null;
 	private String selBaseLayerAttribute = "";
@@ -105,7 +89,6 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 	private boolean displayUnmatched = true;
 	
 	private MultiInputDialog dialog;
-	private PlugInContext context = null;
 
 	public String getName() {
 		return I18N
@@ -113,10 +96,10 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
-		context.getFeatureInstaller().addMainMenuItem(
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES}, 	//menu path
+		context.getFeatureInstaller().addMainMenuPlugin(
 				this,
-				new JMenuItem( this.getName(), null),
+				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},
+				this.getName(), false, null,
 				createEnableCheck(context.getWorkbenchContext()), -1);
 	}
 
@@ -142,17 +125,19 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 	}
 
 	public void run(TaskMonitor monitor, PlugInContext context) throws Exception{            		
-		System.gc(); //flush garbage collector
-		this.context = context;
+
 		monitor.allowCancellationRequests();
+
+		FeatureCollection base = inputBaseLayer.getFeatureCollectionWrapper();
+		FeatureCollection tabletojoin = inputTableLayer.getFeatureCollectionWrapper();
 		int dFromID = base.getFeatureSchema().getAttributeIndex(this.selBaseLayerAttribute);
 		int dToID = tabletojoin.getFeatureSchema().getAttributeIndex(this.selTableLayerJoinIDAttribute);
 		
-		List allTableFeatures = this.tabletojoin.getFeatures();
+		List allTableFeatures = tabletojoin.getFeatures();
 		int numTableFeatures = allTableFeatures.size();
 		
 		//-- prep the attribute transfer
-    	AttributeMapping mapping = null;
+    	AttributeMapping mapping;
     	mapping = new AttributeMapping(base.getFeatureSchema(), tabletojoin.getFeatureSchema());
 
 		FeatureCollection featuresFound = new FeatureDataset(mapping.createSchema("Geometry"));
@@ -161,7 +146,7 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 		
 		//-- loop over all base features (as they are our reference)
 		int i = 0;
-		int numFeatures = this.base.size();
+		int numFeatures = base.size();
 		for (Iterator iterator = base.iterator(); iterator.hasNext();) {
 			Feature baseFeature = (Feature) iterator.next();
 			monitor.report(i, numFeatures, I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.items-processed"));	
@@ -179,13 +164,13 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 				Feature tmpTableItem = (Feature)allTableFeatures.get(j);
 				int tableItemId = tmpTableItem.getInteger(dToID);
 				if(tableItemId == baseFeatureId){
-					if (foundFirst == false){
+					if (!foundFirst){
 						firstFeatureToJoin = tmpTableItem;
 						foundFirst = true;
 						notFound = true; //keep searching
 					}
 					else{
-						if(foundSecond == false){
+						if(!foundSecond){
 							//we got i>=2 matches
 							//write the original
 							Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
@@ -219,16 +204,13 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 					}
 				}//end: we had a match
 				j++;
-				if(j < numTableFeatures){
-					//we have not searched all yet
-				}
-				else{
+				if(j >= numTableFeatures){
 					//we have searched all
 					notFound = false;
 				}
 			} //end while loop over stop-list
 			//-- save if not saved yet
-			if(foundFirst == false){
+			if(!foundFirst){
 				//so we have no matching
 				//transfer it anyway
 				Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
@@ -240,7 +222,7 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 				//stop the loop
 			}
 			else{//foundFirst == true
-				if(foundSecond == false){
+				if(!foundSecond){
 					//we have only one match
 					Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
 					mapping.transferAttributes(baseFeature, firstFeatureToJoin, newFeature);
@@ -264,32 +246,27 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 		else{
 			context.getWorkbenchFrame().warnUser(sAllMatched);
 		}
-		
-		//--
-		System.gc();    	   		
 	}
 
 	private void initDialog(PlugInContext context) {
-		JComboBox layerComboBoxBase = null;
-		JComboBox layerComboBoxTable = null;
 
 		dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.getName(), true);
 		dialog.setSideBarDescription(sSidebar);
 
-		layerComboBoxBase = dialog.addLayerComboBox(this.sLAYERBase, context.getCandidateLayer(0), null, context.getLayerManager());
+		dialog.addLayerComboBox(this.sLAYERBase, context.getCandidateLayer(0), null, context.getLayerManager());
 
-		List listNumAttributesBase = FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(context.getCandidateLayer(0));
+		List<String> listNumAttributesBase = AttributeTypeFilter.NUMERIC_FILTER.filter(context.getCandidateLayer(0));
 		Object valAttribute = listNumAttributesBase.size()>0?listNumAttributesBase.iterator().next():null;
-		final JComboBox baseAttributeBox = dialog.addComboBox(this.sBaseLayerID, valAttribute, listNumAttributesBase, this.sBaseLayerID);
+		final JComboBox<String> baseAttributeBox = dialog.addComboBox(this.sBaseLayerID, valAttribute, listNumAttributesBase, this.sBaseLayerID);
 		if (listNumAttributesBase.size() == 0) baseAttributeBox.setEnabled(false);
 
 		dialog.addSeparator(); //----
 
-		layerComboBoxTable = dialog.addLayerComboBox(this.sLAYERwAttributes, context.getCandidateLayer(0), null, context.getLayerManager());
+		dialog.addLayerComboBox(this.sLAYERwAttributes, context.getCandidateLayer(0), null, context.getLayerManager());
 
-		List listNumAttributesTable = FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(context.getCandidateLayer(0));
-		Object valAttributeStops = listNumAttributesTable.size()>0?listNumAttributesTable.iterator().next():null;
-		final JComboBox tableAttributeBox = dialog.addComboBox(this.sTableLayerAttributeID, valAttributeStops, listNumAttributesTable, this.sTableLayerAttributeID);
+		List<String> listNumAttributesTable = AttributeTypeFilter.NUMERIC_FILTER.filter(context.getCandidateLayer(0));
+		String valAttributeStops = listNumAttributesTable.size()>0?listNumAttributesTable.iterator().next():null;
+		final JComboBox<String> tableAttributeBox = dialog.addComboBox(this.sTableLayerAttributeID, valAttributeStops, listNumAttributesTable, this.sTableLayerAttributeID);
 		if (listNumAttributesTable.size() == 0) tableAttributeBox.setEnabled(false);
 
 		dialog.addSeparator(); //----
@@ -299,13 +276,14 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 		// do listener stuff
 		dialog.getComboBox(this.sLAYERBase).addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				List list = getFieldsFromLayerWithoutGeometryAndStringTransfer();
+				List<String> list = AttributeTypeFilter.NUMERIC_FILTER
+						.filter(dialog.getLayer(JoinTableFromExistingLayerPlugIn.this.sLAYERBase));
 				if (list.size() == 0) {
-					baseAttributeBox.setModel(new DefaultComboBoxModel(new String[0]));
+					baseAttributeBox.setModel(new DefaultComboBoxModel<>(new String[0]));
 					baseAttributeBox.setEnabled(false);
 				}
 				else {
-					baseAttributeBox.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+					baseAttributeBox.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
 					baseAttributeBox.setEnabled(true);
 				}
 			}
@@ -313,13 +291,14 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 
 		dialog.getComboBox(this.sLAYERwAttributes).addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				List list = getFieldsFromLayerWithoutGeometryAndStringStops();
+				List<String> list = AttributeTypeFilter.NUMERIC_FILTER
+						.filter(dialog.getLayer(JoinTableFromExistingLayerPlugIn.this.sLAYERwAttributes));
 				if (list.size() == 0) {
-					tableAttributeBox.setModel(new DefaultComboBoxModel(new String[0]));
+					tableAttributeBox.setModel(new DefaultComboBoxModel<>(new String[0]));
 					tableAttributeBox.setEnabled(false);
 				}
 				else {
-					tableAttributeBox.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+					tableAttributeBox.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
 					tableAttributeBox.setEnabled(true);
 				}
 			}
@@ -334,17 +313,6 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 		this.selBaseLayerAttribute = dialog.getText(this.sBaseLayerID);
 		this.selTableLayerJoinIDAttribute = dialog.getText(this.sTableLayerAttributeID);
 		this.displayUnmatched = dialog.getBoolean(sDisplayUnmatched);
-
-		this.base= this.inputBaseLayer.getFeatureCollectionWrapper(); 
-		this.tabletojoin = this.inputTableLayer.getFeatureCollectionWrapper();
-	}
-
-	private List getFieldsFromLayerWithoutGeometryAndStringTransfer() {
-		return FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(dialog.getLayer(this.sLAYERBase));
-	}
-
-	private List getFieldsFromLayerWithoutGeometryAndStringStops() {
-		return FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(dialog.getLayer(this.sLAYERwAttributes));
 	}
 
 }
