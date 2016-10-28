@@ -103,13 +103,12 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
         sCalcRatios = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.calculating-statistics");	
     	
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    	featureInstaller.addMainMenuItem(
-    			this,                               //exe
-    			//new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},     //menu path
+    	featureInstaller.addMainMenuPlugin(
+    			this,
     			new String[] {MenuNames.TOOLS, MenuNames.STATISTICS},
     			this.sName + "...", //name methode .getName recieved by AbstractPlugIn 
-    			false,          //checkbox
-    			null,           //icon
+    			false,              //checkbox
+    			null,               //icon
     			createEnableCheck(context.getWorkbenchContext())); //enable check   
         	
     }
@@ -123,8 +122,8 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 
         return new MultiEnableCheck()
-                        .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-                        .add(checkFactory.createTaskWindowMustBeActiveCheck());
+                .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck())
+                .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
     }
     
     /**
@@ -153,17 +152,16 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
 		
 	}
     
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
-      {
+    private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
         dialog.setSideBarDescription(this.sidetext);
         dialog.addLayerComboBox(OLAYER, context.getCandidateLayer(0), context.getLayerManager());
         
-        List listO = FeatureSchemaTools.getFieldsFromLayerWithoutGeometry(context.getCandidateLayer(0));
+        List<String> listO = FeatureSchemaTools.getFieldsFromLayerWithoutGeometry(context.getCandidateLayer(0));
         Object valA = listO.size()>0?listO.iterator().next():null;
         Object valB = listO.size()>0?listO.iterator().next():null;
-        final JComboBox jcb_attributeA = dialog.addComboBox(ATTRIBUTEA, valA, listO,ATTRIBUTEA);
+        final JComboBox<String> jcb_attributeA = dialog.addComboBox(ATTRIBUTEA, valA, listO,ATTRIBUTEA);
         if (listO.size() == 0) jcb_attributeA.setEnabled(false);
-        final JComboBox jcb_attributeB = dialog.addComboBox(ATTRIBUTEB, valB, listO,ATTRIBUTEB);
+        final JComboBox<String> jcb_attributeB = dialog.addComboBox(ATTRIBUTEB, valB, listO,ATTRIBUTEB);
         if (listO.size() == 0) jcb_attributeB.setEnabled(false);              
         
         dialog.getComboBox(OLAYER).addActionListener(new ActionListener() {

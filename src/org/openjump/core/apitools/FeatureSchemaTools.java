@@ -41,20 +41,13 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
      *@return array with information on matching attributes
      */
     public static AttributeInfo[] getAttributesWithTypes(FeatureSchema fs, AttributeType[] allowedTypes){
-        ArrayList<AttributeInfo> attrInfosList = new ArrayList<AttributeInfo>();
-        AttributeInfo[] attrInfoArray = AttributeInfo.schema2AttributeInfoArray(fs);
-        int numInfos = attrInfoArray.length;
-        
-        for ( int i=0; i<numInfos; i++){
-            if (FeatureSchemaTools.isAttributeTypeAllowed(attrInfoArray[i].getAttributeType(),allowedTypes)){
-                attrInfosList.add(attrInfoArray[i]);
+        ArrayList<AttributeInfo> attrInfosList = new ArrayList<>();
+        for (AttributeInfo attrInfo :  AttributeInfo.schema2AttributeInfoArray(fs)){
+            if (FeatureSchemaTools.isAttributeTypeAllowed(attrInfo.getAttributeType(),allowedTypes)){
+                attrInfosList.add(attrInfo);
             }
         }
-        
-        numInfos = attrInfosList.size();
-        AttributeInfo[] attrInfoRaw = (AttributeInfo[])attrInfosList.toArray(new AttributeInfo[0]);
-        
-        return attrInfoRaw;
+        return attrInfosList.toArray(new AttributeInfo[0]);
     }
     
     /**
@@ -63,7 +56,7 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
      *@param attrIndex index of the attribute in the given featureSchema to get information about
      *@return information about the attribute
      */
-    public static AttributeInfo getAttributesInfoFor(FeatureSchema fs, int attrIndex){
+    private static AttributeInfo getAttributesInfoFor(FeatureSchema fs, int attrIndex){
         AttributeInfo attrInfo = new AttributeInfo(fs.getAttributeName(attrIndex), fs.getAttributeType(attrIndex));
         
         attrInfo.setIndex(attrIndex);
@@ -77,7 +70,7 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
      *@param attrName name of the attribute in the given featureSchema to get information about
      *@return information about the attribute
      */
-    public static AttributeInfo getAttributesInfoFor(FeatureSchema fs, String attrName){
+    private static AttributeInfo getAttributesInfoFor(FeatureSchema fs, String attrName){
         return FeatureSchemaTools.getAttributesInfoFor(fs, fs.getAttributeIndex(attrName));
     }
     
@@ -87,10 +80,9 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
      *@param allowedTypes array of allowed attribute types
      *@return true if <code>at</code> is contained in <code>allowedTypes</code>, else false
      */
-    public static boolean isAttributeTypeAllowed(AttributeType at, AttributeType[] allowedTypes){
-        int numTypes = allowedTypes.length;
-        for (int i=0; i<numTypes; i++){
-            if (allowedTypes[i].equals(at)) return true;
+    private static boolean isAttributeTypeAllowed(AttributeType at, AttributeType[] allowedTypes){
+        for (AttributeType type : allowedTypes){
+            if (type.equals(at)) return true;
         }
         return false;
     }
@@ -99,7 +91,7 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
      * copy/clone the input featureSchema since it is not proper implemented in Jump
      * Note : FeatureSchema has now a proper deep clone implementation
      * @deprecated
-     * @param oldSchema
+     * @param oldSchema old schema
      * @return a new FeatureSchema cloned from oldSchema
      */
     public static FeatureSchema copyFeatureSchema(FeatureSchema oldSchema){
@@ -124,7 +116,7 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
     public static Feature copyFeature(Feature feature, FeatureSchema newSchema){
         FeatureSchema oldSchema = feature.getSchema();
         Feature newF = new BasicFeature(newSchema);
-        int n = 0;
+        int n;
         if (oldSchema.getAttributeCount() > newSchema.getAttributeCount()){
             //for schema shortening
             n = newSchema.getAttributeCount();
@@ -141,8 +133,8 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
         return newF;
     }
     
-    public static List getFieldsFromLayerWithoutGeometryAndString(Layer lyr) {
-        List fields = new ArrayList();
+    public static List<String> getFieldsFromLayerWithoutGeometryAndString(Layer lyr) {
+        List<String> fields = new ArrayList<>();
         FeatureSchema schema = lyr.getFeatureCollectionWrapper().getFeatureSchema();
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
             if ((schema.getAttributeType(i) != AttributeType.GEOMETRY) &&
@@ -154,8 +146,8 @@ public class FeatureSchemaTools extends ToolToMakeYourLifeEasier {
         return fields;
     }
     
-    public static List getFieldsFromLayerWithoutGeometry(Layer lyr) {
-        List fields = new ArrayList();
+    public static List<String> getFieldsFromLayerWithoutGeometry(Layer lyr) {
+        List<String> fields = new ArrayList<>();
         FeatureSchema schema = lyr.getFeatureCollectionWrapper().getFeatureSchema();
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
             if (schema.getAttributeType(i) != AttributeType.GEOMETRY)

@@ -74,8 +74,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 //TODO: remove for other classification plugins the "save" option (taken from histogram plugin)
 public class ClassifyAttributesPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
 
-    private static String pluginname = "classifyplot";
-    
     private MultiInputDialog dialog;
     
     private String sideBarText = "Classifies attribute data with the chosen method.\n" +
@@ -103,7 +101,6 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
     private String selClassifier = null;
     private Boolean useKmeans = false;
     private boolean nullAsZero = false;
-    public LayerManager currentLM = null; 
     
     private String sName = "Classify Attributes";
 	private String sWarning = "problems appeared";
@@ -141,13 +138,12 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         sNoAttributeChoosen = I18N.get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.No-attribute-choosen");
         
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    	featureInstaller.addMainMenuItem(
-    			this,                               //exe
-    			//new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},     //menu path
+    	featureInstaller.addMainMenuPlugin(
+    			this,
     			new String[] {MenuNames.TOOLS, MenuNames.STATISTICS},
     			this.sName + "...", //name methode .getName recieved by AbstractPlugIn 
-    			false,          //checkbox
-    			null,           //icon
+    			false,              //checkbox
+    			null,               //icon
     			createEnableCheck(context.getWorkbenchContext())); //enable check   				
 
     }
@@ -161,9 +157,8 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 
         return new MultiEnableCheck()
-                        .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-                        //.add(checkFactory.createAtLeastNLayersMustBeEditableCheck(1))
-                        .add(checkFactory.createTaskWindowMustBeActiveCheck());
+                .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck())
+                .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
     }
     
     /**
@@ -190,9 +185,9 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
 	public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
 		//-- get the LM because when the Histogram will be shown, the app. focus 
 		//   will change and context.addLayer will not work (null pointer exc.)
-		// [mmichaud 2012-04-09] to completely resolve this problem, I added the
-		// new JInternalFrame is added after the addLayer method has been called
-		this.currentLM = context.getLayerManager();
+		// [mmichaud 2012-04-09] to completely resolve this problem, the new
+		// JInternalFrame is added after addLayer method has been called
+		LayerManager currentLM = context.getLayerManager();
     	monitor.allowCancellationRequests();
         if (this.selAttribute == null) {
 		    context.getWorkbenchFrame().warnUser(I18N.get(sNoAttributeChoosen));
@@ -206,7 +201,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
 		}
 		else if(result.size() > 0){
 			String name = this.selAttribute + "_" + this.selClassifier;
-			this.currentLM.addLayer(StandardCategoryNames.WORKING, name, result);
+			currentLM.addLayer(StandardCategoryNames.WORKING, name, result);
 			JInternalFrame frame = new JInternalFrame(this.sHistogram);
             frame.setLayout(new BorderLayout());
             frame.add(plot, BorderLayout.CENTER);
@@ -222,21 +217,22 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
 		}		
 	}
     
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
-      {
+    private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     	
 		dialog.setSideBarDescription(sideBarText);
     	
         dialog.addLayerComboBox(CLAYER, context.getCandidateLayer(0), context.getLayerManager());
         
-        List listNumAttributes = FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(context.getCandidateLayer(0));
+        List<String> listNumAttributes = FeatureSchemaTools
+                .getFieldsFromLayerWithoutGeometryAndString(context.getCandidateLayer(0));
         Object valAttribute = listNumAttributes.size()>0?listNumAttributes.iterator().next():null;
-        final JComboBox jcb_attribute = dialog.addComboBox(this.ATTRIBUTE, valAttribute, listNumAttributes, this.ATTRIBUTE);
+        final JComboBox<String> jcb_attribute = dialog
+                .addComboBox(this.ATTRIBUTE, valAttribute, listNumAttributes, this.ATTRIBUTE);
         if (listNumAttributes.size() == 0) jcb_attribute.setEnabled(false);
         
         List listClassifiers = Classifier1D.getAvailableClassificationMethods();
         Object valClassifier = listNumAttributes.size()>0?listNumAttributes.iterator().next():null;
-        final JComboBox jcb_classifier = dialog.addComboBox(this.CLASSIFIER, valClassifier, listClassifiers, this.CLASSIFIER);
+        dialog.addComboBox(this.CLASSIFIER, valClassifier, listClassifiers, this.CLASSIFIER);
         
         dialog.addIntegerField(T2, this.ranges, 6, T2);
         
@@ -246,13 +242,13 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         
         dialog.getComboBox(CLAYER).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                List list = getFieldsFromLayerWithoutGeometryAndString();
+                List<String> list = getFieldsFromLayerWithoutGeometryAndString();
                 if (list.size() == 0) {
-                    jcb_attribute.setModel(new DefaultComboBoxModel(new String[0]));
+                    jcb_attribute.setModel(new DefaultComboBoxModel<>(new String[0]));
                     jcb_attribute.setEnabled(false);
                 }
                 else {
-                    jcb_attribute.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                    jcb_attribute.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
                     jcb_attribute.setEnabled(true);
                 }
             }
@@ -267,14 +263,14 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         this.selClassifier = dialog.getText(this.CLASSIFIER);
         this.useKmeans = dialog.getBoolean(this.OPTIMIZEWITHKMEANS);
         this.nullAsZero = dialog.getBoolean(this.PROCESSNULLASZERO);
-      }
+    }
     
     private FeatureDataset classifyAndCreatePlot(TaskMonitor monitor, final PlugInContext context) throws Exception {
         
     	monitor.report(this.sCalculateBreaks);
         //=============== get DATA and prepare ==============/ 
         FeatureSchema fs = this.fc.getFeatureSchema();
-        AttributeType type = null;
+        AttributeType type;
         if ((fs.getAttributeType(this.selAttribute) == AttributeType.DOUBLE) || 
                 (fs.getAttributeType(this.selAttribute) == AttributeType.INTEGER)){
             //-- move on
@@ -305,11 +301,11 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
             Object val = f.getAttribute(this.selAttribute);
             if (type == AttributeType.DOUBLE){
                 if (val == null) data[i] = 0.0;
-                else data[i] = ((Double)val).doubleValue();
+                else data[i] = (Double)val;
             }
             else if (type == AttributeType.INTEGER){
                 if (val == null) data[i] = 0;
-                else data[i] = ((Integer)val).intValue();
+                else data[i] = (Integer)val;
             }               
             plotdata[0][i] = data[i];
             i++;
@@ -430,8 +426,8 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         }
     	monitor.report(sAddingField); 
 	    
-    	FeatureDataset fd = null;
-    	ArrayList outData = new ArrayList();
+    	FeatureDataset fd;
+    	ArrayList<Feature> outData = new ArrayList<>();
     	FeatureSchema targetFSnew = null;
 	    int count=0;	    
 	    Iterator iterp = fc.iterator();	    
@@ -459,7 +455,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
 	    	//-- evaluate value for every polygon 	    	
 	    	Feature fcopy = FeatureSchemaTools.copyFeature(p, targetFSnew);
 	    	//fcopy.setAttribute(this.selClassifier, new Integer(classes[count-1]));
-	    	fcopy.setAttribute(attname, new Integer(classes[count-1]));
+	    	fcopy.setAttribute(attname, classes[count-1]);
 	    	outData.add(fcopy);
 	    }
     	fd = new FeatureDataset(targetFSnew);  
@@ -476,7 +472,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements Threaded
         return size;
     }
     
-    private List getFieldsFromLayerWithoutGeometryAndString() {
+    private List<String> getFieldsFromLayerWithoutGeometryAndString() {
         return FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(dialog.getLayer(CLAYER));
     }
     
