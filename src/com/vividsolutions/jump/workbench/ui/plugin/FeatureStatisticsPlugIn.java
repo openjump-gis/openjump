@@ -33,9 +33,7 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
-import java.util.Iterator;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.Polygon;
@@ -44,7 +42,6 @@ import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
@@ -59,13 +56,13 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
  * Computes various statistics for selected layers.
  */
 public class FeatureStatisticsPlugIn extends AbstractPlugIn {
-    public static final String nPtsAttr = "nPts";
-    public static final String nHolesAttr = "nHoles";
-    public static final String nCompsAttr = "nComponents";
-    public static final String areaAttr = "area";
-    public static final String lengthAttr = "length";
-    public static final String typeAttr = "type";
-    private static final String jtsGeometryClassPackagePrefix = "com.vividsolutions.jts.geom";
+
+    private static final String nPtsAttr   = "nPts";
+    private static final String nHolesAttr = "nHoles";
+    private static final String nCompsAttr = "nComponents";
+    private static final String areaAttr   = "area";
+    private static final String lengthAttr = "length";
+    private static final String typeAttr   = "type";
 
     public FeatureStatisticsPlugIn() {
     }
@@ -73,24 +70,23 @@ public class FeatureStatisticsPlugIn extends AbstractPlugIn {
     public void initialize(PlugInContext context) throws Exception
     {
         	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    		featureInstaller.addMainMenuItem(
-    	        this,								//exe
-  				new String[] {MenuNames.TOOLS, MenuNames.STATISTICS}, 	//menu path
-                this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+    		featureInstaller.addMainMenuPlugin(
+    	        this,
+  				new String[] {MenuNames.TOOLS, MenuNames.STATISTICS},
+                this.getName() + "...",
                 false,			//checkbox
                 null,			//icon
-                createEnableCheck(context.getWorkbenchContext())); //enable check  
+                createEnableCheck(context.getWorkbenchContext()));
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-
         return new MultiEnableCheck()
-                        .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-                        .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
+                .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck())
+                .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
     }
     
-    public static FeatureSchema getStatisticsSchema() {
+    private static FeatureSchema getStatisticsSchema() {
         FeatureSchema featureSchema = new FeatureSchema();
         featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
         featureSchema.addAttribute(nPtsAttr, AttributeType.INTEGER);
@@ -103,26 +99,13 @@ public class FeatureStatisticsPlugIn extends AbstractPlugIn {
         return featureSchema;
     }
 
-    /**
-     * Removes the JTS geometry package prefix from a classname
-     * @param fullClassName
-     * @return the simplified class name
-     */
-    public static String removeGeometryPackage(String fullClassName) {
-        if (fullClassName.startsWith(jtsGeometryClassPackagePrefix)) {
-            return StringUtil.classNameWithoutQualifiers(fullClassName);
-        } else {
-            return fullClassName;
-        }
-    }
-
     public boolean execute(PlugInContext context) throws Exception {
         //Call #getSelectedLayers before #clear, because #clear will surface
         //output window. [Jon Aquino]
         Layer[] selectedLayers = context.getSelectedLayers();
 
-        for (int i = 0; i < selectedLayers.length; i++) {
-            featureStatistics(selectedLayers[i], context);
+        for (Layer selectedLayer : selectedLayers) {
+            featureStatistics(selectedLayer, context);
         }
 
         return true;
@@ -132,43 +115,26 @@ public class FeatureStatisticsPlugIn extends AbstractPlugIn {
         FeatureSchema statsSchema = getStatisticsSchema();
         FeatureDataset statsFC = new FeatureDataset(statsSchema);
 
-        for (Iterator i = layer.getFeatureCollectionWrapper().iterator(); i.hasNext();) {
-            Feature f = (Feature) i.next();
-            Geometry g = f.getGeometry();
-            double area = g.getArea();
-            double length = g.getLength();
+        for (Feature feature : layer.getFeatureCollectionWrapper().getFeatures()) {
+
+            Geometry g = feature.getGeometry();
 
             // these both need work - need to recurse into geometries
             // work done by mmichaud on 2010-12-12
-            //int comps = 0;
-            //int holes = 0;
             int[] comps_and_holes = new int[]{0,0};
             comps_and_holes = recurse(g, comps_and_holes);
-            int comps = comps_and_holes[0];
-            int holes = comps_and_holes[1];
-            //if (g instanceof GeometryCollection) {
-            //    comps = ((GeometryCollection) g).getNumGeometries();
-            //}
-
-            Coordinate[] pts = g.getCoordinates();
-            //int holes = 0;
-            //
-            //if (g instanceof Polygon) {
-            //    holes = ((Polygon) g).getNumInteriorRing();
-            //}
 
             Feature statsf = new BasicFeature(statsSchema);
 
             // this aliases the geometry of the input feature, but this shouldn't matter,
             // since if geometries are edited they should be completely replaced
             statsf.setAttribute("GEOMETRY", g);
-            statsf.setAttribute(nPtsAttr, new Integer(pts.length));
-            statsf.setAttribute(nHolesAttr, new Integer(holes));
-            statsf.setAttribute(nCompsAttr, new Integer(comps));
-            statsf.setAttribute(areaAttr, new Double(area));
-            statsf.setAttribute(lengthAttr, new Double(length));
-            statsf.setAttribute(typeAttr,
-                removeGeometryPackage(g.getClass().getName()));
+            statsf.setAttribute(nPtsAttr,   g.getCoordinates().length);
+            statsf.setAttribute(nCompsAttr, comps_and_holes[0]);
+            statsf.setAttribute(nHolesAttr, comps_and_holes[1]);
+            statsf.setAttribute(areaAttr,   g.getArea());
+            statsf.setAttribute(lengthAttr, g.getLength());
+            statsf.setAttribute(typeAttr,   g.getGeometryType());
             statsFC.add(statsf);
         }
 
