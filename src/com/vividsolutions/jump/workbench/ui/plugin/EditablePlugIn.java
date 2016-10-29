@@ -183,12 +183,25 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
         .getActiveInternalFrame();
     if (frame instanceof LayerNamePanelProxy) {
       LayerNamePanel layerNamePanel = ((LayerNamePanelProxy) frame).getLayerNamePanel();
-      if (layerNamePanel instanceof LayerableNamePanel)
+      if (frame instanceof InfoFrame) {
+        Layer[] lyrs = ((InfoFrame)frame).getModel().getLayers().toArray(new Layer[0]);
+        layers = new Layerable[lyrs.length];
+        System.arraycopy(lyrs, 0, layers, 0, lyrs.length);
+      }
+      else if (layerNamePanel instanceof LayerableNamePanel) {
         layers = ((LayerableNamePanel) layerNamePanel).getSelectedLayerables().toArray(
-            new Layerable[] {});
-      else
+                new Layerable[]{});
+      }
+      else {
         layers = layerNamePanel.getSelectedLayers();
+      }
     }
+    else if (frame instanceof ViewAttributesPlugIn.ViewAttributesFrame) {
+      layers = new Layerable[]{
+              ((ViewAttributesPlugIn.ViewAttributesFrame)frame).getOneLayerAttributeTab().getLayer()
+      };
+    }
+
 
     return layers;
   }

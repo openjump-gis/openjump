@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-10-29 mmichaud <m.michael.michaud@orange.fr>
+  * Fix editablePlugIn when AttributeTable or InfoFrame are opened
+
 2016-10-26 mmichaud <m.michael.michaud@orange.fr>
   * GeometryFunctions : add Visvalingam-Whyatt simplifier
 
