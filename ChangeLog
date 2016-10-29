@@ -5,6 +5,7 @@
 
 2016-10-29 mmichaud <m.michael.michaud@orange.fr>
   * Fix editablePlugIn when AttributeTable or InfoFrame are opened
+  * JoinTableFromExistingLayerPlugIn can now join on any attribute type
 
 2016-10-26 mmichaud <m.michael.michaud@orange.fr>
   * GeometryFunctions : add Visvalingam-Whyatt simplifier

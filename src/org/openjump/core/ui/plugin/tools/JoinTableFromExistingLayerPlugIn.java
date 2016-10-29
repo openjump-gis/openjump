@@ -30,13 +30,13 @@ package org.openjump.core.ui.plugin.tools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
-import com.vividsolutions.jump.workbench.ui.AttributeTypeFilter;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -57,35 +57,38 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
+import static com.vividsolutions.jump.workbench.ui.AttributeTypeFilter.*;
+
 /**
  * Table join - attaches attributes from one layer to another layer
  *
- * created: 1.Oct.2012
+ * created: 2012-10-01
+ * refactored : 2016-10-29
  * @author sstein
+ * @author mmichaud
  *
  */
 public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 
-	private String sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.description");   
-	private final String sLAYERBase = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Base-layer-that-should-be-extended");
-	private final String sLAYERwAttributes = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Layer-with-attributes-to-join");
-	private final String sBaseLayerID = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Base-layer-attribute-with-unique-feature-IDs");
-	private final String sTableLayerAttributeID = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Attribute-with-unique-IDs");
-	private final String sDisplayUnmatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.display-unmatched-items-from-base-layer");
-	private final String sAllMatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.All-items-matched-no-layer-with-unmatched-features");
+	private final static String sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.description");
+	private final static String BASE_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Base-layer-that-should-be-extended");
+	private final static String JOIN_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Layer-with-attributes-to-join");
+	private final static String BASE_LAYER_ID = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Base-layer-attribute-with-unique-feature-IDs");
+	private final static String JOIN_LAYER_ID = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Attribute-with-unique-IDs");
+	private final static String sDisplayUnmatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.display-unmatched-items-from-base-layer");
+	private final static String sAllMatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.All-items-matched-no-layer-with-unmatched-features");
+	private final static String sItemsProcessed = I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.items-processed");
 
 	//-- for output of layers
-	private final String sJoinResult =  I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.join-result");
-	private final String sUnmatchedItems = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.unmatched-items");
-	private final String sTooManyItems = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches");
-	private final String sMultiMatchesMsg = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches-for-feature-FID");
-	
-	//private FeatureCollection base = null;
-	//private FeatureCollection tabletojoin = null;
-	private Layer inputBaseLayer = null;
-	private Layer inputTableLayer = null;
-	private String selBaseLayerAttribute = "";
-	private String selTableLayerJoinIDAttribute = "";
+	private final static String sJoinResult =  I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.join-result");
+	private final static String sUnmatchedItems = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.unmatched-items");
+	private final static String sTooManyItems = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches");
+	private final static String sMultiMatchesMsg = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches-for-feature-FID");
+
+	private Layer baseLayer = null;
+	private Layer joinLayer = null;
+	private String baseLayerIdAttribute = "";
+	private String joinLayerJoinAttribute = "";
 	private boolean displayUnmatched = true;
 	
 	private MultiInputDialog dialog;
@@ -128,88 +131,109 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 
 		monitor.allowCancellationRequests();
 
-		FeatureCollection base = inputBaseLayer.getFeatureCollectionWrapper();
-		FeatureCollection tabletojoin = inputTableLayer.getFeatureCollectionWrapper();
-		int dFromID = base.getFeatureSchema().getAttributeIndex(this.selBaseLayerAttribute);
-		int dToID = tabletojoin.getFeatureSchema().getAttributeIndex(this.selTableLayerJoinIDAttribute);
+		FeatureCollection baseFC = baseLayer.getFeatureCollectionWrapper();
+		FeatureCollection joinFC = joinLayer.getFeatureCollectionWrapper();
+		int baseLayerAttributeIndex = baseFC.getFeatureSchema().getAttributeIndex(baseLayerIdAttribute);
+		int joinLayerAttributeIndex = joinFC.getFeatureSchema().getAttributeIndex(joinLayerJoinAttribute);
 		
-		List allTableFeatures = tabletojoin.getFeatures();
-		int numTableFeatures = allTableFeatures.size();
+		//List<Feature> joinFeatures = joinFC.getFeatures();
+		//int joinLayerSize = joinFeatures.size();
 		
 		//-- prep the attribute transfer
     	AttributeMapping mapping;
-    	mapping = new AttributeMapping(base.getFeatureSchema(), tabletojoin.getFeatureSchema());
+    	mapping = new AttributeMapping(baseFC.getFeatureSchema(), joinFC.getFeatureSchema());
 
 		FeatureCollection featuresFound = new FeatureDataset(mapping.createSchema("Geometry"));
-		FeatureCollection featuresMissing = new FeatureDataset(base.getFeatureSchema());
+		FeatureCollection featuresMissing = new FeatureDataset(baseFC.getFeatureSchema());
 		FeatureCollection featuresWithManyMatches = new FeatureDataset(mapping.createSchema("Geometry"));
 		
 		//-- loop over all base features (as they are our reference)
 		int i = 0;
-		int numFeatures = base.size();
-		for (Iterator iterator = base.iterator(); iterator.hasNext();) {
-			Feature baseFeature = (Feature) iterator.next();
-			monitor.report(i, numFeatures, I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.items-processed"));	
-			int baseFeatureId = baseFeature.getInteger(dFromID);
+		int baseLayerSize = baseFC.size();
+		for (Feature baseFeature : baseFC.getFeatures()) {
+			monitor.report(i++, baseLayerSize, sItemsProcessed);
+			Object baseId = baseFeature.getAttribute(baseLayerAttributeIndex);
 
 			//-- find the base-features corresponding entry
 			//   we could optimize this procedure by removing found
 			//   table items from the list
-			boolean notFound = true;
-			boolean foundFirst = false;
-			boolean foundSecond = false;
-			Feature firstFeatureToJoin = null;
-			int j = 0;
-			while(notFound){
-				Feature tmpTableItem = (Feature)allTableFeatures.get(j);
-				int tableItemId = tmpTableItem.getInteger(dToID);
-				if(tableItemId == baseFeatureId){
-					if (!foundFirst){
-						firstFeatureToJoin = tmpTableItem;
-						foundFirst = true;
-						notFound = true; //keep searching
-					}
-					else{
-						if(!foundSecond){
+			//boolean notFound = true;
+			//boolean foundFirst = false;
+			//boolean foundSecond = false;
+			Feature firstJoinFeature = null;
+			List<Feature> nextJoinFeatures = new ArrayList<>();
+			int countMatches = 0;
+			//int j = 0;
+			for (Feature joinCandidateFeature : joinFC.getFeatures()) {
+			//while(notFound){
+				//Feature tmpTableItem = joinFeatures.get(j);
+				//int tableItemId = tmpTableItem.getInteger(joinLayerAttributeIndex);
+				Object joinId = joinCandidateFeature.getAttribute(joinLayerAttributeIndex);
+				if((baseId == null && joinId == null) ||
+						baseId != null && joinId != null && baseId.toString().equals(joinId.toString())) {
+					if (countMatches == 0) {
+						firstJoinFeature = joinCandidateFeature;
+
+					} else {
+						nextJoinFeatures.add(joinCandidateFeature);
+						context.getWorkbenchFrame().warnUser(sMultiMatchesMsg + " : " + baseFeature.getID());
+						/*
+						if (!foundSecond) {
 							//we got i>=2 matches
 							//write the original
 							Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
 							mapping.transferAttributes(baseFeature, null, newFeature);
-							newFeature.setGeometry((Geometry)baseFeature.getGeometry().clone());
+							newFeature.setGeometry((Geometry) baseFeature.getGeometry().clone());
 							featuresFound.add(newFeature);
 							//and inform the user
-							context.getWorkbenchFrame().warnUser( sMultiMatchesMsg + " : " + baseFeature.getID());
+							context.getWorkbenchFrame().warnUser(sMultiMatchesMsg + " : " + baseFeature.getID());
 							//add the first and the second to the multiple list
 							//add first
 							Feature newFeature1 = new BasicFeature(featuresWithManyMatches.getFeatureSchema());
-							mapping.transferAttributes(baseFeature, firstFeatureToJoin, newFeature1);
-							newFeature1.setGeometry((Geometry)baseFeature.getGeometry().clone());
+							mapping.transferAttributes(baseFeature, firstJoinFeature, newFeature1);
+							newFeature1.setGeometry((Geometry) baseFeature.getGeometry().clone());
 							featuresWithManyMatches.add(newFeature1);
 							//add second
 							Feature newFeature2 = new BasicFeature(featuresWithManyMatches.getFeatureSchema());
 							mapping.transferAttributes(baseFeature, tmpTableItem, newFeature2);
-							newFeature2.setGeometry((Geometry)baseFeature.getGeometry().clone());
+							newFeature2.setGeometry((Geometry) baseFeature.getGeometry().clone());
 							featuresWithManyMatches.add(newFeature2);
-							
+
 							foundSecond = true;
-						}
-						else{//this should be the third match
-							 //just add it to the list 
+						} else {//this should be the third match
+							//just add it to the list
 							Feature newFeature3 = new BasicFeature(featuresWithManyMatches.getFeatureSchema());
 							mapping.transferAttributes(baseFeature, tmpTableItem, newFeature3);
-							newFeature3.setGeometry((Geometry)baseFeature.getGeometry().clone());
+							newFeature3.setGeometry((Geometry) baseFeature.getGeometry().clone());
 							featuresWithManyMatches.add(newFeature3);
 						}
-						
+						*/
 					}
-				}//end: we had a match
-				j++;
-				if(j >= numTableFeatures){
-					//we have searched all
-					notFound = false;
+					countMatches++;
 				}
 			} //end while loop over stop-list
+			// Unique join
+			if (countMatches > 0) {
+				Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
+				mapping.transferAttributes(baseFeature, firstJoinFeature, newFeature);
+				newFeature.setGeometry((Geometry)baseFeature.getGeometry().clone());
+				if (countMatches == 1) {
+					featuresFound.add(newFeature);
+				} else {
+					featuresWithManyMatches.add(newFeature);
+					for (Feature match : nextJoinFeatures) {
+						newFeature = new BasicFeature(featuresFound.getFeatureSchema());
+						mapping.transferAttributes(baseFeature, match, newFeature);
+						newFeature.setGeometry((Geometry)baseFeature.getGeometry().clone());
+						featuresWithManyMatches.add(newFeature);
+					}
+				}
+
+			} else {
+				featuresMissing.add(baseFeature.clone(true));
+			}
 			//-- save if not saved yet
+			/*
 			if(!foundFirst){
 				//so we have no matching
 				//transfer it anyway
@@ -225,23 +249,23 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 				if(!foundSecond){
 					//we have only one match
 					Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
-					mapping.transferAttributes(baseFeature, firstFeatureToJoin, newFeature);
+					mapping.transferAttributes(baseFeature, firstJoinFeature, newFeature);
 					newFeature.setGeometry((Geometry)baseFeature.getGeometry().clone());
 					featuresFound.add(newFeature);
 				}
 			}
-			i++; //count feature processing (next transfer)
+			*/
 		}
 
 		// show results
 		if(featuresFound.size() > 0){
-			context.addLayer(StandardCategoryNames.RESULT, this.inputBaseLayer.getName() + " - " + sJoinResult , featuresFound);
+			context.addLayer(StandardCategoryNames.RESULT, this.baseLayer.getName() + " - " + sJoinResult , featuresFound);
 		}
 		if(featuresWithManyMatches.size() > 0){
-			context.addLayer(StandardCategoryNames.RESULT, this.inputBaseLayer.getName() + " - " + sTooManyItems , featuresWithManyMatches);
+			context.addLayer(StandardCategoryNames.RESULT, this.baseLayer.getName() + " - " + sTooManyItems , featuresWithManyMatches);
 		}
 		if((this.displayUnmatched) && (featuresMissing.size() > 0)){
-			context.addLayer(StandardCategoryNames.RESULT, this.inputBaseLayer.getName() + " - " + sUnmatchedItems, featuresMissing);
+			context.addLayer(StandardCategoryNames.RESULT, this.baseLayer.getName() + " - " + sUnmatchedItems, featuresMissing);
 		}
 		else{
 			context.getWorkbenchFrame().warnUser(sAllMatched);
@@ -253,31 +277,30 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 		dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.getName(), true);
 		dialog.setSideBarDescription(sSidebar);
 
-		dialog.addLayerComboBox(this.sLAYERBase, context.getCandidateLayer(0), null, context.getLayerManager());
+		dialog.addLayerComboBox(BASE_LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
 
-		List<String> listNumAttributesBase = AttributeTypeFilter.NUMERIC_FILTER.filter(context.getCandidateLayer(0));
-		Object valAttribute = listNumAttributesBase.size()>0?listNumAttributesBase.iterator().next():null;
-		final JComboBox<String> baseAttributeBox = dialog.addComboBox(this.sBaseLayerID, valAttribute, listNumAttributesBase, this.sBaseLayerID);
-		if (listNumAttributesBase.size() == 0) baseAttributeBox.setEnabled(false);
+		List<String> baseLayerAttributeList = NUMSTRING_FILTER.filter(context.getCandidateLayer(0));
+		String valBaseAttribute = baseLayerAttributeList.size()>0?baseLayerAttributeList.get(0):null;
+		final JComboBox<String> baseAttributeBox = dialog.addComboBox(BASE_LAYER_ID, valBaseAttribute, baseLayerAttributeList, BASE_LAYER_ID);
+		if (baseLayerAttributeList.size() == 0) baseAttributeBox.setEnabled(false);
 
 		dialog.addSeparator(); //----
 
-		dialog.addLayerComboBox(this.sLAYERwAttributes, context.getCandidateLayer(0), null, context.getLayerManager());
+		dialog.addLayerComboBox(JOIN_LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
 
-		List<String> listNumAttributesTable = AttributeTypeFilter.NUMERIC_FILTER.filter(context.getCandidateLayer(0));
-		String valAttributeStops = listNumAttributesTable.size()>0?listNumAttributesTable.iterator().next():null;
-		final JComboBox<String> tableAttributeBox = dialog.addComboBox(this.sTableLayerAttributeID, valAttributeStops, listNumAttributesTable, this.sTableLayerAttributeID);
-		if (listNumAttributesTable.size() == 0) tableAttributeBox.setEnabled(false);
+		List<String> joinLayerAttributeList = NUMSTRING_FILTER.filter(context.getCandidateLayer(0));
+		String valJoinAttribute = joinLayerAttributeList.size()>0?joinLayerAttributeList.get(0):null;
+		final JComboBox<String> tableAttributeBox = dialog.addComboBox(JOIN_LAYER_ID, valJoinAttribute, joinLayerAttributeList, JOIN_LAYER_ID);
+		if (joinLayerAttributeList.size() == 0) tableAttributeBox.setEnabled(false);
 
 		dialog.addSeparator(); //----
 		
 		dialog.addCheckBox(sDisplayUnmatched, displayUnmatched);
 		
 		// do listener stuff
-		dialog.getComboBox(this.sLAYERBase).addActionListener(new ActionListener() {
+		dialog.getComboBox(BASE_LAYER).addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				List<String> list = AttributeTypeFilter.NUMERIC_FILTER
-						.filter(dialog.getLayer(JoinTableFromExistingLayerPlugIn.this.sLAYERBase));
+				List<String> list = NUMSTRING_FILTER.filter(dialog.getLayer(BASE_LAYER));
 				if (list.size() == 0) {
 					baseAttributeBox.setModel(new DefaultComboBoxModel<>(new String[0]));
 					baseAttributeBox.setEnabled(false);
@@ -289,10 +312,9 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 			}
 		});        
 
-		dialog.getComboBox(this.sLAYERwAttributes).addActionListener(new ActionListener() {
+		dialog.getComboBox(JOIN_LAYER).addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				List<String> list = AttributeTypeFilter.NUMERIC_FILTER
-						.filter(dialog.getLayer(JoinTableFromExistingLayerPlugIn.this.sLAYERwAttributes));
+				List<String> list = NUMSTRING_FILTER.filter(dialog.getLayer(JOIN_LAYER));
 				if (list.size() == 0) {
 					tableAttributeBox.setModel(new DefaultComboBoxModel<>(new String[0]));
 					tableAttributeBox.setEnabled(false);
@@ -308,10 +330,10 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 	}
 
 	private void getDialogValues(MultiInputDialog dialog) {
-		this.inputBaseLayer =  dialog.getLayer(this.sLAYERBase);
-		this.inputTableLayer = dialog.getLayer(this.sLAYERwAttributes);
-		this.selBaseLayerAttribute = dialog.getText(this.sBaseLayerID);
-		this.selTableLayerJoinIDAttribute = dialog.getText(this.sTableLayerAttributeID);
+		this.baseLayer =  dialog.getLayer(BASE_LAYER);
+		this.joinLayer = dialog.getLayer(JOIN_LAYER);
+		this.baseLayerIdAttribute = dialog.getText(BASE_LAYER_ID);
+		this.joinLayerJoinAttribute = dialog.getText(JOIN_LAYER_ID);
 		this.displayUnmatched = dialog.getBoolean(sDisplayUnmatched);
 	}
 
