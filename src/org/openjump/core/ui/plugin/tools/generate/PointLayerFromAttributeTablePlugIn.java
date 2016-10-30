@@ -25,33 +25,17 @@
  * Stefan Steiniger
  * perriger@gmx.de
  */
-
-/*****************************************************
- * created:  		4.Sept.2012
- * last modified:			
- * 					
- * 
- * @author sstein
- * 
- * description: Plugin that extends line segments by closing the line towards a geometry 
- *              of another layer with polygons or lines using the shortest distance 
- *              connection (i.e. point-line distance)
- * 	
- *****************************************************/
-
 package org.openjump.core.ui.plugin.tools.generate;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
 
-import org.openjump.core.apitools.FeatureSchemaTools;
+import com.vividsolutions.jump.workbench.ui.AttributeTypeFilter;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -61,7 +45,6 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -74,15 +57,14 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 /**
- * @description: creates a new point layer from a attribute table where 
+ * Creates a new point layer from a attribute table where
  * two attributes are used as coordinates.   
  *	
  * @author sstein
- *
- **/
+ */
 public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn{
 
-    private String sSidebar =				I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.descriptiontext");   
+    private final String sSidebar =		    I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.descriptiontext");
     private final String sLAYER = 			I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Layer-with-attribute-table");
     private final String sXCoordAttrib = 	I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.select-attribute-with-East-coordinate");
     private final String sYCoordAttrib = 	I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.select-attribute-with-North-coordinate");
@@ -90,44 +72,37 @@ public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn
     private final String sHasZCoord = 		I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.data-have-a-z-coordinate-/-height-value");
     private final String sPointsFrom =		I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Points-from");
     
-    private FeatureCollection inputFC = null;
-    private Layer inputLayer= null;
+    private Layer inputLayer = null;
 
     private String selXAttribute = "";
     private String selYAttribute = "";
     private String selZAttribute = "";
     private boolean hasHeight = false;
-    
-    private MultiInputDialog dialog;
-    private JCheckBox zCheckBox = null;
-    private JComboBox Z_attributeBox = null;
-    
-    private PlugInContext context = null;
-        
+
 	public String getName() {
 		return I18N
 				.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn") + "...";
 	}
 	
     public void initialize(PlugInContext context) throws Exception {
-	        context.getFeatureInstaller().addMainMenuItem(
-	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE}, 	//menu path
-	                this,
-	                new JMenuItem( this.getName(), null),
-	                createEnableCheck(context.getWorkbenchContext()), -1);
+	        context.getFeatureInstaller().addMainMenuPlugin(
+	        		this,
+	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
+	                this.getName() + "...", false, null,
+	                createEnableCheck(context.getWorkbenchContext()),-1);
 	}
 	        
 	public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
 	            EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
 	            return new MultiEnableCheck()
-	                .add(checkFactory.createTaskWindowMustBeActiveCheck())
+	                .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck())
 	                .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
 	}
     
 	public boolean execute(PlugInContext context) throws Exception{
         //Unlike ValidatePlugIn, here we always call #initDialog because we want
         //to update the layer comboboxes.
-        initDialog(context);
+		MultiInputDialog dialog = initDialog(context);
         dialog.setVisible(true);
         if (!dialog.wasOKPressed()) {
             return false;
@@ -139,98 +114,94 @@ public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn
 	}
     
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception{            		
-	    	System.gc(); //flush garbage collector
-	    	this.context = context;
-	    	monitor.allowCancellationRequests();
-	    	int numTransfers = this.inputFC.size();
-	    	int i = 0;
-	    	int dXCoord = inputFC.getFeatureSchema().getAttributeIndex(this.selXAttribute);
-	    	int dYCoord = inputFC.getFeatureSchema().getAttributeIndex(this.selYAttribute);
-	    	int dZCoord = 0;
-	    	if(hasHeight){
-	    		dZCoord = inputFC.getFeatureSchema().getAttributeIndex(this.selZAttribute);
-	    	}
-	    	
-	    	FeatureCollection resultFC = new FeatureDataset((FeatureSchema)inputFC.getFeatureSchema().clone());
-	    	GeometryFactory gf = new GeometryFactory();
-	    	
-	    	for (Iterator iterator = inputFC.iterator(); iterator.hasNext();) {
-				Feature origFeature = (Feature) iterator.next();
-		    	monitor.report(i, numTransfers, I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.items-processed"));	
+		monitor.allowCancellationRequests();
+		FeatureCollection inputFC = inputLayer.getFeatureCollectionWrapper();
 
-		    	double xc = origFeature.getDouble(dXCoord);
-		    	double yc = origFeature.getDouble(dYCoord);
-		    	
-		    	Geometry pt = gf.createGeometryCollection(null);
-		    	if(hasHeight == false){
-		    		pt = gf.createPoint(new Coordinate(xc,yc));
-		    	}
-		    	else{
-			    	double zc = origFeature.getDouble(dZCoord);
-		    		pt = gf.createPoint(new Coordinate(xc,yc,zc));
-		    	}
-		    	Feature newFeature = origFeature.clone(true);
-		    	newFeature.setGeometry(pt);
-		    	resultFC.add(newFeature);
-		    	i++; //count feature processing (next transfer)
+	    int dXCoord = inputFC.getFeatureSchema().getAttributeIndex(selXAttribute);
+	    int dYCoord = inputFC.getFeatureSchema().getAttributeIndex(selYAttribute);
+	    int dZCoord = 0;
+	    if(hasHeight){
+			dZCoord = inputFC.getFeatureSchema().getAttributeIndex(selZAttribute);
+		}
+	    	
+		FeatureCollection resultFC = new FeatureDataset(inputFC.getFeatureSchema().clone());
+		GeometryFactory gf = new GeometryFactory();
+
+		int i = 0;
+		int numTransfers = inputFC.size();
+		for (Feature origFeature : inputFC.getFeatures()) {
+			monitor.report(i, numTransfers, I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.items-processed"));
+			if (origFeature.getAttribute(dXCoord) == null || origFeature.getAttribute(dYCoord) == null) {
+				continue;
 			}
-	    	
-	    	// show results
-	        if(resultFC.size() > 0){
-	        	context.addLayer(StandardCategoryNames.RESULT, sPointsFrom + " " + inputLayer.getName(), resultFC);
-	        }
-	    	//--
-	        System.gc();    		
-    	}
+			double xc = ((Number)origFeature.getAttribute(dXCoord)).doubleValue();
+			double yc = ((Number)origFeature.getAttribute(dYCoord)).doubleValue();
+			Coordinate coord = new Coordinate(xc, yc);
+			if (hasHeight && origFeature.getAttribute(dZCoord) != null) {
+				coord.z = ((Number)origFeature.getAttribute(dZCoord)).doubleValue();
+			}
+			Geometry pt = gf.createPoint(coord);
+			Feature newFeature = origFeature.clone(true);
+			newFeature.setGeometry(pt);
+			resultFC.add(newFeature);
+			i++; //count feature processing (next transfer)
+		}
 
-	private void initDialog(PlugInContext context) {
-		JComboBox layerComboBoxLayerSelection = null;
-		
-        dialog = new MultiInputDialog(context.getWorkbenchFrame(), I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Create-Point-Layer"), true);
+		// show results
+		if(resultFC.size() > 0){
+			context.addLayer(StandardCategoryNames.RESULT, sPointsFrom + " " + inputLayer.getName(), resultFC);
+		}
+	}
+
+	private MultiInputDialog initDialog(final PlugInContext context) {
+
+		MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
+				I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Create-Point-Layer"), true);
         dialog.setSideBarDescription(sSidebar);
-        
-        	layerComboBoxLayerSelection = dialog.addLayerComboBox(this.sLAYER, context.getCandidateLayer(0), null, context.getLayerManager());
+
+		dialog.addLayerComboBox(sLAYER, context.getCandidateLayer(0), null, context.getLayerManager());
           	
-            List listNumAttributesTransfers = FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(context.getCandidateLayer(0));
-            Object valAttribute = listNumAttributesTransfers.size()>0?listNumAttributesTransfers.iterator().next():null;
-            final JComboBox X_attributeBox = dialog.addComboBox(this.sXCoordAttrib, valAttribute, listNumAttributesTransfers, this.sXCoordAttrib);
-            if (listNumAttributesTransfers.size() == 0) X_attributeBox.setEnabled(false);
+		List<String> attributes = AttributeTypeFilter.NUMERIC_FILTER.filter(context.getCandidateLayer(0));
+		String valAttribute = attributes.size()>0?attributes.get(0):null;
+		final JComboBox<String> X_attributeBox = dialog.addComboBox(this.sXCoordAttrib, valAttribute, attributes, this.sXCoordAttrib);
+		if (attributes.size() == 0) X_attributeBox.setEnabled(false);
 
-            final JComboBox Y_attributeBox = dialog.addComboBox(this.sYCoordAttrib, valAttribute, listNumAttributesTransfers, this.sYCoordAttrib);
-            if (listNumAttributesTransfers.size() == 0) Y_attributeBox.setEnabled(false);
+		final JComboBox<String> Y_attributeBox = dialog.addComboBox(this.sYCoordAttrib, valAttribute, attributes, this.sYCoordAttrib);
+		if (attributes.size() == 0) Y_attributeBox.setEnabled(false);
 
-            dialog.addSeparator();
+		dialog.addSeparator();
             
-            zCheckBox = dialog.addCheckBox(sHasZCoord, hasHeight);
+		final JCheckBox zCheckBox = dialog.addCheckBox(sHasZCoord, hasHeight);
             
-            Z_attributeBox = dialog.addComboBox(this.sZCoordAttrib, valAttribute, listNumAttributesTransfers, this.sZCoordAttrib);
-            if (listNumAttributesTransfers.size() == 0) Z_attributeBox.setEnabled(false);
-            if (this.zCheckBox.isSelected() == false) Z_attributeBox.setEnabled(false);
+		final JComboBox<String> Z_attributeBox = dialog.addComboBox(this.sZCoordAttrib, valAttribute, attributes, this.sZCoordAttrib);
+		if (attributes.size() == 0) Z_attributeBox.setEnabled(false);
+		if (!zCheckBox.isSelected()) Z_attributeBox.setEnabled(false);
         
         zCheckBox.addActionListener(new ActionListener() {
  	        public void actionPerformed(ActionEvent e) {
- 	            updateControls();
- 	        }}); 
+				Z_attributeBox.setEnabled(zCheckBox.isSelected());
+				hasHeight = zCheckBox.isSelected();
+ 	        }});
             
         dialog.getComboBox(this.sLAYER).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                List list = getFieldsFromLayerWithoutGeometryAndStringTransfer();
+				List<String> list = AttributeTypeFilter.NUMERIC_FILTER.filter(context.getCandidateLayer(0));
                 if (list.size() == 0) {
-                	X_attributeBox.setModel(new DefaultComboBoxModel(new String[0]));
+                	X_attributeBox.setModel(new DefaultComboBoxModel<>(new String[0]));
                 	X_attributeBox.setEnabled(false);
-                	Y_attributeBox.setModel(new DefaultComboBoxModel(new String[0]));
+                	Y_attributeBox.setModel(new DefaultComboBoxModel<>(new String[0]));
                 	Y_attributeBox.setEnabled(false);
-                	Z_attributeBox.setModel(new DefaultComboBoxModel(new String[0]));
+                	Z_attributeBox.setModel(new DefaultComboBoxModel<>(new String[0]));
                 	Z_attributeBox.setEnabled(false);
                 }
                 else {
-                	X_attributeBox.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                	X_attributeBox.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
                 	X_attributeBox.setEnabled(true);
-                	Y_attributeBox.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                	Y_attributeBox.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
                 	Y_attributeBox.setEnabled(true);
-                	Z_attributeBox.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                	Z_attributeBox.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
                 	Z_attributeBox.setEnabled(true);
-                	if(hasHeight == false){
+                	if(!hasHeight){
                     	Z_attributeBox.setEnabled(false);
                 	}
                 }
@@ -238,33 +209,17 @@ public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn
         });        
        
         GUIUtil.centreOnWindow(dialog);
+		return dialog;
     }
-	
-	private void updateControls() {
-		//System.out.print("process update method: ");
-		if (this.zCheckBox.isSelected()){
-			this.Z_attributeBox.setEnabled(true);
-			this.hasHeight = true;
-		}
-		else{
-			this.Z_attributeBox.setEnabled(false);
-			this.hasHeight = false;
-		}
-	}
-    private void getDialogValues(MultiInputDialog dialog) {
-    	this.inputLayer =  dialog.getLayer(this.sLAYER);
-        this.selXAttribute = dialog.getText(this.sXCoordAttrib);
-        this.selYAttribute = dialog.getText(this.sYCoordAttrib);
-        this.hasHeight = dialog.getBoolean(sHasZCoord);
-        if(this.hasHeight){
-        	this.selZAttribute = dialog.getText(this.sZCoordAttrib);
-        }
-        
-    	this.inputFC= this.inputLayer.getFeatureCollectionWrapper(); 
-      }
 
-    private List getFieldsFromLayerWithoutGeometryAndStringTransfer() {
-        return FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(dialog.getLayer(this.sLAYER));
-    }
-	
+    private void getDialogValues(MultiInputDialog dialog) {
+		inputLayer    =  dialog.getLayer(sLAYER);
+		selXAttribute = dialog.getText(sXCoordAttrib);
+        selYAttribute = dialog.getText(sYCoordAttrib);
+        hasHeight = dialog.getBoolean(sHasZCoord);
+        if(hasHeight){
+        	selZAttribute = dialog.getText(sZCoordAttrib);
+        }
+	}
+
 }
