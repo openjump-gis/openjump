@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-10-30 ede
+  * autowrap Toolbar if the workbench frame gets too small to fit all entries
+    in one line
+
 2016-10-30 mmichaud <m.michael.michaud@orange.fr>
   * Statistic tools : clean code, extend capabilities, null handling
 

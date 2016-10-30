@@ -55,6 +55,7 @@ import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 
+import de.soldin.awt.WrapLayout;
 
 /**
  * Makes it easy to add CursorTools and PlugIns as toolbar buttons.
@@ -97,6 +98,7 @@ public class WorkbenchToolBar extends EnableableToolBar {
     public WorkbenchToolBar(LayerViewPanelProxy layerViewPanelProxy, ButtonGroup cursorToolButtonGroup) {
         this.cursorToolButtonGroup = cursorToolButtonGroup;
         this.layerViewPanelProxy = layerViewPanelProxy;
+        setLayout(new WrapLayout(WrapLayout.LEFT, 0, 0));
     }
 
     public void setCursorToolEnableCheck(EnableCheck cursorToolEnableCheck) {
