@@ -56,19 +56,20 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
  * Computes various statistics for selected layers.
  */
 public class LayerStatisticsPlugIn extends AbstractPlugIn {
+
     public LayerStatisticsPlugIn() {
     }
 
     public void initialize(PlugInContext context) throws Exception
     {
         	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    		featureInstaller.addMainMenuItem(
-    	        this,								//exe
-  				new String[] {MenuNames.TOOLS, MenuNames.STATISTICS}, 	//menu path
-                this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
+    		featureInstaller.addMainMenuPlugin(
+    	        this,
+  				new String[] {MenuNames.TOOLS, MenuNames.STATISTICS},
+                this.getName() + "...",
                 false,			//checkbox
                 null,			//icon
-                createEnableCheck(context.getWorkbenchContext())); //enable check  
+                createEnableCheck(context.getWorkbenchContext()));
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -90,8 +91,7 @@ public class LayerStatisticsPlugIn extends AbstractPlugIn {
         LayerStatistics totalStats = new LayerStatistics();
         Envelope totalEnv = new Envelope();
 
-        for (int i = 0; i < selectedLayers.length; i++) {
-            Layer layer = selectedLayers[i];
+        for (Layer layer : selectedLayers) {
             LayerStatistics ls = layerStatistics(layer, totalStats);
 
             out.addHeader(2, I18N.get("ui.plugin.LayerStatisticsPlugIn.layer")+" " + layer.getName());
@@ -184,7 +184,7 @@ public class LayerStatisticsPlugIn extends AbstractPlugIn {
         out.append("</table>");
     }
 
-    public class LayerStatistics {
+    private class LayerStatistics {
         boolean isFirst = true;
         int minCoord = 0;
         int maxCoord = 0;
@@ -203,7 +203,7 @@ public class LayerStatisticsPlugIn extends AbstractPlugIn {
         double totalLength = 0.0;
         int featureCount = 0;
 
-        public void addFeature(int coordCount, int holeCount, int compCount,
+        private void addFeature(int coordCount, int holeCount, int compCount,
             double area, double length) {
             featureCount++;
 
@@ -260,23 +260,23 @@ public class LayerStatisticsPlugIn extends AbstractPlugIn {
             isFirst = false;
         }
 
-        public double avgCoord() {
+        private double avgCoord() {
             return (featureCount == 0) ? 0.0 : ((double)totalCoord / featureCount);
         }
 
-        public double avgHoles() {
+        private double avgHoles() {
             return (featureCount == 0) ? 0.0 : ((double)totalHoles / featureCount);
         }
 
-        public double avgComp() {
+        private double avgComp() {
             return (featureCount == 0) ? 0.0 : ((double)totalComp / featureCount);
         }
 
-        public double avgArea() {
+        private double avgArea() {
             return (featureCount == 0) ? 0.0 : (totalArea / featureCount);
         }
 
-        public double avgLength() {
+        private double avgLength() {
             return (featureCount == 0) ? 0.0 : (totalLength / featureCount);
         }
     }

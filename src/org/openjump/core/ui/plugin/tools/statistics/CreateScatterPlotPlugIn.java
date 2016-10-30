@@ -47,7 +47,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 
-import org.openjump.core.apitools.FeatureSchemaTools;
+import com.vividsolutions.jump.workbench.ui.*;
 import org.openjump.core.ui.plot.Plot2DPanelOJ;
 
 import com.vividsolutions.jump.I18N;
@@ -63,18 +63,11 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.GenericNames;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class CreateScatterPlotPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
 
-    private static String pluginname = "classifyplot";
     private String sScatterPlot = "Scatter-Plot";
-    
-    private MultiInputDialog dialog;
     
     private String CLAYER = "select layer";
     private String ATTRIBUTEA = "Select-attribute-for-east-axis";
@@ -96,17 +89,17 @@ public class CreateScatterPlotPlugIn extends AbstractPlugIn implements ThreadedP
         ATTRIBUTEB = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Select-attribute-for-north-axis");
         CLAYER = GenericNames.SELECT_LAYER;
         sScatterPlot = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Scatter-Plot");
-        sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Create-Scatter-Plot");
+        sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn");
         sWrongDataType = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
 		
 		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-		featureInstaller.addMainMenuItem(
-				this,                               //exe
+		featureInstaller.addMainMenuPlugin(
+				this,
     			new String[] {MenuNames.TOOLS, MenuNames.STATISTICS, MenuNames.PLOT },
-    			this.sName + "...", //name methode .getName recieved by AbstractPlugIn 
+    			this.sName + "...",
 				false,          //checkbox
 				null,           //icon
-				createEnableCheck(context.getWorkbenchContext())); //enable check   
+				createEnableCheck(context.getWorkbenchContext()));
 	}
     
     /**
@@ -132,7 +125,7 @@ public class CreateScatterPlotPlugIn extends AbstractPlugIn implements ThreadedP
     	
         this.reportNothingToUndoYet(context);         
         
-            dialog = new MultiInputDialog(
+            MultiInputDialog dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(), sName, true);
             this.setDialogValues(dialog, context);
             GUIUtil.centreOnWindow(dialog);
@@ -148,44 +141,43 @@ public class CreateScatterPlotPlugIn extends AbstractPlugIn implements ThreadedP
 		
 	}
     
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
-      {
+    private void setDialogValues(final MultiInputDialog dialog, PlugInContext context) {
+
         dialog.addLayerComboBox(CLAYER, context.getCandidateLayer(0), context.getLayerManager());
         
-        List list = FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(context.getCandidateLayer(0));
-        Object valA = list.size()>0?list.iterator().next():null;
-        Object valB = list.size()>0?list.iterator().next():null;
-        final JComboBox jcb_attributeA = dialog.addComboBox(ATTRIBUTEA, valA, list,ATTRIBUTEA);
-        if (list.size() == 0) jcb_attributeA.setEnabled(false);
-        final JComboBox jcb_attributeB = dialog.addComboBox(ATTRIBUTEB, valB, list,ATTRIBUTEB);
-            if (list.size() == 0) jcb_attributeB.setEnabled(false);        
+        List<String> attributes = AttributeTypeFilter.NUMERIC_FILTER.filter(context.getCandidateLayer(0));
+        String attA = attributes.size()>0?attributes.get(0):null;
+        String attB = attributes.size()>0?attributes.get(0):null;
+        final JComboBox<String> jcb_attributeA = dialog.addComboBox(ATTRIBUTEA, attA, attributes ,ATTRIBUTEA);
+        if (attributes.size() == 0) jcb_attributeA.setEnabled(false);
+        final JComboBox<String> jcb_attributeB = dialog.addComboBox(ATTRIBUTEB, attB, attributes, ATTRIBUTEB);
+        if (attributes.size() == 0) jcb_attributeB.setEnabled(false);
         
         dialog.getComboBox(CLAYER).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                List list = getFieldsFromLayerWithoutGeometryAndString();
+                List<String> list = AttributeTypeFilter.NUMERIC_FILTER.filter(dialog.getLayer(CLAYER));
                 if (list.size() == 0) {
-                    jcb_attributeA.setModel(new DefaultComboBoxModel(new String[0]));
+                    jcb_attributeA.setModel(new DefaultComboBoxModel<>(new String[0]));
                     jcb_attributeA.setEnabled(false);
                 }
-                jcb_attributeA.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                jcb_attributeA.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
             }            
         });
 
         dialog.getComboBox(CLAYER).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                List list = getFieldsFromLayerWithoutGeometryAndString();
+                List<String> list = AttributeTypeFilter.NUMERIC_FILTER.filter(dialog.getLayer(CLAYER));
                 if (list.size() == 0) {
-                    jcb_attributeB.setModel(new DefaultComboBoxModel(new String[0]));
+                    jcb_attributeB.setModel(new DefaultComboBoxModel<>(new String[0]));
                     jcb_attributeB.setEnabled(false);
                 }
-                jcb_attributeB.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                jcb_attributeB.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
             }            
         });        
 
       }
 
     private void getDialogValues(MultiInputDialog dialog) {
-        //this.itemlayer = dialog.getLayer(this.CLAYER);
         this.selLayer = dialog.getLayer(CLAYER);
         this.fc = this.selLayer.getFeatureCollectionWrapper();
         this.selAttributeA = dialog.getText(ATTRIBUTEA);
@@ -195,19 +187,11 @@ public class CreateScatterPlotPlugIn extends AbstractPlugIn implements ThreadedP
     private boolean createPlot(final PlugInContext context, Layer selLayer) throws Exception {
         
         FeatureSchema fs = this.fc.getFeatureSchema();
-        AttributeType typeA = null;
-        AttributeType typeB = null;
-        if (((fs.getAttributeType(this.selAttributeA) == AttributeType.DOUBLE) || 
-                (fs.getAttributeType(this.selAttributeA) == AttributeType.INTEGER)) &&
-                ((fs.getAttributeType(this.selAttributeB) == AttributeType.DOUBLE) || 
-                        (fs.getAttributeType(this.selAttributeB) == AttributeType.INTEGER)))
-                {
-            //move on
-            typeA = fs.getAttributeType(this.selAttributeA);
-            typeB = fs.getAttributeType(this.selAttributeB);
-        }
-        else{
-            //System.out.println("CreateScatterPlotPlugIn: wrong datatype of chosen attribute");
+        AttributeType typeA = fs.getAttributeType(this.selAttributeA);
+        AttributeType typeB = fs.getAttributeType(this.selAttributeB);
+        if ((typeA != AttributeType.DOUBLE && typeA != AttributeType.INTEGER && typeA != AttributeType.LONG)
+            ||
+            (typeB != AttributeType.DOUBLE && typeB != AttributeType.INTEGER && typeB != AttributeType.LONG)) {
 			context.getWorkbenchFrame().warnUser(sWrongDataType);
             return false;
         }
@@ -219,27 +203,17 @@ public class CreateScatterPlotPlugIn extends AbstractPlugIn implements ThreadedP
             Feature f = (Feature) iter.next();
             fID[i] = f.getID();
             Object valA = f.getAttribute(this.selAttributeA);
-            Object valB = f.getAttribute(this.selAttributeB);            
-            if (typeA == AttributeType.DOUBLE){
-                data[0][i] = ((Double)valA).doubleValue();
+            Object valB = f.getAttribute(this.selAttributeB);
+            if (valA instanceof Number) { // triplecheck as typeA is numeric
+                data[0][i] = ((Number)valA).doubleValue();
             }
-            else if (typeA == AttributeType.INTEGER){
-                data[0][i] = ((Integer)valA).intValue();
+            if (valB instanceof Number) { // triplecheck as typeB is numeric
+                data[1][i] = ((Number)valB).doubleValue();
             }
-            
-            if (typeB == AttributeType.DOUBLE){
-                data[1][i] = ((Double)valB).doubleValue();
-            }
-            else if (typeB == AttributeType.INTEGER){
-                data[1][i] = ((Integer)valB).intValue();
-            }                           
             i++;
         } 
-        
-        //double[] data2 = { 45, 89, 6, 32, 63, 12 };
-        
+
         final Plot2DPanelOJ plot = new Plot2DPanelOJ();
-        //plot.addScatterPlot("Scatter Plot", data);
         plot.addScatterPlotOJ(sScatterPlot, data, fID, context, selLayer);
         plot.plotToolBar.setVisible(true);
         plot.setAxisLabel(0, this.selAttributeA);
@@ -258,10 +232,6 @@ public class CreateScatterPlotPlugIn extends AbstractPlugIn implements ThreadedP
         
         context.getWorkbenchFrame().addInternalFrame(frame);
         return true;
-    }
-    
-    private List getFieldsFromLayerWithoutGeometryAndString() {
-        return FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(dialog.getLayer(CLAYER));
     }
     
 }

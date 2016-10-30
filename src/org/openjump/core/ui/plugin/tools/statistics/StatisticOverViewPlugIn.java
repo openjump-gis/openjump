@@ -27,8 +27,6 @@
  */
 package org.openjump.core.ui.plugin.tools.statistics;
 
-import javax.swing.ImageIcon;
-
 import org.openjump.core.apitools.FeatureCollectionTools;
 
 import com.vividsolutions.jump.I18N;
@@ -41,8 +39,6 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
 
 /**
@@ -54,14 +50,13 @@ import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
  */
 public class StatisticOverViewPlugIn extends AbstractPlugIn{
     
-    private WorkbenchContext workbenchContext;
-    
-    String sStatisticsOverview=I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Attribute-Statistics-Overview");
+    private static final String sStatisticsOverview =
+            I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Attribute-Statistics-Overview");
 	
     public void initialize(PlugInContext context) throws Exception
     {     
-        workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuItem(
+        WorkbenchContext workbenchContext = context.getWorkbenchContext();
+        context.getFeatureInstaller().addMainMenuPlugin(
         		this, 
 				new String[] { MenuNames.TOOLS, MenuNames.STATISTICS}, 
 				this.getName() + "...", 
@@ -87,18 +82,9 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn{
     public boolean execute(PlugInContext context) throws Exception {
         
         Layer layer = context.getSelectedLayer(0);
-        /* -- [sstein] not needed due to enableCheck settings 
-        if (layer==null){
-            context.getWorkbenchFrame().warnUser(I18N.get("no-layer-selected"));
-        }
-        */
         FeatureCollection featureColl = layer.getFeatureCollectionWrapper().getWrappee();
         Feature[] features = FeatureCollectionTools.FeatureCollection2FeatureArray(featureColl);
-        /* -- [sstein] not needed as we get the stats for the full layer
-        if (features==null || features.length==0){
-        	context.getWorkbenchFrame().warnUser(I18N.get("no-features-in-selection"));
-        }
-        */
+
         // mmichaud fix bug 3229892 (2011-04-05)
         if (features.length == 0) {
             context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
@@ -114,7 +100,7 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn{
     public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) 
     {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
                                      .add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1));
     } 
 }

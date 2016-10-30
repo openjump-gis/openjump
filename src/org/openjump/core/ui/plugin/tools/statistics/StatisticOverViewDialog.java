@@ -43,27 +43,23 @@ public class StatisticOverViewDialog extends JDialog implements ActionListener {
 
     private static final long serialVersionUID = 6715515050854850413L;
 
-    //protected OkCancelButtonPanel okCancelButtonPanel = null;
-    protected OKCancelPanel okButtonPanel = null;
-    protected JTable table = null;
-    protected StatisticOverViewTableModel tableModel = null;
 
     /**
-     *@param parentFrame
-     *@param title
-     *@param modal
+     *@param parentFrame the parent frame of this dialog box
+     *@param title title of this dialog box
+     *@param modal whether the dialog box is modal or not
      *@throws java.awt.HeadlessException
      */
     public StatisticOverViewDialog(Frame parentFrame, String title, boolean modal, Feature[] features)
             throws HeadlessException {
         super(parentFrame, title, modal);
+
+        StatisticOverViewTableModel tableModel = new StatisticOverViewTableModel(features);
         
-        this.tableModel = new StatisticOverViewTableModel(features);
-        
-        this.setupGUI();
+        this.setupGUI(tableModel);
     }
     
-    protected void setupGUI(){
+    private void setupGUI(StatisticOverViewTableModel tableModel){
         JPanel content = new JPanel();
         
         BorderLayout bl = new BorderLayout();
@@ -72,22 +68,18 @@ public class StatisticOverViewDialog extends JDialog implements ActionListener {
         content.setLayout(bl);
         
         //-- [sstein] replace line by line below
-        //this.table = new JTable(this.tableModel); 
-        this.table = new JTable((TableModel)this.tableModel);
-        //this.table.setIntercellSpacing(new Dimension(10,10));
-        this.table.setRowHeight(22);
+        JTable table = new JTable(tableModel);
+        table.setRowHeight(22);
 
-        JScrollPane scrollPane = new JScrollPane(this.table);
+        JScrollPane scrollPane = new JScrollPane(table);
         table.setPreferredScrollableViewportSize(new Dimension(500, 300));
         
         content.add(scrollPane, BorderLayout.CENTER);
+
+        OKCancelPanel okButtonPanel = new OKCancelPanel();
+        okButtonPanel.addActionListener(this);
         
-        
-        //this.okButtonPanel = new OkCancelButtonPanel();
-        this.okButtonPanel = new OKCancelPanel();
-        this.okButtonPanel.addActionListener(this);
-        
-		content.add(this.okButtonPanel,BorderLayout.SOUTH);
+		content.add(okButtonPanel,BorderLayout.SOUTH);
 		
         content.doLayout();
         
