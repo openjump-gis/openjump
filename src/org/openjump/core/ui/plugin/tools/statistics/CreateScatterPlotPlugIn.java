@@ -112,7 +112,7 @@ public class CreateScatterPlotPlugIn extends AbstractPlugIn implements ThreadedP
 
         return new MultiEnableCheck()
                         .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-                        .add(checkFactory.createTaskWindowMustBeActiveCheck());
+                        .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck());
     }
     
     /**
@@ -199,8 +199,7 @@ public class CreateScatterPlotPlugIn extends AbstractPlugIn implements ThreadedP
         double[][] data = new double[2][this.fc.size()];
         int[] fID = new int[this.fc.size()];
         int i=0;
-        for (Iterator iter = fc.iterator(); iter.hasNext();) {
-            Feature f = (Feature) iter.next();
+        for (Feature f : fc.getFeatures()) {
             fID[i] = f.getID();
             Object valA = f.getAttribute(this.selAttributeA);
             Object valB = f.getAttribute(this.selAttributeB);

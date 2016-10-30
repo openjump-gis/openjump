@@ -25,29 +25,18 @@
  * Stefan Steiniger
  * perriger@gmx.de
  */
-/***********************************************
- * created on 		19.10.2007
- * last modified: 	
- * 
- * author:			sstein
- * 
- * description:
- * 
- * 
- ***********************************************/
 package org.openjump.core.ui.plugin.tools.statistics;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 
-import org.openjump.core.apitools.FeatureSchemaTools;
+import com.vividsolutions.jump.workbench.ui.*;
 import org.openjump.core.ui.plot.Plot2DPanelOJ;
 
 import com.vividsolutions.jump.I18N;
@@ -63,31 +52,27 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.GenericNames;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
+/**
+ *
+ * created on 		19.10.2007
+ * @author 			sstein
+ */
 public class CreateHistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
 
     private String sHistogram = "Histogram";
     private String sCount = "count";
-    
-    private MultiInputDialog dialog;
-    
+
     private String T2 ="number of ranges";
     private String CLAYER = "select layer";
     private String ATTRIBUTE = "select attribute";
     private Layer selLayer = null;
     private int ranges = 7; 
-    private FeatureCollection fc = null;
     private String selAttribute = null;
     private String sName = "Create Histogram Plot";
     private String sWrongDataType = "Wrong datatype of chosen attribute";
-    
-	//File selFile = null;
-	
+
     /**
      * this method is called on the startup by JUMP/OpenJUMP.
      * We set here the menu entry for calling the function.
@@ -100,17 +85,17 @@ public class CreateHistogramPlugIn extends AbstractPlugIn implements ThreadedPlu
         CLAYER = GenericNames.SELECT_LAYER;
         sHistogram = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Histogram-Plot");
         sCount = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.count");
-        sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Create-Histogram-Plot");
+        sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn");
 		sWrongDataType = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");	
     	
     	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    	featureInstaller.addMainMenuItem(
-    			this,                               //exe
+    	featureInstaller.addMainMenuPlugin(
+    			this,
     			new String[] {MenuNames.TOOLS, MenuNames.STATISTICS, MenuNames.PLOT },
-    			this.sName + "...", //name methode .getName recieved by AbstractPlugIn 
+    			this.sName + "...",
     			false,          //checkbox
     			null,           //icon
-    			createEnableCheck(context.getWorkbenchContext())); //enable check   
+    			createEnableCheck(context.getWorkbenchContext()));
     }
  
     
@@ -124,7 +109,7 @@ public class CreateHistogramPlugIn extends AbstractPlugIn implements ThreadedPlu
 
         return new MultiEnableCheck()
                         .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-                        .add(checkFactory.createTaskWindowMustBeActiveCheck());
+                        .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck());
     }
     
     /**
@@ -137,7 +122,7 @@ public class CreateHistogramPlugIn extends AbstractPlugIn implements ThreadedPlu
     	
         this.reportNothingToUndoYet(context);         
         
-            dialog = new MultiInputDialog(
+            MultiInputDialog dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(),sName, true);
             this.setDialogValues(dialog, context);
             GUIUtil.centreOnWindow(dialog);
@@ -153,72 +138,61 @@ public class CreateHistogramPlugIn extends AbstractPlugIn implements ThreadedPlu
 		
 	}
     
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
+    private void setDialogValues(final MultiInputDialog dialog, PlugInContext context)
       {
         dialog.addLayerComboBox(CLAYER, context.getCandidateLayer(0), context.getLayerManager());
         
-        List list = FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(context.getCandidateLayer(0));
+        List<String> list = AttributeTypeFilter.NUMERIC_FILTER.filter(context.getCandidateLayer(0));
         Object val = list.size()>0?list.iterator().next():null;
-        final JComboBox jcb_attribute = dialog.addComboBox(ATTRIBUTE, val, list,ATTRIBUTE);
+        final JComboBox<String> jcb_attribute = dialog.addComboBox(ATTRIBUTE, val, list, ATTRIBUTE);
         if (list.size() == 0) jcb_attribute.setEnabled(false);        
         dialog.addIntegerField(T2, this.ranges, 6, T2);
         
         dialog.getComboBox(CLAYER).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                List list = getFieldsFromLayerWithoutGeometryAndString();
+                List<String> list = AttributeTypeFilter.NUMERIC_FILTER.filter(dialog.getLayer(CLAYER));
                 if (list.size() == 0) {
-                    jcb_attribute.setModel(new DefaultComboBoxModel(new String[0]));
+                    jcb_attribute.setModel(new DefaultComboBoxModel<>(new String[0]));
                     jcb_attribute.setEnabled(false);
                 }
-                jcb_attribute.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                jcb_attribute.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
             }
         });        
       }
 
     private void getDialogValues(MultiInputDialog dialog) {
-        //this.itemlayer = dialog.getLayer(this.CLAYER);
         this.ranges = dialog.getInteger(T2);
         this.selLayer = dialog.getLayer(CLAYER);
-        this.fc = this.selLayer.getFeatureCollectionWrapper();
         this.selAttribute = dialog.getText(ATTRIBUTE);
       }
     
     private boolean createHistogram(final PlugInContext context, Layer selLayer) throws Exception {
-        
-        FeatureSchema fs = this.fc.getFeatureSchema();
-        AttributeType type = null;
-        if ((fs.getAttributeType(this.selAttribute) == AttributeType.DOUBLE) || 
-                (fs.getAttributeType(this.selAttribute) == AttributeType.INTEGER)){
-            //-- move on
-            type = fs.getAttributeType(this.selAttribute);
-        }
-        else{
-            //System.out.println("CreateHistogramPlugIn: wrong datatype of chosen attribute");
+
+        FeatureCollection fc = selLayer.getFeatureCollectionWrapper();
+        FeatureSchema fs = fc.getFeatureSchema();
+        AttributeType type = fs.getAttributeType(selAttribute);
+        if (type != AttributeType.DOUBLE && type != AttributeType.INTEGER && type != AttributeType.LONG) {
 			context.getWorkbenchFrame().warnUser(sWrongDataType);
             return false;
         }
         
-        double[] data = new double[this.fc.size()];
+        double[] data = new double[fc.size()];
         int i=0;
-        for (Iterator iter = fc.iterator(); iter.hasNext();) {
-            Feature f = (Feature) iter.next();
+        for (Feature f : fc.getFeatures()) {
             Object val = f.getAttribute(this.selAttribute);
-            if (type == AttributeType.DOUBLE){
-                data[i] = ((Double)val).doubleValue();
+            if (val instanceof Number) {
+                data[i] = ((Number) val).doubleValue();
+                i++;
             }
-            else if (type == AttributeType.INTEGER){
-                data[i] = ((Integer)val).doubleValue();
-            }               
-            i++;
-        } 
-        
-        //double[] data2 = { 45, 89, 6, 32, 63, 12 };
-        
+        }
+        double[] data2 = new double[i];
+        System.arraycopy(data,0,data2,0,i);
+
         final Plot2DPanelOJ plot = new Plot2DPanelOJ();
-        plot.addHistogramPlotOJ(this.selAttribute, data, this.ranges, context, selLayer, this.selAttribute);
+        plot.addHistogramPlotOJ(selAttribute, data2, ranges, context, selLayer, selAttribute);
         plot.plotToolBar.setVisible(true);
-        plot.setAxisLabel(0, this.selAttribute);
-        plot.setAxisLabel(1, this.sCount);
+        plot.setAxisLabel(0, selAttribute);
+        plot.setAxisLabel(1, sCount);
         
         // FrameView fv = new FrameView(plot);
         // -- replace the upper line by:
@@ -230,65 +204,9 @@ public class CreateHistogramPlugIn extends AbstractPlugIn implements ThreadedPlu
         frame.setMaximizable(true);
         frame.setSize(450, 450);
         frame.setVisible(true);
-        
-        /**********************************************/
- 
-/*        JMenuBar menuBar = new JMenuBar();
-        frame.setJMenuBar(menuBar);
-        JMenu mTools = new JMenu("Tools");
-        menuBar.add(mTools);
-        
-        mTools.add(new AbstractAction("Save Image as PNG File", IconLoader.icon("disk.png")) { 
-        	        public void actionPerformed(ActionEvent e){
-        	        	java.io.File file = CreateHistogramPlugIn.selectFile(context);
-        	        	if (file != null){
-	                   		try {
-	                			System.out.println("CreateHistogramPlugIn: write grahics file");
-	                			plot.toGraphicFile(file);
-	                		} catch (IOException ex) {
-	                			JOptionPane.showConfirmDialog(null, "Save failed : " + ex.getMessage(), "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-	                		}
-	        	        } 
-        	        	else{
-        	        		JOptionPane.showConfirmDialog(null, "Save failed : " + "file not found", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-        	        	}
-        	        }
-        	  });
-        	  */
-        
-        
-        /**********************************************/
+
         context.getWorkbenchFrame().addInternalFrame(frame);
         return true;
     }
 
-    private List getFieldsFromLayerWithoutGeometryAndString() {
-        return FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(dialog.getLayer(CLAYER));
-    }
-    
-/*	public static File selectFile(PlugInContext context){
-		JFileChooser fc = GUIUtil.createJFileChooserWithOverwritePrompting("png");
-		// Show save dialog; this method does not return until the dialog is closed
-		fc.showSaveDialog(context.getWorkbenchFrame());
-		File file = fc.getSelectedFile();
-		try{
-			String name = file.getPath();		
-			name = CreateHistogramPlugIn.addExtension(name,"png");
-			File newFile = new File(name);
-			return newFile;
-		}
-		catch(Exception e){			
-			return null;
-		}
-	}
-	
-    private static String addExtension(String path, String extension) {
-        if (path.toUpperCase().endsWith(extension.toUpperCase())) {
-            return path;
-        }
-        if (path.endsWith(".")) {
-            return path + extension;
-        }
-        return path + "." + extension;
-    }*/
 }

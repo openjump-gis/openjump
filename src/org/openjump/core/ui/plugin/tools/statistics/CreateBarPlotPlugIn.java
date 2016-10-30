@@ -40,15 +40,13 @@ package org.openjump.core.ui.plugin.tools.statistics;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 
-import org.openjump.core.apitools.FeatureSchemaTools;
+import com.vividsolutions.jump.workbench.ui.*;
 import org.openjump.core.ui.plot.Plot2DPanelOJ;
 
 import com.vividsolutions.jump.I18N;
@@ -64,10 +62,6 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.GenericNames;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class CreateBarPlotPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
@@ -75,18 +69,13 @@ public class CreateBarPlotPlugIn extends AbstractPlugIn implements ThreadedPlugI
     private String sBarPlot = "Bar-Plot";
     private String sNthfeature = "n-th feature";
     
-    private MultiInputDialog dialog;
-    
     private String CLAYER = "select layer";
     private String ATTRIBUTE = "select attribute";
     private Layer selLayer = null; 
-    private FeatureCollection fc = null;
     private String selAttribute = null;
     private String sName = "Create Bar Plot";
     private String sWrongDataType = "Wrong datatype of chosen attribute";
-    
-	File selFile = null;
-	
+
     /**
      * this method is called on the startup by JUMP/OpenJUMP.
      * We set here the menu entry for calling the function.
@@ -97,17 +86,17 @@ public class CreateBarPlotPlugIn extends AbstractPlugIn implements ThreadedPlugI
 		CLAYER = GenericNames.SELECT_LAYER;
 		sBarPlot = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Bar-Plot");
 		sNthfeature = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.n-th-feature");
-		sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Create-Bar-Plot");
+		sName = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn");
 		sWrongDataType = I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
 		
 		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-		featureInstaller.addMainMenuItem(
-				this,                               //exe
-				new String[] {MenuNames.TOOLS, MenuNames.STATISTICS, MenuNames.PLOT },     //menu path
-				this.sName + "...", //name methode .getName recieved by AbstractPlugIn 
+		featureInstaller.addMainMenuPlugin(
+				this,
+				new String[] {MenuNames.TOOLS, MenuNames.STATISTICS, MenuNames.PLOT },
+				this.sName + "...",
 				false,          //checkbox
 				null,           //icon
-				createEnableCheck(context.getWorkbenchContext())); //enable check   
+				createEnableCheck(context.getWorkbenchContext()));
 
 	}
     
@@ -121,7 +110,7 @@ public class CreateBarPlotPlugIn extends AbstractPlugIn implements ThreadedPlugI
 
         return new MultiEnableCheck()
                         .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-                        .add(checkFactory.createTaskWindowMustBeActiveCheck());
+                        .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck());
     }
     
     /**
@@ -134,7 +123,7 @@ public class CreateBarPlotPlugIn extends AbstractPlugIn implements ThreadedPlugI
     	
         this.reportNothingToUndoYet(context);         
         
-            dialog = new MultiInputDialog(
+            MultiInputDialog dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(), sName, true);
             this.setDialogValues(dialog, context);
             GUIUtil.centreOnWindow(dialog);
@@ -150,70 +139,61 @@ public class CreateBarPlotPlugIn extends AbstractPlugIn implements ThreadedPlugI
 		
 	}
     
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
-      {
+    private void setDialogValues(final MultiInputDialog dialog, PlugInContext context) {
+
         dialog.addLayerComboBox(CLAYER, context.getCandidateLayer(0), context.getLayerManager());
         
-        List list = FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(context.getCandidateLayer(0));
-        Object val = list.size()>0?list.iterator().next():null;
-        final JComboBox jcb_attribute = dialog.addComboBox(ATTRIBUTE, val, list, ATTRIBUTE);
-        if (list.size() == 0) jcb_attribute.setEnabled(false);        
-        //dialog.addIntegerField(T2, this.ranges, 6, T2);
-        
+        List<String> list = AttributeTypeFilter.NUMERIC_FILTER.filter(context.getCandidateLayer(0));
+        String val = list.size()>0?list.get(0):null;
+        final JComboBox<String> jcb_attribute = dialog.addComboBox(ATTRIBUTE, val, list, ATTRIBUTE);
+        if (list.size() == 0) jcb_attribute.setEnabled(false);
+
         dialog.getComboBox(CLAYER).addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                List list = getFieldsFromLayerWithoutGeometryAndString();
+                List<String> list = AttributeTypeFilter.NUMERIC_FILTER.filter(dialog.getLayer(CLAYER));
                 if (list.size() == 0) {
-                    jcb_attribute.setModel(new DefaultComboBoxModel(new String[0]));
+                    jcb_attribute.setModel(new DefaultComboBoxModel<>(new String[0]));
                     jcb_attribute.setEnabled(false);
                 }
-                jcb_attribute.setModel(new DefaultComboBoxModel(list.toArray(new String[0])));
+                jcb_attribute.setModel(new DefaultComboBoxModel<>(list.toArray(new String[0])));
             }
         });        
       }
 
     private void getDialogValues(MultiInputDialog dialog) {
-        //this.itemlayer = dialog.getLayer(this.CLAYER);
         this.selLayer = dialog.getLayer(CLAYER);
-        this.fc = this.selLayer.getFeatureCollectionWrapper();
         this.selAttribute = dialog.getText(ATTRIBUTE);
       }
     
     private boolean createPlot(final PlugInContext context, Layer selLayer) throws Exception {
-        
-        FeatureSchema fs = this.fc.getFeatureSchema();
-        AttributeType type = null;
-        if ((fs.getAttributeType(this.selAttribute) == AttributeType.DOUBLE) || 
-                (fs.getAttributeType(this.selAttribute) == AttributeType.INTEGER)){
-            //-- move on
-            type = fs.getAttributeType(this.selAttribute);
-        }
-        else{
-            //System.out.println("CreateBarPlotPlugIn: wrong datatype of chosen attribute");
-			context.getWorkbenchFrame().warnUser(sWrongDataType);
+
+        FeatureCollection fc = selLayer.getFeatureCollectionWrapper();
+        FeatureSchema fs = fc.getFeatureSchema();
+        AttributeType type = fs.getAttributeType(selAttribute);
+        if (type != AttributeType.DOUBLE && type != AttributeType.INTEGER && type != AttributeType.LONG) {
+            context.getWorkbenchFrame().warnUser(sWrongDataType);
             return false;
         }
         
-        double[] data = new double[this.fc.size()];
-        int[] fID = new int[this.fc.size()];
+        double[] data = new double[fc.size()];
+        int[] fID = new int[fc.size()];
         int i=0;
-        for (Iterator iter = fc.iterator(); iter.hasNext();) {
-            Feature f = (Feature) iter.next();
-            fID[i] = f.getID();
+        for (Feature f : fc.getFeatures()) {
             Object val = f.getAttribute(this.selAttribute);
-            if (type == AttributeType.DOUBLE){
-                data[i] = ((Double)val).doubleValue();
+            if (val == null) continue;
+            if (val instanceof Number) {
+                data[i] = ((Number) val).doubleValue();
+                fID[i] = f.getID();
+                i++;
             }
-            else if (type == AttributeType.INTEGER){
-                data[i] = ((Integer)val).intValue();
-            }               
-            i++;
-        } 
-        
-        //double[] data2 = { 45, 89, 6, 32, 63, 12 };
-        
+        }
+        double[] data2 = new double[i];
+        System.arraycopy(data,0,data2,0,i);
+        int[] fID2 = new int[i];
+        System.arraycopy(fID,0,fID2,0,i);
+
         final Plot2DPanelOJ plot = new Plot2DPanelOJ();                
-        plot.addBarPlotOJ(this.selAttribute, data, fID, context, selLayer);
+        plot.addBarPlotOJ(this.selAttribute, data2, fID2, context, selLayer);
         plot.plotToolBar.setVisible(true);
         plot.setAxisLabel(0, sNthfeature);
         plot.setAxisLabel(1, this.selAttribute);
@@ -230,17 +210,7 @@ public class CreateBarPlotPlugIn extends AbstractPlugIn implements ThreadedPlugI
         frame.setVisible(true);
         
         context.getWorkbenchFrame().addInternalFrame(frame);
-        /*
-        if (plotDialog==null) {
-            plotDialog = new PlotDialog(context, this.selAttribute, data, this.ranges);
-        }
-        else {plotDialog.setVisible(true);}
-        */
         return true;
     }
-    
-    private List getFieldsFromLayerWithoutGeometryAndString() {
-        return FeatureSchemaTools.getFieldsFromLayerWithoutGeometryAndString(dialog.getLayer(CLAYER));
-    }
-    
+
 }

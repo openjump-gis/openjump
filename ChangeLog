@@ -4,7 +4,7 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2016-10-30 mmichaud <m.michael.michaud@orange.fr>
-  * CalcVarianceAndMeanPerClassPlugIn : clean code and extends capabilities
+  * Statistic tools : clean code, extend capabilities, null handling
 
 2016-10-29 mmichaud <m.michael.michaud@orange.fr>
   * Fix editablePlugIn when AttributeTable or InfoFrame are opened
