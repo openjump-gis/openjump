@@ -9,6 +9,7 @@
 
 2016-10-30 mmichaud <m.michael.michaud@orange.fr>
   * Statistic tools : clean code, extend capabilities, null handling
+  * Fix dialog box in PlanarGraphPlugIn
 
 2016-10-29 mmichaud <m.michael.michaud@orange.fr>
   * Fix editablePlugIn when AttributeTable or InfoFrame are opened
