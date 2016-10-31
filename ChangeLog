@@ -3,6 +3,13 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-10-31 Giuseppe Aruta
+  * October Sextante sprint code:
+    - Added Sextante Data Exploere and Pick Coordinates plugins
+    - Better integration between OpenJUMP and Sextante data model
+    - Upgraded documentation with a new help dialog style
+    - Fix bugs #410 and #427
+
 2016-10-30 ede
   * autowrap Toolbar if the workbench frame gets too small to fit all entries
     in one line
