@@ -5,7 +5,7 @@
 
 2016-10-31 Giuseppe Aruta
   * October Sextante sprint code:
-    - Added Sextante Data Exploere and Pick Coordinates plugins
+    - Added Sextante Data Explorer and Pick Coordinates plugins
     - Better integration between OpenJUMP and Sextante data model
     - Upgraded documentation with a new help dialog style
     - Fix bugs #410 and #427
