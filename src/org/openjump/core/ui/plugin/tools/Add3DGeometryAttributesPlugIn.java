@@ -42,7 +42,6 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,50 +68,50 @@ import java.util.List;
 
 public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 
-    public static String LAYER               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.layer");
+    private static String LAYER               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.layer");
 
-    public static String GEOM_ATTRIBUTES     = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.3d-geometry-attributes");
-    
-    public static String COMPUTE_ATTRIBUTES  = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.compute-attributes"); 
-    
-    public static String START_Z             = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.start-z");
-    public static String ADD_START_Z         = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-start-z");
-    
-    public static String END_Z               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.end-z");
-    public static String ADD_END_Z           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-end-z");
-    
-    public static String MIN_Z               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.min-z");
-    public static String ADD_MIN_Z           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-min-z");
-    
-    public static String MAX_Z               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-z");
-    public static String ADD_MAX_Z           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-z");
-    
-    public static String WEIGHTED_MEAN_Z     = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.weighted-mean-z");
-    public static String ADD_WEIGHTED_MEAN_Z = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-weighted-mean-z");
-    
-    public static String LENGTH_3D           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.length-3d");
-    public static String ADD_LENGTH_3D       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-length-3d");
-    
-    public static String MAX_DOWN_SLOPE      = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-downslope");
-    public static String ADD_MAX_DOWNSLOPE   = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-downslope");
-    
-    public static String MAX_UPSLOPE         = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-upslope");
-    public static String ADD_MAX_UPSLOPE     = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-upslope");
-    
-    public static String MAX_SLOPE           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-slope");
-    public static String ADD_MAX_SLOPE       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-slope");
-    
-    public static String NB_NAN_Z            = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-nan-z");
-    public static String ADD_NB_NAN_Z        = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-nan-z");
-    
-    public static String NB_NEGATIVE_Z       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-negative-z");
-    public static String ADD_NB_NEGATIVE_Z   = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-negative-z");
-    
-    public static String NB_0_Z              = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-0-z");
-    public static String ADD_NB_0_Z          = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-0-z");
-    
-    public static String NB_POSITIVE_Z       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-positive-z");
-    public static String ADD_NB_POSITIVE_Z   = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-positive-z");      
+    private static String GEOM_ATTRIBUTES     = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.3d-geometry-attributes");
+
+    private static String COMPUTE_ATTRIBUTES  = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.compute-attributes");
+
+    private static String START_Z             = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.start-z");
+    private static String ADD_START_Z         = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-start-z");
+
+    private static String END_Z               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.end-z");
+    private static String ADD_END_Z           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-end-z");
+
+    private static String MIN_Z               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.min-z");
+    private static String ADD_MIN_Z           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-min-z");
+
+    private static String MAX_Z               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-z");
+    private static String ADD_MAX_Z           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-z");
+
+    private static String WEIGHTED_MEAN_Z     = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.weighted-mean-z");
+    private static String ADD_WEIGHTED_MEAN_Z = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-weighted-mean-z");
+
+    private static String LENGTH_3D           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.length-3d");
+    private static String ADD_LENGTH_3D       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-length-3d");
+
+    private static String MAX_DOWN_SLOPE      = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-downslope");
+    private static String ADD_MAX_DOWNSLOPE   = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-downslope");
+
+    private static String MAX_UPSLOPE         = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-upslope");
+    private static String ADD_MAX_UPSLOPE     = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-upslope");
+
+    private static String MAX_SLOPE           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-slope");
+    private static String ADD_MAX_SLOPE       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-slope");
+
+    private static String NB_NAN_Z            = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-nan-z");
+    private static String ADD_NB_NAN_Z        = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-nan-z");
+
+    private static String NB_NEGATIVE_Z       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-negative-z");
+    private static String ADD_NB_NEGATIVE_Z   = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-negative-z");
+
+    private static String NB_0_Z              = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-0-z");
+    private static String ADD_NB_0_Z          = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-0-z");
+
+    private static String NB_POSITIVE_Z       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-positive-z");
+    private static String ADD_NB_POSITIVE_Z   = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-positive-z");
     // 
     // // MORPHOLOGY
     // public static String ADD_ORIENTATION     = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-orientation");
@@ -142,10 +141,10 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
     public void initialize(PlugInContext context) throws Exception {
     	    
 	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-	    	featureInstaller.addMainMenuItem(
+	    	featureInstaller.addMainMenuPlugin(
 	    	        this,
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},
-	                new JMenuItem(getName() + "..."),
+	                getName() + "...", false, null,
 	                createEnableCheck(context.getWorkbenchContext()));
     }
     
@@ -225,9 +224,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 	}
 	
     private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
-	    if (layer == null || context.getLayerManager().getLayer(layer) == null) {
-	        layer = context.getCandidateLayer(0).getName();
-	    }
+        layer = context.getCandidateLayer(0).getName();
     	dialog.addLayerComboBox(LAYER, context.getLayerManager().getLayer(layer), null, context.getLayerManager());
     	dialog.addSeparator();
     	dialog.addCheckBox(ADD_START_Z, addStartZ);
@@ -286,7 +283,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
     }
     
     private FeatureSchema getNewSchema(Layer layer) {
-        FeatureSchema schema = (FeatureSchema)layer.getFeatureCollectionWrapper().getFeatureSchema().clone();
+        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema().clone();
         
         if (addStartZ)         schema.addAttribute(START_Z, AttributeType.DOUBLE);
         if (addEndZ)           schema.addAttribute(END_Z, AttributeType.DOUBLE);
@@ -311,7 +308,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
         Coordinate[] cc = g.getCoordinates();
         
         // Attributes with direct access
-        double startZ=Double.NaN, endZ=Double.NaN;
+        //double startZ=Double.NaN, endZ=Double.NaN;
         if (addStartZ) f.setAttribute(START_Z, cc[0].z);
         if (addEndZ) f.setAttribute(END_Z, cc[cc.length-1].z);
         
@@ -347,7 +344,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
         if (dim == 0) {
             int nbNonNullZ = 0;
             for (int i = 0 ; i < g.getNumGeometries() ; i++) {
-                Geometry component = (Point)g.getGeometryN(i);
+                Geometry component = g.getGeometryN(i);
                 Coordinate c = component.getCoordinate();
                 // Point or Multipoint
                 if (!Double.isNaN(c.z)) {
@@ -364,7 +361,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
                 Geometry component = g.getGeometryN(i);
                 if (component.getDimension() == 0) continue;
                 // We first collect sublinestrings having initial and a final z
-                List<ZBoundedSubLineString> list = new ArrayList<ZBoundedSubLineString>();
+                List<ZBoundedSubLineString> list = new ArrayList<>();
                 if (component instanceof LineString) {
                     getZBoundedSubLineStrings((LineString)component, list);
                 }
@@ -435,21 +432,21 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
      * Z characteristics as 3D length or slopes are computed on
      * ZBoundedSubLineString
      */
-    public static class ZBoundedSubLineString {
+    private static class ZBoundedSubLineString {
         
         double startZ;
         double endZ;
         double length2d;
         double dz = Double.NaN;
-        
-        public ZBoundedSubLineString(double startZ, double endZ, double length2d) {
+
+        private ZBoundedSubLineString(double startZ, double endZ, double length2d) {
             this.startZ = startZ;
             this.endZ = endZ;
             this.length2d = length2d;
             if (!Double.isNaN(startZ) && !Double.isNaN(endZ)) dz = endZ-startZ;
         }
-        
-        public double getLength2d() {
+
+        private double getLength2d() {
             return length2d;
         }
         
@@ -457,7 +454,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
          * Return the length3d of this substring if both start and end points
          * have a z, length2d elseif.
          */
-        public double getLength3d() {
+        private double getLength3d() {
             return Double.isNaN(dz) ? length2d : Math.sqrt(length2d*length2d + dz*dz);
         }
         
@@ -469,7 +466,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
         * <li>NaN if substring end points don't have z values
         * </ul>
         */
-        public double getWeightedZ() {
+        private double getWeightedZ() {
             if (Double.isNaN(dz)) {
                 if (!Double.isNaN(startZ)) return startZ * length2d;
                 if (!Double.isNaN(endZ)) return endZ * length2d;
@@ -482,7 +479,7 @@ public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
          * Return the signed slope of the sublinestring (dz/length2d) or NaN if 
          * it contains only one or z value.
          */
-        public double getSlope() {
+        private double getSlope() {
             if (!Double.isNaN(dz)) {
                 if (length2d > 0) return dz/length2d;
                 else if (dz > 0) return Double.POSITIVE_INFINITY;
