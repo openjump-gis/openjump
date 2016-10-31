@@ -46,6 +46,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
  * system-maintained layer, and can create it if necessary.
  */
 public abstract class SystemLayerFinder {
+
     private String layerName;
     private LayerManagerProxy layerManagerProxy;
 

@@ -22,6 +22,7 @@ import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
 
 public class DynamicFeatureCollection implements FeatureCollection {
+
   private Integer featureLimit = null;
 
   private FilterQuery spatialQuery;
@@ -49,7 +50,7 @@ public class DynamicFeatureCollection implements FeatureCollection {
     return schema;
   }
 
-  public List query(Envelope envelope) {
+  public List<Feature> query(Envelope envelope) {
     final Object myQueryContext = new Object();
     currentQueryContext = myQueryContext;
 
@@ -83,17 +84,17 @@ public class DynamicFeatureCollection implements FeatureCollection {
     // Sometimes #execute takes a long time (e.g. SDE), and other calls to
     // #query may have occurred. [Jon Aquino 2005-03-15]
     if (myQueryContext != currentQueryContext) {
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     }
     schema = myFeatureInputStream.getFeatureSchema();
-    return new ListWrapper() {
-      public Collection getCollection() {
+    return new ListWrapper<Feature>() {
+      public Collection<Feature> getCollection() {
         // Implement #iterator only [Jon Aquino 2005-03-03]
         throw new UnsupportedOperationException();
       }
 
-      public Iterator iterator() {
-        return new Iterator() {
+      public Iterator<Feature> iterator() {
+        return new Iterator<Feature>() {
           private int featuresReturned = 0;
 
           private boolean featureInputStreamOpen = true;
@@ -104,9 +105,8 @@ public class DynamicFeatureCollection implements FeatureCollection {
 
           public boolean hasNext() {
             try {
-              if (featureLimit != null
-                  && featuresReturned >= featureLimit
-                  .intValue()) {
+              if (featureLimit != null &&
+                  featuresReturned >= featureLimit) {
                 closeFeatureInputStream();
                 return false;
               }
@@ -137,7 +137,7 @@ public class DynamicFeatureCollection implements FeatureCollection {
             featureInputStreamOpen = false;
           }
 
-          public Object next() {
+          public Feature next() {
             assertNotInGUIThread();
             if (!hasNext()) {
               throw new NoSuchElementException();
@@ -174,7 +174,7 @@ public class DynamicFeatureCollection implements FeatureCollection {
     throw new UnsupportedOperationException();
   }
 
-  public Collection remove(Envelope env) {
+  public Collection<Feature> remove(Envelope env) {
     throw new UnsupportedOperationException();
   }
 
@@ -182,7 +182,7 @@ public class DynamicFeatureCollection implements FeatureCollection {
    * @see com.vividsolutions.jump.feature.FeatureCollection#getEnvelope()
    */
   public Envelope getEnvelope() {
-    DataStoreConnection dsc = null;
+    DataStoreConnection dsc;
     try {
       dsc = connectionManager.getOpenConnection(connectionDescriptor);
     } catch (Exception e1) {
@@ -206,11 +206,11 @@ public class DynamicFeatureCollection implements FeatureCollection {
     throw new UnsupportedOperationException();
   }
 
-  public List getFeatures() {
+  public List<Feature> getFeatures() {
     throw new UnsupportedOperationException();
   }
 
-  public Iterator iterator() {
+  public Iterator<Feature> iterator() {
     throw new UnsupportedOperationException();
   }
 

@@ -37,7 +37,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import javax.swing.ImageIcon;
@@ -60,12 +59,12 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
-import com.vividsolutions.jump.workbench.ui.OKCancelApplyPanel;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel;
+import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 import com.vividsolutions.jump.workbench.ui.style.DecorationStylePanel;
 import com.vividsolutions.jump.workbench.ui.style.LabelStylePanel;
 import com.vividsolutions.jump.workbench.ui.style.ScaleStylePanel;
@@ -107,9 +106,9 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         dialog.setSideBarDescription(I18N
                 .get("ui.style.ChangeStylesPlugIn.you-can-use-this-dialog-to-change-the-colour-line-width"));
 
-        final ArrayList<StylePanel> stylePanels = new ArrayList<StylePanel>();
+        final ArrayList<StylePanel> stylePanels = new ArrayList<>();
         final DeeRenderingStylePanel renderingStylePanel = new DeeRenderingStylePanel(blackboard, layer, pb);
-        final Collection<?> oldStyles = layer.cloneStyles();
+        final Collection<Style> oldStyles = layer.cloneStyles();
         stylePanels.add(renderingStylePanel);
         stylePanels.add(new ScaleStylePanel(layer, context.getLayerViewPanel()));
 
@@ -169,7 +168,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
                         }
                     }
                     if (dialog.wasApplyPressed()) {
-                        testStyles(layer, stylePanels, context);
+                        testStyles(layer, stylePanels);
                     }
                 }
             }
@@ -193,7 +192,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
     
     // used to apply styles without quiting the ChangeStylesDialog.
     private void testStyles(final Layer layer, 
-            final ArrayList<StylePanel> stylePanels, final PlugInContext context) {
+            final ArrayList<StylePanel> stylePanels) {
         for (final StylePanel stylePanel : stylePanels) {
             stylePanel.updateStyles();
         }
@@ -203,7 +202,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
     }
     
     private void applyStyles(final Layer layer, final ArrayList<StylePanel> stylePanels, 
-            final Collection<?> oldStyles, final PlugInContext context) {
+            final Collection<Style> oldStyles, final PlugInContext context) {
         layer.getLayerManager().deferFiringEvents(new Runnable() {
             public void run() {
                 for (final StylePanel stylePanel : stylePanels) {
@@ -221,7 +220,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
             }
         });
 
-        final Collection<?> newStyles = layer.cloneStyles();
+        final Collection<Style> newStyles = layer.cloneStyles();
         execute(new UndoableCommand(getName()) {
             @Override
             public void execute() {
@@ -272,7 +271,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         /**
          * 
          */
-        public DummyColorThemingStylePanel() {
+        private DummyColorThemingStylePanel() {
             // GridBagLayout so it gets centered. [Jon Aquino]
             super(new GridBagLayout());
             add(new JLabel(I18N.get("ui.style.ChangeStylesPlugIn.this-layer-has-no-attributes")));

@@ -42,16 +42,16 @@ public class ThreadSafeFeatureCollectionWrapper implements FeatureCollection {
 		return featureCollection.isEmpty();
 	}
 
-	public synchronized List getFeatures() {
-		return new ArrayList(featureCollection.getFeatures());
+	public synchronized List<Feature> getFeatures() {
+		return new ArrayList<>(featureCollection.getFeatures());
 	}
 
-	public synchronized Iterator iterator() {
-		return new ArrayList(featureCollection.getFeatures()).iterator();
+	public synchronized Iterator<Feature> iterator() {
+		return new ArrayList<>(featureCollection.getFeatures()).iterator();
 	}
 
-	public synchronized List query(Envelope envelope) {
-		return new ArrayList(featureCollection.query(envelope));
+	public synchronized List<Feature> query(Envelope envelope) {
+		return new ArrayList<>(featureCollection.query(envelope));
 	}
 
 	public synchronized void add(Feature feature) {
@@ -59,12 +59,12 @@ public class ThreadSafeFeatureCollectionWrapper implements FeatureCollection {
 
 	}
 
-	public synchronized void addAll(Collection features) {
+	public synchronized void addAll(Collection<Feature> features) {
 		featureCollection.addAll(features);
 
 	}
 
-	public synchronized void removeAll(Collection features) {
+	public synchronized void removeAll(Collection<Feature> features) {
 		featureCollection.removeAll(features);
 
 	}
@@ -79,7 +79,7 @@ public class ThreadSafeFeatureCollectionWrapper implements FeatureCollection {
 
 	}
 
-	public synchronized Collection remove(Envelope env) {
+	public synchronized Collection<Feature> remove(Envelope env) {
 		return featureCollection.remove(env);
 	}
 

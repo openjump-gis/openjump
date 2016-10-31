@@ -57,7 +57,6 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -102,15 +101,14 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
         Coordinate coord = getPanel().getViewport().toModelCoordinate(getViewSource());
         
         // WMS
-        List<Layerable> wmsLay_l = getWorkbench().getContext().getLayerManager().getLayerables(WMSLayer.class);
+        List<WMSLayer> wmsLay_l = getWorkbench().getContext().getLayerManager().getLayerables(WMSLayer.class);
         //Iterator iter = getWorkbench().getContext().getLayerNamePanel().selectedNodes(WMSLayer.class).iterator();
         
         String response = "";
         String newLine = System.getProperty("line.separator");
-        for(Layerable lay : wmsLay_l) {
+        for(WMSLayer wmsLayer : wmsLay_l) {
             
             // We only want visible layers
-            WMSLayer wmsLayer = (WMSLayer) lay;
             if(!wmsLayer.isVisible()) {
                 continue;
             }
@@ -193,8 +191,7 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
             request.setPoint(point);
             request.setHeight(getPanel().getHeight());
             request.setWidth(getPanel().getWidth());
-//            String fiu2 = request.getURL().toString();
-            
+
             try {
               wmsResponse = request.getText();
               wmsResponse = cleanWmsResponse(wmsResponse);
@@ -210,44 +207,38 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
             
             response = response.concat(wmsResponse);
             response = response.concat(newLine);
-        };
+        }
         
         
         infoFrame.setWmsInfo(response);
         
         // Raster data
-        List<Layerable> layerables_l = getWorkbench().getContext().getLayerManager().getLayerables(RasterImageLayer.class);
+        List<RasterImageLayer> layerables_l = getWorkbench().getContext().getLayerManager().getLayerables(RasterImageLayer.class);
         
         String[] layerNames = new String[layerables_l.size()];
         String[] cellValues = new String[layerables_l.size()];
-        
-        for(int l=0; l<layerables_l.size(); l++) {
-            if(layerables_l.get(l) instanceof RasterImageLayer){
-                RasterImageLayer rasterImageLayer = (RasterImageLayer) layerables_l.get(l);
-                if(rasterImageLayer != null) {
+        int l=0;
+        for(RasterImageLayer rasterImageLayer : layerables_l) {
+            layerNames[l] = rasterImageLayer.getName();
+            try {
 
-                    layerNames[l] = rasterImageLayer.getName();
-
-                    try {
-                        
-                        cellValues[l] = "";
-                        for(int b=0; b<rasterImageLayer.getNumBands(); b++) {
-                            Double cellValue = rasterImageLayer.getCellValue(coord.x, coord.y, b);
-                            if(cellValue != null) {
-                                if(rasterImageLayer.isNoData(cellValue)) {
-                                    cellValues[l] = Double.toString(Double.NaN);
-                                } else {
-                                    cellValues[l] = cellValues[l].concat(Double.toString(cellValue));
-                                }
-                            }
-                            cellValues[l] = cellValues[l].concat(";");
+                cellValues[l] = "";
+                for(int b=0; b<rasterImageLayer.getNumBands(); b++) {
+                    Double cellValue = rasterImageLayer.getCellValue(coord.x, coord.y, b);
+                    if(cellValue != null) {
+                        if(rasterImageLayer.isNoData(cellValue)) {
+                            cellValues[l] = Double.toString(Double.NaN);
+                        } else {
+                            cellValues[l] = cellValues[l].concat(Double.toString(cellValue));
                         }
-                        
-                    } catch(RasterDataNotFoundException ex) {
-                        cellValues[l] = "???";
                     }
+                    cellValues[l] = cellValues[l].concat(";");
                 }
+
+            } catch(RasterDataNotFoundException ex) {
+                cellValues[l] = "???";
             }
+            l++;
         }
             
         infoFrame.setRasterValues(layerNames, cellValues); 

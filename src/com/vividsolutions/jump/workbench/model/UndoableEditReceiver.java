@@ -33,7 +33,6 @@
 package com.vividsolutions.jump.workbench.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
@@ -53,14 +52,15 @@ import com.vividsolutions.jts.util.Assert;
  * #reportIrreversibleChange()
  */
 public class UndoableEditReceiver {
+
     private UndoManager undoManager = new UndoManager();
-    private ArrayList newUndoableEdits = new ArrayList();
+    private ArrayList<UndoableEdit> newUndoableEdits = new ArrayList<>();
     /** Handle nested calls to UndoableEditReceiver */
     private int transactions = 0;
     private boolean nothingToUndoReported = false;
     private boolean irreversibleChangeReported = false;
     private boolean undoManagerCouldUndoAtStart = false;
-    private ArrayList listeners = new ArrayList();
+    private ArrayList<Listener> listeners = new ArrayList<>();
     
     public UndoableEditReceiver() {
     }
@@ -107,8 +107,7 @@ public class UndoableEditReceiver {
                 return;
             }
 
-            for (Iterator i = newUndoableEdits.iterator(); i.hasNext();) {
-                UndoableEdit undoableEdit = (UndoableEdit) i.next();
+            for (UndoableEdit undoableEdit : newUndoableEdits) {
                 undoManager.addEdit(undoableEdit);
             }
             newUndoableEdits.clear();            
@@ -122,15 +121,13 @@ public class UndoableEditReceiver {
     }
 
     private void fireUndoHistoryTruncated() {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            Listener listener = (Listener) i.next();
+        for (Listener listener : listeners) {
             listener.undoHistoryTruncated();
         }
     }
 
     private void fireUndoHistoryChanged() {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            Listener listener = (Listener) i.next();
+        for (Listener listener : listeners) {
             listener.undoHistoryChanged();
         }
     }
@@ -163,11 +160,12 @@ public class UndoableEditReceiver {
         return nothingToUndoReported;
     }
 
-    public static interface Listener {
-        public void undoHistoryChanged();
+    public interface Listener {
+        void undoHistoryChanged();
 
-        public void undoHistoryTruncated();
+        void undoHistoryTruncated();
     }
+
     public boolean isReceiving() {
         return transactions > 0;
     }

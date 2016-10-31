@@ -38,52 +38,53 @@ import com.vividsolutions.jump.util.Blackboard;
  * A "sheet" of spatial data, overlaid on other "sheets".
  */
 public interface Layerable {
-  public void setName(String name);
 
-  public String getName();
+  void setName(String name);
 
-  public void setVisible(boolean visible);
+  String getName();
 
-  public boolean isVisible();
+  void setVisible(boolean visible);
 
-  public void setEditable(boolean editable);
+  boolean isVisible();
 
-  public boolean isEditable();
+  void setEditable(boolean editable);
 
-  public boolean isReadonly();
+  boolean isEditable();
 
-  public void setReadonly(boolean value);
+  boolean isReadonly();
 
-  public boolean isSelectable();
+  void setReadonly(boolean value);
 
-  public void setSelectable(boolean value);
+  boolean isSelectable();
 
-  public LayerManager getLayerManager();
+  void setSelectable(boolean value);
+
+  LayerManager getLayerManager();
 
   /**
    * Called by Java2XML
    */
-  public void setLayerManager(LayerManager layerManager);
+  void setLayerManager(LayerManager layerManager);
 
-  public Blackboard getBlackboard();
+  Blackboard getBlackboard();
 
   /**
    * @return the larger units/pixel value
    */
-  public Double getMinScale();
+  Double getMinScale();
 
-  public Layerable setMinScale(Double minScale);
+  Layerable setMinScale(Double minScale);
 
   /**
    * @return the smaller units/pixel value
    */
-  public Double getMaxScale();
+  Double getMaxScale();
 
-  public Layerable setMaxScale(Double maxScale);
+  Layerable setMaxScale(Double maxScale);
 
-  public boolean isScaleDependentRenderingEnabled();
+  boolean isScaleDependentRenderingEnabled();
 
-  public Layerable setScaleDependentRenderingEnabled(
+  Layerable setScaleDependentRenderingEnabled(
       boolean scaleDependentRenderingEnabled);
 
 }

@@ -23,20 +23,20 @@ import org.openjump.core.ui.plugin.tools.MeasurementStyle;
  * @author Matthias Scholz <ms@jammerhund.de>
  */
 public class MeasureLayerFinder extends SystemLayerFinder {
+
 	public static final String FEATURE_ATTRIBUTE_AREA = "area";
 	public static final String FEATURE_ATTRIBUTE_LENGTH = "length";
-	public static final String FEATURE_ATTRIBUTE_POINTS = "points";
+	private static final String FEATURE_ATTRIBUTE_POINTS = "points";
 
 	public static final String LAYER_NAME = I18N.get("model.MeasureLayerFinder.measure");
 
 	private static Layer measureLayer = null;
-	WorkbenchContext context = null;
+	private WorkbenchContext context = null;
 
 	public MeasureLayerFinder(LayerManagerProxy layerManagerProxy, WorkbenchContext context) {
 		super(LAYER_NAME, layerManagerProxy);
 		this.context = context;
 	}
-
 
 	@Override
 	protected void applyStyles(Layer layer) {
@@ -96,9 +96,7 @@ public class MeasureLayerFinder extends SystemLayerFinder {
 	/**
 	 * Builds a new Feature from a Geometry with the given FeatureSchema.
 	 * This Feature can later be added to Layer.
-	 * 
-	 * @param measureGeometry
-	 * @param schema
+	 *
 	 * @return a new Feature having measureGeometry as Geometry and schema as FeatureSchema
 	 */
 	private Feature toFeature(Geometry measureGeometry, FeatureSchema schema) {
@@ -114,8 +112,6 @@ public class MeasureLayerFinder extends SystemLayerFinder {
 	/**
 	 * Sets the new measure Geometry. This clears all old Features on the
 	 * measurelayer and add's the new Features.
-	 *
-	 * @param measureGeometry
 	 */
 	public void setMeasure(Geometry measureGeometry) {
         if (getLayer() == null) {

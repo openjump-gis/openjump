@@ -36,5 +36,5 @@ package com.vividsolutions.jump.workbench.model;
  * An object that contains or is otherwise associated with a LayerManager.
  */
 public interface LayerManagerProxy {
-    public LayerManager getLayerManager();
+    LayerManager getLayerManager();
 }

@@ -44,9 +44,10 @@ import javax.swing.undo.UndoableEdit;
  * @see javax.swing.undo.UndoableEdit
  */
 public abstract class UndoableCommand {
+
     private String name;
     private Layer layer;
-    boolean canceled = false;
+    private boolean canceled = false;
 
     /**
      * UndoableCommand with a name to be shown in the user interface.

@@ -32,8 +32,6 @@ public class CachingFeatureCollection extends FeatureCollectionWrapper {
 
     private boolean cachingByEnvelope = true;
 
-//    private static final FeatureCollection DUMMY_CACHED_FEATURE_COLLECTION = AddNewLayerPlugIn.createBlankFeatureCollection();
-
     public CachingFeatureCollection(final FeatureCollection featureCollection) {
         // Note that this implementation assumes that the feature collection is
         // being viewed by a single LayerViewPanel. This is the common case;
@@ -64,7 +62,7 @@ public class CachingFeatureCollection extends FeatureCollectionWrapper {
 		return featureCollection.getFeatureSchema();
 	}
 
-    public List query(final Envelope envelope) {
+    public List<Feature> query(final Envelope envelope) {
         // This code achieves its simplicity using two wrappers:
         // LazyList and ListWrapper. [Jon Aquino 2005-03-22]
 
@@ -75,7 +73,7 @@ public class CachingFeatureCollection extends FeatureCollectionWrapper {
         // #iterator method, as this is the only method used in the
         // LayerRenderer thread), use the live feature collection.
         // [Jon Aquino 2005-03-03]
-        final LazyList cachedFeatureCollectionQueryResults = new LazyList(
+        final LazyList<Feature> cachedFeatureCollectionQueryResults = new LazyList<>(
                 new Block() {
                     public Object yield() {
                         return getCachedFeatureCollection().query(envelope);
@@ -85,12 +83,12 @@ public class CachingFeatureCollection extends FeatureCollectionWrapper {
         // collection, except for calls to #iterator, which may or may not use
         // the cache, depending on whether we are in the GUI thread.
         // [Jon Aquino 2005-03-03]
-        return new ListWrapper() {
-            public Collection getCollection() {
+        return new ListWrapper<Feature>() {
+            public Collection<Feature> getCollection() {
                 return cachedFeatureCollectionQueryResults;
             }
 
-            public Iterator iterator() {
+            public Iterator<Feature> iterator() {
                 // Caching criterion 1: envelope check [Jon Aquino 2005-03-22]
                 if (cachingByEnvelope
                         && envelopeOfCompletedCache.contains(envelope)) {
@@ -109,7 +107,7 @@ public class CachingFeatureCollection extends FeatureCollectionWrapper {
                 initializeCacheIfNecessary();
                 emptyCache();
                 envelopeOfCompletedCache = new Envelope();
-                return new Iterator() {
+                return new Iterator<Feature>() {
                     public void remove() {
                         iterator.remove();
                     }
@@ -118,7 +116,7 @@ public class CachingFeatureCollection extends FeatureCollectionWrapper {
                         return iterator.hasNext();
                     }
 
-                    public Object next() {
+                    public Feature next() {
                         Feature nextFeature = (Feature) iterator.next();
                         getCachedFeatureCollection().add(nextFeature);
                         if (!hasNext()) {
@@ -135,6 +133,7 @@ public class CachingFeatureCollection extends FeatureCollectionWrapper {
     }
 
     private boolean initialized = false;
+
     private void initializeCacheIfNecessary() {
         // The FeatureSchema might not defined until the last minute
         // i.e. until FeatureCollection#query is called [Jon Aquino

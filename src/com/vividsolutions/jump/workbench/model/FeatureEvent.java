@@ -30,9 +30,11 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.model;
+
 import java.util.Collection;
 import java.util.Collections;
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.feature.Feature;
 
 /**
  * An addition, removal, or modification of a Feature.
@@ -41,23 +43,24 @@ import com.vividsolutions.jts.util.Assert;
  * @see FeatureEventType
  */
 public class FeatureEvent {
+
     private Layer layer;
     private FeatureEventType type;
-    private Collection features;
-    private Collection oldFeatureClones;
+    private Collection<Feature> features;
+    private Collection<Feature> oldFeatureClones;
     
     //[UT] 25.08.2005 added 
-    private Collection oldFeatureAttClones;
+    private Collection<Feature> oldFeatureAttClones;
     
     /**
      * @param oldFeatureClones for GEOMETRY_MODIFIED events, clones of the Features before
      * they were modified; null for other events
      */
     public FeatureEvent(
-        Collection features,
+        Collection<Feature> features,
         FeatureEventType type,
         Layer layer,
-        Collection oldFeatureClones) {
+        Collection<Feature> oldFeatureClones) {
         Assert.isTrue(layer != null);
         Assert.isTrue(type != null);
         
@@ -79,16 +82,20 @@ public class FeatureEvent {
             this.oldFeatureAttClones = oldFeatureClones;
         }
     }
+
     public Layer getLayer() {
         return layer;
     }
+
     public FeatureEventType getType() {
         return type;
     }
-    public Collection getFeatures() {
+
+    public Collection<Feature> getFeatures() {
         return Collections.unmodifiableCollection(features);
     }
-    public Collection getOldFeatureClones() {
+
+    public Collection<Feature> getOldFeatureClones() {
         return Collections.unmodifiableCollection(oldFeatureClones);
     }
     

@@ -32,10 +32,7 @@
 
 package com.vividsolutions.jump.workbench.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
@@ -51,7 +48,9 @@ import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
  * will be fired.</p>
  */
 public class ObservableFeatureCollection extends FeatureCollectionWrapper {
-    private ArrayList listeners = new ArrayList();
+
+    private ArrayList<ObservableFeatureCollection.Listener> listeners =
+            new ArrayList<>();
 
     public ObservableFeatureCollection(FeatureCollection fc) {
         super(fc);
@@ -64,40 +63,38 @@ public class ObservableFeatureCollection extends FeatureCollectionWrapper {
 
     public void add(Feature feature) {
         super.add(feature);
-        fireFeaturesAdded(Arrays.asList(new Feature[] { feature }));
+        fireFeaturesAdded(Collections.singletonList(feature));
     }
 
     public void remove(Feature feature) {
         super.remove(feature);
-        fireFeaturesRemoved(Arrays.asList(new Feature[] { feature }));
+        fireFeaturesRemoved(Collections.singletonList(feature));
     }
 
-    private void fireFeaturesAdded(Collection features) {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            Listener listener = (Listener) i.next();
+    private void fireFeaturesAdded(Collection<Feature> features) {
+        for (Listener listener : listeners) {
             listener.featuresAdded(features);
         }
     }
 
-    private void fireFeaturesRemoved(Collection features) {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            Listener listener = (Listener) i.next();
+    private void fireFeaturesRemoved(Collection<Feature> features) {
+        for (Listener listener : listeners) {
             listener.featuresRemoved(features);
         }
     }
 
-    public void addAll(Collection features) {
+    public void addAll(Collection<Feature> features) {
         super.addAll(features);
         fireFeaturesAdded(features);
     }
 
-    public void removeAll(Collection features) {
+    public void removeAll(Collection<Feature> features) {
         super.removeAll(features);
         fireFeaturesRemoved(features);
     }
 
-    public Collection remove(Envelope env) {
-        Collection features = super.remove(env);
+    public Collection<Feature> remove(Envelope env) {
+        Collection<Feature> features = super.remove(env);
         fireFeaturesRemoved(features);
 
         return features;
@@ -107,10 +104,10 @@ public class ObservableFeatureCollection extends FeatureCollectionWrapper {
      * Listens for features being added to or removed from a 
      * FeatureCollection.
      */
-    public static interface Listener {
-        public void featuresAdded(Collection features);
+    public interface Listener {
+        void featuresAdded(Collection features);
 
-        public void featuresRemoved(Collection features);
+        void featuresRemoved(Collection features);
     }
 
 }

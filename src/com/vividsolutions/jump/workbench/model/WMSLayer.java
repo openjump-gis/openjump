@@ -63,7 +63,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 
   private String format;
 
-  private List<String> layerNames = new ArrayList<String>();
+  private List<String> layerNames = new ArrayList<>();
 
   private String srs;
 
@@ -73,8 +73,8 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 
   private String wmsVersion = WMService.WMS_1_1_1;
 
-  protected Reference oldImage;
-  protected URL oldURL;
+  private Reference oldImage;
+  private URL oldURL;
 
   /**
    * Called by Java2XML
@@ -84,7 +84,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
   }
 
   public WMSLayer(LayerManager layerManager, String serverURL, String srs,
-      List layerNames, String format, String version) throws IOException {
+      List<String> layerNames, String format, String version) throws IOException {
     this(layerManager, initializedService(serverURL, version), srs, layerNames,
         format);
   }
@@ -97,7 +97,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
   }
 
   public WMSLayer(LayerManager layerManager, WMService initializedService,
-      String srs, List layerNames, String format) throws IOException {
+      String srs, List<String> layerNames, String format) throws IOException {
     this(layerManager, initializedService, srs, layerNames, format,
         initializedService.getVersion());
   }
@@ -170,7 +170,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
       } catch (InterruptedException e) {
         Assert.shouldNeverReachHere();
       }
-      oldImage = new SoftReference(image);
+      oldImage = new SoftReference<>(image);
       oldURL = newURL;
     }
 
@@ -224,7 +224,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 
   public Object clone() throws java.lang.CloneNotSupportedException {
     WMSLayer clone = (WMSLayer) super.clone();
-    clone.layerNames = new ArrayList(this.layerNames);
+    clone.layerNames = new ArrayList<>(this.layerNames);
 
     return clone;
   }
@@ -273,9 +273,8 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 
     List<String> list = getLayerNames();
     try {
-      for (int i = 0; i < list.size(); i++) {
-        MapLayer lyr = getService().getCapabilities().getMapLayerByName(
-            list.get(i));
+      for (String name : list) {
+        MapLayer lyr = getService().getCapabilities().getMapLayerByName(name);
         BoundingBox bb = lyr.getBoundingBox(getSRS());
         if (bb != null
             && bb.getEnvelope().getMinX() < bb.getEnvelope().getMaxX()) {

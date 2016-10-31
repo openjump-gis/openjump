@@ -163,7 +163,7 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	private Layer layer;
 
     private Map<Object,BasicStyle> attributeValueToBasicStyleMap
-            = new HashMap<Object,BasicStyle>(); //[sstein 2.Dec.06] added = new Hashmap
+            = new HashMap<>(); //[sstein 2.Dec.06] added = new Hashmap
 
     private Map<Object,String> attributeValueToLabelMap;
 
@@ -231,10 +231,10 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	public void setAttributeName(String attributeName) {
 		this.attributeName = attributeName;
 	}
-	public Map getAttributeValueToBasicStyleMap() {
+	public Map<Object,BasicStyle> getAttributeValueToBasicStyleMap() {
 		return attributeValueToBasicStyleMap;
 	}
-    public Map getAttributeValueToLabelMap() {
+    public Map<Object,String> getAttributeValueToLabelMap() {
         return attributeValueToLabelMap;
     }
 	private boolean enabled = false;

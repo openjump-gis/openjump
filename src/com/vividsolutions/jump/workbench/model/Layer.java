@@ -40,9 +40,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
@@ -51,10 +49,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.feature.Operation;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
-import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataSource;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.SquareVertexStyle;
@@ -69,10 +64,9 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
  * prefer #addAll and #removeAll to #add and #remove -- fewer events will be
  * fired.
  */
-public class Layer extends AbstractLayerable implements LayerManagerProxy,
-    Disposable {
+public class Layer extends AbstractLayerable implements LayerManagerProxy, Disposable {
 
-  public static final String FIRING_APPEARANCE_CHANGED_ON_ATTRIBUTE_CHANGE = Layer.class
+  private static final String FIRING_APPEARANCE_CHANGED_ON_ATTRIBUTE_CHANGE = Layer.class
       .getName() + " - FIRING APPEARANCE CHANGED ON ATTRIBUTE CHANGE";
 
   private String description = "";
@@ -81,7 +75,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
 
   private FeatureCollectionWrapper featureCollectionWrapper;
 
-  private ArrayList styles = new ArrayList();
+  private ArrayList<Style> styles = new ArrayList<>();
 
   private boolean synchronizingLineColor = true;
 
@@ -141,8 +135,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
   }
 
   public void setDescription(String description) {
-    Assert
-        .isTrue(
+    Assert.isTrue(
             description != null,
             "Java2XML requires that the description be non-null. Use an empty string if necessary.");
     this.description = description;
@@ -260,7 +253,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
     return featureCollectionWrapper;
   }
 
-  protected void setFeatureCollectionWrapper(
+  private void setFeatureCollectionWrapper(
       FeatureCollectionWrapper featureCollectionWrapper) {
     this.featureCollectionWrapper = featureCollectionWrapper;
     // To set FeatureSchema's dynamic attributes (AKA Operations), we need
@@ -280,14 +273,11 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
    * @return The style value
    */
   public Style getStyle(Class c) {
-    for (Iterator i = styles.iterator(); i.hasNext();) {
-      Style p = (Style) i.next();
-
-      if (c.isInstance(p)) {
-        return p;
+    for (Style style : styles) {
+      if (c.isInstance(style)) {
+        return style;
       }
     }
-
     return null;
   }
 
@@ -295,10 +285,10 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
    * get a list of all enabled styles matching the parameter class
    */
   public List<Style> getStylesIfEnabled(Class filter) {
-    List<Style> enabledStyles = new ArrayList();
+    List<Style> enabledStyles = new ArrayList<>();
     final List<Style> someStyles = getStyles(filter);
     for (Style style : someStyles) {
-      if (((Style) style).isEnabled())
+      if (style.isEnabled())
         enabledStyles.add(style);
     }
     return Collections.unmodifiableList(enabledStyles);
@@ -315,10 +305,10 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
    * get a list of all styles matching the parameter class
    */
   public List<Style> getStyles(Class filter) {
-    List<Style> someStyles = new ArrayList();
+    List<Style> someStyles = new ArrayList<>();
     final Collection<Style> currentStyles = getStyles();
     for (Style style : currentStyles) {
-      if (style instanceof Style && filter.isInstance(style)) {
+      if (style != null && filter.isInstance(style)) {
         someStyles.add(style);
       }
     }
@@ -353,9 +343,8 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
    */
   public void dispose() {
     // dispose features if disposable nature
-    Collection features = getFeatureCollectionWrapper().getFeatures();
-    for (Iterator iter = features.iterator(); iter.hasNext();) {
-      Feature feature = (Feature) iter.next();
+    Collection<Feature> features = getFeatureCollectionWrapper().getFeatures();
+    for (Feature feature : features) {
       if (feature instanceof Disposable)
         ((Disposable) feature).dispose();
     }
@@ -370,30 +359,25 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
   }
 
   public Collection<Style> cloneStyles() {
-    ArrayList<Style> styleClones = new ArrayList<Style>();
-
-    for (Iterator<Style> i = getStyles().iterator(); i.hasNext();) {
-      Style style = i.next();
+    ArrayList<Style> styleClones = new ArrayList<>();
+    for (Style style : getStyles()) {
       styleClones.add((Style) style.clone());
     }
-
     return styleClones;
   }
 
-  public void setStyles(Collection newStyles) {
+  public void setStyles(Collection<Style> newStyles) {
     boolean firingEvents = getLayerManager().isFiringEvents();
     getLayerManager().setFiringEvents(false);
 
     try {
       // new ArrayList to prevent ConcurrentModificationException [Jon
       // Aquino]
-      for (Iterator i = new ArrayList(getStyles()).iterator(); i.hasNext();) {
-        Style style = (Style) i.next();
+      for (Style style : new ArrayList<>(getStyles())) {
         removeStyle(style);
       }
 
-      for (Iterator i = newStyles.iterator(); i.hasNext();) {
-        Style style = (Style) i.next();
+      for (Style style : newStyles) {
         addStyle(style);
       }
     } finally {
@@ -407,9 +391,10 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
     if (layerManager != null) {
       layerManager.removeLayerListener(getLayerListener());
     }
-
     super.setLayerManager(layerManager);
-    layerManager.addLayerListener(getLayerListener());
+    if (layerManager != null) {
+      layerManager.addLayerListener(getLayerListener());
+    }
   }
 
   private LayerListener getLayerListener() {
@@ -463,13 +448,15 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
    * saved, only use this method for layers with few features.
    */
   public static UndoableCommand addUndo(final String layerName,
-      final LayerManagerProxy proxy, final UndoableCommand wrappeeCommand) {
+                                        final LayerManagerProxy proxy,
+                                        final UndoableCommand wrappeeCommand) {
     return new UndoableCommand(wrappeeCommand.getName()) {
+
       private Layer layer;
 
       private String categoryName;
 
-      private Collection features;
+      private Collection<Feature> features;
 
       private boolean visible;
 
@@ -481,7 +468,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
         layer = currentLayer();
 
         if (layer != null) {
-          features = new ArrayList(layer.getFeatureCollectionWrapper()
+          features = new ArrayList<>(layer.getFeatureCollectionWrapper()
               .getFeatures());
           categoryName = layer.getName();
           visible = layer.isVisible();
@@ -547,7 +534,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
 
   public Collection<String> getFeatureSchemaOperations() {
     FeatureSchema fs = getFeatureCollectionWrapper().getFeatureSchema();
-    List<String> operations = new ArrayList<String>();
+    List<String> operations = new ArrayList<>();
     for (int i = 0; i < fs.getAttributeCount(); i++) {
       Operation operation = fs.getOperation(i);
       if (operation != null)
@@ -559,11 +546,11 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy,
   }
 
   // Used for Operation deserialization
-  Collection<String> expressions;
+  private Collection<String> expressions;
 
   public void addFeatureSchemaOperation(String expression) {
     if (expressions == null)
-      expressions = new ArrayList<String>();
+      expressions = new ArrayList<>();
     expressions.add(expression);
   }
 

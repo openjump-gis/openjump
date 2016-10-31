@@ -36,6 +36,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ArrowLineStringEndpointStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.CircleLineStringEndpointStyle;
@@ -51,9 +52,9 @@ public abstract class AbstractVectorLayerFinder extends SystemLayerFinder {
         this.color = color;
     }
 
-    public List getVectors() {
+    public List<Geometry> getVectors() {
         if (getLayer() == null) {
-            return new ArrayList();
+            return new ArrayList<>();
         }
 
         return FeatureUtil.toGeometries(getLayer().getFeatureCollectionWrapper().getFeatures());

@@ -78,10 +78,11 @@ public class LayerManager {
     // is lucky enough to have all its strong references released, let it
     // dispose of
     // itself immediately [Jon Aquino]
-    private ArrayList<WeakReference> layerReferencesToDispose = new ArrayList<>();
+    private ArrayList<WeakReference<Layerable>> layerReferencesToDispose = new ArrayList<>();
     private boolean firingEvents = true;
+    // TODO Can a LayerListener still be there if the layer has been removed ? (see #419)
     private ArrayList<LayerListener> layerListeners = new ArrayList<>();
-    private Iterator firstColors;
+    private Iterator<Color> firstColors;
     private Blackboard blackboard = new Blackboard();
 
     private Task task;
@@ -113,23 +114,24 @@ public class LayerManager {
 
     private Collection<Color> firstColors() {
         ArrayList<Color> firstColors = new ArrayList<>();
+        List<BasicStyle> basicStyles = AbstractPalettePanel.basicStyles();
+        if (basicStyles != null) {
+            for (BasicStyle basicStyle : basicStyles) {
 
-        for (BasicStyle basicStyle : AbstractPalettePanel.basicStyles()) {
+                if (!basicStyle.isRenderingFill()) {
+                    continue;
+                }
 
-            if (!basicStyle.isRenderingFill()) {
-                continue;
+                firstColors.add(basicStyle.getFillColor());
             }
-
-            firstColors.add(basicStyle.getFillColor());
         }
 
         return firstColors;
     }
 
     public Color generateLayerFillColor() {
-        // <<TODO>> Ensure that colour is not being used by another layer [Jon
-        // Aquino]
-        Color color = firstColors.hasNext() ? (Color) firstColors.next()
+        // TODO Ensure that colour is not being used by another layer [Jon Aquino]
+        Color color = firstColors.hasNext() ? firstColors.next()
                 : new Color((int) Math.floor(Math.random() * 256),
                         (int) Math.floor(Math.random() * 256),
                         (int) Math.floor(Math.random() * 256));
@@ -183,9 +185,7 @@ public class LayerManager {
                 return;
             }
 
-            for (Iterator i = layer.getFeatureCollectionWrapper().iterator(); i
-                    .hasNext();) {
-                Feature feature = (Feature) i.next();
+            for (Feature feature : layer.getFeatureCollectionWrapper().getFeatures()) {
                 Reprojector.instance().reproject(
                         feature.getGeometry(),
                         layer.getFeatureCollectionWrapper().getFeatureSchema()
@@ -281,11 +281,6 @@ public class LayerManager {
             return name;
         }
 
-        // <<TODO:REMOVE>> debug [Jon Aquino]
-        if (name == "Relative Vectors") {
-            new Throwable().printStackTrace(System.err);
-        }
-
         int i = 2;
         String newName;
 
@@ -362,7 +357,7 @@ public class LayerManager {
 
     public void dispose() {
         this.setFiringEvents(false);
-        for (WeakReference reference : layerReferencesToDispose) {
+        for (WeakReference<Layerable> reference : layerReferencesToDispose) {
             Layer layer = (Layer) reference.get();
 
             if (layer != null) {
@@ -390,7 +385,7 @@ public class LayerManager {
         return categories.indexOf(category);
     }
 
-    public void fireCategoryChanged(Category category, CategoryEventType type) {
+    void fireCategoryChanged(Category category, CategoryEventType type) {
         fireCategoryChanged(category, type, indexOf(category));
     }
 
@@ -415,22 +410,22 @@ public class LayerManager {
         }
     }
 
-    public void fireFeaturesChanged(final Collection features,
+    public void fireFeaturesChanged(final Collection<Feature> features,
             final FeatureEventType type, final Layer layer) {
         Assert.isTrue(type != FeatureEventType.GEOMETRY_MODIFIED);
         fireFeaturesChanged(features, type, layer, null);
     }
 
-    public void fireGeometryModified(final Collection features,
-            final Layer layer, final Collection oldFeatureClones) {
+    public void fireGeometryModified(final Collection<Feature> features,
+            final Layer layer, final Collection<Feature> oldFeatureClones) {
         Assert.isTrue(oldFeatureClones != null);
         fireFeaturesChanged(features, FeatureEventType.GEOMETRY_MODIFIED,
                 layer, oldFeatureClones);
     }
 
-    private void fireFeaturesChanged(final Collection features,
+    private void fireFeaturesChanged(final Collection<Feature> features,
             final FeatureEventType type, final Layer layer,
-            final Collection oldFeatureClones) {
+            final Collection<Feature> oldFeatureClones) {
         if (!firingEvents) {
             return;
         }
@@ -527,19 +522,19 @@ public class LayerManager {
      * @return an iterator over the layers, from bottom to top. Layers with
      *         #drawingLast = true appear last.
      */
-    public Iterator reverseIterator(Class layerableClass) {
-        ArrayList layerablesCopy = new ArrayList(getLayerables(layerableClass));
+    public <T extends Layerable> Iterator<T> reverseIterator(Class<T> layerableClass) {
+        ArrayList<T> layerablesCopy = new ArrayList<>(getLayerables(layerableClass));
         Collections.reverse(layerablesCopy);
         moveLayersDrawnLastToEnd(layerablesCopy);
 
         return layerablesCopy.iterator();
     }
 
-    private void moveLayersDrawnLastToEnd(List<Layerable> layerables) {
-        ArrayList<Layerable> layersDrawnLast = new ArrayList<>();
+    private <T extends Layerable> void moveLayersDrawnLastToEnd(List<T> layerables) {
+        ArrayList<T> layersDrawnLast = new ArrayList<>();
 
-        for (Iterator i = layerables.iterator(); i.hasNext();) {
-            Layerable layerable = (Layerable) i.next();
+        for (Iterator<T> i = layerables.iterator(); i.hasNext();) {
+            T layerable = i.next();
 
             if (!(layerable instanceof Layer)) {
                 continue;
@@ -548,7 +543,7 @@ public class LayerManager {
             Layer layer = (Layer) layerable;
 
             if (layer.isDrawingLast()) {
-                layersDrawnLast.add(layer);
+                layersDrawnLast.add((T)layer);
                 i.remove();
             }
         }
@@ -559,10 +554,9 @@ public class LayerManager {
     /**
      * @return Layers, not all Layerables
      */
-    public Iterator iterator() {
+    public Iterator<Layer> iterator() {
         // <<TODO:PERFORMANCE>> Create an iterator that doesn't build a
-        // Collection of
-        // Layers first (unlike #getLayers) [Jon Aquino]
+        // Collection of Layers first (unlike #getLayers) [Jon Aquino]
         return getLayers().iterator();
     }
 
@@ -605,7 +599,6 @@ public class LayerManager {
     }
 
     /**
-     * @param visibleLayersOnly
      * @return the envelope containing all layers
      * 
      * @since [Giuseppe Aruta] July 8 2015. Now it takes into account Sextante Raster and WMS
@@ -646,7 +639,7 @@ public class LayerManager {
      * Gets the list of WMSLayer.class registered in this manager
      */
     public List<WMSLayer> getWMSLayers() {
-        return (List<WMSLayer>) getLayerables(WMSLayer.class);
+        return getLayerables(WMSLayer.class);
     }
 
     /**
@@ -654,7 +647,7 @@ public class LayerManager {
      * Gets the list of RasterImageLayer.class registered in this manager
      */
     public List<RasterImageLayer> getRasterImageLayers() {
-        return (List<RasterImageLayer>) getLayerables(RasterImageLayer.class);
+        return getLayerables(RasterImageLayer.class);
     }
 
 
@@ -682,23 +675,20 @@ public class LayerManager {
     /**
      * To get all Layerables, set layerableClass to Layerable.class.
      */
-    public List getLayerables(Class layerableClass) {
+    public <T extends Layerable> List<T> getLayerables(Class<T> layerableClass) {
         Assert.isTrue(Layerable.class.isAssignableFrom(layerableClass));
 
-        ArrayList layers = new ArrayList();
+        List<T> layers = new ArrayList<>();
 
         // Create new ArrayLists to avoid ConcurrentModificationExceptions.
         // [Jon Aquino]
         for (Category category : categories) {
 
-            for (Object object : new ArrayList(category.getLayerables())) {
-                Layerable l = (Layerable) object;
-
-                if (!(layerableClass.isInstance(l))) {
+            for (Layerable layerable : new ArrayList<>(category.getLayerables())) {
+                if (!(layerableClass.isInstance(layerable))) {
                     continue;
                 }
-
-                layers.add(l);
+                layers.add((T)layerable);
             }
         }
 
@@ -770,17 +760,14 @@ public class LayerManager {
      * (RasterImageLayer.class in TMP folder)
      */
       public LinkedList<String> getTemporaryRasterImageLayers() {
-       	LinkedList<String> list = new LinkedList<String>();
-       	Collection<Layerable>  rlayers =  getLayerables(RasterImageLayer.class);
-           for (Iterator i = rlayers.iterator(); i.hasNext();) {
-           	
-               RasterImageLayer layer = (RasterImageLayer) i.next();
-               if (layer.isTemporaryLayer()) {
-                   list.add(layer.getName());
-               }
-           }
-
-           return list;
+          LinkedList<String> list = new LinkedList<>();
+          Collection<RasterImageLayer>  rlayers =  getLayerables(RasterImageLayer.class);
+          for (RasterImageLayer layer : rlayers) {
+              if (layer.isTemporaryLayer()) {
+                  list.add(layer.getName());
+              }
+          }
+          return list;
        }
     
     public LinkedList<Layer> getLayersWithNullDataSource() {
@@ -811,9 +798,9 @@ public class LayerManager {
     }
 
     // [UT] 25.08.2005 added
-    public void fireFeaturesAttChanged(final Collection features,
+    public void fireFeaturesAttChanged(final Collection<Feature> features,
             final FeatureEventType type, final Layer layer,
-            final Collection oldFeatureClones) {
+            final Collection<Feature> oldFeatureClones) {
         Assert.isTrue(type != FeatureEventType.GEOMETRY_MODIFIED);
         fireFeaturesChanged(features, type, layer, oldFeatureClones);
 

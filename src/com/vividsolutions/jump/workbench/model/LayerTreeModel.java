@@ -34,7 +34,6 @@ package com.vividsolutions.jump.workbench.model;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +70,7 @@ public class LayerTreeModel extends SimpleTreeModel {
         private BasicStyle style;
         private String label;
         
-        public ColorThemingValue(Object value, BasicStyle style, String label) {
+        ColorThemingValue(Object value, BasicStyle style, String label) {
             this.value = value;
             this.style = style;
             Assert.isTrue(label != null);
@@ -100,10 +99,10 @@ public class LayerTreeModel extends SimpleTreeModel {
         private final Double nextValue;
         private final Double value;
         private final String label;
-        private int width;
-        private int height;
+        //private int width;
+        //private int height;
         
-        public RasterStyleValueIntv(
+        RasterStyleValueIntv(
                 String colorMapType,
                 Color color,
                 Double value,
@@ -136,13 +135,13 @@ public class LayerTreeModel extends SimpleTreeModel {
             return label;
         }
         
-        public int getWidth() {
-            return width;
-        }
+        //public int getWidth() {
+        //    return width;
+        //}
         
-        public int getHeight() {
-            return height;
-        }
+        //public int getHeight() {
+        //    return height;
+        //}
         
         @Override
         public String toString() {
@@ -174,13 +173,13 @@ public class LayerTreeModel extends SimpleTreeModel {
         private int width;
         private int height;
         
-        public RasterStyleValueRamp(Double topValue, Double bottomValue, Color[] colors) {
+        RasterStyleValueRamp(Double topValue, Double bottomValue, Color[] colors) {
             this.topValue = topValue;
             this.bottomValue = bottomValue;
             this.colors = colors;
         }
         
-        public RasterStyleValueRamp(Double topValue, Double bottomValue, Color[] colors, int width, int height) {
+        RasterStyleValueRamp(Double topValue, Double bottomValue, Color[] colors, int width, int height) {
             this.topValue = topValue;
             this.bottomValue = bottomValue;
             this.colors = colors;
@@ -258,17 +257,14 @@ public class LayerTreeModel extends SimpleTreeModel {
         }
         if (parent instanceof Layer
                 && ColorThemingStyle.get((Layer) parent).isEnabled()) {
-            Map attributeValueToBasicStyleMap = ColorThemingStyle.get(
+            Map<Object,BasicStyle> attributeValueToBasicStyleMap = ColorThemingStyle.get(
                     (Layer) parent).getAttributeValueToBasicStyleMap();
-            Map attributeValueToLabelMap = ColorThemingStyle
+            Map<Object,String> attributeValueToLabelMap = ColorThemingStyle
                     .get((Layer) parent).getAttributeValueToLabelMap();
-            List colorThemingValues = new ArrayList();
-            for (Iterator i = attributeValueToBasicStyleMap.keySet().iterator(); i
-                    .hasNext();) {
-                Object value = (Object) i.next();
-                colorThemingValues.add(new ColorThemingValue(value,
-                        (BasicStyle) attributeValueToBasicStyleMap.get(value),
-                        (String) attributeValueToLabelMap.get(value)));
+            List<ColorThemingValue> colorThemingValues = new ArrayList<>();
+            for (Map.Entry<Object,BasicStyle> entry : attributeValueToBasicStyleMap.entrySet()) {
+                colorThemingValues.add(new ColorThemingValue(entry.getKey(),
+                        entry.getValue(), attributeValueToLabelMap.get(entry.getKey())));
             }
             return colorThemingValues;
         }
@@ -286,7 +282,7 @@ public class LayerTreeModel extends SimpleTreeModel {
 
                     if(!rasterImageLayer.getSymbology().getColorMapType().equals(RasterSymbology.TYPE_RAMP)) {
 
-                        List<RasterStyleValueIntv> styleValues_l = new ArrayList<RasterStyleValueIntv>();
+                        List<RasterStyleValueIntv> styleValues_l = new ArrayList<>();
 
                         Double[] keys = rasterSymbology.getColorMapEntries_tm()
                                 .keySet().toArray(new Double[rasterSymbology.getColorMapEntries_tm().size()]);
@@ -320,7 +316,7 @@ public class LayerTreeModel extends SimpleTreeModel {
 
                     } else {
 
-                        List<RasterStyleValueRamp> styleValues_l = new ArrayList<RasterStyleValueRamp>();
+                        List<RasterStyleValueRamp> styleValues_l = new ArrayList<>();
               
                         double topValue = rasterImageLayer.getMetadata().getStats().getMax(0);
                         double bottomValue = rasterImageLayer.getMetadata().getStats().getMin(0);
@@ -328,7 +324,7 @@ public class LayerTreeModel extends SimpleTreeModel {
                         Double[] keys = rasterSymbology.getColorMapEntries_tm()
                                 .keySet().toArray(new Double[rasterSymbology.getColorMapEntries_tm().size()]);
 
-                        List<Color> colors_l = new ArrayList<Color>();
+                        List<Color> colors_l = new ArrayList<>();
                         for(int i=keys.length-1; i>=0; i--) {
                             Double key = keys[i];
                             if(!rasterImageLayer.isNoData(key)) {
@@ -360,7 +356,6 @@ public class LayerTreeModel extends SimpleTreeModel {
         if (parent instanceof RasterStyleValueRamp) {
             return Collections.EMPTY_LIST;
         }
-        
         
         Assert.shouldNeverReachHere(parent.getClass().getName());
         return null;

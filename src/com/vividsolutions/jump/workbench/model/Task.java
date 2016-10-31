@@ -38,7 +38,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -52,20 +51,21 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 // I wonder if this class should be named "Project" instead. [Jon Aquino]
 public class Task implements LayerManagerProxy {
+
   private String name = "";
-	private Point taskWindowLocation = null;
-	private Dimension taskWindowSize = null;
-	private boolean maximized = false;
-	private Envelope savedViewEnvelope = null;
+  private Point taskWindowLocation = null;
+  private Dimension taskWindowSize = null;
+  private boolean maximized = false;
+  private Envelope savedViewEnvelope = null;
 
   private LayerManager layerManager;
 
-  private List<NameListener> nameListeners = new ArrayList<NameListener>();
+  private List<NameListener> nameListeners = new ArrayList<>();
 
   private File projectFile = null;
 
   /** The map of task properties. */
-  private Map<QName, Object> properties = new HashMap<QName, Object>();
+  private Map<QName, Object> properties = new HashMap<>();
   
   /** 
    * Project File property, 
@@ -123,7 +123,7 @@ public class Task implements LayerManagerProxy {
 
     Category actual = getLayerManager().getCategory(category.getName());
 
-    for (Layerable layerable : (Collection<Layerable>)category.getLayerables()) {
+    for (Layerable layerable : category.getLayerables()) {
       actual.addPersistentLayerable(layerable);
     }
   }
@@ -134,9 +134,9 @@ public class Task implements LayerManagerProxy {
    * @param name The name of the property.
    * @param value The value for the property.
    */
-  public void setProperty(QName name, Object value) {
-    properties.put(name, value);
-  }
+  	public void setProperty(QName name, Object value) {
+   	 	properties.put(name, value);
+  	}
 
   /**
    * <p>
@@ -161,39 +161,39 @@ public class Task implements LayerManagerProxy {
    * @param name The name of the property.
    * @return value The value for the property.
    */
-  @SuppressWarnings("unchecked")
-  public <T> T getProperty(QName name) {
-    return (T)properties.get(name);
-  }
+  	@SuppressWarnings("unchecked")
+  	public <T> T getProperty(QName name) {
+    	return (T)properties.get(name);
+  	}
 
   /**
    * Get all the task properties.
    * 
    * @return The task properties.
    */
-  public Map<QName, Object> getProperties() {
-    return properties;
-  }
+  	public Map<QName, Object> getProperties() {
+    	return properties;
+  	}
 
   /**
    * Set all the task properties.
    * 
    * @param properties The task properties.
    */
-  public void setProperties(Map<QName, Object> properties) {
-    this.properties.putAll(properties);
-  }
+  	public void setProperties(Map<QName, Object> properties) {
+    	this.properties.putAll(properties);
+  	}
 
-  public String toString() {
-    return getName();
-  }
+  	public String toString() {
+    	return getName();
+  	}
 
   /**
    * Interface: NameListener must respond to task name changing.
    */
-  public static interface NameListener {
-    public void taskNameChanged(String name);
-  }
+  	public interface NameListener {
+    	void taskNameChanged(String name);
+  	}
 
 	/*
 	 * The following getters and setters are for use by Java2XML to convert to and from XML

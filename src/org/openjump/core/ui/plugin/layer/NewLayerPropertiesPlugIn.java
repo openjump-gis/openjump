@@ -88,7 +88,6 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.HTMLPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
 import com.vividsolutions.jump.workbench.ui.renderer.style.AlphaSetting;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
@@ -205,13 +204,10 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         for (int i = 0; i < layers.length; i++) {
             currTransArray[i] = (255 - getAlpha(layers[i]));
         }
-        final ArrayList<Collection<?>> oldStyleList = new ArrayList<Collection<?>>(
+        final ArrayList<Collection<Style>> oldStyleList = new ArrayList<>(
                 layers.length);
-        for (int i = 0; i < layers.length; i++) {
-            Object layerable = layers[i];
-            if ((layerable instanceof Layer)) {
-                oldStyleList.add(((Layer) layerable).cloneStyles());
-            }
+        for (Layer layer : layers) {
+            oldStyleList.add(layer.cloneStyles());
         }
         infoPanel = new InfoPanel();
         stylePanel = new StylePanel();
@@ -254,13 +250,8 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             public void actionPerformed(ActionEvent e) {
                 if (oldStyleList != null) {
                     int j = 0;
-                    for (int i = 0; i < layers.length; i++) {
-                        Object layerable = layers[i];
-                        if ((layerable instanceof Layer)) {
-                            Layer layer = (Layer) layerable;
-                            layer.setStyles((Collection<?>) oldStyleList
-                                    .get(j++));
-                        }
+                    for (Layer layer : layers) {
+                        layer.setStyles(oldStyleList.get(j++));
                     }
                 }
                 frame.dispose();
@@ -296,11 +287,8 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
 
     public static ColorThemingStyle getColorThemingStyleIfEnabled(Layer layer) {
         ColorThemingStyle someStyle = null;
-        Collection<?> currentStyles = layer.getStyles();
-        for (Iterator<?> j = currentStyles.iterator(); j.hasNext();) {
-            Object style = j.next();
-            if (((style instanceof ColorThemingStyle))
-                    && (((ColorThemingStyle) style).isEnabled())) {
+        for (Style style : layer.getStyles()) {
+            if (style instanceof ColorThemingStyle && style.isEnabled()) {
                 someStyle = (ColorThemingStyle) style;
             }
         }
@@ -315,7 +303,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         List<Style> styles = layer.getStylesIfEnabled(AlphaSetting.class);
         Iterator<Style> localIterator = styles.iterator();
         if (localIterator.hasNext()) {
-            Style style = (Style) localIterator.next();
+            Style style = localIterator.next();
             return ((AlphaSetting) style).getAlpha();
         }
         return 128;
@@ -338,7 +326,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
     private final String bgColor4 = "\"#CCCCCC\"";
 
     public String header(String textA, String textB) {
-        String head = "  <tr valign=\"top\">"
+        return "  <tr valign=\"top\">"
                 + "     <td width=\"550\" height=\"12\" bgcolor="
                 + bgColor3
                 + "align=\"center\"><font face=\"Arial\" size=\"3\" align=\"right\"><b>"
@@ -346,11 +334,10 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                 + "     <td width=\"1586\" height=\"12\" bgcolor=" + bgColor3
                 + "align=\"center\"><font face=\"Arial\" size=\"3\"><b>"
                 + textB + "</b></font></td>" + "  </tr>";
-        return head;
     }
 
     public String property(String textA, String textB, String color) {
-        String prop = "  <tr valign=\"top\">"
+        return "  <tr valign=\"top\">"
                 + "     <td width=\"550\" height=\"12\" bgcolor="
                 + bgColor4
                 + "align=\"right\"><font face=\"Arial\" size=\"3\" align=\"right\">"
@@ -358,7 +345,6 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                 + "     <td width=\"1586\" height=\"12\" bgcolor=" + color
                 + "align=\"left\"><font face=\"Arial\" size=\"3\" >" + textB
                 + "</font></td>" + "  </tr>";
-        return prop;
     }
 
     private class InfoPanel extends HTMLPanel implements PropertyPanel {
@@ -379,7 +365,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         private String label_Path_IR = "";// Image file path
 
         private InfoPanel() throws Exception {
-            String infotext = null;
+            String infotext;
             Locale locale = new Locale("en", "UK");
             String pattern = "###.####";
             DecimalFormat df = (DecimalFormat) NumberFormat
@@ -548,7 +534,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             int numFeatures = 0;
             int numPts = 0;
             int numAtts = 0;
-            Geometry geo = null;
+            Geometry geo;
             boolean multipleGeoTypes = false;
             boolean multipleSourceTypes = false;
             Hashtable<String, Integer> geometryModes = new Hashtable<String, Integer>();
@@ -557,8 +543,8 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                         .getFeatureCollectionWrapper();
                 numFeatures += fcw.size();
                 numAtts += fcw.getFeatureSchema().getAttributeCount() - 1;
-                for (Iterator<?> i = fcw.getFeatures().iterator(); i.hasNext();) {
-                    geo = ((Feature) i.next()).getGeometry();
+                for (Feature feature : fcw.getFeatures()) {
+                    geo = feature.getGeometry();
                     if (geo != null) {
                         numPts += geo.getNumPoints();
                         if (geoClass.equals("")) {
@@ -568,10 +554,8 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                         }
                         String geoClassName = geo.getClass().getName();
                         int count = geometryModes.get(geoClassName) == null ? 0
-                                : (geometryModes.get(geoClassName))
-                                        .intValue();
-                        geometryModes.put(new String(geoClassName),
-                                new Integer(count + 1));
+                                : geometryModes.get(geoClassName);
+                        geometryModes.put(geoClassName, count + 1);
                     }
                 }
                 DataSourceQuery dsq = layers[l].getDataSourceQuery();
@@ -605,8 +589,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                     if (dotPos > 0) {
                         geometryMode = geometryMode.substring(dotPos + 1);
                     }
-                    int geometryModeCount = ((Integer) modeCount.nextElement())
-                            .intValue();
+                    int geometryModeCount = (modeCount.nextElement()).intValue();
                     geoClass = geoClass + (i == 0 ? " " : ", ") + geometryMode
                             + ":" + geometryModeCount;
                 }
@@ -649,7 +632,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                         + AVERAGE_PER_LAYER;
                 label_NumAtts_R = df.format(avgNumAtts) + AVERAGE_PER_LAYER;
             }
-            String charsetName = null;
+            String charsetName;
             DataSourceQuery dsq = layers[0].getDataSourceQuery();
             if (dsq != null) {
                 @SuppressWarnings("unchecked")
@@ -812,8 +795,6 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         */
     }
 
-
-
     
     // Get source file path of a vector layer
     // eg. c:\folder\vector.shp
@@ -840,16 +821,15 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         String fileSourcePath = "";
         FeatureCollection featureCollection = layer
                 .getFeatureCollectionWrapper();
-        String sourcePathImage = null;
+        String sourcePathImage;
         for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
-            sourcePathImage = (String) feature
+            sourcePathImage = feature
                     .getString(ImageryLayerDataset.ATTR_URI);
             sourcePathImage = sourcePathImage.substring(5);
             File f = new File(sourcePathImage);
             String filePath = f.getAbsolutePath();
-            String filePath1 = filePath.replace("%20", " ");
-            fileSourcePath = filePath1;
+            fileSourcePath = filePath.replace("%20", " ");
 
         }
 
@@ -860,20 +840,19 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
     // Get file extension of a layer
     // eg. shp, tif, ect
     public static String imageFileExtension(Layer layer) {
-        String extension = "";
+        String extension;
         String fileSourcePath = "";
         FeatureCollection featureCollection = layer
                 .getFeatureCollectionWrapper();
-        String sourcePathImage = null;
+        String sourcePathImage;
         for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
-            sourcePathImage = (String) feature
+            sourcePathImage = feature
                     .getString(ImageryLayerDataset.ATTR_URI);
             sourcePathImage = sourcePathImage.substring(5);
             File f = new File(sourcePathImage);
             String filePath = f.getAbsolutePath();
-            String filePath1 = filePath.replace("%20", " ");
-            fileSourcePath = filePath1;
+            fileSourcePath = filePath.replace("%20", " ");
 
         }
         extension = FileUtil.getExtension(fileSourcePath).toUpperCase();
@@ -882,12 +861,12 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
     }
     
     
-    public static abstract interface PropertyPanel {
-        public abstract String getTitle();
+    public interface PropertyPanel {
+        String getTitle();
 
-        public abstract void updateStyles();
+        void updateStyles();
 
-        public abstract String validateInput();
+        String validateInput();
     }
 
     // Transparency panel from original LayerPropertyPlugIn.class
@@ -899,11 +878,11 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             Box box = new Box(1);
             setBorder(BorderFactory
                     .createTitledBorder(PROPORTIONAL_TRANSPARENCY_ADJUSTER));
-            Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+            Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
             int value = 0;
             for (int i = -100; (i <= 100) && (i >= -100); i += 20) {
-                labelTable.put(new Integer(value),
-                        new JLabel(new Integer(i).toString()));
+                labelTable.put(value,
+                        new JLabel(Integer.toString(i)));
                 value += 10;
             }
             transparencySlider.setMinimumSize(new Dimension(200, 20));

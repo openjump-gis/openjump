@@ -5,5 +5,5 @@ package com.vividsolutions.jump.workbench.model;
  * all memory used by the implementing object.
  */
 public interface Disposable {
-  public void dispose();
+  void dispose();
 }

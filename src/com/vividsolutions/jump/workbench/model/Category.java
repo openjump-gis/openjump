@@ -35,7 +35,6 @@ package com.vividsolutions.jump.workbench.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import com.vividsolutions.jts.util.Assert;
@@ -44,7 +43,8 @@ import com.vividsolutions.jts.util.Assert;
  * A folder containing Layers.
  */
 public class Category {
-    private ArrayList layerables = new ArrayList();
+
+    private List<Layerable> layerables = new ArrayList<>();
     private String name;
     private LayerManager layerManager;
 
@@ -57,23 +57,22 @@ public class Category {
     }
 
     public Task getTask() {
-      if (layerManager != null) {
-        return layerManager.getTask();
-      } else {
-        return null;
-      }
+        if (layerManager != null) {
+            return layerManager.getTask();
+        } else {
+            return null;
+        }
     }
 
     public void setLayerManager(LayerManager layerManager) {
         this.layerManager = layerManager;
     }
 
-    public void fireCategoryChanged(CategoryEventType type) {
+    private void fireCategoryChanged(CategoryEventType type) {
         if (getLayerManager() == null) {
             //layerManager is null when Java2XML creates the object. [Jon Aquino]
             return;
         }
-        
         getLayerManager().fireCategoryChanged(this, type);
     }
 
@@ -85,24 +84,21 @@ public class Category {
      * Called by Java2XML
      * @return Layerables with enough information to be saved to a project file
      */
-    public List getPersistentLayerables() {
-        ArrayList persistentLayerables = new ArrayList();
+    public List<Layerable> getPersistentLayerables() {
+        ArrayList<Layerable> persistentLayerables = new ArrayList<>();
 
-        for (Iterator i = layerables.iterator(); i.hasNext();) {
-            Layerable layerable = (Layerable) i.next();
-
+        for (Layerable layerable : layerables) {
             if (layerable instanceof Layer &&
                     !((Layer) layerable).hasReadableDataSource()) {
                 continue;
             }
-
             persistentLayerables.add(layerable);
         }
 
         return persistentLayerables;
     }
 
-    public List getLayerables() {
+    public List<Layerable> getLayerables() {
         return Collections.unmodifiableList(layerables);
     }
 

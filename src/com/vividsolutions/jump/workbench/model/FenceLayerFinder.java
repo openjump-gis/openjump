@@ -45,6 +45,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
  * Retrieves the layer containing the single Fence polygon (if any) and sets its styles.
  */
 public class FenceLayerFinder extends SystemLayerFinder {
+
     public static final String LAYER_NAME = I18N.get("model.FenceLayerFinder.fence");
     public FenceLayerFinder(LayerManagerProxy layerManagerProxy) {
         super(LAYER_NAME, layerManagerProxy);
@@ -59,7 +60,7 @@ public class FenceLayerFinder extends SystemLayerFinder {
             return null;
         }
 
-        return ((Feature) getLayer().getFeatureCollectionWrapper().iterator().next()).getGeometry();
+        return (getLayer().getFeatureCollectionWrapper().iterator().next()).getGeometry();
     }
 
     protected void applyStyles(Layer layer) {
