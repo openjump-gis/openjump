@@ -1833,8 +1833,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         }
     }
 
-    private class DefaultApplicationExitHandler implements
-            ApplicationExitHandler {
+    private class DefaultApplicationExitHandler implements ApplicationExitHandler {
+
         public void exitApplication(JFrame mainFrame) {
             PlugInContext context = getContext().createPlugInContext();
             if (confirmClose(I18N.get("ui.WorkbenchFrame.exit-jump"),
@@ -1850,6 +1850,14 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 
                     if (res == JOptionPane.YES_OPTION) {
                         SaveProjectPlugIn saveProjectPlugIn = new SaveProjectPlugIn();
+                        //[mmichaud] added on 2016-11-01 to fix #438
+                        UndoableEditReceiver undoableEditReceiver = workbenchContext
+                                .getLayerManager() != null ? workbenchContext.getLayerManager()
+                                .getUndoableEditReceiver() : null;
+                        if (undoableEditReceiver != null) {
+                            undoableEditReceiver.startReceiving();
+                        }
+                        // end of fix
                         saveProjectPlugIn.initialize(context);
                         if (saveProjectPlugIn.execute(context)) {
                             saveProjectPlugIn.initialize(context);
@@ -1868,6 +1876,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     }
 
                 } catch (Exception e) {
+                    e.printStackTrace();
                     log(null, e);
                 }
 
