@@ -108,6 +108,7 @@ public class Logger {
    */
   public static void log(String msg, Throwable t, Level logLevel,
       StackTraceElement calledFrom) {
+
     // get caller
     StackTraceElement element = getCaller(calledFrom);
 
@@ -125,7 +126,17 @@ public class Logger {
     if (element != null && !loggerLevel.isGreaterOrEqual(Level.INFO))
       msgAppend = " at " + element + "";
 
-    // use t message if null given
+    // empty log messages provoke this error line for devs to fix the cause
+    if (msg!=null && msg.isEmpty()) {
+      error("Logger: string message was empty but not null at "+element);
+    }
+
+    // throw error on empty log entries
+    if (t == null && msg == null)
+        throw new IllegalArgumentException(
+            "Logger: either message or throwable must be given.");
+
+    // use throwable's message if null message given
     if (msg == null)
       msg = t.getMessage();
 
