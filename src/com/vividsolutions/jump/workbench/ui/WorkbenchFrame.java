@@ -631,14 +631,29 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         maximumFeatureExtentForEnvelopeRenderingInPixels = newMaximumFeatureExtentForEnvelopeRenderingInPixels;
     }
 
+    /**
+     * backward compatibility log method for legacy code
+     * @deprecated - use com.vividsolutions.jump.workbench.Logger instead
+     */
+    @Deprecated
     public void log(String message) {
         log(message, null, new Exception().getStackTrace()[0]);
     }
 
+    /**
+     * backward compatibility log method for legacy code.
+     * NOTE: parameter clazz is ignored
+     * @deprecated - use com.vividsolutions.jump.workbench.Logger instead
+     */
+    @Deprecated
     public void log(String message, Class clazz) {
         log(message, null, new Exception().getStackTrace()[0]);
     }
 
+    /**
+     * backward compatibility log method for legacy code
+     * @deprecated - use com.vividsolutions.jump.workbench.Logger instead
+     */
     public void log(String message, Throwable t) {
         log(message, t, new Exception().getStackTrace()[0]);
     }
