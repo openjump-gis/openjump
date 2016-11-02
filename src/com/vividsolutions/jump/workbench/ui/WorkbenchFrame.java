@@ -654,6 +654,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      * backward compatibility log method for legacy code
      * @deprecated - use com.vividsolutions.jump.workbench.Logger instead
      */
+    @Deprecated
     public void log(String message, Throwable t) {
         log(message, t, new Exception().getStackTrace()[0]);
     }
