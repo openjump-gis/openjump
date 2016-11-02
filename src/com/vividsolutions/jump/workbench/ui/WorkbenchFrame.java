@@ -1221,8 +1221,6 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      *            Description of the Parameter
      */
     public void handleThrowable(final Throwable t) {
-        // always log message and stack only if debug is enabled
-        Logger.warn(t.getMessage(), Logger.isDebugEnabled() ? t : null);
         Component parent = this;
         Window[] ownedWindows = getOwnedWindows();
         for (int i = 0; i < ownedWindows.length; i++) {
@@ -1236,10 +1234,14 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         handleThrowable(t, parent);
     }
 
+    /**
+     * show a modal error dialog and log the issue
+     */
     public void handleThrowable(final Throwable t, final Component parent) {
+        // always log message and stack only if debug is enabled
+        Logger.warn(t.getMessage(), Logger.isDebugEnabled() ? t : null);
+
         final String stack = StringUtil.stackTrace(t);
-        // log it
-        log(stack);
         // show it
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -1850,67 +1852,81 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         }
     }
 
-    private class DefaultApplicationExitHandler implements ApplicationExitHandler {
+  private class DefaultApplicationExitHandler implements ApplicationExitHandler {
 
-        public void exitApplication(JFrame mainFrame) {
-            PlugInContext context = getContext().createPlugInContext();
-            if (confirmClose(I18N.get("ui.WorkbenchFrame.exit-jump"),
-                    getLayersWithModifiedFeatureCollections(),
-                    getGeneratedLayers(), WorkbenchFrame.this)) {
+    public void exitApplication(final JFrame mainFrame) {
+      PlugInContext context = getContext().createPlugInContext();
+      if (confirmClose(I18N.get("ui.WorkbenchFrame.exit-jump"),
+          getLayersWithModifiedFeatureCollections(), getGeneratedLayers(),
+          WorkbenchFrame.this)) {
 
-                // Giuseppe Aruta -June 30 2015 - warning to save selected
-                // project before closing Openjump
-                try {
-                    int res = JOptionPane.showConfirmDialog(null, SAVE_PROJECT,
-                            EXIT_OPENJUMP, JOptionPane.YES_NO_CANCEL_OPTION,
-                            JOptionPane.DEFAULT_OPTION, null);
+        // Giuseppe Aruta -June 30 2015 - warning and save selected
+        // project before closing Openjump
+        try {
+          int res = JOptionPane.showConfirmDialog(null, SAVE_PROJECT,
+              EXIT_OPENJUMP, JOptionPane.YES_NO_CANCEL_OPTION,
+              JOptionPane.DEFAULT_OPTION, null);
 
-                    if (res == JOptionPane.YES_OPTION) {
-                        SaveProjectPlugIn saveProjectPlugIn = new SaveProjectPlugIn();
-                        //[mmichaud] added on 2016-11-01 to fix #438
-                        UndoableEditReceiver undoableEditReceiver = workbenchContext
-                                .getLayerManager() != null ? workbenchContext.getLayerManager()
-                                .getUndoableEditReceiver() : null;
-                        if (undoableEditReceiver != null) {
-                            undoableEditReceiver.startReceiving();
-                        }
-                        // end of fix
-                        saveProjectPlugIn.initialize(context);
-                        if (saveProjectPlugIn.execute(context)) {
-                            saveProjectPlugIn.initialize(context);
-                            String projectName = context.getTask()
-                                    .getProjectFile().getAbsolutePath();
+          if (res == JOptionPane.YES_OPTION) {
 
-                            JOptionPane.showMessageDialog(null, PROJECT_SAVED
-                                    + projectName, EXIT_OPENJUMP,
-                                    JOptionPane.PLAIN_MESSAGE);
-
-                        } else {
-                            return;
-                        }
-                    } else if (res == JOptionPane.CANCEL_OPTION) {
-                        return;
-                    }
-
-                } catch (Exception e) {
-                    handleThrowable(e);
-                }
-
-                // PersistentBlackboardPlugIn listens for when the workbench is
-                // hidden [Jon Aquino]
-                saveWindowState();
-                setVisible(false);
-                // Invoke System#exit after all pending GUI events have been
-                // fired
-                // (e.g. the hiding of this WorkbenchFrame) [Jon Aquino]
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        System.exit(0);
-                    }
-                });
+            SaveProjectPlugIn saveProjectPlugIn = new SaveProjectPlugIn();
+            // [mmichaud] added on 2016-11-01 to fix #438
+            UndoableEditReceiver undoableEditReceiver = workbenchContext
+                .getLayerManager() != null ? workbenchContext.getLayerManager()
+                .getUndoableEditReceiver() : null;
+            if (undoableEditReceiver != null) {
+              undoableEditReceiver.startReceiving();
             }
+            // end of fix
+            
+            // save and show affirmation dialog on success
+            saveProjectPlugIn.initialize(context);
+            if (saveProjectPlugIn.execute(context)) {
+              String projectName = context.getTask().getProjectFile()
+                  .getAbsolutePath();
+
+              JOptionPane.showMessageDialog(null, PROJECT_SAVED + projectName,
+                  EXIT_OPENJUMP, JOptionPane.PLAIN_MESSAGE);
+            }
+            // failure to save is handled like a 'Cancel exit' for now 
+            else {
+              return;
+            }
+          } else if (res == JOptionPane.CANCEL_OPTION) {
+            return;
+          }
+
+          // PersistentBlackboardPlugIn listens for when the workbench is
+          // hidden [Jon Aquino]
+          saveWindowState();
+          setVisible(false);
+
+        } catch (final Throwable t) {
+          try {
+            // always log message, log stack only if debug is enabled
+            Logger.warn(t.getMessage(), Logger.isDebugEnabled() ? t : null);
+
+            // show it instantly, before the main frame get's destroyed
+            ErrorDialog.show(mainFrame,
+                StringUtil.toFriendlyName(t.getClass().getName()),
+                toMessage(t), StringUtil.stackTrace(t));
+          } catch (Throwable t2) {
+            // whatever happened here is not important enough to let it
+            // break the application exiting. log it though.
+            Logger.error(t2);
+          }
         }
+
+        // Invoke System#exit after all pending GUI events have been fired
+        // (e.g. the hiding of this WorkbenchFrame) [Jon Aquino]
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            System.exit(0);
+          }
+        });
+      }
     }
+  }
 
     // Method completed by [mmichaud 2007-06-03] to close properly
     // internal frames depending on a TaskFrame.
