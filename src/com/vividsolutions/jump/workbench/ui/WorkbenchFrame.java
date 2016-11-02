@@ -660,7 +660,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     }
 
     private void log(String message, Throwable t, StackTraceElement calledFrom) {
-        Logger.log(message, null, Level.INFO, calledFrom);
+        Logger.log(message, Logger.isDebugEnabled() ? t : null, Level.INFO, calledFrom);
     }
 
     public void setMinimumFeatureExtentForAnyRenderingInPixels(
@@ -1221,7 +1221,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      *            Description of the Parameter
      */
     public void handleThrowable(final Throwable t) {
-        log(StringUtil.stackTrace(t));
+        // always log message and stack only if debug is enabled
+        Logger.warn(t.getMessage(), Logger.isDebugEnabled() ? t : null);
         Component parent = this;
         Window[] ownedWindows = getOwnedWindows();
         for (int i = 0; i < ownedWindows.length; i++) {
@@ -1892,8 +1893,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    log(null, e);
+                    handleThrowable(e);
                 }
 
                 // PersistentBlackboardPlugIn listens for when the workbench is
