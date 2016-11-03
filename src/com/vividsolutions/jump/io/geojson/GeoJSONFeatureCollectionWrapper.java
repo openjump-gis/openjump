@@ -81,6 +81,11 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
             setGeometry((Geometry) attrib);
           }
         }
+        // enforce String if schema says so
+        else if (featureSchema.getAttributeType(i).equals(AttributeType.STRING)
+            && attrib != null && !(attrib instanceof String)) {
+          attrib = String.valueOf(attrib);
+        }
 
         return attrib;
       }
