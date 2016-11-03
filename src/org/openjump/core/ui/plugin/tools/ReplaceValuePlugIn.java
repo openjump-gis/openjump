@@ -39,7 +39,6 @@ import java.util.*;
 
 import javax.swing.*;
 
-
 import org.openjump.sigle.utilities.gui.DialogUtil;
 
 import com.vividsolutions.jump.I18N;
@@ -51,9 +50,6 @@ import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-import static com.vividsolutions.jump.I18N.get;
-
-
 /**
  * 
  * @author Erwan Bocher Laboratoire RESO UMR CNRS 6590
@@ -62,19 +58,13 @@ import static com.vividsolutions.jump.I18N.get;
  * license Licence CeCILL http://www.cecill.info/
  */
 
-public class ReplaceValuePlugIn
-    extends AbstractPlugIn
-    implements ThreadedPlugIn
-{
-
+public class ReplaceValuePlugIn extends AbstractPlugIn implements ThreadedPlugIn {
  
-  private MultiInputDialog dialog;
   //-- replace later with correct language
   private static String ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
   private static String VALUE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value");
   private static String ATTRIBUTE_SRC = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-src");
   private static String BY_ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value-by-copy");
-  private static String TYPE = "";
   private static String SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
   private static String DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
 
@@ -87,19 +77,16 @@ public class ReplaceValuePlugIn
   public static final ImageIcon ICON = IconLoader.icon("Wrench.gif");
 
 
-  public ReplaceValuePlugIn()
-  {
-   
-  }
+  public ReplaceValuePlugIn() {}
   
   public void initialize(PlugInContext context) {
-		
-	  context.getFeatureInstaller().addMainMenuItem(this,new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES }, 
-  			this.getName(), false, null, 
-  			createEnableCheck(context.getWorkbenchContext())
-				); 
-	   	
-	}
+
+	  context.getFeatureInstaller().addMainMenuPlugin(
+	  		this,
+			  new String[]{ MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES },
+			  this.getName(), false, null,
+			  createEnableCheck(context.getWorkbenchContext()));
+  }
 
   public String getName(){
   	return I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Replace-Attribute-Value");
@@ -107,14 +94,14 @@ public class ReplaceValuePlugIn
   
   public boolean execute(PlugInContext context) throws Exception {
 //	  lemesre: duplicate from private initialisation
-	  ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
-	  VALUE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value");
-	  ATTRIBUTE_SRC = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-src");
-	  BY_ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value-by-copy");
-	  SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
-	  DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
+	  //ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
+	  //VALUE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value");
+	  //ATTRIBUTE_SRC = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-src");
+	  //BY_ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value-by-copy");
+	  //SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
+	  //DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
 
-	  dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
+	  MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
 	  setDialogValues(dialog, context);
 	  if (layer.isEditable()){
 		  GUIUtil.centreOnWindow(dialog);
@@ -130,27 +117,24 @@ public class ReplaceValuePlugIn
 
   }
 
-  public void run(TaskMonitor monitor, PlugInContext context)
-  throws Exception
-  {
+  public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
 
 	  // input-proofing
 	  if (layer == null) return;
 	  if (attrName == null) return;
 	  if (value == null && attrNameSrc == null) return;
 
-
-	  List srcFeatures = layer.getFeatureCollectionWrapper().getFeatures();
-
+	  List<Feature> srcFeatures = layer.getFeatureCollectionWrapper().getFeatures();
 
 	  if (useSelected){
 
-		  Collection featureSelected = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems(layer); ;
+		  Collection<Feature> featureSelected =
+				  context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems(layer);
           if (featureSelected.size() == 0) {
-              context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-feature-selected"));
+              context.getWorkbenchFrame().warnUser(
+              		I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-feature-selected"));
               return;
           }
-		  //System.out.println("Feature selected");
 		  monitor.report(I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Replacing-values"));
 		  if (byAttribute) {
 			  replaceByAttributeValue(featureSelected, attrName,attrNameSrc);
@@ -160,7 +144,6 @@ public class ReplaceValuePlugIn
 
 	  } else {
 
-		  //System.out.println("All features");
 		  if (byAttribute) {
 			  replaceByAttributeValue(srcFeatures, attrName,attrNameSrc);
 		  } else {
@@ -175,8 +158,7 @@ public class ReplaceValuePlugIn
   }
   
 
-  private void setDialogValues(final MultiInputDialog dialog, PlugInContext context)
-  {
+  private void setDialogValues(final MultiInputDialog dialog, PlugInContext context) {
 	  
 	dialog.setSideBarDescription(DESCRIPTION);  
     //Initial layer value is null
@@ -224,9 +206,7 @@ public class ReplaceValuePlugIn
 		  public void actionPerformed(ActionEvent e) {
 			  JCheckBox chk = (JCheckBox) e.getSource();
 			  valuetextfield.setEnabled(!chk.isSelected());
-			  // valuetextfield.setVisible(!chk.isSelected());
-			  dialog.getComboBox(ATTRIBUTE_SRC).setEnabled(chk.isSelected()); 
-			  // dialog.getComboBox(ATTRIBUTE_SRC).setVisible(chk.isSelected()); 
+			  dialog.getComboBox(ATTRIBUTE_SRC).setEnabled(chk.isSelected());
 		  }
 	  });
 	
@@ -244,66 +224,47 @@ public class ReplaceValuePlugIn
 
   }
   
-  private void replaceValue(Collection selectedFC, String attrName, String value){
+  private void replaceValue(Collection<Feature> selectedFC, String attrName, String value){
 
-	  AttributeType type;
-	  type = ((Feature) selectedFC.iterator().next()).getSchema().getAttributeType(attrName);
+	  AttributeType type =
+			  selectedFC.iterator().next().getSchema().getAttributeType(attrName);
 
-	  for (Iterator i = selectedFC.iterator(); i.hasNext(); ) {
-		  Feature f = (Feature) i.next();
+	  for (Feature f : selectedFC) {
 
-		  if (byAttribute) {
-			  // replace by the value of selected attribute
-
-		  }else {
+		  if (!byAttribute) {
 			  // remplacement par la valeur saisie
 			  if (type == AttributeType.DOUBLE) {
 				  f.setAttribute(attrName, new Double (value));
-
 			  } else if (type == AttributeType.INTEGER)  {
-				  f.setAttribute(attrName, new Integer (value)); 
-
+				  f.setAttribute(attrName, new Integer (value));
 			  } else if (type == AttributeType.STRING) {
-				  f.setAttribute(attrName, new String (value)); 
-
-			  } else {
-
+				  f.setAttribute(attrName, value);
 			  }
 		  }
 	  }
 
   }
 		  
-  private void  replaceByAttributeValue(Collection selectedFC, String attrNameDest,
+  private void  replaceByAttributeValue(Collection<Feature> selectedFC, String attrNameDest,
 		  String attrNameSrc){
 
-	  //AttributeType typeSrc;
-	  AttributeType typeDest;
-	  String AttrValue;
-	  typeDest = ((Feature) selectedFC.iterator().next()).getSchema().getAttributeType(attrNameDest); 
+	  AttributeType typeDest =
+			  selectedFC.iterator().next().getSchema().getAttributeType(attrNameDest);
 
-	  for (Iterator i = selectedFC.iterator(); i.hasNext(); ) {
-		  Feature f = (Feature) i.next();
+	  for (Feature f : selectedFC) {
 
-		  AttrValue = (String) f.getAttribute(attrNameSrc);
+		  String attrValue = f.getString(attrNameSrc);
 
 		  if (byAttribute) {
 			  // replace by the value of selected attribute
 			  if (typeDest == AttributeType.DOUBLE) {		    
-				  f.setAttribute(attrNameDest, new Double (AttrValue));
-
+				  f.setAttribute(attrNameDest, new Double (attrValue));
 			  } else if (typeDest == AttributeType.INTEGER)  {
-				  f.setAttribute(attrNameDest, new Integer (AttrValue)); 
+				  f.setAttribute(attrNameDest, new Integer (attrValue));
 
 			  } else if (typeDest == AttributeType.STRING) {
-				  f.setAttribute(attrNameDest, new String (AttrValue)); 
-
-			  } else {
-
+				  f.setAttribute(attrNameDest, attrValue);
 			  }
-
-		  }else {
-			  
 		  }
 	  }
 
@@ -311,15 +272,11 @@ public class ReplaceValuePlugIn
 
   public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
   	EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-  	
   	return new MultiEnableCheck()
-		//.add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-        //.add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1))
-		//.add(checkFactory.createSelectedLayersMustBeEditableCheck());
         .add(checkFactory.createExactlyOneSelectedLayerMustBeEditableCheck())
         .add(new EnableCheck(){
             public String check(JComponent component) {
-                Layer[] layers = workbenchContext.getLayerNamePanel().getSelectedLayers();
+                Layer[] layers = workbenchContext.getLayerableNamePanel().getSelectedLayers();
                 Layer layer = null;
                 for (Layer lyr : layers) {
                     if (lyr.isEditable()) {

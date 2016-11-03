@@ -67,43 +67,36 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
-* Calculates areas and lengths from information obtained
-* from the user via a {@link MultiInputDialog}.
-*
-*/
+ * Calculates areas and lengths from information obtained
+ * from the user via a {@link MultiInputDialog}.
+ */
 public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
 	
-    private String LAYER_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.layer");
-    private String AREA_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.area-attribute-name");
-    private String LENGTH_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.length-attribute-name");
-    private String LENGTH_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-length");
-    private String AREA_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-area");
+    private static String LAYER_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.layer");
+    private static String AREA_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.area-attribute-name");
+    private static String LENGTH_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.length-attribute-name");
+    private static String LENGTH_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-length");
+    private static String AREA_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-area");
 
     public void initialize(PlugInContext context) throws Exception {
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-        featureInstaller.addMainMenuItem(
+        featureInstaller.addMainMenuPlugin(
             this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},
-            new JMenuItem(this.getName() + "..."),
+            this.getName() + "...", false, null,
             createEnableCheck(context.getWorkbenchContext())); 
     }
+
+    private Layer layer;
+    private boolean setLength, setArea;
+    private String lengthAttribute, areaAttribute;
     
     public boolean execute(PlugInContext context) throws Exception {
-    	//[sstein, 16.07.2006] set again to obtain correct language
-        LAYER_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.layer");
-        AREA_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.area-attribute-name");
-        LENGTH_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.length-attribute-name");
-        LENGTH_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-length");
-        AREA_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-area");
 
         //<<TODO>> Undo? [Jon Aquino]
         //<<TODO>> Two-phase commit? [Jon Aquino]
@@ -111,82 +104,46 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
         if (!dialog.wasOKPressed()) {
             return false;
         }
-        if (dialog.getBoolean(AREA_CHECK_BOX)) {
-            updateAreas(dialog.getLayer(LAYER_COMBO_BOX), dialog.getText(AREA_COMBO_BOX));
+        getDialogValues(dialog);
+        if (setArea) {
+            updateAreas(layer, areaAttribute);
         }
-        if (dialog.getBoolean(LENGTH_CHECK_BOX)) {
-            updateLengths(
-                dialog.getLayer(LAYER_COMBO_BOX),
-                dialog.getText(LENGTH_COMBO_BOX));
+        if (setLength) {
+            updateLengths(layer, lengthAttribute);
         }
         context.getLayerManager().fireFeaturesChanged(
-            dialog.getLayer(LAYER_COMBO_BOX).getFeatureCollectionWrapper().getFeatures(),
-            FeatureEventType.ATTRIBUTES_MODIFIED,
-            dialog.getLayer(LAYER_COMBO_BOX));
+            layer.getFeatureCollectionWrapper().getFeatures(),
+            FeatureEventType.ATTRIBUTES_MODIFIED, layer);
         return true;
     }
+
     private MultiInputDialog prompt(PlugInContext context) {
+
         final MultiInputDialog dialog =
             new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
-        dialog.addEditableLayerComboBox(
-            LAYER_COMBO_BOX,
-            null,
-            null,
-            context.getLayerManager());
-        initFields(dialog, AREA_CHECK_BOX, AREA_COMBO_BOX, 0);
-        initFields(dialog, LENGTH_CHECK_BOX, LENGTH_COMBO_BOX, 1);
+
+        dialog.addLayerComboBox(LAYER_COMBO_BOX,
+                context.getLayerableNamePanel().chooseEditableLayer(), "",
+                context.getLayerManager().getEditableLayers());
+        dialog.addCheckBox(AREA_CHECK_BOX, setArea);
+        dialog.addAttributeComboBox(AREA_COMBO_BOX, LAYER_COMBO_BOX, AttributeTypeFilter.NUMSTRING_FILTER,"");
+        dialog.addCheckBox(LENGTH_CHECK_BOX, setLength);
+        dialog.addAttributeComboBox(LENGTH_COMBO_BOX, LAYER_COMBO_BOX, AttributeTypeFilter.NUMSTRING_FILTER,"");
+
         initEnableChecks(dialog);
-        loadValues(dialog, context);
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
-        if (dialog.wasOKPressed()) {
-            saveValues(dialog, context);
-        }
         return dialog;
     }
-    private void saveValues(MultiInputDialog dialog, PlugInContext context) {
-        Blackboard blackboard = context.getLayerManager().getBlackboard();
-        blackboard.put(namespace() + LAYER_COMBO_BOX, dialog.getLayer(LAYER_COMBO_BOX));
-        blackboard.put(
-            namespace() + AREA_CHECK_BOX,
-            dialog.getCheckBox(AREA_CHECK_BOX).isSelected());
-        blackboard.put(
-            namespace() + LENGTH_CHECK_BOX,
-            dialog.getCheckBox(LENGTH_CHECK_BOX).isSelected());
-        blackboard.put(
-            namespace() + AREA_COMBO_BOX,
-            dialog.getComboBox(AREA_COMBO_BOX).getSelectedItem());
-        blackboard.put(
-            namespace() + LENGTH_COMBO_BOX,
-            dialog.getComboBox(LENGTH_COMBO_BOX).getSelectedItem());
+
+    private void getDialogValues(MultiInputDialog dialog) {
+        layer = dialog.getLayer(LAYER_COMBO_BOX);
+        setLength = dialog.getBoolean(LENGTH_CHECK_BOX);
+        lengthAttribute = dialog.getText(LENGTH_COMBO_BOX);
+        setArea = dialog.getBoolean(AREA_CHECK_BOX);
+        areaAttribute = dialog.getText(AREA_COMBO_BOX);
     }
-    private void loadValues(MultiInputDialog dialog, PlugInContext context) {
-        Blackboard blackboard = context.getLayerManager().getBlackboard();
-        dialog.getComboBox(LAYER_COMBO_BOX).setSelectedItem(
-            CollectionUtil.ifNotIn(
-                blackboard.get(namespace() + LAYER_COMBO_BOX),
-                GUIUtil.items(dialog.getComboBox(LAYER_COMBO_BOX)),
-                candidateLayer(context)));
-        GUIUtil.setSelectedWithClick(
-            dialog.getCheckBox(AREA_CHECK_BOX),
-            blackboard.get(namespace() + AREA_CHECK_BOX, true));
-        GUIUtil.setSelectedWithClick(
-            dialog.getCheckBox(LENGTH_CHECK_BOX),
-            blackboard.get(namespace() + LENGTH_CHECK_BOX, true));
-        dialog.getComboBox(AREA_COMBO_BOX).setSelectedItem(
-            CollectionUtil.ifNotIn(
-                blackboard.get(namespace() + AREA_COMBO_BOX),
-                GUIUtil.items(dialog.getComboBox(AREA_COMBO_BOX)),
-                dialog.getComboBox(AREA_COMBO_BOX).getSelectedItem()));
-        dialog.getComboBox(LENGTH_COMBO_BOX).setSelectedItem(
-            CollectionUtil.ifNotIn(
-                blackboard.get(namespace() + LENGTH_COMBO_BOX),
-                GUIUtil.items(dialog.getComboBox(LENGTH_COMBO_BOX)),
-                dialog.getComboBox(LENGTH_COMBO_BOX).getSelectedItem()));
-    }
-    private String namespace() {
-        return getClass().getName() + " - ";
-    }
+
     private void initEnableChecks(final MultiInputDialog dialog) {
         dialog.addEnableChecks(
                 LENGTH_COMBO_BOX, new EnableCheck() {
@@ -201,74 +158,13 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
             }
         );
     }
-    private String attributeName(List attributeNames, int preferredIndex) {
-        return (String) attributeNames.get(
-            attributeNames.size() > preferredIndex ? preferredIndex : 0);
+
+    private interface Converter {
+        Object convert(double d);
     }
-    private void initFields(
-        final MultiInputDialog dialog,
-        final String checkBoxFieldName,
-        final String comboBoxFieldName,
-        final int preferredCandidateAttributeIndex) {
-        dialog.addCheckBox(checkBoxFieldName, true);
-        dialog.addComboBox(comboBoxFieldName, null, new ArrayList(), null);
-        dialog.getComboBox(LAYER_COMBO_BOX).addActionListener(new ActionListener() {
-            private Layer lastLayer = null;
-            public void actionPerformed(ActionEvent e) {
-                Layer newLayer =
-                    (Layer) dialog.getComboBox(LAYER_COMBO_BOX).getSelectedItem();
-                if (lastLayer == newLayer) {
-                    return;
-                }
-                lastLayer = newLayer;
-                dialog.getComboBox(comboBoxFieldName).setModel(
-                    new DefaultComboBoxModel(
-                        new Vector(candidateAttributeNames(newLayer))));
-                if (!candidateAttributeNames(newLayer).isEmpty()) {
-                    dialog.getComboBox(comboBoxFieldName).setSelectedItem(
-                        attributeName(
-                            candidateAttributeNames(newLayer),
-                            preferredCandidateAttributeIndex));
-                }
-            }
-        });
-        dialog.getCheckBox(checkBoxFieldName).addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dialog.getComboBox(comboBoxFieldName).setEnabled(
-                    dialog.getCheckBox(checkBoxFieldName).isSelected());
-                dialog.getLabel(comboBoxFieldName).setEnabled(
-                    dialog.getCheckBox(checkBoxFieldName).isSelected());
-            }
-        });
-        dialog
-            .addEnableChecks(
-                comboBoxFieldName,
-                    new EnableCheck() {
-                        public String check(JComponent component) {
-                            return dialog.getBoolean(checkBoxFieldName)
-                                    && dialog.getComboBox(comboBoxFieldName).getItemCount() == 0
-                                        ? "Layer has no string, integer, or double attributes"
-                                        : null;
-                }
-            }
-        );
-        dialog.indentLabel(comboBoxFieldName);
-    }
-    private Layer candidateLayer(PlugInContext context) {
-        if (context.getActiveInternalFrame() instanceof LayerNamePanelProxy) {
-            Layer[] selectedLayers = context.getSelectedLayers();
-            for (int i = 0; i < selectedLayers.length; i++) {
-                if (selectedLayers[i].isEditable()) {
-                    return selectedLayers[i];
-                }
-            }
-        }
-        return (Layer) context.getLayerManager().getEditableLayers().iterator().next();
-    }
-    private static interface Converter {
-        public Object convert(double d);
-    }
-    private Map typeToConverterMap = new HashMap() {
+
+    private Map<AttributeType,Converter> typeToConverterMap =
+            new HashMap<AttributeType,Converter>() {
         {
             put(AttributeType.STRING, new Converter() {
                 public Object convert(double d) {
@@ -277,29 +173,26 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
             });
             put(AttributeType.INTEGER, new Converter() {
                 public Object convert(double d) {
-                    return new Integer((int) d);
+                    return (int)d;
+                }
+            });
+            put(AttributeType.LONG, new Converter() {
+                public Object convert(double d) {
+                    return (long)d;
                 }
             });
             put(AttributeType.DOUBLE, new Converter() {
                 public Object convert(double d) {
-                    return new Double(d);
+                    return d;
                 }
             });
         }
     };
-    private List candidateAttributeNames(Layer layer) {
-        ArrayList candidateAttributeNames = new ArrayList();
-        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-        for (int i = 0; i < schema.getAttributeCount(); i++) {
-            if (typeToConverterMap.keySet().contains(schema.getAttributeType(i))) {
-                candidateAttributeNames.add(schema.getAttributeName(i));
-            }
-        }
-        return candidateAttributeNames;
+
+    private interface Op {
+        double compute(Geometry g);
     }
-    private static interface Op {
-        public double compute(Geometry g);
-    }
+
     private void updateLengths(Layer layer, String attributeName) {
         update(layer, attributeName, new Op() {
             public double compute(Geometry g) {
@@ -314,18 +207,16 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
         AttributeType attributeType =
             layer.getFeatureCollectionWrapper().getFeatureSchema().getAttributeType(
                 attributeIndex);
-        for (Iterator i = layer.getFeatureCollectionWrapper().getFeatures().iterator();
-            i.hasNext();
-            ) {
-            Feature feature = (Feature) i.next();
+        for (Feature feature : layer.getFeatureCollectionWrapper().getFeatures()) {
             feature.setAttribute(
                 attributeIndex,
                 convert(op.compute(feature.getGeometry()), attributeType));
         }
     }
     private Object convert(double d, AttributeType attributeType) {
-        return ((Converter) typeToConverterMap.get(attributeType)).convert(d);
+        return typeToConverterMap.get(attributeType).convert(d);
     }
+
     private void updateAreas(Layer layer, String attributeName) {
         update(layer, attributeName, new Op() {
             public double compute(Geometry g) {
@@ -333,11 +224,26 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
             }
         });
     }
-    public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+
+    public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
         return new MultiEnableCheck()
             .add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck())
             .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-            .add(checkFactory.createAtLeastNLayersMustBeEditableCheck(1));
+            .add(checkFactory.createAtLeastNLayersMustBeEditableCheck(1))
+            .add(new EnableCheck(){
+                public String check(JComponent component) {
+                    Collection<Layer> layers = AttributeTypeFilter.NUMSTRING_FILTER.filter(workbenchContext.getLayerManager());
+                    boolean candidateLayerFound = false;
+                    for (Layer layer : layers) {
+                        if (layer.isEditable()) {
+                            candidateLayerFound = true;
+                            break;
+                        }
+                    }
+                    if (candidateLayerFound) return null;
+                    return I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.no-editable-layer-with-required-attributes");
+                }
+            });
     }
 }
