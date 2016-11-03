@@ -803,6 +803,12 @@
 		org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn
 	</plug-in>
 	<plug-in>
+		org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn
+	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn
+	</plug-in>
+	<plug-in>
 		de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn
 	</plug-in>
 	<plug-in>

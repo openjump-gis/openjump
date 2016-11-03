@@ -37,6 +37,7 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -116,6 +117,22 @@ public class AttributeTypeFilter {
     public List<Layer> filter(LayerManager layerManager) {
         List<Layer> layerList = new ArrayList<>();
         for (Layer layer : layerManager.getLayers()) {
+            FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+            if (filter(schema).size() > 0) layerList.add(layer);
+        }
+        return layerList;
+    }
+
+    /**
+     * Filter layers from a LayerManager according to AttributeType of their
+     * attributes.
+     *
+     * @param layers candidate layers to filter
+     * @return a List of Layers
+     */
+    public List<Layer> filter(Collection<Layer> layers) {
+        List<Layer> layerList = new ArrayList<>();
+        for (Layer layer : layers) {
             FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
             if (filter(schema).size() > 0) layerList.add(layer);
         }

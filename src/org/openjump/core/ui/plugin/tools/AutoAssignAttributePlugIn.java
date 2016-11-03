@@ -149,22 +149,24 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     	dialog.setSideBarDescription(DESCRIPTION);
         
     	// Source layer and target attribute
-    	final JComboBox layerComboBox = dialog.addEditableLayerComboBox(
-                        LAYER_COMBO_BOX, 
-                        context.getLayerNamePanel().chooseEditableLayer(), 
-                        null, context.getLayerManager());
+        dialog.addLayerComboBox(LAYER_COMBO_BOX,
+                context.getLayerableNamePanel().chooseEditableLayer(),
+                null, context.getLayerManager().getEditableLayers());
+
         boolean selectionExists = context.getLayerViewPanel()
                                          .getSelectionManager()
                                          .getFeaturesWithSelectedItems()
                                          .size() > 0;
+
         if (!selectionExists) selectedFeaturesOnly = false;
-        final JCheckBox selectedFeaturesOnlyCheckBox = 
-            dialog.addCheckBox(SELECTED_CHECK_BOX, selectedFeaturesOnly);
+        dialog.addCheckBox(SELECTED_CHECK_BOX, selectedFeaturesOnly);
         dialog.setFieldVisible(SELECTED_CHECK_BOX, selectionExists);
+
         final JComboBox targetAttributeComboBox = 
             dialog.addAttributeComboBox(TARGET_ATTRIBUTE_COMBO_BOX, LAYER_COMBO_BOX,
                     new AttributeTypeFilter(AttributeTypeFilter.DATE | AttributeTypeFilter.STRING |
                     AttributeTypeFilter.DOUBLE | AttributeTypeFilter.INTEGER), "");
+
         for (int i = 0 ; i < targetAttributeComboBox.getModel().getSize() ; i++) {
             Object item = targetAttributeComboBox.getModel().getElementAt(i);
             if (item.equals(targetAttribute)) targetAttributeComboBox.setSelectedIndex(i);
@@ -173,8 +175,8 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
         // Auto-increment options
         dialog.addSeparator();
         final JCheckBox autoIncCheckBox = dialog.addCheckBox(AUTOINC_CHECK_BOX, autoIncrement);
-        final JTextField autoIncPatternField = dialog.addTextField(AUTOINC_PATTERN_BOX, pattern, 4, null, AUTOINC_DESCRIPTION_2);
-        final JTextField incField = dialog.addIntegerField(INC_VALUE_EDIT_BOX, 1, 4, "");
+        dialog.addTextField(AUTOINC_PATTERN_BOX, pattern, 4, null, AUTOINC_DESCRIPTION_2);
+        dialog.addIntegerField(INC_VALUE_EDIT_BOX, 1, 4, "");
         
         // From other attribute option
         dialog.addSeparator();
@@ -278,29 +280,12 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
             }
         }));
     }
-    
-    private String attributeName(List attributeNames, int preferredIndex) {
-        return (String) attributeNames.get(
-            attributeNames.size() > preferredIndex ? preferredIndex : 0);
-    }
-    
-    private Layer candidateLayer(PlugInContext context) {
-        if (context.getActiveInternalFrame() instanceof LayerNamePanelProxy) {
-            Layer[] selectedLayers = context.getSelectedLayers();
-            for (int i = 0; i < selectedLayers.length; i++) {
-                if (selectedLayers[i].isEditable()) {
-                    return selectedLayers[i];
-                }
-            }
-        }
-        return (Layer) context.getLayerManager().getEditableLayers().iterator().next();
+
+    private interface Converter {
+        Object convert(String d);
     }
 
-    private static interface Converter {
-        public Object convert(String d);
-    }
-    
-    private Map typeToConverterMap = new HashMap() {
+    private Map<AttributeType,Converter> typeToConverterMap = new HashMap<AttributeType,Converter>() {
         {
             put(AttributeType.STRING, new Converter() {
                 public Object convert(String d) {
@@ -311,28 +296,40 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
                 public Object convert(String d) {
                     if (d==null) return null;
                     try {
-                        return new Integer(d);
+                        return Integer.parseInt(d);
                     } catch(NumberFormatException nfe) {
                         return null;
                     }
-                	//String s = parseNumber(d);
-                	//if (s.length() == 0) 
-                	//	return new Integer(0);
-                    //return new Integer(s);
+                }
+            });
+            put(AttributeType.LONG, new Converter() {
+                public Object convert(String d) {
+                    if (d==null) return null;
+                    try {
+                        return Long.parseLong(d);
+                    } catch(NumberFormatException nfe) {
+                        return null;
+                    }
+                }
+            });
+            put(AttributeType.BOOLEAN, new Converter() {
+                public Object convert(String d) {
+                    if (d==null) return null;
+                    try {
+                        return Boolean.parseBoolean(d);
+                    } catch(NumberFormatException nfe) {
+                        return null;
+                    }
                 }
             });
             put(AttributeType.DOUBLE, new Converter() {
                 public Object convert(String d) {
                     if (d==null) return null;
                     try {
-                        return new Double(d);
+                        return Double.parseDouble(d);
                     } catch(NumberFormatException nfe) {
                         return null;
                     }
-                	//String s = parseNumber(d);
-                	//if (s.length() == 0) 
-                	//	return new Double(0);
-                    //return new Double(parseNumber(d));
                 }
             });
             put(AttributeType.DATE, new Converter() {
@@ -340,7 +337,6 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
                 public Object convert(String d) {
                     if (d==null) return null;
                     try {
-                        //return new Double(d);
                         return parser.parse(d, true);
                     } catch(ParseException nfe) {
                         return null;
@@ -351,7 +347,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     };
  
     private String parseNumber(String text) {
-        int b=0; int e=0;
+        int b; int e;
     	for (int i=0; i<text.length(); i++) {
     		if (Character.isDigit(text.charAt(i))) {
 		        b=i; e=i;
@@ -365,8 +361,8 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
 
     private void assignValues(PlugInContext context) {
         //Iterator iterator;
-        final Collection newFeatures = new ArrayList<Feature>();
-        final Collection oldFeatures = new ArrayList<Feature>();
+        final Collection<Feature> newFeatures = new ArrayList<>();
+        final Collection<Feature> oldFeatures = new ArrayList<>();
         final Collection<Feature> features;
         if (selectedFeaturesOnly) {
             Collection layers = context.getLayerViewPanel().getSelectionManager()
@@ -380,8 +376,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
             features = layer.getFeatureCollectionWrapper().getFeatures();
         }
         context.getLayerManager().getUndoableEditReceiver().startReceiving();
-        for (Iterator i = features.iterator(); i.hasNext(); ) {
-            Feature feature = (Feature) i.next();
+        for (Feature feature : features) {
             String s;
             if (autoIncrement) {
                 String value = "" + autoInc;
@@ -395,7 +390,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
             } else {
                 s = textToAssign;
             }
-            Object object = ((Converter) typeToConverterMap.get(destinationAttributeType)).convert(s);
+            Object object = typeToConverterMap.get(destinationAttributeType).convert(s);
             oldFeatures.add(feature.clone(false));
             Feature newFeature = feature.clone(false);
             newFeature.setAttribute(targetAttribute, object);
