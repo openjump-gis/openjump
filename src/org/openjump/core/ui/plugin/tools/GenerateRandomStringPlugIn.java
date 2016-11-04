@@ -174,7 +174,7 @@ public class GenerateRandomStringPlugIn extends AbstractUiPlugIn {
         } else if (cities) {
             sb.append(cityArray[rnd.nextInt(cityArray.length)]);
         } else if (names) {
-            sb.append(firstNames[rnd.nextInt(cityArray.length)]).append("").append(surnames[rnd.nextInt(surnames.length)]);
+            sb.append(firstNames[rnd.nextInt(cityArray.length)]).append(" ").append(surnames[rnd.nextInt(surnames.length)]);
         }
         return sb.toString();
     }
