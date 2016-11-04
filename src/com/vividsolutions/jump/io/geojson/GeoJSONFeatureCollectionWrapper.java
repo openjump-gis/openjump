@@ -282,32 +282,41 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
       String name = schema.getAttributeName(i);
       AttributeType type = schema.getAttributeType(i);
       Object value = feature.getAttribute(i);
-      
-      // we do NOT save null values to minimize the file size
-      if (value == null)
-        continue;
 
-      // Date objects should be saved quoted in String representation
-      if (type.equals(AttributeType.DATE))
-        value = String.valueOf(value);
-
+      // geometry to json
       if (i == schema.getGeometryIndex()) {
         Geometry geometry = (Geometry) value;
         if (geometry != null)
           geometryJson = new GeoJsonWriter().write(geometry);
-      } else {
+      } 
+      // attrib to json
+      else {
+        // we do NOT save null values to minimize the file size
+        if (value == null)
+          continue;
+
+        // Date objects should be saved quoted in String representation
+        if (type.equals(AttributeType.DATE))
+          value = String.valueOf(value);
+
         String json = JSONObject.toString(name, value);
         propertiesJson = propertiesJson != null ? propertiesJson + ", " + json
             : json;
       }
     }
 
+    // the GeoJSON specs expect a geometry to be written, it might be empty though
     if (geometryJson != null)
-      geometryJson = "\"geometry\": " + geometryJson;
-    if (propertiesJson != null)
-      propertiesJson = "\"properties\": { " + propertiesJson + " }";
+      geometryJson = "\"" + GeoJSONConstants.GEOMETRY + "\": " + geometryJson;
+    else
+      geometryJson = GeoJSONConstants.EMPTY_GEOMETRY;
 
-    return "{ \"type\": \"Feature\""
+    if (propertiesJson != null)
+      propertiesJson = "\"" + GeoJSONConstants.PROPERTIES + "\": { "
+          + propertiesJson + " }";
+
+    return "{ \"" + GeoJSONConstants.TYPE + "\": \""
+        + GeoJSONConstants.TYPE_FEATURE + "\""
         + (propertiesJson != null ? ", " + propertiesJson : "")
         + (geometryJson != null ? ", " + geometryJson : "") + " }";
   }

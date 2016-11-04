@@ -10,4 +10,6 @@ public class GeoJSONConstants {
   
   public static final String TYPE_FEATURE = "Feature";
   public static final String TYPE_FEATURECOLLECTION = "FeatureCollection";
+  
+  public static final String EMPTY_GEOMETRY = "\"geometry\": {\"type\":\"GeometryCollection\",\"geometries\":[]}";
 }
