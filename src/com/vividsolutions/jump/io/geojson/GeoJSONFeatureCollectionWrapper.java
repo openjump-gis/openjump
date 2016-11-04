@@ -282,6 +282,14 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
       String name = schema.getAttributeName(i);
       AttributeType type = schema.getAttributeType(i);
       Object value = feature.getAttribute(i);
+      
+      // we do NOT save null values to minimize the file size
+      if (value == null)
+        continue;
+
+      // Date objects should be saved quoted in String representation
+      if (type.equals(AttributeType.DATE))
+        value = String.valueOf(value);
 
       if (i == schema.getGeometryIndex()) {
         Geometry geometry = (Geometry) value;
