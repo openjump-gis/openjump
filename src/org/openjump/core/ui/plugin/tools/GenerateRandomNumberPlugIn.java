@@ -15,6 +15,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 
 import javax.swing.*;
+import javax.swing.text.EditorKit;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.util.*;
 
@@ -23,8 +25,8 @@ import java.util.*;
  */
 public class GenerateRandomNumberPlugIn extends AbstractUiPlugIn {
 
-    private static String LAYER        = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.layer");
-    private static String ATTRIBUTE    = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.attribute");
+    private static String LAYER        = I18N.get("ui.GenericNames.select-layer");
+    private static String ATTRIBUTE    = I18N.get("ui.GenericNames.select-attribute");
     private static String ATTRIBUTE_TT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.attribute-tooltip");
     private static String RANDOM       = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.random-generators");
     private static String MIN          = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.min-value");
@@ -32,7 +34,9 @@ public class GenerateRandomNumberPlugIn extends AbstractUiPlugIn {
     private static String MAX          = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.max-value");
     private static String MAX_TT       = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.max-value-tooltip");
 
-    private static String NO_CANDIDATE  = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.no-editable-layer-with-numeric-attribute");
+    private static String NO_CANDIDATE = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.no-editable-layer-with-numeric-attribute");
+    private static String NON_EMPTY_ATT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.non-empty-attribute");
+    private static String OVERWRITE_PROMPT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.overwrite-prompt");
 
     private Layer layer;
     private String attribute;
@@ -77,8 +81,11 @@ public class GenerateRandomNumberPlugIn extends AbstractUiPlugIn {
         getDialogValues(dialog);
         boolean empty = checkAttributeEmpty();
         if (!empty) {
-            OKCancelDialog okCancelDialog = new OKCancelDialog(dialog, "Attribute column is not empty", true,
-                    new JLabel("Attribute column is not empty. Do you want to overwrite it ?"),
+            JLabel label = new JLabel();
+            label.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+            label.setText("<html><body>" + NON_EMPTY_ATT + "<br/>" + OVERWRITE_PROMPT + "</body></html>");
+            OKCancelDialog okCancelDialog = new OKCancelDialog(dialog, NON_EMPTY_ATT, true,
+                    label,
                     new OKCancelDialog.Validator() {
                         @Override
                         public String validateInput(Component component) {
@@ -153,7 +160,6 @@ public class GenerateRandomNumberPlugIn extends AbstractUiPlugIn {
 
     private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
         layer = context.getLayerableNamePanel().chooseEditableLayer();
-        dialog.addLayerComboBox(LAYER, layer, context.getLayerManager());
         dialog.addLayerComboBox(LAYER, layer, null,
                 AttributeTypeFilter.NUMERIC_FILTER.filter(context.getLayerManager().getEditableLayers()));
         dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.NUMERIC_FILTER, ATTRIBUTE_TT);
@@ -166,5 +172,6 @@ public class GenerateRandomNumberPlugIn extends AbstractUiPlugIn {
         attribute = dialog.getText(ATTRIBUTE);
         min = dialog.getDouble(MIN);
         max = dialog.getDouble(MAX);
+        if (max == min) max += 1;
     }
 }

@@ -23,8 +23,8 @@ import java.util.*;
  */
 public class GenerateRandomStringPlugIn extends AbstractUiPlugIn {
 
-    private static String LAYER         = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.layer");
-    private static String ATTRIBUTE     = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.attribute");
+    private static String LAYER         = I18N.get("ui.GenericNames.select-layer");
+    private static String ATTRIBUTE     = I18N.get("ui.GenericNames.select-attribute");
     private static String ATTRIBUTE_TT  = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.attribute-tooltip");
     private static String RANDOM        = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.random-generators");
     private static String MIN_LENGTH    = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.min-length");
@@ -41,6 +41,8 @@ public class GenerateRandomStringPlugIn extends AbstractUiPlugIn {
     private static String NAMES         = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.names");
 
     private static String NO_CANDIDATE  = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.no-editable-layer-with-string-attribute");
+    private static String NON_EMPTY_ATT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.non-empty-attribute");
+    private static String OVERWRITE_PROMPT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.overwrite-prompt");
 
     private Layer layer;
     private String attribute;
@@ -86,8 +88,11 @@ public class GenerateRandomStringPlugIn extends AbstractUiPlugIn {
         getDialogValues(dialog);
         boolean empty = checkAttributeEmpty();
         if (!empty) {
-            OKCancelDialog okCancelDialog = new OKCancelDialog(dialog, "Attribute column is not empty", true,
-                    new JLabel("Attribute column is not empty. Do you want to overwrite it ?"),
+            JLabel label = new JLabel();
+            label.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+            label.setText("<html><body>" + NON_EMPTY_ATT + "<br/>" + OVERWRITE_PROMPT + "</body></html>");
+            OKCancelDialog okCancelDialog = new OKCancelDialog(dialog, NON_EMPTY_ATT, true,
+                    label,
                     new OKCancelDialog.Validator() {
                         @Override
                         public String validateInput(Component component) {
