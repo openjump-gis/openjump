@@ -177,7 +177,6 @@ public class GenerateRandomStringPlugIn extends AbstractUiPlugIn {
 
     private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
         layer = context.getLayerableNamePanel().chooseEditableLayer();
-        dialog.addLayerComboBox(LAYER, layer, context.getLayerManager());
         dialog.addLayerComboBox(LAYER, layer, null,
                 AttributeTypeFilter.STRING_FILTER.filter(context.getLayerManager().getEditableLayers()));
         dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.STRING_FILTER, ATTRIBUTE_TT);
