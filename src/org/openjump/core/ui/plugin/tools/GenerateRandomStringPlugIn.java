@@ -25,8 +25,7 @@ public class GenerateRandomStringPlugIn extends AbstractUiPlugIn {
 
     private static String LAYER         = I18N.get("ui.GenericNames.select-layer");
     private static String ATTRIBUTE     = I18N.get("ui.GenericNames.select-attribute");
-    private static String ATTRIBUTE_TT  = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.attribute-tooltip");
-    private static String RANDOM        = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.random-generators");
+    private static String RANDOM        = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandom");
     private static String MIN_LENGTH    = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.min-length");
     private static String MIN_LENGTH_TT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.min-length-tooltip");
     private static String MAX_LENGTH    = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.max-length");
@@ -47,7 +46,7 @@ public class GenerateRandomStringPlugIn extends AbstractUiPlugIn {
     private Layer layer;
     private String attribute;
     private int min, max;
-    private boolean digits, hexa, ascii, cities, names;
+    private boolean digits = true, hexa, ascii, cities, names;
 
     public void initialize(PlugInContext context) throws Exception {
 
@@ -184,7 +183,7 @@ public class GenerateRandomStringPlugIn extends AbstractUiPlugIn {
         layer = context.getLayerableNamePanel().chooseEditableLayer();
         dialog.addLayerComboBox(LAYER, layer, null,
                 AttributeTypeFilter.STRING_FILTER.filter(context.getLayerManager().getEditableLayers()));
-        dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.STRING_FILTER, ATTRIBUTE_TT);
+        dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.STRING_FILTER, null);
         String GROUP = "group";
         dialog.addSubTitle(LETTER_BASED);
         dialog.addIntegerField(MIN_LENGTH, min, 12, MIN_LENGTH_TT);

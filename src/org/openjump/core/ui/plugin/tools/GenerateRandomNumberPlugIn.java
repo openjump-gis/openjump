@@ -15,8 +15,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 
 import javax.swing.*;
-import javax.swing.text.EditorKit;
-import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.util.*;
 
@@ -27,14 +25,11 @@ public class GenerateRandomNumberPlugIn extends AbstractUiPlugIn {
 
     private static String LAYER        = I18N.get("ui.GenericNames.select-layer");
     private static String ATTRIBUTE    = I18N.get("ui.GenericNames.select-attribute");
-    private static String ATTRIBUTE_TT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.attribute-tooltip");
-    private static String RANDOM       = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.random-generators");
+    private static String RANDOM       = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandom");
     private static String MIN          = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.min-value");
-    private static String MIN_TT       = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.min-value-tooltip");
     private static String MAX          = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.max-value");
-    private static String MAX_TT       = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.max-value-tooltip");
 
-    private static String NO_CANDIDATE = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.no-editable-layer-with-numeric-attribute");
+    private static String NO_CANDIDATE = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.no-editable-layer-with-numeric-attribute");
     private static String NON_EMPTY_ATT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.non-empty-attribute");
     private static String OVERWRITE_PROMPT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.overwrite-prompt");
 
@@ -162,9 +157,9 @@ public class GenerateRandomNumberPlugIn extends AbstractUiPlugIn {
         layer = context.getLayerableNamePanel().chooseEditableLayer();
         dialog.addLayerComboBox(LAYER, layer, null,
                 AttributeTypeFilter.NUMERIC_FILTER.filter(context.getLayerManager().getEditableLayers()));
-        dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.NUMERIC_FILTER, ATTRIBUTE_TT);
-        dialog.addDoubleField(MIN, 0, 12, MIN_TT);
-        dialog.addDoubleField(MAX, 0, 12, MAX_TT);
+        dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.NUMERIC_FILTER, null);
+        dialog.addDoubleField(MIN, 0, 12, null);
+        dialog.addDoubleField(MAX, 0, 12, null);
     }
 
     private void getDialogValues(MultiInputDialog dialog) {
