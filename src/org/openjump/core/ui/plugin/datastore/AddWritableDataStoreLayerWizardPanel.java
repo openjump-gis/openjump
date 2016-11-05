@@ -56,7 +56,6 @@ public class AddWritableDataStoreLayerWizardPanel extends JPanel implements Wiza
 
     public boolean isInputValid() {
         return true;
-        //return validateInput() == nulldataStorePanel.isValid();
     }
 
     public void remove(InputChangedListener listener) {
@@ -65,7 +64,7 @@ public class AddWritableDataStoreLayerWizardPanel extends JPanel implements Wiza
     /**
      * @return the dataStorePanel
      */
-    public AddWritableDataStoreLayerPanel getDataStorePanel() {
+    AddWritableDataStoreLayerPanel getDataStorePanel() {
         return dataStorePanel;
     }
 }

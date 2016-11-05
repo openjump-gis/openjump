@@ -55,6 +55,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     // Update options (write to database) : don't translate, these are map keys
     public static final String EXTERNAL_PK_KEY         = "External PK";
     public static final String SRID_KEY                = "SRID";
+    public static final String MULTI_GEOMETRY_KEY      = "MultiGeometries";
     public static final String GEOM_DIM_KEY            = "Dimension";
     public static final String NAN_Z_TO_VALUE_KEY      = "NaN Z to value";
     public static final String CREATE_PK               = "Create PK";
@@ -117,6 +118,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
     public void setManageConflicts(boolean manageConflicts) {
         getProperties().put(MANAGE_CONFLICTS, manageConflicts);
+    }
+
+    public void setMultiGeometry(boolean multi) {
+        getProperties().put(MULTI_GEOMETRY_KEY, multi);
     }
 
     public void setCoordDimension(int dbCoordDim) {
@@ -192,6 +197,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 String geometryColumn = (String)getProperties().get(WritableDataStoreDataSource.GEOMETRY_ATTRIBUTE_NAME_KEY);
                 boolean createPrimaryKey = (Boolean)getProperties().get(WritableDataStoreDataSource.CREATE_PK);
                 int srid = getProperties().get(SRID_KEY)==null ? 0 : (Integer)getProperties().get(SRID_KEY);
+                boolean multi = getProperties().get(MULTI_GEOMETRY_KEY) == null ?
+                        false : (boolean)getProperties().get(MULTI_GEOMETRY_KEY);
                 int dim = getProperties().get(GEOM_DIM_KEY)==null?
                         getGeometryDimension(featureCollection, 3) :
                         (Integer)getProperties().get(GEOM_DIM_KEY);
@@ -215,7 +222,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                         // if createPrimaryKey=false, old gid will be considered as a normal attribute
                         featureCollection.getFeatureSchema().removeExternalPrimaryKey();
                         createAndPopulateTable(conn,
-                                featureCollection, srid, "GEOMETRY", dim, normalizedColumnNames);
+                                featureCollection, srid, "GEOMETRY", multi, dim, normalizedColumnNames);
                         if (createPrimaryKey) {
                             addDBPrimaryKey(conn, DEFAULT_PK_NAME);
                             // @TODO reload part is kept out of the transaction because it uses
@@ -237,7 +244,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                                 .length < featureSchema.getAttributeCount()) {
                             if (!confirmWriteDespiteDifferentSchemas()) return;
                         }
-                        commit(conn, srid, dim, normalizedColumnNames);
+                        commit(conn, srid, multi, dim, normalizedColumnNames);
                         evolutions.clear();
                     }
                     jdbcConn.commit();
@@ -269,13 +276,13 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
 
     private void commit(SpatialDatabasesDSConnection conn,
-                int srid, int dim, boolean normalizedColumnNames) throws Exception {
+                int srid, boolean multi, int dim, boolean normalizedColumnNames) throws Exception {
 
         Logger.info("Evolutions to commit to " + schemaName + "." + tableName + " (PK=" + primaryKeyName +")");
         for (Evolution evolution : evolutions.values()) {
             if (evolution.getType() == Evolution.Type.CREATION) {
                 PreparedStatement pstmt = insertStatement(conn,
-                        evolution.getNewFeature().getSchema(), normalizedColumnNames);
+                        evolution.getNewFeature().getSchema(), multi, normalizedColumnNames);
                 pstmt = setAttributeValues(pstmt, evolution.getNewFeature(), srid, dim);
                 pstmt.execute();
                 Logger.info("  create new feature " + evolution.getNewFeature().getID()+"/");
@@ -311,10 +318,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * @param fSchema feature schema
      * @param normalizedColumnNames whether database column names should be normalized (lowercase) or not
      * @return a PreparedStatement
-     * @throws SQLException
+     * @throws SQLException  if an exception occurs during insert
      */
     protected PreparedStatement insertStatement(SpatialDatabasesDSConnection conn,
-                FeatureSchema fSchema, boolean normalizedColumnNames) throws SQLException {
+                FeatureSchema fSchema, boolean multi, boolean normalizedColumnNames) throws SQLException {
 
         StringBuilder sb = new StringBuilder("INSERT INTO " + SQLUtil.compose(schemaName, tableName) + "(");
         // create a column name list without datatypes, including geometry and excluding primary key
@@ -326,7 +333,11 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         for (int i = 0 ; i < fSchema.getAttributeCount() ; i++) {
             if (fSchema.getExternalPrimaryKeyIndex() == i) continue;
             if (fSchema.isAttributeReadOnly(i)) continue;
-            sb.append(first?"?":",?");
+            if (multi && fSchema.getAttributeType(i) == AttributeType.GEOMETRY) {
+                sb.append(first ? "ST_Multi(?)" : ",ST_Multi(?)");
+            } else {
+                sb.append(first ? "?" : ",?");
+            }
             first = false;
         }
         sb.append(");");
@@ -342,10 +353,12 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         boolean quoted = schema.getAttributeType(schema.getExternalPrimaryKeyIndex()) == AttributeType.STRING;
         String quoteKey = quoted ? "'" : "";
 
-        StringBuilder sb = new StringBuilder("UPDATE ").append(SQLUtil.compose(schemaName, tableName))
+        StringBuilder sb = new StringBuilder("UPDATE ")
+                .append(SQLUtil.compose(schemaName, tableName))
                 .append(" SET \"").append(schema.getAttributeName(attribute)).append("\" = ?")
                 .append(" WHERE \"").append(primaryKeyName).append("\" = ")
                 .append(quoteKey).append(feature.getAttribute(primaryKeyName)).append(quoteKey).append(";");
+
         PreparedStatement pstmt = conn.getJdbcConnection().prepareStatement(sb.toString());
         AttributeType type = schema.getAttributeType(attribute);
         if (feature.getAttribute(attribute) == null) pstmt.setObject(1, null);
@@ -517,12 +530,12 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * @param geometryType geometry type
      * @param dim geometry dimension
      * @param normalizedColumnNames whether columns names have to be normalized or not
-     * @throws SQLException
+     * @throws SQLException if an exception occurs during table creation or inserts
      */
     abstract protected void createAndPopulateTable(
             SpatialDatabasesDSConnection conn,
             FeatureCollection fc,
-            int srid, String geometryType, int dim,
+            int srid, String geometryType, boolean multi, int dim,
             boolean normalizedColumnNames) throws SQLException;
 
 
@@ -535,7 +548,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     // @TODO Bad design : it should be possible to do this kind of post-processing
     // in the loader (where layer name is known rather than in the datasource)
     private void reloadDataFromDataStore(Connection conn, TaskMonitor monitor) throws Exception {
-        Layer[] selectedLayers = JUMPWorkbench.getInstance().getContext().getLayerNamePanel().getSelectedLayers();
+        Layer[] selectedLayers = JUMPWorkbench.getInstance().getContext().getLayerableNamePanel().getSelectedLayers();
         if (selectedLayers != null && selectedLayers.length == 1) {
             boolean oldFiringEvents = JUMPWorkbench.getInstance().getContext().getLayerManager().isFiringEvents();
             JUMPWorkbench.getInstance().getContext().getLayerManager().setFiringEvents(false);
@@ -557,7 +570,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * Return 3 if coll contains at least one 3d geometry, 2 if coll contains
      * only 2d geometries and defaultDim if coll is empty.
      */
-    public static int getGeometryDimension(FeatureCollection coll, int defaultDim) {
+    private static int getGeometryDimension(FeatureCollection coll, int defaultDim) {
         if (coll.size() > 0) {
             // will explore up to 1000 features regularly distributed in the dataset
             // if none of these feature has dim = 3, return 2, else return 3
@@ -573,7 +586,6 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             return 2;
         } else return defaultDim;
     }
-
 
     private static int getGeometryDimension(Geometry g) {
         Coordinate[] cc = g.getCoordinates();

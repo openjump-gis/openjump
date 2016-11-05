@@ -46,7 +46,7 @@ public class AddDataStoreLayerWizardPanel extends AbstractWizardPanel {
   /**
    * @return the dataStorePanel
    */
-  public AddDatastoreLayerPanel getDataStorePanel() {
+  AddDatastoreLayerPanel getDataStorePanel() {
     return dataStorePanel;
   }
 

@@ -169,7 +169,7 @@ public class H2DataStoreDataSource extends WritableDataStoreDataSource {
     protected void createAndPopulateTable(
             SpatialDatabasesDSConnection conn,
             FeatureCollection fc,
-            int srid, String geometryType, int dim,
+            int srid, String geometryType, boolean multi, int dim,
             boolean normalizedColumnNames) throws SQLException {
         FeatureSchema schema = fc.getFeatureSchema();
         String geometryColumn = normalizedColumnNames ?
@@ -189,7 +189,7 @@ public class H2DataStoreDataSource extends WritableDataStoreDataSource {
             throw new SQLException("Error executing query: " + conn.getMetadata()
                     .getAddGeometryColumnStatement(schemaName, tableName, geometryColumn, srid, geometryType, dim), sqle);
         }
-        populateTable(conn, fc, null, srid, dim, normalizedColumnNames);
+        populateTable(conn, fc, null, srid, multi, dim, normalizedColumnNames);
         try {
             conn.getJdbcConnection().createStatement().execute(conn.getMetadata()
                     .getAddSpatialIndexStatement(schemaName, tableName, geometryColumn));
@@ -200,8 +200,8 @@ public class H2DataStoreDataSource extends WritableDataStoreDataSource {
     }
 
     private void populateTable(SpatialDatabasesDSConnection conn, FeatureCollection fc, String primaryKey,
-                               int srid, int dim, boolean normalizedColumnNames) throws SQLException {
-        PreparedStatement statement = insertStatement(conn, fc.getFeatureSchema(), normalizedColumnNames);
+                               int srid, boolean multi, int dim, boolean normalizedColumnNames) throws SQLException {
+        PreparedStatement statement = insertStatement(conn, fc.getFeatureSchema(), multi, normalizedColumnNames);
         int count = 0;
         // There is an option to convert NaN values to any double value while uploading
         // z is changed without duplicating the geometry

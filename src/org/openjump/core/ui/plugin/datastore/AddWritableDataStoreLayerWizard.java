@@ -71,8 +71,8 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
                 final Layer layer = createLayer(dataStorePanel, monitor);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        Collection<Category> selectedCategories = workbenchContext.getLayerNamePanel()
-                                .getSelectedCategories();
+                        Collection<Category> selectedCategories = workbenchContext
+                                .getLayerableNamePanel().getSelectedCategories();
                         LayerManager layerManager = workbenchContext.getLayerManager();
                         String categoryName = StandardCategoryNames.WORKING;
                         if (!selectedCategories.isEmpty()) {
@@ -82,6 +82,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
                             workbenchContext.getLayerViewPanel().getViewport().update();
                         } catch (Exception e) {
                             //throw NoninvertibleTransformationException;
+                            Logger.warn("Exception thrown by AddWritableDataStoreLayerWizard while displaying data in the view", e);
                         }
                         layerManager.addLayerable(categoryName, layer);
                     }
@@ -123,6 +124,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
         ds.setLimitedToView(limitedToView);
         ds.setManageConflicts(manageConflicts);
         ds.setWorkbenchContext(workbenchContext);
+        ds.setMultiGeometry(panel.getGeometryColumn().getType().toLowerCase().startsWith("multi"));
         ds.setCoordDimension(panel.getGeometryColumn().getCoordDimension());
         ds.setSRID(panel.getGeometryColumn().getSRID());
 
@@ -144,6 +146,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
 
             Logger.info("Add layer '" + layer.getName() + "' to '" + layerManager.getTask().getName() +  "' using WritableDataStoreDataSource with :");
             Logger.info("    geometry column    = " + geometryAttributeName);
+            Logger.info("    is_multi           = " + panel.getGeometryColumn().getType().toLowerCase().startsWith("multi"));
             Logger.info("    coord_dimension    = " + panel.getGeometryColumn().getCoordDimension());
             Logger.info("    srid               = " + sridStyle.getSRID());
             Logger.info("    external PK column = " + identifierAttributeName);

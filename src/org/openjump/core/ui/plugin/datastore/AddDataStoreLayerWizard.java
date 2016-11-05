@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import javax.swing.SwingUtilities;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
@@ -73,8 +74,8 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
         SwingUtilities.invokeLater(new Runnable() {
           public void run() {
             for (final Layer layer : layers) {
-              Collection<Category> selectedCategories = workbenchContext.getLayerNamePanel()
-                  .getSelectedCategories();
+              Collection<Category> selectedCategories = workbenchContext
+                      .getLayerableNamePanel().getSelectedCategories();
               LayerManager layerManager = workbenchContext.getLayerManager();
               String categoryName = StandardCategoryNames.WORKING;
               if (!selectedCategories.isEmpty()) {
@@ -83,12 +84,14 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
               try {
                 workbenchContext.getLayerViewPanel().getViewport().update();
               } catch (Exception e) {
+                Logger.warn("Exception thrown by AddDataStoreLayerWizard during LayerViewPanel update", e);
                 //throw NoninvertibleTransformationException;
               }
               try {
                 layerManager.addLayerable(categoryName, layer);
               } catch (Exception e) {
                 e.printStackTrace();
+                Logger.warn("Exception thrown by AddDataStoreLayerWizard while adding the layer to the LayerManager", e);
               }
             }
           }

@@ -23,11 +23,11 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
 
     public static final String KEY = PostGISSaveDataSourceQueryChooser.class.getName();
 
-    static final String ERROR = I18N.get(KEY + ".error");
-    static final String NO_CONNECTION_CHOOSEN     = I18N.get(KEY + ".no-connection-choosen");
-    static final String NO_TABLE_CHOOSEN          = I18N.get(KEY + ".no-table-choosen");
-    static final String CONNECTION_IS_NOT_POSTGIS = I18N.get(KEY + ".selected-connection-is-not-postgis");
-    static final String GID_ALREADY_EXISTS        = I18N.get(KEY + ".gid-already-exists");
+    private static final String ERROR = I18N.get(KEY + ".error");
+    private static final String NO_CONNECTION_CHOOSEN     = I18N.get(KEY + ".no-connection-choosen");
+    private static final String NO_TABLE_CHOOSEN          = I18N.get(KEY + ".no-table-choosen");
+    private static final String CONNECTION_IS_NOT_POSTGIS = I18N.get(KEY + ".selected-connection-is-not-postgis");
+    private static final String GID_ALREADY_EXISTS        = I18N.get(KEY + ".gid-already-exists");
 
     private PlugInContext context;
     private PostGISSaveDriverPanel panel;
@@ -57,7 +57,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
      * the returned collection only contains a single element.
      * @see com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser#getDataSourceQueries()
      */
-    public Collection getDataSourceQueries() {
+    public Collection<DataSourceQuery> getDataSourceQueries() {
         // Get the name of the table to update
         String updateQuery = (String)properties.get(WritableDataStoreDataSource.DATASET_NAME_KEY);
         // Create a DataSourceQuery from a datasource, and a query
@@ -106,7 +106,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
             return false;
         }
         else {
-            Layer[] layers = context.getWorkbenchContext().getLayerNamePanel().getSelectedLayers();
+            Layer[] layers = context.getWorkbenchContext().getLayerableNamePanel().getSelectedLayers();
             if (layers.length == 1) {
                 FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
                 if (schema.hasAttribute("gid") && panel.isCreatePrimaryKeyColumnSelected()) {
@@ -139,7 +139,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         if (panel.isCreatePrimaryKeyColumnSelected()) {
             properties.put(WritableDataStoreDataSource.EXTERNAL_PK_KEY, WritableDataStoreDataSource.DEFAULT_PK_NAME);
         }
-        Layer[] layers = context.getWorkbenchContext().getLayerNamePanel().getSelectedLayers();
+        Layer[] layers = context.getWorkbenchContext().getLayerableNamePanel().getSelectedLayers();
         if (layers.length == 1) {
             FeatureSchema schema = layers[0].getFeatureCollectionWrapper().getFeatureSchema();
             properties.put(WritableDataStoreDataSource.GEOMETRY_ATTRIBUTE_NAME_KEY,

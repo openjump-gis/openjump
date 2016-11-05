@@ -33,27 +33,28 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
 
     public static final String KEY = DataStoreSaveDriverPanel.class.getName();
 
-    static final String WRITE_3D_GEOM           = I18N.get(KEY + ".write-3d-geometries");
-    static final String CONVERT_NAN_Z           = I18N.get(KEY + ".convert-nan-z");
-    static final String CREATE_DB_PK            = I18N.get(KEY + ".create-database-primary-key");
-    static final String NORMALIZED_TABLE_NAME   = I18N.get(KEY + ".normalized-table-name-key");
-    static final String NORMALIZED_COLUMN_NAMES = I18N.get(KEY + ".normalized-column-names-key");
+    private static final String WRITE_3D_GEOM           = I18N.get(KEY + ".write-3d-geometries");
+    private static final String CONVERT_NAN_Z           = I18N.get(KEY + ".convert-nan-z");
+    private static final String CREATE_DB_PK            = I18N.get(KEY + ".create-database-primary-key");
+    private static final String NORMALIZED_TABLE_NAME   = I18N.get(KEY + ".normalized-table-name-key");
+    private static final String NORMALIZED_COLUMN_NAMES = I18N.get(KEY + ".normalized-column-names-key");
 
     // UI elements
     private ConnectionPanel connectionPanel;
-    private JComboBox tableComboBox;
+    private JComboBox<String> tableComboBox;
     private JCheckBox createPrimaryKeyCheckBox;
     private JCheckBox write3dGeomCheckBox;
+    //private JCheckBox writeMultiGeomCheckBox;
     private JTextField convertNaNZTextField;
     private JCheckBox normalizedTableNameCheckBox;
     private JCheckBox normalizedColumnNamesCheckBox;
-    private OKCancelPanel okCancelPanel;
+    private OKCancelPanel okCancelPanel = new OKCancelPanel();
 
     // context variables
     private WorkbenchContext wbContext;
     private String lastUsedLayerName = null;
-    private Map<String,String> layer2TableMap = new HashMap<String,String>();
-    private DefaultComboBoxModel tableList = new DefaultComboBoxModel();
+    private Map<String,String> layer2TableMap = new HashMap<>();
+    private DefaultComboBoxModel<String> tableList = new DefaultComboBoxModel<>();
 
     public DataStoreSaveDriverPanel(PlugInContext context) {
         try {
@@ -103,7 +104,7 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
         gbLayout.setConstraints(tableLabel, gbConstraints);
         add(tableLabel);
 
-        tableComboBox = new JComboBox(tableList);
+        tableComboBox = new JComboBox<>(tableList);
         tableComboBox.setPrototypeDisplayValue("abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz");
         gbConstraints.gridx = 1;
         gbLayout.setConstraints(tableComboBox, gbConstraints);
@@ -116,6 +117,13 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
         gbConstraints.gridy += 1;
         gbLayout.setConstraints(createPrimaryKeyCheckBox, gbConstraints);
         add(createPrimaryKeyCheckBox);
+
+        // Geometry dimension key checkbox
+        //writeMultiGeomCheckBox = new JCheckBox(WRITE_MULTI_GEOM);
+        //writeMultiGeomCheckBox.setSelected(false);
+        //gbConstraints.gridy += 1;
+        //gbLayout.setConstraints(writeMultiGeomCheckBox, gbConstraints);
+        //add(writeMultiGeomCheckBox);
 
         // Geometry dimension key checkbox
         write3dGeomCheckBox = new JCheckBox(WRITE_3D_GEOM);
@@ -161,10 +169,10 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
             public void itemStateChanged(ItemEvent e) {
                 if (((JCheckBox)e.getSource()).isSelected()) {
                     tableComboBox.setSelectedItem(SQLUtil.normalize(
-                            wbContext.getLayerNamePanel().getSelectedLayers()[0].getName()));
+                            wbContext.getLayerableNamePanel().getSelectedLayers()[0].getName()));
                 } else {
                     tableComboBox.setSelectedItem(
-                            wbContext.getLayerNamePanel().getSelectedLayers()[0].getName());
+                            wbContext.getLayerableNamePanel().getSelectedLayers()[0].getName());
                 }
             }
         });
@@ -182,11 +190,11 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
         return I18N.get(this.getClass().getName() + ".title");
     }
 
-    class PanelAncestorListener implements AncestorListener {
+    private class PanelAncestorListener implements AncestorListener {
         // called when the panel or an ancestor is made visible
         // call layerChanged if the source layer has changed since last call
         public void ancestorAdded(AncestorEvent e) {
-            Layer[] layers = wbContext.getLayerNamePanel().getSelectedLayers();
+            Layer[] layers = wbContext.getLayerableNamePanel().getSelectedLayers();
             if (layers.length == 1) {
                 // call connectionChanged to refresh the list of tables available
                 // in the database in case it has been changed by another client
@@ -253,6 +261,10 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
         return createPrimaryKeyCheckBox.isSelected();
     }
 
+    //public boolean writeCreateMultiGeometriesSelected() {
+    //    return writeMultiGeomCheckBox.isSelected();
+    //}
+
     public boolean writeCreate3dGeometriesSelected() {
         return write3dGeomCheckBox.isSelected();
     }
@@ -299,23 +311,10 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
                 .getOpenConnection(connectionPanel.getConnectionDescriptor());
     }
 
-    // Warning : nothing says this is a PostGIS connection
-    //private Connection getConnection() {
-    //    Connection connection = null;
-    //    try {
-    //        DataStoreConnection dsConnection = getDSConnection();
-    //        if (dsConnection == null || !(dsConnection instanceof PostgisDSConnection)) return null;
-    //        connection = ((PostgisDSConnection)dsConnection).getConnection();
-    //    } catch (Exception e) {
-    //        e.printStackTrace();
-    //    }
-    //    return connection;
-    //}
-
     // Update table list to choose from, using database metadata
     // Eventually add source layer name to the list if create option is selected
     private void updateTableList(DataStoreMetadata metadata) {
-        Layer[] layers = wbContext.getLayerNamePanel().getSelectedLayers();
+        Layer[] layers = wbContext.getLayerableNamePanel().getSelectedLayers();
         if (layers.length == 1) {
             String layerName = layers[0].getName();
             addItemToTableList(tableList, layerName);
@@ -334,9 +333,9 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
     /**
      * Adds a new item to the model, without duplicate, and in alphabetical order
      */
-    private void addItemToTableList(DefaultComboBoxModel model, String item) {
+    private void addItemToTableList(DefaultComboBoxModel<String> model, String item) {
         for (int i = 0 ; i < model.getSize() ; i++) {
-            String item_i = (String)model.getElementAt(i);
+            String item_i = model.getElementAt(i);
             int compare = item.compareTo(item_i);
             if (compare < 0) {
                 model.insertElementAt(item, i);

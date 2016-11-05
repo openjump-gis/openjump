@@ -96,6 +96,7 @@ public class SaveToDataStorePanel extends DataStoreSaveDriverPanel implements Wi
 
     setData(WritableDataStoreDataSource.CONNECTION_DESCRIPTOR_KEY, getConnectionDescriptor());
     setData(WritableDataStoreDataSource.DATASET_NAME_KEY, getData(SaveWizardPlugIn.DATAKEY_SIMPLIFIED_LAYERNAME));
+    //setData(WritableDataStoreDataSource.MULTI_GEOMETRY_KEY, writeCreateMultiGeometriesSelected());
     setData(WritableDataStoreDataSource.GEOM_DIM_KEY, writeCreate3dGeometriesSelected()?3:2);
     setData(WritableDataStoreDataSource.NAN_Z_TO_VALUE_KEY, nanZToValue());
     setData(WritableDataStoreDataSource.CREATE_PK, isCreatePrimaryKeyColumnSelected());

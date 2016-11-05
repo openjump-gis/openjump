@@ -51,9 +51,9 @@ public class SaveToDataStoreWizard extends AbstractWizardGroup {
   public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception {
     // plugin context is initialized too early, we have to use workbenchContext
     // to get the current selected dataset
-    Layer[] layers = context.getWorkbenchContext().getLayerNamePanel().getSelectedLayers();
+    Layer[] layers = context.getWorkbenchContext().getLayerableNamePanel().getSelectedLayers();
     if (layers.length == 0) throw new Exception("No layer has been selected");
-    Layer layer = context.getWorkbenchContext().getLayerNamePanel().getSelectedLayers()[0];
+    Layer layer = context.getWorkbenchContext().getLayerableNamePanel().getSelectedLayers()[0];
     FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
     String geometryAttributeName = schema.getAttributeName(schema.getGeometryIndex());
     //dialog.setData(geomName);

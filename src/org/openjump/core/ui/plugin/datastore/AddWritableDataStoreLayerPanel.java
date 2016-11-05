@@ -5,6 +5,7 @@ import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.PrimaryKeyColumn;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.LangUtil;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -32,11 +33,12 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
 
     private static final String KEY = AddWritableDataStoreLayerPanel.class.getName();
 
-    private Map connectionDescriptorToDatasetNamesMap = new HashMap();
+    private Map<ConnectionDescriptor,String[]> connectionDescriptorToDatasetNamesMap
+            = new HashMap<>();
 
-    private JComboBox datasetComboBox = null;
-    private JComboBox geometryAttributeComboBox = null;
-    private JComboBox identifierAttributeComboBox = null;
+    private JComboBox<Object> datasetComboBox = null;
+    private JComboBox<GeometryColumn> geometryAttributeComboBox = null;
+    private JComboBox<PrimaryKeyColumn> identifierAttributeComboBox = null;
     private JTextField maxFeaturesTextField = null;
     private JTextArea whereTextArea = null;
     //private JCheckBox cachingCheckBox = null;
@@ -53,9 +55,11 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         });
     }
 
-    public static Object runInKillableThread( final String description,
-                                              WorkbenchContext context, final Block block ) {
-        final Object[] result = new Object[]{null};
+    private static <T> T runInKillableThread( final String description,
+                                              WorkbenchContext context,
+                                              final Block<T> block ) {
+
+        final List<T> result = new ArrayList<>();
         // ThreadedBasePlugIn displays a dialog that the user can
         // use to kill the thread by pressing the close button
         // [Jon Aquino 2005-03-14]
@@ -72,10 +76,10 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
                     public void run(TaskMonitor monitor, PlugInContext context)
                             throws Exception {
                         monitor.report(description);
-                        result[0] = block.yield();
+                        result.add(block.yield());
                     }
                 }, context, new TaskMonitorManager()).actionPerformed( null );
-        return result[0];
+        return result.size()>0?result.get(0):null;
     }
 
     public String getDatasetName() {
@@ -83,12 +87,12 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
                 ((String)datasetComboBox.getSelectedItem()).trim() : null;
     }
 
-    public GeometryColumn getGeometryColumn() {
+    GeometryColumn getGeometryColumn() {
         return geometryAttributeComboBox.getSelectedItem() != null ?
                 ((GeometryColumn)geometryAttributeComboBox.getSelectedItem()) : null;
     }
 
-    public PrimaryKeyColumn getIdentifierColumn() throws Exception {
+    private PrimaryKeyColumn getIdentifierColumn() throws Exception {
         Object selectedItem = identifierAttributeComboBox.getSelectedItem();
         if (selectedItem != null) {
             if (selectedItem instanceof PrimaryKeyColumn) {
@@ -101,12 +105,12 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         }
     }
 
-    public String getGeometryAttributeName() {
+    String getGeometryAttributeName() {
         return geometryAttributeComboBox.getSelectedItem() != null ?
                 getGeometryColumn().getName().trim() : null;
     }
 
-    public String getIdentifierAttributeName() throws Exception {
+    String getIdentifierAttributeName() throws Exception {
         return identifierAttributeComboBox.getSelectedItem() != null ?
                 getIdentifierColumn().getName().trim() : null;
     }
@@ -114,19 +118,19 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
     /**
      * @return Integer.MAX_VALUE if the user has left the Max Features text field blank.
      */
-    public Integer getMaxFeatures() {
+    Integer getMaxFeatures() {
         if (maxFeaturesTextField.getText() == null) return Integer.MAX_VALUE;
         if (maxFeaturesTextField.getText().trim().length() == 0) return Integer.MAX_VALUE;
         if (maxFeaturesTextField.getText().trim().equals("-")) return Integer.MAX_VALUE;
         return new Integer(maxFeaturesTextField.getText().trim());
     }
 
-    public String getWhereClause() {
+    String getWhereClause() {
         return getWhereClauseProper().toLowerCase().startsWith("where") ?
                 getWhereClauseProper().substring("where".length()).trim() : getWhereClauseProper();
     }
 
-    public String getWhereClauseProper() {
+    String getWhereClauseProper() {
         return whereTextArea.getText().trim();
     }
 
@@ -138,19 +142,19 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
     //    getCachingCheckBox().setSelected( caching );
     //}
 
-    public boolean isLimitedToView() {
+    boolean isLimitedToView() {
         return getLimitedToViewCheckBox().isSelected();
     }
 
-    public void setLimitedToView( boolean limitedToView ) {
+    void setLimitedToView( boolean limitedToView ) {
         getLimitedToViewCheckBox().setSelected( limitedToView );
     }
 
-    public boolean isManageConfictsActive() {
+    boolean isManageConfictsActive() {
         return getManageConflictsCheckBox().isSelected();
     }
 
-    public void setManageConfictsActive( boolean manageConflicts ) {
+    void setManageConfictsActive( boolean manageConflicts ) {
         getManageConflictsCheckBox().setSelected( manageConflicts );
     }
 
@@ -183,7 +187,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
 
     private JComboBox getDatasetComboBox() {
         if ( datasetComboBox == null ) {
-            datasetComboBox = new JComboBox();
+            datasetComboBox = new JComboBox<>();
             datasetComboBox.setPreferredSize( new Dimension( MAIN_COLUMN_WIDTH,
                     ( int ) datasetComboBox.getPreferredSize().getHeight() ) );
             datasetComboBox.setEditable( true );
@@ -219,7 +223,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
 
     private JComboBox getGeometryAttributeComboBox() {
         if ( geometryAttributeComboBox == null ) {
-            geometryAttributeComboBox = new JComboBox();
+            geometryAttributeComboBox = new JComboBox<>();
             geometryAttributeComboBox.setPreferredSize( new Dimension(
                     MAIN_COLUMN_WIDTH, ( int ) geometryAttributeComboBox.getPreferredSize().getHeight() ) );
             geometryAttributeComboBox.setEditable( true );
@@ -236,7 +240,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
 
     private JComboBox getIdentifierAttributeComboBox() {
         if ( identifierAttributeComboBox == null ) {
-            identifierAttributeComboBox = new JComboBox();
+            identifierAttributeComboBox = new JComboBox<>();
             identifierAttributeComboBox.setPreferredSize( new Dimension(
                     MAIN_COLUMN_WIDTH, ( int ) identifierAttributeComboBox.getPreferredSize().getHeight() ) );
             identifierAttributeComboBox.setEditable( true );
@@ -313,13 +317,13 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         }
         try {
             GeometryColumn selectedGeometryColumn = getGeometryColumn();
-            geometryAttributeComboBox.setModel( new DefaultComboBoxModel(
+            geometryAttributeComboBox.setModel( new DefaultComboBoxModel<>(
                     sortGeometryColumns( getGeometryAttributes( getDatasetName(),
                             getConnectionDescriptor() ) ) ) );
             geometryAttributeComboBox.setSelectedItem( selectedGeometryColumn );
         } catch ( Exception e ) {
             getContext().getErrorHandler().handleThrowable( e );
-            geometryAttributeComboBox.setModel( new DefaultComboBoxModel() );
+            geometryAttributeComboBox.setModel( new DefaultComboBoxModel<GeometryColumn>() );
         }
     }
 
@@ -335,20 +339,20 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         }
         try {
             PrimaryKeyColumn selectedIdentifierColumn = getIdentifierColumn();
-            Object[] pks = sortIdentifierColumns(getIdentifierAttributes(getDatasetName(),
+            PrimaryKeyColumn[] pks = sortIdentifierColumns(getIdentifierAttributes(getDatasetName(),
                     getConnectionDescriptor()));
-            identifierAttributeComboBox.setModel( new DefaultComboBoxModel(pks));
+            identifierAttributeComboBox.setModel( new DefaultComboBoxModel<>(pks));
             if (pks.length > 0) {
                 // preserve the last used pk if pk list has not changed
                 identifierAttributeComboBox.setSelectedItem( selectedIdentifierColumn );
             }
         } catch ( Exception e ) {
             getContext().getErrorHandler().handleThrowable( e );
-            identifierAttributeComboBox.setModel( new DefaultComboBoxModel() );
+            identifierAttributeComboBox.setModel( new DefaultComboBoxModel<PrimaryKeyColumn>() );
         }
     }
 
-    public Object[] sortGeometryColumns(java.util.List<GeometryColumn> list) {
+    private GeometryColumn[] sortGeometryColumns(java.util.List<GeometryColumn> list) {
         Collections.sort(list, new Comparator<GeometryColumn>() {
             public int compare(GeometryColumn o1, GeometryColumn o2) {
                 return o1.getName().compareTo(o2.getName());
@@ -360,7 +364,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         return list.toArray(new GeometryColumn[list.size()]);
     }
 
-    public Object[] sortIdentifierColumns(List<PrimaryKeyColumn> list) {
+    private PrimaryKeyColumn[] sortIdentifierColumns(List<PrimaryKeyColumn> list) {
         Collections.sort(list, new Comparator<PrimaryKeyColumn>() {
             public int compare(PrimaryKeyColumn o1, PrimaryKeyColumn o2) {
                 return o1.getName().compareTo(o2.getName());
@@ -381,13 +385,13 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
             String[] datasetNames = datasetNames( getConnectionDescriptor() );
             // avoid a NPE, if there are no spatial enabled tables in this database
             if (datasetNames != null) {
-                datasetComboBox.setModel( new DefaultComboBoxModel(
+                datasetComboBox.setModel( new DefaultComboBoxModel<>(
                         sortByString( datasetNames) ) );
                 datasetComboBox.setSelectedItem( selectedDatasetName );
             }
         } catch ( Exception e ) {
             getContext().getErrorHandler().handleThrowable( e );
-            datasetComboBox.setModel( new DefaultComboBoxModel() );
+            datasetComboBox.setModel( new DefaultComboBoxModel<>() );
         }
     }
 
@@ -400,10 +404,10 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         // Retrieve the dataset names using a ThreadedBasePlugIn, so
         // that the user can kill the thread if desired
         // [Jon Aquino 2005-03-16]
-        return (List<GeometryColumn>) runInKillableThread(
+        return runInKillableThread(
                 I18N.get(KEY + ".retrieving-list-of-geometry-attributes"), getContext(),
-                new Block() {
-                    public Object yield() throws Exception {
+                new Block<List<GeometryColumn>>() {
+                    public List<GeometryColumn> yield() throws Exception {
                         try {
                             return new PasswordPrompter().getOpenConnection(
                                     connectionManager(), connectionDescriptor,
@@ -412,8 +416,8 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
                         } catch ( Exception e ) {
                             // Can get here if dataset name is not found in the
                             // datastore [Jon Aquino 2005-03-16]
-                            e.printStackTrace( System.err );
-                            return new String[]{};
+                            Logger.warn("Exception thrown while retrieving GeometryColumns from the database", e);
+                            return new ArrayList<>();
                         }
                     }
                 } );
@@ -428,10 +432,10 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         // Retrieve the dataset names using a ThreadedBasePlugIn, so
         // that the user can kill the thread if desired
         // [Jon Aquino 2005-03-16]
-        return (List<PrimaryKeyColumn>) runInKillableThread(
+        return runInKillableThread(
                 I18N.get(KEY + ".retrieving-list-of-geometry-attributes"), getContext(),
-                new Block() {
-                    public Object yield() throws Exception {
+                new Block<List<PrimaryKeyColumn>>() {
+                    public List<PrimaryKeyColumn> yield() throws Exception {
                         try {
                             return new PasswordPrompter().getOpenConnection(
                                     connectionManager(), connectionDescriptor,
@@ -440,8 +444,8 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
                         } catch ( Exception e ) {
                             // Can get here if dataset name is not found in the
                             // datastore [Jon Aquino 2005-03-16]
-                            e.printStackTrace( System.err );
-                            return new String[]{};
+                            Logger.warn("Exception thrown while retrieving PrimaryKeyColumn from the database", e);
+                            return new ArrayList<>();
                         }
                     }
                 } );
@@ -459,10 +463,10 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         // Retrieve the dataset names using a ThreadedBasePlugIn, so
         // that the user can kill the thread if desired
         // [Jon Aquino 2005-03-11]
-        String[] datasetNames = ( String[] ) runInKillableThread(
+        String[] datasetNames = runInKillableThread(
                 I18N.get(KEY + ".retrieving-list-of-tables"), getContext(),
-                new Block() {
-                    public Object yield() throws Exception {
+                new Block<String[]>() {
+                    public String[] yield() throws Exception {
                         return new PasswordPrompter().getOpenConnection(
                                 connectionManager(), connectionDescriptor,
                                 AddWritableDataStoreLayerPanel.this ).getMetadata()
@@ -471,12 +475,12 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
                 } );
         // Don't cache the dataset array if it is empty, as a problem
         // likely occurred. [Jon Aquino 2005-03-14]
-        if ( datasetNames.length != 0 ) {
+        if ( datasetNames != null && datasetNames.length != 0 ) {
             connectionDescriptorToDatasetNamesMap.put( connectionDescriptor,
                     datasetNames );
         }
-        //}
-        return ( String[] ) connectionDescriptorToDatasetNamesMap.get( connectionDescriptor );
+
+        return connectionDescriptorToDatasetNamesMap.get( connectionDescriptor );
     }
 
     private void initialize() {
@@ -536,7 +540,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
                 } );
     }
 
-    public static interface Block {
-        public Object yield() throws Exception;
+    public interface Block<T> {
+        T yield() throws Exception;
     }
 }
