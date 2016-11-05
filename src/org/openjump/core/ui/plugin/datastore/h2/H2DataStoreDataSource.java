@@ -217,7 +217,7 @@ public class H2DataStoreDataSource extends WritableDataStoreDataSource {
                     if (Double.isNaN(c.z)) c.z = replacementZ;
                 }
             }
-            statement = setAttributeValues(statement, f, srid, dim);
+            statement = setAttributeValues(statement, f, srid, multi, dim);
             statement.addBatch();
             if (count++ % 10000 == 0) {
                 statement.executeBatch();
