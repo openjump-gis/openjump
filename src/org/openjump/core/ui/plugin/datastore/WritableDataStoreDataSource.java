@@ -6,7 +6,7 @@ import java.util.Date;
 
 import javax.swing.JOptionPane;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection;
@@ -16,8 +16,6 @@ import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionMan
 import org.openjump.core.ui.plugin.datastore.transaction.Evolution;
 import org.openjump.core.ui.plugin.datastore.transaction.EvolutionOperationException;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
@@ -283,7 +281,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             if (evolution.getType() == Evolution.Type.CREATION) {
                 PreparedStatement pstmt = insertStatement(conn,
                         evolution.getNewFeature().getSchema(), multi, normalizedColumnNames);
-                pstmt = setAttributeValues(pstmt, evolution.getNewFeature(), srid, dim);
+                pstmt = setAttributeValues(pstmt, evolution.getNewFeature(), srid, multi, dim);
                 pstmt.execute();
                 Logger.info("  create new feature " + evolution.getNewFeature().getID()+"/");
             } else if (evolution.getType() == Evolution.Type.SUPPRESSION) {
@@ -301,7 +299,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                     if (oldFeature.getAttribute(i) == null && newFeature.getAttribute(i) != null ||
                         oldFeature.getAttribute(i) != null && newFeature.getAttribute(i) == null ||
                         oldFeature.getAttribute(i) != null && !oldFeature.getAttribute(i).equals(newFeature.getAttribute(i))) {
-                        updateOneAttributeStatement(conn, newFeature, i, srid, dim).executeUpdate();
+                        updateOneAttributeStatement(conn, newFeature, i, srid, multi, dim).executeUpdate();
                     }
                 }
                 Logger.info("  modify " + evolution.getNewFeature().getID() + "/" +
@@ -347,7 +345,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
 
     private PreparedStatement updateOneAttributeStatement(SpatialDatabasesDSConnection conn,
-                Feature feature, int attribute, int srid, int dim) throws SQLException {
+                Feature feature, int attribute, int srid, boolean multi, int dim) throws SQLException {
 
         FeatureSchema schema = feature.getSchema();
         boolean quoted = schema.getAttributeType(schema.getExternalPrimaryKeyIndex()) == AttributeType.STRING;
@@ -364,7 +362,13 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         if (feature.getAttribute(attribute) == null) pstmt.setObject(1, null);
         else if (type == AttributeType.STRING)   pstmt.setString(1, feature.getString(attribute));
         else if (type == AttributeType.GEOMETRY) {
-            pstmt.setBytes(1, SQLUtil.getByteArrayFromGeometry((Geometry) feature.getAttribute(attribute), srid, dim));
+            Geometry g = (Geometry) feature.getAttribute(attribute);
+            if (multi) {
+                if (g instanceof Point) g = g.getFactory().createMultiPoint(new Point[]{(Point)g});
+                else if (g instanceof LineString) g = g.getFactory().createMultiLineString(new LineString[]{(LineString)g});
+                else if (g instanceof Polygon) g = g.getFactory().createMultiPolygon(new Polygon[]{(Polygon)g});
+            }
+            pstmt.setBytes(1, SQLUtil.getByteArrayFromGeometry(g, srid, dim));
         }
         else if (type == AttributeType.INTEGER)  pstmt.setInt(1, feature.getInteger(attribute));
         else if (type == AttributeType.LONG)     pstmt.setLong(1, (Long) feature.getAttribute(attribute));
@@ -386,7 +390,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     }
 
     protected PreparedStatement setAttributeValues(PreparedStatement pstmt,
-                Feature feature, int srid, int dim) throws SQLException {
+                Feature feature, int srid, boolean multi, int dim) throws SQLException {
         FeatureSchema schema = feature.getSchema();
         Set<String> excludedAttributes = new HashSet<>();
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
@@ -402,7 +406,13 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             if (feature.getAttribute(i) == null)     pstmt.setObject(index++, null);
             else if (type == AttributeType.STRING)   pstmt.setString(index++, feature.getString(i));
             else if (type == AttributeType.GEOMETRY) {
-                pstmt.setBytes(index++, SQLUtil.getByteArrayFromGeometry((Geometry)feature.getAttribute(i), srid, dim));
+                Geometry g = (Geometry)feature.getAttribute(i);
+                if (multi) {
+                    if (g instanceof Point) g = g.getFactory().createMultiPoint(new Point[]{(Point)g});
+                    else if (g instanceof LineString) g = g.getFactory().createMultiLineString(new LineString[]{(LineString)g});
+                    else if (g instanceof Polygon) g = g.getFactory().createMultiPolygon(new Polygon[]{(Polygon)g});
+                }
+                pstmt.setBytes(index++, SQLUtil.getByteArrayFromGeometry(g, srid, dim));
             }
             else if (type == AttributeType.INTEGER)  pstmt.setInt(index++, feature.getInteger(i));
             else if (type == AttributeType.LONG)     pstmt.setLong(index++, (Long) feature.getAttribute(i));
