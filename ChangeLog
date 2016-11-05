@@ -3,9 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
-2016-1-05 mmichaud <m.michael.michaud@orange.fr>
+2016-11-05 mmichaud <m.michael.michaud@orange.fr>
   * Writable PostGIS driver apply a ST_Multi transformation to geometries
     if it detected that the distant table has a MultiGeometry constraint
+  * Add two geometry functions to wrap/unwrap geom into/from multigeometry
 
 2016-11-04 mmichaud <m.michael.michaud@orange.fr>
   * Add two plugins to generate random values in an attribute
