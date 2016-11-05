@@ -386,11 +386,20 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     private void addDBPrimaryKey(SpatialDatabasesDSConnection conn, String dbSchema,
                                String dbTable, String primaryKey) throws SQLException {
         String tableFullName = SQLUtil.compose(dbSchema, dbTable);
-        String sql_test_seq = "SELECT * FROM information_schema.sequences\n" +
-                "    WHERE sequence_schema = '" + dbSchema + "' AND sequence_name = 'openjump_dbid_sequence';";
-        String sql_create_seq = "CREATE SEQUENCE \"" + dbSchema + "\".openjump_dbid_sequence;";
-        String sql_create_dbid = "ALTER TABLE " + tableFullName + " ADD COLUMN \"" +
-                primaryKey + "\" BIGINT DEFAULT nextval('\"" + dbSchema + "\".openjump_dbid_sequence') PRIMARY KEY;";
+        String sql_test_seq, sql_create_seq, sql_create_dbid;
+        if (dbSchema == null) {
+            sql_test_seq = "SELECT * FROM information_schema.sequences\n" +
+                    "    WHERE sequence_name = 'openjump_dbid_sequence';";
+            sql_create_seq = "CREATE SEQUENCE openjump_dbid_sequence;";
+            sql_create_dbid = "ALTER TABLE " + tableFullName + " ADD COLUMN \"" +
+                    primaryKey + "\" BIGINT DEFAULT nextval('openjump_dbid_sequence') PRIMARY KEY;";
+        } else {
+            sql_test_seq = "SELECT * FROM information_schema.sequences\n" +
+                    "    WHERE sequence_schema = '" + dbSchema + "' AND sequence_name = 'openjump_dbid_sequence';";
+            sql_create_seq = "CREATE SEQUENCE \"" + dbSchema + "\".openjump_dbid_sequence;";
+            sql_create_dbid = "ALTER TABLE " + tableFullName + " ADD COLUMN \"" +
+                    primaryKey + "\" BIGINT DEFAULT nextval('\"" + dbSchema + "\".openjump_dbid_sequence') PRIMARY KEY;";
+        }
         boolean sequence_already_exists;
         // check if openjump_dbid_sequence already exists
         try {
