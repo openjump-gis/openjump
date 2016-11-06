@@ -31,6 +31,7 @@
  */
 package com.vividsolutions.jump.io.datasource;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,8 +82,10 @@ public class ReaderWriterFileDataSource extends FileDataSource {
           throw new UnsupportedOperationException("reading is not supported");
         
         try {
-          // make readers task monitor aware
           DriverProperties dp = getReaderDriverProperties();
+          fixUpDriverProperties(dp);
+
+          // make readers task monitor aware
           URI uri = new URI(dp.getProperty(DataSource.URI_KEY));
           if (reader instanceof TaskMonitorSupport) {
             ((TaskMonitorSupport) reader).setTaskMonitor(monitor);
@@ -113,15 +116,11 @@ public class ReaderWriterFileDataSource extends FileDataSource {
         if (!isWritable())
           throw new UnsupportedOperationException("writing is not supported");
         
-        // make readers task monitor aware
         DriverProperties dp = getWriterDriverProperties();
-        URI uri = null;
-        if (dp.getProperty(DataSource.URI_KEY) != null) {
-          uri = new URI(dp.getProperty(DataSource.URI_KEY));
-          if (dp.getProperty(DataSource.FILE_KEY) == null) {
-            dp.setProperty(DataSource.FILE_KEY, uri.getPath());
-          }
-        }
+        fixUpDriverProperties(dp);
+
+        // make readers task monitor aware
+        URI uri = new URI(dp.getProperty(DataSource.URI_KEY));
         if (writer instanceof TaskMonitorSupport) {
           ((TaskMonitorSupport) writer).setTaskMonitor(monitor);
           TaskMonitorUtil
@@ -173,14 +172,31 @@ public class ReaderWriterFileDataSource extends FileDataSource {
     return getDriverProperties();
   }
 
-  protected DriverProperties getDriverProperties() {
+  protected DriverProperties getDriverProperties(){
     DriverProperties properties = new DriverProperties();
     Map<Object,Object> map = getProperties();
-    // explicitely copy into properties object or getProperty() returns null
+
+    // explicitly copy into properties object or getProperty() returns null
     for (Map.Entry entry : map.entrySet()){
       properties.setProperty(String.valueOf(entry.getKey()), (String.valueOf(entry.getValue())));
     }
+
     return properties;
+  }
+
+  private DriverProperties fixUpDriverProperties(DriverProperties dp)
+      throws Exception {
+    // fixup the properties: generate FILE from URI and the other way around
+    // some _old_ Drivers expect a FILE property to be set, let's generate it
+    // from URI in case it is missing
+    String uri = dp.getProperty(DataSource.URI_KEY);
+    String file = dp.getProperty(DataSource.FILE_KEY);
+    if (file == null && uri != null)
+      dp.setProperty(DataSource.FILE_KEY, new URI(uri).getPath());
+    else if (file != null && uri == null)
+      dp.setProperty(DataSource.URI_KEY, new File(file).toURI().toString());
+
+    return dp;
   }
 
   @Override
