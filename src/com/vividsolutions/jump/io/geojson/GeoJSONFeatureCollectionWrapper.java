@@ -127,7 +127,7 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
     // parse geometry
     if (featureMap.containsKey(GeoJSONConstants.GEOMETRY)
         && (featureMap.get(GeoJSONConstants.GEOMETRY) instanceof Map)) {
-      // add geom attribute if none so far
+      // add geom attribute to schema if none so far
       if (featureSchema.getGeometryIndex() < 0) {
         featureSchema.addAttribute("Geometry", AttributeType.GEOMETRY);
       }
@@ -166,12 +166,13 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
           if (featureSchema.getAttributeType(key) == ATTRIBUTETYPE_NULL) {
             featureSchema.setAttributeType(key, type);
           }
-          // this column hosts mixed attrib types
-          else {
+          // this column hosts mixed attrib types eg. String/Long, NULL values are allowed though
+          else if (type != ATTRIBUTETYPE_NULL){
             columnsWithMixedValues.add(key);
           }
         }
 
+        // add the attribute value to the feature
         feature.setAttribute(key, value);
       }
     }
@@ -267,7 +268,7 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
         milliSeconds = now;
         TaskMonitorUtil.report(monitor, count, size(), "");
       }
-      
+
       // unset first marker
       if (first)
         first = false;
