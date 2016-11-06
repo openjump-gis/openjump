@@ -78,7 +78,7 @@ public class JFCWithEnterAction extends JFileChooser {
       String filename = (String) getFileName.invoke(getUI());
       if (filename != null && !filename.isEmpty()) {
         file = new File(filename);
-        if (file.getParentFile() == null)
+        if (!file.isAbsolute())
           file = new File(getCurrentDirectory(), filename);
         return file;
       }
