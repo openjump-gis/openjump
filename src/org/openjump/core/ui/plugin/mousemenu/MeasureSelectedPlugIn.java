@@ -1,7 +1,6 @@
 package org.openjump.core.ui.plugin.mousemenu;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -9,12 +8,10 @@ import javax.swing.JComponent;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.MeasureLayerFinder;
@@ -47,7 +44,7 @@ public class MeasureSelectedPlugIn extends AbstractPlugIn {
         LayerViewPanel layerViewPanel = context.getWorkbenchContext()
                 .getLayerViewPanel();
         WorkbenchContext wbc = context.getWorkbenchContext();
-        Collection layers = ((SelectionManagerProxy) wbc.getWorkbench()
+        Collection<Layer> layers = ((SelectionManagerProxy) wbc.getWorkbench()
                 .getFrame().getActiveInternalFrame()).getSelectionManager()
                 .getFeatureSelection().getLayersWithSelectedItems();
         // Giuseppe Aruta 2015-6-25
@@ -56,30 +53,21 @@ public class MeasureSelectedPlugIn extends AbstractPlugIn {
         // multigeometries (multiPolygon, multiLinestring, multipoint and
         // geometry collections)
         // and for points (measure coordinates)
-        for (Iterator li = layers.iterator(); li.hasNext();) {
-            Layer layer = (Layer) li.next();
+        for (Layer layer : layers) {
 
-            FeatureCollection featureCollection = layer
-                    .getFeatureCollectionWrapper();
-            SelectionManager manager = context.getLayerViewPanel()
-                    .getSelectionManager();
-            // Collection feats = getFeatures(layer,context);
-            Collection feats = manager.createFeaturesFromSelectedItems(layer);
+            SelectionManager manager = context.getLayerViewPanel().getSelectionManager();
 
-            for (Iterator i = feats.iterator(); i.hasNext();) {
+            for (Feature feature : manager.createFeaturesFromSelectedItems(layer)) {
                 try {
-                    Feature feat = (Feature) i.next();
                     layerViewPanel.setViewportInitialized(true);
 
-                    Geometry geom = feat.getGeometry();
+                    Geometry geom = feature.getGeometry();
                     if (geom instanceof Polygon || geom instanceof LineString) {
                         measure(wbc, geom);
                     }
-
                     else {
                         // Giuseppe Aruta 2015-6-25
                         // Set here the code for multiplegeometries and point
-
                     }
                 } catch (IllegalArgumentException e) {
                     context.getWorkbenchFrame().warnUser(e.toString());
@@ -115,17 +103,14 @@ public class MeasureSelectedPlugIn extends AbstractPlugIn {
 
         mec.add(new EnableCheck() {
             public String check(JComponent component) {
-                Feature feat =
-
-                (Feature) context.getLayerViewPanel().getSelectionManager()
+                Feature feature = context.getLayerViewPanel().getSelectionManager()
                         .getFeaturesWithSelectedItems().iterator().next();
-                Geometry geom = feat.getGeometry();
+                Geometry geom = feature.getGeometry();
 
                 return geom instanceof GeometryCollection
-                        || geom instanceof MultiLineString
                         || geom instanceof Point ? geom.getGeometryType()
                         + " - "
-                        + I18N.get("org.openjump.core.ui.plugin.mousemenu.MeasureSelectedFeaturePlugin.message1")
+                        + I18N.get("org.openjump.core.ui.plugin.mousemenu.MeasureSelectedFeaturePlugIn.message1")
                         : null;
             }
         });
