@@ -51,7 +51,9 @@ public class JFCWithEnterAction extends JFileChooser {
    * nothing when a file is selected" [Jon Aquino]
    */
   public File getSelectedFile() {
-    File file = super.getSelectedFile();
+    File file;
+    
+    file = super.getSelectedFile();
     if (file != null)
       return file;
 
@@ -74,11 +76,12 @@ public class JFCWithEnterAction extends JFileChooser {
     try {
       Method getFileName = getUI().getClass().getDeclaredMethod("getFileName");
       String filename = (String) getFileName.invoke(getUI());
-      if (!filename.isEmpty())
+      if (filename != null && !filename.isEmpty()) {
         file = new File(filename);
         if (file.getParentFile() == null)
           file = new File(getCurrentDirectory(), filename);
         return file;
+      }
     } catch (Exception e) {
       Logger.error(e);
     }
