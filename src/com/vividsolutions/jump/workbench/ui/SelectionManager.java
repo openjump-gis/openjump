@@ -50,7 +50,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -85,22 +84,20 @@ public class SelectionManager {
      * A feature may get split into two or more -- for example, if two
      * linestrings of a feature are selected. 
      */
-    public Collection createFeaturesFromSelectedItems() {
-        List newFeatures = new ArrayList();
+    public Collection<Feature> createFeaturesFromSelectedItems() {
+        List<Feature> newFeatures = new ArrayList<>();
         for (Layer layer : getLayersWithSelectedItems()) {
             newFeatures.addAll(createFeaturesFromSelectedItems(layer));
         }
         return newFeatures;
     }
 
-    public Collection createFeaturesFromSelectedItems(Layer layer) {
-        ArrayList newFeatures = new ArrayList();
-        for (Iterator i = getFeaturesWithSelectedItems(layer).iterator(); i.hasNext();) {
-            Feature feature = (Feature) i.next();
-            for (Iterator j = getSelectedItems(layer, feature).iterator(); j.hasNext();) {
-                Geometry item = (Geometry) j.next();
+    public Collection<Feature> createFeaturesFromSelectedItems(Layer layer) {
+        ArrayList<Feature> newFeatures = new ArrayList<>();
+        for (Feature feature : getFeaturesWithSelectedItems(layer)) {
+            for (Geometry item : getSelectedItems(layer, feature)) {
                 // Geometry is changed just after, no need to clone it
-                Feature newFeature = (Feature) feature.clone(false);
+                Feature newFeature = feature.clone(false);
                 newFeature.setGeometry(item);
                 newFeatures.add(newFeature);
             }
@@ -123,8 +120,7 @@ public class SelectionManager {
         lineStringSelection.setParent(partSelection);
         lineStringSelection.setChild(null);
         selections = Collections.unmodifiableList(Arrays.asList(
-            new AbstractSelection[] {featureSelection, partSelection, lineStringSelection}
-        ));
+                featureSelection, partSelection,lineStringSelection));
         addLayerListenerTo(layerManagerProxy.getLayerManager());
     }
 
@@ -202,8 +198,8 @@ public class SelectionManager {
      * of a Geometry (an element of a GeometryCollection or a ring of a Polygon).
      * @return a collection of Geometries
      */
-    public Collection getSelectedItems() {
-        ArrayList selectedItems = new ArrayList();
+    public Collection<Geometry> getSelectedItems() {
+        ArrayList<Geometry> selectedItems = new ArrayList<>();
         for (AbstractSelection selection : selections) {
             selectedItems.addAll(selection.getSelectedItems());
         }
@@ -214,16 +210,16 @@ public class SelectionManager {
     	return selectedItems;
     }
 
-    public Collection getSelectedItems(Layer layer) {
-        List selectedItems = new ArrayList();
+    public Collection<Geometry> getSelectedItems(Layer layer) {
+        List<Geometry> selectedItems = new ArrayList<>();
         for (AbstractSelection selection : selections) {
             selectedItems.addAll(selection.getSelectedItems(layer));
         }
         return selectedItems;
     }
 
-    public Collection getSelectedItems(Layer layer, Feature feature) {
-        List selectedItems = new ArrayList();
+    public Collection<Geometry> getSelectedItems(Layer layer, Feature feature) {
+        List<Geometry> selectedItems = new ArrayList<>();
         for (AbstractSelection selection : selections) {
             selectedItems.addAll(selection.getSelectedItems(layer, feature));
         }
@@ -235,8 +231,8 @@ public class SelectionManager {
      * similar enough Geometry from which Geometries can be retrieved using
      * the selection indices
      */
-    public Collection getSelectedItems(Layer layer, Feature feature, Geometry geometry) {
-        ArrayList selectedItems = new ArrayList();
+    public Collection<Geometry> getSelectedItems(Layer layer, Feature feature, Geometry geometry) {
+        ArrayList<Geometry> selectedItems = new ArrayList<>();
         for (AbstractSelection selection : selections) {
             selectedItems.addAll(selection.getSelectedItems(layer, feature, geometry));
         }
@@ -244,7 +240,7 @@ public class SelectionManager {
     }
 
     public Collection<Layer> getLayersWithSelectedItems() {
-        Set<Layer> layersWithSelectedItems = new HashSet<Layer>();
+        Set<Layer> layersWithSelectedItems = new HashSet<>();
         for (AbstractSelection selection : selections) {
             layersWithSelectedItems.addAll(selection.getLayersWithSelectedItems());
         }
@@ -309,8 +305,8 @@ public class SelectionManager {
 
     public void unselectFromFeaturesWithModifiedItemCounts(
         Layer layer,
-        Collection features,
-        Collection oldFeatureClones) {
+        Collection<Feature> features,
+        Collection<Feature> oldFeatureClones) {
         boolean originalPanelUpdatesEnabled = arePanelUpdatesEnabled();
         setPanelUpdatesEnabled(false);
         try {

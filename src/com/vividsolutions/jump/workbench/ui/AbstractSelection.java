@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -46,7 +45,6 @@ import java.util.Set;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.util.CollectionMap;
 import com.vividsolutions.jump.workbench.model.Layer;
 
 /**
@@ -56,8 +54,7 @@ import com.vividsolutions.jump.workbench.model.Layer;
 // lists with size 1 only)
 public abstract class AbstractSelection {
     
-    private Map<Layer,Map<Feature,Set<Integer>>> layerMap = 
-        new HashMap<Layer,Map<Feature,Set<Integer>>>();
+    private Map<Layer,Map<Feature,Set<Integer>>> layerMap = new HashMap<>();
 
     public abstract String getRendererContentID();
 
@@ -84,9 +81,9 @@ public abstract class AbstractSelection {
      */
     public List<Geometry> items(Geometry geometry, Collection<Integer> indices) {
         List<Geometry> allItems = items(geometry);
-        List<Geometry> items = new ArrayList<Geometry>(1);
+        List<Geometry> items = new ArrayList<>(1);
         for (Integer index : indices) {
-            items.add(allItems.get(index.intValue()));
+            items.add(allItems.get(index));
         }
         return items;
     }
@@ -108,26 +105,25 @@ public abstract class AbstractSelection {
      */
     public Set<Integer> getSelectedItemIndices(Layer layer, Feature feature) {
         Set<Integer> indices = getFeatureToSelectedItemIndexCollectionMap(layer).get(feature);
-        return indices == null ? Collections.EMPTY_SET : indices;
+        return indices == null ? Collections.<Integer>emptySet() : indices;
     }
 
     /**
      * Returns a mapping of each feature to selected items in this feature.
      */
     public Map<Feature,List<Geometry>> getFeatureToSelectedItemCollectionMap(Layer layer) {
-        Map<Feature,List<Geometry>> collectionMap = new LinkedHashMap<Feature,List<Geometry>>();
+        Map<Feature,List<Geometry>> collectionMap = new LinkedHashMap<>();
         for (Feature feature : getFeatureToSelectedItemIndexCollectionMap(layer).keySet()) {
             Set<Integer> set = getSelectedItemIndices(layer, feature);
-            if (set == null) {
-                //set = Collections.EMPTY_SET;
+            if (set != null) {
+                collectionMap.put(feature, items(feature.getGeometry(), set));
             }
-            else collectionMap.put(feature, items(feature.getGeometry(), set));
         }
         return collectionMap;
     }
 
     public Collection<Layer> getLayersWithSelectedItems() {
-        List<Layer> layersWithSelectedItems = new ArrayList<Layer>();
+        List<Layer> layersWithSelectedItems = new ArrayList<>();
         for (Layer layer : layerMap.keySet()) {
             if (!getFeaturesWithSelectedItems(layer).isEmpty()) {
                 layersWithSelectedItems.add(layer);
@@ -137,7 +133,7 @@ public abstract class AbstractSelection {
     }
 
     public Collection<Feature> getFeaturesWithSelectedItems() {
-        List<Feature> featuresWithSelectedItems = new ArrayList<Feature>();
+        List<Feature> featuresWithSelectedItems = new ArrayList<>();
         for (Layer layer : layerMap.keySet()) {
             featuresWithSelectedItems.addAll(getFeaturesWithSelectedItems(layer));
         }
@@ -145,7 +141,7 @@ public abstract class AbstractSelection {
     }
 
     public Collection<Feature> getFeaturesWithSelectedItems(Layer layer) {
-        List<Feature> featuresWithSelectedItems = new ArrayList<Feature>();
+        List<Feature> featuresWithSelectedItems = new ArrayList<>();
         for (Feature feature : getFeatureToSelectedItemIndexCollectionMap(layer).keySet()) {
             if (!getFeatureToSelectedItemIndexCollectionMap(layer).get(feature).isEmpty()) {
                 featuresWithSelectedItems.add(feature);
@@ -155,7 +151,7 @@ public abstract class AbstractSelection {
     }
 
     public Collection<Geometry> getSelectedItems() {
-        ArrayList selectedItems = new ArrayList(1);
+        ArrayList<Geometry> selectedItems = new ArrayList<>(1);
         for (Layer layer : layerMap.keySet()) {
             selectedItems.addAll(getSelectedItems(layer));
         }
@@ -163,7 +159,7 @@ public abstract class AbstractSelection {
     }
 
     public Collection<Geometry> getSelectedItems(Layer layer) {
-        List<Geometry> selectedItems = new ArrayList<Geometry>(1);
+        List<Geometry> selectedItems = new ArrayList<>(1);
         for (Feature feature : getFeatureToSelectedItemIndexCollectionMap(layer).keySet()) {
             selectedItems.addAll(getSelectedItems(layer, feature));
         }
@@ -181,7 +177,7 @@ public abstract class AbstractSelection {
      */
     public Collection<Geometry> getSelectedItems(Layer layer, Feature feature, Geometry geometry) {
         Set<Integer> indices = getFeatureToSelectedItemIndexCollectionMap(layer).get(feature);
-        if (indices == null) indices = Collections.EMPTY_SET;
+        if (indices == null) indices = Collections.emptySet();
         return items(geometry, indices);
     }
 
@@ -190,9 +186,9 @@ public abstract class AbstractSelection {
      */
     public Set<Integer> indices(Geometry geometry, Collection<Geometry> items) {
         List<Geometry> allItems = items(geometry);
-        Set<Integer> indices = new LinkedHashSet<Integer>(1);
+        Set<Integer> indices = new LinkedHashSet<>(1);
         for (Geometry item : items) {
-            indices.add(new Integer(allItems.indexOf(item)));
+            indices.add(allItems.indexOf(item));
         }
         return indices;
     }
@@ -225,7 +221,7 @@ public abstract class AbstractSelection {
         updatePanel();
     }
 
-    public void selectItems(Layer layer, Feature feature, Collection items) {
+    public void selectItems(Layer layer, Feature feature, Collection<Geometry> items) {
         Collection<Geometry> itemsToSelect = itemsNotSelectedInAncestors(layer, feature, items);
         boolean originalPanelUpdatesEnabled = selectionManager.arePanelUpdatesEnabled();
         selectionManager.setPanelUpdatesEnabled(false);
@@ -246,7 +242,7 @@ public abstract class AbstractSelection {
         updatePanel();
     }
 
-    public void unselectItems(Layer layer, Feature feature, Collection items) {
+    public void unselectItems(Layer layer, Feature feature, Collection<Geometry> items) {
         boolean originalPanelUpdatesEnabled = selectionManager.arePanelUpdatesEnabled();
         selectionManager.setPanelUpdatesEnabled(false);
         try {
@@ -265,11 +261,10 @@ public abstract class AbstractSelection {
         updatePanel();
     }
 
-    public Collection itemsNotSelectedInAncestors(Layer layer, Feature feature, Collection items) {
-        ArrayList itemsNotSelectedInAncestors = new ArrayList(1);
+    public Collection<Geometry> itemsNotSelectedInAncestors(Layer layer, Feature feature, Collection<Geometry> items) {
+        ArrayList<Geometry> itemsNotSelectedInAncestors = new ArrayList<>(1);
         if (layer.isSelectable()) {
-            for (Object object : items) {
-                Geometry item = (Geometry) object;
+            for (Geometry item : items) {
                 if (!selectedInAncestors(layer, feature, item)) {
                     itemsNotSelectedInAncestors.add(item);
                 }
@@ -280,7 +275,7 @@ public abstract class AbstractSelection {
 
     protected abstract boolean selectedInAncestors(Layer layer, Feature feature, Geometry item);
 
-    protected abstract void unselectInDescendants(Layer layer, Feature feature, Collection items);
+    protected abstract void unselectInDescendants(Layer layer, Feature feature, Collection<Geometry> items);
 
     public void selectItems(Layer layer, Feature feature) {
         selectItems(layer, feature, items(feature.getGeometry()));
@@ -302,13 +297,12 @@ public abstract class AbstractSelection {
 
     public void unselectFromFeaturesWithModifiedItemCounts(
         Layer layer,
-        Collection features,
-        Collection oldFeatureClones) {
-        List featuresToUnselect = new ArrayList(1);
+        Collection<Feature> features,
+        Collection<Feature> oldFeatureClones) {
+        List<Feature> featuresToUnselect = new ArrayList<>(1);
         Iterator j = oldFeatureClones.iterator();
         j.hasNext();
-        for (Object object : features) {
-            Feature feature = (Feature) object;
+        for (Feature feature : features) {
             Feature oldFeatureClone = (Feature) j.next();
             if (items(feature.getGeometry()).size()
                 != items(oldFeatureClone.getGeometry()).size()) {
@@ -350,7 +344,7 @@ public abstract class AbstractSelection {
     public void unselectItem(Layer layer, Feature feature, int selectedItemIndex) {
         Set<Integer> indices = getFeatureToSelectedItemIndexCollectionMap(layer).get(feature);
         if (indices != null) {
-            indices.remove(new Integer(selectedItemIndex));
+            indices.remove(selectedItemIndex);
             if (indices.isEmpty()) {
                 getFeatureToSelectedItemIndexCollectionMap(layer).remove(feature);
             }

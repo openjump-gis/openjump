@@ -34,11 +34,9 @@ package com.vividsolutions.jump.workbench.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
@@ -57,7 +55,7 @@ public class PartSelection extends AbstractSelection {
      */
     public List<Geometry> items(Geometry geometry) {
         int partNumber = geometry.getNumGeometries();
-        List<Geometry> items = new ArrayList<Geometry>(partNumber);
+        List<Geometry> items = new ArrayList<>(partNumber);
         if (partNumber > 1) {
             for (int i = 0; i < partNumber; i++) {
                 items.addAll(items(geometry.getGeometryN(i)));
@@ -83,15 +81,12 @@ public class PartSelection extends AbstractSelection {
         return getParent().getFeaturesWithSelectedItems().contains(feature);
     }
 
-    protected void unselectInDescendants(Layer layer, Feature feature, Collection items) {
+    protected void unselectInDescendants(Layer layer, Feature feature, Collection<Geometry> items) {
         Assert.isTrue(getChild() instanceof LineStringSelection);
-        for (Iterator i = items.iterator(); i.hasNext();) {
-            Geometry part = (Geometry) i.next();
+        for (Geometry part : items) {
             List partLineStrings = getChild().items(part);
-            for (Iterator j = getChild().getSelectedItems(layer, feature).iterator();
-                j.hasNext();
-                ) {
-                LineString selectedLineString = (LineString) j.next();
+            for (Geometry selectedItem : getChild().getSelectedItems(layer, feature)) {
+                LineString selectedLineString = (LineString) selectedItem;
                 if (partLineStrings.contains(selectedLineString)) {
                     getChild().unselectItem(
                         layer,

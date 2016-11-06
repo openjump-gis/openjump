@@ -36,6 +36,7 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.renderer.FeatureSelectionRenderer;
+
 /**
  * A collection of selected {@link Feature Features}
  */
@@ -45,7 +46,7 @@ public class FeatureSelection extends AbstractSelection {
      * Returns a list containing the geometry itself.
      */
     public List<Geometry> items(Geometry geometry) {
-        List<Geometry> items = new ArrayList<Geometry>(1);
+        List<Geometry> items = new ArrayList<>(1);
         items.add(geometry);
         return items;
     }
@@ -63,7 +64,7 @@ public class FeatureSelection extends AbstractSelection {
         //[michael.michaud@free.fr].        
         //[Jon Aquino 2004-04-27]
         Assert.isTrue(items.size() == 1 || items.isEmpty());
-        return items.isEmpty() ? Collections.EMPTY_SET : Collections.singleton(0);
+        return items.isEmpty() ? Collections.<Integer>emptySet() : Collections.singleton(0);
     }
     
     public String getRendererContentID() {
@@ -76,7 +77,7 @@ public class FeatureSelection extends AbstractSelection {
     }
     
     protected void unselectInDescendants(Layer layer, Feature feature,
-            Collection items) {
+            Collection<Geometry> items) {
         Assert.isTrue(getChild() instanceof PartSelection);
         Assert.isTrue(getChild().getChild() instanceof LineStringSelection);
         getChild().unselectItems(layer, feature);

@@ -34,7 +34,6 @@ package com.vividsolutions.jump.workbench.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -56,7 +55,7 @@ public class LineStringSelection extends AbstractSelection {
      * Returns a list of LineString items contained in this geometry.
      */
     public List<Geometry> items(Geometry geometry) {
-        List<Geometry> items = new ArrayList<Geometry>(1);
+        List<Geometry> items = new ArrayList<>(1);
 
         if (geometry instanceof LineString) {
             items.add(geometry);
@@ -92,14 +91,13 @@ public class LineStringSelection extends AbstractSelection {
         Assert.isTrue(getParent().getParent() instanceof FeatureSelection);
         Assert.isTrue(getParent() instanceof PartSelection);        
         if (getParent().getParent().getFeaturesWithSelectedItems().contains(feature)) { return true; }
-        for (Iterator i = getParent().getSelectedItems(layer, feature).iterator(); i.hasNext(); ) {
-            Geometry selectedPart = (Geometry) i.next();
+        for (Geometry selectedPart : getParent().getSelectedItems(layer, feature)) {
             if (items(selectedPart).contains(item)) { return true; }
         }
         return false;
     }
 
-    protected void unselectInDescendants(Layer layer, Feature feature, Collection items) {
+    protected void unselectInDescendants(Layer layer, Feature feature, Collection<Geometry> items) {
         Assert.isTrue(getChild() == null);        
     }
 
