@@ -6,6 +6,7 @@
 2016-11-06 mmichaud <m.michael.michaud@orange.fr>
   * Fix bug #439 MakeValid now uses SymDifference instead of difference to
     repair overlapping holes (which corresponds what is displayed on screen)
+  * Add a selection mode to select features with a Multi-Geometry type
 
 2016-11-05 mmichaud <m.michael.michaud@orange.fr>
   * Writable PostGIS driver apply a ST_Multi transformation to geometries

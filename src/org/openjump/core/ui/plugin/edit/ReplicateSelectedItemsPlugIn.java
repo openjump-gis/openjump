@@ -44,7 +44,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 
 import org.openjump.core.ui.images.IconLoader;
 
@@ -80,7 +79,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
     public static ImageIcon ICON = IconLoader.icon("shape_replicate.png");
     private String T1 = "Replicate to new layer?";
     private String CLAYER = "otherwise select layer";
-    boolean newLayer = true;
+    private boolean newLayer = true;
     private Layer itemlayer = null;
     private boolean copyAsGeometry = false;
 
@@ -142,7 +141,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
         dialog.setSideBarDescription(sidebarString);
         // "Replicates selected items if all have same feature schema"
         dialog.addCheckBox(T1, true);
-        JComboBox addLayerComboBoxBuild = dialog.addLayerComboBox(this.CLAYER,
+        dialog.addLayerComboBox(this.CLAYER,
                 context.getCandidateLayer(0), null, context.getLayerManager());
     }
 
@@ -165,28 +164,25 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
                 .get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.no-replication-because-different-attribute-schema");
 
         boolean hasBeenCalled = false;
-        System.gc(); // flush garbage collector
         // --------------------------
         // -- get selected items
         final Collection features = context.getLayerViewPanel()
                 .getSelectionManager().getFeaturesWithSelectedItems();
 
-        if (newLayer == false) {
+        if (!newLayer) {
 
             EditTransaction transaction = new EditTransaction(new ArrayList(),
                     this.getName(), this.itemlayer,
                     this.isRollingBackInvalidEdits(context), true,
                     context.getWorkbenchFrame());
 
-            FeatureCollection actualLayerFeatures = this.itemlayer
-                    .getFeatureCollectionWrapper().getWrappee();
             FeatureSchema fschema = this.itemlayer
                     .getFeatureCollectionWrapper().getFeatureSchema();
             // -- check if schema is the same if yes add the feature (or change
             // Schema)
             Iterator iter = features.iterator();
             int i = 0;
-            Feature fi = null;
+            Feature fi;
             while (iter.hasNext()) {
                 i++;
                 fi = (Feature) iter.next();
@@ -196,11 +192,11 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
                 } else {
                     context.getWorkbenchFrame().setStatusMessage(
                             statusMessage1 + ": " + i + " " + statusMessage2);
-                    if (hasBeenCalled == false) {
+                    if (!hasBeenCalled) {
                         this.askWhatToDo(context);
                         hasBeenCalled = true;
                     }
-                    if (this.copyAsGeometry == true) {
+                    if (this.copyAsGeometry) {
                         Geometry geom = (Geometry) fi.getGeometry().clone();
                         Feature newFeature = FeatureUtil.toFeature(geom,
                                 fschema);
@@ -213,23 +209,23 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
             Iterator iter = features.iterator();
             Feature f = (Feature) iter.next();
             FeatureCollection myCollA = new FeatureDataset(f.getSchema());
-            myCollA.add((Feature) f.clone()); // copy first Item
-            Feature fi = null;
+            myCollA.add(f.clone()); // copy first Item
+            Feature fi;
             int i = 1;
             while (iter.hasNext()) {
                 i++;
                 fi = (Feature) iter.next();
                 if (f.getSchema().equals(fi.getSchema())) {
-                    Feature feature = (Feature) fi.clone();
+                    Feature feature = fi.clone();
                     myCollA.add(feature);
                 } else {
                     context.getWorkbenchFrame().setStatusMessage(
                             statusMessage1 + ": " + i + statusMessage2);
-                    if (hasBeenCalled == false) {
+                    if (!hasBeenCalled) {
                         this.askWhatToDo(context);
                         hasBeenCalled = true;
                     }
-                    if (this.copyAsGeometry == true) {
+                    if (this.copyAsGeometry) {
                         Geometry geom = (Geometry) fi.getGeometry().clone();
                         Feature newFeature = FeatureUtil.toFeature(geom,
                                 f.getSchema());

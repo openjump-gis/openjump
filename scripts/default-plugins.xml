@@ -257,6 +257,9 @@
 		org.openjump.core.ui.plugin.edit.SelectByTypePlugIn
 	</plug-in>
 	<plug-in>
+		org.openjump.core.ui.plugin.edit.SelectGeometryCollectionsPlugIn
+	</plug-in>
+	<plug-in>
 		org.openjump.core.ui.plugin.edit.SelectLayersWithSelectedItemsPlugIn
 	</plug-in>
 	<plug-in>

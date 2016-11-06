@@ -36,7 +36,7 @@ package org.openjump.core.ui.plugin.edit;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.BasicFeature;
@@ -77,21 +77,18 @@ public class SelectAllModifiedFeaturesPlugIn extends AbstractPlugIn {
 
   public boolean execute(final PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
-    ArrayList selectedFeatures = new ArrayList();
+    List<Feature> selectedFeatures = new ArrayList<>();
     LayerViewPanel layerViewPanel = context.getWorkbenchContext()
         .getLayerViewPanel();
     layerViewPanel.getSelectionManager().clear();
-    Collection layers = (Collection) context.getWorkbenchContext()
-        .getLayerNamePanel().getLayerManager().getLayers();
-    for (Iterator j = layers.iterator(); j.hasNext();) {
-      Layer layer = (Layer) j.next();
+    Collection<Layer> layers = context.getLayerManager().getLayers();
+    for (Layer layer : layers) {
       selectedFeatures.clear();
 
       if (layer.isVisible()) {
         FeatureCollection featureCollection = layer
             .getFeatureCollectionWrapper();
-        for (Iterator i = featureCollection.iterator(); i.hasNext();) {
-          Feature feature = (Feature) i.next();
+        for (Feature feature : featureCollection.getFeatures()) {
           if (feature instanceof BasicFeature
               && ((BasicFeature) feature).isModified()) {
             selectedFeatures.add(feature);

@@ -25,19 +25,9 @@
  * Stefan Steiniger
  * perriger@gmx.de
  */
-/*****************************************************
- * created:  		16.05.2005
- * last modified:  	18.05.2005
- * 
- * description:
- *    selects items within a fence of the actual selected layers
- *    and informs about the number of selected items<p>
- * 	  uses DrawFenceTool class for user interaction and
- * 	  determination of selection
- * 
- *****************************************************/
 
 package org.openjump.core.ui.plugin.edit;
+
 import org.openjump.core.ui.plugin.edit.helpclassesselection.DrawFenceTool;
 
 import com.vividsolutions.jump.I18N;
@@ -52,21 +42,21 @@ import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 
 
 /**
- * Selects items within a fence of the actual layer
- * and informs about the number of selected items
+ * Selects items within a fence of the actual selected layers
+ * and informs about the number of selected items.
  * 
  * @author sstein
+ *
+ * created:  16.05.2005
  *
  */
 public class SelectItemsByFenceFromSelectedLayersPlugIn extends AbstractPlugIn{    
 
     public void initialize(PlugInContext context) throws Exception {
-		    context.getFeatureInstaller().addMainMenuItem(this,
-		        new String[]
-				{MenuNames.EDIT, MenuNames.SELECTION},
+		    context.getFeatureInstaller().addMainMenuPlugin(this,
+		        new String[] {MenuNames.EDIT, MenuNames.SELECTION},
 				I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn.select-features-by-polygon-from-selected-layers"), 
-				false, 
-				null, 
+				false, null,
 				createEnableCheck(context.getWorkbenchContext()));
 		}
     

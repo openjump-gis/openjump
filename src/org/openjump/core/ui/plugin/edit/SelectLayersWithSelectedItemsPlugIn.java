@@ -48,33 +48,26 @@ import com.vividsolutions.jump.workbench.model.Layer;
 
 public class SelectLayersWithSelectedItemsPlugIn extends AbstractPlugIn {
 
-	private static final String sSelectLayersWithSelectedItems = I18N.get("org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn.SelectLayersWithSelectedItems");
-   public void initialize(PlugInContext context) throws Exception
+    private static final String sSelectLayersWithSelectedItems =
+            I18N.get("org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn.SelectLayersWithSelectedItems");
+
+    public void initialize(PlugInContext context) throws Exception
     {     
         WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuItem(this, 
+        context.getFeatureInstaller().addMainMenuPlugin(this,
         		new String[] { MenuNames.EDIT, MenuNames.SELECTION }, 
         		sSelectLayersWithSelectedItems, 
-				false, 
-				null, 
+				false, null,
 				this.createEnableCheck(workbenchContext));
-        /*//[sstein] 23.Mar.2009 disabled - now in >edit>selection menu
-        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
-        JPopupMenu popupMenu = LayerViewPanel.popupMenu();
-        featureInstaller.addPopupMenuItem(popupMenu,
-            this, sSelectLayersWithSelectedItems,
-            false, null,
-            this.createEnableCheck(workbenchContext));
-        */ 
     }
     
     public boolean execute(final PlugInContext context) throws Exception
     {
         reportNothingToUndoYet(context);
     	LayerViewPanel layerViewPanel = context.getWorkbenchContext().getLayerViewPanel();
-        Collection layerCollection = layerViewPanel.getSelectionManager().getLayersWithSelectedItems();
-        TreeLayerNamePanel lnp = (TreeLayerNamePanel)context.getWorkbenchContext().getLayerNamePanel();
-        Layer[] layersToSelect = (Layer[]) layerCollection.toArray(new Layer[]{});
+        Collection<Layer> layerCollection = layerViewPanel.getSelectionManager().getLayersWithSelectedItems();
+        TreeLayerNamePanel lnp = (TreeLayerNamePanel)context.getWorkbenchContext().getLayerableNamePanel();
+        Layer[] layersToSelect = layerCollection.toArray(new Layer[]{});
         lnp.setSelectedLayers(layersToSelect);
         return true;
     }

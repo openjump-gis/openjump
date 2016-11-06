@@ -61,6 +61,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
  * 
  */
 public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
+
   private String name = I18N
       .get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.select-all-items-of-selected-layers");
 
@@ -74,7 +75,7 @@ public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
 
     context
         .getFeatureInstaller()
-        .addPopupMenuItem(
+        .addPopupMenuPlugin(
             context.getWorkbenchContext().getWorkbench().getFrame()
                 .getLayerNamePopupMenu(),
             this,
@@ -83,7 +84,7 @@ public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
 
     context
         .getFeatureInstaller()
-        .addMainMenuItem(
+        .addMainMenuPlugin(
             this,
             new String[] { MenuNames.EDIT, MenuNames.SELECTION },
             name,
@@ -101,13 +102,13 @@ public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
   public boolean execute(PlugInContext context) throws Exception {
 
     int count = 0;
-    Layer[] selectedLayers = context.getLayerNamePanel().getSelectedLayers();
+    Layer[] selectedLayers = context.getSelectedLayers();
     for (int i = 0; i < selectedLayers.length; i++) {
       Layer actualLayer = selectedLayers[i];
       if (actualLayer.isVisible()) {
         FeatureCollection fc = context.getSelectedLayer(i)
             .getFeatureCollectionWrapper().getWrappee();
-        Collection features = new ArrayList();
+        Collection<Feature> features = new ArrayList<>();
 
         for (Iterator iter = fc.iterator(); iter.hasNext();) {
           Feature element = (Feature) iter.next();

@@ -36,12 +36,10 @@ package org.openjump.core.ui.plugin.edit;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -51,7 +49,6 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
 
 /**
@@ -61,51 +58,43 @@ import com.vividsolutions.jump.workbench.ui.SelectionManager;
  * @author beckerl
  */
 public class InvertSelectionPlugIn extends AbstractPlugIn {
-  private String name = I18N
-      .get("org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn.invert-selection");
+
+    private String name = I18N
+        .get("org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn.invert-selection");
 
     public InvertSelectionPlugIn() {
-      super();
-      this.setShortcutKeys(KeyEvent.VK_I);
-      this.setShortcutModifiers(KeyEvent.CTRL_MASK);
+        super();
+        this.setShortcutKeys(KeyEvent.VK_I);
+        this.setShortcutModifiers(KeyEvent.CTRL_MASK);
     }
 
     public void initialize(PlugInContext context) throws Exception {
-//        context.getFeatureInstaller().addMainMenuItem(this,
-//            new String[]
-//                {MenuNames.EDIT},
-//                name+"{pos:6}",
-//                false,
-//                null,
-//                createEnableCheck(context.getWorkbenchContext())); //enable check
     }
 
     public boolean execute(final PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         
-        Collection oldSelectedFeatures = new ArrayList();
-        Collection newSelectedFeatures = new ArrayList();
+        Collection<Feature> oldSelectedFeatures;
+        Collection<Feature> newSelectedFeatures = new ArrayList<>();
         LayerViewPanel layerViewPanel = context.getWorkbenchContext().getLayerViewPanel();
         SelectionManager selectionManager = layerViewPanel.getSelectionManager();
         
         // Layers process
-        Collection layers = selectionManager.getLayersWithSelectedItems();
-        for (Iterator layersIterator = layers.iterator() ; layersIterator.hasNext() ;) {
+        Collection<Layer> layers = selectionManager.getLayersWithSelectedItems();
+        for (Layer layer : layers) {
             // Invisible layers are just cleared
-            Layer layer = (Layer)layersIterator.next();
             newSelectedFeatures.clear();
             oldSelectedFeatures = selectionManager.getFeaturesWithSelectedItems(layer);
             selectionManager.getFeatureSelection().unselectItems(layer);
             if (layer.isVisible()) {
                 // Get an ordered set of old selected identifiers
-                SortedSet ids = new TreeSet();
-                for (Iterator it = oldSelectedFeatures.iterator() ; it.hasNext() ; ) {
-                    ids.add(new Integer(((Feature)it.next()).getID()));
+                SortedSet<Integer> ids = new TreeSet<>();
+                for (Feature oldF : oldSelectedFeatures) {
+                    ids.add(oldF.getID());
                 }
                 FeatureCollection featureCollection = layer.getFeatureCollectionWrapper();
-                for (Iterator i = featureCollection.iterator(); i.hasNext();) {
-                    Feature feature = (Feature) i.next();
-                    if (!ids.contains(new Integer(feature.getID()))) {
+                for (Feature feature : featureCollection.getFeatures()) {
+                    if (!ids.contains(feature.getID())) {
                         newSelectedFeatures.add(feature);
                     }
                 }

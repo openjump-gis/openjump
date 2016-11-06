@@ -36,6 +36,7 @@ package org.openjump.core.ui.plugin.edit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -77,21 +78,19 @@ public class SelectByTypePlugIn extends AbstractPlugIn
     private boolean excludeEmptyGeometries = false;
     protected AbstractSelection selection;
 
-    final static String sSelectByGeometryType = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Select-by-Geometry-Type");
-    final static String sSelectOnlyTheseTypes = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Select-only-these-types");
-    final static String sEmptyGeometries = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Empty-Geometries");
-    final static String sOnSelectedLayersOnly = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.On-selected-layers-only");
-    final static String sExcludeEmptyGeometries = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Exclude-empty-geometries");
+    private final static String sSelectByGeometryType = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Select-by-Geometry-Type");
+    private final static String sSelectOnlyTheseTypes = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Select-only-these-types");
+    private final static String sEmptyGeometries = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Empty-Geometries");
+    private final static String sOnSelectedLayersOnly = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.On-selected-layers-only");
+    private final static String sExcludeEmptyGeometries = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Exclude-empty-geometries");
 	
     public void initialize(PlugInContext context) throws Exception
     {     
         workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuItem(this, 
+        context.getFeatureInstaller().addMainMenuPlugin(this,
         		new String[] { MenuNames.EDIT, MenuNames.SELECTION }, 
         		sSelectByGeometryType + "...", 
-				false, 
-				null, 
-				this.createEnableCheck(workbenchContext));
+				false, null, getEnableCheck());
     }
     
     public String getName(){
@@ -103,7 +102,7 @@ public class SelectByTypePlugIn extends AbstractPlugIn
         reportNothingToUndoYet(context);
         MultiInputDialog dialog = new MultiInputDialog(
         context.getWorkbenchFrame(), getName(), true);
-        setDialogValues(dialog, context);
+        setDialogValues(dialog);
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         
@@ -111,19 +110,18 @@ public class SelectByTypePlugIn extends AbstractPlugIn
         
         getDialogValues(dialog);
         LayerViewPanel layerViewPanel = context.getWorkbenchContext().getLayerViewPanel();
-        ArrayList selectedFeatures = new ArrayList();
+        List<Feature> selectedFeatures = new ArrayList<>();
         
         layerViewPanel.getSelectionManager().clear();
-        Collection layers;
+        Collection<Layer> layers;
         
         if (selectedLayersOnly)
-            layers = (Collection) context.getWorkbenchContext().getLayerNamePanel().selectedNodes(Layer.class);
+            layers = context.getWorkbenchContext().getLayerableNamePanel().selectedNodes(Layer.class);
         else
-            layers = (Collection) context.getWorkbenchContext().getLayerNamePanel().getLayerManager().getLayers();
+            layers = context.getLayerManager().getLayers();
             
-        for (Iterator j = layers.iterator(); j.hasNext();) 
+        for (Layer layer : layers)
         {
-            Layer layer = (Layer) j.next();
             selectedFeatures.clear();
             
             if (layer.isVisible())
@@ -161,7 +159,7 @@ public class SelectByTypePlugIn extends AbstractPlugIn
         return false;
     }
     
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
+    private void setDialogValues(MultiInputDialog dialog)
     {
         dialog.addLabel(sSelectOnlyTheseTypes);
         dialog.addCheckBox(sEmptyGeometries, selectEmpty);
@@ -191,11 +189,13 @@ public class SelectByTypePlugIn extends AbstractPlugIn
         excludeEmptyGeometries = dialog.getCheckBox(sExcludeEmptyGeometries).isSelected();
         selectedLayersOnly = dialog.getCheckBox(sOnSelectedLayersOnly).isSelected();
     }
-    
-    public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) 
+
+    @Override
+    public MultiEnableCheck getEnableCheck()
     {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+        return new MultiEnableCheck()
+                .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
         		.add(checkFactory.createAtLeastNLayersMustExistCheck(1));
     }    
 }

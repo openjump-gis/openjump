@@ -2,19 +2,14 @@ package org.openjump.core.ui.plugin.edit;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.JComponent;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.feature.IndexedFeatureCollection;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.tools.AttributeMapping;
 import com.vividsolutions.jump.tools.OverlayEngine;
@@ -36,7 +31,6 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn  {
 
 	private static String FENCELAYERMUSTBEPRESENT = "Fence layer must be present";
-	//private static String CLIPMAPTOFENCE = "Clip Map to Fence";
 	private static String DIALOGMSG = "All vector layers will be clipped to the Fence."+
 			" Warning: if your task loaded with layers not visible, they have not be loaded" +
 			" and therefore will not be clipped.";
@@ -54,13 +48,12 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 	public void initialize( PlugInContext context ) throws Exception 
     {
 		workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuItem(this,
-        	      new String[] {MenuNames.EDIT}, getName()+ "...", 
-        	      		false, null,
-        	      		new MultiEnableCheck()
-        	      		    .add(new EnableCheckFactory(context.getWorkbenchContext())
-        	      		        .createTaskWindowMustBeActiveCheck())
-        	      		    .add(fenceLayerMustBePresent()));
+        context.getFeatureInstaller().addMainMenuPlugin(this,
+				new String[] {MenuNames.EDIT}, getName()+ "...",
+				false, null,
+				new MultiEnableCheck()
+						.add(new EnableCheckFactory(context.getWorkbenchContext()).createTaskWindowMustBeActiveCheck())
+						.add(fenceLayerMustBePresent()));
         
         DIALOGWARNING=I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.This-operation-is-not-undoable");
         VISIBLEONLY = I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Visible-Only-(-see-Warning-)");
@@ -68,10 +61,9 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
         FENCELAYERMUSTBEPRESENT = I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Fence-layer-must-be-present");
     }
     
-   public boolean execute(PlugInContext context) throws Exception {
+    public boolean execute(PlugInContext context) throws Exception {
 		MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
 				getName(), true);
-		//dialog.setInset(0);
 		dialog.setSideBarDescription(DIALOGMSG);
 		dialog.addLabel(DIALOGWARNING);
 		dialog.addCheckBox(VISIBLEONLY, visibleOnly);
@@ -88,21 +80,18 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 
 		LayerManager layerManager = context.getLayerManager();
 		Layer fence = layerManager.getLayer(FenceLayerFinder.LAYER_NAME);
-		ArrayList layerList;
+		ArrayList<Layer> layerList;
 		if (visibleOnly) {
-			layerList = new ArrayList(layerManager.getVisibleLayers(false));
+			layerList = new ArrayList<>(layerManager.getVisibleLayers(false));
 		} else {
-			layerList = new ArrayList(layerManager.getLayers());         		
+			layerList = new ArrayList<>(layerManager.getLayers());
 		}
 		OverlayEngine overlayEngine = new OverlayEngine();
 		overlayEngine.setAllowingPolygonsOnly(POLYGON_OUTPUT);
 		overlayEngine.setSplittingGeometryCollections(POLYGON_OUTPUT);
         FeatureCollection a = fence.getFeatureCollectionWrapper();
-        //boolean firingEvents = layerManager.isFiringEvents();
-        //layerManager.setFiringEvents(false);
-        List<Layer> unprocessedLayers = new ArrayList<Layer>();
-		for (Iterator j = layerList.iterator(); j.hasNext();) {
-			Layer layer = (Layer) j.next();
+        List<Layer> unprocessedLayers = new ArrayList<>();
+		for (Layer layer : layerList) {
 			if (layer == fence) continue;
 	        FeatureCollection b = layer.getFeatureCollectionWrapper();
 	        if (hasDuplicateAttributeNames(b.getFeatureSchema())) {
@@ -124,44 +113,21 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 		        outputFrame.append(layer.getName());
 		    }
 		}
-       //layerManager.setFiringEvents(firingEvents);
-   }
-	 
-//    public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
-//
-//			LayerManager layerManager = context.getLayerManager();
-//			Layer fence = layerManager.getLayer(FenceLayerFinder.LAYER_NAME);
-//			ArrayList layerList;
-//			if (visibleOnly) {
-//				layerList = new ArrayList(layerManager.getVisibleLayers(false));
-//			} else {
-//				layerList = new ArrayList(layerManager.getLayers());         		
-//			}
-//			Polygon a = (Polygon) ((Feature) fence.getFeatureCollectionWrapper()
-//					.iterator().next()).getGeometry();
-//			for (Iterator j = layerList.iterator(); j.hasNext();) {
-//				Layer layer = (Layer) j.next();
-//				if (layer == fence) continue;
-//		        FeatureCollection b = layer.getFeatureCollectionWrapper();
-//		        IndexedFeatureCollection ifc = new IndexedFeatureCollection(b);
-//		        FeatureCollection overlay = GeoUtils.clipToPolygon(a, ifc, true);
-//		        layer.setFeatureCollection(overlay);
-//			}
-//	}
-//    
+    }
+
     private AttributeMapping mapping(FeatureCollection a, FeatureCollection b) {
         return new AttributeMapping( new FeatureSchema(), b.getFeatureSchema());
     }
     
     private boolean hasDuplicateAttributeNames(FeatureSchema schema) {
-        Set set = new HashSet();
+        Set<String> set = new HashSet<>();
         for (int i = 0; i < schema.getAttributeCount(); i++) {
             if (!set.add(schema.getAttributeName(i))) return true ;
         }
         return false;
     }
 
-    public EnableCheck fenceLayerMustBePresent() {
+    private EnableCheck fenceLayerMustBePresent() {
         return new EnableCheck() {
             public String check(JComponent component) {
                 return (workbenchContext.getLayerViewPanel().getFence() == null)

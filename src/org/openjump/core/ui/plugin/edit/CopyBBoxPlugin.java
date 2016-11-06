@@ -43,19 +43,13 @@ import java.awt.datatransfer.StringSelection;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  * <code>CopyBBoxPlugin</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
  */
 public class CopyBBoxPlugin extends AbstractPlugIn {
 
@@ -66,41 +60,35 @@ public class CopyBBoxPlugin extends AbstractPlugIn {
 
     @Override
     public void initialize( PlugInContext context ) {
-//        WorkbenchContext wbcontext = context.getWorkbenchContext();
-//        FeatureInstaller installer = new FeatureInstaller( wbcontext );
-//
-//        installer.addMainMenuItem( this, new String[] { MenuNames.VIEW },
-//                                                I18N.get( "org.openjump.core.ui.plugin.edit.CopyBBoxPlugin.name" )+"{pos:2}",
-//                                                false, null, null );
     }
 
     @Override
     public boolean execute( PlugInContext context ) {
         Envelope env = context.getWorkbenchContext().getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates();
 
-        StringBuffer sb = new StringBuffer( 512 );
-        sb.append( "POLYGON((" );
-        sb.append( env.getMinX() ).append( " " ).append( env.getMinY() );
-        sb.append( "," );
-        sb.append( env.getMinX() ).append( " " ).append( env.getMaxY() );
-        sb.append( "," );
-        sb.append( env.getMaxX() ).append( " " ).append( env.getMaxY() );
-        sb.append( "," );
-        sb.append( env.getMaxX() ).append( " " ).append( env.getMinY() );
-        sb.append( "," );
-        sb.append( env.getMinX() ).append( " " ).append( env.getMinY() );
-        sb.append( "))" );
+        //StringBuilder sb = new StringBuilder( 512 );
+        //sb.append( "POLYGON((" );
+        //sb.append( env.getMinX() ).append( " " ).append( env.getMinY() );
+        //sb.append( "," );
+        //sb.append( env.getMinX() ).append( " " ).append( env.getMaxY() );
+        //sb.append( "," );
+        //sb.append( env.getMaxX() ).append( " " ).append( env.getMaxY() );
+        //sb.append( "," );
+        //sb.append( env.getMaxX() ).append( " " ).append( env.getMinY() );
+        //sb.append( "," );
+        //sb.append( env.getMinX() ).append( " " ).append( env.getMinY() );
+        //sb.append( "))" );
 
-        StringBuffer sbcleartext = new StringBuffer( 512 );
-        sbcleartext.append( "bbox(" );
-        sbcleartext.append( env.getMinX() );
-        sbcleartext.append( "," );
-        sbcleartext.append( env.getMinY() );
-        sbcleartext.append( "," );
-        sbcleartext.append( env.getMaxX() );
-        sbcleartext.append( "," );
-        sbcleartext.append( env.getMaxY() );
-        sbcleartext.append( ")" );
+        StringBuilder sbcleartext = new StringBuilder( 128 )
+        .append( "bbox(" )
+        .append( env.getMinX() )
+        .append( "," )
+        .append( env.getMinY() )
+        .append( "," )
+        .append( env.getMaxX() )
+        .append( "," )
+        .append( env.getMaxY() )
+        .append( ")" );
 
         
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents( new StringSelection( sbcleartext.toString() ), null );

@@ -25,18 +25,6 @@
  * Stefan Steiniger
  * perriger@gmx.de
  */
-/*****************************************************
- * created:  		20.05.2005
- * last modified:  	22.05.2005
- * 
- * description:
- *    selects items within a cirlce of the actual selected layers
- *    and informs about the number of selected items<p>
- * 	  uses selectItemsByCircle class for user interaction and
- * 	  determination of selection
- * 
- *****************************************************/
-
 package org.openjump.core.ui.plugin.edit;
 
 import org.openjump.core.ui.plugin.edit.helpclassesselection.SelectItemsByCircleTool;
@@ -55,11 +43,12 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 
 /**
- * Selects items of the actual layer
+ * Selects items within a cirlce of the actual selected layers
  * and informs about the number of selected items
  * 
  * @author sstein
  *
+ * created: 20.05.2005
  */
 public class SelectItemsByCircleFromSelectedLayersPlugIn extends AbstractPlugIn{
 	
@@ -72,14 +61,10 @@ public class SelectItemsByCircleFromSelectedLayersPlugIn extends AbstractPlugIn{
 		this.T1 = I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.cirlce-diameter") + ":";
 		this.sidebarstring = I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.select-features-within-a-circle-from-currently-selected-layers");
 		
-	    context.getFeatureInstaller().addMainMenuItem(this,
-	        new String[]
-			{MenuNames.EDIT, MenuNames.SELECTION},
-			getName(),
-			//I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.select-items-by-cirlce-from-selected-layers"), 
-			false, //icon
-			null, //icon
-            createEnableCheck(context.getWorkbenchContext())); //enable check
+	    context.getFeatureInstaller().addMainMenuPlugin(this,
+	        new String[] {MenuNames.EDIT, MenuNames.SELECTION},
+			getName(), false, null,
+            createEnableCheck(context.getWorkbenchContext()));
     }
     
     public String getName() {
@@ -92,11 +77,11 @@ public class SelectItemsByCircleFromSelectedLayersPlugIn extends AbstractPlugIn{
                         .add(checkFactory.createAtLeastNLayersMustExistCheck(1));        
     }
 
-	public boolean makeDialogThings(PlugInContext context) throws Exception{
+	private boolean makeDialogThings(PlugInContext context) throws Exception{
 	    this.reportNothingToUndoYet(context);
 	    MultiInputDialog dialog = new MultiInputDialog(
 	            context.getWorkbenchFrame(), getName(), true);
-	        setDialogValues(dialog, context);
+	        setDialogValues(dialog);
 	        GUIUtil.centreOnWindow(dialog);
 	        dialog.setVisible(true);
 	        if (! dialog.wasOKPressed()) { return false; }
@@ -104,17 +89,14 @@ public class SelectItemsByCircleFromSelectedLayersPlugIn extends AbstractPlugIn{
 	        return true;	
 	}
 	
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
-	  {    	
+    private void setDialogValues(MultiInputDialog dialog) {
 	    dialog.setSideBarDescription(this.sidebarstring);
 	    dialog.addDoubleField(T1,this.diameter,7,T1);    	
-	  }
+	}
 
 	private void getDialogValues(MultiInputDialog dialog) {
 	    this.diameter = dialog.getDouble(T1);
-
-	  }
-	
+	}
     
 	public boolean execute(PlugInContext context) throws Exception{	    
         try {
@@ -125,24 +107,13 @@ public class SelectItemsByCircleFromSelectedLayersPlugIn extends AbstractPlugIn{
         	    Coordinate initCoords = new Coordinate(x,y);
                 SelectItemsByCircleTool sit = new SelectItemsByCircleTool(context, this.diameter, initCoords);
                 context.getLayerViewPanel().setCurrentCursorTool(sit);
-                
-                //-- if an toolbar item should be added use the following? 
-                /**
-                QuasimodeTool tool = new QuasimodeTool(sit).add(
-                        new QuasimodeTool.ModifierKeySpec(true, false, false), null);
-                WorkbenchContext wbcontext = context.getWorkbenchContext();
-                wbcontext.getWorkbench().getFrame().getToolBar().addCursorTool(tool).getQuasimodeTool();
-                **/
             }
         }
         catch (Exception e) {
             context.getWorkbenchFrame().warnUser("SelecItemsByCircleTool Exception:" + e.toString());
             return false;
         }
-
-		System.gc();		
 	    return true;
 	}
-
      
 }
