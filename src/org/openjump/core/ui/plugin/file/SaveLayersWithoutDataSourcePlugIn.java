@@ -90,8 +90,7 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     }
     
     public void initialize(PlugInContext context) throws Exception {
-      //fileChooser = new JFCWithEnterAction();
-      fileChooser = new JFileChooser();
+      fileChooser = new JFCWithEnterAction();
       fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
       fileChooser.setDialogTitle(FILECHOOSER);
     }
@@ -165,12 +164,12 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
         if (dotPos > 0) name = name.substring(0, dotPos);
         File fileName = FileUtil.addExtensionIfNone(new File(name), ext);
         String path = new File(dir, fileName.getName()).getAbsolutePath();
-        
+
         DriverProperties dp = new DriverProperties();
         dp.set(DataSource.URI_KEY, new File(path).toURI().toString());
         dp.set(DataSource.FILE_KEY, path);
         dataSource.setProperties(dp);
-                
+
         DataSourceQuery dsq = new DataSourceQuery(dataSource, path, path);
         layer.setDataSourceQuery(dsq).setFeatureCollectionModified(false);
         dataSource.getConnection().executeUpdate("", layer.getFeatureCollectionWrapper(), new DummyTaskMonitor());
@@ -186,23 +185,26 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
         }
         return layersWithoutDataSource;
     }
-    
+
     /**
      * @param workbenchContext
      * @return an enable check
      */
     public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-	    final WorkbenchContext wc = workbenchContext;
-	    EnableCheckFactory enableCheckFactory = new EnableCheckFactory(workbenchContext);
-	    MultiEnableCheck enableCheck = new MultiEnableCheck();
-	    enableCheck.add(enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck());
-	    enableCheck.add(new EnableCheck(){
-	        public String check(javax.swing.JComponent component) {
-	            return layersWithoutDataSource(wc.getTask()).size() > 0 ? null :
-	                I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.a-layer-without-datasource-must-exist");
-	        }
-	    });
-	    return enableCheck;
+      final WorkbenchContext wc = workbenchContext;
+      EnableCheckFactory enableCheckFactory = new EnableCheckFactory(
+          workbenchContext);
+      MultiEnableCheck enableCheck = new MultiEnableCheck();
+      enableCheck.add(enableCheckFactory
+          .createWindowWithLayerManagerMustBeActiveCheck());
+      enableCheck.add(new EnableCheck() {
+        public String check(javax.swing.JComponent component) {
+          return layersWithoutDataSource(wc.getTask()).size() > 0 ? null
+              : I18N
+                  .get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.a-layer-without-datasource-must-exist");
+        }
+      });
+      return enableCheck;
     }
 
 }
