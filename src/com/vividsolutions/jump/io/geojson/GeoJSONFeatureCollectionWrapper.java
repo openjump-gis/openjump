@@ -252,12 +252,12 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
       if (TaskMonitorUtil.isCancelRequested(monitor))
         break;
 
-      if (first)
-        first = false;
-      else
+      // write separator after first dataset
+      if (!first)
         out.write(",\n");
 
-      String featureJson = toJSONString(feature);
+      // only first dataset writes NULL values to keep attribute order
+      String featureJson = toJSONString(feature, first);
       out.write(featureJson);
 
       long now = Timer.milliSecondsSince(0);
@@ -267,14 +267,21 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
         milliSeconds = now;
         TaskMonitorUtil.report(monitor, count, size(), "");
       }
-
+      
+      // unset first marker
+      if (first)
+        first = false;
     }
     out.write("\n]");
 
     out.write("\n\n}");
   }
 
-  public static String toJSONString(Feature feature) {
+  private static String toJSONString(Feature feature) {
+    return toJSONString(feature, false);
+  }
+
+  private static String toJSONString(Feature feature, boolean saveNullValues) {
     String propertiesJson = null, geometryJson = null;
     FeatureSchema schema = feature.getSchema();
 
@@ -292,7 +299,7 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
       // attrib to json
       else {
         // we do NOT save null values to minimize the file size
-        if (value == null)
+        if (!saveNullValues && value == null)
           continue;
 
         // Date objects should be saved quoted in String representation
