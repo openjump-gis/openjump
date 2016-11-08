@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-11-08 Giuseppe Aruta
+  * Sextante: activated Sextante help for single algorithms
+  * Sextante: Sextante tables are decoded from OJ vector files
+    with all features with empy geometries
+  
 2016-11-06 mmichaud <m.michael.michaud@orange.fr>
   * Fix bug #439 MakeValid now uses SymDifference instead of difference to
     repair overlapping holes (which corresponds what is displayed on screen)
