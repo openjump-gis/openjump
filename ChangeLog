@@ -3,6 +3,12 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-11-11 mmichaud <m.michael.michaud@orange.fr>
+  * Add 3 functions in GeometryFunction plugin
+    - Simplifier (Remove small segments)
+    - Remove Holes (FR #248)
+    - Remove Small Holes
+
 2016-11-08 Giuseppe Aruta
   * Sextante: activated Sextante help for single algorithms
   * Sextante: Sextante tables are decoded from OJ vector files

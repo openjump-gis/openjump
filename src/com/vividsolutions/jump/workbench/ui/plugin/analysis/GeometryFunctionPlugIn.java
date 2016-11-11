@@ -318,6 +318,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
     }
     catch (RuntimeException ex) {
       // simply eat exceptions and report them by returning null
+      ex.printStackTrace();
       exceptionThrown = true;
     }
     return null;

@@ -45,10 +45,10 @@ import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 import com.vividsolutions.jts.simplify.VWSimplifier;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.algorithm.Densifier;
+import com.vividsolutions.jump.geom.AbstractGeometryProcessor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -84,6 +84,7 @@ public abstract class GeometryFunction
     new SimplifyFunction(),
     new SimplifyTopologyFunction(),
     new SimplifyVWFunction(),
+    new RemoveSmallSegmentsFunction(),
     new DensifyFunction(),
     new ConvexHullFunction(),
     new BoundaryFunction(),
@@ -96,7 +97,9 @@ public abstract class GeometryFunction
     new ReverseLinestringFunction(),
     new MinimumBoundingCircleFunction(),
     new MinimumDiameterFunction(),
-    new MinimumBoundingRectangleFunction()
+    new MinimumBoundingRectangleFunction(),
+    new RemoveHolesFunction(),
+    new RemoveSmallHolesFunction()
   };
 
   public static List<String> getNames()
@@ -478,6 +481,60 @@ public abstract class GeometryFunction
     public Geometry execute(Geometry[] geom, double[] param)
     {
       return new MinimumDiameter(geom[0]).getMinimumRectangle();
+    }
+  }
+
+  // added on 2016-11-11 by mmichaud
+  private static class RemoveHolesFunction extends GeometryFunction {
+    public RemoveHolesFunction() {
+      super(I18N.get("ui.plugin.analysis.GeometryFunction.Remove-Holes"), 1, 0);
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      AbstractGeometryProcessor removeHoleProcessor = new AbstractGeometryProcessor() {
+        public void process(Polygon polygon, List<Geometry> list) {
+          list.add(polygon.getFactory().createPolygon((LinearRing)polygon.getExteriorRing()));
+        }
+      };
+      return removeHoleProcessor.process(geom[0]);
+    }
+  }
+
+  // added on 2016-11-11 by mmichaud
+  private static class RemoveSmallHolesFunction extends GeometryFunction {
+    public RemoveSmallHolesFunction() {
+      super(I18N.get("ui.plugin.analysis.GeometryFunction.Remove-Small-Holes"), 1, 1);
+    }
+
+    public Geometry execute(Geometry[] geom, final double[] param)
+    {
+      AbstractGeometryProcessor removeHoleProcessor = new AbstractGeometryProcessor() {
+        public void process(Polygon polygon, List<Geometry> list) {
+          List<LinearRing> holes = new ArrayList<>();
+          for (int i = 0 ; i < polygon.getNumInteriorRing() ; i++) {
+            LinearRing ring = (LinearRing)polygon.getInteriorRingN(i);
+            if (ring.getFactory().createPolygon(ring).getArea() >= param[0]) holes.add(ring);
+          }
+          list.add(polygon.getFactory().createPolygon(
+                  (LinearRing)polygon.getExteriorRing(),
+                  holes.toArray(new LinearRing[0])));
+        }
+      };
+      return removeHoleProcessor.process(geom[0]);
+    }
+  }
+
+  // added on 2016-11-11 by mmichaud
+  private static class RemoveSmallSegmentsFunction extends GeometryFunction {
+    public RemoveSmallSegmentsFunction() {
+      super(I18N.get("ui.plugin.analysis.GeometryFunction.Remove-Small-Segments"), 1, 1);
+    }
+
+    public Geometry execute(Geometry[] geom, final double[] param)
+    {
+      RemoveSmallSegments removeSmallSegments = new RemoveSmallSegments(param[0]);
+      return removeSmallSegments.process(geom[0]);
     }
   }
   
