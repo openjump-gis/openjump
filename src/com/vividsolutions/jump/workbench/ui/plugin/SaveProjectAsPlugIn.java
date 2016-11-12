@@ -28,6 +28,7 @@ package com.vividsolutions.jump.workbench.ui.plugin;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.Collection;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -36,6 +37,7 @@ import javax.swing.filechooser.FileFilter;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -114,7 +116,7 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
         }
         File file = fileChooser.getSelectedFile();
         
-        java.util.Collection collection = ignoredLayers(context.getTask());
+        Collection<Layer> collection = ignoredLayers(context.getTask());
         if (collection.size() > 0) {
             // Starting with OpenJUMP 1.4.1beta (2011-04-20), the plugin uses
             // org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn

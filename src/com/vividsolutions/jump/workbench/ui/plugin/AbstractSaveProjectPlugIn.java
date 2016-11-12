@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.swing.JInternalFrame;
 import javax.xml.namespace.QName;
@@ -47,6 +46,7 @@ import javax.xml.namespace.QName;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.util.java2xml.Java2XML;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -61,6 +61,7 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
  * Subclass this to implement a 'Save Project' plugin.
  */
 public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
+
   public AbstractSaveProjectPlugIn() {
   }
 
@@ -104,41 +105,25 @@ public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
     task.setName(GUIUtil.nameWithoutExtension(file));
     task.setProjectFile(file);
 
-    ArrayList ignoredLayers = new ArrayList(ignoredLayers(task));
+    Collection<Layer> ignoredLayers = new ArrayList<>(ignoredLayers(task));
 
     if (!ignoredLayers.isEmpty()) {
-      String warning = I18N
-          .get("ui.plugin.AbstractSaveProjectPlugIn.some-layers-were-not-saved-to-the-task-file")
-          + " ";
 
-      for (int i = 0; i < ignoredLayers.size(); i++) {
-        Layer ignoredLayer = (Layer) ignoredLayers.get(i);
+      Logger.info(I18N
+              .get("ui.plugin.AbstractSaveProjectPlugIn.some-layers-were-not-saved-to-the-task-file"));
 
-        if (i > 0) {
-          // warning += "; ";
-          warning += "\n";
-        }
-
-        warning += ignoredLayer.getName();
+      for (Layer ignoredLayer : ignoredLayers) {
+        Logger.info("- " + ignoredLayer.getName() + " (" +
+                I18N.get("ui.plugin.AbstractSaveProjectPlugIn.data-source-is-write-only") + ")");
       }
 
-      warning += " ("
-          + I18N
-              .get("ui.plugin.AbstractSaveProjectPlugIn.data-source-is-write-only")
-          + ")";
-
-      // frame.warnUser(warning);
-      frame.log(warning);
     }
   }
 
-  protected Collection ignoredLayers(Task task) {
-    ArrayList ignoredLayers = new ArrayList();
+  protected Collection<Layer> ignoredLayers(Task task) {
+    ArrayList<Layer> ignoredLayers = new ArrayList<>();
 
-    for (Iterator i = task.getLayerManager().getLayers().iterator(); i
-        .hasNext();) {
-      Layer layer = (Layer) i.next();
-
+    for (Layer layer : task.getLayerManager().getLayers()) {
       if (!layer.hasReadableDataSource()) {
         ignoredLayers.add(layer);
       }
