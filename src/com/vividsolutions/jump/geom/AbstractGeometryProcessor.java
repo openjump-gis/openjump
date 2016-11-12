@@ -53,21 +53,21 @@ public class AbstractGeometryProcessor {
         list.add(clone);
     }
 
-    /** Method to process Points. Override this method to transform linear elements).*/
+    /** Method to process LineStrings. Override this method to transform linear elements).*/
     public void process(LineString lineString, List<Geometry> list) {
         LineString clone = (LineString)lineString.clone();
         process(clone.getCoordinateSequence());
         list.add(clone);
     }
 
-    /** Method to process Points. Override this method to transform linear elements).*/
+    /** Method to process LinearRings.*/
     public LinearRing process(LinearRing linearRing) {
         LinearRing clone = (LinearRing)linearRing.clone();
         process(clone.getCoordinateSequence());
         return clone;
     }
 
-    /** Method to process Points. Override this method to transform areal elements).*/
+    /** Method to process Polygons. Override this method to transform areal elements).*/
     public void process(Polygon polygon, List<Geometry> list) {
         LinearRing ext = process((LinearRing)polygon.getExteriorRing());
         LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
