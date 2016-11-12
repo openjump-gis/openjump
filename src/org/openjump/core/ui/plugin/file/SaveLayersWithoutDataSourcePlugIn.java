@@ -33,10 +33,10 @@
 package org.openjump.core.ui.plugin.file;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -68,16 +68,15 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     
     private static final String KEY = SaveLayersWithoutDataSourcePlugIn.class.getName();
     
-    //public static final String SAVE_LAYERS_WITHOUT_DATASOURCE = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.save-layers-without-datasource");
-    public static final String LAYERS_WITHOUT_DATASOURCE = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.layers-without-datasource-management");
-    
-    public static final String DONOTSAVE = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.do-not-save");
-    public static final String SAVEASJML = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.save-as-jml");
-    public static final String SAVEASSHP = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.save-as-shp");
-    
-    public static final String FILECHOOSER = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.directory-chooser");
-    
-    public static final String WARN_USER = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.every-layer-has-a-datasource");
+    private static final String LAYERS_WITHOUT_DATASOURCE = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.layers-without-datasource-management");
+
+    private static final String DONOTSAVE = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.do-not-save");
+    private static final String SAVEASJML = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.save-as-jml");
+    private static final String SAVEASSHP = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.save-as-shp");
+
+    private static final String FILECHOOSER = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.directory-chooser");
+
+    private static final String WARN_USER = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.every-layer-has-a-datasource");
     
     public static final ImageIcon ICON = IconLoader.icon("disks_dots.png");
     private JFileChooser fileChooser;
@@ -121,7 +120,7 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
                          "</html>";
         
         dialog.addSubTitle(I18N.getMessage("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.layers-without-datasource", 
-            new Object[]{new Integer(collection.size())}))
+            collection.size()))
             .setToolTipText(tooltip);
         dialog.addLabel(I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.hover-the-label-to-see-the-list"))
             .setToolTipText(tooltip);
@@ -136,20 +135,24 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
                 return false;
             }
             else {
-                //File dir = FileUtil.removeExtensionIfAny(task);
                 dir.mkdir();
+                String ext = null;
+                DataSource dataSource = null;
+                if (dialog.getBoolean(SAVEASJML)) {
+                    ext = "jml";
+                    dataSource = new com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource.JML();
+                }
+                else if (dialog.getBoolean(SAVEASSHP)) {
+                    ext = "shp";
+                    dataSource = new com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource.Shapefile();
+                }
                 for (Layer layer : collection) {
-                    String ext = null;
-                    DataSource dataSource = null;
-                    if (dialog.getBoolean(SAVEASJML)) {
-                        ext = "jml";
-                        dataSource = new com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource.JML();
+                    File file = getFile(layer, dir, ext);
+                    if (file.exists()) {
+                        if (GUIUtil.showConfirmOverwriteDialog(context.getWorkbenchFrame(), file)) {
+                            saveLayer(layer, dir, dataSource, ext);
+                        }
                     }
-                    else if (dialog.getBoolean(SAVEASSHP)) {
-                        ext = "shp";
-                        dataSource = new com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource.Shapefile();
-                    }
-                    saveLayer(layer, dir, dataSource, ext);
                 }
                 return true;
             }
@@ -158,27 +161,31 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     }
     
     private void saveLayer(Layer layer, File dir, DataSource dataSource, String ext) throws Exception {
-        String name = FileUtil.getFileNameFromLayerName(layer.getName());
-        // remove extension if any (ex. for layer image.png, will remove png
-        int dotPos = name.indexOf(".");
-        if (dotPos > 0) name = name.substring(0, dotPos);
-        File fileName = FileUtil.addExtensionIfNone(new File(name), ext);
-        String path = new File(dir, fileName.getName()).getAbsolutePath();
+        File file = getFile(layer, dir, ext);
+        String path = file.getAbsolutePath();
 
         DriverProperties dp = new DriverProperties();
-        dp.set(DataSource.URI_KEY, new File(path).toURI().toString());
+        dp.set(DataSource.URI_KEY, file.toURI().toString());
         dp.set(DataSource.FILE_KEY, path);
         dataSource.setProperties(dp);
 
         DataSourceQuery dsq = new DataSourceQuery(dataSource, path, path);
         layer.setDataSourceQuery(dsq).setFeatureCollectionModified(false);
         dataSource.getConnection().executeUpdate("", layer.getFeatureCollectionWrapper(), new DummyTaskMonitor());
-    } 
+    }
+
+    private File getFile(Layer layer, File dir, String ext) {
+        String name = FileUtil.getFileNameFromLayerName(layer.getName());
+        // remove extension if any (ex. for layer image.png, will remove png
+        int dotPos = name.indexOf(".");
+        if (dotPos > 0) name = name.substring(0, dotPos);
+        File fileName = FileUtil.addExtensionIfNone(new File(name), ext);
+        return new File(dir, fileName.getName());
+    }
 
     private Collection<Layer> layersWithoutDataSource(Task task) {
-        ArrayList<Layer> layersWithoutDataSource = new ArrayList<Layer>();
-        for (Iterator i = task.getLayerManager().getLayers().iterator(); i.hasNext();) {
-            Layer layer = (Layer)i.next();
+        List<Layer> layersWithoutDataSource = new ArrayList<>();
+        for (Layer layer : task.getLayerManager().getLayers()) {
             if (!layer.hasReadableDataSource()) {
                 layersWithoutDataSource.add(layer);
             }
@@ -187,7 +194,6 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     }
 
     /**
-     * @param workbenchContext
      * @return an enable check
      */
     public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

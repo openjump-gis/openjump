@@ -5,6 +5,7 @@
 
 2016-11-12 mmichaud <m.michael.michaud@orange.fr>
   * Fix #442 Missing unsaved layers warning in SaveProjectPlugIn
+  * Fix #441 Missing file overwrite warning in SaveLayersWithoutDataSourcePlugIn
 
 2016-11-11 mmichaud <m.michael.michaud@orange.fr>
   * Add 3 functions in GeometryFunction plugin

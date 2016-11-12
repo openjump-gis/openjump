@@ -31,24 +31,7 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
-import java.awt.AlphaComposite;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.KeyboardFocusManager;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
@@ -70,9 +53,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -175,10 +156,10 @@ public class GUIUtil {
   /**
    * Convenience method by default escaping everything.
    * 
-   * @param value
+   * @param value string to escape
    * @return string or null
    */
-  public final static String escapeHTML(String value) {
+  public static String escapeHTML(String value) {
     return escapeHTML(value, true, true);
   }
 
@@ -191,7 +172,7 @@ public class GUIUtil {
    * http://www.w3schools.com/html/html_asciiref.asp
    * </p>
    */
-  public final static String escapeHTML(String value, boolean escapeSpaces,
+  public static String escapeHTML(String value, boolean escapeSpaces,
       boolean escapeNewlines) {
     if (value == null) {
       return (null);
@@ -200,7 +181,7 @@ public class GUIUtil {
     char[] content = new char[value.length()];
     value.getChars(0, value.length(), content, 0);
 
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < content.length; i++) {
       switch (content[i]) {
@@ -451,11 +432,11 @@ public class GUIUtil {
     // resize smaller if bigger than screen
     if (neww > screendim.width - 2 * offset) {
       neww = screendim.width - 2 * offset;
-      newx = 0 + offset;
+      newx = offset;
     }
     if (newh > screendim.height - 2 * offset) {
       newh = screendim.height - 2 * offset;
-      newy = 0 + offset;
+      newy = offset;
     }
     componentToMove.setBounds(newx, newy, neww, newh);
   }
@@ -613,7 +594,7 @@ public class GUIUtil {
   public static boolean showConfirmOverwriteDialog(Component parent, File file) {
     int response = JOptionPane
         .showConfirmDialog(parent, I18N.getMessage(
-            "ui.GUIUtil.overwrite-prompting", new Object[] { file.getName() }),
+            "ui.GUIUtil.overwrite-prompting", file.getName()),
             "JUMP", JOptionPane.YES_NO_OPTION);
 
     return response == JOptionPane.YES_OPTION;
@@ -701,12 +682,9 @@ public class GUIUtil {
 
   public static void removeChoosableFileFilters(JFileChooser fc) {
     FileFilter[] filters = fc.getChoosableFileFilters();
-
-    for (int i = 0; i < filters.length; i++) {
-      fc.removeChoosableFileFilter(filters[i]);
+    for (FileFilter fileFilter : filters) {
+      fc.removeChoosableFileFilter(fileFilter);
     }
-
-    return;
   }
 
   /**
@@ -715,6 +693,7 @@ public class GUIUtil {
    */
   public static FileFilter createFileFilter(final String description,
       final String[] extensions) {
+
     return new FileFilter() {
 
       public boolean accept(File f) {
@@ -722,8 +701,8 @@ public class GUIUtil {
           return true;
         }
 
-        for (int i = 0; i < extensions.length; i++) {
-          if (GUIUtil.getExtension(f).equalsIgnoreCase(extensions[i])) {
+        for (String ext : extensions) {
+          if (GUIUtil.getExtension(f).equalsIgnoreCase(ext)) {
             return true;
           }
         }
@@ -732,10 +711,10 @@ public class GUIUtil {
       }
 
       public String getDescription() {
-        ArrayList extensionStrings = new ArrayList();
+        List<String> extensionStrings = new ArrayList<>();
 
-        for (int i = 0; i < extensions.length; i++) {
-          extensionStrings.add("*." + extensions[i]);
+        for (String ext : extensions) {
+          extensionStrings.add("*." + ext);
         }
 
         return description
@@ -809,9 +788,9 @@ public class GUIUtil {
   /**
    * resize to a square, even non square images
    * 
-   * @param icon
-   * @param extent_xy
-   * @return
+   * @param icon imageIcon to resize
+   * @param extent_xy new size of the icon
+   * @return the resized ImageIcon
    */
   public static ImageIcon resize(ImageIcon icon, int extent_xy) {
     return resize(icon, extent_xy, extent_xy);
@@ -821,10 +800,10 @@ public class GUIUtil {
    * resizes to the given dimensions. take care to calculate them properly if
    * you want to keep aspect ratio
    * 
-   * @param icon
-   * @param extent_x
-   * @param extent_y
-   * @return
+   * @param icon imageIcon to resize
+   * @param extent_x new width of the icon
+   * @param extent_y new height of the icon
+   * @return the resized ImageIcon
    */
   public static ImageIcon resize(ImageIcon icon, int extent_x, int extent_y) {
     return new ImageIcon(icon.getImage().getScaledInstance(extent_x, extent_y,
@@ -841,20 +820,20 @@ public class GUIUtil {
   /**
    * Resize icon to specified width
    * 
-   * @param icon
-   * @param width
-   * @return
+   * @param icon imageIcon to resize
+   * @param width width of the new ImageIcon
+   * @return the resized ImageIcon
    */
   public static ImageIcon toSmallIcon(ImageIcon icon, int width) {
     return resize(icon, width);
   }
 
   /**
-   * enlarge icon by padding border pixels onto it
+   * Enlarge icon by padding border pixels onto it
    * 
-   * @param icon
-   * @param border
-   * @return ImageIcon
+   * @param icon the ImageIcon to enlarge
+   * @param border width of the border to add
+   * @return the enlarged ImageIcon
    */
   public static ImageIcon pad(ImageIcon icon, int border) {
     BufferedImage padded = new BufferedImage(icon.getIconWidth() + 2 * border,
@@ -865,10 +844,10 @@ public class GUIUtil {
   }
 
   /**
-   * convert icon to grayscale
+   * Convert icon to grayscale
    * 
-   * @param icon
-   * @return ImageIcon
+   * @param icon ImageIcon to transform
+   * @return the grayed ImageIcon
    */
   public static ImageIcon toGrayScale(ImageIcon icon) {
     BufferedImage gray = new BufferedImage(icon.getIconWidth(),
@@ -877,7 +856,7 @@ public class GUIUtil {
         icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
     Graphics g = orig.getGraphics();
     g.drawImage(icon.getImage(), 0, 0, null);
-    // Automatic converstion....
+    // Automatic convertion....
     ColorConvertOp op = new ColorConvertOp(
         ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
     op.filter(orig, gray);
@@ -886,10 +865,10 @@ public class GUIUtil {
   }
 
   /**
-   * overlay an icon over another icon
+   * Overlay an icon over another icon
    * 
-   * @param icon
-   * @param overlay
+   * @param icon ImageIcon to be overlayed
+   * @param overlay overlay ImageIcon
    * @param x
    * @param y
    * @return ImageIcon
@@ -942,10 +921,7 @@ public class GUIUtil {
   }
 
   /**
-   * transform a b/w image to image containing an alpha channel
-   * 
-   * @param image
-   * @return
+   * Transform a b/w image to image containing an alpha channel
    */
   private static Image transformGrayToTransparency(Image image) {
     if (image == null)
@@ -1047,8 +1023,8 @@ public class GUIUtil {
       final InternalFrameListener listener) {
     JInternalFrame[] frames = pane.getAllFrames();
 
-    for (int i = 0; i < frames.length; i++) {
-      frames[i].addInternalFrameListener(listener);
+    for (JInternalFrame frame : frames) {
+      frame.addInternalFrameListener(listener);
     }
 
     pane.addContainerListener(new ContainerAdapter() {
@@ -1382,9 +1358,9 @@ public class GUIUtil {
 
     Component[] components = c.getComponents();
 
-    for (int i = 0; i < components.length; i++) {
-      if (components[i].isVisible()) {
-        return components[i];
+    for (Component component : components) {
+      if (component.isVisible()) {
+        return component;
       }
     }
 
@@ -1504,12 +1480,12 @@ public class GUIUtil {
   public static JTextArea makeTabMoveFocus(JTextArea textArea) {
     textArea.setFocusTraversalKeys(
         KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
-        new HashSet(
-            Arrays.asList(new Object[] { KeyStroke.getKeyStroke("TAB") })));
+        new HashSet<AWTKeyStroke>(Collections
+                .singleton(KeyStroke.getKeyStroke("TAB"))));
     textArea.setFocusTraversalKeys(
         KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
-        new HashSet(Arrays.asList(new Object[] { KeyStroke
-            .getKeyStroke("shift TAB") })));
+        new HashSet<AWTKeyStroke>(Collections
+                .singleton(KeyStroke.getKeyStroke("shift TAB"))));
     return textArea;
   }
 
@@ -1521,8 +1497,7 @@ public class GUIUtil {
   public static GraphicsDevice getDefaultScreenDevice() {
     // Determine what the default GraphicsDevice can support.
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    GraphicsDevice gd = ge.getDefaultScreenDevice();
-    return gd;
+    return ge.getDefaultScreenDevice();
   }
 
   public final static int UNIFORM_TRANSLUCENCY = 0;
