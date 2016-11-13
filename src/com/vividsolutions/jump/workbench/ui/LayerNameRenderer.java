@@ -36,6 +36,7 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
@@ -54,9 +55,11 @@ import javax.swing.tree.TreeCellRenderer;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -118,6 +121,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     private ImageIcon rasterIcon = IconLoader.icon("map_13.png");
     private ImageIcon sextante_rasterIcon = IconLoader.icon("mapSv2_13.png");
     private ImageIcon sextante_rasterIcon2 = IconLoader.icon("mapSv2_13bw.png");
+    private ImageIcon table_Icon = IconLoader.icon("Table.gif");
     private final static String LAYER_NAME = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Name");
     private final static String FILE_NAME = I18N.get("ui.MenuNames.FILE");
@@ -379,6 +383,12 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                     .getFeatureCollectionWrapper().size() > 1 ? multiRasterIcon
                     : rasterIcon);
             imageLabel.setVisible(true);
+        } else if (showColorPanel && layerable instanceof Layer
+            && isTable((Layer) layerable)) {
+          //Show a table icon if the Layer has features with empty geometries
+        imageLabel.setIcon(table_Icon);
+        imageLabel.setVisible(true);
+
         } else if (showColorPanel && layerable instanceof Layer) {
             colorPanel.init((Layer) layerable, isSelected,
                     list.getBackground(), list.getSelectionBackground());
@@ -1021,5 +1031,28 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         boolean colorMatchOrOpaque = (bgc != null) && (p != null)
                 && bgc.equals(p.getBackground()) && p.isOpaque();
         return !colorMatchOrOpaque && super.isOpaque();
+    }
+    
+    /* 
+     * [Giuseppe Aruta 11.2016] . True if all the layer geometries are empty
+     * (Geometrycollection empty). Workaround to decode table files (like .csv or .dbf)
+     *  so that they are loaded in Sextante as table
+      */
+    public static boolean isTable(Layer layer) {
+        FeatureCollectionWrapper featureCollection = layer
+                .getFeatureCollectionWrapper();
+        List featureList = featureCollection.getFeatures();
+        Geometry nextGeo = null;
+        for (@SuppressWarnings("unchecked")
+        Iterator<FeatureCollectionWrapper> i = featureList.iterator(); i
+                .hasNext();) {
+            Feature feature = (Feature) i.next();
+            nextGeo = feature.getGeometry();
+        }
+        if (!featureCollection.isEmpty() && nextGeo.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
