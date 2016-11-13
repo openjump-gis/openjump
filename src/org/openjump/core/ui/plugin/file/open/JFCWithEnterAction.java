@@ -52,7 +52,7 @@ public class JFCWithEnterAction extends JFileChooser {
    */
   public File getSelectedFile() {
     File file;
-    
+
     file = super.getSelectedFile();
     if (file != null)
       return file;
