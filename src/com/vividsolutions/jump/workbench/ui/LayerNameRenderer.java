@@ -383,12 +383,6 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                     .getFeatureCollectionWrapper().size() > 1 ? multiRasterIcon
                     : rasterIcon);
             imageLabel.setVisible(true);
-        } else if (showColorPanel && layerable instanceof Layer
-            && isTable((Layer) layerable)) {
-          //Show a table icon if the Layer has features with empty geometries
-        imageLabel.setIcon(table_Icon);
-        imageLabel.setVisible(true);
-
         } else if (showColorPanel && layerable instanceof Layer) {
             colorPanel.init((Layer) layerable, isSelected,
                     list.getBackground(), list.getSelectionBackground());
