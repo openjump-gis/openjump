@@ -210,8 +210,10 @@ public class Condition  {
                 else if (op==Operator.TOUCH && g.touches(p)) return true;
                 else if (op==Operator.CROSS && g.crosses(p)) return true;
                 else if (op==Operator.OVERL && g.overlaps(p)) return true;
-                else if (op==Operator.DISJO && g.disjoint(p)) return true;
+                //else if (op==Operator.DISJO && g.disjoint(p)) return true;
                 else if (op==Operator.RELAT && g.relate(p, op.arg.toString())) return true;
+                else if (op==Operator.INTIP && g.intersects(p.getInteriorPoint())) return true;
+                else if (op==Operator.IPINT && g.getInteriorPoint().intersects(p)) return true;
                 else;
             }
             return false;
@@ -233,8 +235,10 @@ public class Condition  {
                     else if (op==Operator.TOUCH && g.touches(p)) return true;
                     else if (op==Operator.CROSS && g.crosses(p)) return true;
                     else if (op==Operator.OVERL && g.overlaps(p)) return true;
-                    else if (op==Operator.DISJO && g.disjoint(p)) return true;
+                    //else if (op==Operator.DISJO && g.disjoint(p)) return true;
                     else if (op==Operator.RELAT && g.relate(p, op.arg.toString())) return true;
+                    else if (op==Operator.INTIP && g.intersects(p.getInteriorPoint())) return true;
+                    else if (op==Operator.IPINT && g.getInteriorPoint().intersects(p)) return true;
                     else;
                 }
                 return false;
@@ -257,8 +261,10 @@ public class Condition  {
                     else if (op==Operator.TOUCH && g.touches(p)) return true;
                     else if (op==Operator.CROSS && g.crosses(p)) return true;
                     else if (op==Operator.OVERL && g.overlaps(p)) return true;
-                    else if (op==Operator.DISJO && g.disjoint(p)) return true;
+                    //else if (op==Operator.DISJO && g.disjoint(p)) return true;
                     else if (op==Operator.RELAT && g.relate(p, op.arg.toString())) return true;
+                    else if (op==Operator.INTIP && g.intersects(p.getInteriorPoint())) return true;
+                    else if (op==Operator.IPINT && g.getInteriorPoint().intersects(p)) return true;
                     else;
                 }
                 return false;
@@ -279,8 +285,10 @@ public class Condition  {
                 else if (op==Operator.TOUCH && g.touches(p)) return true;
                 else if (op==Operator.CROSS && g.crosses(p)) return true;
                 else if (op==Operator.OVERL && g.overlaps(p)) return true;
-                else if (op==Operator.DISJO && g.disjoint(p)) return true;
+                //else if (op==Operator.DISJO && g.disjoint(p)) return true;
                 else if (op==Operator.RELAT && g.relate(p, op.arg.toString())) return true;
+                else if (op==Operator.INTIP && g.intersects(p.getInteriorPoint())) return true;
+                else if (op==Operator.IPINT && g.getInteriorPoint().intersects(p)) return true;
                 else;
             }
             return false;
@@ -307,7 +315,8 @@ public class Condition  {
     private Collection candidates(Geometry g, String collectionName, Collection collection) {
         if (collection.size() > 256 &&
                 Arrays.asList(Operator.INTER, Operator.CONTA, Operator.WITHI, Operator.WSTRI,
-                        Operator.WDIST, Operator.TOUCH, Operator.CROSS, Operator.OVERL).contains(op)) {
+                        Operator.WDIST, Operator.TOUCH, Operator.CROSS, Operator.OVERL,
+                        Operator.INTIP, Operator.IPINT).contains(op)) {
             STRtree index = spatialIndices.get(collectionName);
             if (index == null) {
                 index = createIndex(collection);
@@ -324,7 +333,8 @@ public class Condition  {
     private Collection candidates(Geometry g, String collectionName, FeatureCollection collection) {
         if (collection.size() > 256 &&
                 Arrays.asList(Operator.INTER, Operator.CONTA, Operator.WITHI, Operator.WSTRI,
-                        Operator.WDIST, Operator.TOUCH, Operator.CROSS, Operator.OVERL).contains(op)) {
+                        Operator.WDIST, Operator.TOUCH, Operator.CROSS, Operator.OVERL,
+                        Operator.INTIP, Operator.IPINT).contains(op)) {
             STRtree index = spatialIndices.get(collectionName);
             if (index == null) {
                 index = createIndex(collection);

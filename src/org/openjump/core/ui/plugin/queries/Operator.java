@@ -43,8 +43,10 @@ public class Operator {
     public final static Operator TOUCH = new Operator("touch", 'G');
     public final static Operator CROSS = new Operator("cross", 'G');
     public final static Operator OVERL = new Operator("overl", 'G');
-    public final static Operator DISJO = new Operator("disjo", 'G');
+    //public final static Operator DISJO = new Operator("disjo", 'G');
     public final static Operator RELAT = new Operator("relat", 'G', "FF*F1****");
+    public final static Operator INTIP = new Operator("intip", 'G'); // intersects interior point
+    public final static Operator IPINT = new Operator("ipint", 'G'); // interior point intersects
     
     public static Operator[] BOOLEAN_OP = new Operator[] {BEQ, BNE};
     
@@ -57,7 +59,7 @@ public class Operator {
     };
         
     public static Operator[] GEOMETRIC_OP = new Operator[] {
-        INTER, CONTA, WITHI, WSTRI, WDIST, TOUCH, CROSS, OVERL, DISJO, RELAT
+        INTER, CONTA, WITHI, WSTRI, WDIST, TOUCH, CROSS, OVERL,/* DISJO,*/ RELAT, INTIP, IPINT
     };  
     
     public Operator(String key, char type) {

@@ -55,29 +55,31 @@ public abstract class GeometryPredicate
     new CoversPredicate(),
     new CoveredByPredicate(),
     new CrossesPredicate(),
-    new DisjointPredicate(),
+    //new DisjointPredicate(), // misleading (user generally wants intersects + inverse selection)
     new EqualsPredicate(),
     new OverlapsPredicate(),
     new TouchesPredicate(),
     new WithinPredicate(),
     new WithinDistancePredicate(),
     new SimilarPredicate(),
+    new IntersectsInteriorPointPredicate(),
+    new InteriorPointIntersectsPredicate()
   };
 
-  static List getNames()
+  static List<String> getNames()
   {
-    List names = new ArrayList();
-    for (int i = 0; i < method.length; i++) {
-      names.add(method[i].name);
+    List<String> names = new ArrayList<>();
+    for (GeometryPredicate m : method) {
+      names.add(m.name);
     }
     return names;
   }
 
   static GeometryPredicate getPredicate(String name)
   {
-    for (int i = 0; i < method.length; i++) {
-      if (method[i].name.equals(name))
-        return method[i];
+    for (GeometryPredicate m : method) {
+      if (m.name.equals(name))
+        return m;
     }
     return null;
   }
@@ -176,5 +178,15 @@ public abstract class GeometryPredicate
 	    public boolean isTrue(Geometry geom0, Geometry geom1, double[] param) {
 	    	return BufferGeometryMatcher.isMatch(geom0, geom1, param[0]);
 	    }
-	  }
+  }
+  private static class IntersectsInteriorPointPredicate extends GeometryPredicate {
+    public IntersectsInteriorPointPredicate() {  super(GenericNames.INTERSECTS_INTERIOR_POINT);  }
+    public boolean isTrue(Geometry geom0, Geometry geom1, double[] param) {
+      return geom0.intersects(geom1.getInteriorPoint());   }
+  }
+  private static class InteriorPointIntersectsPredicate extends GeometryPredicate {
+    public InteriorPointIntersectsPredicate() {  super(GenericNames.INTERIOR_POINT_INTERSECTS);  }
+    public boolean isTrue(Geometry geom0, Geometry geom1, double[] param) {
+      return geom0.getInteriorPoint().intersects(geom1);   }
+  }
 }

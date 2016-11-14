@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-11-14 mmichaud <m.michael.michaud@orange.fr>
+  * deactivate the misleading disjoint predicate in query and join plugins
+  * #FR 249 - add "intersects interior point" and "interior point intersects"
+    in query and join predicates
+
 2016-11-12 mmichaud <m.michael.michaud@orange.fr>
   * Fix #442 Missing unsaved layers warning in SaveProjectPlugIn
   * Fix #441 Missing file overwrite warning in SaveLayersWithoutDataSourcePlugIn

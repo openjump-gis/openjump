@@ -39,39 +39,41 @@ import com.vividsolutions.jump.I18N;
  * @author Basile Chandesris - <chandesris@pt-consulting.lu>
  */
 public interface GenericNames {
-	public static String LAYER = I18N.get("ui.GenericNames.LAYER");
-	public static String LAYER_A = I18N.get("ui.GenericNames.LAYER_A");
-	public static String LAYER_B = I18N.get("ui.GenericNames.LAYER_B");
-	public static String RESULT_LAYER=I18N.get("ui.GenericNames.ResultLayer");
-	public static String LAYER_POLYGONS = I18N.get("ui.GenericNames.LAYER-with-Polygons");
-	public static String LAYER_GRID=I18N.get("ui.GenericNames.LayerGrid");
-	public static String ANGLE=I18N.get("ui.GenericNames.ANGLE");
-	public static String SOURCE_LAYER=I18N.get("ui.GenericNames.Source-Layer");
-	public static String TARGET_LAYER=I18N.get("ui.GenericNames.Target-Layer");
-	public static String MASK_LAYER=I18N.get("ui.GenericNames.Mask-Layer");
-	public static String PARAMETER=I18N.get("ui.GenericNames.Parameter");	
-	public static String FEATURES=I18N.get("ui.GenericNames.features");
-	public static String ERROR=I18N.get("ui.GenericNames.Error");
-	public static String RELATION=I18N.get("ui.GenericNames.Relation");
+	String LAYER = I18N.get("ui.GenericNames.LAYER");
+	String LAYER_A = I18N.get("ui.GenericNames.LAYER_A");
+	String LAYER_B = I18N.get("ui.GenericNames.LAYER_B");
+	String RESULT_LAYER=I18N.get("ui.GenericNames.ResultLayer");
+	String LAYER_POLYGONS = I18N.get("ui.GenericNames.LAYER-with-Polygons");
+	String LAYER_GRID=I18N.get("ui.GenericNames.LayerGrid");
+	String ANGLE=I18N.get("ui.GenericNames.ANGLE");
+	String SOURCE_LAYER=I18N.get("ui.GenericNames.Source-Layer");
+	String TARGET_LAYER=I18N.get("ui.GenericNames.Target-Layer");
+	String MASK_LAYER=I18N.get("ui.GenericNames.Mask-Layer");
+	String PARAMETER=I18N.get("ui.GenericNames.Parameter");
+	String FEATURES=I18N.get("ui.GenericNames.features");
+	String ERROR=I18N.get("ui.GenericNames.Error");
+	String RELATION=I18N.get("ui.GenericNames.Relation");
 	
-	public static String INTERSECTS=I18N.get("ui.GenericNames.intersects");
-	public static String CONTAINS=I18N.get("ui.GenericNames.contains");
-	public static String COVERS=I18N.get("ui.GenericNames.covers");	
-	public static String COVEREDBY=I18N.get("ui.GenericNames.is-covered-by");
-	public static String CROSSES=I18N.get("ui.GenericNames.crosses");	
-	public static String DISJOINT=I18N.get("ui.GenericNames.disjoint");
-	public static String EQUALS=I18N.get("ui.GenericNames.equals");
-	public static String OVERLAPS=I18N.get("ui.GenericNames.overlaps");
-	public static String TOUCHES=I18N.get("ui.GenericNames.touches");	
-	public static String WITHIN=I18N.get("ui.GenericNames.within");
-	public static String WITHIN_DISTANCE=I18N.get("ui.GenericNames.is-within-distance");	
-	public static String SIMILAR=I18N.get("ui.GenericNames.similar");
+	String INTERSECTS=I18N.get("ui.GenericNames.intersects");
+	String CONTAINS=I18N.get("ui.GenericNames.contains");
+	String COVERS=I18N.get("ui.GenericNames.covers");
+	String COVEREDBY=I18N.get("ui.GenericNames.is-covered-by");
+	String CROSSES=I18N.get("ui.GenericNames.crosses");
+	String DISJOINT=I18N.get("ui.GenericNames.disjoint");
+	String EQUALS=I18N.get("ui.GenericNames.equals");
+	String OVERLAPS=I18N.get("ui.GenericNames.overlaps");
+	String TOUCHES=I18N.get("ui.GenericNames.touches");
+	String WITHIN=I18N.get("ui.GenericNames.within");
+	String WITHIN_DISTANCE=I18N.get("ui.GenericNames.is-within-distance");
+	String SIMILAR=I18N.get("ui.GenericNames.similar");
+	String INTERSECTS_INTERIOR_POINT=I18N.get("ui.GenericNames.intersects-interior-point");
+	String INTERIOR_POINT_INTERSECTS=I18N.get("ui.GenericNames.interior-point-intersects");
 	
-	public static String CALCULATE_IN_PROGRESS=I18N.get("ui.GenericNames.CalculateInProgress");
-	public static String GLOBAL_BOX=I18N.get("ui.GenericNames.GlobalBox");
+	String CALCULATE_IN_PROGRESS=I18N.get("ui.GenericNames.CalculateInProgress");
+	String GLOBAL_BOX=I18N.get("ui.GenericNames.GlobalBox");
 	
-	public static String USE_SELECTED_FEATURES_ONLY=I18N.get("ui.GenericNames.Use-selected-features-only");
-	public static String ATTRIBUTE=I18N.get("ui.GenericNames.Attribute");
-	public static String SELECT_LAYER=I18N.get("ui.GenericNames.select-layer");
-	public static String SELECT_ATTRIBUTE=I18N.get("ui.GenericNames.select-attribute");
+	String USE_SELECTED_FEATURES_ONLY=I18N.get("ui.GenericNames.Use-selected-features-only");
+	String ATTRIBUTE=I18N.get("ui.GenericNames.Attribute");
+	String SELECT_LAYER=I18N.get("ui.GenericNames.select-layer");
+	String SELECT_ATTRIBUTE=I18N.get("ui.GenericNames.select-attribute");
 }
