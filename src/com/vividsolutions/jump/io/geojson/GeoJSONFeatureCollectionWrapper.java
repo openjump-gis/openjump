@@ -319,13 +319,16 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
     else
       geometryJson = GeoJSONConstants.EMPTY_GEOMETRY;
 
+    // the GeoJSON specs expect properties to be written, it might be null when empty
     if (propertiesJson != null)
       propertiesJson = "\"" + GeoJSONConstants.PROPERTIES + "\": { "
           + propertiesJson + " }";
+    else
+      propertiesJson = GeoJSONConstants.EMPTY_PROPERTIES;
 
     return "{ \"" + GeoJSONConstants.TYPE + "\": \""
         + GeoJSONConstants.TYPE_FEATURE + "\""
-        + (propertiesJson != null ? ", " + propertiesJson : "")
-        + (geometryJson != null ? ", " + geometryJson : "") + " }";
+        + ", " + propertiesJson
+        + ", " + geometryJson;
   }
 }
