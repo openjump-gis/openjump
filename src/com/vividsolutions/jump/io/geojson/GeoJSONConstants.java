@@ -10,9 +10,4 @@ public class GeoJSONConstants {
 
   public static final String TYPE_FEATURE = "Feature";
   public static final String TYPE_FEATURECOLLECTION = "FeatureCollection";
-
-  // for performance reasons, prevent concatenating the same string
-  public static final String EMPTY_GEOMETRY = "\"" + GEOMETRY
-      + "\": {\"type\":\"GeometryCollection\",\"geometries\":[]}";
-  public static final String EMPTY_PROPERTIES = "\"" + PROPERTIES + "\" : null";
 }

@@ -166,8 +166,9 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
           if (featureSchema.getAttributeType(key) == ATTRIBUTETYPE_NULL) {
             featureSchema.setAttributeType(key, type);
           }
-          // this column hosts mixed attrib types eg. String/Long, NULL values are allowed though
-          else if (type != ATTRIBUTETYPE_NULL){
+          // this column hosts mixed attrib types eg. String/Long, NULL values
+          // are allowed though
+          else if (type != ATTRIBUTETYPE_NULL) {
             columnsWithMixedValues.add(key);
           }
         }
@@ -215,7 +216,7 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
    */
   public FeatureCollection getFeatureCollection() {
     // set type to String for mixed columns
-    for (String key : new LinkedList<String>(columnsWithMixedValues) ) {
+    for (String key : new LinkedList<String>(columnsWithMixedValues)) {
       featureSchema.setAttributeType(featureSchema.getAttributeIndex(key),
           AttributeType.STRING);
       columnsWithMixedValues.remove(key);
@@ -296,7 +297,7 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
         Geometry geometry = (Geometry) value;
         if (geometry != null)
           geometryJson = new GeoJsonWriter().write(geometry);
-      } 
+      }
       // attrib to json
       else {
         // we do NOT save null values to minimize the file size
@@ -313,22 +314,18 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
       }
     }
 
-    // the GeoJSON specs expect a geometry to be written, it might be empty though
-    if (geometryJson != null)
-      geometryJson = "\"" + GeoJSONConstants.GEOMETRY + "\": " + geometryJson;
-    else
-      geometryJson = GeoJSONConstants.EMPTY_GEOMETRY;
+    // the GeoJSON specs expect a geometry to be written, it might be null
+    geometryJson = "\"" + GeoJSONConstants.GEOMETRY + "\": " + geometryJson;
 
-    // the GeoJSON specs expect properties to be written, it might be null when empty
+    // wrap array list, null value stays plain
     if (propertiesJson != null)
-      propertiesJson = "\"" + GeoJSONConstants.PROPERTIES + "\": { "
-          + propertiesJson + " }";
-    else
-      propertiesJson = GeoJSONConstants.EMPTY_PROPERTIES;
+      propertiesJson = "{ " + propertiesJson + " }";
+    // the GeoJSON specs expect properties to be written, it might be null
+    propertiesJson = "\"" + GeoJSONConstants.PROPERTIES + "\": "
+        + propertiesJson;
 
     return "{ \"" + GeoJSONConstants.TYPE + "\": \""
-        + GeoJSONConstants.TYPE_FEATURE + "\""
-        + ", " + propertiesJson
-        + ", " + geometryJson;
+        + GeoJSONConstants.TYPE_FEATURE + "\"" + ", " + propertiesJson + ", "
+        + geometryJson + " }";
   }
 }
