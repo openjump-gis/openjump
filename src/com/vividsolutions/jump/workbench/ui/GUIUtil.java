@@ -388,7 +388,7 @@ public class GUIUtil {
   public static void centre(Component componentToMove,
       Component componentToCentreOn) {
     int offset = 30;
-    Dimension screendim = Toolkit.getDefaultToolkit().getScreenSize();
+    Dimension screendim = getMultiScreenDimension();
     Dimension componentToCentreOnSize = componentToCentreOn.getSize();
     int newx = componentToCentreOn.getX()
         + ((componentToCentreOnSize.width - componentToMove.getWidth()) / 2);
@@ -411,6 +411,18 @@ public class GUIUtil {
       newh = screendim.height - offset - newy;
     }
     componentToMove.setBounds(newx, newy, neww, newh);
+  }
+
+  private static Dimension getMultiScreenDimension() {
+    GraphicsDevice[] gds = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+    int w = 0, h = 0;
+    for (GraphicsDevice gd : gds) {
+      Rectangle r = gd.getDefaultConfiguration().getBounds();
+      if (r.getX()+r.getWidth() > w) w = (int)(r.getX()+r.getWidth());
+      if (r.getY()+r.getHeight() > h) h = (int)(r.getY()+r.getHeight());
+      System.out.println(r);
+    }
+    return new Dimension(w, h);
   }
 
   /**
