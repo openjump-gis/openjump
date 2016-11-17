@@ -83,7 +83,7 @@ rem -- NOTE: mount UNC paths to a local drive for this --
 cd /D "%JUMP_HOME%"
 
 rem -- Uninstall if asked nicely ---
-if "%1"=="--uninstall" ( 
+if [%1] == [--uninstall] ( 
   "%JAVA%" -jar .\uninstall\uninstaller.jar
   goto:eof
 )
@@ -102,6 +102,7 @@ rem command ver example outputs
 rem  german win7 "Microsoft Windows [Version 6.1.7601]"
 rem  finnish xp  "Microsoft Windows XP [versio 5.1.2600]"
 rem  french  xp  "Microsoft Windows XP [version 5.1.2600]"
+set "ID=unknown"
 rem --- XP Version 5.x ---
 for /f "delims=" %%v in ('ver^|findstr /REC:" 5[0-9\.]*]"') do (
   set "ID=xp"
@@ -121,6 +122,10 @@ for /f "delims=" %%v in ('ver^|findstr /REC:" 6.2.[0-9\.]*]"') do (
 rem --- 8.1 Version 6.3 ---
 for /f "delims=" %%v in ('ver^|findstr /REC:" 6.3.[0-9\.]*]"') do (
   set "ID=eightone"
+)
+rem --- 10 Version 10.x ---
+for /f "delims=" %%v in ('ver^|findstr /REC:" 10.[0-9\.]*]"') do (
+  set "ID=ten"
 )
 rem -- add native as fallthrough and lib\ext the legacy value and default system path --
 if DEFINED X64 (
