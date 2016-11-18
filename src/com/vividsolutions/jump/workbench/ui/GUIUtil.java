@@ -420,7 +420,6 @@ public class GUIUtil {
       Rectangle r = gd.getDefaultConfiguration().getBounds();
       if (r.getX()+r.getWidth() > w) w = (int)(r.getX()+r.getWidth());
       if (r.getY()+r.getHeight() > h) h = (int)(r.getY()+r.getHeight());
-      System.out.println(r);
     }
     return new Dimension(w, h);
   }
