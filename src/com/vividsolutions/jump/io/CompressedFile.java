@@ -113,7 +113,7 @@ public class CompressedFile {
   }
 
   public static List<URI> listEntries(File file) throws Exception {
-    List<URI> entries = new ArrayList<URI>();
+    List<URI> entries = new ArrayList<>();
 
     // tar[.gz,.bz...] (un)compressed archive files
     if (CompressedFile.isTar(file.getName())) {
@@ -237,7 +237,7 @@ public class CompressedFile {
     }
 
     // load into memory workaround until commons compress 7zip learns streaming again 
-    else if (compressedEntry != null && isSevenZ(filePath)) {
+    else if (isSevenZ(filePath)) {
 
       SevenZFile sevenZFile = new SevenZFile(new File(filePath));
       try {

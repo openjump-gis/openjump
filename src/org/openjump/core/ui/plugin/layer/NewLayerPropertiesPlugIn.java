@@ -636,12 +636,12 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             DataSourceQuery dsq = layers[0].getDataSourceQuery();
             if (dsq != null) {
                 @SuppressWarnings("unchecked")
-                Map<String, String> properties = dsq.getDataSource()
+                Map<String,Object> properties = dsq.getDataSource()
                         .getProperties();
-                charsetName = (String) properties.get("charset");
+                charsetName = (String) properties.get(DataSource.CHARSET_KEY);
                 if (charsetName == null) {
                     charsetName = Charset.defaultCharset().displayName();
-                    properties.put("charset", charsetName);
+                    properties.put(DataSource.CHARSET_KEY, charsetName);
                 }
             } else {
                 charsetName = Charset.defaultCharset().displayName();

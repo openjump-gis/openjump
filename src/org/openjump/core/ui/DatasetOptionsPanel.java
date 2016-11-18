@@ -1,6 +1,7 @@
 package org.openjump.core.ui;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooserDialog;
@@ -86,9 +87,9 @@ public class DatasetOptionsPanel extends JPanel implements OptionsPanel {
 			if (loader instanceof DataSourceFileLayerLoader) {
 				DataSourceFileLayerLoader fileLoader = (DataSourceFileLayerLoader)loader;
 				if (fileLoader.getDescription().equals("ESRI Shapefile")) {
-					fileLoader.removeOption("charset", "CharSetComboBoxField", Charset.defaultCharset().displayName(), true);
+					fileLoader.removeOption(DataSource.CHARSET_KEY, "CharSetComboBoxField", Charset.defaultCharset().displayName(), true);
 					if (charsetSelectionCheckBox.isSelected()) {
-                        fileLoader.addOption("charset", "CharSetComboBoxField", Charset.defaultCharset().displayName(), true);
+                        fileLoader.addOption(DataSource.CHARSET_KEY, "CharSetComboBoxField", Charset.defaultCharset().displayName(), true);
                     }
                     // update the DataSourceQueryChooserDialog for the current format
                     String KEY = SaveDatasetAsPlugIn.class.getName() + " - DIALOG";

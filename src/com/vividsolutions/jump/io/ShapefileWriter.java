@@ -38,6 +38,7 @@ import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 import org.geotools.dbffile.DbfFieldDef;
 import org.geotools.dbffile.DbfFile;
@@ -222,13 +223,13 @@ import java.util.*;
  **/
 public class ShapefileWriter implements JUMPWriter {
 
-	public static final String FILE_PROPERTY_KEY = "File";
-	public static final String DEFAULT_VALUE_PROPERTY_KEY = "DefaultValue";
-	public static final String SHAPE_TYPE_PROPERTY_KEY = "ShapeType";
-	public static boolean truncate = false;
+	//public static final String FILE_PROPERTY_KEY = "File";
+	//public static final String DEFAULT_VALUE_PROPERTY_KEY = "DefaultValue";
+	private static final String SHAPE_TYPE_PROPERTY_KEY = "ShapeType";
+	private static boolean truncate = false;
 	private static long lastTimeTruncate = new Date(0).getTime();
 	
-    protected static CGAlgorithms CG_ALGO = new CGAlgorithms();
+    private static CGAlgorithms CG_ALGO = new CGAlgorithms();
 
     /** Creates new ShapefileWriter */
     public ShapefileWriter() {
@@ -258,10 +259,10 @@ public class ShapefileWriter implements JUMPWriter {
         //sstein: check for mixed geometry types in the FC
         this.checkIfGeomsAreMixed(featureCollection);
         
-        shpfileName = dp.getProperty(FILE_PROPERTY_KEY);
+        shpfileName = dp.getProperty(DataSource.FILE_KEY);
 
         if (shpfileName == null) {
-            shpfileName = dp.getProperty(DEFAULT_VALUE_PROPERTY_KEY);
+            shpfileName = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
         }
 
         if (shpfileName == null) {
@@ -290,7 +291,7 @@ public class ShapefileWriter implements JUMPWriter {
         fname_withoutextention = fname.substring(0, loc); // ie. "hills.shp" -> "hills."
         dbffname = path + fname_withoutextention + ".dbf";
 
-		String charsetName = dp.getProperty("charset");
+		String charsetName = dp.getProperty(DataSource.CHARSET_KEY);
 		if (charsetName == null) charsetName = Charset.defaultCharset().name();
         writeDbf(featureCollection, dbffname, Charset.forName(charsetName));
         PrintWriter pw = null;
@@ -361,7 +362,7 @@ public class ShapefileWriter implements JUMPWriter {
      * (3 is for x,y,m but thats not supported yet) <br>
      * @param g geometry to test - looks at 1st coordinate
      */
-    public int guessCoordinateDims(Geometry g) {
+    private int guessCoordinateDims(Geometry g) {
         Coordinate[] cs = g.getCoordinates();
 
         for (Coordinate coord : cs) {
@@ -394,7 +395,7 @@ public class ShapefileWriter implements JUMPWriter {
      * July 2, 2010 - modified by beckerl to read existing dbf file header
      * and use the existing numeric field definitions.
      */
-    void writeDbf(FeatureCollection featureCollection, String fname, Charset charset)
+    private void writeDbf(FeatureCollection featureCollection, String fname, Charset charset)
         throws Exception {
         DbfFileWriter dbf;
         FeatureSchema fs;
@@ -730,7 +731,7 @@ public class ShapefileWriter implements JUMPWriter {
      * @param fc features to look at
      * @param attributeIndex which of the column to test.
      */
-    int findMaxStringLength(FeatureCollection fc, int attributeIndex, Charset charset) {
+    private int findMaxStringLength(FeatureCollection fc, int attributeIndex, Charset charset) {
         int l;
         int maxlen = 0;
         Feature f;
@@ -764,7 +765,7 @@ public class ShapefileWriter implements JUMPWriter {
      *         31 : only non empty geometry collection<br>
      * @param fc feature collection containing tet geometries.
      */
-    int findBestGeometryType(FeatureCollection fc) {
+    private int findBestGeometryType(FeatureCollection fc) {
         Geometry geom;
         boolean onlyPoints = true;
         boolean onlyEmptyGeometryCollection = true;
@@ -814,7 +815,7 @@ public class ShapefileWriter implements JUMPWriter {
         
     }
 
-    public void checkIfGeomsAreMixed(FeatureCollection featureCollection) throws Exception {
+    private void checkIfGeomsAreMixed(FeatureCollection featureCollection) throws Exception {
 	    //-- sstein: check first if features are of different geometry type.
 	    int i= 0;
 	    Class firstClass = null;
@@ -862,7 +863,7 @@ public class ShapefileWriter implements JUMPWriter {
     /**
      * Reverses the order of points in lr (is CW -> CCW or CCW->CW)
      */
-    LinearRing reverseRing(LinearRing lr) {
+    private LinearRing reverseRing(LinearRing lr) {
         int numPoints = lr.getNumPoints();
         Coordinate[] newCoords = new Coordinate[numPoints];
 
@@ -877,7 +878,7 @@ public class ShapefileWriter implements JUMPWriter {
      * Make sure outer ring is CCW and holes are CW
      * @param p polygon to check
      */
-    Polygon makeGoodSHAPEPolygon(Polygon p) {
+    private Polygon makeGoodSHAPEPolygon(Polygon p) {
         
         if (p.isEmpty()) return p;
         
@@ -887,7 +888,7 @@ public class ShapefileWriter implements JUMPWriter {
 
         coords = p.getExteriorRing().getCoordinates();
 
-        if (CG_ALGO.isCCW(coords)) {
+        if (CGAlgorithms.isCCW(coords)) {
             outer = reverseRing((LinearRing) p.getExteriorRing());
         } else {
             outer = (LinearRing) p.getExteriorRing();
@@ -895,7 +896,7 @@ public class ShapefileWriter implements JUMPWriter {
 
         for (int t = 0; t < p.getNumInteriorRing(); t++) {
             coords = p.getInteriorRingN(t).getCoordinates();
-            if (!(CG_ALGO.isCCW(coords))) {
+            if (!(CGAlgorithms.isCCW(coords))) {
                 holes[t] = reverseRing((LinearRing) p.getInteriorRingN(t));
             } else {
                 holes[t] = (LinearRing) p.getInteriorRingN(t);
@@ -909,7 +910,7 @@ public class ShapefileWriter implements JUMPWriter {
      * Make sure outer ring is CCW and holes are CW for all the polygons in the Geometry
      * @param mp set of polygons to check
      */
-    MultiPolygon makeGoodSHAPEMultiPolygon(MultiPolygon mp) {
+    private MultiPolygon makeGoodSHAPEMultiPolygon(MultiPolygon mp) {
         MultiPolygon result;
         Polygon[] ps = new Polygon[mp.getNumGeometries()];
 
@@ -933,7 +934,7 @@ public class ShapefileWriter implements JUMPWriter {
      *
      * @param fc feature collection to make homogeneous
      */
-    public GeometryCollection makeSHAPEGeometryCollection(FeatureCollection fc)
+    private GeometryCollection makeSHAPEGeometryCollection(FeatureCollection fc)
         throws Exception {
         GeometryCollection result;
         Geometry[] allGeoms = new Geometry[fc.size()];

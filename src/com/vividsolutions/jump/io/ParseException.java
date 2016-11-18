@@ -45,8 +45,8 @@ public class ParseException extends JUMPException {
     //fileName. cpos is kind of cryptic. Also, the Java naming convention is to
     //separate words with capitals; for example, lineNo rather than lineno. [Jon Aquino]
     public String fileName;
-    public int lineNumber;
-    public int charPos;
+    private int lineNumber;
+    private int charPos;
 
     /** construct exception with a message*/
     public ParseException(String message) {

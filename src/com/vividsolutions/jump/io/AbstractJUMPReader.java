@@ -12,8 +12,8 @@ import java.util.Collection;
  */
 abstract public class AbstractJUMPReader implements JUMPReader, TaskMonitorSupport {
 
-  protected Collection<Exception> exceptions = null;
-  protected TaskMonitor taskMonitor = null;
+  private Collection<Exception> exceptions = null;
+  private TaskMonitor taskMonitor = null;
 
   /**
    * Read the specified file using the filename given by the "File" property and
@@ -23,7 +23,7 @@ abstract public class AbstractJUMPReader implements JUMPReader, TaskMonitorSuppo
 
   protected void addException(Exception e) {
     if (exceptions == null)
-      exceptions = new ArrayList<Exception>();
+      exceptions = new ArrayList<>();
 
     exceptions.add(e);
   }
@@ -33,7 +33,7 @@ abstract public class AbstractJUMPReader implements JUMPReader, TaskMonitorSuppo
    */
   public Collection<Exception> getExceptions() {
     if (exceptions == null)
-      exceptions = new ArrayList<Exception>();
+      exceptions = new ArrayList<>();
     return exceptions;
   }
 

@@ -39,6 +39,7 @@ import java.util.Iterator;
 
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.io.datasource.DataSource;
 
 /**
  * WKTWriter is a {@link JUMPWriter} specialized to write WTK (Well Known Text) files.
@@ -82,10 +83,10 @@ public class WKTWriter implements JUMPWriter {
 
         String outputFname;
 
-        outputFname = dp.getProperty("File");
+        outputFname = dp.getProperty(DataSource.FILE_KEY);
 
         if (outputFname == null) {
-            outputFname = dp.getProperty("DefaultValue");
+            outputFname = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
         }
 
         if (outputFname == null) {

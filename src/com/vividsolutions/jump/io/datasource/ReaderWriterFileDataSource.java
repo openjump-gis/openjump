@@ -174,11 +174,11 @@ public class ReaderWriterFileDataSource extends FileDataSource {
 
   protected DriverProperties getDriverProperties(){
     DriverProperties properties = new DriverProperties();
-    Map<Object,Object> map = getProperties();
+    Map<String,Object> map = getProperties();
 
     // explicitly copy into properties object or getProperty() returns null
-    for (Map.Entry entry : map.entrySet()){
-      properties.setProperty(String.valueOf(entry.getKey()), (String.valueOf(entry.getValue())));
+    for (Map.Entry<String,Object> entry : map.entrySet()){
+      properties.setProperty(entry.getKey(), (String.valueOf(entry.getValue())));
     }
 
     return properties;

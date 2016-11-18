@@ -51,7 +51,7 @@ public class GMLGeometryWriter {
    * @return        a <code>String</code> of characters
    */
   private static String stringOfChar(char ch, int count) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     for (int i = 0; i < count; i++) {
       buf.append(ch);
     }
@@ -72,7 +72,7 @@ public class GMLGeometryWriter {
   public GMLGeometryWriter() {
   }
 
-  public void setLinePrefix(String linePrefix)
+  void setLinePrefix(String linePrefix)
   {
     this.linePrefix = linePrefix;
   }
@@ -80,7 +80,7 @@ public class GMLGeometryWriter {
   /**
    * Sets the <code>srsName</code> attribute to be output on the Geometry element.
    * If <code>null</code> no attribute will be output.
-   * @param srsName
+   * @param srsName name of the SpatialReferenceSystem
    */
   public void setSRSName(String srsName)
   {
@@ -92,12 +92,12 @@ public class GMLGeometryWriter {
    * If <code>null</code> no attribute will be output.
    * @param gid the geographic identifier
    */
-  public void setGID(String gid)
+  void setGID(String gid)
   {
     this.gid = gid;
   }
 
-  public void setMaximumCoordinatesPerLine(int maxCoordinatesPerLine)
+  void setMaximumCoordinatesPerLine(int maxCoordinatesPerLine)
   {
     if (maxCoordinatesPerLine <= 0) {
       this.maxCoordinatesPerLine = 1;
@@ -166,7 +166,7 @@ public class GMLGeometryWriter {
 
   private String geometryTag(String geometryName, String attributes)
   {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append("<gml:");
     buf.append(geometryName);
     if (attributes != null && attributes.length() > 0) {
@@ -179,7 +179,7 @@ public class GMLGeometryWriter {
 
   private String attributeString()
   {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     if (gid != null) {
       buf.append(" gid='");
       buf.append(gid);

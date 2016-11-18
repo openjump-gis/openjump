@@ -39,6 +39,7 @@
 package com.vividsolutions.jump.io;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.io.datasource.DataSource;
 
 
 /**
@@ -82,10 +83,10 @@ public class JMLWriter implements JUMPWriter {
         GMLWriter gmlWriter;
         String outputFname;
 
-        outputFname = dp.getProperty("File");
+        outputFname = dp.getProperty(DataSource.FILE_KEY);
 
         if (outputFname == null) {
-            outputFname = dp.getProperty("DefaultValue");
+            outputFname = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
         }
 
         if (outputFname == null) {

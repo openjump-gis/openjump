@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.vividsolutions.jump.io.datasource.DataSource;
 import org.geotools.dbffile.DbfFile;
 import org.geotools.shapefile.Shapefile;
 
@@ -109,11 +110,6 @@ public class ShapefileReader extends AbstractJUMPReader {
     private File delete_this_tmp_shx = null;
     private File delete_this_tmp_cpg = null;
 
-    public static final String FILE_PROPERTY_KEY = "File";
-    public static final String DEFAULT_VALUE_PROPERTY_KEY = "DefaultValue";
-    public static final String COMPRESSED_FILE_PROPERTY_KEY = "CompressedFile";
-
-
     /** Creates new ShapeReader */
     public ShapefileReader() {
     }
@@ -132,10 +128,10 @@ public class ShapefileReader extends AbstractJUMPReader {
 
         // ATTENTION: this can contain a zip file path as well
         // shpFileName contains the .shp extension
-        String shpFileName = dp.getProperty(FILE_PROPERTY_KEY);
+        String shpFileName = dp.getProperty(DataSource.FILE_KEY);
 
         if (shpFileName == null) {
-            shpFileName = dp.getProperty(DEFAULT_VALUE_PROPERTY_KEY);
+            shpFileName = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
         }
 
         if (shpFileName == null) {
@@ -143,15 +139,15 @@ public class ShapefileReader extends AbstractJUMPReader {
         }
 
         //okay, we have .shp and .dbf file paths, lets create Shapefile and DbfFile
-        Shapefile myshape = getShapefile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
+        Shapefile myshape = getShapefile(shpFileName, dp.getProperty(DataSource.COMPRESSED_KEY));
 
         // charset used to read dbf (one charset defined by cpg file,
         // charset defined in dp or default platform charset)
         String charsetName = getCharset(shpFileName, dp);
 
-        DbfFile mydbf = getDbfFile(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY),
+        DbfFile mydbf = getDbfFile(shpFileName, dp.getProperty(DataSource.COMPRESSED_KEY),
                 Charset.forName(charsetName));
-        InputStream shx = getShx(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY));
+        InputStream shx = getShx(shpFileName, dp.getProperty(DataSource.COMPRESSED_KEY));
         GeometryFactory factory = new GeometryFactory();
         GeometryCollection collection = null;
         try {
@@ -315,7 +311,7 @@ public class ShapefileReader extends AbstractJUMPReader {
         // if a cpg file is found, charset used is the one defined in the cpg file
         //BufferedReader cpgCharsetReader = null;
         try (InputStream cpgCharsetInputStream =
-                     getCpgInputStream(shpFileName, dp.getProperty(COMPRESSED_FILE_PROPERTY_KEY))) {
+                     getCpgInputStream(shpFileName, dp.getProperty(DataSource.COMPRESSED_KEY))) {
             if (cpgCharsetInputStream != null) {
                 try (BufferedReader cpgCharsetReader =
                              new BufferedReader(new InputStreamReader(cpgCharsetInputStream))) {
@@ -333,9 +329,9 @@ public class ShapefileReader extends AbstractJUMPReader {
         }
         // if dp.getProperty("charset") contains a charset different from platform default,
         // this charset is preferred to the one defined by cpg file
-        if (dp.getProperty("charset") != null && Charset.isSupported(dp.getProperty("charset")) &&
-                !Charset.defaultCharset().name().equals(Charset.forName(dp.getProperty("charset")).name())) {
-            charsetName = dp.getProperty("charset");
+        if (dp.getProperty(DataSource.CHARSET_KEY) != null && Charset.isSupported(dp.getProperty(DataSource.CHARSET_KEY)) &&
+                !Charset.defaultCharset().name().equals(Charset.forName(dp.getProperty(DataSource.CHARSET_KEY)).name())) {
+            charsetName = dp.getProperty(DataSource.CHARSET_KEY);
         }
         return charsetName;
     }

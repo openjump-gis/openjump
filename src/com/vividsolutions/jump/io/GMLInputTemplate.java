@@ -60,31 +60,32 @@ import com.vividsolutions.jump.util.FlexibleDateParser;
  */
 public class GMLInputTemplate extends DefaultHandler {
 
-    XMLReader xr;
-    String tagBody = "";
+    boolean loaded = false;
     String collectionTag;
     String featureTag;
-    private ArrayList<String> geometryElements = new ArrayList<>(20); //shouldnt need more than 20, but will auto-expand bigger
-    String streamName;
-    boolean havecollectionTag = false;
-    boolean havefeatureTag = false;
-    boolean havegeometryElement = false;
-    public boolean loaded = false;
     ArrayList<ColumnDescription> columnDefinitions = new ArrayList<>(); //list of type ColumnDescription
 
+    private XMLReader xr;
+    private String tagBody = "";
+    private ArrayList<String> geometryElements = new ArrayList<>(20); //shouldnt need more than 20, but will auto-expand bigger
+    private String streamName;
+    private boolean havecollectionTag = false;
+    private boolean havefeatureTag = false;
+    private boolean havegeometryElement = false;
+
     //for the jcs column definition
-    int columnDef_valueType = 0; // 0 - undef, 1 = body, 2 = attribute
-    String columnDef_valueAttribute = ""; // name of the attribute the value is in
-    String columnDef_tagName = ""; // tag this is a part of
-    int columnDef_tagType = 0; // 0 - undef, 1=tag only, 2 = attribute, 3 = att & value
-    String columnDef_tagAttribute = "";
-    String columnDef_tagValue = "";
-    String columnDef_columnName = "";
-    AttributeType columnDef_type = null;
-    String lastStartTag_uri;
-    String lastStartTag_name;
-    String lastStartTag_qName;
-    Attributes lastStartTag_atts;
+    private int columnDef_valueType = 0; // 0 - undef, 1 = body, 2 = attribute
+    private String columnDef_valueAttribute = ""; // name of the attribute the value is in
+    private String columnDef_tagName = ""; // tag this is a part of
+    private int columnDef_tagType = 0; // 0 - undef, 1=tag only, 2 = attribute, 3 = att & value
+    private String columnDef_tagAttribute = "";
+    private String columnDef_tagValue = "";
+    private String columnDef_columnName = "";
+    private AttributeType columnDef_type = null;
+    private String lastStartTag_uri;
+    private String lastStartTag_name;
+    private String lastStartTag_qName;
+    private Attributes lastStartTag_atts;
 
     /**
      * constructor - makes a new org.apache.xerces.parser and makes this class be the SAX
@@ -101,7 +102,7 @@ public class GMLInputTemplate extends DefaultHandler {
      * Returns the column name for the 'index'th column.
      *@param index 0=first
      */
-    public String columnName(int index) throws ParseException {
+    String columnName(int index) throws ParseException {
         if (loaded) {
             return columnDefinitions.get(index).columnName;
         } else {
@@ -113,7 +114,7 @@ public class GMLInputTemplate extends DefaultHandler {
     /**
      * Converts this GMLInputTemplate to a feature schema.
      */
-    public FeatureSchema toFeatureSchema() throws ParseException {
+    FeatureSchema toFeatureSchema() throws ParseException {
         if (!(loaded)) {
             throw new ParseException(
                 "requested toFeatureSchema w/o loading the template");
@@ -134,7 +135,7 @@ public class GMLInputTemplate extends DefaultHandler {
      * Function to help the GMLParser - is this tag name the Geometry Element tag name?
      *@param tag an XML tag name
      **/
-    public boolean isGeometryElement(String tag) {
+    boolean isGeometryElement(String tag) {
         int t;
         String s;
 
@@ -272,7 +273,7 @@ public class GMLInputTemplate extends DefaultHandler {
      * @param tagBody value of the XML tag body
      * @param xmlAtts key/values of the XML tag's attributes
      */
-    public Object getColumnValue(int index, String tagBody, Attributes xmlAtts)
+    Object getColumnValue(int index, String tagBody, Attributes xmlAtts)
             throws ParseException {
         String val;
         ColumnDescription cd;
@@ -443,7 +444,7 @@ public class GMLInputTemplate extends DefaultHandler {
      *@param atts the attributes for the xml tag (from SAX)
      *@param att_name the name of the attribute to search for
      */
-    int lookupAttribute(Attributes atts, String att_name) {
+    private int lookupAttribute(Attributes atts, String att_name) {
         int t;
 
         for (t = 0; t < atts.getLength(); t++) {

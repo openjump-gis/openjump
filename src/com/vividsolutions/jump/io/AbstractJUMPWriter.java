@@ -4,9 +4,9 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorSupport;
 
-public abstract class AbstractJUMPWriter implements JUMPWriter,
-    TaskMonitorSupport {
-  protected TaskMonitor taskMonitor;
+public abstract class AbstractJUMPWriter implements JUMPWriter, TaskMonitorSupport {
+
+  private TaskMonitor taskMonitor;
 
   @Override
   abstract public void write(FeatureCollection featureCollection,

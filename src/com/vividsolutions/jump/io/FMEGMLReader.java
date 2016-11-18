@@ -37,6 +37,7 @@
 package com.vividsolutions.jump.io;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.io.datasource.DataSource;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -78,12 +79,12 @@ public class FMEGMLReader extends AbstractJUMPReader {
         String inputfname;
         boolean isCompressed;
 
-        isCompressed = (dp.getProperty("CompressedFile") != null);
+        isCompressed = (dp.getProperty(DataSource.COMPRESSED_KEY) != null);
 
-        inputfname = dp.getProperty("DefaultValue");
+        inputfname = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
 
         if (inputfname == null) {
-            inputfname = dp.getProperty("File");
+            inputfname = dp.getProperty(DataSource.FILE_KEY);
         }
 
         if (inputfname == null) {
@@ -93,7 +94,7 @@ public class FMEGMLReader extends AbstractJUMPReader {
 
         if (isCompressed) {
             inputStream = CompressedFile.openFile(inputfname,
-                            dp.getProperty("CompressedFile"));
+                            dp.getProperty(DataSource.COMPRESSED_KEY));
         } else {
             inputStream = new BufferedInputStream(new FileInputStream(inputfname));
         }
@@ -110,7 +111,7 @@ public class FMEGMLReader extends AbstractJUMPReader {
 
         if (isCompressed) {
             inputStream = CompressedFile.openFile(inputfname,
-                            dp.getProperty("CompressedFile"));
+                            dp.getProperty(DataSource.COMPRESSED_KEY));
         } else {
             inputStream = new BufferedInputStream(new FileInputStream(inputfname));
         }
@@ -155,7 +156,7 @@ public class FMEGMLReader extends AbstractJUMPReader {
         int end;
         String propertyNamePrefix;
 
-        while ((foundStartTag == false) && (lineNo < 10)) {
+        while (!foundStartTag && lineNo < 10) {
             s = reader.readLine();
 
             if (s == null) {
@@ -165,7 +166,7 @@ public class FMEGMLReader extends AbstractJUMPReader {
 
             lineNo++;
 
-            if (s.indexOf("<schemaFeatures>") > -1) {
+            if (s.contains("<schemaFeatures>")) {
                 foundStartTag = true;
             }
         }
@@ -177,20 +178,20 @@ public class FMEGMLReader extends AbstractJUMPReader {
 
         columns = "";
 
-        while ((foundEndTag == false)) {
+        while (!foundEndTag) {
             s = reader.readLine();
 
-            if (s.indexOf("</schemaFeatures>") > -1) {
+            if (s.contains("</schemaFeatures>")) {
                 foundEndTag = true;
             }
 
-            if ((s.indexOf("<property fme:name") != -1) ||
-                    (s.indexOf("<property name") != -1)) {
+            if ((s.contains("<property fme:name")) ||
+                    (s.contains("<property name"))) {
                 //column definition
                 //handle 2 fme variants - <property fme:name="name">...</property> and <property name="name">..</property>
                 propertyNamePrefix = "";
 
-                if (s.indexOf("<property fme:name") != -1) {
+                if (s.contains("<property fme:name")) {
                     propertyNamePrefix = "fme:";
                 }
 
@@ -282,12 +283,12 @@ public class FMEGMLReader extends AbstractJUMPReader {
      *
      * @param fmeType type that fme reports (ie. fme_char, fme_decimal, long)
      */
-    String FMEtypeToJCSType(String fmeType) {
-        if (fmeType.indexOf("fme_char") > -1) {
+    private String FMEtypeToJCSType(String fmeType) {
+        if (fmeType.contains("fme_char")) {
             return "STRING";
         }
 
-        if (fmeType.indexOf("fme_decimal") > -1) {
+        if (fmeType.contains("fme_decimal")) {
             int loc;
 
             loc = fmeType.indexOf(",");
@@ -303,7 +304,7 @@ public class FMEGMLReader extends AbstractJUMPReader {
             return "DOUBLE";
         }
 
-        if (fmeType.indexOf("long") > -1) {
+        if (fmeType.contains("long")) {
             return "DOUBLE"; // strange but true!
         }
 

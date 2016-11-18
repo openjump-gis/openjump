@@ -108,9 +108,9 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 public class GMLWriter implements JUMPWriter {
 
     // Standard tags for the auto-generated outputTemplate.
-    public static String standard_geom = "geometry";
-    public static String standard_feature = "feature";
-    public static String standard_featureCollection = "featureCollection";
+    private static String standard_geom = "geometry";
+    private static String standard_feature = "feature";
+    private static String standard_featureCollection = "featureCollection";
     private GMLOutputTemplate outputTemplate = null;
     private GMLGeometryWriter geometryWriter = new GMLGeometryWriter();
 
@@ -213,7 +213,7 @@ public class GMLWriter implements JUMPWriter {
      * Ie. convert "<" to "&lt;"
      *@param s string to safe-ify
      */
-    public static String safeXML(String s) {
+    private static String safeXML(String s) {
         if (s == null) return null;
         StringBuilder sb = new StringBuilder(s);
         char c;
@@ -248,7 +248,7 @@ public class GMLWriter implements JUMPWriter {
     /**
      * Attaches a GMLOuputTemplate
      */
-    public void setOutputTemplate(GMLOutputTemplate ot) {
+    void setOutputTemplate(GMLOutputTemplate ot) {
         outputTemplate = ot;
     }
 
@@ -390,7 +390,7 @@ public class GMLWriter implements JUMPWriter {
      * in the JCS  format
      * @param fcmd input featureSchema
      */
-    public static GMLOutputTemplate makeOutputTemplate(FeatureSchema fcmd) {
+    private static GMLOutputTemplate makeOutputTemplate(FeatureSchema fcmd) {
         GMLOutputTemplate result;
         String inputTemplate;
         int t;
@@ -436,13 +436,14 @@ public class GMLWriter implements JUMPWriter {
         return result;
     }
 
-    /**given a FeatureSchema, make a chunk of XML that represents a valid
-    * GMLInputTemplate for the JCS format.  Used by makeOutputTemplate since the
+    /**
+     * Given a FeatureSchema, make a chunk of XML that represents a valid
+     * GMLInputTemplate for the JCS format.  Used by makeOutputTemplate since the
      * output template includes an inputtemplate.
      *
-     *@param fcmd the featureSchema to describe
+     * @param fcmd the featureSchema to describe
      */
-    public static String makeInputTemplate(FeatureSchema fcmd) {
+    private static String makeInputTemplate(FeatureSchema fcmd) {
         String result;
         int t;
 

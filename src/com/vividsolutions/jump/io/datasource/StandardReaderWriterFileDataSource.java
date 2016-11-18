@@ -50,6 +50,8 @@ public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFil
 
     public static final String[] GML_EXTENSIONS = new String[] { "gml", "xml" };
 
+    public static String TEMPLATE_FILE_KEY  = "TemplateFile";
+
     public static final String OUTPUT_TEMPLATE_FILE_KEY = "Output Template File";
 
     public static final String INPUT_TEMPLATE_FILE_KEY = "Input Template File";
@@ -69,7 +71,7 @@ public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFil
     * receive the properties they need to do decompression.
     */
     private static class ClassicReaderWriterFileDataSource extends StandardReaderWriterFileDataSource {
-        public ClassicReaderWriterFileDataSource(
+        ClassicReaderWriterFileDataSource(
             JUMPReader reader,
             JUMPWriter writer,
             String[] extensions) {
@@ -150,14 +152,14 @@ public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFil
         }
         protected DriverProperties getReaderDriverProperties() {
             return super.getReaderDriverProperties().set(
-                "TemplateFile",
-                (String) getProperties().get(StandardReaderWriterFileDataSource.INPUT_TEMPLATE_FILE_KEY));
+                    TEMPLATE_FILE_KEY,
+                    (String) getProperties().get(StandardReaderWriterFileDataSource.INPUT_TEMPLATE_FILE_KEY));
         }
 
         protected DriverProperties getWriterDriverProperties() {
             return super.getWriterDriverProperties().set(
-                "TemplateFile",
-                (String) getProperties().get(StandardReaderWriterFileDataSource.OUTPUT_TEMPLATE_FILE_KEY));
+                    TEMPLATE_FILE_KEY,
+                    (String) getProperties().get(StandardReaderWriterFileDataSource.OUTPUT_TEMPLATE_FILE_KEY));
         }        
         
         public boolean isReadable() {

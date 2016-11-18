@@ -616,9 +616,9 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn {
           newLayers = splitLayer(context, layer);
 
         // charset fix [Matthias Scholz 12. Feb 2011]
-        Object charsetName = dsq.getDataSource().getProperties().get("charset");
+        Object charsetName = dsq.getDataSource().getProperties().get(DataSource.CHARSET_KEY);
         if (charsetName != null)
-          dp.set("charset", charsetName.toString());
+          dp.set(DataSource.CHARSET_KEY, charsetName.toString());
 
         (new ShapefileWriter()).write(layer.getFeatureCollectionWrapper(), dp);
 

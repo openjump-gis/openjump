@@ -45,8 +45,8 @@ import com.vividsolutions.jump.feature.AttributeType;
  */
 public class ColumnDescription {
 
-    public static final int VALUE_IS_BODY = 1;
-    public static final int VALUE_IS_ATT = 2;
+    static final int VALUE_IS_BODY = 1;
+    static final int VALUE_IS_ATT = 2;
 
     String columnName; //jcs column name
     String tagName; //XML tag this is a part of

@@ -19,6 +19,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vividsolutions.jump.io.datasource.DataSource;
 import org.openjump.core.feature.BeanshellAttributeOperationFactory;
 import org.openjump.core.rasterimage.AddRasterImageLayerWizard;
 import org.openjump.core.rasterimage.RasterImageLayer;
@@ -177,7 +178,7 @@ public class OpenJumpConfiguration {
               DatasetOptionsPanel.BB_DATASET_OPTIONS_SHOW_CHARSET_SELECTION);
           if (showCharsetSelection instanceof Boolean) {
             if (((Boolean) showCharsetSelection).booleanValue()) {
-              fileLoader.addOption("charset", "CharSetComboBoxField", Charset
+              fileLoader.addOption(DataSource.CHARSET_KEY, "CharSetComboBoxField", Charset
                   .defaultCharset().displayName(), true);
             }
           }

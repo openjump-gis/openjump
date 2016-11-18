@@ -20,6 +20,7 @@ import java.util.List;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.*;
+import com.vividsolutions.jump.io.datasource.DataSource;
 
 public class IOTools
 {
@@ -27,8 +28,7 @@ public class IOTools
  private static String getExtension(String filename)
  {
    int len = filename.length();
-   String extension = filename.substring(len - 3, len);
-   return extension;
+   return filename.substring(len - 3, len);
  }
 
  public static FeatureCollection load(String filename)
@@ -58,7 +58,7 @@ public class IOTools
  {
    JMLReader rdr = new JMLReader();
    DriverProperties dp = new DriverProperties();
-   dp.set("File", filename);
+   dp.set(DataSource.FILE_KEY, filename);
    return rdr.read(dp);
  }
 
@@ -67,7 +67,7 @@ public class IOTools
  {
    ShapefileReader rdr = new ShapefileReader();
    DriverProperties dp = new DriverProperties();
-   dp.set("File", filename);
+   dp.set(DataSource.FILE_KEY, filename);
    return rdr.read(dp);
  }
 
@@ -76,9 +76,9 @@ public class IOTools
  {
    ShapefileReader rdr = new ShapefileReader();
    DriverProperties dp = new DriverProperties();
-   dp.set(ShapefileReader.FILE_PROPERTY_KEY, filename);
+   dp.set(DataSource.FILE_KEY, filename);
    if (zipFileName != null)
-     dp.set(ShapefileReader.COMPRESSED_FILE_PROPERTY_KEY, zipFileName);
+     dp.set(DataSource.COMPRESSED_KEY, zipFileName);
    return rdr.read(dp);
  }
 
@@ -87,7 +87,7 @@ public class IOTools
  {
    FMEGMLReader rdr = new FMEGMLReader();
    DriverProperties dp = new DriverProperties();
-   dp.set("File", filename);
+   dp.set(DataSource.FILE_KEY, filename);
    return rdr.read(dp);
  }
 
@@ -96,7 +96,7 @@ public class IOTools
  {
    WKTReader rdr = new WKTReader();
    DriverProperties dp = new DriverProperties();
-   dp.set("File", filename);
+   dp.set(DataSource.FILE_KEY, filename);
    FeatureCollection fc = rdr.read(dp);
    return fc;
  }
@@ -121,7 +121,7 @@ public class IOTools
  {
    ShapefileWriter writer = new ShapefileWriter();
    DriverProperties dp = new DriverProperties();
-   dp.set("File", filename);
+   dp.set(DataSource.FILE_KEY, filename);
    writer.write(fc, dp);
  }
  public static void saveJMLFile(FeatureCollection fc, String filename)
@@ -129,7 +129,7 @@ public class IOTools
  {
    JMLWriter writer = new JMLWriter();
    DriverProperties dp = new DriverProperties();
-   dp.set("File", filename);
+   dp.set(DataSource.FILE_KEY, filename);
    writer.write(fc, dp);
  }
  public static void print(FeatureCollection fc)

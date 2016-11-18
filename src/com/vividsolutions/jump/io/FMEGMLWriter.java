@@ -42,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.io.datasource.DataSource;
 
 
 /**
@@ -104,7 +105,8 @@ import com.vividsolutions.jump.feature.*;
  */
 public class FMEGMLWriter implements JUMPWriter {
 
-    int outputFormatType = 1; // 0 = 2000, 1 = 2001, others to come
+    private int outputFormatType = 1; // 0 = 2000, 1 = 2001, others to come
+    private String FME_FORMAT_VERSION = "FMEFormatVersion";
 
     /** Creates new FMEGMLWriter */
     public FMEGMLWriter() {
@@ -124,10 +126,10 @@ public class FMEGMLWriter implements JUMPWriter {
         java.io.BufferedWriter w;
         String outputfname;
 
-        outputfname = dp.getProperty("File");
+        outputfname = dp.getProperty(DataSource.FILE_KEY);
 
         if (outputfname == null) {
-            outputfname = dp.getProperty("DefaultValue");
+            outputfname = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
         }
 
         if (outputfname == null) {
@@ -135,12 +137,12 @@ public class FMEGMLWriter implements JUMPWriter {
                 "call to FMEGMLWriter.write() has DataProperties w/o a OutputFile specified");
         }
 
-        if (dp.getProperty("FMEFormatVersion") != null) {
-            if (dp.getProperty("FMEFormatVersion").equals("2000")) {
+        if (dp.getProperty(FME_FORMAT_VERSION) != null) {
+            if (dp.getProperty(FME_FORMAT_VERSION).equals("2000")) {
                 outputFormatType = 0;
             }
 
-            if (dp.getProperty("FMEFormatVersion").equals("2001")) {
+            if (dp.getProperty(FME_FORMAT_VERSION).equals("2001")) {
                 outputFormatType = 1;
             }
         }
@@ -165,7 +167,7 @@ public class FMEGMLWriter implements JUMPWriter {
      *
      * @param fs description of the column in the dataset.
      */
-    public GMLOutputTemplate createOutputTemplate(FeatureSchema fs) throws Exception {
+    private GMLOutputTemplate createOutputTemplate(FeatureSchema fs) throws Exception {
         GMLOutputTemplate result;
         String templateText;
         String column;
@@ -290,7 +292,7 @@ public class FMEGMLWriter implements JUMPWriter {
      *
      * @param jcsType JCS column type (ie. 'STRING','DOUBLE', or 'INTEGER'
      */
-    String JCSattributeType2FMEtype(String jcsType) throws ParseException {
+    private String JCSattributeType2FMEtype(String jcsType) throws ParseException {
         switch (outputFormatType) {
         case 0:
 

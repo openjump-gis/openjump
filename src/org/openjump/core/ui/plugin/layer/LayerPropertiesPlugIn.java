@@ -65,6 +65,7 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
+import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
@@ -633,12 +634,12 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn {
       DataSourceQuery dsq = layers[0].getDataSourceQuery();
       if (dsq != null) {
         Map properties = dsq.getDataSource().getProperties();
-        charsetName = (String) properties.get("charset");
+        charsetName = (String) properties.get(DataSource.CHARSET_KEY);
         // if the layer do not have the charset property, set with default
         // charset
         if (charsetName == null) {
           charsetName = Charset.defaultCharset().displayName();
-          properties.put("charset", charsetName);
+          properties.put(DataSource.CHARSET_KEY, charsetName);
         }
       } else {
         // if the layer does not come from a datasource

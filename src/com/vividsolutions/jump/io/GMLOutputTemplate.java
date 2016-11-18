@@ -105,30 +105,31 @@ import java.util.ArrayList;
 public class  GMLOutputTemplate {
 
     String headerText;
-    String footerText;
-    String AllFeatureText;
     ArrayList<String> featureText = new ArrayList<>();
     ArrayList<String> codingText = new ArrayList<>();
     String featureTextfooter;
-    int lineNumber = 0;
-    String streamName;
+    String footerText;
+
+    private String AllFeatureText;
+    private int lineNumber = 0;
+    private String streamName;
 
     /** constructor**/
     public GMLOutputTemplate() {
     }
 
     /** sets the HeaderText for the Outputtemplate */
-    public void setHeaderText(String text) {
+    void setHeaderText(String text) {
         headerText = text;
     }
 
     /** sets the FooterText for the Outputtemplate */
-    public void setFooterText(String text) {
+    void setFooterText(String text) {
         footerText = text;
     }
 
     /** sets the Footer text for the bottom of the feature*/
-    public void setFeatureFooter(String text) {
+    void setFeatureFooter(String text) {
         featureTextfooter = text;
     }
 

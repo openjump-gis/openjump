@@ -47,17 +47,17 @@ import java.util.Map;
  */
 public abstract class DataSource {
 
-  private Map properties;
+  private Map<String,Object> properties;
 
   /**
    * Sets properties required to open a DataSource, such as username, password,
    * filename, coordinate system, etc. Called by DataSourceQueryChoosers.
    */
-  public void setProperties(Map properties) {
-    this.properties = new HashMap(properties);
+  public void setProperties(Map<String,Object> properties) {
+    this.properties = new HashMap<>(properties);
   }
 
-  public Map getProperties() {
+  public Map<String,Object> getProperties() {
     // This method needs to be public because it is called by Java2XML [Jon
     // Aquino 11/13/2003]
 
@@ -87,6 +87,11 @@ public abstract class DataSource {
    * A property used when the datasource is wrapped into a compressed file
    */
   public static final String COMPRESSED_KEY = "CompressedFile";
+
+  /**
+   * A property used to define the datasource encoding
+   */
+  public static final String CHARSET_KEY = "charset";
 
   /**
    * Coordinate-system property, used for files and other DataSources that have

@@ -13,6 +13,7 @@ import com.vividsolutions.jump.feature.*;
  * They also need to set the featureSchema instance variable.
  */
 public abstract class BaseFeatureInputStream implements FeatureInputStream {
+
     private Feature nextFeature = null;
 
     public abstract FeatureSchema getFeatureSchema();
@@ -37,7 +38,7 @@ public abstract class BaseFeatureInputStream implements FeatureInputStream {
    * Read the next feature, if any.
    *
    * @return the next Feature, or <code>null</code> if there is none
-   * @throws Exception
+   * @throws Exception if an exception occured while reading next Feature
    */
     protected abstract Feature readNext() throws Exception;
 

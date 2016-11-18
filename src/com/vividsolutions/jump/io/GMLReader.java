@@ -218,8 +218,8 @@ import java.util.StringTokenizer;
  */
 public class GMLReader extends DefaultHandler implements JUMPReader {
 
-  static int STATE_GET_COLUMNS = 3;
-  Collection<Exception> exceptions;
+  private static int STATE_GET_COLUMNS = 3;
+  private Collection<Exception> exceptions;
 
   /**
    * STATE MEANING <br>
@@ -231,14 +231,14 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
    * 1000 Parsing Multi-geometry, recursion level =1 <br>
    * 1001 Parsing Multi-geometry, recursion level =2 <br>
    */
-  static int STATE_INIT = 0;
-  static int STATE_PARSE_GEOM_NESTED = 1000;
-  static int STATE_PARSE_GEOM_SIMPLE = 4;
-  static int STATE_WAIT_COLLECTION_TAG = 1;
-  static int STATE_WAIT_FEATURE_TAG = 2;
+  private static int STATE_INIT = 0;
+  private static int STATE_PARSE_GEOM_NESTED = 1000;
+  private static int STATE_PARSE_GEOM_SIMPLE = 4;
+  private static int STATE_WAIT_COLLECTION_TAG = 1;
+  private static int STATE_WAIT_FEATURE_TAG = 2;
 
-  final static List<String> simpleGeoms = new ArrayList<>();
-  final static List<String> multiGeoms = new ArrayList<>();
+  private final static List<String> simpleGeoms = new ArrayList<>();
+  private final static List<String> multiGeoms = new ArrayList<>();
 
   static {
     multiGeoms.add("multipoint");
@@ -252,46 +252,46 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
     simpleGeoms.add("linearring");
   }
 
-  GMLInputTemplate GMLinput = null;
-  int STATE = STATE_INIT; // list of points
-  Point apoint;
-  Feature currentFeature;
-  int currentGeometryNumb = 1;
-  FeatureCollection fc;
-  FeatureSchema fcmd; // list of geometries
-  Geometry finalGeometry; // list of geometrycollections - list of list of
+  private GMLInputTemplate GMLinput = null;
+  private int STATE = STATE_INIT; // list of points
+  private Point apoint;
+  private Feature currentFeature;
+  private int currentGeometryNumb = 1;
+  private FeatureCollection fc;
+  private FeatureSchema fcmd; // list of geometries
+  private Geometry finalGeometry; // list of geometrycollections - list of list of
                           // geometry
-  String current_geom_qname = "";
-  ArrayList<Geometry> geometry;
-  GeometryFactory geometryFactory = new GeometryFactory(); // this might get
+  private String current_geom_qname = "";
+  private ArrayList<Geometry> geometry;
+  private GeometryFactory geometryFactory = new GeometryFactory(); // this might get
                                                            // replaced if
                                                            // there's an SRID
                                                            // change
-  ArrayList<LinearRing> innerBoundaries = new ArrayList<>();
-  Attributes lastStartTag_atts;
-  String lastStartTag_name;
-  String lastStartTag_qName; // accumulate values inside a tag
+  private ArrayList<LinearRing> innerBoundaries = new ArrayList<>();
+  private Attributes lastStartTag_atts;
+  private String lastStartTag_name;
+  private String lastStartTag_qName; // accumulate values inside a tag
 
   // info about the last start tag encountered
-  String lastStartTag_uri;
-  LineString lineString;
-  LinearRing linearRing; // a LR
-  LinearRing outerBoundary; // list of LinearRing
-  ArrayList<Coordinate> pointList = new ArrayList<>(); // list of accumulated points
+  private String lastStartTag_uri;
+  private LineString lineString;
+  private LinearRing linearRing; // a LR
+  private LinearRing outerBoundary; // list of LinearRing
+  private ArrayList<Coordinate> pointList = new ArrayList<>(); // list of accumulated points
                                          // (Coordinate)
-  Polygon polygon; // polygon
+  private Polygon polygon; // polygon
 
   // higherlevel geomery object
-  ArrayList<ArrayList> recursivegeometry = new ArrayList<>();
+  private ArrayList<ArrayList> recursivegeometry = new ArrayList<>();
 
   // low-level geometry objects
-  Coordinate singleCoordinate = new Coordinate();
-  String streamName; // result geometry -
-  StringBuffer tagBody;
-  XMLReader xr; // see above
+  private Coordinate singleCoordinate = new Coordinate();
+  private String streamName; // result geometry -
+  private StringBuffer tagBody;
+  private XMLReader xr; // see above
 
-  int SRID = 0; // srid to give the created geometries
-  public boolean parseSRID = false; // true = put SRID for srsName="EPSG:42102"
+  private int SRID = 0; // srid to give the created geometries
+  private boolean parseSRID = false; // true = put SRID for srsName="EPSG:42102"
 
   /**
    * true => for 'OBJECT' types, if you find more than 1 item, make a list and

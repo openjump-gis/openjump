@@ -38,6 +38,7 @@ import java.io.*;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.io.datasource.DataSource;
 
 
 /**
@@ -87,12 +88,12 @@ public class WKTReader extends AbstractJUMPReader {
         boolean isCompressed;
         Reader fileReader = null;
 
-        isCompressed = (dp.getProperty("CompressedFile") != null);
+        isCompressed = (dp.getProperty(DataSource.COMPRESSED_KEY) != null);
 
-        inputFname = dp.getProperty("File");
+        inputFname = dp.getProperty(DataSource.FILE_KEY);
 
         if (inputFname == null) {
-            inputFname = dp.getProperty("DefaultValue");
+            inputFname = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
         }
 
         if (inputFname == null) {
@@ -103,7 +104,7 @@ public class WKTReader extends AbstractJUMPReader {
         try {
             if (isCompressed) {
                 fileReader = new InputStreamReader(CompressedFile.openFile(
-                            inputFname, dp.getProperty("CompressedFile")));
+                            inputFname, dp.getProperty(DataSource.COMPRESSED_KEY)));
             } else {
                 fileReader = new FileReader(inputFname);
             }

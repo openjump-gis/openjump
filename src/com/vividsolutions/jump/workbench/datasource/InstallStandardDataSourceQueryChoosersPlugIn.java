@@ -34,6 +34,7 @@ package com.vividsolutions.jump.workbench.datasource;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.*;
+import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource;
 import com.vividsolutions.jump.io.geojson.GeoJSONReader;
 import com.vividsolutions.jump.io.geojson.GeoJSONWriter;
@@ -105,7 +106,7 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
                   charsetName = (String) ((ComboBoxComponentPanel) comboboxFieldComponent)
                       .getSelectedItem();
                 }
-                properties.put("charset", charsetName);
+                properties.put(DataSource.CHARSET_KEY, charsetName);
 
                 return properties;
               }

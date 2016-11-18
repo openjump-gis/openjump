@@ -39,6 +39,7 @@
 package com.vividsolutions.jump.io;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.io.datasource.DataSource;
 
 
 /**
@@ -97,10 +98,10 @@ public class JMLReader extends AbstractJUMPReader {
         GMLReader gmlReader;
         String inputFname;
 
-        inputFname = dp.getProperty("File");
+        inputFname = dp.getProperty(DataSource.FILE_KEY);
 
         if (inputFname == null) {
-            inputFname = dp.getProperty("DefaultValue");
+            inputFname = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
         }
 
         if (inputFname == null) {

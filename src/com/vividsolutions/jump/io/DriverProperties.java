@@ -38,6 +38,8 @@
 
 package com.vividsolutions.jump.io;
 
+import com.vividsolutions.jump.io.datasource.DataSource;
+
 import java.util.Properties;
 
 
@@ -56,6 +58,9 @@ import java.util.Properties;
  */
 public class DriverProperties extends Properties {
 
+    static String DEFAULT_VALUE_KEY  = "DefaultValue";
+
+
     /** Creates new DataProperties */
     public DriverProperties() {
     }
@@ -66,7 +71,7 @@ public class DriverProperties extends Properties {
      *@param defaultValue value portion for the the key 'DefaultValue'
      */
     public DriverProperties(String defaultValue) {
-        this.set("DefaultValue", defaultValue);
+        this.set(DEFAULT_VALUE_KEY, defaultValue);
     }
 
     /**
