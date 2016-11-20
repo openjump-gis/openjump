@@ -21,6 +21,7 @@ package org.openjump.core.ui.plugin.tools;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.util.HashMap;
 
@@ -28,6 +29,7 @@ import javax.swing.JInternalFrame;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -46,6 +48,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugIn;
  * @author Benjamin Gudehus
  * @author Michaël Michaud
  */
+@Ignore("currently broken: workbench hangs indefinitely after being setVisible(true)")
 public class DeleteDuplicateGeometriesPlugInTest {
     
     //-----------------------------------------------------------------------------------
@@ -70,6 +73,7 @@ public class DeleteDuplicateGeometriesPlugInTest {
     
     @Before
     public void before() {
+        Assume.assumeFalse( GraphicsEnvironment.isHeadless() );
         //workbench.getFrame().addTaskFrame();
         plugin = new DeleteDuplicateGeometriesPlugIn();
     }
@@ -91,7 +95,6 @@ public class DeleteDuplicateGeometriesPlugInTest {
     // FEATURE METHODS.
     //-----------------------------------------------------------------------------------
     
-    @Ignore("currently broken")
     @Test
     public void remove_duplicate_geometries() throws Exception {
         // given: "a loaded shapefile fixture"
@@ -118,7 +121,6 @@ public class DeleteDuplicateGeometriesPlugInTest {
         //Thread.sleep(Integer.MAX_VALUE);
     }
     
-    @Ignore("currently broken")
     @Test
     public void remove_duplicate_geometries_with_same_attributes() throws Exception {
         // given: "a loaded shapefile fixture"
@@ -144,7 +146,6 @@ public class DeleteDuplicateGeometriesPlugInTest {
         //Thread.sleep(Integer.MAX_VALUE);
     }
     
-    @Ignore("currently broken")
     @Test
     public void configuration_parameters() throws Exception {
         // expect: "sourceLayer can be set to a layer"
@@ -157,7 +158,6 @@ public class DeleteDuplicateGeometriesPlugInTest {
         TestTools.configurePlugIn(plugin, params);
     }
     
-    @Ignore("currently broken")
     @Test
     public void result_layer_name_and_category() throws Exception {
         // given: "a loaded shapefile fixture"

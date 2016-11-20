@@ -20,6 +20,7 @@ package org.openjump.core.ui.plugin.tools;
 
 import static org.junit.Assert.assertEquals;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.util.HashMap;
 
@@ -27,6 +28,7 @@ import javax.swing.JInternalFrame;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -40,6 +42,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugIn;
 /**
  * @author Benjamin Gudehus
  */
+@Ignore("currently broken: workbench hangs indefinitely after being setVisible(true)")
 public class UnionByAttributePlugInTest {
     
     //-----------------------------------------------------------------------------------
@@ -62,7 +65,7 @@ public class UnionByAttributePlugInTest {
     
     @Before
     public void before() {
-        //workbench.getFrame().addTaskFrame();
+      Assume.assumeFalse( GraphicsEnvironment.isHeadless() );
     }
     
     @After
@@ -82,7 +85,6 @@ public class UnionByAttributePlugInTest {
     // TEST CASES.
     //-----------------------------------------------------------------------------------
 
-    @Ignore("currently broken")
     @Test
     public void testAddedResultLayer() throws Exception {
         // given: "a loaded shapefile fixture"
