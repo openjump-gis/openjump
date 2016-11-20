@@ -45,6 +45,7 @@ import java.util.zip.ZipFile;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.util.Timer;
@@ -134,7 +135,15 @@ public class PlugInManager {
           
 //          System.out.println("A:"+ClassLoader.getSystemClassLoader().getClass().getClassLoader());
 //          System.out.println("B:"+PlugInClassLoader.class.getClassLoader());;
-          PlugInClassLoader mycl = (PlugInClassLoader) ClassLoader.getSystemClassLoader();
+            PlugInClassLoader mycl = null;
+            try {
+              mycl = (PlugInClassLoader) ClassLoader.getSystemClassLoader();
+            } catch (ClassCastException e) {
+              Exception je = new JUMPException(
+                  "Wrong classloader. Make sure to run JRE with property -Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader set!",e);
+              throw je;
+            }
+
 //          
 //          // add system classpath (eg. org.deegree overrides classes in deegree.jar)
 //          System.out.println(Arrays.toString(((URLClassLoader) mycl.getParent()).getURLs()));
