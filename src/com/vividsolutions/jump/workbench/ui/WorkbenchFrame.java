@@ -1615,6 +1615,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         menuBar.add(fileMenu);
         menuBar.add(windowMenu);
 
+        // a little padding from the left looks better, when the floating handle is missing
+        toolBar.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 0));
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         // [Matthias Scholz 11. Dec 2010] new resizable statusbar

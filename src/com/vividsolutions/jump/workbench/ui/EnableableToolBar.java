@@ -67,6 +67,11 @@ public class EnableableToolBar extends JToolBar {
     }
 
     public EnableableToolBar() {
+      // OJ is not prepared to handle detached toolbars properly for now, so
+      // disable this
+      // Note: this class is the parent of _every_ toolbar in OJ , even the ones
+      // in AttribTab or SchemaEditor
+      setFloatable(false);
     }
 
     public void updateEnabledState() {
