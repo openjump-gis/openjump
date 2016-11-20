@@ -20,6 +20,10 @@ package org.openjump.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.awt.GraphicsEnvironment;
+
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -28,6 +32,11 @@ import com.vividsolutions.jump.workbench.model.Layer;
  * @author Benjamin Gudehus
  */
 public class DialogParametersTest {
+
+    @Before
+    public void setUp() {
+      Assume.assumeFalse( GraphicsEnvironment.isHeadless() );
+    }
 
     // TODO: Test that methods gracefully complain about invalid calls.
     // TODO: Test nonexistent hash keys.
