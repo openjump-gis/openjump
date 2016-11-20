@@ -58,8 +58,8 @@ public class ReflectionUtilsTest {
     @Test
     public void testGetPrivateStaticField() throws Exception {
         // expect: "private static field"
-        Class<PrivateClass> cls = PrivateClass.class;
-        assertEquals("foo", privateStaticField(cls, "privateStaticField"));
+        Class cls = DefaultPrivateClass.class;
+        assertEquals("default", privateStaticField(cls, "privateStaticField"));
     }
     
     @Test(expected=NoSuchFieldException.class)
@@ -86,7 +86,14 @@ public class ReflectionUtilsTest {
         private String privateField = "foo";
         
         @SuppressWarnings("unused")
-        private static String privateStaticField = "foo";
+        private static String privateStaticField = "bar";
     }
     
+    public static class DefaultPrivateClass {
+      @SuppressWarnings("unused")
+      private String privateField = "default";
+      
+      @SuppressWarnings("unused")
+      private static String privateStaticField = "default";
+    }
 }
