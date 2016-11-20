@@ -560,6 +560,14 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
                 <version>1.4</version>
+                <!-- use os independent maven java svn provider, no need for svn binary in PATH anymore -->
+                <configuration>
+                  <doCheck>false</doCheck>
+                  <doUpdate>false</doUpdate>
+                  <providerImplementations>
+                    <svn>javasvn</svn>
+                  </providerImplementations>
+                </configuration>
                 <executions>
                     <execution>
                         <id>generate-buildnumber</id>
@@ -693,6 +701,14 @@
             <artifact> <file>target/openjump-core-1.4.3-SNAPSHOT-bin.zip</file> <type>zip</type> 
             <classifier>bin</classifier> </artifact> </artifacts> </configuration> </execution> 
             </executions> </plugin> -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <version>2.19.1</version>
+              <configuration>
+                <argLine>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argLine>
+              </configuration>
+            </plugin>
         </plugins>
     </build>
     <repositories>
