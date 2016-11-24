@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-11-24 ede
+  * new windows exe launcher (2nd trial), that plainly runs the batch file 
+    w/o need for jre in path to do so
+
 2016-11-20 ede
   * made toolbars nonfloatable, which never was supported properly anyway
 
