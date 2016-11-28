@@ -133,7 +133,7 @@ and the following plugins
  SetAttributes (Michaël Michaud) - GPL2 - gpl-2.txt
  Sextante Tools (es.unex.sextante.openjump.extensions) - GPL3 - gpl-3.0.txt
   sextante-binding-*.jar, sextante/*.*
- Sextante algorithms priveded by www.scolab.es under GNU General Public License
+ Sextante algorithms  (www.scolab.es) - GPL3 - gpl-3.0.txt
   sextante_new_algorithms.jar
  TableLayout-*.jar - Clearthought License - clearthought-2.0.txt
   xbean-*.jar - Apache License Version 2.0 - apache_license-2.0.txt
