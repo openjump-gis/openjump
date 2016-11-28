@@ -132,8 +132,10 @@ and the following plugins
   PirolCsv.jar, pbaseClasses.jar
  SetAttributes (Michaël Michaud) - GPL2 - gpl-2.txt
  Sextante Tools (es.unex.sextante.openjump.extensions) - GPL3 - gpl-3.0.txt
-  sextante-binding-*.jar, sextante/*.* 
-  TableLayout-*.jar - Clearthought License - clearthought-2.0.txt
+  sextante-binding-*.jar, sextante/*.*
+ Sextante algorithms priveded by www.scolab.es under GNU General Public License
+  sextante_new_algorithms.jar
+ TableLayout-*.jar - Clearthought License - clearthought-2.0.txt
   xbean-*.jar - Apache License Version 2.0 - apache_license-2.0.txt
  Topology Extension (Michaël Michaud) - GPL2 - gpl-2.txt
   topology-*.jar
