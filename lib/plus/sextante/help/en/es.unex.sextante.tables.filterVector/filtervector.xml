@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm filters a vector layer, creating a new one that contains just those features that pass the specified filter.&#10;&#10;A filter is defined as a mathematical expression. If the expression applied to the values of a feature yields a  non-zero or true value, the features passes the filter." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="LAYER" text="The vector layer to filter." description="Layer" type="3">
+		</element>
+		<element name="FORMULA" text="The expression to use as filter.&#10;&#10;&#10; Notes on general syntax:  &#10;&#10;To add a field, just enter its name.  &#10;&#10;Functions:  &#10;*sin(x): returns the sine of x (x should be in radians). &#10;*cos(x): returns the cosine of x (x should be in radians). &#10;*tan(x): returns the tangent of x (x should be in radians). &#10;*asin(x): returns the archsine of x (x should be in radians). &#10;*acos(x): returns the archcosine of x (x should be in radians). &#10;*atan(x): returns the archcotangent de x (x should be in radians). &#10;*atan2(x,y): returns the archcotangent of x/y (x/y should be in radians). &#10;*sinh(x): returns the hyperbolic sine of x (x should be in radians). &#10;*cosh(x): returns the hyperbolic cosine of x (x should be in radians). &#10;*atanh(x): returns the inverse hyperbolic tangent of x (x should be in radians). &#10;*In(x): returns the logarithm of x. &#10;*log(x): returns the base-10 logarithm. &#10;*exp(x): returns the exponential function of x. &#10;*abs(x): returns the absolute value of x. &#10;*rand(): returns a random value within the range 0-1. &#10;*mod(x,y): returns the module of x/y. &#10;*sqrt(x): returns the positive square root of x. &#10;&#10;Operators. The precedence of operators is as usual : + and - are evaluated after &#183; y /, and these after the power operator. Use parenthesis in case of doubt, to be sure of how the program will evaluate the introduced formula. &#10;*+ (add) &#10;*- (subtract) &#10;*x(multiplication) &#10;*/ (division) &#10;*% (modulus) &#10;*! (NOT) &#10;*^ (powero) &#10;*&amp;&amp; (AND) &#10;*|| (OR) &#10;*(less than) &#10;*&gt; (more than) &#10;*= (less or equal to) &#10;*&gt;= (more or equal to) &#10;*== (equal to) &#10;*!= (different from)  &#10;&#10;Constants. &#10;&#10;*Pi &#10;*e  &#10;&#10;If, for a given feature, a field used in the formula has an invalid value, that feature will not pass the filter." description="Formula" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The filtered layer, containing only those layers that passed the filter." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="Shows a ROC (Receiver Operating Characteristic) curve. &#10;&#10;ROC curves can be used to assess the validity of a predictive model. &#10;&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text='* Benito de Pando, B. y pe&#241;as de Giles, J. (2007): "Aplicaci&#243;n de modelos de distribuci&#243;n de especies a la conservaci&#243;n de la biodiversidad en el sureste de la Pen&#237;nsula Ib&#233;rica", GeoFocus (Art&#237;culos), n&#186; 7, p. 100-119, ISSN: 1578-5157 &#10;* Modelos de distribuci&#243;n basados en algoritmos de presencia-ausencia (Fielding y Bell 1997, Segurado y Ara&#250;jo 2004, Mu&#241;oz y Felic&#237;simo 2004) y en algoritmos de solo presencia (Phillips et al., 2006).&#10;* Fielding, A.H and Bell, J.F (1997). A review of methods for the assessment of prediction errors in conservation presence absence models. Environmental Conservation 24: 38-49.' description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="Suitability layer, with value in the 0-1 range" description="Suitability" type="3">
+		</element>
+		<element name="POINTS" text="layer with presence/absence data." description="Observed points" type="3">
+		</element>
+		<element name="FIELD" text="The field with presence/absence information. A value equals to zero means absence. Any other value means presence." description="Absence/presence field" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="GRAPH" text="" description="ROC" type="2">
+		</element>
+		<element name="AREA" text="" description="ROC curve" type="2">
+			<image description="" file="curva_roc.png">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

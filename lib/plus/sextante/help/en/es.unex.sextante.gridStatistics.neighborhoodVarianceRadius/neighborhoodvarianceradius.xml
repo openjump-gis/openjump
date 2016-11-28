@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the variance in each cell and its surrounding ones, using an increasing search radius. The minimum radius needed to reach a given variance is the radius of variance of the cell for that variance value." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The input raster layer" description="Layer" type="3">
+		</element>
+		<element name="MAXRADIUS" text="If values are too homogeneous, the given variance might not be reached and the analysis window might grow up to a very large radius. Use this parameter to set a maximum radius, so if this radius is reached, the algorithm will not look any further and will return it as the radius of variance for the analyzed cell." description="Maximum radius (cells)" type="3">
+		</element>
+		<element name="STDDEV" text="The standard deviation to search for." description="Standard deviation" type="3">
+		</element>
+		<element name="METHOD" text="The units for the resulting values: cells or map units &#10;&#10;" description="Units: " type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="" description="Radius of variance" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

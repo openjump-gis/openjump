@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates a density map from an input points layer. Points are weighed using a given filed from its attributes table, and that weight is applied equally to all cells within a given radius.&#10;&#10;The following pictures show two very simple examples of how density is calculated. In both of them, there are just two input points. In the first example, however, both points have the same weight (=1), while in the second one the lower point has a weight twice the one of the upper points." description="Description" type="0">
+			<image description="" file="densidad_uno.jpg">
+			</image>
+			<image description="" file="densidad_dos.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="input vector layer." description="Vector layer" type="3">
+		</element>
+		<element name="FIELD" text="Attribute to use for weighing points." description="Field" type="3">
+		</element>
+		<element name="DISTANCE" text="Size of the influence area around each point. Influence area is assumed to be circular (same influence in all directions) " description="Search radius" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="DENSITY" text="The following pictures show two examples. The search radius used in (b) is twice the one used in (a)." description="Density" type="2">
+			<image description="Density" file="densidad.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

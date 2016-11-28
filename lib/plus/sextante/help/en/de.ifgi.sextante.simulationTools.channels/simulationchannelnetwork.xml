@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates a channel network from a DEM, using a geostatistical approach. Instead of using a single DEM, it generates a set of them from a point layer using kriging and error propagation techniques (each DEM is a simulation). Then it calculates the channel network for each of them and adds all the resulting layers. The values in the output layer represent the probability of each cell of having a channel network flowing through it.&#10;&#10;Since this algorithm uses kriging and channel network calculation, it is recommended to check the help files associated to those algorithms." description="Descripci&#243;n" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Informaci&#243;n adicional" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Felix Bach &amp; Victor Olaya" description="Algoritmo creado por" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Ayuda creada por" type="0">
+		</element>
+		<element name="USER_NOTES" text="Victor Olaya" description="Notas de usuario" type="0">
+		</element>
+		<element name="SIMULATIONSCOUNT" text="The number of DEMs to calculate from the points layer" description="Number of Simulations [Simulation]" type="3">
+		</element>
+		<element name="LAYER" text="The input points layer, with elevation values" description="Capa de puntos" type="3">
+		</element>
+		<element name="FIELD" text="The field with elevation values" description="Campo" type="3">
+		</element>
+		<element name="DIST" text="The search radius" description="Radio de b&#250;squeda" type="3">
+		</element>
+		<element name="MINPOINTS" text="The minimum number of point to perform kriging" description="M&#237;nimo n&#250;mero de puntos" type="3">
+		</element>
+		<element name="MAXPOINTS" text="The maximum number of point to perform kriging" description="M&#225;ximo n&#250;mero de puntos" type="3">
+		</element>
+		<element name="MODEL" text="The variogram model" description="Modelo" type="3">
+		</element>
+		<element name="NUGGET" text="The nugget value" description="Nugget" type="3">
+		</element>
+		<element name="SILL" text="The sill value" description="Sill" type="3">
+		</element>
+		<element name="RANGE" text="The range value" description="Rango" type="3">
+		</element>
+		<element name="METHOD" text="The threshold for channel network definition" description="Threshold [ChannelNetwork]" type="3">
+		</element>
+		<element name="THRESHOLD" text="The criteria for channel network definition" description="Criteria [ChannelNetwork]" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Descripci&#243;n general" type="2">
+		</element>
+		<element name="RESULTCHAN" text="The final raster layer with channel network probability. The value in each cell represents the number of simulations for which the corresponding channel network includes that cell." description="ChannelNetwork added results" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

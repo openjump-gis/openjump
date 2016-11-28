@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm creates a continuous raster layer from a set of points, using the linear decrease interpolation method&#10;&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="the points layer for interpolation." description="Point layer" type="3">
+		</element>
+		<element name="FIELD" text="The field that contains the value to use for interpolation." description="Field" type="3">
+		</element>
+		<element name="DIST" text="The distance within which points are analized, in map units. Only those points within the search radius from a given cell are used to compute the value at that cell" description="Search radius" type="3">
+		</element>
+		<element name="MAXPOINTS" text="the number of points that will be used for the interpolation. If there are more points within the search radius only the n closest ones will be used by the interpolation algorithm." description="Max. number of points" type="3">
+		</element>
+		<element name="POWER" text="the parameter k in the following equation, to be applied for the calculation of the weights:" description="Exponent" type="3">
+			<image description="" file="decremento_lineal_exponente.jpg">
+			</image>
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="CROSSVALIDATION" text="" description="Cross validation" type="2">
+			<image description="" file="decremento_lineal2.jpg">
+			</image>
+		</element>
+		<element name="RESULT" text="" description="Result" type="2">
+			<image description="Search radius: 3000 output  pixel size: 25 (The layer in black points)" file="decremento_lineal.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
