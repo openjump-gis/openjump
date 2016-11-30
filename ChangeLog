@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-11-30 Giuseppe Aruta
+  * upgraded ColorChooser plugin to version 0.7. The plugin adds an extr
+   attribute ("COLOR") with indexed colors for Autocad export compatibility
+ 
 2016-11-24 Giuseppe Aruta
   * new upgrade of Sextante OpenJUMP binding that solves bugs #445 and #446
   
