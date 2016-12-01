@@ -32,7 +32,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -136,9 +135,6 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 		int baseLayerAttributeIndex = baseFC.getFeatureSchema().getAttributeIndex(baseLayerIdAttribute);
 		int joinLayerAttributeIndex = joinFC.getFeatureSchema().getAttributeIndex(joinLayerJoinAttribute);
 		
-		//List<Feature> joinFeatures = joinFC.getFeatures();
-		//int joinLayerSize = joinFeatures.size();
-		
 		//-- prep the attribute transfer
     	AttributeMapping mapping;
     	mapping = new AttributeMapping(baseFC.getFeatureSchema(), joinFC.getFeatureSchema());
@@ -169,8 +165,7 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 				//Feature tmpTableItem = joinFeatures.get(j);
 				//int tableItemId = tmpTableItem.getInteger(joinLayerAttributeIndex);
 				Object joinId = joinCandidateFeature.getAttribute(joinLayerAttributeIndex);
-				if((baseId == null && joinId == null) ||
-						baseId != null && joinId != null && baseId.toString().equals(joinId.toString())) {
+				if(baseId != null && joinId != null && baseId.toString().equals(joinId.toString())) {
 					if (countMatches == 0) {
 						firstJoinFeature = joinCandidateFeature;
 
