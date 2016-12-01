@@ -180,7 +180,8 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
         StandardReaderWriterFileDataSource.GeoJSON.class);
   }
 
-  static void addCompressedFileFilter(final String description, JFileChooser chooser) {
+  // Should be public (used in some external plugins)
+  public static void addCompressedFileFilter(final String description, JFileChooser chooser) {
     chooser
         .addChoosableFileFilter(GUIUtil.createFileFilter(
             I18N.get("datasource.InstallStandardDataSourceQueryChoosersPlugIn.compressed")

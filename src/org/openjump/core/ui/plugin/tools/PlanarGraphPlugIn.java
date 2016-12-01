@@ -259,7 +259,8 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
     // ************************************************
     // Create edge layer
     // ************************************************
-    private FeatureCollection createEdgeLayer(FeatureCollection fc,
+    // public (used in external plugin) TODO such public method should not be directly in the PlugIn
+    public FeatureCollection createEdgeLayer(FeatureCollection fc,
         boolean nodeb, boolean faceb, boolean relations) {
         // Schema edge
         FeatureSchema fsEdge = new FeatureSchema();
@@ -307,7 +308,8 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
     // ************************************************
     // Create node layer
     // ************************************************
-    private FeatureCollection createNodeLayer(FeatureCollection fcEdge, boolean relations) {
+    // public (used in external plugin) TODO such public method should not be directly in the PlugIn
+    public FeatureCollection createNodeLayer(FeatureCollection fcEdge, boolean relations) {
         FeatureSchema fsNode = new FeatureSchema();
         fsNode.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
         fsNode.addAttribute("ID", AttributeType.INTEGER);
@@ -345,7 +347,8 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
     // ************************************************
     // Create face layer
     // ************************************************
-    private FeatureCollection createFaceLayer(FeatureCollection fcEdge, boolean relations) {
+    // public (used in external plugin) TODO such public method should not be directly in the PlugIn
+    public FeatureCollection createFaceLayer(FeatureCollection fcEdge, boolean relations) {
         // Create the face layer
         FeatureSchema fsFace = new FeatureSchema();
         fsFace.addAttribute("GEOMETRY", AttributeType.GEOMETRY);

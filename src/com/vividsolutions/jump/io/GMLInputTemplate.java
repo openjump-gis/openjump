@@ -102,7 +102,7 @@ public class GMLInputTemplate extends DefaultHandler {
      * Returns the column name for the 'index'th column.
      *@param index 0=first
      */
-    String columnName(int index) throws ParseException {
+    public String columnName(int index) throws ParseException {
         if (loaded) {
             return columnDefinitions.get(index).columnName;
         } else {
@@ -114,7 +114,7 @@ public class GMLInputTemplate extends DefaultHandler {
     /**
      * Converts this GMLInputTemplate to a feature schema.
      */
-    FeatureSchema toFeatureSchema() throws ParseException {
+    public FeatureSchema toFeatureSchema() throws ParseException {
         if (!(loaded)) {
             throw new ParseException(
                 "requested toFeatureSchema w/o loading the template");
@@ -135,7 +135,7 @@ public class GMLInputTemplate extends DefaultHandler {
      * Function to help the GMLParser - is this tag name the Geometry Element tag name?
      *@param tag an XML tag name
      **/
-    boolean isGeometryElement(String tag) {
+    public boolean isGeometryElement(String tag) {
         int t;
         String s;
 
@@ -273,7 +273,7 @@ public class GMLInputTemplate extends DefaultHandler {
      * @param tagBody value of the XML tag body
      * @param xmlAtts key/values of the XML tag's attributes
      */
-    Object getColumnValue(int index, String tagBody, Attributes xmlAtts)
+    public Object getColumnValue(int index, String tagBody, Attributes xmlAtts)
             throws ParseException {
         String val;
         ColumnDescription cd;
