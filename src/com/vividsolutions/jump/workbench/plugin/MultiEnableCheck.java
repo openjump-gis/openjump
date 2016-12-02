@@ -34,8 +34,6 @@
 package com.vividsolutions.jump.workbench.plugin;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import javax.swing.JComponent;
 
 
@@ -46,7 +44,8 @@ import javax.swing.JComponent;
  * A sequence of EnableChecks treated as one.
  */
 public class MultiEnableCheck implements EnableCheck {
-    private ArrayList enableChecks = new ArrayList();
+
+    private ArrayList<EnableCheck> enableChecks = new ArrayList<>();
 
     /**
      * Create a new MultiEnableCheck
@@ -55,8 +54,7 @@ public class MultiEnableCheck implements EnableCheck {
     }
 
     public String check(JComponent component) {
-        for (Iterator i = enableChecks.iterator(); i.hasNext();) {
-            EnableCheck enableCheck = (EnableCheck) i.next();
+        for (EnableCheck enableCheck : enableChecks) {
             String errorMessage = enableCheck.check(component);
 
             if (errorMessage != null) {
@@ -68,7 +66,7 @@ public class MultiEnableCheck implements EnableCheck {
     }
 
     /**
-     *@return    this, to allow "method chaining"
+     *@return this, to allow "method chaining"
      */
     public MultiEnableCheck add(EnableCheck enableCheck) {
         enableChecks.add(enableCheck);

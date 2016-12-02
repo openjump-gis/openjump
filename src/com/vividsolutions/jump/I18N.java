@@ -43,7 +43,6 @@ import java.util.ResourceBundle;
 import com.vividsolutions.jump.workbench.Logger;
 
 
-
 /**
  * Singleton for the Internationalization (I18N)
  **/
@@ -58,13 +57,15 @@ public final class I18N {
   // [ede 11.2012] kept it, although i don't see any usage of it in here
   // [ede 12.2015] used by de.fho.jump.pirol.utilities.i18n.I18NPlug
   public static Hashtable plugInsResourceBundle = new Hashtable();
+
   /** The map of I18N instances. */
-  private static Map<Object, I18N> instances = new HashMap<Object, I18N>();
+  private static Map<Object, I18N> instances = new HashMap<>();
 
   /** The defaults for the I18N instance. */
   private static ClassLoader classLoader;
   private String resourcePath = "language/jump";
   private Locale locale = Locale.getDefault();
+
   /** three rbs see getText(String) for details */
   private ResourceBundle resourceBundle, resourceBundle2, resourceBundle3;
 
@@ -86,7 +87,7 @@ public final class I18N {
   /**
    * Create an instance for a concrete path without 'language/jump' appended
    * 
-   * @param path
+   * @param path path of the resource file
    */
   private I18N(final File path) {
     resourcePath = path.toString();
@@ -133,7 +134,7 @@ public final class I18N {
   }
 
   // remember missing strings, do not flood log
-  private HashSet missing = new HashSet();
+  private HashSet<String> missing = new HashSet<>();
 
   /**
    * Get the I18N text from the language file associated with this instance. If
@@ -177,10 +178,9 @@ public final class I18N {
   }
 
   /**
-   * we ignore untranslated string when we find them
+   * We ignore untranslated string when we find them
    * 
-   * @param text
-   * @return
+   * @param text internationalized string to check
    */
   private boolean isValid(String text) {
     return text != null && !text.trim().equals("")
@@ -268,7 +268,7 @@ public final class I18N {
    * 
    * use static I18N.getMessage() methods instead
    * 
-   * @param path
+   * @param path path of the ResourceBundle
    */
   public static I18N getInstance(final File path) {
     return getInstance((Object) path);
@@ -279,8 +279,6 @@ public final class I18N {
    * knows what is using this code anyway.
    * 
    * use static I18N.getMessage() methods instead
-   * 
-   * @param path
    */
   public static I18N getInstance() {
     // is initialized statically above
@@ -291,8 +289,7 @@ public final class I18N {
    * [ede] utility method which is used in several places
    * (loadFile,getLanguage...)
    * 
-   * @param localeCode
-   * @return
+   * @return a Locale from the localeCode
    */
   public static Locale fromCode(final String localeCode) {
     // [Michael Michaud 2007-03-04] handle the case where lang is the only
@@ -330,7 +327,7 @@ public final class I18N {
   /***
    * Applies a given locale to the java runtime.
    * 
-   * @param loc
+   * @param loc the Locale to apply
    */
   public static void applyToRuntime(Locale loc) {
     Locale.setDefault(loc);
@@ -341,7 +338,7 @@ public final class I18N {
   /**
    * Process text with the locale 'jump_<locale>.properties' file
    * 
-   * @param label
+   * @param label the key to look for.
    * @return i18n label [Michael Michaud 2007-03-23] If no resourcebundle is
    *         found, returns a default string which is the last part of the label
    */
@@ -383,9 +380,9 @@ public final class I18N {
    * resourcebundle is found, returns default string contained inside
    * com.vividsolutions.jump.jump
    * 
-   * @param label
+   * @param label the key to look for
    *          with argument insertion : {0}
-   * @param objects
+   * @param objects values of parameters contained in the key
    * @return i18n label
    */
   public static String getMessage(final String label, final Object... objects) {
@@ -410,7 +407,7 @@ public final class I18N {
    *          The category.
    * @param label
    *          Label with argument insertion : {0}
-   * @param objects
+   * @param objects values of parameters contained in the key
    * 
    * @return i18n label
    */

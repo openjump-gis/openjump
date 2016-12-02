@@ -8,8 +8,8 @@ import com.vividsolutions.jump.util.java2xml.XMLBinder;
  */
 public interface MacroManager {
 
-    public static final String MACRO_STARTED = "MacroStarted";
-    public static final String MACRO         = "Macro";
-    public static final String MACRO_RUNNING = "MacroRunning";
+    String MACRO_STARTED = "MacroStarted";
+    String MACRO         = "Macro";
+    String MACRO_RUNNING = "MacroRunning";
 
 }

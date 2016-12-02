@@ -171,7 +171,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   }
 
   /**
-   * @param blackboard
+   * @param bb blackboard
    */
   public ProxySettingsOptionsPanel(Blackboard bb) {
     this.blackboard = bb;

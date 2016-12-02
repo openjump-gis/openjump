@@ -224,7 +224,7 @@ public class BoundaryMatchDataEngine {
      *@return        coordinates of the boundary for the given cell, from the
      *      north vertex to the south vertex
      */
-    private List boundaryCoordinates(double boundaryX, double south,
+    private List boundaryCoordinates(double west, double south,
         Coordinate prevCellsTopBoundaryCoordinate) {
         ArrayList boundaryCoordinates = new ArrayList();
         double segmentLength = cellSideLength / (verticesPerBoundarySide - 1);
@@ -238,7 +238,7 @@ public class BoundaryMatchDataEngine {
             }
 
             double y = south + (i * segmentLength);
-            double x = boundaryX +
+            double x = west +
                 (boundaryAmplitude * Math.sin((2 * Math.PI * y) / boundaryPeriod));
 
             //To ensure perturbations are negative half the time, multiply by two

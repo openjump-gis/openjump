@@ -10,5 +10,5 @@ import javax.swing.KeyStroke;
  *
  */
 public interface MultiShortcutEnabled {
-  public PlugIn[] getShortcutEnabledPlugins();
+  PlugIn[] getShortcutEnabledPlugins();
 }

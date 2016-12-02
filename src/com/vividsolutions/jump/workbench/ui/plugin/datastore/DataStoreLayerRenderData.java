@@ -7,7 +7,6 @@ package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import java.awt.Color;
-import javax.swing.UIManager;
 import org.netbeans.swing.outline.RenderDataProvider;
 
 public class DataStoreLayerRenderData implements RenderDataProvider {
