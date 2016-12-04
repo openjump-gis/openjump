@@ -180,11 +180,10 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
         StandardReaderWriterFileDataSource.GeoJSON.class);
   }
 
-  // Should be public (used in some external plugins)
+  /**
+   * @deprecated please remove where implemented, replaced by handling of compressed files in SelectFilesPanel
+   */
+  @Deprecated
   public static void addCompressedFileFilter(final String description, JFileChooser chooser) {
-    chooser
-        .addChoosableFileFilter(GUIUtil.createFileFilter(
-            I18N.get("datasource.InstallStandardDataSourceQueryChoosersPlugIn.compressed")
-                + " " + description, new String[] { "zip", "gz" }));
   }
 }
