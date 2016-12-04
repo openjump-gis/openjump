@@ -60,6 +60,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
+import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -622,92 +623,69 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     }
 
     /*
-     * Enumeration of File extension used in Sextante Raster Layer
-     */
-    public enum TypeFile {
-        ASC, CSV, DXF, FLT, TIF, TIFF, JPG, JPEG, PNG, GIF, GRD, JP2, BMP, ECW, MrSID, TXT
-    }
-
-    private String filetype;
-
-    /*
      * Return type of the Sextante Raster Layer as String
      */
     public String filetype(File file) {
-        TypeFile extension1 = TypeFile.valueOf(getExtension(file));
-        switch (extension1) {
-        case ASC: {
+        String ext = CompressedFile.getExtension(file.getName());
+        
+        String filetype = "";
+        switch (ext.toUpperCase()) {
+        case "ASC": {
             filetype = "ASC - ESRI ASCII grid";
             break;
         }
-        case CSV: {
+        case "CSV": {
             filetype = "CSV - Comma-separated values";
             break;
         }
-        case DXF: {
+        case "DXF": {
             filetype = "Autocad DXF - Drawing Exchange Format";
             break;
         }
-        case FLT: {
+        case "FLT": {
             filetype = "FLT - ESRI Binary grid";
             break;
         }
-        case TIF: {
+        case "TIF":
+        case "TIFF": {
             filetype = "GEOTIF/TIFF Tagged Image File Format";
             break;
         }
-        case TIFF: {
-            filetype = "GEOTIF/TIFF Tagged Image File Format";
-            break;
-        }
-        case JPG: {
+        case "JPG":
+        case "JPEG": {
             filetype = "JPEG/JPG - Joint Photographic Experts Group";
             break;
         }
-        case JPEG: {
-            filetype = "JPEG/JPG - Joint Photographic Experts Group";
-            break;
-        }
-        case PNG: {
+        case "PNG": {
             filetype = "PNG - Portable Network Graphics";
             break;
         }
-        case GIF: {
+        case "GIF": {
             filetype = "GIF - Graphics Interchange Format";
             break;
         }
-        case GRD: {
+        case "GRD": {
             filetype = "GRD - Surfer ASCII Grid";
             break;
         }
-        case JP2: {
+        case "JP2": {
             filetype = "JPEG 2000 - Joint Photographic Experts Group";
             break;
         }
-        case BMP: {
+        case "BMP": {
             filetype = "BMP - Windows Bitmap";
             break;
         }
-        case ECW: {
+        case "ECW": {
             filetype = "ECW - Enhanced Compression Wavelet";
             break;
         }
-        case MrSID: {
+        case "MrSID": {
             filetype = "MrSID - Multiresolution seamless image database";
             break;
         }
         }
         return filetype;
-    }
-
-    public static String getExtension(File f) {
-        String ext = null;
-        String s = f.getName();
-        int i = s.lastIndexOf('.');
-        if (i > 0 && i < s.length() - 1) {
-            ext = s.substring(i + 1).toUpperCase();
-        }
-        return ext;
     }
 
     /**
