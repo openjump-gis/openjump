@@ -75,6 +75,7 @@ import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.SeekableStream;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.model.Disposable;
@@ -389,8 +390,9 @@ public abstract class GeoRaster implements Disposable {
   // }
 
   static protected boolean hasFileExtension(ImageReaderSpi provider, URI uri) {
-    return hasFileExtension(provider,
-        FileUtil.getExtension(CompressedFile.getTargetFileWithPath(uri)));
+    String path = CompressedFile.getTargetFileWithPath(uri);
+    String ext = CompressedFile.getExtension(path);
+    return hasFileExtension(provider,ext);
   }
 
   static protected boolean hasFileExtension(ImageReaderSpi provider, String ext) {
@@ -440,10 +442,21 @@ public abstract class GeoRaster implements Disposable {
         continue;
       }
 
-      Object input = createInput(uri, provider);
-      boolean canDec = /*provider instanceof GDALImageReaderSpi ||*/
-                        provider.canDecodeInput(input);
-      disposeInput(input);
+      Object input = null;
+      boolean canDec = false;
+      try {
+        input = createInput(uri, provider);
+        canDec = /*provider instanceof GDALImageReaderSpi ||*/
+            provider.canDecodeInput(input);
+      } catch (Exception e) {
+        // hmm, failing to create an input is fatal for this reader
+        // some providers insist on a physical file, which we cannot deliver for compressed sources
+        Logger.debug(e);
+        continue;
+      } finally {
+        disposeInput(input);
+      }
+
       boolean hasNoExts = hasNoFileExtensions(provider);
       boolean hasExt = hasFileExtension(provider, uri);
 
@@ -560,7 +573,7 @@ public abstract class GeoRaster implements Disposable {
       }
 
       throw new IOException("Couldn't create an input for '" + uri
-          + "' accepted by reader '" + loader + "'");
+          + "' accepted ("+StringUtil.toCommaDelimitedString(intypes)+")by reader '" + loader + "'");
     }
 
     return input;

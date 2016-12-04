@@ -337,6 +337,23 @@ public class CompressedFile {
     return  new String[]{ "gz", "bz", "bz2", "xz" };
   }
   
+  /**
+   * returns 
+   *   second level extension for compressed files eg. "tif" for "file.tif.gz"
+   *   all others the first extension eg. "tif" for "file.tif"
+   * 
+   * @param path
+   * @return
+   */
+  public static String getExtension( String path ){
+    // strip compressed ext eg. .gz
+    if (CompressedFile.isCompressed(path)) {
+      path = UriUtil.removeExtension(path);
+    }
+    String ext = FileUtil.getExtension(path);
+    return ext;
+  }
+  
   public static boolean hasCompressedFileExtension(String filename) {
     return Arrays.asList(CompressedFile.getFileExtensions()).contains(
         FileUtil.getExtension(new File(filename)).toLowerCase());
@@ -352,8 +369,8 @@ public class CompressedFile {
   
   public static String getTargetFileWithPath( URI uri ){
     String filepath = UriUtil.getFilePath(uri);
-    String entry = UriUtil.getZipEntryName(uri);
     if (hasArchiveFileExtension(filepath)) {
+      String entry = UriUtil.getZipEntryName(uri);
       return entry;
     }
     return filepath;

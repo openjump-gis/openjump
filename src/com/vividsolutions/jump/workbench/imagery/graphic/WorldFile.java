@@ -143,10 +143,12 @@ public class WorldFile {
   public static List<String> generateWorldFileExtensions(String filename) {
     ArrayList<String> exts = new ArrayList<String>();
     String img_ext;
+
     if ( CompressedFile.hasCompressedFileExtension(filename) ) 
       img_ext = FileUtil.getExtension(UriUtil.removeExtension(filename));
     else
       img_ext = FileUtil.getExtension(filename);
+
     if (img_ext.length()>=3)
       exts.add(img_ext.substring(0, 1) + img_ext.substring(2) + "w");
     exts.add(img_ext + "w");
@@ -170,7 +172,10 @@ public class WorldFile {
       String fileName = CompressedFile.getTargetFileWithPath(origuri);
       fileName = UriUtil.getFileName(fileName);
       for (String ext : generateWorldFileExtensions(fileName)) {
-        String wf_name = UriUtil.removeExtension(fileName) + "." + ext;
+        String wf_base = UriUtil.removeExtension(fileName);
+        if (CompressedFile.isCompressed(fileName))
+          wf_base = UriUtil.removeExtension(wf_base);
+        String wf_name =  wf_base + "." + ext;
         URI wf_uri = CompressedFile.replaceTargetFileName(origuri, wf_name);
         InputStream is = null;
         try {
