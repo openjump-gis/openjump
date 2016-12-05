@@ -98,7 +98,7 @@ public class FeatureUtil {
      * Increments and returns the feature-ID counter
      * @see Feature#getID()
      */
-	static int nextID() { return ++lastID; }
+	public static int nextID() { return ++lastID; }
 
     /**
      * Although Feature implements Cloneable, this method is useful
