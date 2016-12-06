@@ -83,7 +83,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     private ImageIcon nullObject = IconLoader.icon("null1.png");
     private ImageIcon nullString = IconLoader.icon("null1.png");
 
-    interface FeatureEditor {
+    public interface FeatureEditor {
 
         void edit(PlugInContext context, Feature feature, Layer layer)
                 throws Exception;
