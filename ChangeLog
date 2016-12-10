@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-12-10 mmichaud <m.michael.michaud@orange.fr>
+  * Sort the list of SRS in WMS layer SRS chooser + fix some I18N
+
 2016-11-30 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
   * New version of ColorChooser (0.8)
     - Added Color picker tool
