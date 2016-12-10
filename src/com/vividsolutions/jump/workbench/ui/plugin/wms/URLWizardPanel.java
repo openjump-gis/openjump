@@ -87,7 +87,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
 
   // [UT]
   public static final String VERSION_KEY = "WMS_VERSION";
-  public static final String TITLE = I18N.get(I18N_PREFIX + "select-wms-url");
+  public static final String TITLE = I18N.get(I18N_PREFIX + "select-uniform-resource-locator-url");
 
   // this is a hack, guess why
   public static String wmsVersion = WMService.WMS_1_1_1;
@@ -142,7 +142,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
             0, 0, 0), 0, 0));
 
     JPanel versionPanel = createVersionPanel();
-    versionPanel.setBorder(BorderFactory.createTitledBorder(I18N.get("GenericNames.version")));
+    versionPanel.setBorder(BorderFactory.createTitledBorder(I18N.get("ui.GenericNames.version")));
     keepNorth.add(versionPanel, new GridBagConstraints(0, 1,
         1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
         new Insets(0, 0, 0, 0), 0, 0));

@@ -52,13 +52,13 @@ public class SelectUrlWithAuthPanel extends JPanel {
 
   public JPanel createUrlPanel() {
     urlLabel = new JLabel();
-    urlLabel.setText(I18N.get("GenericNames.url"));
+    urlLabel.setText(I18N.get("ui.GenericNames.url"));
     userLabel = new JLabel();
-    userLabel.setText(I18N.get("GenericNames.user"));
+    userLabel.setText(I18N.get("ui.GenericNames.user"));
     passLabel = new JLabel();
-    passLabel.setText(I18N.get("GenericNames.password"));
+    passLabel.setText(I18N.get("ui.GenericNames.password"));
     JLabel showLabel = new JLabel();
-    showLabel.setText(I18N.get("GenericNames.show"));
+    showLabel.setText(I18N.get("ui.GenericNames.show"));
 
     user = new JTextField();
     pass = new JPasswordField();

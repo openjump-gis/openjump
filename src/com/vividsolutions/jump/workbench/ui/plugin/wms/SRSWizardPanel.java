@@ -39,9 +39,9 @@ import static java.awt.GridBagConstraints.WEST;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -115,9 +115,30 @@ public class SRSWizardPanel extends JPanel implements WizardPanel {
         dataMap.put(URLWizardPanel.FORMAT_KEY, formatBox.getSelectedItem());
     }
 
+    private static Pattern NB = Pattern.compile("(\\d+)$");
+
+    private static Comparator<String> cleverStringComparator = new Comparator<String>() {
+        @Override
+        public int compare(String o1, String o2) {
+            Matcher m1 = NB.matcher(o1);
+            Matcher m2 = NB.matcher(o2);
+            if (m1.find() && m2.find() && m1.replaceAll("").equals(m2.replaceAll(""))) {
+                m1 = NB.matcher(o1);
+                m2 = NB.matcher(o2);
+                m1.find(); m2.find();
+                return new Integer(m1.group(1).replaceAll("^0+",""))
+                        .compareTo(new Integer(m2.group(1).replaceAll("^0+","")));
+            }
+            else return o1.compareTo(o2);
+        }
+    };
+
     private List getCommonSrsList() {
+        List<String> list = (List<String>)dataMap.get(COMMON_SRS_LIST_KEY);
+        Collections.sort(list, cleverStringComparator);
         return (List) dataMap.get(COMMON_SRS_LIST_KEY);
     }
+
 
     public void enteredFromLeft(Map dataMap) {
         this.dataMap = dataMap;
