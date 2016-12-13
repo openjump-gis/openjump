@@ -134,7 +134,7 @@ public class Logger {
     // throw error on empty log entries
     if (t == null && msg == null)
         throw new IllegalArgumentException(
-            "Logger: either message or throwable must be given.");
+            "Logger: either message or throwable must be given. "+element);
 
     // use throwable's message if null message given
     if (msg == null)
