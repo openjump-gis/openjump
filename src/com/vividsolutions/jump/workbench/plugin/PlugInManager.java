@@ -366,7 +366,7 @@ public class PlugInManager {
         } 
         // make sure ClassVersionErrors or such do not break OJ startup
         catch (Throwable t) {
-          context.getErrorHandler().handleThrowable(t,context.getWorkbench().getFrame());
+          context.getErrorHandler().handleThrowable(t);
           continue;
         }
       }

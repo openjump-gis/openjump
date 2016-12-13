@@ -61,7 +61,7 @@ public class JUMPWorkbenchContext extends WorkbenchContext {
     return workbench.getDriverManager();
   }
 
-  public ErrorHandlerV2 getErrorHandler() {
+  public ErrorHandler getErrorHandler() {
     return workbench.getFrame();
   }
 

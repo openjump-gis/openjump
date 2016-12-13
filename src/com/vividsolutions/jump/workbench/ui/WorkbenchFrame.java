@@ -154,7 +154,7 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
  * This class is responsible for the main window of the JUMP application.
  */
 public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
-        ViewportListener, ErrorHandlerV2 {
+        ViewportListener, ErrorHandler {
 
     private String EXIT_OPENJUMP = I18N.get("ui.WorkbenchFrame.exit-jump");
     private String CLOSE_PROJECT = I18N.get("ui.WorkbenchFrame.close-task");
