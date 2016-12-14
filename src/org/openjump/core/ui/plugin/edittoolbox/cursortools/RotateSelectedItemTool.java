@@ -59,6 +59,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -219,24 +220,29 @@ public class RotateSelectedItemTool extends DragTool implements ShortcutsDescrip
     }
   }
 
+  protected static GeometryFactory geomFac = new GeometryFactory();
+
+  @SuppressWarnings("unchecked")
   private Shape createSelectedItemsShape()
-      throws NoninvertibleTransformException {
-    Collection selectedGeos = (getPanel().getSelectionManager()
-        .getSelectedItems());
-    Geometry geo = ((Geometry) selectedGeos.iterator().next());
-    Geometry[] allGeoms = new Geometry[selectedGeos.size()];
-    int i = 0;
-    for (Iterator j = selectedGeos.iterator(); j.hasNext();)
-      allGeoms[i++] = (Geometry) j.next();
-
-    GeometryFactory geoFac = new GeometryFactory();
-    geo = geoFac.createGeometryCollection(allGeoms);
-
-    if (centerCoord == null) {
-      centerCoord = geo.getCentroid().getCoordinate();
-    }
-    return getPanel().getJava2DConverter().toShape(geo);
+          throws NoninvertibleTransformException {
+      Collection selectedGeos = (getPanel().getSelectionManager()
+              .getSelectedItems());
+      Point p = geomFac.createPoint(centerCoord);
+      selectedGeos.add(p);
+      Geometry geo = ((Geometry) selectedGeos.iterator().next());
+      Geometry[] allGeoms = new Geometry[selectedGeos.size()];
+      int i = 0;
+      for (Iterator j = selectedGeos.iterator(); j.hasNext();)
+          allGeoms[i++] = (Geometry) j.next();
+      GeometryFactory geoFac = new GeometryFactory();
+      geo = geoFac.createGeometryCollection(allGeoms);
+      if (centerCoord == null) {
+          centerCoord = geo.getCentroid().getCoordinate();
+      }
+      Shape shap = getPanel().getJava2DConverter().toShape(geo);
+      return shap;
   }
+
 
   protected Shape getShape() throws Exception {
     AffineTransform transform = new AffineTransform();
