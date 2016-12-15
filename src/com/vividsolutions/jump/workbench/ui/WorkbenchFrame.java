@@ -1238,8 +1238,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      * show a modal error dialog and log the issue
      */
     public void handleThrowable(final Throwable t, final Component parent) {
-        // always log message and stack only if debug is enabled
-        Logger.warn(t.getMessage(), Logger.isDebugEnabled() ? t : null);
+        // always log as error
+        Logger.error(t);
 
         final String stack = StringUtil.stackTrace(t);
         // show it
