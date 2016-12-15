@@ -136,9 +136,12 @@ public class Logger {
         throw new IllegalArgumentException(
             "Logger: either message or throwable must be given. "+element);
 
-    // use throwable's message if null message given
-    if (msg == null)
+    // use throwable's data if null message was given
+    if (msg == null) {
       msg = t.getMessage();
+      if (msg == null || msg.isEmpty() )
+        msg = t.getClass().getName();
+    }
 
     logger.log(logLevel, msg + msgAppend, t);
   }
