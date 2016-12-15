@@ -85,11 +85,11 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     private JFileChooser getFileChooser() {
         if (fileChooser == null) {
             fileChooser = new GUIUtil.FileChooserWithOverwritePrompting() {
-                public File getSelectedFile() {
-                    return new File(addExtension(
-                            super.getSelectedFile().getPath(),
-                            ((MyFileFilter) getFileFilter()).getFormat()));
-                }
+              public File getSelectedFile() {
+                File file = super.getSelectedFile();
+                return file == null ? null : new File(addExtension(file.getPath(),
+                    ((MyFileFilter) getFileFilter()).getFormat()));
+              }
             };
             fileChooser.setDialogTitle(I18N.get("ui.plugin.SaveImageAsPlugIn.save-image"));
             //Remove *.* [Jon Aquino 11/6/2003]
