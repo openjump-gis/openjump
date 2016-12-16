@@ -18,6 +18,7 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.registry.Registry;
+
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 
 public class OpenFileWizard extends AbstractWizardGroup {
@@ -162,7 +163,8 @@ public class OpenFileWizard extends AbstractWizardGroup {
             }
           }
         } catch (final Exception e) {
-          (workbenchContext.getErrorHandler()).handleThrowable(e);
+            workbenchContext.getWorkbench().getFrame()
+              .handleThrowable(e, dialog);
         }
       }
     } finally {
