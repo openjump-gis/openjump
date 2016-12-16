@@ -223,13 +223,9 @@ import java.util.*;
  **/
 public class ShapefileWriter implements JUMPWriter {
 
-	//public static final String FILE_PROPERTY_KEY = "File";
-	//public static final String DEFAULT_VALUE_PROPERTY_KEY = "DefaultValue";
 	private static final String SHAPE_TYPE_PROPERTY_KEY = "ShapeType";
 	private static boolean truncate = false;
 	private static long lastTimeTruncate = new Date(0).getTime();
-	
-    private static CGAlgorithms CG_ALGO = new CGAlgorithms();
 
     /** Creates new ShapefileWriter */
     public ShapefileWriter() {
@@ -294,6 +290,11 @@ public class ShapefileWriter implements JUMPWriter {
 		String charsetName = dp.getProperty(DataSource.CHARSET_KEY);
 		if (charsetName == null) charsetName = Charset.defaultCharset().name();
         writeDbf(featureCollection, dbffname, Charset.forName(charsetName));
+        // Prepare prj file writing for post 1.10 version
+        //String registry = dp.getProperty("SrsRegistry", "EPSG");
+        //String code = dp.getProperty("SrsCode", "0");
+        //writePrj(path + fname_withoutextention + ".prj", registry, code);
+
         PrintWriter pw = null;
         try {
             cpgfname = path + fname_withoutextention + ".cpg";
@@ -358,7 +359,7 @@ public class ShapefileWriter implements JUMPWriter {
     /**
      * Returns: <br>
      * 2 for 2d (default) <br>
-     * 4 for 3d  - one of the oordinates has a non-NaN z value <br>
+     * 4 for 3d  - one of the coordinates has a non-NaN z value <br>
      * (3 is for x,y,m but thats not supported yet) <br>
      * @param g geometry to test - looks at 1st coordinate
      */
@@ -670,6 +671,25 @@ public class ShapefileWriter implements JUMPWriter {
         }
 
         dbf.close();
+    }
+
+    // Prepare prj writing for post-1.10 version
+    private void writePrj(String fname, String registry, String code)
+            throws Exception {
+        System.out.println("writePrj");
+        System.out.println(registry);
+        System.out.println(code);
+        if (code.equals("0")) return;
+        if (!code.matches("\\d+")) return;
+        System.out.println("test org.cts.CRSFactory");
+        //if (Class.forName("org.cts.CRSFactory") != null) {
+        //    org.cts.CRSFactory crsFactory = new org.cts.CRSFactory();
+        //    org.cts.registry.RegistryManager registryManager = crsFactory.getRegistryManager();
+        //    if (registry.equals("EPSG")) registryManager.addRegistry(new org.cts.registry.EPSGRegistry());
+        //    if (registry.equals("ESRI")) registryManager.addRegistry(new org.cts.registry.ESRIRegistry());
+        //    org.cts.crs.CoordinateReferenceSystem crs = crsFactory.getCRS(registry + ":" + code);
+        //    System.out.println(crs.toWKT());
+        //}
     }
 
     private String removeCount(String s, int count) {

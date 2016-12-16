@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -50,6 +51,11 @@ public class DataSourceFileLayerSaver extends AbstractFileLayerSaver {
     options.put(DataSource.URI_KEY, uri);
     options.put(DataSource.FILE_KEY, UriUtil.getFilePath(uri));
     dataSource.setProperties(options);
+    SRSInfo srsInfo = org.openjump.core.ccordsys.utils.ProjUtils.getSRSInfoFromLayerSource(layer);
+    if (srsInfo != null) {
+      dataSource.getProperties().put("SrsRegistry", srsInfo.getRegistry().name());
+      dataSource.getProperties().put("SrsCode", srsInfo.getCode());
+    }
 
     Connection connection = dataSource.getConnection();
     try {

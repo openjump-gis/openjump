@@ -10,7 +10,7 @@ import static org.openjump.core.ccordsys.utils.SRSInfo.Registry.SRID;
 
 /**
  * Small container for SRS information.
- * This class does not contains all information to perform coordinate transformation,
+ * This class does not contain all information to perform coordinate transformation,
  * but enough to return metadata about SRS code or map unit
  */
 public class SRSInfo {
