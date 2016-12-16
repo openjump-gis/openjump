@@ -240,6 +240,10 @@ public class GMLWriter implements JUMPWriter {
             if (c == '"') {
                 sb.replace(t, t + 1, "&quot;");
             }
+
+            if ((int)c < 20 && c != '\t' && c != '\n' && c != 'r') {
+                sb.replace(t, t + 1, "");
+            }
         }
 
         return sb.toString();
@@ -257,7 +261,7 @@ public class GMLWriter implements JUMPWriter {
      * @param f feature to take geometry or column value from
      * @param token to evaluate - "column","geometry" or "geometrytype"
      */
-    // [mmichaud 2012-04-27] no mor eused, replaced by 
+    // [mmichaud 2012-04-27] no more used, replaced by
     // evaluateToken(Feature f, String token, Writer writer)
     private String evaluateToken(Feature f, String token)
         throws Exception {
