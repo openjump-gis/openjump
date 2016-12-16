@@ -241,7 +241,7 @@ public class GMLWriter implements JUMPWriter {
                 sb.replace(t, t + 1, "&quot;");
             }
 
-            if ((int)c < 20 && c != '\t' && c != '\n' && c != 'r') {
+            if ((int)c < 20 && c != '\t' && c != '\n' && c != '\r') {
                 sb.replace(t, t + 1, "");
             }
         }
