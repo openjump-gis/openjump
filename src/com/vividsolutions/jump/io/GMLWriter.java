@@ -41,6 +41,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
@@ -50,6 +52,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 
 /**
  * GMLWriter is a {@link JUMPWriter} specialized to output GML.
+ * TODO: use a proper XML framework, switch to XML1.1 which supports much broader range of unicode characters
  *
  * <p>
  * DataProperties for the JCSWriter write(featureSchema,DataProperties) interface:<br>
@@ -213,40 +216,46 @@ public class GMLWriter implements JUMPWriter {
      * Ie. convert "<" to "&lt;"
      *@param s string to safe-ify
      */
-    private static String safeXML(String s) {
+    private static String escapeXML(String s) {
         if (s == null) return null;
-        StringBuilder sb = new StringBuilder(s);
-        char c;
-
-        for (int t = 0; t < sb.length(); t++) {
-            c = sb.charAt(t);
-
-            if (c == '<') {
-                sb.replace(t, t + 1, "&lt;");
-            }
-
-            if (c == '>') {
-                sb.replace(t, t + 1, "&gt;");
-            }
-
-            if (c == '&') {
-                sb.replace(t, t + 1, "&amp;");
-            }
-
-            if (c == '\'') {
-                sb.replace(t, t + 1, "&apos;");
-            }
-
-            if (c == '"') {
-                sb.replace(t, t + 1, "&quot;");
-            }
-
-            if ((int)c < 20 && c != '\t' && c != '\n' && c != '\r') {
-                sb.replace(t, t + 1, "");
-            }
-        }
-
-        return sb.toString();
+        
+        // this should take care of really _all_ XML1.0 invalid chars
+        // see https://commons.apache.org/proper/commons-lang/javadocs/api-3.5/org/apache/commons/lang3/StringEscapeUtils.html#escapeXml10-java.lang.String-
+        return StringEscapeUtils.escapeXml10(s);
+        
+        // kept for reference
+//        StringBuilder sb = new StringBuilder(s);
+//        char c;
+//
+//        for (int t = 0; t < sb.length(); t++) {
+//            c = sb.charAt(t);
+//
+//            if (c == '<') {
+//                sb.replace(t, t + 1, "&lt;");
+//            }
+//
+//            if (c == '>') {
+//                sb.replace(t, t + 1, "&gt;");
+//            }
+//
+//            if (c == '&') {
+//                sb.replace(t, t + 1, "&amp;");
+//            }
+//
+//            if (c == '\'') {
+//                sb.replace(t, t + 1, "&apos;");
+//            }
+//
+//            if (c == '"') {
+//                sb.replace(t, t + 1, "&quot;");
+//            }
+//
+//            if ((int)c < 20 && c != '\t' && c != '\n' && c != '\r') {
+//                sb.replace(t, t + 1, "");
+//            }
+//        }
+//
+//        return sb.toString();
     }
 
     /**
@@ -296,7 +305,7 @@ public class GMLWriter implements JUMPWriter {
             result = toString(f, column);
     
             //need to ensure that the output is XML okay
-            result = safeXML(result);
+            result = escapeXML(result);
             
             return result;
         } else if (cmd.equalsIgnoreCase("geometry")) {
@@ -347,7 +356,7 @@ public class GMLWriter implements JUMPWriter {
             result = toString(f, column);
 
             //need to ensure that the output is XML okay
-            result = safeXML(result);
+            result = escapeXML(result);
             if (result == null) writer.append(pre.replaceAll(">$"," xsi:nil=\"true\">"));
             else writer.append(pre).append(result);
             //writer.append(result);
