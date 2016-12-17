@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-12-17 ede
+  * upgrade commons-lang to version 3.5
+
 2016-12-16 mmichaud <m.michael.michaud@orange.fr>
   * #447 fix illegal character writing in jml
 
