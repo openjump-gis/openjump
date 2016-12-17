@@ -46,7 +46,7 @@ import javax.swing.JComboBox;
 
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.workbench.ui.*;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.math.array.StatisticSample;
 import org.openjump.core.apitools.FeatureSchemaTools;
 

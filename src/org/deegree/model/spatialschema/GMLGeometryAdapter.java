@@ -55,8 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
-import org.deegree.framework.log.ILogger;
+import org.apache.commons.lang3.StringUtils;
 import org.deegree.framework.util.StringTools;
 import org.deegree.framework.xml.ElementList;
 import org.deegree.framework.xml.NamespaceContext;

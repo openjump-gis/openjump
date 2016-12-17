@@ -41,7 +41,7 @@ import java.util.Set;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 
 import com.vividsolutions.jump.I18N;

@@ -58,7 +58,7 @@ import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 import org.openjump.util.UriUtil;
 

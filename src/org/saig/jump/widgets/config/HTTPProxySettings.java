@@ -36,7 +36,7 @@
  */
 package org.saig.jump.widgets.config;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.saig.core.crypt.CryptManager;
 import org.saig.core.crypt.CryptManagerException;
 import org.saig.core.crypt.CryptManagerFactory;

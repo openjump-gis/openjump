@@ -76,7 +76,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 import org.saig.jump.widgets.config.HTTPProxySettings;
 import org.saig.jump.widgets.config.ProxyAuth;

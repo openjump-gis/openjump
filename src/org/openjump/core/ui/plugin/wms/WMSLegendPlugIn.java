@@ -18,7 +18,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.ui.swing.DetachableInternalFrame;
 
