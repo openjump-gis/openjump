@@ -79,6 +79,7 @@ public class OptionsPlugIn extends AbstractPlugIn {
   public void initialize(PlugInContext context) throws Exception {
     dialog(context).addTab(
         I18N.get("ui.plugin.OptionsPlugIn.view-edit"),
+        GUIUtil.resize(IconLoader.icon("edit.gif"), 16),
         new EditOptionsPanel(PersistentBlackboardPlugIn.get(context.getWorkbenchContext())));
     dialog(context).addTab(
         I18N.get("ui.plugin.OptionsPlugIn.snap-vertices-tools"),
@@ -87,6 +88,7 @@ public class OptionsPlugIn extends AbstractPlugIn {
             .getWorkbench().getBlackboard()));
     // [Matthias Scholz 3. Sept 2010] SelectionStyllingOptionsPanel added
     dialog(context).addTab(I18N.get("ui.plugin.OptionsPlugIn.selection-style"),
+        GUIUtil.resize(IconLoader.icon("Select.gif"), 16),
         new SelectionStyllingOptionsPanel(context.getWorkbenchContext()));
     // [Matthias Scholz 15. Sept 2010] DatasetOptionsPanel added
     dialog(context).addTab(I18N.get("ui.DatasetOptionsPanel.datasetOptions"),
