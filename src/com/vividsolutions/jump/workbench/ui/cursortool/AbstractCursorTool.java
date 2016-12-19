@@ -709,6 +709,10 @@ public abstract class AbstractCursorTool implements CursorTool {
     }
 
     public void keyPressed(KeyEvent e) {
+		// Save modifiers even if the componentWithFocus is not the LayerView
+		// otherwise, when entering or exiting another component, one of the
+		// modification (pressed or released) is not saved
+		saveModifiers(e);
       if(!componentWithFocusIsHandledByCursorTools())
         return;
       
@@ -719,10 +723,13 @@ public abstract class AbstractCursorTool implements CursorTool {
         // System.out.println("snap off");
         showMsg("com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool.snapping-off");
       }
-      saveModifiers(e);
     }
 
     public void keyReleased(KeyEvent e) {
+		// Save modifiers even if the componentWithFocus is not the LayerView
+		// otherwise, when entering or exiting another component, one of the
+		// modification (pressed or released) is not saved
+		saveModifiers(e);
       if(!componentWithFocusIsHandledByCursorTools())
         return;
       
@@ -733,7 +740,6 @@ public abstract class AbstractCursorTool implements CursorTool {
         // System.out.println("snap on");
         showMsg("com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool.snapping-on");
       }
-      saveModifiers(e);
     }
 
     private void saveModifiers(KeyEvent e){
