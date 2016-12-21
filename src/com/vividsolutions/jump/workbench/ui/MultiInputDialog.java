@@ -97,8 +97,8 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
         // imagePanel contains an image and a description
         final private MultiInputDialogInfoPanel infoPanel = new MultiInputDialogInfoPanel();
         // mainComponent contains all the components for user inputs
-        Container mainComponent;
-        JPanel currentPanel;
+        protected Container mainComponent;
+        protected JPanel currentPanel;
         // consolePanel can show warnings or comments to help the user
         final private MultiInputDialogConsole console = new MultiInputDialogConsole();
     // This panel just contains the OK and the Cancel Buttons
@@ -113,6 +113,10 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
             BorderFactory.createEmptyBorder(5+inset, 5+inset, 5+inset, 5+inset)
         );
         currentPanel.setBorder(mainComponentBorder);
+    }
+
+    public void setMainComponent(Container container) {
+        this.mainComponent = container;
     }
     
     /**
