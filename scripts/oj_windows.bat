@@ -15,6 +15,9 @@ rem set JAVA_HOME=G:\path\to\a\specific\<jre|jdk>-1.<5|6>
 rem -- uncomment to use 'java' for console output, if unset defaults to 'javaw' for background jre  --
 rem set JAVA_BIN=java
 
+rem -- set some default OJ options here (eg. -v debug), initialize empty --
+set JUMP_OPTS=
+
 rem -- set some java runtime options here, initialize empty --
 set JAVA_OPTS=
 
@@ -216,9 +219,9 @@ rem -- essential options, don't change unless you know what you're doing --
 set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration="%LOG4J_CONF%" -Dlog.dir="%LOG_DIR%" -Djump.home="%JUMP_HOME%" %JAVA_MEM%
 
 rem -- set default app options --
-set JUMP_OPTS=-default-plugins bin\default-plugins.xml -state "%SETTINGS_HOME%" -plug-in-directory "%LIB%\ext"
+set JUMP_OPTS=-default-plugins bin\default-plugins.xml -state "%SETTINGS_HOME%" -plug-in-directory "%LIB%\ext" %JUMP_OPTS%
 rem --- workbench-properties.xml is used to manually load plugins (ISA uses this) ---
-if EXIST "bin\workbench-properties.xml" set "JUMP_OPTS=%JUMP_OPTS% -properties bin\workbench-properties.xml"
+if EXIST "bin\workbench-properties.xml" set "JUMP_OPTS=-properties bin\workbench-properties.xml %JUMP_OPTS%"
 
 rem -- disconnect javaw from console by using start --
 rem -- note: title is needed or start won't accept quoted path to java binary (protect spaces in javapath) --
