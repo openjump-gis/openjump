@@ -5,6 +5,8 @@
 
 2016-12-28 ede
   * make GML/JML reader cancellable and show already parsed featcount
+  * upgrade commons-io to v2.5, commons-codec to v1.10, release notes assure
+    backwards compatibility
 
 2016-12-28 mmichaud <m.michael.michaud@orange.fr>
   * fix #449 severe regression in "save project as" introduced in r5178
