@@ -134,17 +134,17 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
             else {
                 dir.mkdir();
                 String ext = null;
-                DataSource dataSource = null;
-                if (dialog.getBoolean(SAVEASJML)) {
-                    ext = "jml";
-                    dataSource = new com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource.JML();
-                }
-                else if (dialog.getBoolean(SAVEASSHP)) {
-                    ext = "shp";
-                    dataSource = new com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource.Shapefile();
-                }
                 for (Layer layer : collection) {
                     File file = getFile(layer, dir, ext);
+                    DataSource dataSource = null;
+                    if (dialog.getBoolean(SAVEASJML)) {
+                        ext = "jml";
+                        dataSource = new com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource.JML();
+                    }
+                    else if (dialog.getBoolean(SAVEASSHP)) {
+                        ext = "shp";
+                        dataSource = new com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource.Shapefile();
+                    }
                     if (file.exists()) {
                         if (GUIUtil.showConfirmOverwriteDialog(context.getWorkbenchFrame(), file)) {
                             saveLayer(layer, dir, dataSource, ext);
