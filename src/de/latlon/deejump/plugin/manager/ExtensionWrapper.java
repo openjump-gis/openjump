@@ -1,6 +1,3 @@
-/* This file is *not* under GPL or any other public license
- * Copyright 2005 Ugo Taddei 
- */
 package de.latlon.deejump.plugin.manager;
 
 import java.util.List;
