@@ -110,6 +110,7 @@ public class JMLReader extends AbstractJUMPReader {
         }
 
         gmlReader = new GMLReader();
+        gmlReader.setTaskMonitor(getTaskMonitor());
 
         return gmlReader.read(dp);
     }

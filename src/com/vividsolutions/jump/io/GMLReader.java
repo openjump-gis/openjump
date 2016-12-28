@@ -32,7 +32,12 @@
 package com.vividsolutions.jump.io;
 
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.task.TaskMonitorSupport;
+import com.vividsolutions.jump.task.TaskMonitorUtil;
+import com.vividsolutions.jump.util.Timer;
 
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
@@ -216,7 +221,7 @@ import java.util.StringTokenizer;
  * ['...1...','...2...','...3...']
  *
  */
-public class GMLReader extends DefaultHandler implements JUMPReader {
+public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitorSupport {
 
   private static int STATE_GET_COLUMNS = 3;
   private Collection<Exception> exceptions;
@@ -382,6 +387,10 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
    */
   public void endElement(String uri, String name, String qName)
       throws SAXException {
+    
+    // allow cancellation
+    if (getTaskMonitor().isCancelRequested()) throw new SAXCancelledException();
+    
     try {
       int index;
 
@@ -527,6 +536,8 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
           }
 
           fc.add(currentFeature);
+          report(fc.size());
+
           currentFeature = null;
 
           return;
@@ -754,6 +765,9 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
 
     try {
       xr.parse(is);
+    } catch (SAXCancelledException e){
+      // we were cancelled
+      fc = null;
     } catch (SAXParseException e) {
       throw new ParseException(e.getMessage() + "  Last Opened Tag: "
           + lastStartTag_qName + ".  Reader reports last line read as "
@@ -797,6 +811,10 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
    */
   public void startElement(String uri, String name, String qName,
       Attributes atts) throws SAXException {
+    
+    // allow cancellation
+    if (getTaskMonitor().isCancelRequested()) throw new SAXCancelledException();
+    
     try {
       // System.out.println("Start element: " + qName);
       tagBody = new StringBuffer();
@@ -1077,4 +1095,32 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
       exceptions = new ArrayList<>();
     return exceptions;
   }
+  
+  private TaskMonitor taskMonitor = null;
+  
+  public void setTaskMonitor(TaskMonitor taskMonitor) {
+    this.taskMonitor = taskMonitor;
+  }
+
+  public TaskMonitor getTaskMonitor() {
+    return taskMonitor;
+  }
+  
+  private long milliSeconds = 0;
+
+  private void report( int num ){
+    long now = Timer.milliSecondsSince(0);
+    // show status every .5s
+    if (now - 500 >= milliSeconds) {
+      milliSeconds = now;
+      TaskMonitorUtil.report(
+          getTaskMonitor(),
+          I18N.getMessage("Reader.parsed-{0}-features",
+              String.format("%,10d", num)));
+    }
+  }
+}
+
+class SAXCancelledException extends SAXException{
+  // dummy to allow proper cancellation
 }

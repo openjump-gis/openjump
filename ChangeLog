@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2016-12-28 ede
+  * make GML/JML reader cancellable and show already parsed featcount
+
 2016-12-28 mmichaud <m.michael.michaud@orange.fr>
   * fix #449 severe regression in "save project as" introduced in r5178
 

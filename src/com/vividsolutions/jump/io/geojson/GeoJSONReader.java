@@ -87,7 +87,7 @@ public class GeoJSONReader extends AbstractJUMPReader {
     private Stack valueStack;
     private Object featsId = null;
     private GeoJSONFeatureCollectionWrapper fcwrap = null;
-    private long milliSeconds = 0;;
+    private long milliSeconds = 0;
 
     public Transformer(GeoJSONFeatureCollectionWrapper fcwrap) {
       this.fcwrap = fcwrap;
@@ -120,7 +120,7 @@ public class GeoJSONReader extends AbstractJUMPReader {
             milliSeconds = now;
             TaskMonitorUtil.report(
                 monitor,
-                I18N.getMessage("GeoJSONReader.parsed-{0}-features",
+                I18N.getMessage("Reader.parsed-{0}-features",
                     String.format("%,10d", fcwrap.size())));
           }
         } catch (Exception e) {
