@@ -1,6 +1,7 @@
 package com.vividsolutions.jump.io;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorSupport;
 
@@ -13,7 +14,7 @@ import java.util.Collection;
 abstract public class AbstractJUMPReader implements JUMPReader, TaskMonitorSupport {
 
   private Collection<Exception> exceptions = null;
-  private TaskMonitor taskMonitor = null;
+  private TaskMonitor taskMonitor = new DummyTaskMonitor();
 
   /**
    * Read the specified file using the filename given by the "File" property and

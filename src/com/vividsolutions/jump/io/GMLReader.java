@@ -34,6 +34,7 @@ package com.vividsolutions.jump.io;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorSupport;
 import com.vividsolutions.jump.task.TaskMonitorUtil;
@@ -1095,9 +1096,9 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
       exceptions = new ArrayList<>();
     return exceptions;
   }
-  
-  private TaskMonitor taskMonitor = null;
-  
+
+  private TaskMonitor taskMonitor = new DummyTaskMonitor();
+
   public void setTaskMonitor(TaskMonitor taskMonitor) {
     this.taskMonitor = taskMonitor;
   }
