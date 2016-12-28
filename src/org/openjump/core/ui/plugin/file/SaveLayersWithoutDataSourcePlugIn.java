@@ -149,6 +149,8 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
                         if (GUIUtil.showConfirmOverwriteDialog(context.getWorkbenchFrame(), file)) {
                             saveLayer(layer, dir, dataSource, ext);
                         }
+                    } else {
+                        saveLayer(layer, dir, dataSource, ext);
                     }
                 }
                 return true;
