@@ -41,6 +41,7 @@ public class ZoomToCoordinatePlugIn extends AbstractPlugIn {
           retry = false;
         } else {
           coordinate = toCoordinate(value);
+          retry = false;
         }
       } catch (Exception e) {
         context.getWorkbenchContext().getErrorHandler().handleThrowable(e);
