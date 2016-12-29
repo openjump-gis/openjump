@@ -80,7 +80,7 @@ public class UndoableEditReceiver {
      * undo history will be truncated.
      */
     public void reportNothingToUndoYet() {
-        Assert.isTrue(isReceiving());
+        //Assert.isTrue(isReceiving());
         setNothingToUndoReported(true);
     }
 
@@ -90,7 +90,7 @@ public class UndoableEditReceiver {
      * of an UndoableCommand, leaving it partially complete and non-unexecutable.
      */    
     public void reportIrreversibleChange() {
-        Assert.isTrue(isReceiving());
+        //Assert.isTrue(isReceiving());
         irreversibleChangeReported = true;
     }
 
@@ -141,7 +141,7 @@ public class UndoableEditReceiver {
      * it should simply not call this method; the undo history will be cleared.
      */
     public void receive(UndoableEdit undoableEdit) {
-        Assert.isTrue(isReceiving());
+        //Assert.isTrue(isReceiving());
 
         //Don't add the UndoableEdit to the UndoManager right away; the caller may
         //call #clearNewUndoableEdits. [Jon Aquino]
