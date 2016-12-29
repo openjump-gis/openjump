@@ -824,11 +824,15 @@
 		org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn
 	</plug-in>
 	<plug-in>
-		org.openjump.core.ui.plugin.tools.BeanshellAttributeCalculatorPlugIn
+		org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.tools.JoinTablePlugIn
 	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.tools.BeanshellAttributeCalculatorPlugIn
+	</plug-in>
+
 
 	<!--- ========= Generalization ==================== / -->
 	<plug-in>
