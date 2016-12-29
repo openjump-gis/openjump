@@ -229,6 +229,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     private JPanel statusPanel;
     private JTextArea messageText;
     private JLabel timeLabel, memoryLabel, scaleLabel, coordinateLabel;
+    private DecimalFormat scaleFormat = new DecimalFormat("#,###");
+    private DecimalFormat scaleFormatSmall = new DecimalFormat("#.####");
     private ZoomToScalePlugIn zoomToScalePlugin = new ZoomToScalePlugIn();
     private ZoomToCoordinatePlugIn zoomToCoordPlugin = new ZoomToCoordinatePlugIn();
 
@@ -1305,10 +1307,10 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         toolBar.updateEnabledState();
         // May be null during a new project initialization
         if (getActiveTaskFrame() != null) {
-            setScaleText("1:"
-                    + (int) Math.floor(ScreenScale
-                            .getHorizontalMapScale(getActiveTaskFrame()
-                                    .getLayerViewPanel().getViewport())));
+          double scale = ScreenScale.getHorizontalMapScale(getActiveTaskFrame()
+              .getLayerViewPanel().getViewport());
+          DecimalFormat format = scale >= 10 ? scaleFormat : scaleFormatSmall;
+          setScaleText("1:" + format.format(scale));
         }
     }
 
