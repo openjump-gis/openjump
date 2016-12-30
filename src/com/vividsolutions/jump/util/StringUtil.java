@@ -373,4 +373,28 @@ public class StringUtil {
 
         return buf.toString();
     }
+
+    /**
+     * format Doubles to String representation, cutting zeroes from the decimal end
+     * eg. 1234.000 -> "1234", 1234.5600 -> "1234.56"
+     * @param d
+     * @return string
+     */
+    public static String toString(double d) {
+      if (d == (long) d)
+        return String.format("%d", (long) d);
+      else {
+        // detect number of decimal digits (until there are only zeroes)
+        int i = 1;
+        for (; i <= 12; i++) {
+          double factor = (double) Math.pow(10, i);
+          double temp = ((long) (d * factor)) / factor;
+          System.out.println(temp);
+          if (temp == d)
+            break;
+        }
+        System.out.println("orig:" + d);
+        return String.format("%." + i + "f", d);
+      }
+    }
 }
