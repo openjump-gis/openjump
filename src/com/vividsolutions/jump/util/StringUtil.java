@@ -389,12 +389,11 @@ public class StringUtil {
         for (; i <= 12; i++) {
           double factor = (double) Math.pow(10, i);
           double temp = ((long) (d * factor)) / factor;
-          System.out.println(temp);
           if (temp == d)
-            break;
+            return String.format("%." + i + "f", d);
         }
-        System.out.println("orig:" + d);
-        return String.format("%." + i + "f", d);
+        // eventually we simply return the double
+        return Double.toString(d);
       }
     }
 }
