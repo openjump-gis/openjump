@@ -31,33 +31,50 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
-import java.awt.Component;
-
-import java.util.*;
-
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-
-import org.openjump.core.rasterimage.RasterImageLayer;
-
-import com.vividsolutions.jts.util.Assert;
-
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.LayerManager;
-import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.model.WMSLayer;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
-import com.vividsolutions.jump.util.CollectionMap;
-
-import de.latlon.deejump.wfs.jump.WFSLayer;
-
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.swing.ButtonGroup;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.text.JTextComponent;
+
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.util.CollectionMap;
+import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 
 /**
  * Flexible generic dialog to prompt the user typing input parameters.
@@ -175,40 +192,48 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     ////////////////////////////////////////////////////////////////////////////
     
     // Map containing associations between field names and their component
-    protected HashMap<String,JComponent> fieldNameToComponentMap = new HashMap<String,JComponent>();
+    private HashMap<String,Component> fieldNameToComponentMap = new HashMap<String,Component>();
     
     // Map containing associations between field names and their label
-    protected HashMap<String,JComponent> fieldNameToLabelMap = new HashMap<>();
+    private HashMap<String,Component> fieldNameToLabelMap = new HashMap<>();
     
     // Map containing associations between field names and ButtonGroup
-    protected Map buttonGroupMap = new HashMap();
+    private Map buttonGroupMap = new HashMap();
     
     // Map containing associations between field names and EnableChecks
-    protected CollectionMap fieldNameToEnableCheckListMap = new CollectionMap();
+    private CollectionMap fieldNameToEnableCheckListMap = new CollectionMap();
 
-    private JComponent getComponent(String fieldName) {
+    protected void addComponent(String fieldName, Component label,
+        Component component) {
+      if (label != null)
+        fieldNameToLabelMap.put(fieldName, label);
+      if (component != null)
+        fieldNameToComponentMap.put(fieldName, component);
+    }
+    
+    protected Component getComponent(String fieldName) {
         return fieldNameToComponentMap.get(fieldName);
     }
     
     
     ////////////////////////////////////////////////////////////////////////////
     //                                                                        //
-    //                               GETTERS                                  //
+    //                     COMPONENT GETTERS                                  //
     //                                                                        //
     ////////////////////////////////////////////////////////////////////////////
     
     /**
      * Gets JLabel matching this fieldName.
      */
-    public JComponent getLabel(String fieldName) {
-        return fieldNameToLabelMap.get(fieldName);
+    public JLabel getLabel(String fieldName) {
+        return (JLabel)getComponent(fieldName);
     }
     
     /**
      * Gets JComboBox component matching this fieldName.
      */
     public JComboBox getComboBox(String fieldName) {
-        return (JComboBox) getComponent(fieldName);
+        return (JComboBox)getComponent(fieldName);
     }
     
     /**
@@ -228,104 +253,141 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     /**
      * Gets JFileChooser component matching this fieldName.
      */
-    // added by mmichaud
     public JFileChooser getFileChooser(String fieldName) {
-        return (JFileChooser) fieldNameToComponentMap.get(fieldName);
+        return (JFileChooser)getComponent(fieldName);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //                                                                        //
+    //                         VALUE GETTERS                                  //
+    //                                                                        //
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Fetch the current value held by a component given. Semi intelligent it returns
+     * - String text for text components and scrollpanes
+     * - selected Objects for combo boxes
+     * - Boolean states for buttons and checkboxes
+     * - List of files for file choosers
+     * 
+     * @param component
+     * @return object
+     */
+    public Object getValue(Component component) {
+      // textfield, textarea
+      if (component instanceof JTextComponent) {
+          return ((JTextComponent)component).getText();
+      }
+      // combobox
+      if (component instanceof JComboBox) {
+          Object selObj = ((JComboBox)component).getSelectedItem();
+          return selObj;
+      }
+      // scrollpane
+      if (component instanceof JScrollPane) {
+          component = ((JScrollPane)component).getViewport().getView();
+          return getValue(component);
+      }
+      // button
+      if (component instanceof JButton) {
+         boolean state = ((JButton)component).isEnabled();
+         return new Boolean(state);
+      }
+      // radiobutton, checkbox
+      if (component instanceof JToggleButton) {
+         boolean state = ((JToggleButton)component).isSelected();
+         return new Boolean(state);
+      }
+      // filechooser
+      if (component instanceof JFileChooser) {
+         JFileChooser fc = ((JFileChooser)component);
+         File[] files;
+         if (fc.isMultiSelectionEnabled())
+           files = fc.getSelectedFiles();
+         else {
+           File file = fc.getSelectedFile();
+           files = file == null ? new File[0] : new File[]{ file };
+         }
+         
+         return Arrays.asList(files);
+      }
+      
+      return null;
+    }
+
+    /**
+     * Convenience method for {@link #getValue(Component)}
+     * 
+     * @param fieldName
+     * @return object
+     */
+    public Object getValue(String fieldName) {
+      Component component = fieldNameToComponentMap.get(fieldName);
+      if (component == null) {
+        Logger.error("No component labelled '" + fieldName + "' in this dialog.");
+        return null;
+      }
+
+      return getValue(component);
     }
     
     /**
      * Gets the string value of a control
+     * 
      * @param fieldName control to read
      * @return the string value of the control
-     *         null if the control is not in a valid state (e.g. not selected)
      */
     public String getText(String fieldName) {
-        Component component = fieldNameToComponentMap.get(fieldName);
-        if (component == null) {
-            return "";
-        }
-        if (component instanceof JTextComponent) {
-            return ((JTextComponent)component).getText();
-        }
-        if (fieldNameToComponentMap.get(fieldName) instanceof JComboBox) {
-            Object selObj = ((JComboBox)component).getSelectedItem();
-            if (selObj == null) return null;
-            return selObj.toString();
-        }
-        if (component instanceof JScrollPane) {
-            component = ((JScrollPane)component).getViewport().getView();
-            return ((JTextArea)component).getText();
-        }
-        Assert.shouldNeverReachHere(fieldName);
-        return null;
+      Object value = getValue(fieldName);
+  
+      if (value == null)
+        return "";
+  
+      return String.valueOf(value);
     }
 
     /**
      * Returns selected state for checkboxes, radio buttons.
      */
     public boolean getBoolean(String fieldName) {
-        AbstractButton button = (AbstractButton) fieldNameToComponentMap.get(fieldName);
-        return button.isSelected();
+        return (Boolean)getValue(fieldName);
     }
     
     /**
      * Returns double value from a JTextField control.
      */
     public double getDouble(String fieldName) {
-        return Double.parseDouble(getText(fieldName).trim());
+        return Double.parseDouble(getValue(fieldName).toString().trim());
     }
     
     /**
      * Returns integer value from a JTextField control.
      */
     public int getInteger(String fieldName) {
-        return Integer.parseInt(getText(fieldName).trim());
+        return Integer.parseInt(getValue(fieldName).toString().trim());
     }
     
     /**
-     * Returns a Layer from a JComboBox control.
+     * Returns a Layer from a control.
      */
     public Layer getLayer(String fieldName) {
-        JComboBox comboBox = (JComboBox) fieldNameToComponentMap.get(fieldName);
-        return (Layer)comboBox.getSelectedItem();
+        return (Layer)getValue(fieldName);
     }
     
     /**
-     * Returns a Layerable from a JComboBox control.
+     * Returns a Layerable from a control.
      */
- // 2015-4-15 added by ma15569 - Giuseppe Aruta
     public Layerable getLayerable(String fieldName) {
-        JComboBox comboBox = (JComboBox) fieldNameToComponentMap.get(fieldName);
-        return (Layerable) comboBox.getSelectedItem();
+        return (Layerable)getValue(fieldName);
     }
 
     /**
-     * Returns a Raster Image Layer from a JComboBox control.
+     * Returns a File Collection from a JFilechooser control.
      */
-    // 2015-2-28 added by ma15569 - Giuseppe Aruta
-    public RasterImageLayer getRasterImageLayer(String fieldName) {
-        JComboBox comboBox = (JComboBox) fieldNameToComponentMap.get(fieldName);
-        return (RasterImageLayer) comboBox.getSelectedItem();
+    public List getFiles(String fieldName) {
+        return (List)getValue(fieldName);
     }
 
-    /**
-     * Returns a WMS layer from a JComboBox control.
-     */
-    // 2015-4-15 added by ma15569 - Giuseppe Aruta
-    public WMSLayer getWMSLayer(String fieldName) {
-        JComboBox comboBox = (JComboBox) fieldNameToComponentMap.get(fieldName);
-        return (WMSLayer) comboBox.getSelectedItem();
-    }
-    
-    /**
-     * Returns a WFS layer from a JComboBox control.
-     */
-    // 2015-4-15 added by ma15569 - Giuseppe Aruta
-    public WFSLayer getWFSLayer(String fieldName) {
-        JComboBox comboBox = (JComboBox) fieldNameToComponentMap.get(fieldName);
-        return (WFSLayer) comboBox.getSelectedItem();
-    }
-    
     ////////////////////////////////////////////////////////////////////////////
     //                                                                        //
     //                          ADD ENABLE CHECKS                             //
@@ -543,23 +605,44 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                                               int approxWidthInChars) {
         return addPositiveIntegerField(fieldName, initialValue, approxWidthInChars, null);
     }
+
+    /**
+     * Adds a JTextField field for double values.
+     * Allows limiting the number of decimals, defaulting to 0.
+     * Always shows the number as decimal and _never_ uses the scientific notation
+     * like "1.234E15"
+     * 
+     * @param fieldName field name of the control
+     * @param initialValue initial value of the control
+     * @param decimals number of decimals to round to
+     * @param approxWidthInChars approximative width of the control in characters
+     * @return the JTextField control added to this dialog
+     */
+    public JTextField addDoubleField(String fieldName,
+        double initialValue, int decimals,
+        int approxWidthInChars,
+        String toolTipText) {
+      if (decimals < 0)
+        decimals = 0;
+      
+      return addNumericField(fieldName,
+          String.format("%."+decimals+"f", initialValue),
+          approxWidthInChars,
+          new EnableCheck[] {createDoubleCheck(fieldName)},
+          toolTipText);
+    }
     
     /**
-     * Adds a JTextField control for positive integer inputs.
+     * Adds a JTextField control for double values.
      * 
      * @param fieldName field name of the control
      * @param initialValue initial value of the control
      * @param approxWidthInChars approximative width of the control in characters
      * @return the JTextField control added to this dialog
      */
-    public JTextField addDoubleField(String fieldName,
-                                     double initialValue,
-                                     int approxWidthInChars) {
-        return addNumericField(fieldName,
-            String.valueOf(initialValue),
-            approxWidthInChars,
-            new EnableCheck[] { createDoubleCheck(fieldName)},
-            null);
+    public JTextField addDoubleField(String fieldName, double initialValue,
+        int approxWidthInChars) {
+      return addDoubleField(fieldName, initialValue, approxWidthInChars, null);
     }
     
     /**
@@ -576,7 +659,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                                      int approxWidthInChars,
                                      String toolTipText) {
         return addNumericField(fieldName,
-            String.valueOf(initialValue),
+            StringUtil.toString(initialValue),
             approxWidthInChars,
             new EnableCheck[] {createDoubleCheck(fieldName)},
             toolTipText);
@@ -596,7 +679,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                                              String toolTipText) {
         return addNumericField(
             fieldName,
-            String.valueOf(initialValue),
+            StringUtil.toString(initialValue),
             approxWidthInChars,
             new EnableCheck[] {
                 createDoubleCheck(fieldName),
@@ -633,7 +716,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                                                 String toolTipText) {
         return addNumericField(
             fieldName,
-            String.valueOf(initialValue),
+            StringUtil.toString(initialValue),
             approxWidthInChars,
             new EnableCheck[] {
                 createDoubleCheck(fieldName),
@@ -914,7 +997,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     protected abstract void addRow();
     
     public void setFieldEnabled(String fieldName, boolean enable) {
-        JComponent component = getComponent(fieldName);
+        Component component = getComponent(fieldName);
         if (component != null) component.setEnabled(enable);
     }
     
@@ -923,4 +1006,28 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         if (getLabel(fieldName) != null) getLabel(fieldName).setVisible(visible);
     }
     
+    protected void reportValidationError(String errorMessage) {
+      JOptionPane.showMessageDialog(this, errorMessage, "JUMP",
+          JOptionPane.ERROR_MESSAGE);
+    }
+  
+    protected boolean isInputValid() {
+      return firstValidationErrorMessage() == null;
+    }
+  
+    protected String firstValidationErrorMessage() {
+      for (Iterator i = fieldNameToEnableCheckListMap.keySet().iterator(); i
+          .hasNext();) {
+        String fieldName = (String) i.next();
+        for (Iterator j = fieldNameToEnableCheckListMap.getItems(fieldName)
+            .iterator(); j.hasNext();) {
+          EnableCheck enableCheck = (EnableCheck) j.next();
+          String message = enableCheck.check(null);
+          if (message != null) {
+            return message;
+          }
+        }
+      }
+      return null;
+    }
 }

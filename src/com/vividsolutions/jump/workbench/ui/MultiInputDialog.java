@@ -249,7 +249,7 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
      * |---|------------------------|----------------------|-----|---| 
      * | 0 |            1           |             2        |  3  | 4 |
      * |---|-----------------------------------------------------|---|
-     * |   | JChekBox with label associated                      |   |
+     * |   | JCheckBox with label associated                     |   |
      * |---|-----------------------------------------------------|---|
      * |   | JRadioButton with label associated                  |   |
      * |---|-----------------------------------------------------|---|
@@ -278,15 +278,13 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
                           String toolTipText,
                           int labelPos,
                           int fillMode) {
-        if (label != null && toolTipText != null) {
-            label.setToolTipText(toolTipText);
-            component.setToolTipText(toolTipText);
-        }
+        // register with parent
+        addComponent(fieldName, label, component);
 
-        if (label!= null) {
-            fieldNameToLabelMap.put(fieldName, label);
+        if (label != null && toolTipText != null) {
+          label.setToolTipText(toolTipText);
+          component.setToolTipText(toolTipText);
         }
-        fieldNameToComponentMap.put(fieldName, component);
         
         if (enableChecks != null) {
             addEnableChecks(fieldName, Arrays.asList(enableChecks));
@@ -378,38 +376,6 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
         okCancelApplyPanel.setOKPressed(false);
         okCancelApplyPanel.setApplyPressed(false);
     }
-    
-    private boolean isInputValid() {
-        return firstValidationErrorMessage() == null;
-    }
-    
-    private void reportValidationError(String errorMessage) {
-        JOptionPane.showMessageDialog(
-            this,
-            errorMessage,
-            "JUMP",
-            JOptionPane.ERROR_MESSAGE);
-    }
-    
-    private String firstValidationErrorMessage() {
-        for (Iterator i = fieldNameToEnableCheckListMap.keySet().iterator();
-            i.hasNext();
-            ) {
-            String fieldName = (String) i.next();
-            for (Iterator j =
-                fieldNameToEnableCheckListMap.getItems(fieldName).iterator();
-                j.hasNext();
-                ) {
-                EnableCheck enableCheck = (EnableCheck) j.next();
-                String message = enableCheck.check(null);
-                if (message != null) {
-                    return message;
-                }
-            }
-        }
-        return null;
-    }
-    
     
     /**
      * Indent the label of a field with a MatteBorder having the width of
