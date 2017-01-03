@@ -2,6 +2,9 @@
 # 1. for display continuity sake please use 2 spaces instead of tabs
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
+
+* release 1.10 Changes.txt updated until here***********************************
+
 2016-12-30 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
   * Updated Italian and Spanish Language files
 
@@ -22,7 +25,7 @@
 2016-12-16 mmichaud <m.michael.michaud@orange.fr>
   * #447 fix illegal character writing in jml
 
-2016-12-10 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
+2016-14-10 Giuseppe Aruta <giuseppe_aruta@yahoo.it>
   * Updated Italian Language file
   * RotateSelectedItemTool shows rotation center as point shape
     if this has been set (shift option)
@@ -271,7 +274,7 @@
   * SpatialDatabase : small patch to avoid trying to read wkt as wkb
 
 2016-04-25 ede, Giuseppe
-  * featreq 422: wfs layer, add SRIDStyle using loading crs's epsg id
+  * featreq 233: wfs layer, add SRIDStyle using loading crs's epsg id
 
 2016-04-15 bertazza <bertazza@gmail>
   * Handling of .aux.xml files associated to tiff files changed: now if the
@@ -310,7 +313,7 @@
     in jumptest package
 
 2016-03-23 Giuseppe Aruta  <giuseppe_aruta@yahoo.it>
-  * emhenced version of RasterImageLayerPropertiesPlugIn: 
+  * enhanced version of RasterImageLayerPropertiesPlugIn: 
     1) New info HTML table "a la" GvSIG style
     2) Faster info checker (all cell statistic related to Sextante raster 
        image have been removed as alredy embedded into Raster Statistic 
