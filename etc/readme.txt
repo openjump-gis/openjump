@@ -75,7 +75,7 @@ and the following plugins
 
 
 Additionally PLUS distribution contains
-( Component name - License name - License file in "licenses/" folder
+( Component name (Author) - License name - License file in "licenses/" folder
    list of files and dependencies with license if any )
  Batik SVG Toolkit - Apache License Version 2.0 - apache_license-2.0.txt
  ImageIO Ext (mainly libs needing native support) - LGPL3 - lgpl-3.0.txt
@@ -89,9 +89,13 @@ Additionally PLUS distribution contains
   Windows x86/x64, Linux, Mac OSX with 32bit java runtime - 
   ERDAS ECW JPEG2000 SDK license - ecw license.txt
   lib/native/[os/]{jecw-*.jar,NCS*.dll,ermapper.jar}
+ JGraphT - LGPL2 - lgpl-2.1.txt
+  lib/jgrapht-*.jar
  Postgis driver (postgis-*.jar) - LGPL2 - lgpl-2.1.txt
  MariaDB Connector/J (mariadb-java-client-*.jar) - LGPL2 - lgpl-2.1.txt
  MySQL Connector/J (mysql-connector-java-*-bin.jar) - GPL2 - gpl-2.txt
+ Simple Logging Facade for Java (SLF4J) - MIT License - MIT-license.txt
+  lib/slf4j-api-*.jar,slf4j-api-*.jar
  Xerial SQLite JDBC driver (sqlite-jdbc-*.jar) - apache_license-2.0.txt
  
 and the following plugins
@@ -103,11 +107,16 @@ and the following plugins
   csv-driver-*.jar
  Concave Hull (Eric Grosso) - LGPL2.1, GPL2 - lgpl-2.1.txt, gpl-2.txt
   ConcaveHull*.{jar,txt}
+ CTS extension (Michaël Michaud) - GPL2 - gpl-2.txt
+  CTS-PlugIn-*.jar, lib/cts-*.jar
+  SLF4J (see above)
  DXF driver (Michaël Michaud) - GPL2 - gpl-2.txt
   driver-dxf-*.jar
+ Five Color Map Coloring (Larry Reeder) - GPL3 - gpl-3.0.txt
+  SLF4J (see above), JGraphT (see above)
  Graph Extension (Michaël Michaud) - GPL2 - gpl-2.txt
-  graph-toolbox-*.jar, jump-jgrapht-*.jar, 
-  jgrapht-*.jar - LGPL2 - lgpl-2.1.txt
+  graph-toolbox-*.jar, lib/jump-jgrapht-*.jar
+  JGraphT (see above)
  Jump Chart (com.cadplan.jump) - GPL2 - gpl-2.txt
   JumpChart.jar
  JUMP DB Query Plugin (Larry Reeder) - GPL3 - gpl-3.0.txt
