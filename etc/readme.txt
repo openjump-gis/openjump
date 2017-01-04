@@ -107,8 +107,9 @@ and the following plugins
   csv-driver-*.jar
  Concave Hull (Eric Grosso) - LGPL2.1, GPL2 - lgpl-2.1.txt, gpl-2.txt
   ConcaveHull*.{jar,txt}
- CTS extension (Michaël Michaud) - LGPL3 - lgpl-3.0.txt
-  CTS-PlugIn-*.jar, lib/cts-*.jar
+ CTS extension (Michaël Michaud) - GPL2 - gpl-2.txt
+  CTS-PlugIn-*.jar,
+  lib/cts-*.jar - LGPL3 - lgpl-3.0.txt
   SLF4J (see above)
  DXF driver (Michaël Michaud) - GPL2 - gpl-2.txt
   driver-dxf-*.jar
