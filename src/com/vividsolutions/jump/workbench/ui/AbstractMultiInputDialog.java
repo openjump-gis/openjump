@@ -226,7 +226,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      * Gets JLabel matching this fieldName.
      */
     public JLabel getLabel(String fieldName) {
-        return (JLabel)getComponent(fieldName);
+        return (JLabel)fieldNameToLabelMap.get(fieldName);
     }
     
     /**
