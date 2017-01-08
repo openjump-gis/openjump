@@ -32,9 +32,12 @@
 
 package com.vividsolutions.jump.workbench.ui.toolbox;
 
+import java.util.HashMap;
+
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -44,52 +47,66 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public abstract class ToolboxPlugIn extends AbstractPlugIn {
-    private ToolboxDialog toolbox = null;
+  // just one toolbox instance for plugins switching the same toolbox
+  private static HashMap toolboxMap = new HashMap<String,ToolboxDialog>();
 
-    public ToolboxDialog getToolbox() {
-      return getToolbox(JUMPWorkbench.getInstance().getContext());
+  public ToolboxDialog getToolbox() {
+    return getToolbox(JUMPWorkbench.getInstance().getContext());
+  }
+
+  /**
+   * @return the toolbox for this plug-in class.
+   */
+  public ToolboxDialog getToolbox(WorkbenchContext context) {
+    String name = getName();
+    ToolboxDialog toolbox = (ToolboxDialog) toolboxMap.get(name);
+    if (toolbox == null) {
+      toolbox = new ToolboxDialog(context);
+      toolbox.setTitle(name);
+      initializeToolbox(toolbox);
+      toolbox.finishAddingComponents();
+      
+      toolboxMap.put(name, toolbox);
     }
+    return toolbox;
+  }
 
-    /**
-     * @return the toolbox for this plug-in class.
-     */
-    public ToolboxDialog getToolbox(WorkbenchContext context) {
-      if (toolbox == null) {
-        toolbox = new ToolboxDialog(context);
-        toolbox.setTitle(getName());
-        initializeToolbox(toolbox);
-        toolbox.finishAddingComponents();
+  protected abstract void initializeToolbox(ToolboxDialog toolbox);
+
+  /**
+   * Toolbox subclasses can override this method to implement their own
+   * behaviour when the plug-in is called. Remember to call super.execute to
+   * make the toolbox visible.
+   */
+  public boolean execute(PlugInContext context) throws Exception {
+    reportNothingToUndoYet(context);
+    getToolbox(context.getWorkbenchContext()).setVisible(
+        !getToolbox(context.getWorkbenchContext()).isVisible());
+    return true;
+  }
+
+  /**
+   * Creates a menu item with a checkbox beside it that appears when the toolbox
+   * is visible.
+   * 
+   * @param icon
+   *          null to leave unspecified
+   */
+  public void createMainMenuItem(String[] menuPath, Icon icon,
+      final WorkbenchContext context) throws Exception {
+    new FeatureInstaller(context).addMainMenuPlugin(this, menuPath, getName()
+        + "...", true, icon, getEnableCheck());
+  }
+
+  public EnableCheck getEnableCheck() {
+    return new EnableCheck() {
+      // switch checkbox menu item on/off, depending on current visibility 
+      public String check(JComponent component) {
+        JDialog tb = getToolbox();
+        if (component instanceof JCheckBoxMenuItem)
+          ((JCheckBoxMenuItem) component).setSelected(tb.isVisible());
+        return null;
       }
-      return toolbox;
-    }
-    
-    protected abstract void initializeToolbox(ToolboxDialog toolbox);
-
-    /**
-     * Toolbox subclasses can override this method to implement their
-     * own behaviour when the plug-in is called. Remember to call
-     * super.execute to make the toolbox visible.
-     */
-    public boolean execute(PlugInContext context) throws Exception {
-        reportNothingToUndoYet(context);
-        getToolbox(context.getWorkbenchContext()).setVisible(!getToolbox(context.getWorkbenchContext()).isVisible());
-        return true;
-    }
-
-    /**
-     * Creates a menu item with a checkbox beside it that appears when the toolbox
-     * is visible.
-     * @param icon null to leave unspecified
-     */
-    public void createMainMenuItem(String[] menuPath, Icon icon, final WorkbenchContext context) 
-        throws Exception {
-        new FeatureInstaller(context)
-            .addMainMenuItem(this, menuPath, getName()+"...", true, icon, new EnableCheck() {
-            public String check(JComponent component) {
-                ((JCheckBoxMenuItem) component).setSelected(getToolbox(context).isVisible());
-                return null;
-            }
-        });
-    }
-
+    };
+  }
 }
