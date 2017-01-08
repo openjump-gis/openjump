@@ -43,9 +43,11 @@ import java.util.List;
 
 import javax.swing.*;
 import javax.swing.Timer;
-import javax.swing.plaf.basic.BasicSliderUI;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+import javax.swing.plaf.basic.BasicSliderUI;
+
+import org.openjump.core.ui.util.ScreenScale;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -53,7 +55,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.geom.LineSegmentEnvelopeIntersector;
 import com.vividsolutions.jump.util.Blackboard;
@@ -93,7 +94,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
 
     private Envelope lastGoodEnvelope = null;
     private WorkbenchFrame frame;
-    private BorderLayout borderLayout1 = new BorderLayout();
+
     private JSlider slider = new JSlider();
     private JLabel label = new JLabel();
     private IncrementChooser incrementChooser = new IncrementChooser();
@@ -186,7 +187,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
 	            }
 	        });
 	    }
-	    label.setPreferredSize(new Dimension(50, label.getHeight()));
+	    //label.setPreferredSize(new Dimension(50, label.getHeight()));
 	    slider.addKeyListener(new KeyAdapter() {
 	        public void keyReleased(KeyEvent e) {
 	            try {
@@ -764,11 +765,12 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         return ((LayerViewPanelProxy) frame.getActiveInternalFrame()).getLayerViewPanel();
     }
     void jbInit() throws Exception {
-        this.setLayout(borderLayout1);
+        this.setLayout(new BorderLayout());
         label.setText(" ");
         slider.setPaintLabels(true);
         slider.setToolTipText(I18N.get("ui.zoom.ZoomBar.zoom"));
         slider.setMaximum(1000);
+
         this.add(slider, BorderLayout.CENTER);
         this.add(label, BorderLayout.EAST);
     }

@@ -31,8 +31,6 @@
  */
 package com.vividsolutions.jump.workbench.ui.zoom;
 
-import java.awt.Dimension;
-
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
@@ -40,7 +38,7 @@ public class InstallZoomBarPlugIn extends AbstractPlugIn {
 
     public void initialize(PlugInContext context) throws Exception {
         ZoomBar zoomBar = new ZoomBar(false, true, context.getWorkbenchFrame());
-        zoomBar.setMaximumSize(new Dimension(200, 10000));
+        //zoomBar.setMaximumSize(new Dimension(200, 10000));
         context.getWorkbenchFrame().getToolBar().add(zoomBar);
     }
 
