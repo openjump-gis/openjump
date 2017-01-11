@@ -176,8 +176,17 @@ public class FeatureSchema implements Cloneable, Serializable {
      */
     public void addAttribute(String attributeName, AttributeType attributeType) {
         if (AttributeType.GEOMETRY == attributeType) {
-            Assert.isTrue(geometryIndex == -1);
+            //Assert.isTrue(geometryIndex == -1);
+            if (geometryIndex != -1) {
+                throw new IllegalArgumentException(
+                        I18N.get("feature.FeatureSchema.only-one-geometry-is-authorized"));
+            }
             geometryIndex = attributeCount;
+        }
+        //Assert.isTrue(!attributeNames.contains(attributeName));
+        if (attributeNames.contains(attributeName)) {
+            throw new IllegalArgumentException(
+                    I18N.getMessage("feature.FeatureSchema.attribute-already-exists", attributeName));
         }
         attributeNames.add(attributeName);
         attributeNameToIndexMap.put(attributeName, attributeCount);

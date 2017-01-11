@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-01-11 mmichaud <m.michael.michaud@orange.fr>
+  * Prevent addition of a second attribute with the same name in FeatureSchema
+
 2017-01-08 ede
   * fix #450: Zoombar/Edittoolbox checkbox menu item de-synchronized when
     toolbar is closed manually
