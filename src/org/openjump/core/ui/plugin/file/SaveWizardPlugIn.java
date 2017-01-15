@@ -3,6 +3,8 @@ package org.openjump.core.ui.plugin.file;
 import java.util.Collection;
 import java.util.List;
 
+import javax.swing.Icon;
+
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 import org.openjump.core.ui.plugin.datastore.SaveToDataStoreWizard;
 import org.openjump.core.ui.plugin.file.save.SaveToFileWizard;
@@ -22,9 +24,8 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
@@ -56,14 +57,16 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
     WorkbenchFrame frame = workbench.getFrame();
     blackboard = PersistentBlackboardPlugIn.get(context.getWorkbenchContext());
 
-    String name = getName();
-    if (!JUMPVersion.getRelease().equalsIgnoreCase("release"))
-      FeatureInstaller.getInstance().addMainMenuPlugin(this,
-          new String[] { MenuNames.FILE });
+//    String name = getName();
+//    if (!JUMPVersion.getRelease().equalsIgnoreCase("release"))
+//      FeatureInstaller.getInstance().addMainMenuPlugin(this,
+//          new String[] { MenuNames.FILE });
 
     // add each wiz one by one
     addWizard(context.getWorkbenchContext(), new SaveToFileWizard(context));
-    addWizard(context.getWorkbenchContext(), new SaveToDataStoreWizard(context));
+    // datastores are experimental for now
+    if (!JUMPVersion.getRelease().equalsIgnoreCase("release"))
+      addWizard(context.getWorkbenchContext(), new SaveToDataStoreWizard(context));
   }
 
   public boolean execute(PlugInContext pluginContext) throws Exception {
@@ -71,7 +74,7 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
 
     List<WizardGroup> wizards = registry.getEntries(KEY);
     WizardGroup lastwizard = null;
-    // dialog = null;
+    //dialog = null;
     if (dialog == null) {
       WorkbenchFrame workbenchFrame = pluginContext.getWorkbenchFrame();
       String name = getName();
@@ -126,5 +129,15 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
     return new MultiEnableCheck().add(
         checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck()).add(
         checkFactory.createExactlyNLayersMustBeSelectedCheck(1));
+  }
+
+  @Override
+  public Icon getIcon() {
+    return IconLoader.icon("disk_dots.png");
+  }
+
+  @Override
+  public String getName() {
+    return I18N.get("com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn") +" (testing)";
   }
 }

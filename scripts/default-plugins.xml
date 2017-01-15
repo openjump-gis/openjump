@@ -156,8 +156,11 @@
 			<main-menu menupath="MenuNames.FILE" install="true" />
 		</menus>
 	</plug-in>
- 	<plug-in>
+	<plug-in>
 		org.openjump.core.ui.plugin.file.SaveWizardPlugIn
+		<menus>
+			<main-menu menupath="MenuNames.FILE" install="true" />
+		</menus>
 	</plug-in>
 
 	<plug-in>
@@ -1210,6 +1213,12 @@
 
 	<plug-in>
 		com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn
+		<menus>
+			<layername-popup install="true" />
+		</menus>
+	</plug-in>
+	<plug-in>
+		org.openjump.core.ui.plugin.file.SaveWizardPlugIn
 		<menus>
 			<layername-popup install="true" />
 		</menus>
