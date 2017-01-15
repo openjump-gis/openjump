@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.openjump.core.ui.io.file.DataSourceFileLayerSaver;
 import org.openjump.core.ui.plugin.file.SaveWizardPlugIn;
+import org.openjump.core.ui.plugin.file.open.OpenFileWizard;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
 import com.vividsolutions.jump.I18N;
@@ -33,7 +34,7 @@ public class SaveToFileWizard extends AbstractWizardGroup {
   private File file;
 
   public SaveToFileWizard(final PlugInContext context) {
-    super(I18N.get(KEY), IconLoader.icon("disk_dots.png"), SelectFilePanel.KEY);
+    super(I18N.get(OpenFileWizard.KEY), IconLoader.icon("disk_dots.png"), SelectFilePanel.KEY);
 //    this.context = context;
   }
 
