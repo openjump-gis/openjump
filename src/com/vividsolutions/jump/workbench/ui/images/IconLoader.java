@@ -33,48 +33,90 @@
 
 package com.vividsolutions.jump.workbench.ui.images;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.net.URL;
+import java.security.InvalidParameterException;
+import java.util.HashMap;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-import org.deegree.ogcwebservices.wcs.configuration.Resolution;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * Gets an icon from this class' package.
  */
 public class IconLoader {
-    public static ImageIcon icon(String filename) {
-        return new ImageIcon(IconLoader.class.getResource(resolveFile( filename )));
+  // cache icons, in case they are requested more than once to speedup OJ start
+  private static HashMap<String, ImageIcon> iconCache = new HashMap<>();
+
+  public static ImageIcon icon(String filename) {
+    return getIcon(IconLoader.class.getResource(resolveFile(filename)));
+  }
+
+  public static BufferedImage image(String filename) {
+    ImageIcon icon = getIcon(
+        IconLoader.class.getResource(resolveFile(filename)));
+    Image image = icon.getImage();
+
+    // create a buffered image with transparency
+    BufferedImage bufImg = new BufferedImage(image.getWidth(null),
+        image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+    // draw the image on to the buffered image
+    Graphics2D bGr = bufImg.createGraphics();
+    bGr.drawImage(image, 0, 0, null);
+    bGr.dispose();
+
+    return bufImg;
+  }
+
+  protected static ImageIcon getIcon(URL url) {
+    // check for null
+    if (url == null)
+      throw new InvalidParameterException("parameter url must not be null.");
+
+    String key = url.toExternalForm();
+    // System.out.println(key);
+    ImageIcon icon = null;
+    // check cache
+    icon = iconCache.get(key);
+    if (icon != null)
+      return icon;
+
+    // try loading the image
+    try {
+      // we keep using ImageIcon, as other loaders like ImageIO, commons Imaging
+      // choke on our icon gifs currently
+      icon = new ImageIcon(url);
+      // cache the image
+      iconCache.put(key, icon);
+    } catch (Exception e) {
+      Logger.error(e);
     }
-    
-    public static BufferedImage image(String filename) {
-        try {
-          return ImageIO.read(IconLoader.class.getResource(resolveFile( filename )));
-        } catch (IOException e) {
-          e.printStackTrace();
-          return null;
-        }
+    if (icon == null)
+      Logger.error("icon '" + key + "' is null!");
+
+    return icon;
+  }
+
+  /**
+   * utility method to automagically resolve images that moved into their
+   * appropriate iconset subfolders for legacy code
+   * 
+   * @param filename
+   * @return
+   */
+  protected static String resolveFile(String filename) {
+    // iterate over each location, return on first hit
+    for (String path : new String[] { "", "famfam/", "fugue/" }) {
+      if (IconLoader.class.getResource(path + filename) != null)
+        return path + filename;
     }
-    
-    /**
-     * utility method to automagically resolve images that moved into their 
-     * appropriate iconset subfolders for legacy code
-     * 
-     * @param filename
-     * @return
-     */
-    private static String resolveFile( String filename ){
-      // iterate over each location, return on first hit
-      for (String path : new String[]{"","famfam/","fugue/"}) {
-        if (IconLoader.class.getResource( path + filename )!=null)
-          return path + filename;
-      }
-      
-      // if push comes to shove, we let the calling method deal w/ the 
-      // consequences, exactly as it was before
-      return filename;
-    }
+
+    // if push comes to shove, we let the calling method deal w/ the
+    // consequences, exactly as it was before
+    return filename;
+  }
 }

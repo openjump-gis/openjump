@@ -35,12 +35,14 @@ package com.vividsolutions.jump.workbench.ui.images.famfam;
 
 import javax.swing.ImageIcon;
 
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
 
 /**
  * Gets an icon from this class' package.
  */
-public class IconLoaderFamFam {
+public class IconLoaderFamFam extends IconLoader{
     public static ImageIcon icon(String filename) {
-        return new ImageIcon(IconLoaderFamFam.class.getResource(filename));
+        return getIcon(IconLoaderFamFam.class.getResource(filename));
     }
 }
