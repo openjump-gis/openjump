@@ -2,6 +2,7 @@ package org.openjump.core.ui.swing.wizard;
 
 import java.awt.Component;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -21,7 +22,7 @@ public class WizardGroupListCellRenderer extends DefaultListCellRenderer {
       setText(wizard.getName());
       setIcon(wizard.getIcon());
     }
-    
+    setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
     return this;
   }
 

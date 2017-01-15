@@ -1,12 +1,9 @@
 package org.openjump.core.ui.swing.wizard;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -21,7 +18,6 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardContext;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
-import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 public class WizardGroupDialog extends WizardDialog implements WizardContext,
   InputChangedListener {
@@ -42,8 +38,6 @@ public class WizardGroupDialog extends WizardDialog implements WizardContext,
   }
 
   private void initUi() {
-    Container contentPane = getContentPane();
-
     groupSelectList = new JList(new DefaultListModel());
     groupSelectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     groupSelectList.setVisibleRowCount(-1);
@@ -53,8 +47,21 @@ public class WizardGroupDialog extends WizardDialog implements WizardContext,
     groupSelectList.addListSelectionListener(new InvokeMethodListSelectionListener(
       this, "updateSelectedWizard"));
 
-    JScrollPane groupScrollPane = new JScrollPane(groupSelectList);
-    contentPane.add(groupScrollPane, BorderLayout.WEST);
+    JScrollPane groupScrollPane = new JScrollPane(){
+      // limit min/max width when displayed
+      @Override
+      public Dimension getPreferredSize() {
+        Dimension d = super.getPreferredSize();
+        if (d.width > 125)
+          d.width = 125;
+        else if ( d.width < 75 )
+          d.width = 75;
+        return d;
+      }
+    };
+    groupScrollPane.setViewportView(groupSelectList);
+
+    add(groupScrollPane, BorderLayout.WEST);
   }
 
   public void addWizard(WizardGroup wizard) {
