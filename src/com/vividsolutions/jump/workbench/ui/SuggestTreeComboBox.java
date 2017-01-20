@@ -37,11 +37,13 @@ public class SuggestTreeComboBox extends JComboBox<String> {
         for (String s : array) {
             String sm = s.toLowerCase();
             map.put(sm, s);
-            trie.put(sm, 2);
+            int weight = 16;
+            trie.put(sm, weight);
             for (int split : split(sm)) {
+                weight = weight-1;
                 String permuted = sm.substring(split) + sm.substring(0, split);
                 map.put(permuted, s);
-                trie.put(permuted, 1);
+                trie.put(permuted, weight);
             }
         }
         return trie;
@@ -81,9 +83,11 @@ public class SuggestTreeComboBox extends JComboBox<String> {
                 cb.setSelectedItem(map.get(node.getSuggestion(0).getTerm()));
                 cb.hidePopup();
             } else {
-                Set<String> set = new HashSet<>();
+                List<String> set = new ArrayList<>();
                 for (int i = 0; i < node.listLength(); i++) {
-                    set.add(map.get(node.getSuggestion(i).getTerm()));
+                    String term = map.get(node.getSuggestion(i).getTerm());
+                    if (set.contains(term)) continue;
+                    set.add(term);
                 }
                 cb.setModel(new DefaultComboBoxModel<>(set.toArray(new String[set.size()])));
                 cb.showPopup();
