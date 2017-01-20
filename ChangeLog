@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-01-20 mmichaud <m.michael.michaud@orange.fr>
+  * Add a BeanTool to search for a plugin in the menus
+
 2017-01-17 mmichaud <m.michael.michaud@orange.fr>
   * Upgrade GraphToolBox to 0.4.0 for PLUS version
 
