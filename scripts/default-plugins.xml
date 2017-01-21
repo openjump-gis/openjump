@@ -948,6 +948,12 @@
 		</menus>
 	</plug-in>
 	<plug-in>
+		org.openjump.core.ui.plugin.help.SearchCommandPlugIn
+		<menus>
+			<main-menu menupath="MenuNames.HELP" install="false" />
+		</menus>
+	</plug-in>
+	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.AboutPlugIn
 		<menus>
 			<main-menu menupath="MenuNames.HELP" install="true" />

@@ -5,8 +5,8 @@
 
 * release 1.10 Changes.txt updated until here***********************************
 
-2017-01-20 mmichaud <m.michael.michaud@orange.fr>
-  * Add a BeanTool to search for a plugin in the menus
+2017-01-21 mmichaud <m.michael.michaud@orange.fr>
+  * FR 252 : Add a PlugIn to search for a command (menu Help)
 
 2017-01-17 mmichaud <m.michael.michaud@orange.fr>
   * Upgrade GraphToolBox to 0.4.0 for PLUS version
