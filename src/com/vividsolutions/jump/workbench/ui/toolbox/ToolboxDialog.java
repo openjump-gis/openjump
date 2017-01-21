@@ -128,9 +128,17 @@ public class ToolboxDialog extends JDialog {
         buttons.add(button);
     }
 
-    private ArrayList buttons = new ArrayList();
+    private ArrayList<AbstractButton> buttons = new ArrayList();
 
-    private ArrayList toolBars = new ArrayList();
+    public List<AbstractButton> getButtons() {
+        return buttons;
+    }
+
+    private ArrayList<WorkbenchToolBar> toolBars = new ArrayList();
+
+    public List<WorkbenchToolBar> getToolBars() {
+        return toolBars;
+    }
 
     public void addToolBar() {
         toolBars.add(new WorkbenchToolBar(context, context.getWorkbench()

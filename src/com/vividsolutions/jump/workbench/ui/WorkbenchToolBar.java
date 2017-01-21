@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -71,15 +72,16 @@ import de.soldin.awt.WrapLayout;
  * Set the task-monitor-manager to report the progress of threaded plug-ins.
  */
 public class WorkbenchToolBar extends EnableableToolBar {
-    private HashMap cursorToolClassToButtonMap = new HashMap();
+
+    private HashMap<Class<? extends CursorTool>,AbstractButton> cursorToolClassToButtonMap = new HashMap<>();
 
 
     private LayerViewPanelProxy layerViewPanelProxy;
     private TaskMonitorManager taskMonitorManager = null;
 
-    public AbstractButton getButton(Class cursorToolClass) {
+    public AbstractButton getButton(Class<? extends CursorTool> cursorToolClass) {
         Assert.isTrue(CursorTool.class.isAssignableFrom(cursorToolClass));
-        return (AbstractButton) cursorToolClassToButtonMap.get(cursorToolClass);
+        return cursorToolClassToButtonMap.get(cursorToolClass);
     }
 
     // By default, CursorTool buttons are always enabled. [Jon Aquino]
@@ -117,6 +119,10 @@ public class WorkbenchToolBar extends EnableableToolBar {
                     return cursorTool.getName();
                 }
                 });
+    }
+
+    public Set<Class<? extends CursorTool>> getCursorToolClasses() {
+        return cursorToolClassToButtonMap.keySet();
     }
 
 	/**

@@ -66,34 +66,23 @@ public class SearchCommandPlugIn extends AbstractPlugIn {
         // Gather Toolbox Cursor Tools
         EditingPlugIn editingPlugIn = (EditingPlugIn)context.getWorkbenchContext().getBlackboard().getProperties()
                 .get("com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn");
+        for (AbstractButton b : editingPlugIn.getToolbox().getButtons()) {
+            commands.add(b.getToolTipText() + " [" +
+                    I18N.get("ui.cursortool.editing.EditingPlugIn.editing-toolbox") + "]");
+        }
 
-        // Try to get CursorTools
-        /*
-        for (Object o : editingPlugIn.getToolbox().getPluginsTools()) {
-            if (o instanceof PlugIn) {
-                System.out.println(((PlugIn) o).getName());
-                commands.add(((PlugIn) o).getName() + " [" +
-                        I18N.get("ui.cursortool.editing.EditingPlugIn.editing-toolbox") + "]");
+        // Gather main toolbar tools
+        WorkbenchToolBar toolBar = context.getWorkbenchFrame().getToolBar();
+        for (Component component : toolBar.getComponents()) {
+            if (component instanceof AbstractButton) {
+                AbstractButton b = (AbstractButton) component;
+                if (b.getToolTipText() != null) {
+                    commands.add(b.getToolTipText() + " [" +
+                            I18N.get("Toolbar") + "]");
+                }
             }
         }
 
-        // contains tools from main toolbar and from EditingToolBox
-        for (Component c : editingPlugIn.getToolbox().getToolBar().getComponents()) {
-            System.out.println(c);
-        }
-        for (Enumeration<AbstractButton> e = editingPlugIn.getToolbox().getToolBar().getButtonGroup().getElements();
-             e.hasMoreElements();) {
-            AbstractButton ab = e.nextElement();
-            System.out.println("command   " + ab.getActionCommand());
-            System.out.println("tooltip   " + ab.getToolTipText());
-            System.out.println("text      " + ab.getText());
-            System.out.println("name      " + ab.getName());
-            System.out.println("listeners " + ab.getActionListeners());
-            System.out.println("----------");
-            commands.add(ab.getToolTipText() + " [" +
-                    I18N.get("ui.cursortool.editing.EditingPlugIn.editing-toolbox") + "]");
-        }
-        */
 
         SuggestTreeComboBox stcb = new SuggestTreeComboBox(commands.toArray(new String[0]), 64);
         JDialog dialog = new JDialog(context.getWorkbenchFrame(), getName());
