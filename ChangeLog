@@ -7,6 +7,7 @@
 
 2017-01-21 mmichaud <m.michael.michaud@orange.fr>
   * FR 252 : Add a PlugIn to search for a command (menu Help)
+  * Update CTSPlugIn to 0.1.3 for OJ 1.10 (SuggestTree is now factorized in OJ)
 
 2017-01-17 mmichaud <m.michael.michaud@orange.fr>
   * Upgrade GraphToolBox to 0.4.0 for PLUS version
