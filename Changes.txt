@@ -7,17 +7,17 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * Add zoom shortcuts to status bar.
     a) Double clicking on scale section opens Zoom to scale plugin
     b) Double clicking on coordinate section opens Zoom to coordinates plugin
-  * Added checkbox to EditOptionPanel that select the geometry after 
-    it has been drawn
-  * PLUS - Added Sextante Data Explorer, Pick Coordinates plugin
-         - enhanced Sextante Help
+  * Add an option in EditOptionPanel to select the geometry after it has been
+    drawn
+  * PLUS - Add Sextante Data Explorer, Pick Coordinates plugin
+         - Enhanced Sextante Help
 
   New Features
   * Add a new PlugInClassLoader to keep all classes in one to circumvent issues
     resulting in non working instanceof's or missing classes
   * Extended Sextante Raster Capabilities to read Bitmap (BMP) and JP2000 
    (JP2) raster files
-  * add brand new shiny SaveWizardPlugin, which is supposed to eventually
+  * Add brand new shiny SaveWizardPlugin, which is supposed to eventually
     replace the outdated SaveDatasetAsPlugIn adding the possibility to install
     further datasource writers allowing to save easily to different datasource
     stores, hopefully databases, WFS, archives or the likes in the future
@@ -30,13 +30,14 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
     - Simplifier (Remove small segments)
     - Remove Holes (FR #248)
     - Remove Small Holes
-  * make GML/JML reader cancellable and show already parsed featcount
+  * Make GML/JML reader cancellable and show already parsed featcount
+  * Add a BeanTool to search for a plugin in the menus
 
   Improvements
   * Adopt java 5 style for feature package (generics, foreach loops)
   * Improve RemoveSpike plugin an move RemoveSpike and MakeValid plugins
     to Tools > QA submenu
-  * enhanced version of RasterImageLayerPropertiesPlugIn: 
+  * Enhanced version of RasterImageLayerPropertiesPlugIn:
     1) New info HTML table "a la" GvSIG style
     2) Faster info checker (all cell statistic related to Sextante raster 
        image have been removed as alredy embedded into Raster Statistic 
@@ -44,11 +45,11 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
     3) Added a limited projection checker < see other details into 
     org.openjump.core.ui.util.ProjUtils.class
     4) Added a Raster Transparency panel
-  * add build-helper-maven-plugin in maven to be able to run tests located
+  * Add build-helper-maven-plugin in maven to be able to run tests located
     in jumptest package
   * Update JDOM dependency to JDOM2 (used in java2xml)
   * upgraded junit & imageio-ext to latest stable versions
-  * featreq 233: wfs layer, add SRIDStyle using loading crs's epsg id
+  * FR 233: wfs layer, add SRIDStyle using loading crs's epsg id
   * Rename LineSimplifyJTS15AlgorithmPlugIn to SimplifyWithJTSAlgorithm
     Now works for every kind of geometry and always use PreserveTopology version
   * SpatialDatabase : small patch to avoid trying to read wkt as wkb
@@ -69,8 +70,8 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * Refactoring of EditOptionsPanel + add single editable layer option
   * EditOptions are now persistent except rolling back invalid edits which is
     activated by default (in OpenJumpConfiguration)
-  * update ImageIO-Ext to 1.1.16
-  * downgrade ImageIO-Ext TIFF plugin to 0.1.13 because of a persisting bug 
+  * Update ImageIO-Ext to 1.1.16
+  * Downgrade ImageIO-Ext TIFF plugin to 0.1.13 because of a persisting bug
     from 0.1.14-0.1.16 described on jpp-devel
     https://sourceforge.net/p/jump-pilot/mailman/message/35425922/
   * JoinTableFromExistingLayerPlugIn can now join on any attribute type
@@ -78,10 +79,10 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
     in one line
   * Writable PostGIS driver apply a ST_Multi transformation to geometries
     if it detected that the distant table has a MultiGeometry constraint
-  * deactivate the misleading disjoint predicate in query and join plugins
+  * Deactivate the misleading disjoint predicate in query and join plugins
   * #FR 249 - add "intersects interior point" and "interior point intersects"
     in query and join predicates
-  * new windows exe launcher (2nd trial), that plainly runs the batch file 
+  * New windows exe launcher (2nd trial), that plainly runs the batch file
     w/o need for jre in path to do so
   * Create new layer was not active in Aggregation PlugIn (extension analysis)
   * Join Table : do not join null values any more
@@ -91,11 +92,12 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * upgrade commons-lang to version 3.5
   * upgrade to commons-io 2.5, commons-codec 1.10, commons-compress 1.12
     release notes assure backwards compatibility afa we are concerned
+  * Prevent addition of a second attribute with the same name in FeatureSchema
 
   Bug Fixes
-  * fix bug 414 "Image Layer Resizing lost after loading project"
+  * Fix #414 "Image Layer Resizing lost after loading project"
     jml save files for referenced images ignored their saved geometry on reopen
-  * fix a regression introduced after 1.9.1 release in shapefile (cpg) reader
+  * Fix regression introduced after 1.9.1 release in shapefile (cpg) reader
   * Improve MakeValid plugin (correction of geometries in place)
   * Fix a bug preventing updates with WritableDataSource in some cases
   * Handling of .aux.xml files associated to tiff files changed: now if the
@@ -105,12 +107,12 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
     vary from one version to another and using that much memory may crash the jvm.
   * Fix a problem with z interpolation in Noder plugin (note : there is still
     a bug related to JTS when using a PrecisionModel of 0 decimal - scale=1)
-  * Fix bug #420 (many feature labels were lost with svg export)
-  * bufix: save dataset warns before overwriting an existing file now also 
+  * Fix #420 (many feature labels were lost with svg export)
+  * Fix bug: save dataset warns before overwriting an existing file now also
     when the ok button is pressed only
-  * save dataset now respects doubleclicking a file and enter
+  * Save dataset now respects doubleclicking a file and enter
     like open dialog did already
-  * bugfix : old postgis driver could not save layer with pk != dbid
+  * Fix bug : old postgis driver could not save layer with pk != dbid
   * Fix bug happening when modifying schema two times with InfoPanel opened
     * Postgis writer : create the sequence in the same schema as the table
   * Postgis writer : normalize index name
@@ -120,7 +122,7 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * Fix bug introduced in r5032 in postgis reader
   * Fix #431 : Save project with unsaved layers
   * fix #428 (introduced during ProjUtil refactoring)
-  * Fix bug #433 throwing exception when applying scale limits in bad order
+  * Fix #433 throwing exception when applying scale limits in bad order
   * Optimization : changeStyle was applying the new style two times
   * Fix #432 Non-writable datasource (zipped, datastore...) :
     add prompt to detach the source in EditablePlugIn
@@ -129,7 +131,7 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * Statistic tools : clean code, extend capabilities, null handling
   * Fix dialog box in PlanarGraphPlugIn
   * Fix #438 Exception while saving the project before closing application
-  * Fix bug #439 MakeValid now uses SymDifference instead of difference to
+  * Fix #439 MakeValid now uses SymDifference instead of difference to
     repair overlapping holes (which corresponds what is displayed on screen)
   * Fix #442 Missing unsaved layers warning in SaveProjectPlugIn
   * Fix #441 Missing file overwrite warning in SaveLayersWithoutDataSourcePlugIn
@@ -138,6 +140,8 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * #447 fix illegal character writing in jml
   * fix #440 about shift-selection problem between layerView and attributePanel
   * fix #449 severe regression in "save project as" introduced in r5178
+  * fix #450: Zoombar/Edittoolbox checkbox menu item de-synchronized when
+        toolbar is closed manually
 
   PLUS edition
   * upgrade set-attribute plugin to v0.7.1
@@ -163,6 +167,9 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
     - Rewrite color panel to extend to 255 autocad Index colors
     - Tooltips now show correct color in 3 ways: 
       autocad Index color, hexadecimal and decimal RGB
+  * Update Aggregation extension to 0.2.10 (fix bug in dialog initialization)
+  * PLUS add Map Coloring Plugin 0.5 (style by Five Color Theorem)
+  * Upgrade GraphToolBox to 0.4.0 for PLUS version
 
 
 Version 1.9.1 release rev.4840 (released on 13. March 2016)
