@@ -1,7 +1,6 @@
 package org.openjump.core.ui.swing.wizard;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
 import org.openjump.swing.listener.InvokeMethodListSelectionListener;
@@ -41,25 +41,20 @@ public class WizardGroupDialog extends WizardDialog implements WizardContext,
     groupSelectList = new JList(new DefaultListModel());
     groupSelectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     groupSelectList.setVisibleRowCount(-1);
+    // alternate way to force a specific width, currently unused
+    // groupSelectList.setFixedCellWidth(100);
     groupSelectList.setLayoutOrientation(JList.VERTICAL);
-    groupSelectList.setCellRenderer(new WizardGroupListCellRenderer());
+    // let's wrap long description via custom renderer
+    ListCellRenderer renderer = new WrappingWizardGroupListCellRenderer();
+    groupSelectList.setCellRenderer(renderer);
     groupSelectList.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     groupSelectList.addListSelectionListener(new InvokeMethodListSelectionListener(
       this, "updateSelectedWizard"));
 
-    JScrollPane groupScrollPane = new JScrollPane(){
-      // limit min/max width when displayed
-      @Override
-      public Dimension getPreferredSize() {
-        Dimension d = super.getPreferredSize();
-        if (d.width > 125)
-          d.width = 125;
-        else if ( d.width < 75 )
-          d.width = 75;
-        return d;
-      }
-    };
+    JScrollPane groupScrollPane = new JScrollPane();
     groupScrollPane.setViewportView(groupSelectList);
+    // disable horizontal scrolling
+    groupScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
     add(groupScrollPane, BorderLayout.WEST);
   }

@@ -74,6 +74,7 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
 
     WorkbenchFrame workbenchFrame = context.getWorkbenchFrame();
     String name = getName();
+    // dialog = null;
     if (dialog == null) {
       dialog = new WizardGroupDialog(workbenchContext, workbenchFrame, name);
 
