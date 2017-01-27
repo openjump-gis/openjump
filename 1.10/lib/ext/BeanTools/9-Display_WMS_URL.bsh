@@ -1,0 +1,27 @@
+//////////////////////////////////////////////////////////////
+// This script has been written by Jukka Rahkonen
+// and improved by Michaël Michaud
+// It display the full URL address of a WMS service
+// 2011-09-02
+//////////////////////////////////////////////////////////////
+import com.vividsolutions.jump.workbench.model.WMSLayer;
+import com.vividsolutions.jump.workbench.ui.ErrorDialog;
+
+
+url = null;
+
+// Find first selected WMS layer
+it = wc.layerNamePanel.selectedNodes(WMSLayer.class).iterator();
+if (it.hasNext()) {
+    url = it.next().createRequest(wc.getLayerViewPanel()).getURL();
+}
+// If no WMS layer is selected, find first WMS layer of the project
+else {
+    it = wc.getLayerManager().getLayerables(WMSLayer.class).iterator();
+    if (it.hasNext()) {
+        url = it.next().createRequest(wc.getLayerViewPanel()).getURL();
+    }
+}
+if (url != null) ErrorDialog.show(wc.workbench.frame, "URL of requested WMS", url.toString().substring(0, 64), url.toString().replaceAll("(\\?)|(&)","$1$2\n"));
+// If no WMS layer has been found, through an error message
+else ErrorDialog.show(wc.workbench.frame, "URL of requested WMS", "No WMS Layer found in the project", "");

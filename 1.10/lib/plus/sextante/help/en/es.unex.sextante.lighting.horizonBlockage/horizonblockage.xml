@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the horizon blocking line, that is, the location of the visible horizon in all directions from a given point." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* http://freegeographytools.com/2007/assessing-terrain-effects-on-gps-accuracy" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="a Digital Elevation Model. " description="Elevation" type="3">
+		</element>
+		<element name="POINT" text="The coordinates of the center point representing a emitter/receiver" description="Coordinates of emitter/receiver" type="3">
+		</element>
+		<element name="HEIGHT" text="Height of the emitter/receiver." description="Height of emitter/receiver" type="3">
+		</element>
+		<element name="RADIUS" text="Maximum distance from emitter to horizon (i.e. maximum visibility distance)" description="Radius" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="GRAPHDIST" text="a graph showing the distance to the topographic horizon from the observer's position as a function of direction (azimuth) ." description="Distance" type="2">
+			<image description="" file="hor_vis_distancia.jpg">
+			</image>
+		</element>
+		<element name="RESULT" text="A vector layer with the contour of the visible horizon" description="Horizon" type="2">
+			<image description="" file="horizonte_visible_salida.jpg">
+			</image>
+		</element>
+		<element name="GRAPHSLOPE" text="Graph window showing the horizon blocking angle (altitude) as a function of direction (azimuth)." description="Angle" type="2">
+			<image description="" file="hor_vis_angulo.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

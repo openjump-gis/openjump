@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="Principal component analysis (PCA) is a mathematical procedure that uses an orthogonal transformation to convert a set of observations of possibly correlated variables into a set of values of uncorrelated variables called principal components. The number of principal components is less than or equal to the number of original variables. This transformation is defined in such a way that the first principal component has as high a variance as possible (that is, accounts for as much of the variability in the data as possible), and each succeeding component in turn has the highest variance possible under the constraint that it be orthogonal to (uncorrelated with) the preceding components&#10;&#10;In the case of applying this technique to an image with several bands, a new image with a lower number of bands is generated, and redundancy in the data set can be reduced." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="Examples of Principal Components Analysis to land use change detection&#10;&#10;* T. Fung and E. LeDrew. Application of principal component analysis to change detection. Photogrammetric Engineering and Remote Sensing, 53(12):1649&#8211;1658, 1987.  &#10;&#10;* G. F. Byne, P. F. Crapper, and K. K. Mayo. Monitoring land-cover change by principal component analysis of multitemporal landsat data. Remote Sensing of Environment, 10:175&#8211;184, 1980." description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The set of input bands." description="Input bands" type="3">
+		</element>
+		<element name="NBANDS" text="Number of bands of the resulting image. Must be lower or equal to the number of input bands." description="Numero_bandas" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="A new raster layer with the specified number of bands. The first one is the band that explains the largest amount of variance." description="Principal Components Analysis" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates an accumulated cost surface from an unitary cost layer, assuming that the cost is anisotropic (the cost of crossing each cell is not the same one in all directions). The value in each result cell is the cost up to the closest destination point." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="COST" text="Values in this layer represent the cost of crossing each cell in the maximum cost direction" description="Maximum unitary cost" type="3">
+		</element>
+		<element name="COSTDIR" text="Values in this layer represents the direction of maximum cost in degrees, counting clockwise from north. " description="Direction of maximum cost[degrees]" type="3">
+		</element>
+		<element name="FEATURES" text="Destination points are represented as cells with any valid value. Remaining cells must have the no-data value." description="Origin/destination points" type="3">
+		</element>
+		<element name="THRESHOLD" text="" description="Threshold for route separation" type="3">
+		</element>
+		<element name="KFACTOR" text="The constant K in the following equation controls the way in which, from the maximum cost value (Fs)  and the direction of maximum cost, the cost of moving in any other direction is computed." description="K" type="3">
+			<image description="" file="costeAcumAnisotropico_ecuacion.jpg">
+			</image>
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="ACCCOST" text="The accumulated cost surface, containing the cost of moving to the closest destination point." description="Accumulated cost" type="2">
+		</element>
+		<element name="CLOSESTPOINT" text="The values in this layer indicate the number that identifies the closest point. Cells with the same values in this layer have the same destination point as their closest one." description="Closest points" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

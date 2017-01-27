@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm quantifies the aggregation of similar values in a raster layer, using the index defined by Hong et al., 1991.&#10;&#10;Here is an example: The following figure shows two tables that represent two small raster layers. Both contain the same values, with the same average and standard deviation. However, the cells with similar values are grouped on the first layer while on the second one they are scattered. The aggregation index measures the degree of grouping." description="Description" type="0">
+			<image description="" file="indice_de_agregacion.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="* He, H. S., DeZonia, B., Mladenoff, D. J. 2000. An aggregation index to quantify spatial patterns of landscapes. Landscape Ecology 15: 590-602 &#10;* http://web.missouri.edu/~umcsnrlandis/lab/he2000b.pdf" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The input categorical layer." description="Layer" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The table shows information about each class, including the aggregation index. Values of this index vary between 0 (the less compact configuration ) and 1 (the most compact)." description="Aggregation index" type="2">
+			<image description="New table Aggregation Index" file="indice_de_agregacion2.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
