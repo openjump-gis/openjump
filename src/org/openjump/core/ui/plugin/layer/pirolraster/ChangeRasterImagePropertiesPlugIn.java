@@ -41,7 +41,8 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * @version Jul 03 2015 [Giuseppe Aruta] - Renamed plugin name to "Change Style"
  * @version Jul 06 2015 [Giuseppe Aruta] - correct bug when Largest scale
  *          >Smallest scale
- * @version Nov 14 2015 [Giuseppe Aruta] - chosen colorset is stored into the Blackboard            
+ * @version Nov 14 2015 [Giuseppe Aruta] - chosen colorset is stored into the Blackboard
+ * @version Jan 27 2017 [Michaël Michaud] - fix close dialog problem
  */
 @SuppressWarnings("deprecation")
 public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
@@ -161,9 +162,10 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
         });*/
         // Add to prevent error message and OJ to freeze if Large scale>Small
         // scale
+        // deactivate this patch, scale problem has been solved in #433
         // Now the only way to close this dialog is using cancel button
+        //dialog.setDefaultCloseOperation(dialog.DO_NOTHING_ON_CLOSE);
 
-        dialog.setDefaultCloseOperation(dialog.DO_NOTHING_ON_CLOSE);
         dialog.pack();
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);

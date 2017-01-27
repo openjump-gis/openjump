@@ -142,6 +142,7 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * fix #449 severe regression in "save project as" introduced in r5178
   * fix #450: Zoombar/Edittoolbox checkbox menu item de-synchronized when
         toolbar is closed manually
+  * fix #453 about closing ChangeRasterStyle dialog (related to #433)
 
   PLUS edition
   * upgrade set-attribute plugin to v0.7.1
