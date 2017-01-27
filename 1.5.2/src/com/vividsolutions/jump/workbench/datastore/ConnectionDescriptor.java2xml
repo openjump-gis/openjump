@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<root>
-  <element xml-name="name" java-name="name"/>
-  <element xml-name="dataStoreDriverClassName" java-name="dataStoreDriverClassName"/>
-  <element xml-name="parameterList" java-name="parameterListWithObfuscatedPassword"/>
-</root>
