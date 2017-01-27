@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm creates a shaded relief image layer from a DEM. " description="Description" type="0">
+			<image description="" file="Relieve sombreado.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model." description="DEM" type="3">
+		</element>
+		<element name="METHOD" text="the method to use may be selected from the following:&#10;* Standard&#10;* Standard (max 90&#186;)&#10;* Combined" description="Method" type="3">
+		</element>
+		<element name="DECLINATION" text="Sun elevation angle above the horizon. In degrees, and ranging from 0 to 90." description="Sun elevation angle [degrees]" type="3">
+		</element>
+		<element name="AZIMUTH" text="Azimuth angle of the Sun. The azimuth is expressed in positive degrees from 0 to 360, measured clockwise from north." description="Sun azimuthal angle [degrees]" type="3">
+		</element>
+		<element name="EXAGGERATION" text="Use this to exaggerate the relief and get a more dramatic effect if flat terrains." description="Exaggeration" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="SHADED" text="The resulting shaded relief layer." description="Shaded relief" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

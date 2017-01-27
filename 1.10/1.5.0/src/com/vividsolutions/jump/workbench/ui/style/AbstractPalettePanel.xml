@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<basic-styles>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>0, 180, 0, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>0, 125, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>180, 0, 0, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>125, 0, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>0, 180, 180, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>0, 125, 125, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>152, 78, 163, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>106, 54, 114, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>255, 127, 0, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>178, 88, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>255, 255, 51, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>178, 178, 35, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>255, 192, 0, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>178, 134, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>204, 204, 255, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>0, 0, 255, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>255, 204, 204, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>255, 0, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>204, 255, 204, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>0, 170, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="false">
+      <color>227, 26, 28, 255</color>
+    </fill>
+    <line enabled="true" width="4">
+      <color>227, 26, 28, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="false">
+      <color>55, 125, 184, 255</color>
+    </fill>
+    <line enabled="true" width="4">
+      <color>55, 125, 184, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="false">
+      <color>77, 175, 74, 255</color>
+    </fill>
+    <line enabled="true" width="4">
+      <color>77, 175, 74, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="false">
+      <color>255, 224, 104, 255</color>
+    </fill>
+    <line enabled="true" width="4">
+      <color>255, 153, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="false">
+      <color>152, 78, 163, 255</color>
+    </fill>
+    <line enabled="true" width="4">
+      <color>106, 54, 114, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="false">
+      <color>0, 0, 0, 0</color>
+    </fill>
+    <line enabled="true" width="4">
+      <color>0, 0, 0, 0</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>166, 86, 40, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>116, 60, 28, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>247, 129, 191, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>172, 90, 133, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>0, 255, 0, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>0, 178, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>255, 0, 0, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>178, 0, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>0, 0, 255, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>0, 0, 178, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>0, 255, 255, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>0, 178, 178, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>255, 0, 255, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <color>178, 0, 178, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="false">
+      <color>0, 0, 0, 255</color>
+    </fill>
+    <line enabled="true" width="1">
+      <pattern enabled="true">2,2</pattern>
+      <color>0, 0, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="false">
+      <color>0, 0, 255, 255</color>
+    </fill>
+    <line enabled="true" width="2">
+      <pattern enabled="true">3,3</pattern>
+      <color>0, 0, 255, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="false">
+      <color>255, 0, 0, 255</color>
+    </fill>
+    <line enabled="true" width="2">
+      <pattern enabled="true">3,3</pattern>
+      <color>255, 0, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>226, 226, 255, 255</color>
+    </fill>
+    <line enabled="true" width="2">
+      <pattern enabled="true">3,3</pattern>
+      <color>0, 0, 255, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+  <basic-style enabled="true">
+    <fill enabled="true">
+      <color>255, 226, 226, 255</color>
+    </fill>
+    <line enabled="true" width="2">
+      <pattern enabled="true">3,3</pattern>
+      <color>255, 0, 0, 255</color>
+    </line>
+    <alpha>255</alpha>
+  </basic-style>
+</basic-styles>

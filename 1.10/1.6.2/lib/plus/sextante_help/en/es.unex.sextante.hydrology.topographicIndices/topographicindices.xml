@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates three topographic indices, namely LS Factor, Topographic Wetness Index and Stream Power Index." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="SLOPE" text="Slope in radians" description="Slope" type="3">
+		</element>
+		<element name="ACCFLOW" text='Flow accumulation layer. Units should be areal units, so the "weight" field should not be used in the "flow accumulation" algorithm' description="Flow accumulation" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="SPI" text="This index is related to soil erosion processes and evaluates the kinetic energy of water flows passing through each cell" description="Stream Power Index" type="2">
+			<image description="" file="indice_de_potencia_de_cauce.jpg">
+			</image>
+		</element>
+		<element name="TWI" text="This index is related to soil wetness and reflects the soil tendency to accumulate water due to its topographic position and its slope" description="Topographic Wetness Index (TWI)" type="2">
+			<image description="" file="indice_de_humedad_topografica.jpg">
+			</image>
+		</element>
+		<element name="LS" text="The LS factor from the popular Universal Soil Loss Equation (USLE)." description="LS factor" type="2">
+			<image description="" file="factor_ls.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

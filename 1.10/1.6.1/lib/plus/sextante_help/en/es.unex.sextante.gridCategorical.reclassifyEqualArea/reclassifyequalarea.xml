@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm classifies a grid in a given number of classes, in such a way that all classes occupy the same area. Each class interval has a different range, selected to meet the area criteria entered by the user." description="Description" type="0">
+			<image description="Input layer" file="dividir_n_clases_area_entrada.jpg">
+			</image>
+			<image description="Reclassify layer" file="diviidir_n_clases_area_salida.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The input raster layer." description="Layer" type="3">
+		</element>
+		<element name="CLASSAREA" text="The number of cells in each class." description="Class area(cells)" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RECLASS" text="The reclassified layer. Classes are number starting from 1, with consecutive integers." description="Reclassify" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

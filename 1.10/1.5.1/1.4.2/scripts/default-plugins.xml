@@ -1,0 +1,142 @@
+<workbench>
+	<!---  ======================================== /-->
+	<!--  			menu FILE 						/-->
+	<!--- ========================================= /-->	
+	<plug-in>org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn</plug-in>
+	<!---  ======================================== /-->
+	<!--  			menu EDIT 						/-->
+	<!--- ========================================= /-->
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectItemsByCircleFromSelectedLayersPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectByTypePlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.SelectLayersWithSelectedItemsPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayerInFence</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edit.ClipToFencePlugIn</plug-in>
+	<!---  ======================================== /-->
+	<!--  			menu VIEW 						/-->
+	<!--- ========================================= /-->		
+	<plug-in>org.openjump.core.ui.plugin.edit.CopyBBoxPlugin</plug-in>
+	<!---  ======================================== /-->
+	<!--  			menu LAYER 						/-->
+	<!--- ========================================= /-->	
+	<!--- =========  Sort Categories =============  /-->
+	<plug-in>org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.layer.SortCategoryByNamePlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.layer.SortCategoryRestorePlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.layer.SortCategorySavePlugIn</plug-in>		
+	<!---  ======================================== /-->
+	<!--  			menu Tools 						/-->
+	<!--- ========================================= /-->
+	<!--- =========  Query ====================  /-->
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialQueryPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.AttributeQueryPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.queries.SimpleQueryPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.queries.SearchAllAttributes</plug-in>	
+	<!--- =========  Analysis ====================  /-->
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.PlumePlugIn</plug-in>
+	
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.ConvexHullPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.ConvexHullPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.OverlayPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn</plug-in>
+	<!--plug-in>org.openjump.core.ui.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn</plug-in-->
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn</plug-in>
+	
+	<!--- =========  Statistics ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn</plug-in>
+	<!--- =========  Generate ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.test.RandomTrianglesPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.test.RandomArrowsPlugIn</plug-in>
+	<!--- =========  WARP ====================  /-->
+	<plug-in>com.vividsolutions.jump.workbench.ui.warp.WarpingPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn</plug-in>	
+	<!--- =========  QA ====================  /-->	
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.ValidateSelectedLayersPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.LayerStatisticsPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.FeatureStatisticsPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.plugin.qa.DiffGeometryPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn</plug-in>	
+	<!--- =========  Edit Geometry ====================  /-->
+	<!--- =========  Edit Geometry - Convert ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.tools.geometrychange.ExtractPointsPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn</plug-in>			
+	<plug-in>com.vividsolutions.jump.plugin.edit.ExtractSegmentsPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.plugin.edit.PolygonizerPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.tools.PlanarGraphPlugIn</plug-in>
+	<!--- =========  Edit Geometry ====================  /-->
+	<plug-in>de.soldin.jumpcore.geomconv.GCPlugin</plug-in>
+	<plug-in>com.vividsolutions.jump.plugin.edit.LineNoderPlugIn</plug-in>	
+	<plug-in>com.vividsolutions.jump.plugin.edit.PrecisionReducerPlugIn</plug-in>
+	<plug-in>com.vividsolutions.jump.plugin.edit.AffineTransformationPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.MergeTwoSelectedPolygonsPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.analysis.onelayer.MergeSelectedPolygonsWithNeighbourPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn</plug-in>	
+	<!--- =========  Edit Attributes ====================  /-->		
+	<!--plug-in>org.openjump.core.ui.plugin.tools.ReplaceValuePlugIn</plug-in-->
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn</plug-in>
+	<plug-in>de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn</plug-in>
+	<!--- =========  Generalization ====================  /-->	
+	<plug-in>org.openjump.core.ui.plugin.tools.LineSimplifyJTS15AlgorithmPlugIn</plug-in>	
+	<!--plug-in>org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn</plug-in-->
+	<plug-in>org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn</plug-in>	
+	<!--- =========  other ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn</plug-in>
+	<!---  ======================================== /-->
+	<!--  		 	RASTER 					        /-->
+	<!--- ========================================= /-->
+	<plug-in> org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn</plug-in>
+ 	<plug-in> org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn</plug-in>
+ 	<plug-in> org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn</plug-in>
+ 	<plug-in> org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn</plug-in>
+	<!---  ======================================== /-->
+	<!--  			CUSTOMIZE 						/-->
+	<!--- ========================================= /-->
+	<!--plug-in>de.latlon.deejump.plugin.manager.ExtensionManagerPlugIn</plug-in-->	
+	<plug-in>com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.customize.BeanToolsPlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.customize.PythonToolsPlugIn</plug-in>	
+	<!---  ======================================== /-->
+	<!--  			RIGHT CLICK 					/-->
+	<!--- ========================================= /-->
+	<!--- =========  MapWindow ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.mousemenu.RotatePlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn</plug-in>	
+	<plug-in>org.openjump.core.ui.plugin.tools.JoinTablePlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn</plug-in>	
+	<!--- =========  EditTools ====================  /-->
+	<plug-in>org.openjump.core.ui.plugin.edittoolbox.CutPolygonSIGLEPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn</plug-in>
+	<plug-in>org.openjump.core.ui.plugin.edittoolbox.NoteToolPlugIn</plug-in>
+	<!--- =========  LayerNamePanel ==============  /-->
+	<plug-in>org.openjump.core.ui.plugin.datastore.EditDataStoreQueryPlugIn</plug-in>
+	<!---  ======================================== /-->
+	<!--  			OTHER 							/-->
+	<!--- ========================================= /-->
+	<!--plug-in>org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn</plug-in-->	
+</workbench>
+

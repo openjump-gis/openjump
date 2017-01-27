@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm converts HIS format to RGB format" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYERH" text="The layer with the hue band" description="H layer" type="3">
+		</element>
+		<element name="BANDH" text="The band in the hue layer with hue values" description="H band" type="3">
+		</element>
+		<element name="LAYERI" text="The layer with the intensity band" description="I layer" type="3">
+		</element>
+		<element name="BANDI" text="The band in the intensity layer with intensity values" description="I band" type="3">
+		</element>
+		<element name="LAYERS" text="The layer with the saturation band" description="S layer" type="3">
+		</element>
+		<element name="BANDS" text="The band in the saturation layer with saturation values" description="S band" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="Three monoband layers, each one with one of the RGB values" description="Description" type="2">
+		</element>
+		<element name="R" text="The layer with red intensity values" description="R" type="2">
+		</element>
+		<element name="G" text="The layer with green intensity values" description="G" type="2">
+		</element>
+		<element name="B" text="The layer with blue intensity values" description="B" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

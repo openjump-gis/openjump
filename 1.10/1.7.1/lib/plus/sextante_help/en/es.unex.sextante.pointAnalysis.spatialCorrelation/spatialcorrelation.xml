@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm analyses the spatial autocorrelation of a variable in a set of points.&#10;&#10;Autocorrelation is measured using the following indices:&#10;* Moran Index&#10;* Geary Index&#10;* Semivariance&#10;&#10;These indices are computer for distances ranging from zero to the maximum distance between points in the input layer&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="POINTS" text="The input points layer" description="Points" type="3">
+		</element>
+		<element name="FIELD" text="The field that contains the variable to analyze." description="Field" type="3">
+		</element>
+		<element name="INTERVAL" text="Spatial autocorrelation measures are computed at certain distances. This parameter indicates the interval to be used to select those distances. " description="Distance interval" type="3">
+		</element>
+		<element name="CREATECLOUD" text="* if this option is selected, a table is created with all the distances and semivariances between points" description="Create table with variogram cloud" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="a table with the following fields:&#10;* Distance&#10;* Moran Index at that distance&#10;* Geary Index at that distance&#10;* Semivariance at that distance" description="Spatial autocorrelation" type="2">
+			<image description="" file="autocorrelacion_espacial.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

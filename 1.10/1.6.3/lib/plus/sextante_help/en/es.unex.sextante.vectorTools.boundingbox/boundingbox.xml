@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm generates a new vector layer with a single polygon representing the bounding box of an input vector layer." description="Description" type="0">
+			<image description="Figure: Bounding Box example" file="boundingbox.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="Related words: envelope, boundary" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Juan Ignacio Varela (Nacho Uve)" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya and Nacho Varela" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The input layer" description="Layer" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The output layer with just a single polygon which defines the bounding box of the input layer" description="Bounding Box" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

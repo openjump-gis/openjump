@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="Resamples a raster layer to a lower resolution, aggregating the values of a group of cells.&#10;&#10;This should be used in any case in which and a normal resampling will result in wrong values in the resulting layer, such as, for instance, if the variable contained in the input layer is the number of elements of a given class in each cell." description="Description" type="0">
+			<image description="An example of aggregation. The input layer a) contains the number of individuals found in each cell. A normal resampling will yield wrong values (b). Using the aggregation algorithm with the 'add' method will yield the correct output layer with a coarser resolution (c)" file="agregar.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="GRID" text="input layer." description="Layer" type="3">
+		</element>
+		<element name="METHOD" text="The aggregation operation to use &#10;* Add&#10;* Maximum&#10;* M&#237;nimum&#10;" description="Method" type="3">
+		</element>
+		<element name="SIZE" text="The relation between the cellsize of the input layer and the one of the result layer. A value of 2 will cause the output layer to have a cellsize twice the cellsize of the input one, and each cell will represent the aggregated value of the 4 cells in a 2 by 2 window." description="Aggregation factor" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The aggregated layer" description="Aggregated layer" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

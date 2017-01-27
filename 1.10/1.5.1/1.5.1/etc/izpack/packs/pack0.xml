@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+
+<installation version="1.0">
+  <packs>
+    <pack name="OpenJUMP" required="yes">
+      <description>The core files needed for the application</description>
+      <!--file src="test.zip" targetdir="${INSTALL_PATH}" override="true" unpack="true"/-->
+      <fileset dir="pack0" targetdir="${INSTALL_PATH}" override="true"/>
+      <file src="res/postinstall.sh" targetdir="$INSTALL_PATH/bin/" condition="izpack.linuxinstall|izpack.macinstall"/>
+      <executable targetfile="$INSTALL_PATH/bin/postinstall.sh" stage="postinstall" keep="false" condition="izpack.linuxinstall|izpack.macinstall"/>
+      <file src="res/macinstall.sh" targetdir="$INSTALL_PATH/bin/" condition="izpack.macinstall"/>
+      <executable targetfile="$INSTALL_PATH/bin/macinstall.sh" stage="postinstall" keep="false" condition="izpack.macinstall"/>
+    </pack>
+  </packs>
+</installation>

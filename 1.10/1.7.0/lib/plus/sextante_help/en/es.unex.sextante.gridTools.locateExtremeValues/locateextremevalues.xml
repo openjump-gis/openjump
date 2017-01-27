@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="Given a polygon vector layer and a raster layer, this algorithm calculates the cell with the highest value from all the ones contained inside each polygon. The result of this algorithm is a points layer with as many points as polygons are in the input polygon layer, each of them representing the location of the maximum value for the corresponding polygon. That maximum value is stored in the attributes table associated to the vector layer.&#10;" description="Descripci&#243;n" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Informaci&#243;n adicional" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="V&#237;ctor Olaya" description="Algoritmo creado por" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya" description="Ayuda creada por" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="Notas de usuario" type="0">
+		</element>
+		<element name="POLYGONS" text="A vector layer with polygons. A point will be created for each polygon." description="Pol&#237;gonos" type="3">
+		</element>
+		<element name="GRID" text="The raster layer that contains the values to analyze" description="Grid" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Descripci&#243;n general" type="2">
+		</element>
+		<element name="RESULT" text="A points layer with points representing the location of the higuest value cell for each input polygon." description="Pol&#237;gonos" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

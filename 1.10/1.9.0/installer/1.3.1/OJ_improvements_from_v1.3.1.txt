@@ -1,0 +1,98 @@
+1) for past changes see here: 	http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/core/trunk/ChangeLog?view=markup
+ 
+2) Known issues and bugs can be found here: 
+	http://sourceforge.net/tracker/?group_id=118054&atid=679906 
+
+
+The OpenJUMP version 1.3.1 is primarily a maintenance release to solve a problem with the tiff image file export. So there are is only one new feature for working with PostGIS queries, compared to version 1.3.
+
+
+3) Highlights of new functionality in OpenJUMP 1.3.1 compared to Version 1.2F:
+=============================================================================
+- new (cartographic) attribute classification methods for color theming.
+  (added to equal number and quantiles: i) mean-standard deviation, 
+  ii) maximal breaks, iii) Jenks optimal)
+
+- new function that generates a layer attribute statistics table (integrated from PirolJUMP)
+
+- Jython/Python support as second scripting possibility besides BeanShell (integrated from SkyJUMP)
+
+- new raster image reader that allows to directly use Sextante raster/image analysis tools (integrated from PirolJUMP)
+
+- the list of functions available in the "tools" menu is now configurable with the file "default-plugins.xml"
+
+- new function that allows searching in all attribute values over all layers
+
+- new function to simplify polygon within a tesselation/landscape of polygons
+
+- new tool that allows to add notes in the Editing toolbox
+
+- new Auto-Complete-Polygon tool
+
+- new snychronization function for map views for panning and zooming operations
+
+- ...for more new functions see below...
+
+4) Detailed Bugfixes and Improvements between release of OpenJUMP 1.3.1 and 1.3
+(note, latest changes are written on top. So we recommend to read upside down)
+=================================================================
+
+from the SVN history:
+* Added hungarian language file
+* made the Scale Style Panel smaller (ScaleStylePanel)
+* added some API methods for FeatureSchema analysis and copying to make life easier (package apitools)
+* solved character encoding problems for UTF8
+
+from the regular log entries:
+
+2009-12-05 michaudm <michael.michaud@free.fr>
+	   * srid parameter for the view or the fence
+          
+2009-12-04 mentaer <sstein@geo.unizh.ch>
+        changed OJ Version to 1.3.1 to prepare new release
+        
+2009-12-03 mentaer <sstein@geo.unizh.ch>
+        Fixed problem with Pirol world file writer. Tiff images were shifted by
+        0.5 pixel since the coords have been taken directly from the envelope
+        and not adjusted for the pixel center. 
+        
+2009-11-22 michaudm <michael.michaud@free.fr>
+        * now possible to add a ${view} or ${fence} parameter to limit the query
+          to the wiew or to the fence
+
+2009-07-07 stranger <schmitz@lat-lon.de>
+        Fixed yet another dangling progress window.
+
+2009-06-25 stranger <schmitz@lat-lon.de>
+        Workaround to get correct namespace bindings in SLD output documents
+        using recent Java versions.
+
+2009-05-17 mentaer <sstein@geo.unizh.ch>
+        Added Patch to remove compiling dependence to the proprietary
+        ermapper.jar by Sascha Teichman. However, the change will allow
+        to use the ermapper jar and dlls during OJ runtime.
+
+2009-05-16 michaudm <michael.michaud@free.fr>
+    Optimization for large selection deletion :
+        * optimize FeatureDataset.removeAll, using FID for removeAll method
+        * optimize EditTransaction.setGeometries(), creating an index on the fly
+    Fixed an issue throwing IndexOutOfBoundException in ViewSchemaPlugIn
+    Reformatting and cleaning of shapefile.PolygonHandler
+
+2009-05-12 stranger <schmitz@lat-lon.de>
+        Fixed accidental double encoding of layer names.
+
+2009-04-23 michaudm <michael.michaud@free.fr>
+    Fix a bug in findCWHoles. Could create a 'outer hole' because the test to
+    check if a ring contains another ring was a quick and dirty test.
+
+2009-04-23 michaudm <michael.michaud@free.fr>
+    Fixed issue related to "Newly created layers are marked with
+    featureCollectionModified=true" (see 2009-02-20) :
+    need to set layerManager.setFiringEvents(false) during layer loading in
+    AddDataStoreLayerPlugIn.
+    Note that there is duplicated code since addition of the new
+    AddDataStoreLayerWizard (see issue fixed on 2009-04-05)
+
+2009-04-20 Andreas Schmitz <schmitz@lat-lon.de>
+    Fixed proper disposal of progress dialog (TaskMonitor).

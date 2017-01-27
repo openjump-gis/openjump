@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm takes a points layer and generates a new layer with those same points, but adding two new fields (X and Y) to its attributes table, containing X and Y coordinates of each point" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="V&#237;ctor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The input points layer" description="Points layers" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting layer with coordinates" description="Points" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

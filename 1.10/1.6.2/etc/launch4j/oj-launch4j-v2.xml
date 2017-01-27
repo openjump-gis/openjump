@@ -1,0 +1,34 @@
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>Y:\projekte\gps\proj_oj-core_svn\etc\launch4j\Exec.jar</jar>
+  <outfile>Y:\projekte\gps\proj_oj-core_svn\scripts\OpenJUMP.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine>cmd /C start cmd /C call oj_windows.bat</cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <customProcName>false</customProcName>
+  <stayAlive>true</stayAlive>
+  <manifest></manifest>
+  <icon>Y:\projekte\gps\proj_oj-core_svn\icon\openjump_icon3.ico</icon>
+  <jre>
+    <path></path>
+    <minVersion>1.5.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+  </jre>
+  <versionInfo>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0.0.0</txtFileVersion>
+    <fileDescription>OpenJUMP native windows launcher</fileDescription>
+    <copyright>oj team</copyright>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0.0.0</txtProductVersion>
+    <productName>OpenJUMP</productName>
+    <companyName>openjump.org</companyName>
+    <internalName>OpenJUMP</internalName>
+    <originalFilename>OpenJUMP.exe</originalFilename>
+  </versionInfo>
+</launch4jConfig>

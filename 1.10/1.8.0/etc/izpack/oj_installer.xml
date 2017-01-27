@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+
+<installation version="1.0">
+  <!-- Ant properties in this file can be referenced with @{}, otherwise 
+    use variables below in installer files with ${} -->
+  <info>
+    <appname>OpenJUMP</appname>
+    <appversion>@version@ rev.@revision@ @edition@</appversion>
+    <appsubpath>OpenJUMP-@version@-r@revision@-@edition@</appsubpath>
+    <authors>
+      <author email="jump-pilot-devel@lists.sourceforge.net" name="jump pilot project" />
+    </authors>
+    <url>http://openjump.org/</url>
+    <uninstaller path="${INSTALL_PATH}/uninstall" write="yes" />
+    <javaversion>1.5</javaversion>
+    <run-privileged
+      condition="izpack.windowsinstall.xp|izpack.windowsinstall.2003|izpack.windowsinstall.vista|izpack.windowsinstall.7" />
+    <summarylogfilepath>
+      $INSTALL_PATH/uninstall/InstallSummary.htm
+    </summarylogfilepath>
+    <!--><pack200/>--> 
+  </info>
+
+  <!-- Flexible and in the screen proportions -->
+  <guiprefs height="520" resizable="yes" width="800">
+    <modifier key="langDisplayType" value="native" />
+    <!-- GUI addaption for more informations see "Modifying the GUI" in the 
+      documentation -->
+    <modifier key="layoutAnchor" value="CENTER" />
+    <modifier key="headingPanelCounter" value="progressbar" />
+    <modifier key="headingPanelCounterPos" value="inNavigationPanel" />
+    <modifier key="allYGap" value="4" />
+    <modifier key="paragraphYGap" value="0" />
+    <modifier key="filler1YGap" value="5" />
+    <modifier key="filler3XGap" value="10" />
+  </guiprefs>
+
+  <variables>
+    <variable name="DesktopShortcutCheckboxEnabled" value="true" />
+    <variable name="ApplicationShortcutPath" value="ApplicationShortcuts" />
+    <!--variable name="AppFolderName" value="OpenJUMP-@version@-r@revision@-@edition@" /-->
+  </variables>
+
+
+  <!--conditions>
+    <condition type="exists" id="ecwlinux32">
+      <file>lib/native/ecw-gvsig1.11-linux32.tar.gz</file>
+    </condition>
+  </conditions-->
+
+  <!-- We include every langpack -->
+  <locale>
+    <langpack iso3="eng" />
+    <langpack iso3="fra" />
+    <langpack iso3="deu" />
+    <langpack iso3="ita" />
+    <langpack iso3="jpn" />
+    <langpack iso3="spa" />
+    <langpack iso3="dan" />
+    <langpack iso3="ell" />
+    <langpack iso3="cat" />
+    <langpack iso3="ned" />
+    <langpack iso3="fin" />
+    <langpack iso3="swe" />
+    <langpack iso3="por" />
+    <langpack iso3="pol" />
+    <langpack iso3="rus" />
+    <langpack iso3="ukr" />
+    <langpack iso3="hun" />
+    <langpack iso3="svk" />
+    <langpack iso3="rom" />
+    <langpack iso3="mys" />
+    <langpack iso3="nor" />
+    <langpack iso3="chn" />
+    <langpack iso3="scg" />
+    <langpack iso3="cze" />
+    <langpack iso3="kor" />
+    <langpack iso3="glg" />
+  </locale>
+
+  <resources>
+    <res id="TargetPanel.dir.mac_os_x" src="targetdir.macosx.conf" />
+    <res id="TargetPanel.dir.macosx" src="targetdir.macosx.conf" />
+
+    <!--res src="install-readme.html" id="HTMLInfoPanel.info" / -->
+    <res id="LicencePanel.licence" src="res/gpl-2(nowrap).txt" />
+    <!--res id="InfoPanel.info" src="pack0/readme.txt" /-->
+    <res id="HTMLInfoPanel.info" src="../readme.html" />
+    <!--res id="LicencePanel.licence" src="licenses/gpl-2.txt" encoding="ISO-8859-1"/ -->
+    <res src="shortcuts.xml" id="shortcutSpec.xml" />
+    <res src="shortcuts_unix.xml" id="Unix_shortcutSpec.xml" />
+    <res src="registry.xml" id="RegistrySpec.xml" />
+
+
+    <!-- The resources needed by the various panels -->
+    <res id="Installer.image" src="res/ojlogo-vertical_400px.png" />
+    <res src="res/ojlogo-300px.png" id="installer.langsel.img" />
+    <!--res src="../../../launcher/res/ojlogo-vertical_400px.png" id="Installer.image.0" 
+      /> <res src="../../../launcher/res/ojlogo-vertical_400px.png" id="Installer.image.1" 
+      /> <res src="../../../launcher/res/ojlogo-vertical_400px.png" id="Installer.image.2" 
+      /> <res src="../../../launcher/res/ojlogo-vertical_400px.png" id="Installer.image.3" 
+      /> <res src="../../../launcher/res/ojlogo-vertical_400px.png" id="Installer.image.4" 
+      /> <res src="../../../launcher/res/ojlogo-vertical_400px.png" id="Installer.image.5" 
+      /> <res src="../../../launcher/res/ojlogo-vertical_400px.png" id="Installer.image.6" 
+      /> <res src="../../../launcher/res/ojlogo-vertical_400px.png" id="Installer.image.7" 
+      /> <res src="../../../launcher/res/ojlogo-vertical_400px.png" id="Installer.image.8" 
+      / -->
+  </resources>
+
+  <!-- The panels in a classic order -->
+  <panels>
+    <panel classname="CheckedHelloPanel" id="hellopanel" />
+    <!-- don't use InfoPanel: a combination of iso-8859-1, ant preprocessed html and HTMLInfoPanel let's survive special chars -->
+    <!--panel classname="InfoPanel" id="infopanel" encoding="ISO-8859-1"/-->
+    <panel classname="HTMLInfoPanel" id="infopanel" encoding="ISO-8859-1"/>
+    <panel classname="LicencePanel" id="licensepanel" />
+    <panel classname="TargetPanel" id="targetpanel" condition="!izpack.macinstall"/>
+    <!--panel classname="PacksPanel" id="packspanel" / -->
+    <panel classname="ShortcutPanel" id="shortcutpanel" />
+    <!--panel classname="SummaryPanel" id="summarypanel" / -->
+    <panel classname="InstallPanel" id="installpanel" />
+    <!--panel classname="FinishPanel" id="finishpanel" / -->
+  </panels>
+
+  <!-- The listeners section for CustomActions -->
+  <listeners>
+    <listener installer="SummaryLoggerInstallerListener" />
+    <listener installer="RegistryInstallerListener"
+      uninstaller="RegistryUninstallerListener">
+      <os family="windows" />
+    </listener>
+  </listeners>
+
+  <packs>
+    <refpackset dir="packs" includes="**/*.xml" />
+  </packs>
+
+  <!--natives -->
+  <!-- The native libraries to add -->
+  <native type="izpack" name="ShellLink.dll" />
+  <native type="izpack" name="ShellLink_x64.dll" />
+  <native type="izpack" name="WinSetupAPI.dll" />
+  <native type="izpack" name="WinSetupAPI_x64.dll" />
+  <native type="3rdparty" name="COIOSHelper.dll" stage="both">
+    <os family="windows" />
+  </native>
+  <native type="3rdparty" name="COIOSHelper_x64.dll" stage="both">
+    <os family="windows" />
+  </native>
+  <!--/natives -->
+</installation>

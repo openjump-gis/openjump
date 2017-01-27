@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithms add elevation values to a layer with contour lines, based on the information contained in an additional layer with line  that represent uphill paths.&#10;&#10;For each uphill segment, a starting elevation and an interval value are needed. The algorithm will assign the starting value to the first line crossed by the segment, and the starting value + n times the interval to each n-th line crossed.&#10;&#10;This way, labeling of contour lines can be simplified.&#10;&#10;The direction of uphill segments should correctly reflect the change in elevation. That is, the first point must represent the lowest point, while the last one should represent the highest point.&#10;&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="CONTOURS_LAYER" text="The layer with contour lines" description="Contour lines" type="3">
+		</element>
+		<element name="UPHILL_LAYER" text="The layer with uphill lines." description="Uphill lines" type="3">
+		</element>
+		<element name="CONTOURS_LAYER_FIELD" text="The field in the contour lines layer where elevation values should be set." description="Elevation field" type="3">
+		</element>
+		<element name="UPHILL_LAYER_FIELD" text="The field with the starting height for each uphill line" description="Elevation field" type="3">
+		</element>
+		<element name="UPHILL_LAYER_INTERVAL_FIELD" text="The field with the interval value for each uphill line" description="Interval field" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting layer contains the same lines as the input contour lines one, but with new elevation values in the selected elevation field. For those lines not crossed by any uphill line, the original value is left." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

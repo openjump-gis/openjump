@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm converts a RGB(Red, Green. Blue) image in a HSI (Hue, Saturation, Intensity) one. The three bands needed for input (R,G,B) do not have to belong to the same image (layer)" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="V&#237;ctor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYERR" text="The layer that contains the band with Red values" description="R layer" type="3">
+		</element>
+		<element name="BANDR" text="The band with Red values" description="R band" type="3">
+		</element>
+		<element name="LAYERG" text="The layer that contains the band with Green values" description="G layer" type="3">
+		</element>
+		<element name="BANDG" text="The band with Green values" description="G band" type="3">
+		</element>
+		<element name="LAYERB" text="The layer that contains the band with Blue values" description="B layer" type="3">
+		</element>
+		<element name="BANDB" text="The band with Blue values" description="B band" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="The algorithm generates 3 new single-band layers, one for each component of the HSI image." description="Description" type="2">
+		</element>
+		<element name="H" text="The layer with Hue values" description="H" type="2">
+		</element>
+		<element name="I" text="The layer with Intensity values" description="I" type="2">
+		</element>
+		<element name="S" text="The layer with Saturation values" description="S" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

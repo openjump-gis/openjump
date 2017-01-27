@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates erosion and deposition using the Unit Stream Power - based Erosion Deposition (USPED) model. " description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* http://skagit.meas.ncsu.edu/~helena/gmslab/denix/usped.html" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="V&#237;ctor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="A Digital Elevation Model" description="mde" type="3">
+		</element>
+		<element name="K" text="USLE K factor" description="K" type="3">
+		</element>
+		<element name="C" text="USLE C Factor" description="C" type="3">
+		</element>
+		<element name="R" text="USLe R factor" description="R" type="3">
+		</element>
+		<element name="EROSIONTYPE" text="Select the prevailing erosion type: rill erosion or sheet erosion" description="Prevailing erosion type" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="USPED" text="The resulting layer, showing erosion (+) or deposition (-) rates." description="USPED" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

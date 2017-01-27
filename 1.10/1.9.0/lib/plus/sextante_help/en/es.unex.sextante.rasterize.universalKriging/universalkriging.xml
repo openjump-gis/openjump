@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates a raster layer from a set of points, using the Universal Kriging interpolation method.&#10;&#10;Predictors can be used as well in case that first order stacionarity cannot be assumed." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The points layer for interpolation." description="Point layer" type="3">
+		</element>
+		<element name="FIELD" text="The field that contains the variable to inteprolate" description="Field" type="3">
+		</element>
+		<element name="DIST" text="The search radius in map units. Only points within that area defined by this radius are used" description="Search radius" type="3">
+		</element>
+		<element name="GRIDS" text="select the layers that will act as predictives." description="Predictors" type="3">
+		</element>
+		<element name="MINPOINTS" text="the minimum number of points that will be used for the interpolation. If there are less points near the cell than the minimum specified, this cell will be assigned the no data value." description="M&#237;nimo_numero_puntos" type="3">
+		</element>
+		<element name="MAXPOINTS" text="The maximum number of points that will be used for the interpolation." description="M&#225;ximo_numero_puntos" type="3">
+		</element>
+		<element name="MODEL" text="the semivariogram model to use:&#10;* Spherical&#10;* Exponential&#10;* Gaussian" description="Model" type="3">
+		</element>
+		<element name="NUGGET" text="The nugget value of the variogram" description="Nugget" type="3">
+		</element>
+		<element name="SILL" text="The sill value of the variogram." description="Sill" type="3">
+		</element>
+		<element name="RANGE" text="The range value of the variogram." description="Range" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="CROSSVALIDATION" text="Cross validation table. This is calculated interpolating at the corrdinates of the input points, using all the points except the one at that coordinate. Expected values and values obtained from interpolation are then compared to evaluate the correctness of the model, which is summarized in this table." description="Cross validation" type="2">
+			<image description="" file="kriging_uni_tabla.jpg">
+			</image>
+		</element>
+		<element name="VARIANCE" text="A layer with calculated variances." description="Variances" type="2">
+		</element>
+		<element name="RESULT" text="The layer with interpolated values." description="Result" type="2">
+			<image description="" file="kriging_uni_interpolado.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

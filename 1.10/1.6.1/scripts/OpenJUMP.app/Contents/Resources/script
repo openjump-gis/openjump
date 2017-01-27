@@ -1,0 +1,7 @@
+#!/bin/sh
+## open a terminal and run the mac shell script in it, parameters are ignored
+## as 'open' does route them into the called app, instead of into the script
+## NOTE: start 'oj_macosx.command' manually in finder to achieve the same
+#open -a Terminal "$(dirname "$0")/../../../oj_macosx.command"
+## run shell script in background with dropped files/folders
+sh "$(dirname "$0")/../../../oj_macosx.command" "$@" &

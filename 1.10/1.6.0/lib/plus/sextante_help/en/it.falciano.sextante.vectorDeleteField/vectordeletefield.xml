@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm deletes an alphanumerical field from the attribute table associated with a vector layer." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Antonio Falciano" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Antonio Falciano" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The input vector layer from which we want to delete the field" description="Layer" type="3">
+		</element>
+		<element name="FIELD" text="The name of the field which we want to delete" description="Field" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The output vector layer without the deleted field" description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

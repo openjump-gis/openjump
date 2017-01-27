@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates an accumulated cost surface from an unitary cost layer, assuming that the cost is isotropic (the cost of crossing each cell is the same in all directions). The value in each result cell is the cost up to the closest destination point." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="COST" text="Values in this layer represent the cost of crossing each cell" description="Unitary cost" type="3">
+		</element>
+		<element name="FEATURES" text="Desstination points are represented as cells with any valid value. Remaining cells must have the no-data value." description="Origin/destination points" type="3">
+		</element>
+		<element name="THRESHOLD" text="" description="Threshold for route separation" type="3">
+		</element>
+		<element name="DISTANCE" text="The way to compute distance between cells. The following options are available:&#10;* Euclidean&#10;* Chessboard&#10;* Manhattan &#10;* Chamfer 3:4 &#10;* 5 X 5" description="Type of distance" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="ACCCOST" text="The accumulated cost surface. The values in this layer indicate the cost to the closest destination point." description="Accumulated cost" type="2">
+		</element>
+		<element name="CLOSESTPOINT" text="The values in this layer indicate the number that idetifies the closest point. Cells with the same values in this layer have the same destination point as their closests one." description="Closest points" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

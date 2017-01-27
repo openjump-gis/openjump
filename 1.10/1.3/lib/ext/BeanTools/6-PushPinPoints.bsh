@@ -1,0 +1,41 @@
+{
+//filenameOrURL = new URL("http://www.techsoup.org/fb/fxforums/images/pushpin.gif");
+filenameOrURL = new URL("http://openclipart.org/people/jean_victor_balin/jean_victor_balin_icon_host.png");
+//filenameOrURL = "c:/junk/Arrow.jpg";
+image = Toolkit.getDefaultToolkit().getImage(filenameOrURL);
+import java.awt.geom.Point2D;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.geom.EnvelopeUtil;
+import com.vividsolutions.jump.workbench.model.*;
+import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
+import com.vividsolutions.jump.workbench.ui.Viewport;
+mediaTracker = new MediaTracker(wc.layerViewPanel);
+mediaTracker.addImage(image, 0);
+mediaTracker.waitForID(0);
+layer = wc.getLayerNamePanel().chooseEditableLayer();
+if (layer != null) {
+      wc.getLayerNamePanel().chooseEditableLayer().addStyle(new Style() {
+	  public void paint(Feature f, Graphics2D g, Viewport viewport) {    
+        int w = image.getWidth(wc.getLayerViewPanel()); 
+        int h = image.getHeight(wc.getLayerViewPanel());        
+	    Coordinate[] coordinates = f.getGeometry().getCoordinates();
+	    for (int i = 0; i < coordinates.length; i++) {
+		    if (!viewport.getEnvelopeInModelCoordinates().contains(coordinates[i]))
+		    	continue;
+	    	p = viewport.toViewPoint(coordinates[i]);
+	    	g.drawImage(image, (int) p.getX() - w  + 2, (int) p.getY() - h + 2, null);  
+	    }  
+	  }
+	  public void initialize(Layer layer) {}
+	  public Object clone() { throw new UnsupportedOperationException(); }
+	  public void setEnabled(boolean enabled) {}
+	  public boolean isEnabled() { return true; }
+	});
+	layer.getBasicStyle().renderingFill = false;
+	layer.getBasicStyle().renderingLine = false;
+}
+else {
+	wc.getWorkbench().getFrame().warnUser("Layer not editable");
+}
+}

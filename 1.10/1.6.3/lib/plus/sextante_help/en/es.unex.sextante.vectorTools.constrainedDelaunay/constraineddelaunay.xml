@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm computes a constrained delaunay traingulation of a set of points and using the lines from a lines layer as constraints.&#10;&#10;A constrained Delaunay triangulation is a generalization of the Delaunay triangulation that forces certain required segments into the triangulation. In these case, those segments are taken from the aforementioned lines layer." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="POINTS" text="The layer with points to triangulate." description="Points layer" type="3">
+		</element>
+		<element name="LINES" text="The layer with the constraints" description="Lines_layer" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="TRIANGLES" text="The resulting constrained triangulation" description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

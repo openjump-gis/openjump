@@ -1,0 +1,43 @@
+Do not forget:
+-------------------------------------------------------------------------------
+1. update AND set version and release date in Changes.txt
+2. build AND test
+3. tag the revision in svn with version to release
+4. set sf.net download button default (in sf.net file manager, info button on the right, default checkboxes)
+5. update and add links to website/wikipage
+
+Instructions for generating a win32 installer for OpenJUMP
+-------------------------------------------------------------------------------
+
+needed a compiled version of OpenJUMP with Ant (using build.xml)
+the input:
+an OpenJUMP folder that contains the folders
+ 
+/bin       contains OJ start files
+/lib       contains the jar files (should also contain the openjump jars)
+/licenses  contains the license files
+
+the file in this folder (containing scripts, images and icons)  
+
+Three programs are required: 
+	. HM NSIS Editor
+	. NSIS program
+	
+-------------------------------------------------------------------------------
+
+The following steps are used:
+
+
+1. make a copy of the OJ folders and test if OJ starts
+
+2. Launch HM NSIS Editor and load the file: "openjump-installer-script.nsi"
+   The JRE loader part was broken. I made it work, but now, it needs JREDyna.bsh
+   and the NSIS InetLoad plugin [mmichaud for version 1.4.0.2]
+
+3. Edit the file, i.e. adapt the locations and files to install 
+   (or create a new file with the wizard)
+   As I could ,ot make it work, I had to rebuild one from the wizard [mmichaud]
+
+4. Launch the NSIS program and execute "openjump-installer-script.nsi"
+
+5. Test the newly created setup file.

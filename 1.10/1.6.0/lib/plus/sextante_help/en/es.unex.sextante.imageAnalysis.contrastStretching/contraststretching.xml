@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm applies contrast stretching to a single-band (grey scale) image. Contrast stretching modifies the range of values in the image, applying a linear transformation. The goal of the algorithm is to change the values of the input image so they make full use of the available dynamic range.&#10;&#10;To avoid outliers reducing the effectiveness of this process, the original range of the input layer is not used, but a fraction of it defined by percentiles (usually 5% and 95%)" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="* http://homepages.inf.ed.ac.uk/rbf/HIPR2/stretch.htm&#10;* http://www.ph.tn.tudelft.nl/Courses/FIP/noframes/fip-istogram.html" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="V&#237;ctor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="IMAGE" text="The input image." description="Image" type="3">
+		</element>
+		<element name="LOWER" text="The lower percentile to define the efecctive range." description="Lower percentile" type="3">
+		</element>
+		<element name="UPPER" text="The upper percentile to define the efecctive range." description="Upper percentile" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The contrast stretched image." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

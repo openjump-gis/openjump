@@ -1,0 +1,436 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+</head>
+<body bgcolor="white">
+
+
+<p>
+<tt>Java2XML</tt> is a utility class that lets you turn objects into
+XML documents and vice versa. It's dead simple to use, yet quite
+powerful - you can create complex-looking XML from it.
+</p>
+
+<p>
+<tt>Java2XML</tt> has advantages over existing Java XML bindings: it
+is simpler than Castor (for example, there is no need for a schema or
+DTD); unlike Digester, it can both read and write; unlike Bewitched,
+it gives clear and helpful error messages when a problem occurs. Since
+there are very few classes (3), it's relatively easy to track down
+problems.
+</p>
+
+
+<h3>Example: Using Java2XML</h3>
+
+<p>
+Say you have an object <tt>Person</tt> that you want to turn into XML:
+</p>
+
+<center>
+<table border='1' 
+       width='80%' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>
+public class Person {   
+    private int age = 50;
+    public int getAge() { return age; }
+    public void setAge(int i) { age = i; }
+    
+    private String name = "Charles";
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    private Collection nicknames = Arrays.asList(new String[]{"Charlie", "Chuck", "Chick"});
+    public Collection getNicknames() { return Collections.unmodifiableCollection(nicknames); }
+    public void addNickname(String nickname) { nicknames.add(nickname); }
+}      
+
+Person person = new Person();
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+<p>
+If you try <tt>Java2XML</tt>, you'll get a very short XML document:
+</p>
+
+<center>
+<table width='80%' 
+       border='1' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>System.out.println(new Java2XML().write(person, "person"));
+
+<font face='serif'>Output:</font>
+
+&lt;person /&gt;
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+
+<p>
+This is because you need to write a little mapping file that maps the
+Java fields to XML tags. Don't worry - it's easy! Just place the
+following file (<tt>Person.java2xml</tt>) right
+beside <tt>Person.class</tt>:
+</p>
+
+<center>
+<table width='80%' 
+       border='1' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>Person.java2xml:
+
+&lt;root&gt;
+&lt;element xml-name="age" java-name="age" /&gt;
+&lt;/root&gt;
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+<p>
+Now your XML document will contain a more complete representation:
+</p>
+
+<center>
+<table width='80%' 
+       border='1' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>System.out.println(new Java2XML().write(person, "person"));
+</pre>
+
+<font face='serif'>Output:</font>
+
+<pre>
+&lt;person&gt;
+  &lt;age&gt;50&lt;/age&gt;
+&lt;/person&gt;
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+<p>
+As you can see, the <tt>java2xml</tt> file maps an xml tag to a java
+field. All you have to do is specify the name of each (they can be
+different).
+</p>
+
+<p>
+Why could we just specify "age" for the Java field rather than
+"<tt>getAge</tt>" and "<tt>setAge</tt>"? <tt>Java2XML</tt> does a
+case-insensitive search for methods like "<tt>setAge*</tt>" and
+"<tt>getAge*</tt>" (and "<tt>isAge*</tt>").
+</p>
+
+<p>
+Want to add an attribute? It's the same thing again, but you use
+"attribute" instead of "element":
+</p>
+
+<center>
+<table width='80%' 
+       border='1' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>Person.java2xml:
+
+&lt;root&gt;
+&lt;attribute xml-name="name" java-name="name" /&gt;
+&lt;element xml-name="age" java-name="age" /&gt;
+&lt;/root&gt;
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+<br>
+
+<center>
+<table width='80%' 
+       border='1' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>System.out.println(new Java2XML().write(person, "person"));
+
+<font face='serif'>Output:</font>
+
+&lt;person name="Charles"&gt;
+  &lt;age&gt;50&lt;/age&gt;
+&lt;/person&gt;
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+
+<p>
+If you nest the attribute inside the element, guess what the output
+looks like? "name" is nested inside "age"!
+</p>
+
+<center>
+<table width='80%' 
+       border='1' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>Person.java2xml:
+&lt;root&gt;
+&lt;element xml-name="age" java-name="age"&gt;
+&lt;attribute xml-name="name" java-name="name" /&gt; 
+&lt;/element&gt;
+&lt;/root&gt;
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+<br>
+
+<center>
+<table width='80%' 
+       border='1' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>System.out.println(new Java2XML().write(person, "person"));
+
+<font face='serif'>Output:</font>
+
+&lt;person&gt;
+  &lt;age name="Charles"&gt;50&lt;/age&gt;
+&lt;/person&gt;
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+<p>
+What about collections? Look at "nickname" below:
+</p>
+
+<center>
+<table width='80%' 
+       border='1' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>Person.java2xml:
+
+&lt;root&gt;
+&lt;element xml-name="age" java-name="age"&gt;
+&lt;attribute xml-name="name" java-name="name" /&gt; 
+&lt;/element&gt;
+&lt;element xml-name="nickname" java-name="nickname" /&gt; 
+&lt;/root&gt;
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+<br>
+
+<center>
+<table width='80%' 
+       border='1' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>System.out.println(new Java2XML().write(person, "person"));
+
+<font face='serif'>Output:</font>
+
+&lt;person&gt;
+  &lt;age name="Charles"&gt;50&lt;/age&gt;
+  &lt;nickname&gt;Charlie&lt;/nickname&gt;
+  &lt;nickname&gt;Chuck&lt;/nickname&gt;
+  &lt;nickname&gt;Chick&lt;/nickname&gt;
+&lt;/person&gt;
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+<p>
+<tt>Java2XML</tt> does a case-insensitive search for a getter like
+"<tt>getNickname*</tt>" and a setter like
+"<tt>addNickname*</tt>". Note that it's important to leave off the "s"
+in "<tt>nickname</tt>" - otherwise <tt>Java2XML</tt> will look for a
+setter like "<tt>addNicknames*</tt>" and of course there isn't one.
+</p>
+
+<p>
+If you want to add some structure to your XML file, you can add tags
+that aren't mapped to anything. Look at "<tt>aliases</tt>" below and
+note that it isn't mapped to any java name:
+</p>
+
+<center>
+<table width='80%' 
+       border='1' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>
+Person.java2xml:
+
+&lt;root&gt;
+&lt;element xml-name="age" java-name="age"&gt;
+&lt;attribute xml-name="name" java-name="name" /&gt; 
+&lt;/element&gt;
+&lt;element xml-name="aliases"&gt;
+&lt;element xml-name="nickname" java-name="nickname" /&gt; 
+&lt;/element&gt;
+&lt;/root&gt;
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+<br>
+
+<center>
+<table width='80%' 
+       border='1' cellspacing='0' bgcolor='#CCCCCC' cellpadding='4'>
+<tr><td>
+<pre>System.out.println(new Java2XML().write(person, "person"));
+
+<font face='serif'>Output:</font>
+
+&lt;person&gt;
+  &lt;age name="Charles"&gt;50&lt;/age&gt;
+  &lt;aliases&gt;
+    &lt;nickname&gt;Charlie&lt;/nickname&gt;
+    &lt;nickname&gt;Chuck&lt;/nickname&gt;
+    &lt;nickname&gt;Chick&lt;/nickname&gt;
+  &lt;/aliases&gt;
+&lt;/person&gt;
+</pre>
+</td>
+</tr>
+</table>
+</center>
+
+<p>
+Want to turn your XML back into a Java object? There's a class called
+<tt>XML2Java</tt> that will let you do just that. Easy!
+</p>
+
+<h3>Notes:</h3>
+
+<ol>
+
+<li>
+The Java class that you want to turn into XML must have a constructor
+without any parameters. Otherwise how could <tt>XML2Java</tt> know
+what to use as parameters?
+</li>
+
+<li>
+You're not confined to storing simple types like Strings and ints in
+your XML files - you can also store other classes, but of course they
+too must have a little <tt>.java2xml</tt> file.
+</li>
+
+<li>
+Your getters and setters can even get/set interfaces and abstract
+classes! How does XML2Java know which class to instantiate then when
+you read it back in? <tt>Java2XML</tt> stores the name of the actual class in
+the XML file.
+</li>
+
+<li>
+<tt>Java2XML</tt> uses JDOM, which may not be appropriate for large
+XML files because the whole XML file gets loaded into memory
+</li>
+</ol>
+
+
+<h3>Java2XML FAQ</h3>
+
+<ol>
+
+<li>
+<p>
+<i>
+My IDE often deletes the directory containing my <tt>.class</tt> files
+ &ndash;  how can I prevent my <tt>.java2xml</tt> files from being lost?
+</i>
+</p>
+
+<p>
+Do the same thing as you do with <tt>.gifs</tt> and <tt>.jpegs</tt>:
+Have your IDE copy your <tt>.java2xml</tt> files from your source
+directory to your classes directory every time you do a build. All
+major IDEs, including JBuilder and Eclipse, will let you set up which
+filename extensions are copied over.
+</p>
+</li>
+
+<li>
+<p>
+<i>
+What if one of the objects I'd like to turn into XML is from a
+third party, e.g., a Swing class like <tt>java.awt.Font</tt>? I
+wouldn't want to modify the Swing jar to add a <tt>.java2xml</tt> file
+beside <tt>Font.class</tt>.
+</i>
+</p>
+
+<p>
+Add a <tt>CustomConverter</tt> for the <tt>Font</tt> class. It's
+almost as easy as writing a <tt>.java2xml</tt> file. Check
+out <tt>Java2XML#addCustomConverter</tt>.
+<p>
+</li>
+</ol>
+
+
+<h3>To Do</h3>
+
+<ul>
+<li>Setters and getters work with Maps</li>
+
+<li><tt>Java2XML</tt> can't turn interfaces and abstract classes into
+attributes. It is possible to turn them into elements though.</li>
+
+<li>"<tt>class</tt>", "<tt>null</tt>" attributes are reserved.</li>
+
+<li>Wart: one can't pass a custom class (e.g., <tt>HashMap</tt>) into
+<tt>Java2XML</tt>.  Workaround: can pass in an Object containing a
+custom class.</li>
+</ul>
+
+
+<h2>Related Documentation</h2>
+
+For overviews, tutorials, examples, guides, and tool documentation,
+please see:
+
+<ul>
+ <li><a 
+   href = 
+     "http://www.jump-project.org/jump/doc/JUMP User Guide.pdf">JUMP 
+     Workbench User's Guide</a></li>
+ <li><a 
+    href = 
+     "http://www.jump-project.org/jump/doc/JUMP Developer Guide.pdf">JUMP 
+     Developer's Guide</a></li>
+ <li><a 
+    href = 
+     "http://www.jump-project.org/jump/doc/JUMP Technical Report.pdf">JUMP 
+     Technical Report</a></li>
+ <li><a 
+    href = 
+     "http://www.jump-project.org/jump/doc/JUMP Data Sheet.pdf">JUMP 
+     Data Sheet</a></li>
+</ul>
+
+<!-- Put @see and @since tags down here. -->
+
+</body>
+</html>

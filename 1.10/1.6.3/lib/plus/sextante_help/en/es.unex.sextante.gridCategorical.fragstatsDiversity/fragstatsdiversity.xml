@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm computes diversity metrics as defined in the FRAGSTATS software package" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="*http://www.umass.edu/landeco/research/fragstats/fragstats.html &#10;*McGarigal, K., and B. J. Marks. 1995. FRAGSTATS: spatial pattern analysis program for quantifying landscape structure. USDA For. Serv. Gen. Tech. Rep. PNW-351." description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text=" the origin raster layer. Should be a categorical layer." description="Layer" type="3">
+		</element>
+		<element name="MAX" text="The number of different classes in the raster layer" description="Maximum number of different classes" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="METRICS" text="" description="Metrics" type="2">
+			<image description="" file="fragstats_metrica_diversidad_con10clases.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm creates a new vector layer with gradient lines from a raster layer representing a continuous field, such as a DEM." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="" description="Layer" type="3">
+		</element>
+		<element name="MIN" text="minimum size of each gradient line, in map units" description="Minimum size" type="3">
+		</element>
+		<element name="MAX" text="maximum size of each  gradient line, in map units." description="Maximum size" type="3">
+		</element>
+		<element name="SKIP" text="If it is equal to 1, it will create one line for each cell, if it is 2, it will add 1 for each 4 cells, and so on" description="Interval" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="LINES" text="Vector lines layer with two fields on the attributes table:&#10;* Slope&#10;* Aspect" description="Gradient lines" type="2">
+			<image description="Gradient lines" file="gradiente.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

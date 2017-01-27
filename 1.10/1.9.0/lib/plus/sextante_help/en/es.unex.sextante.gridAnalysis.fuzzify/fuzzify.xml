@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm applies a member function to the values in a raster layer and prepares it for fuzzy logic analysis. A member function is defined by a function type and four control points, as shown in the next figure." description="Description" type="0">
+			<image description="" file="MemberFunctionFuzzyLinear.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The input layer to fuzzify." description="Input layer" type="3">
+		</element>
+		<element name="FUNCTIONTYPE" text="The type of function defines the transitions between the values 0 and 1 on both sides of the graph. That is, between A and B, and between C and D&#10;* Linear: linear formulation (the one shown in the above graph)&#10;* Sigmoidal. Sigmoidal formulation for the transitions.&#10;* J- shaped." description="Member function" type="3">
+		</element>
+		<element name="A" text="" description="Control point A" type="3">
+		</element>
+		<element name="B" text="" description="Control point B" type="3">
+		</element>
+		<element name="C" text="" description="Control point C" type="3">
+		</element>
+		<element name="D" text="" description="Control point D" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="Raster layer with values between 0 and 1 obtained from applying the defined member function. &#10;&#10;" description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

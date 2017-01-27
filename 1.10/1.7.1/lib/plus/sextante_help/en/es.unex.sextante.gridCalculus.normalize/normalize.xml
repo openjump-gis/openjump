@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm converts one raster layer with arbitrary values into a new layer with normalized values.&#10;&#10;There are two methods available to normalize a layer:&#10;&#10;*Standard deviation. The resulting layer will have a standard deviation equal to 1.&#10;* 0-1 range. The range of values is adjusted, so it goes from 0 to 1.&#10;&#10;In both cases, the shape of the histogram (i.e. the distribution of values within the layer) is not affected.&#10;&#10;Normalizing a layer is useful when several layers have to be used as input to a given algorithm. This happens, for instance, when performing an unsupervised classification. In this case, it is usually interesting to have layers with the same weight when performing the classification process, although the magnitude of the variables in the input layers might be very different. Normalizing all of them so they have their values within the 0-1 interval will cause them to have the same influence on the resulting classified layer.&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="GRID" text="The layer to normalize" description="Layer to normalize" type="3">
+		</element>
+		<element name="METHOD" text="the method to be used may be selected from the following:&#10;* Standard deviation: the resulting layer will have a standard deviation equal to 1.&#10;* 0-1 range: the resulting layer will have values within the 0-1 range." description="Method" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting normalized layer." description="Normalized" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

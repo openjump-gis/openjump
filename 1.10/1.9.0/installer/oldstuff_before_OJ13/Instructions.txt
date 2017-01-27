@@ -1,0 +1,32 @@
+Instructions for generating a win32 installer for OpenJUMP
+----------------------------------------------------------
+Steve tanner
+
+To create an OpenJUMP installer for win32 we use NSIS, the NullSoft
+Installation System (nsis.sourceforge.net). In order to correctly
+behave, the procedure needs the following folder structure, normally
+present on the CVS of the openjump module on jump-pilot.sourceforge.net
+
+/distrib   contains the generated .exe installer
+/etc       contains licences and .xml files
+/installer contains all the stuff for generating the installer
+/lib       contains the jar files (should also contain the openjump jars)
+
+The following steps are used:
+
+1. Edit the nsi script "installer_openjump_exe.nsi"
+   This can be done by hand or using the excellent HM NIS Edit
+   allowing to create also user custom pannels under the form
+   of .ini files
+
+2. Place in the /lib folder the current jar versions of openjump
+   They can be extracted from a chosen build, for instance:
+   \lib\jump-workbench-20060112-0047.jar
+   \lib\jump-api-20060112-0047.jar
+   
+3. Copy the file oj.exe from an older release (i.e. from the trunk). 
+
+4. Launch the NSIS program and execute "installer_openjump_exe.nsi"
+
+
+   

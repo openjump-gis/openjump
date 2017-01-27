@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm uses different predictive analysis methods to create suitability maps.&#10;&#10;It takes as input a points layer with information about the presence of a certain phenomena and a set of raster layer with variables that influence the presence of that phenomena. Based on the values of those variables in the input points, it performs different analysis and estimates the probability of finding the phenomena in the remaining cells of the analysis area." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="One or several  layers with variables that affect the presence of the studied phenomena" description="Predictors" type="3">
+		</element>
+		<element name="POINTS" text="Presence points. Only coordinates are used, so the attributes table can contain any number of fields and any kind of information." description="Presence points" type="3">
+		</element>
+		<element name="METHOD" text="The following methods are available:&#10;* Distance to mean value&#10;* Distance of  Mahalanobis&#10;* BIOCLIM&#10;" description="Method" type="3">
+		</element>
+		<element name="CUTOFF" text="Cutoff for BIOCLIM method." description="Cutoff (BIOCLIM)" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="Values in this layer indicate the probability of finding the studied phenomena in each cell. &#10;&#10;The following images show two examples of such layers." description="Suitability" type="2">
+			<image description="Distance to mean value " file="modelosPred_1metodo.jpg">
+			</image>
+			<image description="Mahalanobis distance " file="modelosPred_2metodo.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

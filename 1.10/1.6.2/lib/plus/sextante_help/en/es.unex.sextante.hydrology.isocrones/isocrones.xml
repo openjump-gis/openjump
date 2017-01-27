@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm generates a new layer that indicates the time it takes the flow from each cell to reach the outlet of the basin defined by a given outlet point." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="NETWORK" text="Channel network. If used, cells in the channel network will have a different flow speed that cells outside of it" description="Channel network" type="3">
+		</element>
+		<element name="RATIO" text="The ratio between the flow speed in channel cells and the one in cells not belonging to the channel network." description="speed ratio (channel / overland)" type="3">
+		</element>
+		<element name="OUTLET" text="The outlet point of the watershed" description="Outlet point" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="TIME" text="The values in the cells of this output layer represent the time (in hours) that it takes the flow to reach the selected outlet point. The cells outside of the watershed have no data values." description="Time to outlet" type="2">
+			<image description="Time to outlet (h) map" file="isocrones.png">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

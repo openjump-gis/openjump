@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<model name="Watersheds from contour lines" group="Models">
+		<algorithm key="PROC0" alg_cmd_line_name="rasterizevectorlayer" coords="53,109,130,58">
+			<assignment key="FIELD" assigned_to="INPUT1" />
+			<assignment key="LAYER" assigned_to="INPUT0" />
+		</algorithm>
+		<algorithm key="PROC1" alg_cmd_line_name="fillsinks" coords="211,107,70,58">
+			<assignment key="DEM" assigned_to="RESULTPROC7" />
+			<assignment key="MINSLOPE" assigned_to="INNERPARAM0PROC1" />
+		</algorithm>
+		<algorithm key="PROC2" alg_cmd_line_name="accflow" coords="274,202,111,58">
+			<assignment key="DEM" assigned_to="RESULTPROC1" />
+			<assignment key="WEIGHTS" assigned_to="null" />
+			<assignment key="CONVERGENCE" assigned_to="INNERPARAM1PROC2" />
+			<assignment key="METHOD" assigned_to="INNERPARAM0PROC2" />
+		</algorithm>
+		<algorithm key="PROC3" alg_cmd_line_name="channelnetwork" coords="432,205,105,58">
+			<assignment key="THRESHOLDLAYER" assigned_to="FLOWACCPROC2" />
+			<assignment key="DEM" assigned_to="RESULTPROC1" />
+			<assignment key="THRESHOLD" assigned_to="INPUT2" />
+			<assignment key="METHOD" assigned_to="INNERPARAM0PROC3" />
+		</algorithm>
+		<algorithm key="PROC4" alg_cmd_line_name="watersheds" coords="206,288,82,58">
+			<assignment key="NETWORK" assigned_to="NETWORKPROC3" />
+			<assignment key="MINSIZE" assigned_to="INNERPARAM0PROC4" />
+			<assignment key="DEM" assigned_to="RESULTPROC1" />
+		</algorithm>
+		<algorithm key="PROC5" alg_cmd_line_name="vectorize" coords="17,399,181,58">
+			<assignment key="LAYER" assigned_to="WATERSHEDSPROC4" />
+		</algorithm>
+		<algorithm key="PROC6" alg_cmd_line_name="geometricproperties" coords="283,402,183,58">
+			<assignment key="LAYER" assigned_to="RESULTPROC5" />
+		</algorithm>
+		<algorithm key="PROC7" alg_cmd_line_name="closegaps" coords="83,208,71,58">
+			<assignment key="INPUT" assigned_to="RESULTPROC0" />
+			<assignment key="THRESHOLD" assigned_to="INNERPARAM0PROC7" />
+		</algorithm>
+		<input name="INPUT0" description="Contour lines" class="class es.unex.sextante.parameters.ParameterVectorLayer" coords="20,20,87,58">
+			<attribute name="mandatory" value="true" />
+			<attribute name="shape_type" value="1" />
+		</input>
+		<input name="INPUT1" description="Elevation field" class="class es.unex.sextante.parameters.ParameterTableField" coords="127,20,91,58">
+			<attribute name="parent" value="INPUT0" />
+		</input>
+		<input name="INPUT2" description="Threshold for channel definition" class="class es.unex.sextante.parameters.ParameterNumericalValue" coords="238,20,175,58">
+			<attribute name="min" value="0.0" />
+			<attribute name="max" value="1.7976931348623157E308" />
+			<attribute name="default" value="1000000.0" />
+			<attribute name="type" value="2" />
+		</input>
+		<output key="RESULTPROC6" class="class es.unex.sextante.outputs.OutputVectorLayer" description="Watersheds" />
+		<data_object key="INNERPARAM0PROC7" value="0.1" description="Numerical Value" />
+		<data_object key="INNERPARAM1PROC2" value="1.1" description="Numerical Value" />
+		<data_object key="INNERPARAM0PROC3" value="0" description="Selection" />
+		<data_object key="RESULTPROC0" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Result" de Process 0: Rasterize vector layer' />
+		<data_object key="RESULTPROC6" value="class es.unex.sextante.modeler.elements.ModelElementVectorLayer,2" description='"Polygons" de Process 6: Geometric properties of polygons' />
+		<data_object key="NETWORKPROC3" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Channel network" de Channel network' />
+		<data_object key="RESULTPROC7" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Filled layer" de Process 8: Void filling' />
+		<data_object key="INNERPARAM0PROC2" value="0" description="Selection" />
+		<data_object key="INNERPARAM0PROC1" value="0.01" description="Numerical Value" />
+		<data_object key="INNERPARAM0PROC4" value="0.0" description="Numerical Value" />
+		<data_object key="NETWORKVECTPROC3" value="class es.unex.sextante.modeler.elements.ModelElementVectorLayer,1" description='"Channel network" de Channel network' />
+		<data_object key="RESULTPROC1" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Preprocessed" de Sink filling' />
+		<data_object key="RESULTPROC5" value="class es.unex.sextante.modeler.elements.ModelElementVectorLayer,2" description='"Result" de Process 5: Vectorize raster layer (polygons)' />
+		<data_object key="FLOWACCPROC2" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Flow accumulation" de Process 2: Flow accumulation' />
+		<data_object key="WATERSHEDSPROC4" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Watersheds" de Watersheds' />
+	</model>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

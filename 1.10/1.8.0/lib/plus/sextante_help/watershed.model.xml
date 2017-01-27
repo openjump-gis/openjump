@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="Given a set of contour lines, this algorithms creates a vector layer which represents watersheds in the given area.&#10;&#10;Watersheds are calculated from a channel network previously extracted from a Digital Elevation Model. A threshold value is required to extract the channel network. Larger values of this threshold will result in a lower number of streams and, thus, a lower number of watersheds.&#10;&#10;Once watersheds are calculated, their geometric properties (area, perimeter...) are added to the attributes table of the resulting layer" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="This model has been created as an example to show users how to create complex models using the SEXTANTE modeler. Please, open it in the modeler to study its structure and learn more about how to use this powerful and versatile element of SEXTANTE. Feel free to edit the model to adapt it to your particular needs." description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="V&#237;ctor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT0" text="Contour lines" description="Contour lines" type="3">
+		</element>
+		<element name="INPUT1" text="The field in the attributes table that contains the elevation associated with each contour line" description="Elevation field" type="3">
+		</element>
+		<element name="INPUT2" text="A threshold vale, expressed in m2, that controls the number and size of watersheds in the resulting layer" description="Threshold for channel definition" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULTPROC6" text="A vector layer with polygons representing watersheds. Geometric properties such as area and perimeter are included in the associated attributes table" description="Watersheds" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

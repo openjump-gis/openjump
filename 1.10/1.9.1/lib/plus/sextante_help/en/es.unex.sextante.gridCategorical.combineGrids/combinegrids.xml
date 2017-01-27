@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm applies a look-up table having two different entries. Two categorical raster layers are used and the value asigned to a cell in the output layer depends on the value of those two layers in the given cell. A resulting value must be defined for each possible combination of input values (i.e. for each pair of key values)&#10;&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="GRID" text="The first layer to use." description="Grid 1" type="3">
+		</element>
+		<element name="GRID2" text="The second layer to use" description="Grid 2" type="3">
+		</element>
+		<element name="LUT" text="This table defines the resulting value for each combination of input values. If no resulting value is introduced for a given combination, the no-data value will be used in case that combination appears while processing the input layers." description="Look-up table" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting grid with values obtained from the combination of input values." description="Grid combination" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

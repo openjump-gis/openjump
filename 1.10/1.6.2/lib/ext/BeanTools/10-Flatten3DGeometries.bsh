@@ -1,0 +1,26 @@
+/////////////////////////////////////////////////////
+// This script remove z (set z to Double.NaN)      //
+// of every coordinate of every geometry           //
+// of selected layers                              //
+//                                                 //
+// Michael Michaud 2013-04-04                      //
+/////////////////////////////////////////////////////
+
+{
+   import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+   import com.vividsolutions.jump.workbench.ui.GUIUtil;
+
+   dialog = new MultiInputDialog(wc.workbench.frame, "", true);
+   dialog.addLabel("<html>Do you really want to remove z<br>on all coordinates of all geometries<br>of selected layers ?</html>");
+   GUIUtil.centreOnWindow(dialog);
+   dialog.setVisible(true);
+   
+   if (dialog.wasOKPressed()) {
+      for (lyr : wc.layerNamePanel.selectedLayers) {
+         ff = lyr.featureCollectionWrapper.features; 
+            for (f : ff) {
+            for (c:f.geometry.getCoordinates()) c.z = Double.NaN;
+         }
+      }
+   }
+}

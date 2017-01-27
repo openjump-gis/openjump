@@ -1,0 +1,4 @@
+<workbench>
+ <!--plug-in> ====== Sextante ===== </plug-in-->
+ <extension> es.unex.sextante.openjump.extensions.SextanteExtension</extension>
+</workbench>

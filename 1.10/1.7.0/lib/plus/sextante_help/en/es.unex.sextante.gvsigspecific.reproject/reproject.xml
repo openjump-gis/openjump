@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm reprojects a vector layer onto a new coordinate system.&#10;&#10;This algorithm uses gvSIG reprojection routines, and is only available in SEXTANTE for gvSIG" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="V&#237;ctor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="INPUT" text="The layer to reproject." description="Layer" type="3">
+		</element>
+		<element name="EPSG_OUTPUT" text="The EPSG code of the destination coordinate system." description="Output EPSG" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="OUTPUT" text="The reprojected layer." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

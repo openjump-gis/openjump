@@ -1,0 +1,6 @@
+for ecw support on linux with 32bit jre please manually extract 'ecw-gvsig1.11-linux32.tar.gz' in this folder.
+
+eg. 
+> tar xvf ecw-gvsig1.11-linux32.tar.gz
+
+on Mac OSX extract 'ecw-gvsigce1.0pre-osx32.tgz'.

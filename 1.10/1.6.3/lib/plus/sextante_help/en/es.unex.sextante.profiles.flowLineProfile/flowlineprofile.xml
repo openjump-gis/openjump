@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates a profile from a given point, following the downhill route from that point onwards (that is, the route that water would follow from that point when flowing downhill). The process stops when it reaches a cell without data, a sink (in an unprocessed MDE)or the boundary of the layer. " description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="a Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="LAYERS" text="Layers whose values will be studied along the profile. For each of them, a new field will be added to the attributes table of the resulting layer" description="Additional layers" type="3">
+		</element>
+		<element name="POINT" text="The starting point for profile calculation." description="Starting point" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="GRAPH" text="A graph showing the profile" description="Profile" type="2">
+			<image description="" file="pefil_segun_linea_de_flujo_grafico.jpg">
+			</image>
+		</element>
+		<element name="PROFILELINE" text="The route of the profile, as a single line" description="Profile [line]" type="2">
+			<image description="Profile layer based on flow line (yellow line)  superimposed on an MDE." file="pefil_segun_linea_de_flujo.png">
+			</image>
+		</element>
+		<element name="PROFILEPOINTS" text="A new points layer with the following fields in its attributes table:&#10;* X: X coordinate of each point.&#10;* Y: Y coordinate of each point.&#10;* Z: Z coordinate of each point.&#10;* Projected distance:  projected distance from origin.&#10;* Real distance: real distance from origin.&#10;* Values of the selected additional layers.&#10;&#10;A new point is added for each cell crossed by the defined route" description="Profile [points]" type="2">
+			<image description="" file="pefil_segun_linea_de_flujo_tabla.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

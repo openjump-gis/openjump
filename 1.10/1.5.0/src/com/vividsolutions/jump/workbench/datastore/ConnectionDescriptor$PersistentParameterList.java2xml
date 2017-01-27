@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<root>
+  <element xml-name="schema" java-name="schema"/>  
+  <element xml-name="nameToValueMap" java-name="nameToValueMap"/>    
+</root>

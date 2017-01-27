@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm performs a regression analysis, studying the relation between two quantitative variables.&#10;&#10;The dependent variable is introduced using a points layer, while the independent one is introduced using a raster layer. The algorithm analyzes the relation between them and generates a new raster layer with values of the dependent variable, based on the values of the independent one" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="POINTS" text="The points layer with the dependent variable" description="Points" type="3">
+		</element>
+		<element name="FIELD" text="The field that contains the dependent variable" description="Field" type="3">
+		</element>
+		<element name="RASTER" text="The raster layer with the independent variable" description="Raster layer" type="3">
+		</element>
+		<element name="METHOD" text="The type of function to use to define the relation between the variables. To choose from:&#10;* y = a + b &#183; x&#10;* y = a + b / x&#10;*  y = a / (b -x)&#10;* y = a &#183; x^b&#10;* y = a e^(bx)&#10;* y = a + b &#183; ln(x)" description="Function type" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESIDUALS" text="Points layer with the same points as the input layer and the following attributes:&#10;*Value of the independent variable at the point&#10;*Predicted value of the dependent variable at the point&#10;*Known value of the dependent variable at the point&#10;*Difference between predicted and known values" description="Residuals" type="2">
+		</element>
+		<element name="RESULT" text="Raster layer with estimated values of the dependent variable" description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

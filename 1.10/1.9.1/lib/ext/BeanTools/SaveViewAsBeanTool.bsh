@@ -1,0 +1,70 @@
+{
+import java.io.File;
+import java.io.FileWriter;
+import java.awt.Dimension;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
+import org.openjump.core.ui.plugin.customize.BeanToolsPlugIn;
+
+PlugInContext pc = wc.createPlugInContext();
+Dimension fDim = pc.getWorkbenchFrame().getActiveInternalFrame().getSize();
+int fWidth = fDim.width;
+int fHeight = fDim.height;
+
+Envelope modelViewEnv = pc.getLayerViewPanel().getViewport().getEnvelopeInModelCoordinates();
+double left = modelViewEnv.getMinX();
+double right = modelViewEnv.getMaxX();
+double bottom = modelViewEnv.getMinY();
+double top = modelViewEnv.getMaxY();
+
+String beanShellViewDirName = wc.getWorkbench().getPlugInManager().getPlugInDirectory()
+	.getPath() +  File.separator + I18N.get("ui.plugin.customize.BeanToolsPlugIn.BeanTools")
+	+  File.separator + "Saved_Views";
+File beanShellViewDir = new File(beanShellViewDirName);
+if (!beanShellViewDir.exists()) {
+    beanShellViewDir.mkdir(); //ensure Saved_views directory exists
+}
+int i = 0;
+File saveViweFile;
+do {
+   i++;
+   saveViewFile = new File(beanShellViewDir+File.separator+"SavedView"+i+".bsh");
+} while (saveViewFile.exists());
+
+MultiInputDialog dialog = new MultiInputDialog(pc.getWorkbenchFrame(), "Save view", true);
+dialog.addTextField("Name", saveViewFile.getName().substring(0, saveViewFile.getName().indexOf('.')), 16, null, null);
+com.vividsolutions.jump.workbench.ui.GUIUtil.centreOnWindow(dialog);
+dialog.setVisible(true);
+if (dialog.wasOKPressed()) {
+  saveViewFile = new File(beanShellViewDir+File.separator + dialog.getText("Name") + ".bsh");
+}
+
+FileWriter bshFile = new FileWriter(saveViewFile);
+bshFile.write("import com.vividsolutions.jts.geom.Envelope;\n");
+bshFile.write("left = "+ left +"d; \n");
+bshFile.write("right = "+ right +"d; \n");
+bshFile.write("bottom = "+ bottom +"d; \n");
+bshFile.write("top = "+ top +"d; \n");
+bshFile.write("int fWidth = " + fWidth +"; \n");
+bshFile.write("int fHeight = " + fHeight +"; \n");
+bshFile.write("Envelope modelEnv = new Envelope();\n");
+bshFile.write("modelEnv.init(left, right, bottom, top);\n");
+bshFile.write("wc.createPlugInContext().getWorkbenchFrame().getActiveInternalFrame().setSize( fWidth, fHeight);\n");
+bshFile.write("wc.getLayerViewPanel().getViewport().zoom(modelEnv);\n");
+bshFile.close();
+
+// Remove the BeanTools menu
+context = wc.createPlugInContext();
+featureInstaller = context.getFeatureInstaller();
+menu = featureInstaller.menuBarMenu(I18N.get(MenuNames.CUSTOMIZE));
+item = featureInstaller.childMenuItem(I18N.get("ui.plugin.BeanToolsPlugIn.BeanTools"), FeatureInstaller.wrapMenu(menu));
+menu.remove(item);
+
+// Reinitialize the plugin
+plugin = new BeanToolsPlugIn();
+plugin.initialize(context);
+}

@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm generates a new layer with values depending on the grid coordinates of each cell. That is:&#10;* z=f(x,y)&#10;&#10;All the functions in the raster calculator module may be used, including the logical ones. The main difference is that this algorithm does not use cell values but cell positions instead.&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="MINX" text="The X coordinate of the left-most cell" description="X min" type="3">
+		</element>
+		<element name="MAXX" text="The X coordinate of the right-most cell" description="X Max" type="3">
+		</element>
+		<element name="MINY" text="The Y coordinate of the bottom cell" description="Y Min" type="3">
+		</element>
+		<element name="MAXY" text="The X coordinate of the top cell" description="Y Max" type="3">
+		</element>
+		<element name="FORMULA" text="The formula to use&#10;&#10;Notes on general syntax&#10;&#10;Functions:&#10;&#10;* sin(x): returns the sine of x &#10;* cos(x): returns the  cosine of x &#10;* tan(x): returns the  tangent of x &#10;* asin(x): returns the archsine of  x &#10;* acos(x): returns the archcosine of  x &#10;* atan(x): returns the archcotangent de x &#10;* atan2(x/y): returns the archcotangent of  x/y &#10;* sinh(x): returns the  hyperbolic sine of x &#10;* cosh(x): returns the hyperbolic cosine of x &#10;* atanh(x): returns the inverse hyperbolic  tangent  of x &#10;* In(x): returns the logarithm of  x.&#10;* log(x): returns the base-10 logarithm.&#10;* exp(x): returns the  exponential function of  x.&#10;* abs(x): returns the absolute value of  x.&#10;* rand(): returns a random value  within the range 0-1.&#10;* mod(x/y): returns the module of  x/y.&#10;* sqrt(x): returns the positive square root of x.&#10;* if(): returns 1 if the expression inside the parenthesis is true, 0  otherwise.&#10;&#10;Operators. The  precedence of  operators is as usual : + and - are evaluated after &#183; y /, and these after the power operator. Use parenthesis in case of doubt, to be sure of how the program will evaluate the introduced formula.&#10;* + (add)&#10;* - (subtract)&#10;* (multiplication)&#10;* / (division)&#10;*  % (percentage)&#10;* ! (NOT)&#10;*  ^ (elevated to)&#10;* &amp;&amp; (AND)&#10;* || (OR)&#10;* &lt; (less than)&#10;* &gt; (more than)&#10;* &lt;= (less or equal to)&#10;* &gt;= (more or equal to)&#10;*  == (iqual to)&#10;* != (different from)&#10;&#10;Constants. &#10;* Pi&#10;* Cell size[raster layer]&#10;* e" description="Formula" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="New raster layer." description="Grid from function" type="2">
+			<image description="" file="grid_funcion_matematica3.jpg">
+			</image>
+			<image description="" file="grid_funcion_matematica4.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

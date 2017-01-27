@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the minimum enclosing polygon for a set of points" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="POINTS" text="the input points layer." description="Points" type="3">
+		</element>
+		<element name="FIELD" text="The field used to separate the point into classes" description="Field" type="3">
+		</element>
+		<element name="METHOD" text="The following options are available:&#10;* Convex hull. &#10;* M&#237;nimum enclosing circle.&#10;* M&#237;nimum enclosing rectangle." description="Enclosing shape" type="3">
+		</element>
+		<element name="USECLASSES" text='If this ption is selected, instead of a global polygon for the whole set of input points, a set of polygons will be created, one for each class. Use the "field" parameter to select the field that indicates the class each point belongs to' description="Create one polygon for each class" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="A polygons layer containing one or a set of minimum enclosing polygons." description="Minimum enclosing shape" type="2">
+			<image description="Convex hull" file="minima_envolvente_convexa.jpg">
+			</image>
+			<image description="M&#237;nimum enclosing circle" file="minimo_circulo.jpg">
+			</image>
+			<image description="M&#237;nimum enclosing rectangle " file="minimo_rectangulo.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

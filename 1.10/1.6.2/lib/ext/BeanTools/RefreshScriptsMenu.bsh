@@ -1,0 +1,26 @@
+///////////////////////////////////////////////////////////////
+//
+// RE-INITIALIZE BEAN TOOLS PLUGIN
+//
+// IF YOU PUT A NEW SCRIPT FILE INTO THE BeanTools DIR,
+// RUN THIS SCRIPT INSTEAD OF RESTARTING OPEN JUMP
+//
+// Michael Michaud 2007-03-15
+//
+///////////////////////////////////////////////////////////////
+
+// import statements
+import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.I18N;
+import org.openjump.core.ui.plugin.customize.BeanToolsPlugIn;
+
+// Remove the BeanTools menu
+context = wc.createPlugInContext();
+featureInstaller = context.getFeatureInstaller();
+menu = featureInstaller.menuBarMenu(I18N.get(MenuNames.CUSTOMIZE));
+item = featureInstaller.childMenuItem(I18N.get("ui.plugin.BeanToolsPlugIn.BeanTools"), menu);
+menu.remove(item);
+
+// Reinitialize the plugin
+plugin = new BeanToolsPlugIn();
+plugin.initialize(context);

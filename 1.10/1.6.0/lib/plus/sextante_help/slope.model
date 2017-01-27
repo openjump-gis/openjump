@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<model name="mean slope" group="Models">
+		<algorithm key="PROC0" alg_cmd_line_name="saga:slope,aspect,curvature" coords="279,87,146,58">
+			<assignment key="ELEVATION" assigned_to="INPUT0" />
+			<assignment key="METHOD" assigned_to="INNERPARAM0PROC0" />
+		</algorithm>
+		<algorithm key="PROC1" alg_cmd_line_name="grass:r.slope.aspect" coords="46,186,93,64">
+			<assignment key="min_slp_allowed" assigned_to="INNERPARAM5PROC1" />
+			<assignment key="-q" assigned_to="INNERPARAM6PROC1" />
+			<assignment key="-a" assigned_to="INNERPARAM7PROC1" />
+			<assignment key="elevation" assigned_to="INPUT0" />
+			<assignment key="zfactor" assigned_to="INNERPARAM4PROC1" />
+			<assignment key="format" assigned_to="INNERPARAM2PROC1" />
+			<assignment key="prec" assigned_to="INNERPARAM3PROC1" />
+		</algorithm>
+		<algorithm key="PROC2" alg_cmd_line_name="slope" coords="194,148,50,58">
+			<assignment key="UNITS" assigned_to="INNERPARAM1PROC2" />
+			<assignment key="METHOD" assigned_to="INNERPARAM0PROC2" />
+			<assignment key="DEM" assigned_to="INPUT0" />
+		</algorithm>
+		<algorithm key="PROC3" alg_cmd_line_name="multigridmeanvalue" coords="311,253,50,58">
+			<assignment key="INPUT" assigned_to="INNERPARAM0PROC3" />
+			<assignment key="NODATA" assigned_to="INNERPARAM1PROC3" />
+		</algorithm>
+		<input name="INPUT0" description="Raster layer1" tooltip="" class="class es.unex.sextante.parameters.ParameterRasterLayer" coords="20,20,89,58">
+			<attribute name="mandatory" value="true" />
+		</input>
+		<output key="SLOPEPROC0" class="class es.unex.sextante.outputs.OutputRasterLayer" description="slopesaga" />
+		<output key="slopePROC1" class="class es.unex.sextante.outputs.OutputRasterLayer" description="slopegrass" />
+		<output key="SLOPEPROC2" class="class es.unex.sextante.outputs.OutputRasterLayer" description="slopesextante" />
+		<output key="RESULTPROC3" class="class es.unex.sextante.outputs.OutputRasterLayer" description="mean" />
+		<data_object key="INNERPARAM4PROC1" value="1" description="String" />
+		<data_object key="dyyPROC1" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,-1" description='"Name for output second order partial derivative dyy raster map" from r.slope.aspect' />
+		<data_object key="SLOPEPROC0" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Slope" from Process 0: Slope, Aspect, Curvature' />
+		<data_object key="dxPROC1" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,-1" description='"Name for output first order partial derivative dx (E-W slope) raster map" from r.slope.aspect' />
+		<data_object key="INNERPARAM7PROC1" value="false" description="Boolean" />
+		<data_object key="CURVPROC0" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Curvature" from Process 0: Slope, Aspect, Curvature' />
+		<data_object key="tcurvPROC1" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,-1" description='"Name for output tangential curvature raster map" from r.slope.aspect' />
+		<data_object key="RESULTPROC3" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Mean" from Process 3: Mean' />
+		<data_object key="SLOPEPROC2" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Slope" from Process 2: Slope' />
+		<data_object key="INNERPARAM3PROC1" value="0" description="Selection" />
+		<data_object key="INNERPARAM6PROC1" value="false" description="Boolean" />
+		<data_object key="INNERPARAM0PROC1" value="0" description="Selection" />
+		<data_object key="INNERPARAM0PROC2" value="0" description="Selection" />
+		<data_object key="HCURVPROC0" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Plan Curvature" from Process 0: Slope, Aspect, Curvature' />
+		<data_object key="INNERPARAM0PROC0" value="0" description="Selection" />
+		<data_object key="dxyPROC1" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,-1" description='"Name for output second order partial derivative dxy raster map" from r.slope.aspect' />
+		<data_object key="INNERPARAM0PROC3" value="slopePROC1,SLOPEPROC0,SLOPEPROC2" description="Multiple Input" />
+		<data_object key="slopePROC1" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,-1" description='"Name for output slope raster map" from r.slope.aspect' />
+		<data_object key="INNERPARAM2PROC1" value="0" description="Selection" />
+		<data_object key="INNERPARAM1PROC3" value="true" description="Boolean" />
+		<data_object key="aspectPROC1" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,-1" description='"Name for output aspect raster map" from r.slope.aspect' />
+		<data_object key="dyPROC1" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,-1" description='"Name for output first order partial derivative dy (N-S slope) raster map" from r.slope.aspect' />
+		<data_object key="INNERPARAM1PROC2" value="0" description="Selection" />
+		<data_object key="INNERPARAM5PROC1" value="0" description="String" />
+		<data_object key="INNERPARAM1PROC1" value="0" description="Selection" />
+		<data_object key="ASPECTPROC0" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Aspect" from Process 0: Slope, Aspect, Curvature' />
+		<data_object key="VCURVPROC0" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,1" description='"Profile Curvature" from Process 0: Slope, Aspect, Curvature' />
+		<data_object key="pcurvPROC1" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,-1" description='"Name for output profile curvature raster map" from r.slope.aspect' />
+		<data_object key="dxxPROC1" value="class es.unex.sextante.modeler.elements.ModelElementRasterLayer,-1" description='"Name for output second order partial derivative dxx raster map" from r.slope.aspect' />
+	</model>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

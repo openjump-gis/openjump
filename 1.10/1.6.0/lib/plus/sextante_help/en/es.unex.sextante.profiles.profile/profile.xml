@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates a longitudinal profile along a given route" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="ROUTE" text="The layer that containing the route. If the layer has several features, the algorithm will just use the first one.. " description="Profile route" type="3">
+		</element>
+		<element name="DEM" text="a Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="LAYERS" text="Layers whose values will be studied along the profile route." description="Additional layers" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="GRAPH" text="A graph showing the profile" description="Profile" type="2">
+			<image description="" file="profile_graph.jpg">
+			</image>
+		</element>
+		<element name="PROFILEPOINTS" text="A new points layer with the following fields in its attributes table:&#10;* X: X coordinate of each point.&#10;* Y: Y coordinate of each point.&#10;* Z: Z coordinate of each point.&#10;* Projected distance:  projected distance from origin.&#10;* Real distance: real distance from origin.&#10;* Values of the selected additional layers.&#10;&#10;A new point is added for each cell crossed by the defined route" description="Profile [points]" type="2">
+			<image description="Longitudinal profile (points) from the MDE and the Channel Network." file="perfil_longitudinal_figura.png">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

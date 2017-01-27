@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="Curvatures provide information about the concavity or convexity of a surface area at a given point." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="The figures shown were realized with the Fit 2. Degree Polynom (Zevenbergen &amp; Thorne 1987)." description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="METHOD" text="the method to use may be selected from  the following:&#10;* Fit 2. Degree Polynom (Bauer, Rohdenburg, Bork 1985)&#10;* Fit 2. Degree Polynom (Heerdegen &amp; Beran 1982)&#10;* Fit 2. Degree Polynom (Zevenbergen &amp; Thorne 1987)&#10;* Fit 3. Degree Polynom (Haralick 1983)" description="Method" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="CLASS" text="The cells are divided in 9 classes according to the values of horizontal and vertical curvature in them .The meaning of each of these classes and the value asigned to it in this classification layer is as follows:&#10;* 0: Vertical Curvature: concave. Horizontal Curvature: concave.&#10;* 1: Vertical Curvature: concave. Horizontal Curvature: plane.&#10;* 2: Vertical Curvature: concave. Horizontal Curvature: convex&#10;* 3: Vertical Curvature: plane. Horizontal Curvature: concave.&#10;* 4: Vertical Curvature: plane. Horizontal Curvature: plane.&#10;* 5: Vertical Curvature: plane. Horizontal Curvature: convex.&#10;* 6: Vertical Curvature: convex. Horizontal Curvature: concave.&#10;* 7: Vertical Curvature: convex. Horizontal Curvature: plane.&#10;* 8: Vertical Curvature: convex. Horizontal Curvature: convex." description="Classification" type="2">
+			<image description="" file="CurvaturaClasificacion.jpg">
+			</image>
+		</element>
+		<element name="HORZ" text="A horizontal convex curvature represents an area where the flow tends to disperse while horizontal concave curvature represents an area where the flow tends to concentrate since the flow lines converge." description="Horizontal curvature" type="2">
+			<image description="" file="CurvaturaHorizontal.jpg">
+			</image>
+		</element>
+		<element name="GLOBAL" text="Mean curvature of surface." description="Curvature" type="2">
+			<image description="" file="Curvatura.jpg">
+			</image>
+		</element>
+		<element name="VERT" text="Positive values indicate a convex curvature (areas of flow acceleration), while negative values indicate a concave curvature (areas with a tendency to accumulate water)." description="Vertical curvature" type="2">
+			<image description="" file="CurvaturaVertical.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm takes a vector layer and a field from its attributes table and adds a new numerical field to it. This new field will match the selected field, so if a two features have the same value for that field, they will also have identical values in the new field.&#10;&#10;This is useful when rasterizing a vector layer. Since only numerical values can be used in raster layers, rasterizing a non-numerical field is not possible. Creating an equivalent numerical field solves this problem." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="LAYER" text="The input  layer. The new field will be added to the attributes table of this layer." description="Input layer" type="3">
+		</element>
+		<element name="NEW_FIELD_NAME" text="The name for the field to create with the equivalent numerical class." description="Name for new field" type="3">
+		</element>
+		<element name="CLASS_FIELD" text="The field that contains the non-numerical class values." description="Class field" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting layer with a new numerical class field added to its attributes table." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

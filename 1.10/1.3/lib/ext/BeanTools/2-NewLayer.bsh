@@ -1,0 +1,14 @@
+///////////////////////////////////////////////////////////////
+// ADD A NEW LAYER WITH A CUSTOMIZED SCHEMA
+// Michael Michaud   2007-03-15
+///////////////////////////////////////////////////////////////
+
+fs = new FeatureSchema();
+fs.addAttribute("Geometry", AttributeType.GEOMETRY);
+fs.addAttribute("Name", AttributeType.STRING);
+fs.addAttribute("Width", AttributeType.DOUBLE);
+fs.addAttribute("Count", AttributeType.INTEGER);
+fs.addAttribute("Date", AttributeType.DATE);
+
+fc = new FeatureDataset(fs);
+wc.layerManager.addLayer("MyCategory", "MyLayer", fc);

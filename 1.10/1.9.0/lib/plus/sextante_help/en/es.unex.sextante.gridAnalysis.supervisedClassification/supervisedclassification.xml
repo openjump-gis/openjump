@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm generates one thematic layer (classified) from a group of images, clasifying its values in groups (classes). All of these images should contain information of the same zone using different  parameters. The most common practice for this is to use different bands of a  remote multispectral sensor although this is not the only possibility.&#10;&#10;The module should be provided with information previously known about a part of  the input data so that it can automatically apply it over the rest of the area being analysed. In short, helping the module  by showing it some areas (called training areas) that are known beforehand and share common characteristics with the area being analysed (homogenous class). These characteristics are known as spectral signature of each class and this signature is obtained from a series of statistical analysis of the values found in each training area and in each input layer. Once this signature is known, it is used to assign values to other cells that have similar signatures. The following figure shows a diagram of the process of supervised classification. " description="Description" type="0">
+			<image description="" file="clasSuper.jpg">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="Picture taken from  http://www.sc.chula.ac.th/courseware/2309507/Lecture/remote18.htm&#10;" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="One or various bands. These bands will provide the information to define the spectral signatures" description="Bands" type="3">
+		</element>
+		<element name="POLYGONS" text="Layer with training areas." description="Polygons" type="3">
+		</element>
+		<element name="FIELD" text="The field that contains the name of the class represented by each polygon. Pixels within each polygon will be analyzed, and the spectral signature obtained from that analysis will be assigned to its class." description="Field with class value" type="3">
+		</element>
+		<element name="METHOD" text="The assignment of values in the cells outside of the training areas also depend on the criteria used. This algorithms incorporates three of them:&#10;&#10;* Paralelepiped&#10;* Minimum distance&#10;* Maximum likelihood&#10;&#10;The user should check which of the algorithms produces the best classification of the image (this  depends on the  training areas as well as the characteristics of the images itself). &#10;&#10;In the paralelepiped algorithm, some cells might not be classified (they will be asigned the no data value) if their signature is not similar to any of those defined by the training areas. The other algorithms will always classify a pixel into a given class." description="Method" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="CLASSES" text="Table with statistical information for each one of the bands used." description="Classes" type="2">
+		</element>
+		<element name="CLASSIFICATION" text="The output raster layer with classes." description="Classification" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

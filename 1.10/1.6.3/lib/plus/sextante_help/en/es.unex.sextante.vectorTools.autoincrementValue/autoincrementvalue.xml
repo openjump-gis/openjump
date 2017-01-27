@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm generates a copy of the input vector layer setting a autoincremental value in the selected field. It starts at zero (0, 1, 2, ...)." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Juan Ignacio Varela (Nacho Uve)" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Nacho Varela" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The input layer" description="Layer" type="3">
+		</element>
+		<element name="FIELD" text="Attribute where autoincremental number will be set" description="Attribute" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The output layer with the autoincremental field value" description="Incremental_field" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

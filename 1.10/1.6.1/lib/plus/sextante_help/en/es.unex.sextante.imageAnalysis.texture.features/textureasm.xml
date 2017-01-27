@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text='This algorithm performs texture analysis on an image and calculates the Angular Second Moment&#10;&#10;This parameter is calculated from the Grey-level coocurrence matrix (GLCM), following the ideas defined by Haralick in his seminal article&#10;&#10;Robert M Haralick, K Shanmugam, Its&apos;hak Dinstein (1973). "Textural Features for Image Classification". IEEE Transactions on Systems, Man, and Cybernetics SMC-3 (6): 610&#8211;621.&#10;&#10;Detailed descriptions of both the GLCM and ASM can be found at http://www.fp.ucalgary.ca/mhallbey/tutorial.htm' description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="LAYER" text="The image to analyze" description="Image" type="3">
+		</element>
+		<element name="WINDOW_RADIUS" text="The radius of the analysis window. Texture is calculated for each pixel taking into account pixels in an analysis window of the given radius centered on it." description="Window_radius" type="3">
+		</element>
+		<element name="SHIFTX" text="The X distance between two pixels in the analysis window. The GLCM is created using this shift distance." description="ShiftX" type="3">
+		</element>
+		<element name="SHIFTY" text="The Y distance between two pixels in the analysis window. The GLCM is created using this shift distance." description="ShiftY" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting image with ASM values." description="Result" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

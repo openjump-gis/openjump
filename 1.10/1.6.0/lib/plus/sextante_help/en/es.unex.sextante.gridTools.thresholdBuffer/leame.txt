@@ -1,0 +1,7 @@
+
+
+capa origen: red de drenaje
+capa de parametro umbral: pendiente
+
+tipo umbral: absoluto
+umbral absoluto: 0.15
