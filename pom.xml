@@ -430,6 +430,11 @@
                             <reportOutputDirectory>${project.build.directory}/apidocs/</reportOutputDirectory>
                             <!-- destDir>${version.string}</destDir -->
                             <quiet>true</quiet>
+                            <!--
+                              java8+ enforce some strict checking, which we do not abide (yet?)
+                              also see http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
+                            -->
+                            <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
                         <executions>
                             <execution>
