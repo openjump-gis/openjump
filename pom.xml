@@ -414,6 +414,19 @@
             </build>
         </profile>
         <profile>
+            <id>Java 8</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <properties>
+                <!--
+                  java8+ enforces some strict checking, which we do not abide (yet?)
+                  also see http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
+                -->
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
+        </profile>
+        <profile>
             <id>javadoc</id>
             <properties>
                 <!-- by default datestamp, can be overwritten with -D version.number=X.X.X -->
@@ -430,11 +443,6 @@
                             <reportOutputDirectory>${project.build.directory}/apidocs/</reportOutputDirectory>
                             <!-- destDir>${version.string}</destDir -->
                             <quiet>true</quiet>
-                            <!--
-                              java8+ enforce some strict checking, which we do not abide (yet?)
-                              also see http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
-                            -->
-                            <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
                         <executions>
                             <execution>
