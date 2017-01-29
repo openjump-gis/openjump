@@ -414,7 +414,7 @@
             </build>
         </profile>
         <profile>
-            <id>Java 8</id>
+            <id>javadoc8 fix</id>
             <activation>
                 <jdk>1.8</jdk>
             </activation>
