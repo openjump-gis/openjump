@@ -252,7 +252,7 @@ NATIVE_PATH="$GDALPATH:$GDALPATH/lib:$GDALPATH/java:$NATIVE_PATH"
 CLASSPATH=$GDALPATH/java/gdal.jar:$CLASSPATH
 
 # export (DY)LD_LIBRARY_PATH depending on platform
-if [ "$(basename "$0")" == "oj_macosx.command" ]; then
+if [ "$(basename "$0")" = "oj_macosx.command" ]; then
   ## Export environment variables for C-coded functions.
   export DYLD_LIBRARY_PATH="$NATIVE_PATH:$DYLD_LIBRARY_PATH"
   echo ---DYLD_LIBRARY_PATH---
