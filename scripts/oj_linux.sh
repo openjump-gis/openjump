@@ -246,10 +246,10 @@ NATIVE_PATH="$JUMP_NATIVE_DIR/$JAVA_ARCH:$JUMP_NATIVE_DIR:$JUMP_PLUGIN_DIR"
 export PATH="$JUMP_NATIVE_DIR:$PATH"
 
 # generate gdal settings
-export GDAL_DATA=$JUMP_NATIVE_DIR/gdal-linux-data
-GDALPATH=$JUMP_NATIVE_DIR/gdal-linux-$JAVA_ARCH
+export GDAL_DATA="$JUMP_NATIVE_DIR/gdal-linux-data"
+GDALPATH="$JUMP_NATIVE_DIR/gdal-linux-$JAVA_ARCH"
 NATIVE_PATH="$GDALPATH:$GDALPATH/lib:$GDALPATH/java:$NATIVE_PATH"
-CLASSPATH=$GDALPATH/java/gdal.jar:$CLASSPATH
+CLASSPATH="$GDALPATH/java/gdal.jar:$CLASSPATH"
 
 # export (DY)LD_LIBRARY_PATH depending on platform
 if [ "$(basename "$0")" = "oj_macosx.command" ]; then
