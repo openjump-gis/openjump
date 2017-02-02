@@ -123,11 +123,6 @@ public class WMSStylePlugIn extends AbstractPlugIn {
                 }
             }
         });
-        // Add to prevent error message and OJ to freeze if Large scale>Small
-        // scale
-        // Now the only way to close this dialog is using cancel button
-
-        dialog.setDefaultCloseOperation(dialog.DO_NOTHING_ON_CLOSE);
         dialog.pack();
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);

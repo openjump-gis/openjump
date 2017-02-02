@@ -5,6 +5,7 @@
 
 2017-02-02 mmichaud <m.michael.michaud@orange.fr>
   * Restore ZoomToWMSPlugIn capabilities in more recent ZoomToWMSLayerPlugIn
+  * WMSStylePlugIn dialog did not close (related to Fix #453)
 
 * release 1.10 Changes.txt updated until here***********************************
 
