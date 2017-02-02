@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-02-02 mmichaud <m.michael.michaud@orange.fr>
+  * Restore ZoomToWMSPlugIn capabilities in more recent ZoomToWMSLayerPlugIn
+
 * release 1.10 Changes.txt updated until here***********************************
 
 2017-01-27 mmichaud <m.michael.michaud@orange.fr>

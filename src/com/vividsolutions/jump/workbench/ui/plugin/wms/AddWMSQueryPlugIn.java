@@ -36,7 +36,9 @@ import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
-
+/**
+ * This plugin has been deactivated in favor of AddWmsLayerWizard
+ */
 public class AddWMSQueryPlugIn extends AbstractWizardPlugin {
     public void initialize(PlugInContext context) throws Exception {
       super.initialize(context);
