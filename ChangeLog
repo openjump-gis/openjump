@@ -7,7 +7,7 @@
   * Restore ZoomToWMSPlugIn capabilities in more recent ZoomToWMSLayerPlugIn
   * WMSStylePlugIn dialog did not close (related to Fix #453)
 
-* release 1.10 Changes.txt updated until here***********************************
+* release 1.10 *****************************************************************
 
 2017-01-27 mmichaud <m.michael.michaud@orange.fr>
   * Fix #453 about closing ChangeRasterStyle dialog (related to #433)
