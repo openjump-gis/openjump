@@ -455,7 +455,11 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
     public void addCreation(Feature feature) throws EvolutionOperationException {
         Evolution oldEvo = evolutions.remove(feature.getID());
-        Evolution newEvo = Evolution.createCreation(feature.clone(true, false)).mergeToPrevious(oldEvo);
+        //Evolution newEvo = Evolution.createCreation(feature.clone(true, false)).mergeToPrevious(oldEvo);
+        // copy the pk if exists (may happen when a new feature is build from an old one as in split command)
+        // the pk of a creation will not be committed to the database, but keeping it in the local feature
+        // may help in case of undo/redo
+        Evolution newEvo = Evolution.createCreation(feature.clone(true, true)).mergeToPrevious(oldEvo);
         if (newEvo != null) evolutions.put(feature.getID(), newEvo);
     }
 

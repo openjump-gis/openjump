@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-03-04 mmichaud <m.michael.michaud@orange.fr>
+  * Fix a bug in PostGIS writer happening in the evolution merging process
+
 2017-02-02 mmichaud <m.michael.michaud@orange.fr>
   * Upgrade csv-driver to 1.0.0 (encoding option to writer + other improvements)
 
