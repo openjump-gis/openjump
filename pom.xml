@@ -165,6 +165,7 @@
                 <version.number>unknown</version.number>
                 <version.release>release</version.release>
                 <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
+                <recompress.jars>true</recompress.jars>
             </properties>
             <build>
                 <plugins>
@@ -223,7 +224,7 @@
                                 <id>recompress portable zip distros</id>
                                 <phase>package</phase>
                                 <configuration>
-                                    <target>
+                                    <target if="${recompress.jars}">
                                         <property name="file.encoding" value="ISO-8859-1" />
                                         <property name="recompress.folder"
                                                   value="${project.build.directory}/recompress" />
