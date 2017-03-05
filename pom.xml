@@ -224,7 +224,7 @@
                                 <id>recompress portable zip distros</id>
                                 <phase>package</phase>
                                 <configuration>
-                                    <target if="${recompress.jars}">
+                                    <target name="unzip">
                                         <property name="file.encoding" value="ISO-8859-1" />
                                         <property name="recompress.folder"
                                                   value="${project.build.directory}/recompress" />
@@ -243,6 +243,8 @@
                                             dest="${recompress.folder}/plus">
                                             <cutdirsmapper dirs="1" />
                                         </unzip>
+                                      </target>
+                                      <target name="recompressJars" if="${recompress.jars}">
                                         <!-- recompress jars -->
                                         <taskdef name="p200ant"
                                                  classname="de.matthiasmann.p200ant.P200AntTask"
@@ -256,6 +258,8 @@
                                         <p200ant repack="true">
                                             <fileset refid="jars2pack" />
                                         </p200ant>
+                                      </target>
+                                      <target name="createPortableZips">
                                         <!-- Recompress to distro zips -->
                                         <zip
                                             destfile="${recompress.folder}/${portable.filename}-CORE.zip"
