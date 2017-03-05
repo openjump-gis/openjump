@@ -22,11 +22,11 @@ public class PlugInClassLoader extends URLClassLoader {
     // that changed in java9, now we build it from the java property
     else {
       List ucp = new ArrayList<URL>();
-//      System.out.println(parent.getClass());
-//      String cp = System.getProperty("java.class.path");
-//      System.out.println(cp);
-//      addClassPathToUCP(cp, ucp);
-//      System.out.println(ucp);
+      System.out.println(parent.getClass());
+      String cp =System.getProperty ("java.class.path","");
+      System.out.println(cp);
+      addClassPathToUCP(cp, ucp);
+      System.out.println(ucp);
       
       addUrls((URL[])ucp.toArray(new URL[] {}));
     }
