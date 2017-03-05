@@ -52,8 +52,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 import com.vividsolutions.jump.workbench.ui.OptionsPanel;
 import com.vividsolutions.jump.workbench.ui.TrackedPopupMenu;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
@@ -93,7 +93,15 @@ public class SkinOptionsPanel extends JPanel implements OptionsPanel {
       for (Iterator i = ((Collection) blackboard.get(SKINS_KEY)).iterator(); i
           .hasNext();) {
         LookAndFeelProxy proxy = (LookAndFeelProxy) i.next();
-        String proxy_skin = proxy.getLookAndFeel().getClass().getName();
+        String proxy_skin = null;
+        try {
+          proxy_skin = proxy.getLookAndFeel().getClass().getName();
+        } catch (NullPointerException e) {
+          // preliminary Workaround: since java9 we cannot access _all_ skins anymore
+          Logger.error(e);
+          continue;
+        }
+
         model.addElement(proxy);
 
         // activate saved laf if available

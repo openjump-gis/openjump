@@ -40,6 +40,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.OptionsDialog;
@@ -65,11 +66,11 @@ public class InstallSkinsPlugIn extends AbstractPlugIn {
           return (LookAndFeel) Class.forName(lookAndFeelClassName)
               .newInstance();
         } catch (InstantiationException e) {
-          Assert.shouldNeverReachHere(e.toString());
+          Logger.error(e);
         } catch (IllegalAccessException e) {
-          Assert.shouldNeverReachHere(e.toString());
+          Logger.error(e);
         } catch (ClassNotFoundException e) {
-          Assert.shouldNeverReachHere(e.toString());
+          Logger.error(e);
         }
 
         return null;

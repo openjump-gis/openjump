@@ -1,13 +1,35 @@
 package com.vividsolutions.jump.workbench.plugin;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.vividsolutions.jump.workbench.Logger;
 
 public class PlugInClassLoader extends URLClassLoader {
 
   public PlugInClassLoader(ClassLoader parent) {
     super(new URL[0], parent);
-    addUrls(((URLClassLoader) parent).getURLs());
+    // up to java8 we could get the classpath from the app classloader
+    if (parent instanceof URLClassLoader) {
+      addUrls(((URLClassLoader) parent).getURLs());
+    }
+    // that changed in java9, now we build it from the java property
+    else {
+      List ucp = new ArrayList<URL>();
+//      System.out.println(parent.getClass());
+//      String cp = System.getProperty("java.class.path");
+//      System.out.println(cp);
+//      addClassPathToUCP(cp, ucp);
+//      System.out.println(ucp);
+      
+      addUrls((URL[])ucp.toArray(new URL[] {}));
+    }
   }
 
   public PlugInClassLoader(URL[] urls) {
@@ -36,16 +58,14 @@ public class PlugInClassLoader extends URLClassLoader {
     }
 
     // we prefer this class loader to the sun.misc.Launcher one to have all OJ
-    // classes within one classloader, advantages are: 
+    // classes within one classloader, advantages are:
     // - instanceof does not work over different classloaders
     // - we override some classes from extension jars (wfs, deegree), which is
-    //   only possible if they are found before the ones in the jars
-    // Note: 
+    // only possible if they are found before the ones in the jars
+    // Note:
     // exception is this class which is already instantiated with
     // sun.misc.Launcher so we keep it that way
-    if (c == null
-        && !name
-            .equals("com.vividsolutions.jump.workbench.plugin.PlugInClassLoader")) {
+    if (c == null && !name.equals("com.vividsolutions.jump.workbench.plugin.PlugInClassLoader")) {
       try {
         c = findClass(name);
       } catch (ClassNotFoundException e) {
@@ -53,15 +73,13 @@ public class PlugInClassLoader extends URLClassLoader {
     }
 
     // this classloader is always loaded by the default cl, so find it there
-    if (c == null
-        && name
-            .equals("com.vividsolutions.jump.workbench.plugin.PlugInClassLoader")) {
+    if (c == null && name.equals("com.vividsolutions.jump.workbench.plugin.PlugInClassLoader")) {
       try {
         c = getParent().loadClass(name);
       } catch (ClassNotFoundException e) {
       }
     }
-    
+
     return c;
   }
 
@@ -73,6 +91,41 @@ public class PlugInClassLoader extends URLClassLoader {
   public void addUrls(URL[] urls) {
     for (URL url : urls) {
       addURL(url);
+    }
+  }
+
+  /**
+   * Converts the elements in the given class path to file URLs and adds them to
+   * the given URL List.
+   */
+  private static void addClassPathToUCP(String cp, List<URL> ucp) {
+    int off = 0;
+    int next;
+    while ((next = cp.indexOf(File.pathSeparator, off)) != -1) {
+      URL url = toFileURL(cp.substring(off, next));
+      if (url != null)
+        ucp.add(url);
+      off = next + 1;
+    }
+
+    // remaining
+    URL url = toFileURL(cp.substring(off));
+    if (url != null)
+      ucp.add(url);
+  }
+
+  /**
+   * Attempts to convert the given string to a file URL.
+   *
+   * @apiNote This is called by the VM
+   */
+  private static URL toFileURL(String s) {
+    try {
+      return Paths.get(s).toRealPath().toUri().toURL();
+    } catch (InvalidPathException | IOException ignore) {
+      // malformed path string or class path element does not exist
+      Logger.warn(ignore);
+      return null;
     }
   }
 };

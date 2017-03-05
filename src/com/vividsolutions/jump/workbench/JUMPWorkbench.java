@@ -144,11 +144,10 @@ public class JUMPWorkbench {
     return iconlist;
   }
 
-  // for java 1.5-
-  public static final ImageIcon APP_ICON = IconLoader.icon("app-icon.gif");
-  // for java 1.6+
-  public static final ArrayList APP_ICONS = appIcons();
-
+  // icons for frame and desktop purposes eg. alt+tab listing
+  public static final ArrayList<Image> APP_ICONS = appIcons();
+  public static final ImageIcon APP_ICON = new ImageIcon(APP_ICONS.get(0));
+  
   // -- dont change the following strings
   public final static String PROPERTIES_OPTION = "properties";
   public final static String DEFAULT_PLUGINS = "default-plugins";
@@ -206,21 +205,11 @@ public class JUMPWorkbench {
     }
   }
 
-  private static ImageIcon icon;
-
+  /**
+   * getter for the frame icon
+   */
   public static ImageIcon getIcon() {
-    // java 1.5 is really bad with transparent pngs, so we stick with the gif
-    if (!(icon instanceof ImageIcon)) {
-      Double jre_version = Double.parseDouble(System
-          .getProperty("java.version").substring(0, 3));
-      if (jre_version < 1.6) {
-        icon = APP_ICON;
-      } else {
-        icon = new ImageIcon();
-        icon.setImage((Image) APP_ICONS.get(0));
-      }
-    }
-    return icon;
+    return APP_ICON;
   }
 
   /**
