@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.openjump</groupId>
     <artifactId>OpenJUMP</artifactId>
-    <version>snapshot</version>
-    <name>OpenJUMP svn snapshot</name>
+    <version>${version.release}</version>
+    <name>OpenJUMP</name>
     <scm>
         <connection>scm:svn:https://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/core/trunk</connection>
         <developerConnection>scm:svn:https://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/core/trunk</developerConnection>
@@ -14,6 +14,7 @@
     </scm>
     <properties>
         <version.number>0.0.0</version.number>
+        <version.release>svn build</version.release>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
         <imageio-ext.version>1.1.16</imageio-ext.version>
@@ -162,7 +163,7 @@
             <id>release</id>
             <properties>
                 <!-- has to be set on maven run with -D version.number=X.X.X -->
-                <version.number>unknown</version.number>
+                <version.number>0.0.0</version.number>
                 <version.release>release</version.release>
                 <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
                 <recompress.jars>true</recompress.jars>
@@ -217,65 +218,112 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>1.4.1</version>
+                        <executions>
+                            <execution>
+                                <id>snapshot-or-release-is-active</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireActiveProfile>
+                                            <profiles>snapshot,release</profiles>
+                                            <all>false</all>
+                                            <message>You need to select a profile to build the portable distro for!</message>
+                                        </requireActiveProfile>
+                                    </rules>
+                                    <fail>true</fail>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>${maven-antrun-plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>recompress portable zip distros</id>
+                                <id>unzip distros</id>
                                 <phase>package</phase>
                                 <configuration>
-                                    <target name="unzip">
+                                    <target>
                                         <property name="file.encoding" value="ISO-8859-1" />
-                                        <property name="recompress.folder"
-                                                  value="${project.build.directory}/recompress" />
+                                        <!--property name="recompress.folder"
+                                                  value="${project.build.directory}/recompress" /-->
+                                        <echo>Cleanup</echo>
                                         <delete includeemptydirs="true" quiet="true">
-                                            <fileset dir="${project.build.directory}/recompress"
+                                            <fileset dir="${portable.filepath}"
                                                      followsymlinks="false" />
                                         </delete>
                                         <!-- Using an ant task to deflate *.zip -->
+                                        <echo>Unzip CORE</echo>
                                         <unzip
                                             src="${project.build.directory}/${version.string}-CORE.zip"
-                                            dest="${recompress.folder}/core">
+                                            dest="${portable.filepath}/core">
                                             <cutdirsmapper dirs="1" />
                                         </unzip>
+                                        <echo>Unzip PLUS</echo>
                                         <unzip
                                             src="${project.build.directory}/${version.string}-PLUS.zip"
-                                            dest="${recompress.folder}/plus">
+                                            dest="${portable.filepath}/plus">
                                             <cutdirsmapper dirs="1" />
                                         </unzip>
-                                      </target>
-                                      <target name="recompressJars" if="${recompress.jars}">
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>recompress jars (release only)</id>
+                                <phase>package</phase>
+                                <configuration>
+                                      <target if="${recompress.jars}">
                                         <!-- recompress jars -->
                                         <taskdef name="p200ant"
                                                  classname="de.matthiasmann.p200ant.P200AntTask"
                                                  classpath="launcher/p200ant.jar" />
-                                        <fileset id="jars2pack" dir="${recompress.folder}/">
+                                        <fileset id="jars2pack" dir="${portable.filepath}/">
                                             <include name="**/*.jar" />
                                             <!-- exclude signed jars, circumvent security errors 
                                             e.g. "SecurityException: SHA1 digest error" -->
                                             <exclude name="**/ermapper.jar" />
                                         </fileset>
+                                        <echo>Recompress jars</echo>
                                         <p200ant repack="true">
                                             <fileset refid="jars2pack" />
                                         </p200ant>
-                                      </target>
-                                      <target name="createPortableZips">
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>fix permissions, zip portable distros</id>
+                                <phase>package</phase>
+                                <configuration>
+                                      <target>
                                         <!-- Recompress to distro zips -->
+                                        <echo>Zip CORE portable </echo>
                                         <zip
-                                            destfile="${recompress.folder}/${portable.filename}-CORE.zip"
+                                            destfile="${portable.filepath}/${portable.filename}-CORE.zip"
                                             level="9">
-                                            <zipfileset dir="${recompress.folder}/core"
+                                            <zipfileset dir="${portable.filepath}/core"
                                                         prefix="${version.string}-CORE" excludes="${project.binaries}" />
-                                            <zipfileset dir="${recompress.folder}/core"
+                                            <zipfileset dir="${portable.filepath}/core"
                                                         prefix="${version.string}-CORE" includes="${project.binaries}"
                                                         filemode="755" />
                                         </zip>
+                                        <echo>Zip PLUS portable </echo>
                                         <zip
-                                            destfile="${recompress.folder}/${portable.filename}-PLUS.zip"
+                                            destfile="${portable.filepath}/${portable.filename}-PLUS.zip"
                                             level="9">
-                                            <zipfileset dir="${recompress.folder}/plus"
+                                            <zipfileset dir="${portable.filepath}/plus"
                                                         prefix="${version.string}-PLUS" excludes="${project.binaries}" />
-                                            <zipfileset dir="${recompress.folder}/plus"
+                                            <zipfileset dir="${portable.filepath}/plus"
                                                         prefix="${version.string}-PLUS" includes="${project.binaries}"
                                                         filemode="755" />
                                         </zip>
@@ -298,6 +346,29 @@
             </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>1.4.1</version>
+                        <executions>
+                            <execution>
+                                <id>portable-is-active</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireActiveProfile>
+                                            <profiles>portable</profiles>
+                                            <all>true</all>
+                                            <message>The installers are build using the portable distro zips!</message>
+                                        </requireActiveProfile>
+                                    </rules>
+                                    <fail>true</fail>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>${maven-antrun-plugin.version}</version>
