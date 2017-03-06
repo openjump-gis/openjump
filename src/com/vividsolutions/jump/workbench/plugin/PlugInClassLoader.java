@@ -9,8 +9,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vividsolutions.jump.workbench.Logger;
-
 public class PlugInClassLoader extends URLClassLoader {
 
   public PlugInClassLoader(ClassLoader parent) {
@@ -124,7 +122,8 @@ public class PlugInClassLoader extends URLClassLoader {
       return Paths.get(s).toRealPath().toUri().toURL();
     } catch (InvalidPathException | IOException ignore) {
       // malformed path string or class path element does not exist
-      Logger.warn(ignore);
+      // we cannot use Logger during VM init, so we simply print to STDERR
+      ignore.printStackTrace(System.err);
       return null;
     }
   }
