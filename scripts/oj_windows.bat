@@ -76,6 +76,27 @@ for /f "tokens=* delims=" %%i in ('"%dirname%java" -version 2^>^&1') do call :co
 set "JAVA_VERSIONSTRING=%concat%"
 echo %JAVA_VERSIONSTRING%
 
+rem -- get java version (for processing) --
+
+for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do (
+    rem @echo Output: %%g
+    set JAVAVER=%%g
+)
+set JAVAVER=%JAVAVER:"=%
+rem @echo Output: %JAVAVER%
+
+for /f "delims=. tokens=1-3" %%v in ("%JAVAVER%") do (
+    rem @echo Major: %%v
+    set JAVAVER_MAJOR=%%v
+    rem @echo Minor: %%w
+    set JAVAVER_MINOR=%%w
+    rem @echo Build: %%x
+    set JAVAVER_PATCH=%%x
+)
+
+rem -- explicitly export some packages as needed since java9 --
+if /i "%JAVAVER_MAJOR%"=="9-ea" set JAVA_OPTS=%JAVA_OPTS% --add-exports java.base/jdk.internal.loader=ALL-UNNAMED --add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED --add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED
+
 rem -- detect if java is 64bit --
 for /f "delims=" %%v in ('echo "%JAVA_VERSIONSTRING%"^|findstr /I "64-Bit"') do (
   set JAVA_X64=64
