@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-03-11 Giuseppe Aruta
+  * Added CadTools extension to OpenJUMP Plus. A set of cad-like tools 
+    and plugins mainly deriving from Kosmo 3.0 source code
+
 2017-03-04 mmichaud <m.michael.michaud@orange.fr>
   * Fix a bug in PostGIS writer happening in the evolution merging process
 

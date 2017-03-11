@@ -103,6 +103,8 @@ and the following plugins
   aggregation-*.jar
  BeanShell Editor (Michaël Michaud) - GPL2 - gpl-2.txt
   bsheditor4jump-*.jar, buoy.jar(see above)
+ CAD Tools (Giuseppe Aruta) - GPL3 - gpl-3.0.txt
+  CadTools-*.jar
  CSV driver (Michaël Michaud) - GPL2 - gpl-2.txt
   csv-driver-*.jar
  Concave Hull (Eric Grosso) - LGPL2.1, GPL2 - lgpl-2.1.txt, gpl-2.txt
