@@ -204,68 +204,67 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 
 
     public boolean execute(PlugInContext context) throws Exception {
-        
-  	    //[sstein, 16.07.2006] set again to obtain correct language
-	    //[LDB: 31.08.2007] moved all initialization of strings here
-	    MAIN_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.main-options");
-	    PROCESSED_DATA = I18N.get("ui.plugin.analysis.BufferPlugIn.processed-data");
-	    LAYER = I18N.get("ui.plugin.analysis.BufferPlugIn.layer");
+        // [sstein, 16.07.2006] set again to obtain correct language
+        // [LDB: 31.08.2007] moved all initialization of strings here
+        MAIN_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.main-options");
+        PROCESSED_DATA = I18N.get("ui.plugin.analysis.BufferPlugIn.processed-data");
+        LAYER = I18N.get("ui.plugin.analysis.BufferPlugIn.layer");
         SELECTION = I18N.get("ui.plugin.analysis.BufferPlugIn.selection");
         SELECTION_HELP = I18N.get("ui.plugin.analysis.BufferPlugIn.selection-help");
         UPDATE_SOURCE = I18N.get("ui.plugin.analysis.BufferPlugIn.update-source");
         UPDATE_SOURCE_HELP = I18N.get("ui.plugin.analysis.BufferPlugIn.update-source-help");
-  
+
         DISTANCE = I18N.get("ui.plugin.analysis.BufferPlugIn.distance");
-	    FIXED_DISTANCE = I18N.get("ui.plugin.analysis.BufferPlugIn.fixed-distance");
-	    FROM_ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.get-distance-from-attribute-value");
-	    ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use");
-	    ATTRIBUTE_TOOLTIP = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use-tooltip");
-	    
-	    
-	    OTHER_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.other-options");
-        QUADRANT_SEGMENTS = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Number-of-segments-per-circle-quarter");
-	    UNION_RESULT = I18N.get("ui.plugin.analysis.UnionPlugIn.union");
-	    COPY_ATTRIBUTES = I18N.get("ui.plugin.analysis.BufferPlugIn.preserve-attributes");
-	    
-	    ADVANCED_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.advanced-options");
-	    END_CAP_STYLE = I18N.get("ui.plugin.analysis.BufferPlugIn.end-cap-style");
-	    JOIN_STYLE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-style");
+        FIXED_DISTANCE = I18N.get("ui.plugin.analysis.BufferPlugIn.fixed-distance");
+        FROM_ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.get-distance-from-attribute-value");
+        ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use");
+        ATTRIBUTE_TOOLTIP = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use-tooltip");
+
+        OTHER_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.other-options");
+        QUADRANT_SEGMENTS = I18N.get(
+                "org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Number-of-segments-per-circle-quarter");
+        UNION_RESULT = I18N.get("ui.plugin.analysis.UnionPlugIn.union");
+        COPY_ATTRIBUTES = I18N.get("ui.plugin.analysis.BufferPlugIn.preserve-attributes");
+
+        ADVANCED_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.advanced-options");
+        END_CAP_STYLE = I18N.get("ui.plugin.analysis.BufferPlugIn.end-cap-style");
+        JOIN_STYLE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-style");
         MITRE_LIMIT = I18N.get("ui.plugin.analysis.BufferPlugIn.mitre-join-limit");
         LEFT_SINGLE_SIDED = I18N.get("ui.plugin.analysis.BufferPlugIn.left-single-sided");
         RIGHT_SINGLE_SIDED = I18N.get("ui.plugin.analysis.BufferPlugIn.right-single-sided");
-	  
-	    endCapStyles = new ArrayList();
-	    endCapStyles.add(S_CAP_FLAT);
-	    endCapStyles.add(S_CAP_ROUND);
-	    endCapStyles.add(S_CAP_SQUARE);
-	  
-	    joinStyles = new ArrayList();
-	    joinStyles.add(S_JOIN_BEVEL);
-	    joinStyles.add(S_JOIN_MITRE);
-	    joinStyles.add(S_JOIN_ROUND);
-	  
-	    MultiTabInputDialog dialog = new MultiTabInputDialog(
-	        context.getWorkbenchFrame(), getName(), MAIN_OPTIONS, true);
-	    int n = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
-	    boolean useSelection = (n > 0);
+
+        endCapStyles = new ArrayList();
+        endCapStyles.add(S_CAP_FLAT);
+        endCapStyles.add(S_CAP_ROUND);
+        endCapStyles.add(S_CAP_SQUARE);
+
+        joinStyles = new ArrayList();
+        joinStyles.add(S_JOIN_BEVEL);
+        joinStyles.add(S_JOIN_MITRE);
+        joinStyles.add(S_JOIN_ROUND);
+
+        MultiTabInputDialog dialog = new MultiTabInputDialog(context.getWorkbenchFrame(), getName(), MAIN_OPTIONS,
+                true);
+        int n = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
+        boolean useSelection = (n > 0);
         String sideBarText;
-	    if (useSelection) {
-		  sideBarText = SELECTION;
-		}
-	    else {
-		  sideBarText = I18N.get("ui.plugin.analysis.BufferPlugIn.buffers-all-geometries-in-the-input-layer");
-		}
+        if (useSelection) {
+            sideBarText = SELECTION;
+        } else {
+            sideBarText = I18N.get("ui.plugin.analysis.BufferPlugIn.buffers-all-geometries-in-the-input-layer");
+        }
         dialog.setSideBarDescription(sideBarText);
         addParameter(P_USE_SELECTION, useSelection);
-	    setDialogValues(dialog, context, useSelection);
-	    updateControls(context, dialog, useSelection);
-	    GUIUtil.centreOnWindow(dialog);
-	    dialog.setVisible(true);
-	    if (! dialog.wasOKPressed()) { return false; }
-	    getDialogValues(dialog, useSelection);
-	    return true;
+        setDialogValues(dialog, context, useSelection);
+        updateControls(context, dialog, useSelection);
+        GUIUtil.centreOnWindow(dialog);
+        dialog.setVisible(true);
+        if (!dialog.wasOKPressed()) {
+            return false;
+        }
+        getDialogValues(dialog, useSelection);
+        return true;
     }
-
 
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception{
         try {
@@ -462,9 +461,8 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
     private void setDialogValues(final MultiTabInputDialog dialog,
                                  final PlugInContext context,
                                  final boolean useSelection) {
-	    
         try{
-	    	updateIcon(dialog);
+            updateIcon(dialog);
         }
         catch (Exception ex){}
         
@@ -477,8 +475,8 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         dialog.addSeparator();
         dialog.addSubTitle(DISTANCE);
         final JTextField bufferDistanceTextField = dialog.addDoubleField(FIXED_DISTANCE, (Double)getParameter(P_DISTANCE), 10, null);
-	    final JCheckBox fromAttributeCheckBox = dialog.addCheckBox(FROM_ATTRIBUTE, false, ATTRIBUTE_TOOLTIP);
-	    final JComboBox attributeComboBox = dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.NUMERIC_FILTER, ATTRIBUTE_TOOLTIP);
+        final JCheckBox fromAttributeCheckBox = dialog.addCheckBox(FROM_ATTRIBUTE, false, ATTRIBUTE_TOOLTIP);
+        final JComboBox attributeComboBox = dialog.addAttributeComboBox(ATTRIBUTE, LAYER, AttributeTypeFilter.NUMERIC_FILTER, ATTRIBUTE_TOOLTIP);
         
         dialog.addSeparator();
         dialog.addSubTitle(OTHER_OPTIONS);
@@ -563,48 +561,49 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 
     private void getDialogValues(final MultiInputDialog dialog, final boolean useSelection) {
         Layer layer = null;
-	    if (!useSelection) {
-		    layer = dialog.getLayer(LAYER);
+        if (!useSelection) {
+            layer = dialog.getLayer(LAYER);
         }
         boolean updateSource = dialog.getBoolean(UPDATE_SOURCE);
-	    double bufferDistance = dialog.getDouble(FIXED_DISTANCE);
-	    int endCapStyleCode = encodeCapStyle(dialog.getText(END_CAP_STYLE));
-	    int quadrantSegments = dialog.getInteger(QUADRANT_SEGMENTS);
-	    int joinStyleCode = encodeJoinStyle(dialog.getText(JOIN_STYLE));
-	    double mitreLimit = dialog.getDouble(MITRE_LIMIT);
-	    boolean leftSingleSided = dialog.getBoolean(LEFT_SINGLE_SIDED);
+        double bufferDistance = dialog.getDouble(FIXED_DISTANCE);
+        int endCapStyleCode = encodeCapStyle(dialog.getText(END_CAP_STYLE));
+        int quadrantSegments = dialog.getInteger(QUADRANT_SEGMENTS);
+        int joinStyleCode = encodeJoinStyle(dialog.getText(JOIN_STYLE));
+        double mitreLimit = dialog.getDouble(MITRE_LIMIT);
+        boolean leftSingleSided = dialog.getBoolean(LEFT_SINGLE_SIDED);
         boolean rightSingleSided = dialog.getBoolean(RIGHT_SINGLE_SIDED);
-	    boolean unionResult = dialog.getBoolean(UNION_RESULT);
-	    boolean copyAttributes = dialog.getBoolean(COPY_ATTRIBUTES);
-        boolean fromAttribute  = getParameter(P_FROM_ATTRIBUTE) != null ? (Boolean)getParameter(P_FROM_ATTRIBUTE) : false;
-        int attributeIndex = getParameter(P_ATTRIBUTE_INDEX) != null ? (Integer)getParameter(P_ATTRIBUTE_INDEX) : -1;
-	    if (!useSelection) {
-	        boolean hasNumericAttributes = AttributeTypeFilter.NUMERIC_FILTER
-	            .filter(layer.getFeatureCollectionWrapper().getFeatureSchema()).size() > 0;
-	        fromAttribute = dialog.getBoolean(FROM_ATTRIBUTE);
-	        if (fromAttribute && dialog.getCheckBox(FROM_ATTRIBUTE).isEnabled() && hasNumericAttributes) {
-			    FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-			    String attributeName = dialog.getText(ATTRIBUTE);
-			    attributeIndex = schema.getAttributeIndex(attributeName);
-		    } else {
-		        dialog.getCheckBox(FROM_ATTRIBUTE).setSelected(false);
-			    fromAttribute = false;
-		    }
-	    }
-        addParameter(P_USE_SELECTION,       useSelection);
-        addParameter(P_UPDATE_SOURCE,       updateSource);
-        addParameter(P_DISTANCE,            bufferDistance);
-        addParameter(P_LAYER_NAME,          useSelection ? null : layer.getName());
-        addParameter(P_QUADRANT_SEGMENTS,   quadrantSegments);
-        addParameter(P_END_CAP_STYLE,       endCapStyleCode);
-        addParameter(P_JOIN_STYLE,          joinStyleCode);
-        addParameter(P_MITRE_LIMIT,         mitreLimit);
-        addParameter(P_LEFT_SINGLE_SIDED,   leftSingleSided);
-        addParameter(P_RIGHT_SINGLE_SIDED,  rightSingleSided);
-        addParameter(P_UNION_RESULT,        unionResult);
-        addParameter(P_COPY_ATTRIBUTE,      copyAttributes);
-        addParameter(P_FROM_ATTRIBUTE,      fromAttribute);
-        addParameter(P_ATTRIBUTE_INDEX,     attributeIndex);
+        boolean unionResult = dialog.getBoolean(UNION_RESULT);
+        boolean copyAttributes = dialog.getBoolean(COPY_ATTRIBUTES);
+        boolean fromAttribute = getParameter(P_FROM_ATTRIBUTE) != null ? (Boolean) getParameter(P_FROM_ATTRIBUTE)
+                : false;
+        int attributeIndex = getParameter(P_ATTRIBUTE_INDEX) != null ? (Integer) getParameter(P_ATTRIBUTE_INDEX) : -1;
+        if (!useSelection) {
+            boolean hasNumericAttributes = AttributeTypeFilter.NUMERIC_FILTER
+                    .filter(layer.getFeatureCollectionWrapper().getFeatureSchema()).size() > 0;
+            fromAttribute = dialog.getBoolean(FROM_ATTRIBUTE);
+            if (fromAttribute && dialog.getCheckBox(FROM_ATTRIBUTE).isEnabled() && hasNumericAttributes) {
+                FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+                String attributeName = dialog.getText(ATTRIBUTE);
+                attributeIndex = schema.getAttributeIndex(attributeName);
+            } else {
+                dialog.getCheckBox(FROM_ATTRIBUTE).setSelected(false);
+                fromAttribute = false;
+            }
+        }
+        addParameter(P_USE_SELECTION, useSelection);
+        addParameter(P_UPDATE_SOURCE, updateSource);
+        addParameter(P_DISTANCE, bufferDistance);
+        addParameter(P_LAYER_NAME, useSelection ? null : layer.getName());
+        addParameter(P_QUADRANT_SEGMENTS, quadrantSegments);
+        addParameter(P_END_CAP_STYLE, endCapStyleCode);
+        addParameter(P_JOIN_STYLE, joinStyleCode);
+        addParameter(P_MITRE_LIMIT, mitreLimit);
+        addParameter(P_LEFT_SINGLE_SIDED, leftSingleSided);
+        addParameter(P_RIGHT_SINGLE_SIDED, rightSingleSided);
+        addParameter(P_UNION_RESULT, unionResult);
+        addParameter(P_COPY_ATTRIBUTE, copyAttributes);
+        addParameter(P_FROM_ATTRIBUTE, fromAttribute);
+        addParameter(P_ATTRIBUTE_INDEX, attributeIndex);
     }
 
     private Feature combine(Collection originalFeatures) {
@@ -618,27 +617,30 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
     }
 
     protected void updateControls(PlugInContext context, final MultiInputDialog dialog, boolean useSelection) {
-	    getDialogValues(dialog, useSelection);
-	    updateIcon(dialog);
-	    boolean hasNumericAttributes = !useSelection && AttributeTypeFilter.NUMERIC_FILTER
-	        .filter(context.getLayerManager().getLayer((String)getParameter(P_LAYER_NAME))
-                    .getFeatureCollectionWrapper().getFeatureSchema()).size() > 0;
-	    dialog.setFieldVisible(LAYER, !useSelection);
-	    dialog.setFieldVisible(SELECTION, useSelection);
+        getDialogValues(dialog, useSelection);
+        updateIcon(dialog);
+        boolean hasNumericAttributes = !useSelection
+                && AttributeTypeFilter.NUMERIC_FILTER.filter(context.getLayerManager()
+                        .getLayer((String) getParameter(P_LAYER_NAME)).getFeatureCollectionWrapper().getFeatureSchema())
+                        .size() > 0;
+        dialog.setFieldVisible(LAYER, !useSelection);
+        dialog.setFieldVisible(SELECTION, useSelection);
         dialog.setFieldVisible(UPDATE_SOURCE, useSelection);
-	    dialog.setFieldVisible(SELECTION_HELP, useSelection);
-	    dialog.setFieldEnabled(FIXED_DISTANCE, useSelection || !(Boolean)getParameter(P_FROM_ATTRIBUTE) || !hasNumericAttributes);
-	    dialog.setFieldEnabled(FROM_ATTRIBUTE, !useSelection && hasNumericAttributes);
-	    dialog.setFieldEnabled(ATTRIBUTE, !useSelection && (Boolean)getParameter(P_FROM_ATTRIBUTE) && hasNumericAttributes);
-	    dialog.setFieldEnabled(COPY_ATTRIBUTES, !(Boolean)getParameter(P_UNION_RESULT) && !(Boolean)getParameter(P_UPDATE_SOURCE));
-        dialog.setFieldEnabled(UNION_RESULT, !(Boolean)getParameter(P_UPDATE_SOURCE));
-	    dialog.setFieldEnabled(QUADRANT_SEGMENTS,
-                    ((Integer)getParameter(P_END_CAP_STYLE) == BufferParameters.CAP_ROUND) ||
-                    ((Integer)getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_ROUND));
-        dialog.setFieldEnabled(MITRE_LIMIT,
-                (Integer)getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_MITRE);
-        dialog.setFieldEnabled(END_CAP_STYLE, !((Boolean)getParameter(P_LEFT_SINGLE_SIDED)
-                || (Boolean)getParameter(P_RIGHT_SINGLE_SIDED)));
+        dialog.setFieldVisible(SELECTION_HELP, useSelection);
+        dialog.setFieldEnabled(FIXED_DISTANCE,
+                useSelection || !(Boolean) getParameter(P_FROM_ATTRIBUTE) || !hasNumericAttributes);
+        dialog.setFieldEnabled(FROM_ATTRIBUTE, !useSelection && hasNumericAttributes);
+        dialog.setFieldEnabled(ATTRIBUTE,
+                !useSelection && (Boolean) getParameter(P_FROM_ATTRIBUTE) && hasNumericAttributes);
+        dialog.setFieldEnabled(COPY_ATTRIBUTES,
+                !(Boolean) getParameter(P_UNION_RESULT) && !(Boolean) getParameter(P_UPDATE_SOURCE));
+        dialog.setFieldEnabled(UNION_RESULT, !(Boolean) getParameter(P_UPDATE_SOURCE));
+        dialog.setFieldEnabled(QUADRANT_SEGMENTS,
+                ((Integer) getParameter(P_END_CAP_STYLE) == BufferParameters.CAP_ROUND)
+                        || ((Integer) getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_ROUND));
+        dialog.setFieldEnabled(MITRE_LIMIT, (Integer) getParameter(P_JOIN_STYLE) == BufferParameters.JOIN_MITRE);
+        dialog.setFieldEnabled(END_CAP_STYLE,
+                !((Boolean) getParameter(P_LEFT_SINGLE_SIDED) || (Boolean) getParameter(P_RIGHT_SINGLE_SIDED)));
     }
     
     private void updateIcon(MultiInputDialog dialog) {
