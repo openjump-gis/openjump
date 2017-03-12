@@ -3,9 +3,19 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-03-12 ede
+  * fix regression "#455 UI problem with decimal parameters and Locale" 
+    rendering MultiInputDialog based plugins using decimal values unusable for 
+    locales formatting decimal number w/ comma instead of dot
+    https://sourceforge.net/p/jump-pilot/bugs/455/
+
 2017-03-11 Giuseppe Aruta
   * Added CadTools extension to OpenJUMP Plus. A set of cad-like tools 
     and plugins mainly deriving from Kosmo 3.0 source code
+
+2017-03-06 ede
+  * initial java9 support, still compiled w/ java8
+    workbench comes up, PLUS extensions throw some errors during startup still
 
 2017-03-04 mmichaud <m.michael.michaud@orange.fr>
   * Fix a bug in PostGIS writer happening in the evolution merging process

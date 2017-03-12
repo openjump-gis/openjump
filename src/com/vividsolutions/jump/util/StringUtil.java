@@ -33,6 +33,8 @@ package com.vividsolutions.jump.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -374,26 +376,23 @@ public class StringUtil {
         return buf.toString();
     }
 
+    // set up a locale independent decimal formatter, using dot separator and no grouping
+    static DecimalFormat allDecimals;
+    static {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        allDecimals = new DecimalFormat("#0.0###########", symbols);
+        allDecimals.setGroupingUsed(false);
+    }
     /**
-     * format Doubles to String representation, cutting zeroes from the decimal end
-     * eg. 1234.000 -> "1234", 1234.5600 -> "1234.56"
+     * format Doubles to a String representation, cutting zeroes from the decimal end
+     * the minimum number of decimals is one, hinting the decimal nature of this number
+     * the maximimum number of decimal is hardcoded 12 and will be rounded
+     * eg. 1234.000 -> "1234.0", 1234.5600 -> "1234.56"
      * @param d
      * @return string
      */
     public static String toString(double d) {
-      if (d == (long) d)
-        return String.format("%d", (long) d);
-      else {
-        // detect number of decimal digits (until there are only zeroes)
-        int i = 1;
-        for (; i <= 12; i++) {
-          double factor = (double) Math.pow(10, i);
-          double temp = ((long) (d * factor)) / factor;
-          if (temp == d)
-            return String.format("%." + i + "f", d);
-        }
-        // eventually we simply return the double
-        return Double.toString(d);
-      }
+        return allDecimals.format(d);
     }
 }
