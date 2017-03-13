@@ -393,6 +393,13 @@ public class StringUtil {
      * @return string
      */
     public static String toString(double d) {
-        return allDecimals.format(d);
+        String s = allDecimals.format(d);
+        double d2 = Double.valueOf(s);
+        // check if we lost precision and if so we accept floating point
+        // representation
+        if (d != d2)
+            s = Double.toString(d);
+
+        return s;
     }
 }
