@@ -5,6 +5,7 @@
 
 2017-03-13 mmichaud <m.michael.michaud@orange.fr>
   * Small improvements in UpdateWithJoinPlugIn
+  * Fix a NullPointerException in Dissolve2PlugIn (ConcatenateUnique)
 
 2017-03-12 ede
   * fix regression "#455 UI problem with decimal parameters and Locale" 

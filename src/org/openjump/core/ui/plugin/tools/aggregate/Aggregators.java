@@ -138,11 +138,14 @@ public class Aggregators {
         }
         public String getResult() {
             StringBuilder sb = new StringBuilder();
-            Set set = new TreeSet<Object>(getValues());
+            List<Object> values = getValues();
+            for (int i = 0 ; i < values.size() ; i++) {
+                if (values.get(i) == null) values.set(i, "<NULL>");
+            }
+            Set set = new TreeSet<>(values);
             for (Object value : set) {
-                String v = value == null ? "<NULL>" : value.toString();
-                if (sb.length()==0) sb.append(v);
-                else sb.append(getParameter(SEPARATOR_NAME)).append(v);
+                if (sb.length()==0) sb.append(value);
+                else sb.append(getParameter(SEPARATOR_NAME)).append(value);
             }
             return sb.toString();
         }
