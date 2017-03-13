@@ -67,7 +67,7 @@ public class UpdateWithJoinPlugIn extends AbstractThreadedUiPlugIn {
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
         return new MultiEnableCheck()
-                .add(checkFactory.createTaskWindowMustBeActiveCheck())
+                .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck())
                 .add(checkFactory.createAtLeastNLayersMustExistCheck(2));
     }
 
@@ -383,7 +383,11 @@ public class UpdateWithJoinPlugIn extends AbstractThreadedUiPlugIn {
             List<String> candidates = filter.filter(joinLayer);
             candidates.add(0, DO_NOT_JOIN);
             candidates.remove(joinLayerId);
-            dialog.addComboBox(name, candidates.contains(name) ? name : DO_NOT_JOIN, candidates, "");
+            dialog.addComboBox(name,
+                    candidates.contains(name) && type != AttributeType.GEOMETRY ?
+                            name :
+                            DO_NOT_JOIN,
+                    candidates, "");
         }
         return dialog;
     }
