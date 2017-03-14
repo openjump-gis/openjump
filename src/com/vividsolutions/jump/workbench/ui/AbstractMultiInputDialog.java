@@ -968,7 +968,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         JTextArea textArea = new JTextArea(initialValue, rowNumber, columnNumber);
         if (scrollable) component = new JScrollPane(textArea);
         else component = textArea;
-        addRow(fieldName, new JLabel(fieldName), component, enableChecks, toolTipText, LEFT_LABEL, HORIZONTAL);
+        addRow(fieldName, new JLabel(fieldName), component, enableChecks, toolTipText, LEFT_LABEL, BOTH);
         return textArea;
     }
     

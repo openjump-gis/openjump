@@ -45,6 +45,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.swing.text.JTextComponent;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -280,7 +281,10 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
                           int fillMode) {
         // register with parent
         addComponent(fieldName, label, component);
-
+        double weighty = 0.1;
+        if (component instanceof JTextArea) weighty = 1.0;
+        if (component instanceof JTextPane) weighty = 1.0;
+        if (component instanceof JScrollPane) weighty = 1.0;
         if (label != null && toolTipText != null) {
           label.setToolTipText(toolTipText);
           component.setToolTipText(toolTipText);
@@ -292,30 +296,30 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
         
         if (labelPos == NO_LABEL) {
             currentPanel.add(component,
-                new GridBagConstraints(1, rowCount, 3, 1, 1.0, 1.0,
+                new GridBagConstraints(1, rowCount, 3, 1, 1.0, weighty,
                 GridBagConstraints.WEST, fillMode,
                 new Insets(5+inset, 2+inset, 2+inset, 2+inset), 0, 0));
         }
         else if (labelPos == LEFT_LABEL) {
             if (label != null) {
                 currentPanel.add(label,
-                        new GridBagConstraints(1, rowCount, 1, 1, 1.0, 1.0,
+                        new GridBagConstraints(1, rowCount, 1, 1, 0.0, weighty,
                                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                                 new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
             }
             currentPanel.add(component,
-                new GridBagConstraints(2, rowCount, 2, 1, 1.0, 1.0,
+                new GridBagConstraints(2, rowCount, 2, 1, 1.0, weighty,
                 GridBagConstraints.WEST, fillMode,
                 new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
         }
         else if (labelPos == RIGHT_LABEL) {
             currentPanel.add(component,
-                new GridBagConstraints(1, rowCount, 2, 1, 1.0, 1.0,
+                new GridBagConstraints(1, rowCount, 2, 1, 1.0, weighty,
                 GridBagConstraints.WEST, fillMode,
                 new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
             if (label != null) {
                 currentPanel.add(label,
-                        new GridBagConstraints(3, rowCount, 1, 1, 1.0, 1.0,
+                        new GridBagConstraints(3, rowCount, 1, 1, 0.0, weighty,
                                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                                 new Insets(2+inset, 2+inset, 2+inset, 2+inset), 0, 0));
             }
