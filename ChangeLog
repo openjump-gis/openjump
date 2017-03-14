@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-03-14 mmichaud <m.michael.michaud@orange.fr>
+  *  upgrade to jumpjgrapht 0.7.1 (fix a bug related to empty geometries)
+
 2017-03-13 mmichaud <m.michael.michaud@orange.fr>
   * Small improvements in UpdateWithJoinPlugIn
   * Fix a NullPointerException in Dissolve2PlugIn (ConcatenateUnique)
