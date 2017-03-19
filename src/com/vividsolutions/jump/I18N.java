@@ -93,6 +93,11 @@ public final class I18N {
    */
   private I18N(final File path) {
     resourcePath = path.toString();
+    // make sure the resource path is slash separated, File.toString()
+    // returns it as separated by the OS which may contain eg. backslashes
+    // on windows, leading to resources not found in zipped jars
+    if (File.separatorChar != '/')
+        resourcePath = resourcePath.replace(File.separatorChar, '/');
     init();
   }
 
@@ -125,33 +130,19 @@ public final class I18N {
   private void init() {
     ClassLoader cl = classLoader instanceof ClassLoader ? classLoader
         : getClass().getClassLoader();
-    // load resourcebundles accordingly
-    // selected locale
-    resourceBundle = getBundleOrDummy(resourcePath, locale, cl);
-    // lang only locale
-    resourceBundle2 = getBundleOrDummy(resourcePath, new Locale(
+    // load several resourcebundles to allow overlaying "invalid" translations
+    // with an entry from te next sensible translation file
+    // order is: lang_Country, lang, default (english)
+    // loads selected locale, selected language, empty locale
+    resourceBundle = ResourceBundle.getBundle(resourcePath, locale, cl);
+    // loads lang only locale or empty
+    resourceBundle2 = ResourceBundle.getBundle(resourcePath, new Locale(
         language()), cl);
-    // empty fallback locale (english)
+    // loads only empty fallback locale (english)
     resourceBundle3 = ResourceBundle.getBundle(resourcePath,
         new Locale("", ""), cl);
     // apply locale to system
     applyToRuntime(locale);
-  }
-
-  private ResourceBundle getBundleOrDummy(String baseName, Locale targetLocale, ClassLoader loader){
-      try {
-        return ResourceBundle.getBundle(baseName, locale, loader);
-    } catch (MissingResourceException e) {
-        // return a dummy rb
-        return new ResourceBundle(){
-            protected Object handleGetObject(String key) {
-                return null;
-            }
-            public Enumeration<String> getKeys() {
-                return null;
-            }
-        };
-    }
   }
 
   // remember missing strings, do not flood log
