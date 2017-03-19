@@ -393,6 +393,9 @@ public class StringUtil {
      * @return string
      */
     public static String toString(double d) {
+        if (Double.isNaN(d) || d == Double.POSITIVE_INFINITY || d == Double.NEGATIVE_INFINITY) {
+            return Double.toString(d);
+        }
         String s = allDecimals.format(d);
         double d2 = Double.valueOf(s);
         // check if we lost precision and if so we accept floating point
