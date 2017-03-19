@@ -33,11 +33,13 @@ package com.vividsolutions.jump;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import com.vividsolutions.jump.workbench.Logger;
@@ -123,14 +125,33 @@ public final class I18N {
   private void init() {
     ClassLoader cl = classLoader instanceof ClassLoader ? classLoader
         : getClass().getClassLoader();
-    // load resourcebundle accordingly
-    resourceBundle = ResourceBundle.getBundle(resourcePath, locale, cl);
-    resourceBundle2 = ResourceBundle.getBundle(resourcePath, new Locale(
+    // load resourcebundles accordingly
+    // selected locale
+    resourceBundle = getBundleOrDummy(resourcePath, locale, cl);
+    // lang only locale
+    resourceBundle2 = getBundleOrDummy(resourcePath, new Locale(
         language()), cl);
+    // empty fallback locale (english)
     resourceBundle3 = ResourceBundle.getBundle(resourcePath,
         new Locale("", ""), cl);
-    // apply to system
+    // apply locale to system
     applyToRuntime(locale);
+  }
+
+  private ResourceBundle getBundleOrDummy(String baseName, Locale targetLocale, ClassLoader loader){
+      try {
+        return ResourceBundle.getBundle(baseName, locale, loader);
+    } catch (MissingResourceException e) {
+        // return a dummy rb
+        return new ResourceBundle(){
+            protected Object handleGetObject(String key) {
+                return null;
+            }
+            public Enumeration<String> getKeys() {
+                return null;
+            }
+        };
+    }
   }
 
   // remember missing strings, do not flood log
