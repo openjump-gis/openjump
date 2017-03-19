@@ -72,17 +72,26 @@ for %%F in ("%JAVA%") do set "dirname=%%~dpF"
 echo Using '%JAVA_BIN%' found in '%dirname%'
 rem "%dirname%java" -version
 SET concat=
-for /f "tokens=* delims=" %%i in ('"%dirname%java" -version 2^>^&1') do call :concat "; " %%i
+for /f "tokens=* delims=" %%i in ('"%dirname%java" -version 2^>^&1') do (
+    call :concat "; " %%i
+    for /F "tokens=1-3 delims= " %%a in ("%%i") do (
+       rem -- memorize version number string --
+       if "%%a"=="java" ( 
+           if "%%b"=="version" ( 
+               set JAVAVER=%%c
+           )
+       )
+    )
+)
 set "JAVA_VERSIONSTRING=%concat%"
+rem -- print java version string all in one line --
 echo %JAVA_VERSIONSTRING%
 
-rem -- get java version (for processing) --
-
-for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do (
-    rem @echo Output: %%g
-    set JAVAVER=%%g
-)
+rem -- strip doublequotes from version number --
 set JAVAVER=%JAVAVER:"=%
+
+rem -- split java version (for processing) --
+
 rem @echo Output: %JAVAVER%
 
 for /f "delims=. tokens=1-3" %%v in ("%JAVAVER%") do (
