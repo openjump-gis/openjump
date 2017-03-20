@@ -24,6 +24,7 @@ package com.vividsolutions.jump.geom;
 import com.vividsolutions.jts.algorithm.RobustLineIntersector;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
+import com.vividsolutions.jts.geom.util.PolygonExtracter;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.noding.IntersectionAdder;
@@ -421,10 +422,18 @@ public class MakeValidOp {
     private Geometry nodePolygon(Polygon polygon) {
         LinearRing exteriorRing = (LinearRing)polygon.getExteriorRing();
         Geometry geom = getArealGeometryFromLinearRing(exteriorRing);
+        // geom can be a GeometryCollection
+        // extract polygonal areas because symDifference cannot process GeometryCollections
+        List<Geometry> list = new ArrayList<>();
+        geom.apply(new PolygonExtracter(list));
+        geom = geom.getFactory().buildGeometry(list);
         for (int i = 0 ; i < polygon.getNumInteriorRing() ; i++) {
             LinearRing interiorRing = (LinearRing)polygon.getInteriorRingN(i);
+            // extract polygonal areas because symDifference cannot process GeometryCollections
+            list.clear();
+            getArealGeometryFromLinearRing(interiorRing).apply(new PolygonExtracter(list));
             // TODO avoid the use of difference operator
-            geom = geom.symDifference(getArealGeometryFromLinearRing(interiorRing));
+            geom = geom.symDifference(geom.getFactory().buildGeometry(list));
         }
         return geom;
     }
@@ -446,7 +455,7 @@ public class MakeValidOp {
         else {
             Polygonizer polygonizer = new Polygonizer();
             polygonizer.add(nodeLineString(ring.getCoordinates(), ring.getFactory()));
-            Collection<Geometry> geoms = new ArrayList<Geometry>();
+            Collection<Geometry> geoms = new ArrayList<>();
             geoms.addAll(polygonizer.getPolygons());
             geoms.addAll(polygonizer.getCutEdges());
             geoms.addAll(polygonizer.getDangles());

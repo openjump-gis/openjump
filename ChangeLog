@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-03-20 mmichaud <m.michael.michaud@orange.fr>
+  * Fix a robustess problem in MakeValidOp
+
 2017-03-19 ede
   * fix WFS in PLUS not working due too i18n error
 
