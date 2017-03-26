@@ -80,8 +80,8 @@ public abstract class ToolboxPlugIn extends AbstractPlugIn {
    */
   public boolean execute(PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
-    getToolbox(context.getWorkbenchContext()).setVisible(
-        !getToolbox(context.getWorkbenchContext()).isVisible());
+    ToolboxDialog tb = getToolbox(context.getWorkbenchContext());
+    tb.setVisible(!getToolbox(context.getWorkbenchContext()).isVisible());
     return true;
   }
 
