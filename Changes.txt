@@ -1,5 +1,32 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
+  New features
+  * Added CadTools extension to OpenJUMP Plus. A set of cad-like tools 
+    and plugins mainly deriving from Kosmo 3.0 source code
+
+  Improvements
+  * Upgrade csv-driver to 1.0.0 (encoding option to writer + other improvements)
+  * initial java9 support, still compiled w/ java8
+    workbench comes up, PLUS extensions throw some errors during startup still
+  * Small improvements in UpdateWithJoinPlugIn
+  * improve how MultiInputDialog is resized (let JTextArea increase its size)
+  * upgrade to jumpjgrapht 0.7.1 (fix a bug related to empty geometries)
+  
+  Bug fixes
+  * Fix a bug in PostGIS writer happening in the evolution merging process
+  * Restore ZoomToWMSPlugIn capabilities in more recent ZoomToWMSLayerPlugIn
+  * WMSStylePlugIn dialog did not close (related to Fix #453)
+  * fix regression "#455 UI problem with decimal parameters and Locale" 
+    rendering MultiInputDialog based plugins using decimal values unusable for 
+    locales formatting decimal number w/ comma instead of dot
+    https://sourceforge.net/p/jump-pilot/bugs/455/
+  * Fix a NullPointerException in Dissolve2PlugIn (ConcatenateUnique)
+  * fix WFS in PLUS not working due too i18n error
+  * Fix a robustness problem in MakeValidOp
+
+
+Version 1.10 release rev.5336 (released on 27. January 2017)
+
   Highlights
   * Switch compiler source and target to java 1.7
   * GeoJSON read/write support added, sponsored by Jukka Rahkonen

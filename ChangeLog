@@ -3,6 +3,8 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+* release 1.10 updated until here **********************************************
+
 2017-03-20 mmichaud <m.michael.michaud@orange.fr>
   * Fix a robustess problem in MakeValidOp
 
