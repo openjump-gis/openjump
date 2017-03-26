@@ -132,6 +132,9 @@ and the following plugins
   JumpFillPattern.jar
  KML Driver (skyjump) - GPL2 - gpl-2.txt
   kml-driver-*.jar
+ Matching (Michaël Michaud) - GPL2 - gpl-2.txt
+   matching-*.jar
+   utils-*.jar
  Measure Toolbox (Giuseppe Aruta) - GPL3 - gpl-3.0.txt
   MeasureToolbox_*.jar
  OSM Driver (Stefan Steiniger) - GPL2 - gpl-2.txt
