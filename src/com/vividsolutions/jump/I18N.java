@@ -149,47 +149,6 @@ public final class I18N {
   private HashSet<String> missing = new HashSet<>();
 
   /**
-   * Get the I18N text from the language file associated with this instance. If
-   * no label is defined then a default string is created from the last part of
-   * the key.
-   * 
-   * ATTENTION: using three resource bundles is a workaround to enable having
-   * entries in the language properties that are not translated now (empty or
-   * #T:something)
-   * 
-   * @param key
-   *          The key of the text in the language file.
-   * @return The I18Nized text.
-   */
-  public String getText(final String key) {
-    String text;
-    try {
-      // try lang_country resourcebundle
-      if (isValid(text = resourceBundle.getString(key)))
-        return text;
-      // try language only resourcebundle
-      if (isValid(text = resourceBundle2.getString(key)))
-        return text;
-      // eventually use base resourcebundle
-      return resourceBundle3.getString(key);
-    } catch (java.util.MissingResourceException e) {
-      if (!missing.contains(key)) {
-        String msg = "No translation for key ''{0}'' in bundle ''{1}''.";
-        msg = MessageFormat.format(msg, key, resourcePath);
-
-        Logger.warn(msg, Logger.isDebugEnabled() ? e : null);
-
-        missing.add(key);
-        // uncomment and add a search string to get staks telling you where the
-        // call came from
-        // Assert.isTrue(!key.contains("Write"));
-      }
-      String[] labelpath = key.split("\\.");
-      return labelpath[labelpath.length - 1];
-    }
-  }
-
-  /**
    * We ignore untranslated string when we find them
    * 
    * @param text internationalized string to check
@@ -218,6 +177,28 @@ public final class I18N {
   }
 
   /**
+   * Get the I18N text from the language file associated with this instance. If
+   * no label is defined then a default string is created from the last part of
+   * the key.
+   * 
+   * ATTENTION: using three resource bundles is a workaround to enable having
+   * entries in the language properties that are not translated now (empty or
+   * #T:something)
+   * 
+   * @param key
+   *          The key of the text in the language file.
+   * @return The I18Nized text.
+   * 
+   * @deprecated Use {@link #getMessage(String, Object...)} instead
+   */
+  @Deprecated
+  public String getText(final String key) {
+      return getMessage(key);
+  }
+  
+  /**
+   * Convenience wrapper for {@link #getMessage(Object, String, Object...)}
+   * 
    * Get the I18N text from the language file associated with the specified
    * category. If no label is defined then a default string is created from the
    * last part of the key.
@@ -427,10 +408,15 @@ public final class I18N {
       final String label, final Object... objects) {
     I18N i18n = categoryPrefixOrPath != null ? getInstance(categoryPrefixOrPath)
         : getInstance();
+    if (label.contains("ShortenLinePlugIn"))
+        System.out.println(label);
     try {
       // IMPORTANT: trailing spaces break the Malayalam translation, 
       //            so we trim here, just to make sure
-      String text = i18n.getText(label).trim();
+      String text = i18n.getValue(label).trim();
+      // reread in case of reused i18n vars '$J:'
+      if (text.startsWith("$J:"))
+          text = getInstance().getValue(text.substring(3).trim());
       // no params, nothing to parse
       if ( objects.length < 1 )
         return text;
@@ -438,6 +424,7 @@ public final class I18N {
       final MessageFormat mformat = new MessageFormat(text);
       return mformat.format(objects);
     } catch (java.util.MissingResourceException e) {
+      // last resort fallback is to simply reuse the last key segment as value
       final String[] labelpath = label.split("\\.");
       Logger.warn(e.getMessage() + " no default value, the resource key is used: "
           + labelpath[labelpath.length - 1]);
@@ -452,4 +439,38 @@ public final class I18N {
       final Object... objects) {
     return getMessage((Object) path, label, objects);
   }
+  
+  /**
+   * find values for keys,
+   * - respect validity and use next rb order being 'lang_Country', 'lang', '' default
+   * - eventually return missing resource exception
+   * @param key
+   * @return
+   */
+  private String getValue(final String key) {
+      String text;
+      try {
+        // try lang_country resourcebundle
+        if (isValid(text = resourceBundle.getString(key)))
+          return text;
+        // try language only resourcebundle
+        if (isValid(text = resourceBundle2.getString(key)))
+          return text;
+        // eventually use base resourcebundle
+        return resourceBundle3.getString(key);
+      } catch (java.util.MissingResourceException e) {
+        if (!missing.contains(key)) {
+          String msg = "No translation for key ''{0}'' in bundle ''{1}''.";
+          msg = MessageFormat.format(msg, key, resourcePath);
+
+          Logger.warn(msg, Logger.isDebugEnabled() ? e : null);
+
+          missing.add(key);
+          // uncomment and add a search string to get staks telling you where the
+          // call came from
+          // Assert.isTrue(!key.contains("Write"));
+        }
+        throw e;
+      }
+    }
 }
