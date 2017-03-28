@@ -254,7 +254,7 @@ public class ProjUtils {
         return srsInfo;
 
     }
-
+    //[Giuseppe Aruta 28(3/2017] small patch to correct reading SRID from aux file
     /**
      * Method to get SRID from a layer file from auxiliary files (.prj or .aux)
      * or GeoTIFFed tag. If the auxiliary file SRID does not exist, it returns
@@ -275,8 +275,8 @@ public class ProjUtils {
             for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
                 Feature feature = (Feature) i.next();
                 sourcePathImage = feature.getString(ImageryLayerDataset.ATTR_URI);
-                if (sourcePathImage != null && sourcePathImage.length()>5) {
-                    sourcePathImage = sourcePathImage.substring(5);
+                if (sourcePathImage != null && sourcePathImage.length()>6) {
+                    sourcePathImage = sourcePathImage.substring(6);
                     File f = new File(sourcePathImage);
                     if (f.exists()) {
                         fileSourcePath = f.getAbsolutePath().replace("%20", " ");
