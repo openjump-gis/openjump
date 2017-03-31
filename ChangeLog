@@ -7,6 +7,7 @@
 
 2017-03-31 mmichaud <m.michael.michaud@orange.fr>
   * Fix a regression in RasterImageLayerPropertiesPlugIn
+  * Fix #456 possible NPE in AutoAssignAttributePlugIn
 
 2017-03-26 Giuseppe Aruta 
   * Updated CadTools extension to ver. 0.2

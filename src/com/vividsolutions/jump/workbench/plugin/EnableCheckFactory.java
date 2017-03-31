@@ -343,6 +343,19 @@ public class EnableCheckFactory {
             }
         };
     }
+
+    public EnableCheck createAtLeastOneVisibleLayersMustBeEditableCheck() {
+        return new EnableCheck() {
+            public String check(JComponent component) {
+                for (Layer layer : workbenchContext.getLayerManager().getLayers()) {
+                    if (layer.isVisible() && layer.isEditable()) {
+                        return null;
+                    }
+                }
+                return get("plugin.EnableCheckFactory.at-least-one-visible-layer-must-be-editable");
+            }
+        };
+    }
     
     public EnableCheck createExactlyOneSelectedLayerMustBeEditableCheck() {
         return new EnableCheck() {

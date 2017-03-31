@@ -149,9 +149,12 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     	dialog.setSideBarDescription(DESCRIPTION);
         
     	// Source layer and target attribute
-        dialog.addLayerComboBox(LAYER_COMBO_BOX,
-                context.getLayerableNamePanel().chooseEditableLayer(),
-                null, context.getLayerManager().getEditableLayers());
+        if (layer == null || !context.getLayerManager().getLayers().contains(layer) ||
+                context.getLayerManager().getEditableLayers().contains(layer)) {
+            layer = context.getLayerableNamePanel().chooseEditableLayer();
+        }
+        dialog.addLayerComboBox(LAYER_COMBO_BOX, layer, null,
+                context.getLayerManager().getEditableLayers());
 
         boolean selectionExists = context.getLayerViewPanel()
                                          .getSelectionManager()
@@ -428,8 +431,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
         return new MultiEnableCheck()
-            .add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck())
-            .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-            .add(checkFactory.createAtLeastNLayersMustBeEditableCheck(1));
+            .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck())
+            .add(checkFactory.createAtLeastOneVisibleLayersMustBeEditableCheck());
     }
 }
