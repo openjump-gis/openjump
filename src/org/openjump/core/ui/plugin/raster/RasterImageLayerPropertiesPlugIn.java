@@ -30,6 +30,7 @@ import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ccordsys.utils.SRSInfo;
@@ -414,23 +415,13 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 		file_path = rLayer.getImageFileName();// get file path
 		String fileSourcePath = rLayer.getImageFileName();
 		String extension = FileUtil.getExtension(fileSourcePath).toLowerCase();
-		if (extension.equals("tif") || extension.equals("tiff")) {
-			TiffTags.TiffMetadata metadata = TiffTags.readMetadata(new File(fileSourcePath));
-			if (metadata.isGeoTiff()) {
+		if ((extension.equals("tif") || extension.equals("tiff")) &&
+				TiffTags.readMetadata(new File(fileSourcePath)).isGeoTiff()) {
 				file_type = "GeoTIFF" + " - " + SEXTANTE;
-			} else {
-				file_type = fileExtension(rLayer) + " - " + SEXTANTE;
-			}
+		} else {
+			file_type = fileExtension(rLayer) + " - " + SEXTANTE;
 		}
-		//if ((extension.equals("tif") || extension.equals("tiff")
-		//		|| extension.equals("TIF") || extension.equals("TIFF"))
-		//		&& ProjUtilsOld.isGeoTIFF(fileSourcePath)) {
-		//	file_type = "GeoTIFF" + " - " + SEXTANTE;// Get GeoTIF
-		//												// description
-		//} else {
-		//	file_type = fileExtension(rLayer) + " - " + SEXTANTE;// Get file
-		//															// description
-		//}
+
 		file_size = getFileSizeBytes(rLayer); // Get file size in byte
 		file_sizeMB = getFileSizeMegaBytes(file_size); // Get file size in Mega
 														// Bytes

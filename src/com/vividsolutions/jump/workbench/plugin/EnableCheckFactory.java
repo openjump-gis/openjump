@@ -760,10 +760,10 @@ public class EnableCheckFactory {
 
                 String msg;
                 if (n == 1) {
-                    msg = get("Exactly 1 bands must exist on selected raster layer");
+                    msg = get("plugin.EnableCheckFactory.exactly-1-band-must-exist-on-selected-raster-layer");
                 } else {
                     msg = getMessage(
-                            "Exactly n bands must exist on selected raster layer",
+                            "plugin.EnableCheckFactory.exactly-{0}-bands-must-exist-on-selected-raster-layer",
                             new Object[] { n });
                 }
                 return (n != numbands) ? msg : null;

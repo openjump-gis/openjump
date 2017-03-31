@@ -209,6 +209,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         for (Layer layer : layers) {
             oldStyleList.add(layer.cloneStyles());
         }
+        System.out.println("execute");
         infoPanel = new InfoPanel();
         stylePanel = new StylePanel();
         infoPanel.setPreferredSize(new Dimension(350, 200));
@@ -365,6 +366,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         private String label_Path_IR = "";// Image file path
 
         private InfoPanel() throws Exception {
+            System.out.println("create infopanel");
             String infotext;
             Locale locale = new Locale("en", "UK");
             String pattern = "###.####";
@@ -444,6 +446,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                     }
                 }
                 // PROJECTION section
+                System.out.println("projection section");
                 info = info + header("", COORDINATE_SYSTEM);
                 setInfoProjection(layers);
                 info = info + property(CRS, label_Coordinate, bgColor0);
@@ -831,7 +834,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             File f = new File(sourcePathImage);
             String filePath = f.getAbsolutePath();
             fileSourcePath = filePath.replace("%20", " ");
-
+System.out.println("!!!!!!!!!" + fileSourcePath);
         }
 
         return fileSourcePath;

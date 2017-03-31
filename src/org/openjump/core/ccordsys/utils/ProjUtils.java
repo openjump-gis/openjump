@@ -107,20 +107,18 @@ public class ProjUtils {
                 srsInfo = new SRSInfo().setSource(projectSourceFilePrj);
                 scanner.close();
             }
-        } else if (new File(projectSourceRFileAux).exists()) {
-            Scanner scanner = new Scanner(new File(projectSourceRFileAux));
-            textProj = scanner.useDelimiter("\\A").next();
-            if (!textProj.contains("<WKT>") && !textProj.contains("<SRS>") &&
-                    new File(projectSourceRFilePrj).exists()) {
-                Scanner scanner2 = new Scanner(new File(projectSourceRFilePrj));
-                textProj = getWktProjDefinition(scanner2.nextLine());
-                srsInfo = new SRSInfo().setSource(projectSourceRFileAux);
-                scanner2.close();
-            }
         } else if (new File(projectSourceRFilePrj).exists()) {
             Scanner scanner = new Scanner(new File(projectSourceRFilePrj));
             textProj = scanner.nextLine();
             srsInfo = new SRSInfo().setSource(projectSourceRFilePrj);
+            scanner.close();
+        } else if (new File(projectSourceRFileAux).exists()) {
+            Scanner scanner = new Scanner(new File(projectSourceRFileAux));
+            textProj = scanner.useDelimiter("\\A").next();
+            if (textProj.contains("<WKT>") || textProj.contains("<SRS>")) {
+                textProj = getWktProjDefinition(textProj);
+                srsInfo = new SRSInfo().setSource(projectSourceRFileAux);
+            }
             scanner.close();
         }
 
