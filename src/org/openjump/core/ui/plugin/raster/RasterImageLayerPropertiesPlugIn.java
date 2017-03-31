@@ -30,7 +30,6 @@ import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ccordsys.utils.SRSInfo;
@@ -308,7 +307,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 				.createTitledBorder(PROPORTIONAL_TRANSPARENCY_ADJUSTER));
 		Box box = new Box(1);
 		for (int i = 0; i <= 100; i += 25) {
-			sliderLabelDictionary.put(new Integer(i), new JLabel(i + "%"));
+			sliderLabelDictionary.put(i, new JLabel(i + "%"));
 		}
 		transparencySlider.setMinimumSize(new Dimension(200, 20));
 		transparencySlider.setPreferredSize(new Dimension(460, 50));
