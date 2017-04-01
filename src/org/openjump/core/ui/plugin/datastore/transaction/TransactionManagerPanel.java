@@ -72,9 +72,9 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
         c.gridx = 0;
         c.gridy = 0;
 
-        JLabel experimental = new JLabel("<html><font size='6' color='red'>Experimental</font><html>");
-        c.gridwidth = 2;
-        panel.add(experimental, c);
+        //JLabel experimental = new JLabel("<html><font size='6' color='red'>Experimental</font><html>");
+        //c.gridwidth = 2;
+        //panel.add(experimental, c);
 
         JButton inspectButton = new JButton(I18N.get(KEY + ".inspect"));
         inspectButton.setToolTipText(I18N.get(KEY + ".inspect-tooltip"));
