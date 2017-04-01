@@ -42,14 +42,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -178,8 +171,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Web_Service");
     private static String DATASOURCE = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.DataSource");
-    private InfoPanel infoPanel;
-    private StylePanel stylePanel;
+
     private Layer[] layers;
     private Envelope extent;
     private int[] currTransArray;
@@ -197,6 +189,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
     }
 
     public boolean execute(PlugInContext context) throws Exception {
+
         styleChanged = false;
         layers = context.getSelectedLayers();
         extent = context.getSelectedLayerEnvelope();
@@ -209,9 +202,8 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         for (Layer layer : layers) {
             oldStyleList.add(layer.cloneStyles());
         }
-        System.out.println("execute");
-        infoPanel = new InfoPanel();
-        stylePanel = new StylePanel();
+        InfoPanel infoPanel = new InfoPanel();
+        StylePanel stylePanel = new StylePanel();
         infoPanel.setPreferredSize(new Dimension(350, 200));
         JTabbedPane tabbedPane = new JTabbedPane();
         final DetachableInternalFrame frame = new DetachableInternalFrame();
@@ -349,24 +341,27 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
     }
 
     private class InfoPanel extends HTMLPanel implements PropertyPanel {
+
         private static final long serialVersionUID = 1L;
-        private String label_Name_R = "";// Layer name
-        private String label_NumItems_R = "";// Number of features
-        private String label_NumPts_R = "";// Number of points
-        private String label_GeoType_R = "";// Geometry type
-        private String label_NumAtts_R = "";// Attribute number
+
+        private String label_Name_R = "";     // Layer name
+        private String label_NumItems_R = ""; // Number of features
+        private String label_NumPts_R = "";   // Number of points
+        private String label_GeoType_R = "";  // Geometry type
+        private String label_NumAtts_R = "";  // Attribute number
+
         // These are the codes for Database and vector layers
-        private String label_DSClass_R = "";// vector type (SHP, etc)
-        private String label_Path_R = "";// Vector file path
-        private String label_Charset_R = "";// Shapefile charset
-        private String label_Coordinate = "";// Projection description
+        private String label_DSClass_R = "";  // vector type (SHP, etc)
+        private String label_Path_R = "";     // Vector file path
+        private String label_Charset_R = "";  // Shapefile charset
+        private String label_Coordinate = ""; // Projection description
         private String label_Coordinate_file = "";// Proj. location
+
         // These are the string codes for ReferencedImage layers
-        private String label_DSClass_IR = "";// Image type (TIF, etc)
-        private String label_Path_IR = "";// Image file path
+        private String label_DSClass_IR = ""; // Image type (TIF, etc)
+        private String label_Path_IR = "";    // Image file path
 
         private InfoPanel() throws Exception {
-            System.out.println("create infopanel");
             String infotext;
             Locale locale = new Locale("en", "UK");
             String pattern = "###.####";
@@ -376,6 +371,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             setInfo(layers);
             String info = "";
             info = info + header("", LAYERS + ": " + df.format(layers.length));
+
             // If only one layer (Layer.class) is selected
             if (layers.length == 1) {
 
@@ -391,8 +387,8 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
 
                 if (sclass.equals("WFSLayer")) {
                     // WFSLayer layer = (WFSLayer) layers[0];
-                    String server = "";
-                    String urlLayer = "";
+                    String server;
+                    String urlLayer;
                     try {
                         WFSLayer layer = (WFSLayer) layers[0];
                         server = layer.getServerURL();
@@ -446,7 +442,6 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                     }
                 }
                 // PROJECTION section
-                System.out.println("projection section");
                 info = info + header("", COORDINATE_SYSTEM);
                 setInfoProjection(layers);
                 info = info + property(CRS, label_Coordinate, bgColor0);
@@ -527,8 +522,8 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                 }
             } else {
                 // Get the list of layers if more than one layer is selected
-                for (int l = 0; l < layers.length; l++)
-                    label_Name_R += layers[l].getName() + " - ";
+                for (Layer layer : layers)
+                    label_Name_R += layer.getName() + " - ";
             }
             // The following code derives from original LayerPropertyPlugIn
             String sourcePath = NOT_SAVED;
@@ -540,9 +535,9 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             Geometry geo;
             boolean multipleGeoTypes = false;
             boolean multipleSourceTypes = false;
-            Hashtable<String, Integer> geometryModes = new Hashtable<String, Integer>();
-            for (int l = 0; l < layers.length; l++) {
-                FeatureCollectionWrapper fcw = layers[l]
+            Hashtable<String, Integer> geometryModes = new Hashtable<>();
+            for (Layer layer : layers) {
+                FeatureCollectionWrapper fcw = layer
                         .getFeatureCollectionWrapper();
                 numFeatures += fcw.size();
                 numAtts += fcw.getFeatureSchema().getAttributeCount() - 1;
@@ -561,7 +556,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                         geometryModes.put(geoClassName, count + 1);
                     }
                 }
-                DataSourceQuery dsq = layers[l].getDataSourceQuery();
+                DataSourceQuery dsq = layer.getDataSourceQuery();
                 if (dsq != null) {
                     String dsqSourceClass = dsq.getDataSource().getClass().getName();
                     if (sourceClass.equals("")) {
@@ -587,12 +582,12 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                 Enumeration<Integer> modeCount = geometryModes.elements();
                 Enumeration<String> modeName = geometryModes.keys();
                 for (int i = 0; i < n; i++) {
-                    String geometryMode = (String) modeName.nextElement();
+                    String geometryMode = modeName.nextElement();
                     int dotPos = geometryMode.lastIndexOf(".");
                     if (dotPos > 0) {
                         geometryMode = geometryMode.substring(dotPos + 1);
                     }
-                    int geometryModeCount = (modeCount.nextElement()).intValue();
+                    int geometryModeCount = modeCount.nextElement();
                     geoClass = geoClass + (i == 0 ? " " : ", ") + geometryMode
                             + ":" + geometryModeCount;
                 }
@@ -657,29 +652,26 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             // b) the file path (ex C:/foòder/filepath.tif)
             if (layers[0].getStyle(ReferencedImageStyle.class) != null
                     && (layers[0].getDescription() != null)) {
-                String sourcePathImage = null;
+                String sourcePathImage;
                 FeatureCollection featureCollection = layers[0]
                         .getFeatureCollectionWrapper();
-                int size = -1;
-                size = featureCollection.size();
+                int size = featureCollection.size();
                 // If there is only one image file in the raster catalog
                 if (size == 1) {
-                    for (Iterator<?> i = featureCollection.iterator(); i
-                            .hasNext();) {
-                        Feature feature = (Feature) i.next();
+                    for (Feature feature : featureCollection.getFeatures()) {
                         if (!feature.getString(ImageryLayerDataset.ATTR_URI)
                                 .isEmpty()) {
-                            sourcePathImage = (String) feature
+                            sourcePathImage = feature
                                     .getString(ImageryLayerDataset.ATTR_URI);
                             sourcePathImage = sourcePathImage.substring(5);
+                            File f = new File(sourcePathImage);
+                            String filePath = f.getAbsolutePath().replace("%20",
+                                    " ");
+                            String type = FilenameUtils.getExtension(filePath)
+                                    .toUpperCase();
+                            label_DSClass_IR = type + " - " + IMAGE;
+                            label_Path_IR = filePath;
                         }
-                        File f = new File(sourcePathImage);
-                        String filePath = f.getAbsolutePath().replace("%20",
-                                " ");
-                        String type = FilenameUtils.getExtension(filePath)
-                                .toUpperCase();
-                        label_DSClass_IR = type + " - " + IMAGE;
-                        label_Path_IR = filePath;
                     }
                     // If there are more than one image file in the raster
                     // catalog
@@ -687,7 +679,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                     for (Iterator<?> i = featureCollection.iterator(); i
                             .hasNext();) {
                         Feature feature = (Feature) i.next();
-                        sourcePathImage = (String) feature
+                        sourcePathImage = feature
                                 .getString(ImageryLayerDataset.ATTR_URI);
                         sourcePathImage = sourcePathImage.substring(5);
                         File f = new File(sourcePathImage);
@@ -709,9 +701,9 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
 
 
         private void setInfoProjection(Layer[] layers) throws Exception {
-         // [Giuseppe Aruta 28/3(2017] restored method to load SRID from Style first
+            // [Giuseppe Aruta 28/3(2017] restored method to load SRID from Style first
             SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerStyleOrSource(layers[0]);
-          //  SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerSource(layers[0]);
+            // SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerSource(layers[0]);
             label_Coordinate_file = srsInfo.getSource();
             label_Coordinate = String.format("%s:%s",
                     srsInfo.getRegistry(), srsInfo.getCode());
@@ -804,19 +796,18 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
     // eg. c:\folder\vector.shp
     public static String vectorFileSourcePath(Layer layer) {
         String fileSourcePath = "";
-        DataSourceQuery dsq = layer.getDataSourceQuery();
-        String sourceClass = "";
-        String sourcePath = "";
-        String dsqSourceClass = dsq.getDataSource().getClass().getName();
-        if (sourceClass.equals("")) {
-            sourceClass = dsqSourceClass;
+        if (layer.getDataSourceQuery() != null) {
+            DataSourceQuery dsq = layer.getDataSourceQuery();
+            if (dsq.getDataSource() != null) {
+                Map map = dsq.getDataSource().getProperties();
+                if (map.get(DataSource.URI_KEY) != null) {
+                    fileSourcePath = ((URI)map.get(DataSource.URI_KEY)).getPath();
+                } else if (map.get(DataSource.FILE_KEY) != null) {
+                    fileSourcePath = map.get(DataSource.FILE_KEY).toString();
+                }
+            }
         }
-        Object fnameObj = dsq.getDataSource().getProperties().get("File");
-        sourcePath = fnameObj.toString();
-        fileSourcePath = sourcePath;
-
         return fileSourcePath;
-
     }
 
     // Get source file path of a image layer
@@ -834,9 +825,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             File f = new File(sourcePathImage);
             String filePath = f.getAbsolutePath();
             fileSourcePath = filePath.replace("%20", " ");
-System.out.println("!!!!!!!!!" + fileSourcePath);
         }
-
         return fileSourcePath;
 
     }
@@ -857,15 +846,12 @@ System.out.println("!!!!!!!!!" + fileSourcePath);
             File f = new File(sourcePathImage);
             String filePath = f.getAbsolutePath();
             fileSourcePath = filePath.replace("%20", " ");
-
         }
         extension = FileUtil.getExtension(fileSourcePath).toUpperCase();
         return extension;
-
     }
     
-    
-    public interface PropertyPanel {
+    interface PropertyPanel {
         String getTitle();
 
         void updateStyles();
