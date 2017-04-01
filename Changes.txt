@@ -15,6 +15,8 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * upgrade to jumpjgrapht 0.7.1 (fix a bug related to empty geometries)
   
   Bug fixes
+  * Fix #458 as well as a regression in RasterImageLayerPropertiesPlugIn
+  * Fix #456 possible NPE in AutoAssignAttributePlugIn
   * Fix a bug in PostGIS writer happening in the evolution merging process
   * Restore ZoomToWMSPlugIn capabilities in more recent ZoomToWMSLayerPlugIn
   * WMSStylePlugIn dialog did not close (related to Fix #453)
