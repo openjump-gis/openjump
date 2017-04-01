@@ -103,6 +103,7 @@ public enum Unit {
     static {
         for (Unit u : Unit.values()) {
             map.put(u.name().toLowerCase(), u);
+            map.put(u.getName().toLowerCase(), u);
             map.put(Integer.toString(u.getEpsgCode()), u);
             if (u.getAbbreviation().length()>0) map.put(u.getAbbreviation(), u);
         }
@@ -145,8 +146,11 @@ public enum Unit {
         nameOrCode = nameOrCode.replaceAll("meter","metre");
         nameOrCode = nameOrCode.replaceAll("grade","grad");
         nameOrCode = nameOrCode.replaceAll("(metre|yard|mile|degree|grad|radian)s\\b","$1");
-        Unit u = map.get(nameOrCode);
-        return u;
+        return map.get(nameOrCode);
+    }
+
+    public String toString() {
+        return name;
     }
 
 }
