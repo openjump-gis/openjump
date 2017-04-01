@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import javax.media.jai.JAI;
 
+import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.util.metaData.MetaDataMap;
 import org.openjump.util.metaData.ObjectContainingMetaInformation;
 
@@ -1723,7 +1724,17 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
          }
     	return fileName;
     	}
-    
+   
+    //[Giuseppe Aruta 04/01/2017] SRS info for RasterImageLayer.class
+    private SRSInfo srsInfo;
+
+    public SRSInfo getSRSInfo() {
+        return srsInfo;
+    }
+
+    public void setSRSInfo(SRSInfo srs) {
+        this.srsInfo = srs;
+    }
     
     
 }

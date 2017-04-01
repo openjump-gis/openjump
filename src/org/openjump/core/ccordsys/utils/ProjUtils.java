@@ -10,10 +10,13 @@ import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataSource;
+
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.io.FilenameUtils;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
+import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.TiffTags;
+
 
 
 import java.io.File;
@@ -334,5 +337,29 @@ public class ProjUtils {
         }
     }
 
+    //[Giuseppe Aruta 04/01/2017] get SRS info for RasterImageLayer.class
+    public static SRSInfo getSRSInfoFromLayerSource(RasterImageLayer layer)
+        throws Exception, URISyntaxException {
+    String fileSourcePath = layer.getImageFileName();
+    String extension = FileUtil.getExtension(fileSourcePath).toLowerCase();
+    SRSInfo srsInfo;
+    if (extension.equals("tif") || extension.equals("tiff")) {
+        TiffTags.TiffMetadata metadata = TiffTags.readMetadata(new File(
+                fileSourcePath));
+        if (metadata.isGeoTiff()) {
+
+            srsInfo = metadata.getSRSInfo();
+        } else {
+            srsInfo = ProjUtils.getSRSInfoFromAuxiliaryFile(fileSourcePath);
+
+        }
+    } else {
+        srsInfo = ProjUtils.getSRSInfoFromAuxiliaryFile(fileSourcePath);
+
+    }
+    return srsInfo;
+    // Integer.parseInt(srsInfo.getCode());
+}
+    
 }
 

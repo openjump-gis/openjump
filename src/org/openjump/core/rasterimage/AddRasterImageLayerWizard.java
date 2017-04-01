@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
 import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
@@ -34,6 +35,7 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
+
 import java.awt.Color;
 
 public class AddRasterImageLayerWizard extends AbstractWizardGroup {
@@ -183,6 +185,12 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
         RasterImageLayer rLayer = new RasterImageLayer(newLayerName,
                 context.getLayerManager(), imageFileName, null, envelope);
+        //[Giuseppe Aruta 04/01/2017] Store SRS info into RasterImageLayer.class metadata
+        try {
+          rLayer.setSRSInfo(ProjUtils.getSRSInfoFromLayerSource(rLayer));
+        } catch (Exception e1) {
+          e1.printStackTrace();
+      }
         // #################################
 
         MetaInformationHandler mih = new MetaInformationHandler(rLayer);
