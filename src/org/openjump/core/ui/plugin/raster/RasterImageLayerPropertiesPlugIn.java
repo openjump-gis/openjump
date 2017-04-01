@@ -479,8 +479,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 		  srsInfo = ProjUtils.getSRSInfoFromAuxiliaryFile(fileSourcePath);
 		  proj_file_path = srsInfo.getSource();
       }
-	  proj_coordinate = String.format("%s:%s - %s",
-			  srsInfo.getRegistry(), srsInfo.getCode(), srsInfo.getDescription());
+	  proj_coordinate = srsInfo.toString();
   }
 	// //////////////////////////////////////////
 

@@ -703,14 +703,10 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         private void setInfoProjection(Layer[] layers) throws Exception {
             // [Giuseppe Aruta 28/3(2017] restored method to load SRID from Style first
             SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerStyleOrSource(layers[0]);
-            // SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerSource(layers[0]);
+            //SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerSource(layers[0]);
+            System.out.println("NewLayerPropertiesPlugIn.setInfoProjection: " + srsInfo);
             label_Coordinate_file = srsInfo.getSource();
-            label_Coordinate = String.format("%s:%s",
-                    srsInfo.getRegistry(), srsInfo.getCode());
-            if (srsInfo.getDescription() != null && srsInfo.getDescription().length() > 0) {
-                label_Coordinate = label_Coordinate + " - " + srsInfo.getDescription();
-            }
-
+            label_Coordinate = srsInfo.toString();
         }
 
         // Get Projection info from the layer

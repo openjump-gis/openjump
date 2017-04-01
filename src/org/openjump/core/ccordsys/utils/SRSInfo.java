@@ -107,7 +107,7 @@ public class SRSInfo {
 
     @Override
     public String toString() {
-        return getRegistry().toString() + ':' + getCode() + ' ' + getDescription() + '[' + getUnit() + ']';
+        return getRegistry().toString() + ':' + getCode() + ' ' + getDescription() + " [" + getUnit() + ']';
     }
 
     @Override
