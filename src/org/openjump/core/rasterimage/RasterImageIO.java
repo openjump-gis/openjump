@@ -14,7 +14,6 @@ import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -49,9 +48,7 @@ public class RasterImageIO {
 
 	public ImageAndMetadata loadImage(WorkbenchContext wbContext,
 			String fileNameOrURL, Stats stats, Envelope viewPortEnvelope,
-			Resolution requestedRes) throws IOException,
-			NoninvertibleTransformException, FileNotFoundException,
-			TiffTags.TiffReadingException, Exception {
+			Resolution requestedRes) throws Exception {
 
 		if (fileNameOrURL.toLowerCase().endsWith(".jpg")
 				|| fileNameOrURL.toLowerCase().endsWith(".gif")
@@ -285,8 +282,7 @@ public class RasterImageIO {
 	}
 
 	public static Double readCellValue(String fileNameOrURL,
-			Coordinate coordinate, int band)
-			throws NoninvertibleTransformException, Exception {
+			Coordinate coordinate, int band) throws Exception {
 
 		Point imageDims = getImageDimensions(fileNameOrURL);
 
@@ -400,8 +396,7 @@ public class RasterImageIO {
 	}
 
 	public static Envelope getGeoReferencing(String fileName,
-			boolean allwaysLookForTFWExtension, Point imageDimensions)
-			throws IOException, NoninvertibleTransformException, Exception {
+			boolean allwaysLookForTFWExtension, Point imageDimensions) throws Exception {
 
 		Envelope env = null;
 
@@ -409,15 +404,11 @@ public class RasterImageIO {
 				allwaysLookForTFWExtension);
 
 		if (imageDimensions == null) {
-			// logger.printError("can not determine image dimensions");
-			// context.getWorkbench().getFrame().warnUser(I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.can-not-determine-image-dimensions"));
-			// return null;
 			throw new Exception(
 					I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.can-not-determine-image-dimensions"));
 		}
 
 		if (worldFileHandler.isWorldFileExistentForImage() != null) {
-			// logger.printDebug(PirolPlugInMessages.getString("worldfile-found"));
 			env = worldFileHandler.readWorldFile(imageDimensions.x,
 					imageDimensions.y);
 		}
@@ -428,7 +419,6 @@ public class RasterImageIO {
 
 			if (fileName.toLowerCase().endsWith(".tif")
 					|| fileName.toLowerCase().endsWith(".tiff")) {
-				// logger.printDebug("checking for GeoTIFF");
 
 				Coordinate tiePoint = null, pixelOffset = null, pixelScale = null;
 				double[] doubles;
@@ -603,8 +593,7 @@ public class RasterImageIO {
 		return env;
 	}
 
-	public static CellSizeXY getCellSize(String fileNameOrURL)
-			throws NoninvertibleTransformException, Exception {
+	public static CellSizeXY getCellSize(String fileNameOrURL) throws Exception {
 
 		Point imageDims = getImageDimensions(fileNameOrURL);
 
@@ -672,11 +661,10 @@ public class RasterImageIO {
 	public static Rectangle getDrawingRectangle(int imgWidth, int imgHeight,
 			Envelope wholeImageEnvelope, Envelope viewportEnvelope,
 			Resolution subsetResolution) throws NoninvertibleTransformException {
-
+		Rectangle rect = null;
 		if (viewportEnvelope == null
 				|| viewportEnvelope.contains(wholeImageEnvelope)) {
-			Rectangle rect = new Rectangle(0, 0, imgWidth, imgHeight);
-			return rect;
+			rect = new Rectangle(0, 0, imgWidth, imgHeight);
 		} else if (viewportEnvelope.intersects(wholeImageEnvelope)) {
 
 			Coordinate upperLeftVisible = new Coordinate(
@@ -686,11 +674,11 @@ public class RasterImageIO {
 
 			java.awt.Point upperLeft = fromCoordinateToCell(upperLeftVisible,
 					new Coordinate(wholeImageEnvelope.getMinX(),
-							wholeImageEnvelope.getMinY()), (int) imgHeight,
+							wholeImageEnvelope.getMinY()), imgHeight,
 					subsetResolution.getX(), subsetResolution.getY());
 			java.awt.Point lowerRight = fromCoordinateToCell(lowerRightVisible,
 					new Coordinate(wholeImageEnvelope.getMinX(),
-							wholeImageEnvelope.getMinY()), (int) imgHeight,
+							wholeImageEnvelope.getMinY()), imgHeight,
 					subsetResolution.getX(), subsetResolution.getY());
 
 			int xOffset = Math.max(0, upperLeft.x);
@@ -699,12 +687,9 @@ public class RasterImageIO {
 			int width = lowerRight.x - upperLeft.x;
 			int height = lowerRight.y - upperLeft.y;
 
-			Rectangle rect = new Rectangle(xOffset, yOffset, width, height);
-			return rect;
-		} else {
-			return null;
+			rect = new Rectangle(xOffset, yOffset, width, height);
 		}
-
+		return rect;
 	}
 
 	protected Rectangle getVisibleImageCoordinatesOfImage(double imgWidth,
@@ -778,8 +763,7 @@ public class RasterImageIO {
 	}
 
 	public void writeImage(File outFile, Raster raster, Envelope envelope,
-			CellSizeXY cellSize, double noData) throws FileNotFoundException,
-			IOException {
+			CellSizeXY cellSize, double noData) throws IOException {
 
 		// Delete old .xml.aux statistics file
 		File auxXmlFile = new File(outFile.getParent(), outFile.getName()
@@ -840,8 +824,7 @@ public class RasterImageIO {
 		double yRes = viewport.getEnvelopeInModelCoordinates().getHeight()
 				/ (double) viewport.getPanel().getVisibleRect().height;
 
-		Resolution requestedRes = new Resolution(xRes, yRes);
-		return requestedRes;
+		return new Resolution(xRes, yRes);
 	}
 
 	public class CellSizeXY {

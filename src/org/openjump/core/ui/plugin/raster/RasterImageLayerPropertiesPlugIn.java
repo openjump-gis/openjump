@@ -76,7 +76,6 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 	// Components
 	private JSlider transparencySlider = new JSlider();
 	@SuppressWarnings("rawtypes")
-	protected Dictionary sliderLabelDictionary = new Hashtable();
 	private JPanel transparencySliderPanel = new JPanel(new GridBagLayout());
 	private String layer_name;
 	private String file_path;
@@ -306,6 +305,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 		transparencySliderPanel.setBorder(BorderFactory
 				.createTitledBorder(PROPORTIONAL_TRANSPARENCY_ADJUSTER));
 		Box box = new Box(1);
+		Dictionary sliderLabelDictionary = new Hashtable();
 		for (int i = 0; i <= 100; i += 25) {
 			sliderLabelDictionary.put(i, new JLabel(i + "%"));
 		}
@@ -367,7 +367,6 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 		okButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
-				return;
 			}
 		});
 		final JButton cancelButton = new JButton(CANCEL) {
@@ -383,7 +382,6 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 				rLayer.setTransparencyLevel(transparency);
 				transparencySlider.setValue((int) (transparency) * 100);
 				frame.dispose();
-				return;
 			}
 		});
 		JPanel okCancelPane = new JPanel();
@@ -426,23 +424,19 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 														// Bytes
 		raster_bands = df.format(rLayer.getNumBands());// Get raster number of
 														// bands
-		raster_datatype = getDataType(rLayer);// Get raster data type
-		raster_colordepth = getColorDepth(rLayer);// Get raster color depth
-		raster_dpi = getDPI(rLayer);// Get raster DPI
-		extent = rLayer.getWholeImageEnvelope(); // Get Envelope
-		extent_cellSizeX = df.format(cellSizeX(rLayer));// Get X Cell size
-		extent_cellSizeY = df.format(cellSizeY(rLayer));// Get Y Cell size
-		extent_columns = getNumColumns(rLayer); // Get Number of columns
-		extent_rows = getNumRows(rLayer); // Get Number of rows
-		extent_cellnumber = String.valueOf(extent_columns * extent_rows); // Get
-																			// cell
-																			// number
-		extent_area = df.format(rLayer.getWholeImageEnvelope().getArea()); // Get
-																			// Area
-		extent_width = df.format(rLayer.getWholeImageEnvelope().getWidth()); // Get
-																				// Width
-		extent_height = df.format(rLayer.getWholeImageEnvelope().getHeight()); // Get
-																				// Height
+		Raster raster = rLayer.getRasterData(null);
+		raster_datatype = getDataType(raster);         // Get raster data type
+		raster_colordepth = getColorDepth(raster);     // Get raster color depth
+		raster_dpi = getDPI(raster);                   // Get raster DPI
+		extent = rLayer.getWholeImageEnvelope();       // Get Envelope
+		extent_cellSizeX = df.format(cellSizeX(raster, extent));// Get X Cell size
+		extent_cellSizeY = df.format(cellSizeY(raster, extent));// Get Y Cell size
+		extent_columns = getNumColumns(raster);        // Get Number of columns
+		extent_rows = getNumRows(raster);              // Get Number of rows
+		extent_cellnumber = String.valueOf(extent_columns * extent_rows); // Get cell number
+		extent_area = df.format(extent.getArea());     // Get area
+		extent_width = df.format(extent.getWidth());   // Get width
+		extent_height = df.format(extent.getHeight()); // Get height
 		extent_minX = df.format(extent.getMinX());
 		extent_maxX = df.format(extent.getMaxX());
 		extent_minY = df.format(extent.getMinY());
@@ -450,14 +444,16 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 		raster_nodata = String.valueOf(rLayer.getNoDataValue());
 		int numBands = rLayer.getNumBands();
 		raster_bands = String.valueOf(numBands);
-		for (int b = 0; b < numBands; b++) {
-			int numerobanda = b + 1;
-			String.valueOf(numerobanda);
-			String.valueOf(rLayer.getMetadata().getStats().getMax(b));
-			String.valueOf(rLayer.getMetadata().getStats().getMin(b));
-			String.valueOf(rLayer.getMetadata().getStats().getMean(b));
-			String.valueOf(rLayer.getMetadata().getStats().getStdDev(b));
-		}
+		// Its is never used. Why it was calculated ?
+		//Stats stats = rLayer.getMetadata().getStats();
+		//for (int b = 0; b < numBands; b++) {
+		//	int numerobanda = b + 1;
+		//	String.valueOf(numerobanda);
+		//	String.valueOf(stats.getMax(b));
+		//	String.valueOf(stats.getMin(b));
+		//	String.valueOf(stats.getMean(b));
+		//	String.valueOf(stats.getStdDev(b));
+		//}
 	}
 
   /*
@@ -466,8 +462,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
    * GeoTIF, it checks if <Filename>.AUX.XML exists and scans inside it. As
    * last choice it scans into <filename>.PRJ file
    */
-  private void setInfoProjection(RasterImageLayer layer) throws Exception,
-          URISyntaxException {
+  private void setInfoProjection(RasterImageLayer layer) throws Exception {
       String fileSourcePath = layer.getImageFileName();
       String extension = FileUtil.getExtension(fileSourcePath).toLowerCase();
 	  SRSInfo srsInfo;
@@ -541,8 +536,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 	/*
 	 * Gets data type
 	 */
-	public String getDataType(RasterImageLayer rLayer) throws IOException {
-		Raster r = rLayer.getRasterData(null);
+	public String getDataType(Raster r) throws IOException {
 		SampleModel sm = r.getSampleModel();
 		datatype = sm.getDataType();
 		switch (datatype) {
@@ -581,63 +575,45 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 	/*
 	 * Gets color depth
 	 */
-	public String getColorDepth(RasterImageLayer layer) throws IOException {
-		Raster r = null;
-		r = layer.getRasterData(null);
+	public String getColorDepth(Raster r) throws IOException {
 		SampleModel sm = r.getSampleModel();
 		ColorModel cm = PlanarImage.createColorModel(sm);
 		int colordepth = cm.getNumComponents();
-		String color = String.valueOf(colordepth) + " bpp";
-		return color;
+		return String.valueOf(colordepth) + " bpp";
 	}
 
 	/*
 	 * Gets Dots per Inch (DPI)
 	 */
-	public String getDPI(RasterImageLayer layer) throws IOException {
-		Raster r = null;
-		r = layer.getRasterData(null);
+	public String getDPI(Raster r) throws IOException {
 		SampleModel sm = r.getSampleModel();
 		ColorModel cm = PlanarImage.createColorModel(sm);
-		String color = String.valueOf(cm.getPixelSize());
-		return color;
+		return String.valueOf(cm.getPixelSize());
 	}
 
 	/*
 	 * Gets cell size
 	 */
-	public double cellSizeX(RasterImageLayer layer) throws IOException {
-		Raster m_Raster = layer.getRasterData(null);
-		Envelope env = layer.getWholeImageEnvelope();
-		double cellSize = env.getWidth() / (double) m_Raster.getWidth();
-		return cellSize;
+	public double cellSizeX(Raster r, Envelope env) throws IOException {
+		return env.getWidth() / (double)r.getWidth();
 	}
 
-	public double cellSizeY(RasterImageLayer layer) throws IOException {
-		Raster m_Raster = layer.getRasterData(null);
-		Envelope env = layer.getWholeImageEnvelope();
-		double cellSize = env.getHeight() / (double) m_Raster.getHeight();
-		return cellSize;
-
+	public double cellSizeY(Raster r, Envelope env) throws IOException {
+		return env.getHeight() / (double)r.getHeight();
 	}
 
 	/*
 	 * Gets number of columns
 	 */
-	public int getNumColumns(RasterImageLayer layer) throws IOException {
-		Raster m_Raster = layer.getRasterData(null);
-		int x = m_Raster.getWidth();
-		return x;
+	public int getNumColumns(Raster r) throws IOException {
+		return r.getWidth();
 	}
 
 	/*
 	 * Gets number of rows
 	 */
-	public int getNumRows(RasterImageLayer layer) throws IOException {
-		Raster m_Raster = layer.getRasterData(null);
-		int x = m_Raster.getHeight();
-		return x;
-
+	public int getNumRows(Raster r) throws IOException {
+		return r.getHeight();
 	}
 
 	/*
@@ -665,9 +641,9 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 	 * Counts the number of valid cells. This code is deactivated
 	 */
 	public int getValidCellsNumber(RasterImageLayer rLayer) throws IOException {
-		int number = getNumColumns(rLayer) * getNumRows(rLayer)
+		Raster raster = rLayer.getRasterData(null);
+		return raster.getWidth() * raster.getHeight()
 				- getNodataCellsNumber(rLayer);
-		return number;
 	}
 
 }

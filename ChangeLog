@@ -5,6 +5,9 @@
 
 * release 1.10 updated until here **********************************************
 
+2017-04-01 mmichaud <m.michael.michaud@orange.fr>
+  * Fix #458 Improve RasterImageLayerPropertiesPlugIn speed
+
 2017-03-31 mmichaud <m.michael.michaud@orange.fr>
   * Fix a regression in RasterImageLayerPropertiesPlugIn
   * Fix #456 possible NPE in AutoAssignAttributePlugIn
