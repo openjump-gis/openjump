@@ -275,30 +275,19 @@ public class ProjUtils {
             String sourcePathImage = null;
             
             for (Iterator i = featureCollection.iterator(); i.hasNext();) {
-              Feature feature = (Feature) i.next();
-              sourcePathImage = feature
+                Feature feature = (Feature) i.next();
+                sourcePathImage = feature
                       .getString(ImageryLayerDataset.ATTR_URI);
 
-              if (sourcePathImage == null || sourcePathImage.length() < 5) {
-                  sourcePathImage = "";
-              } else {
-                  sourcePathImage = sourcePathImage.substring(5);
-              }
-          }
-          fileSourcePath = sourcePathImage.replace("%20", " ");
-            
-       /*     for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
-                Feature feature = (Feature) i.next();
-                sourcePathImage = feature.getString(ImageryLayerDataset.ATTR_URI);
-                if (sourcePathImage != null && sourcePathImage.length()>6) {
-                    sourcePathImage = sourcePathImage.substring(6);
-                    File f = new File(sourcePathImage);
+                if (sourcePathImage != null && !sourcePathImage.isEmpty()) {
+                    File f = new File(URI.create(sourcePathImage).getPath());
                     if (f.exists()) {
-                        fileSourcePath = f.getAbsolutePath().replace("%20", " ");
+                        fileSourcePath = f.getAbsolutePath();
                         break;
                     }
                 }
-            }*/
+            }
+
             String extension = FileUtil.getExtension(fileSourcePath).toUpperCase();
             if ((extension.equals("TIF") || extension.equals("TIFF"))) {
                 // If TIFF file is a geotiff, it scans into embedded tag
