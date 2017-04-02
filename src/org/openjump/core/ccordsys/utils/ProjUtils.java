@@ -273,7 +273,21 @@ public class ProjUtils {
             FeatureCollection featureCollection = layer
                     .getFeatureCollectionWrapper();
             String sourcePathImage = null;
-            for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
+            
+            for (Iterator i = featureCollection.iterator(); i.hasNext();) {
+              Feature feature = (Feature) i.next();
+              sourcePathImage = feature
+                      .getString(ImageryLayerDataset.ATTR_URI);
+
+              if (sourcePathImage == null || sourcePathImage.length() < 5) {
+                  sourcePathImage = "";
+              } else {
+                  sourcePathImage = sourcePathImage.substring(5);
+              }
+          }
+          fileSourcePath = sourcePathImage.replace("%20", " ");
+            
+       /*     for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
                 Feature feature = (Feature) i.next();
                 sourcePathImage = feature.getString(ImageryLayerDataset.ATTR_URI);
                 if (sourcePathImage != null && sourcePathImage.length()>6) {
@@ -284,7 +298,7 @@ public class ProjUtils {
                         break;
                     }
                 }
-            }
+            }*/
             String extension = FileUtil.getExtension(fileSourcePath).toUpperCase();
             if ((extension.equals("TIF") || extension.equals("TIFF"))) {
                 // If TIFF file is a geotiff, it scans into embedded tag
