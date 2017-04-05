@@ -21,9 +21,13 @@
 
 package com.vividsolutions.jump.geom;
 
+import com.vividsolutions.jts.algorithm.RayCrossingCounter;
 import com.vividsolutions.jts.algorithm.RobustLineIntersector;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequenceFactory;
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
+import com.vividsolutions.jts.geom.util.LineStringExtracter;
+import com.vividsolutions.jts.geom.util.PointExtracter;
 import com.vividsolutions.jts.geom.util.PolygonExtracter;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
@@ -95,7 +99,7 @@ public class MakeValidOp {
      * @param geometry input geometry
      * @param list a list of simple components (Point, LineString or Polygon)
      */
-    private static void decompose(Geometry geometry, List<Geometry> list) {
+    private static void decompose(Geometry geometry, Collection<Geometry> list) {
         for (int i = 0 ; i < geometry.getNumGeometries() ; i++) {
             Geometry component = geometry.getGeometryN(i);
             if (component instanceof GeometryCollection) decompose(component, list);
@@ -127,11 +131,13 @@ public class MakeValidOp {
      * @return a valid Geometry
      */
     public Geometry makeValid(Geometry geometry) {
-        // Input geometry is exploded into a list of simple components
+
+        // Input geometry is recursively exploded into a list of simple components
         List<Geometry> list = new ArrayList<>(geometry.getNumGeometries());
         decompose(geometry, list);
+
         // Each single component is made valid
-        List<Geometry> list2 = new ArrayList<>();
+        Collection<Geometry> list2 = new ArrayList<>();
         for (Geometry component : list) {
             if (component instanceof Point) {
                 Point p = makePointValid((Point)component);
@@ -151,11 +157,19 @@ public class MakeValidOp {
             }
             else assert false : "Should never reach here";
         }
-        // If preserveGeomDim is true and input geometry is not a GeometryCollection
-        // components with a lower dimension than input geometry are removed
-        if (preserveGeomDim && !geometry.getClass().getSimpleName().equals("GeometryCollection")) {
-            list2 = removeLowerDimension(list2, geometry.getDimension());
+
+        list.clear();
+        for (Geometry g : list2) {
+            // If preserveGeomDim is true and original input geometry is not a GeometryCollection
+            // components with a lower dimension than input geometry are removed
+            if (preserveGeomDim && !geometry.getClass().getSimpleName().equals("GeometryCollection")) {
+                removeLowerDimension(g, list, geometry.getDimension());
+            } else {
+                decompose(g, list);
+            }
         }
+        list2 = list;
+
         // In a MultiPolygon, polygons cannot touch or overlap each other
         // (adjacent polygons are not merged in the context of a mixed GeometryCollection)
         if (list2.size() > 1) {
@@ -178,6 +192,15 @@ public class MakeValidOp {
             else if (geometry instanceof MultiPolygon) return factory.createMultiPolygon(new Polygon[0]);
             else return factory.createGeometryCollection(new Geometry[0]);
         } else {
+            CoordinateSequenceFactory csFactory = geometry.getFactory().getCoordinateSequenceFactory();
+            // Preserve 4th coordinate dimension as much as possible if preserveCoordDim is true
+            if (preserveCoordDim && csFactory instanceof PackedCoordinateSequenceFactory
+                    && ((PackedCoordinateSequenceFactory)csFactory).getDimension() == 4) {
+                Map<Coordinate,Double> map = new HashMap<>();
+                gatherDim4(geometry, map);
+                list2 = restoreDim4(list2, map);
+            }
+
             Geometry result = geometry.getFactory().buildGeometry(list2);
             // If input geometry was a GeometryCollection and result is a simple geometry
             // create a multi-geometry made of a single component
@@ -196,20 +219,20 @@ public class MakeValidOp {
         }
     }
 
-
-    // Remove geometries with a dimension less than dimension parameter
-    private List<Geometry> removeLowerDimension(List<Geometry> geometries, int dimension) {
-        List<Geometry> list = new ArrayList<>();
-        for (Geometry geom : geometries) {
-            if (geom.getDimension() == dimension) {
-                list.add(geom);
+    // Reursively remove geometries with a dimension less than dimension parameter
+    private void removeLowerDimension(Geometry geometry, List<Geometry> result, int dimension) {
+        for (int i = 0 ; i < geometry.getNumGeometries() ; i++) {
+            Geometry g = geometry.getGeometryN(i);
+            if (g instanceof GeometryCollection) {
+                removeLowerDimension(g, result, dimension);
+            } else if (g.getDimension() >= dimension) {
+                result.add(g);
             }
         }
-        return list;
     }
 
     // Union adjacent polygons to make an invalid MultiPolygon valid
-    private List<Geometry> unionAdjacentPolygons(List<Geometry> list) {
+    private Collection<Geometry> unionAdjacentPolygons(Collection<Geometry> list) {
         UnaryUnionOp op = new UnaryUnionOp(list);
         Geometry result = op.union();
         if (result.getNumGeometries() < list.size()) {
@@ -255,7 +278,6 @@ public class MakeValidOp {
         int count = 0;
         // Iterate through coordinates, skip points with x=NaN, y=NaN or duplicate
         for (int i = 0 ; i < sequence.size() ; i++) {
-            //System.out.println("coordinate " + i + " " + sequence.getCoordinate(i));
             if (Double.isNaN(sequence.getOrdinate(i, 0)) || Double.isNaN(sequence.getOrdinate(i, 1))) {
                 modified = true;
                 continue;
@@ -271,9 +293,7 @@ public class MakeValidOp {
         }
         // Close the sequence if it is not closed and there is already 3 distinct coordinates
         if (close && count > 2 && (array[0] != array[(count-1)*dim] || array[1] != array[(count-1)*dim + 1])) {
-            for (int j = 0 ; j < dim ; j++) {
-                array[count*dim + j] = array[j];
-            }
+            System.arraycopy(array,0,array,count*dim,dim);
             modified = true;
             count++;
         }
@@ -299,6 +319,7 @@ public class MakeValidOp {
      *     <li>an empty LineString if input CoordinateSequence has no valid point</li>
      *     <li>a Point if input CoordinateSequence has a single valid Point</li>
      * </ul>
+     * makeLineStringValid keeps the original dimension of input sequence.
      * @param lineString the LineString to make valid
      * @return a valid LineString or a Point if lineString length equals 0
      */
@@ -424,18 +445,26 @@ public class MakeValidOp {
         Geometry geom = getArealGeometryFromLinearRing(exteriorRing);
         // geom can be a GeometryCollection
         // extract polygonal areas because symDifference cannot process GeometryCollections
-        List<Geometry> list = new ArrayList<>();
-        geom.apply(new PolygonExtracter(list));
-        geom = geom.getFactory().buildGeometry(list);
+        List<Geometry> polys = new ArrayList<>();
+        List<Geometry> lines = new ArrayList<>();
+        List<Geometry> points = new ArrayList<>();
+        geom.apply(new PolygonExtracter(polys));
+        geom.apply(new LineStringExtracter(lines));
+        geom.apply(new PointExtracter(points));
+        geom = geom.getFactory().buildGeometry(polys);
         for (int i = 0 ; i < polygon.getNumInteriorRing() ; i++) {
             LinearRing interiorRing = (LinearRing)polygon.getInteriorRingN(i);
             // extract polygonal areas because symDifference cannot process GeometryCollections
-            list.clear();
-            getArealGeometryFromLinearRing(interiorRing).apply(new PolygonExtracter(list));
+            polys.clear();
+            getArealGeometryFromLinearRing(interiorRing).apply(new PolygonExtracter(polys));
             // TODO avoid the use of difference operator
-            geom = geom.symDifference(geom.getFactory().buildGeometry(list));
+            geom = geom.symDifference(geom.getFactory().buildGeometry(polys));
         }
-        return geom;
+        List<Geometry> result = new ArrayList<>();
+        result.add(geom);
+        result.addAll(lines);
+        result.addAll(points);
+        return geom.getFactory().buildGeometry(result);
     }
 
     /**
@@ -453,55 +482,116 @@ public class MakeValidOp {
             });
         }
         else {
+            // Node input LinearRing and extract unique segments
+            Set<LineString> lines = nodeLineString(ring.getCoordinates(), ring.getFactory());
+            lines = getSegments(lines);
+
+            // Polygonize the line network
             Polygonizer polygonizer = new Polygonizer();
-            polygonizer.add(nodeLineString(ring.getCoordinates(), ring.getFactory()));
-            Collection<Geometry> geoms = new ArrayList<>();
-            geoms.addAll(polygonizer.getPolygons());
-            geoms.addAll(polygonizer.getCutEdges());
-            geoms.addAll(polygonizer.getDangles());
-            geoms.addAll(polygonizer.getInvalidRingLines());
-            if (ring.getCoordinateSequence().getDimension() == 4 && preserveCoordDim) {
-                geoms = restoreFourthDimension(ring, geoms);
+            polygonizer.add(lines);
+
+            // Computes intersections to determine the status of each polygon
+            Collection<Geometry> geoms = new ArrayList();
+            for (Object object : polygonizer.getPolygons()) {
+                Polygon polygon = (Polygon)object;
+                Coordinate p = polygon.getInteriorPoint().getCoordinate();
+                int location = RayCrossingCounter.locatePointInRing(p, ring.getCoordinateSequence());
+                if (location == Location.INTERIOR) geoms.add(polygon);
             }
+            Geometry unionPoly = UnaryUnionOp.union(geoms);
+            Geometry unionLines = UnaryUnionOp.union(lines).difference(unionPoly.getBoundary());
+            geoms.clear();
+            decompose(unionPoly, geoms);
+            decompose(unionLines, geoms);
             return ring.getFactory().buildGeometry(geoms);
         }
     }
 
-    private Collection<Geometry> restoreFourthDimension(LinearRing ring, Collection<Geometry> geoms) {
-        CoordinateSequence sequence = ring.getCoordinateSequence();
-        GeometryFactory factory = ring.getFactory();
-        if (sequence.getDimension() < 4) {
-            return geoms;
+    private Set<LineString> getSegments(Collection<LineString> lines) {
+        Set<LineString> set = new HashSet<>();
+        for (LineString line : lines) {
+            Coordinate[] cc = line.getCoordinates();
+            for (int i = 1 ; i < cc.length ; i++) {
+                if (!cc[i-1].equals(cc[i])) {
+                    LineString segment = line.getFactory().createLineString(
+                            new Coordinate[]{new Coordinate(cc[i-1]), new Coordinate(cc[i])});
+                    set.add(segment);
+                }
+            }
         }
+        return set;
+    }
+
+    // Use ring to restore M values on geoms
+    private Collection<Geometry> restoreDim4(Collection<Geometry> geoms, Map<Coordinate,Double> map) {
+        GeometryFactory factory = new GeometryFactory(
+                new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE, 4));
         Collection<Geometry> result = new ArrayList<>();
-        Map<Coordinate,Double> map = new HashMap<>();
-        for (int i = 0 ; i < sequence.size() ; i++) {
-            map.put(sequence.getCoordinate(i), sequence.getOrdinate(i, 3));
-        }
         for (Geometry geom : geoms) {
             if (geom instanceof Point) {
-                result.add(factory.createPoint(restoreFourthDimension(
-                        ((Point) geom).getCoordinateSequence().toCoordinateArray(), map)));
+                result.add(factory.createPoint(restoreDim4(
+                        ((Point) geom).getCoordinateSequence(), map)));
             }
             else if (geom instanceof LineString) {
-                result.add(factory.createLineString(restoreFourthDimension(
-                        ((LineString) geom).getCoordinateSequence().toCoordinateArray(), map)));
+                result.add(factory.createLineString(restoreDim4(
+                        ((LineString) geom).getCoordinateSequence(), map)));
             }
-            if (geom instanceof Polygon) {
-                result.add(factory.createPolygon(restoreFourthDimension(
-                        ((Polygon) geom).getExteriorRing().getCoordinateSequence().toCoordinateArray(), map)));
+            else if (geom instanceof Polygon) {
+                LinearRing outer = factory.createLinearRing(restoreDim4(
+                        ((Polygon) geom).getExteriorRing().getCoordinateSequence(), map));
+                LinearRing[] inner = new LinearRing[((Polygon) geom).getNumInteriorRing()];
+                for (int i = 0 ; i < ((Polygon) geom).getNumInteriorRing() ; i++) {
+                    inner[i] = factory.createLinearRing(restoreDim4(
+                            ((Polygon) geom).getInteriorRingN(i).getCoordinateSequence(), map));
+                }
+                result.add(factory.createPolygon(outer, inner));
+            } else {
+                for (int i = 0 ; i < geom.getNumGeometries() ; i++) {
+                    result.addAll(restoreDim4(Collections.singleton(geom.getGeometryN(i)), map));
+                }
             }
         }
         return result;
     }
 
-    private CoordinateSequence restoreFourthDimension(Coordinate[] array, Map<Coordinate,Double> map) {
-        CoordinateSequence seq = new PackedCoordinateSequenceFactory(DOUBLE, 4).create(array.length, 4);
-        for (int i = 0 ; i < array.length ; i++) {
-            seq.setOrdinate(i,0,array[i].x);
-            seq.setOrdinate(i,1,array[i].y);
-            seq.setOrdinate(i,2,array[i].z);
-            Double d = map.get(array[i]);
+    private void gatherDim4(Geometry geometry, Map<Coordinate,Double> map) {
+
+        if (geometry instanceof Point) {
+            gatherDim4(((Point) geometry).getCoordinateSequence(), map);
+        }
+        else if (geometry instanceof LineString) {
+            gatherDim4(((LineString) geometry).getCoordinateSequence(), map);
+        }
+        else if (geometry instanceof Polygon) {
+            Polygon polygon = (Polygon)geometry;
+            gatherDim4(polygon.getExteriorRing().getCoordinateSequence(), map);
+            for (int i = 0 ; i < polygon.getNumInteriorRing() ; i++) {
+                gatherDim4(polygon.getInteriorRingN(i).getCoordinateSequence(), map);
+            }
+        }
+        else {
+            for (int i = 0 ; i < geometry.getNumGeometries() ; i++) {
+                gatherDim4(geometry.getGeometryN(i), map);
+            }
+        }
+    }
+
+    private void gatherDim4(CoordinateSequence cs, Map<Coordinate,Double> map) {
+        if (cs.getDimension()==4) {
+            for (int i = 0 ; i < cs.size() ; i++) {
+                map.put(cs.getCoordinate(i), cs.getOrdinate(i, 3));
+            }
+        }
+    }
+
+    // Use map to restore M values on the coordinate array
+    private CoordinateSequence restoreDim4(CoordinateSequence cs, Map<Coordinate,Double> map) {
+        CoordinateSequence seq = new PackedCoordinateSequenceFactory(DOUBLE, 4).create(cs.size(), 4);
+        for (int i = 0 ; i < cs.size() ; i++) {
+            seq.setOrdinate(i,0,cs.getOrdinate(i,0));
+            seq.setOrdinate(i,1,cs.getOrdinate(i,1));
+            seq.setOrdinate(i,2,cs.getOrdinate(i,2));
+            Double d = map.get(cs.getCoordinate(i));
             seq.setOrdinate(i,3,d==null?Double.NaN:d);
         }
         return seq;
@@ -539,6 +629,7 @@ public class MakeValidOp {
         // Remove duplicate linestrings preserving main orientation
         Set<LineString> lineStringSet = new HashSet<>();
         for (LineString line : lineStringList) {
+            // TODO as equals makes a topological comparison, comparison with line.reverse maybe useless
             if (!lineStringSet.contains(line) && !lineStringSet.contains(line.reverse())) {
                 lineStringSet.add(line);
             }
@@ -549,7 +640,8 @@ public class MakeValidOp {
 
 
     public static void main(String[] args) throws ParseException {
-        GeometryFactory factory = new GeometryFactory();
+        GeometryFactory factory3 = new GeometryFactory(CoordinateArraySequenceFactory.instance());
+        GeometryFactory factory4 = new GeometryFactory(new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE,4));
         WKTReader reader;
         MakeValidOp op = new MakeValidOp();
         MakeValidOp opGeomDimNotPreserved = new MakeValidOp().setPreserveGeomDim(false);
@@ -560,24 +652,24 @@ public class MakeValidOp {
         // -----------------------------------------------------
         // Test Point
         // -----------------------------------------------------
-        Point p1 = factory.createPoint(new Coordinate(0,0));
+        Point p1 = factory3.createPoint(new Coordinate(0,0));
         Point p2 = op.makePointValid(p1);
         assert p1.equals(p2);
 
         // return an empty point if X or Y is NaN
-        p1 = factory.createPoint(new Coordinate(Double.NaN,0));
+        p1 = factory3.createPoint(new Coordinate(Double.NaN,0));
         p2 = op.makePointValid(p1);
         assert !p1.isEmpty();
         assert p2.isEmpty();
 
         // return an empty point if X or Y is NaN
-        p1 = factory.createPoint(new Coordinate(0, Double.NaN));
+        p1 = factory3.createPoint(new Coordinate(0, Double.NaN));
         p2 = op.makePointValid(p1);
         assert !p1.isEmpty();
         assert p2.isEmpty();
 
         // Preserve fourth coord dimension
-        p1 = factory.createPoint(DOUBLE_FACTORY.create(new double[]{0,1,2,3}, 4));
+        p1 = factory4.createPoint(DOUBLE_FACTORY.create(new double[]{0,1,2,3}, 4));
         p2 = op.makePointValid(p1);
         assert p1.getCoordinateSequence().getOrdinate(0,3) == p2.getCoordinateSequence().getOrdinate(0,3);
 
@@ -679,7 +771,7 @@ public class MakeValidOp {
 
         // restore fourth dimension (self-intersection)
         cs1 = DOUBLE_FACTORY.create(new double[]{0,0,0,5, 10,0,0,1, 0,10,0,2, 10,10,0,3, 0,0,0,5}, 4);
-        input = factory.createPolygon(cs1);
+        input = factory4.createPolygon(cs1);
         assert input.getNumGeometries() == 1;
         result = op.makeValid(input);
         assert result.getNumGeometries() == 2;
@@ -687,7 +779,7 @@ public class MakeValidOp {
         assert ((Polygon)result.getGeometryN(0)).getExteriorRing().getCoordinateSequence().getOrdinate(1,3) > 0;
         result = opCoordDimNotPreserved.makeValid(input);
         assert result.getNumGeometries() == 2;
-        assert ((Polygon)result.getGeometryN(0)).getExteriorRing().getCoordinateSequence().getDimension() == 3;
+        assert ((Polygon)result.getGeometryN(0)).getExteriorRing().getCoordinateSequence().getOrdinate(1,3) == 0;
         // -----------------------------------------------------
         // Test MultiPolygon
         // -----------------------------------------------------

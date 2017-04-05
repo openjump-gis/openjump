@@ -41,6 +41,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.io.CompressedFile;
@@ -84,22 +85,22 @@ public class WorldFile {
       if (lineIn != null && !"".equals(lineIn)) {
         switch (line) {
         case 0:
-          wf.xSize = Float.valueOf(lineIn.trim()).floatValue();
+          wf.xSize = Float.valueOf(lineIn.trim());
           break;
         case 1:
-          wf.rowRotation = Float.valueOf(lineIn.trim()).floatValue();
+          wf.rowRotation = Float.valueOf(lineIn.trim());
           break;
         case 2:
-          wf.colRotation = Float.valueOf(lineIn.trim()).floatValue();
+          wf.colRotation = Float.valueOf(lineIn.trim());
           break;
         case 3:
-          wf.ySize = Float.valueOf(lineIn.trim()).floatValue();
+          wf.ySize = Float.valueOf(lineIn.trim());
           break;
         case 4:
-          wf.xUpperLeft = Double.valueOf(lineIn.trim()).doubleValue();
+          wf.xUpperLeft = Double.valueOf(lineIn.trim());
           break;
         case 5:
-          wf.yUpperLeft = Double.valueOf(lineIn.trim()).doubleValue();
+          wf.yUpperLeft = Double.valueOf(lineIn.trim());
           break;
         }
       }
@@ -179,7 +180,7 @@ public class WorldFile {
         URI wf_uri = CompressedFile.replaceTargetFileName(origuri, wf_name);
         InputStream is = null;
         try {
-          System.out.println("WF try open: "+wf_uri);
+          Logger.debug("Try open World File: " + wf_uri);
           return is = CompressedFile.openFile(wf_uri);
         } catch (FileNotFoundException e) {
           // we gracefully ignore missing world files
