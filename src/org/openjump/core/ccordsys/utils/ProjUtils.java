@@ -257,9 +257,9 @@ public class ProjUtils {
        SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerSource(layer);
        String SRID_srs_string = srsInfo.getCode();
        srsInfo.setCode(SRID_style_string);
-       if (SRID_srs_string.equals("0") & SRID_style_string.equals("0"))
+       if (SRID_srs_string.equals("0") & SRID_style_string.equals("0") & !isTemporaryLayer(layer))
            srsInfo.setSource(NO_SRS);
-       if ((!SRID_style_string.equals(SRID_srs_string) & SRID_srs_string.equals("0") & !SRID_style_string.equals("0")) || isImageGeoTIFFLayer(layer) ) 
+       if ((!SRID_style_string.equals(SRID_srs_string) & SRID_srs_string.equals("0") & !SRID_style_string.equals("0")) & !isTemporaryLayer(layer) || isImageGeoTIFFLayer(layer) ) 
            srsInfo.setSource(EMBEDDED_SRS);
       if (!SRID_style_string.equals(SRID_srs_string) & !SRID_style_string.equals("0") & !SRID_srs_string.equals("0"))
            srsInfo.setSource(NOT_CONSISTENT_SRS);
@@ -370,6 +370,20 @@ public class ProjUtils {
         }
     }
 
+    //Boolean, Select layer is a temporary layer
+    private static boolean isTemporaryLayer(Layer layer){
+      DataSourceQuery dsq = layer.getDataSourceQuery();
+      String sclass = layer.getClass().getSimpleName();
+      if (dsq == null && layer.getStyle(ReferencedImageStyle.class) == null
+                    && layer.getDescription() != null && !sclass.equals("WFSLayer"))
+    {
+       return true;
+     } else {
+       return false;
+   }
+}
+    
+    
     // Boolean. Selected layer is related to a database
     private static boolean isDataBaseLayer(Layer layer) {
         DataSourceQuery dsq = layer.getDataSourceQuery();
@@ -405,6 +419,8 @@ public class ProjUtils {
                     }
                 }
             }
+            String extension = FileUtil.getExtension(fileSourcePath).toUpperCase();
+            if ((extension.equals("TIF") || extension.equals("TIFF"))) {
             TiffTags.TiffMetadata metadata = null;
             try {
                 metadata = TiffTags.readMetadata(new File(fileSourcePath));
@@ -417,7 +433,8 @@ public class ProjUtils {
                 return false;
             }
         }
-        return false;
+       }
+      return false;
     }
     
     
