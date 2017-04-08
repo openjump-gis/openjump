@@ -74,7 +74,7 @@
 <2063>;<Dabola 1981 UTM zone 28N (deprecated)>;[metre]
 <2064>;<Dabola 1981 UTM zone 29N (deprecated)>;[metre]
 <2065>;<S JTSK (Ferro) Krovak>;[metre]
-<2066>;<Mount Dillon Tobago Grid>;'[Clarke''s link]'
+<2066>;<Mount Dillon Tobago Grid>;[Clarke's link]
 <2067>;<Naparima 1955 UTM zone 20N>;[metre]
 <2068>;<ELD79 Libya zone 5>;[metre]
 <2069>;<ELD79 Libya zone 6>;[metre]
@@ -314,7 +314,7 @@
 <2311>;<WGS 84 TM 6 NE>;[metre]
 <2312>;<Garoua UTM zone 33N>;[metre]
 <2313>;<Kousseri UTM zone 33N>;[metre]
-<2314>;<Trinidad 1903 Trinidad Grid (ftCla)>;'[Clarke''s foot]'
+<2314>;<Trinidad 1903 Trinidad Grid (ftCla)>;[Clarke's foot]
 <2315>;<Campo Inchauspe UTM zone 19S>;[metre]
 <2316>;<Campo Inchauspe UTM zone 20S>;[metre]
 <2317>;<PSAD56 ICN Regional>;[metre]
@@ -1407,7 +1407,7 @@
 <3404>;<NAD83(HARN) North Carolina (ftUS)>;[US survey foot]
 <3405>;<VN 2000 UTM zone 48N>;[metre]
 <3406>;<VN 2000 UTM zone 49N>;[metre]
-<3407>;<Hong Kong 1963 Grid System>;'[Clarke''s foot]'
+<3407>;<Hong Kong 1963 Grid System>;[Clarke's foot]
 <3408>;<NSIDC EASE-Grid North>;[metre]
 <3409>;<NSIDC EASE-Grid South>;[metre]
 <3410>;<NSIDC EASE Grid Global>;[metre]
@@ -2824,7 +2824,7 @@
 <23948>;<Indian 1954 UTM zone 48N>;[metre]
 <24047>;<Indian 1975 UTM zone 47N>;[metre]
 <24048>;<Indian 1975 UTM zone 48N>;[metre]
-<24100>;<Jamaica 1875 Jamaica (Old Grid)>;'[Clarke''s foot]'
+<24100>;<Jamaica 1875 Jamaica (Old Grid)>;[Clarke's foot]
 <24200>;<JAD69 Jamaica National Grid>;[metre]
 <24305>;<Kalianpur 1937 UTM zone 45N>;[metre]
 <24306>;<Kalianpur 1937 UTM zone 46N>;[metre]
@@ -3383,7 +3383,7 @@
 <30177>;<Tokyo Japan Plane Rectangular CS XVII>;[metre]
 <30178>;<Tokyo Japan Plane Rectangular CS XVIII>;[metre]
 <30179>;<Tokyo Japan Plane Rectangular CS XIX>;[metre]
-<30200>;<Trinidad 1903 Trinidad Grid>;'[Clarke''s link]'
+<30200>;<Trinidad 1903 Trinidad Grid>;[Clarke's link]
 <30339>;<TC(1948) UTM zone 39N>;[metre]
 <30340>;<TC(1948) UTM zone 40N>;[metre]
 <30491>;<Voirol 1875 Nord Algerie (ancienne)>;[metre]
@@ -4988,6 +4988,7 @@
 <GEOPORTALCRZ>;<Geoportail - Iles de Crozet>;[metre]
 <GEOPORTALKER>;<Geoportail - Iles Kerguelen>;[metre]
 <GEOPORTALASP>;<Geoportail - Iles St Paul et Amsterdam>;[metre]
+# EPSG Compound Coordinate referenc esystems 
 <5628>;<SWEREF99 + RH2000 height>;[metre]
 <3901>;<KKJ / Finland Uniform Coordinate System + N60 height>;[metre]
 <3902>;<ETRS89 / TM35FIN(N,E) + N60 height>;[metre]
