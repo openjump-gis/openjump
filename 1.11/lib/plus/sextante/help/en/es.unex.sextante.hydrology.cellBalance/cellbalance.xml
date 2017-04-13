@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm allows the user to know the difference between its flow input and the flow output, considering its hydrological structure. A given number of cells situated upslope and in the immediate surrounding of a specific cell flow onto it. At the same time, the flow of this cell flows onto one (or various depending on the model used) cell situated downhill. Analysing the difference between these values, the so called net balance is obtained." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="DEM" text="Digital Elevation Model.It should be a sink-filled DEM, since flow routing algorithms are used." description="Elevation" type="3">
+		</element>
+		<element name="WEIGHTS" text="If a layer is selected in this field, each one of the cells will be weighted  based on the values of the selected layer." description="Weight" type="3">
+		</element>
+		<element name="METHOD" text="the method to use may be selected from the following:&#10;* D8: the flow goes from the center of one cell up to the center of another cell ( just one) around it. For this, the directions of flow are limited in multiple angles of  45&#186;, which makes this method inconvinient. (O'Callaghan &amp; Mark 1984).&#10;* DInfinity: the flow goes from the center of one cell up to the center of two contiguous cells  around it,  for which it is considered a bidimensional flow and overcome in this way the deficiency of  D8. (Tarboton 1998).&#10;* MFD (Multiple Flow Direction): a method that considers a flow bidimensional (Multiple Flow Direction Algorithms.)" description="Method" type="3">
+		</element>
+		<element name="CONVERGENCE" text="Convergence factor to use if MFD method is selected." description="Convergence factor (MFD)" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="CELLBALANCE" text="The layer contains both negative and positive values, depending on whether the cell gains or losses flow." description="Net balance" type="2">
+			<image description="" file="balance_neto_por_celdas.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

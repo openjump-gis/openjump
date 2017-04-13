@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<root>
+  <attribute xml-name="visible" java-name="visible"/>
+  <element xml-name="name" java-name="name"/>
+  <element xml-name="imageFileName" java-name="imageFileName"/>
+  <element xml-name="envelope" java-name="xmlEnvelope"/>
+  <element xml-name="transparencyLevel" java-name="transparencyLevel"/>
+  <element xml-name="transparentColorAsString" java-name="transparentColorAsString"/>
+  <element xml-name="origImageWidth" java-name="origImageWidth"/>
+  <element xml-name="origImageHeight" java-name="origImageHeight"/>
+  <element xml-name="metaInformation" java-name="metaInformation"/>
+  <element xml-name="symbology" java-name="symbology"/>
+</root>

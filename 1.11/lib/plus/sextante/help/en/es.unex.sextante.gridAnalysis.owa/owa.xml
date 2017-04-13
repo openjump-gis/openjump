@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="The technique known as Ordered Weighted Average (OWA) calculates the weighted average of  a group of layers. The weighting, however, is not done with fixed weights for each layer. Instead, they are set based on the order of values.&#10;&#10;Thus, for each cell, values from all layers are sorted and the highest one is multiplied by a given coefficient, the second highest by another, and so on. The weights are associated to a position within the sorted series of values in each cell,  not to one particular layer. " description="Descripci&#243;n" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Informaci&#243;n adicional" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extensi&#243;n creada por" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Ayuda creada por" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="Notas de usuario" type="0">
+		</element>
+		<element name="INPUT" text="" description="Capas" type="3">
+		</element>
+		<element name="WEIGHTS" text="add values of weighted average for the group of selected layers." description="Ponderaci&#243;n" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Descripci&#243;n general" type="2">
+		</element>
+		<element name="RESULT" text="" description="Resultado" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
