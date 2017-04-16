@@ -1,5 +1,16 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
+  Highlights
+
+  New Features
+
+  Improvements
+
+  Bug Fixes
+
+
+Version 1.11 release rev.5434 (released on 13. April 2017)
+
   New features
   * Added CadTools extension to OpenJUMP PLUS. A set of cad-like tools
     and plugins mainly deriving from Kosmo 3.0 source code
