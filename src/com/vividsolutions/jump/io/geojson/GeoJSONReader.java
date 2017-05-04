@@ -280,18 +280,23 @@ class MapGeoJsonGeometryReader extends
       geometryFactory = (GeometryFactory) m2.invoke(this, geometryMap);
     }
 
-    Object coords = geometryMap.get(GeoJsonConstants.NAME_COORDINATES);
-    // are we a list of objects?
-    if (!(coords instanceof List))
-      throw new com.vividsolutions.jts.io.ParseException(
-          GeoJsonConstants.NAME_COORDINATES + " is not a list: "
-              + JSONObject.toJSONString(geometryMap));
-    // are we an empty list? OJ allows empty geometries, so do we
-    if (((List)coords).isEmpty()){
-      String type = (String) geometryMap.get(GeoJsonConstants.NAME_TYPE);
+    // GeomColls have no coord list, but list geoms instead, so we skip this
+    // test for them
+    if (!GeoJsonConstants.NAME_GEOMETRYCOLLECTION.equals(geometryMap.get(GeoJsonConstants.NAME_TYPE))) {
+      Object coords = geometryMap.get(GeoJsonConstants.NAME_COORDINATES);
+      // are we a list of objects?
+      if (!(coords instanceof List))
+        throw new com.vividsolutions.jts.io.ParseException(
+            GeoJsonConstants.NAME_COORDINATES + " is not a list: " + JSONObject.toJSONString(geometryMap));
+
+      // are we an empty list? OJ allows empty geometries, so do we
+      // TODO: we do not handle empty coord lists within GeomColls so far
+      if (((List) coords).isEmpty()) {
+        String type = (String) geometryMap.get(GeoJsonConstants.NAME_TYPE);
         return GeometryUtils.createEmptyGeometry(type, geometryFactory);
+      }
     }
-    
+
     return (Geometry) m.invoke(this, geometryMap, geometryFactory);
   }
 }
