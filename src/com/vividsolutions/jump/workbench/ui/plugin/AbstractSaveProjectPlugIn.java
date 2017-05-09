@@ -37,8 +37,11 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.swing.JInternalFrame;
 import javax.xml.namespace.QName;
@@ -92,7 +95,10 @@ public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
     task.setSavedViewEnvelope(frame.getContext().getLayerViewPanel()
         .getViewport().getEnvelopeInModelCoordinates());
     task.setProperty(new QName(Task.PROJECT_FILE_KEY), file.getAbsolutePath());
-
+    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    Date date = new Date();
+    task.setProperty(new QName(Task.PROJECT_TIME_KEY),
+            dateFormat.format(date));
     StringWriter stringWriter = new StringWriter();
 
     try {

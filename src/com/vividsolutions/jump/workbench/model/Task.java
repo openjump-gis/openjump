@@ -72,6 +72,10 @@ public class Task implements LayerManagerProxy {
    * Used to determine whether a project file has been moved away from its original location
    */
   public static final String PROJECT_FILE_KEY = "Project File";
+  public static final String PROJECT_UNIT = "Project Unit";
+  public static final String PROJECT_SRS_KEY = "Project SRS ID";
+  public static final String PROJECT_METAINFO_KEY = "Project Metainfo";
+  public static final String PROJECT_TIME_KEY = "Project Date";
 
   // No parameters so it can be created by Java2XML.
   public Task() {
