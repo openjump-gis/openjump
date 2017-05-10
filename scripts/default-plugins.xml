@@ -316,7 +316,10 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.edit.ClipToFencePlugIn
 	</plug-in>
-
+    <separator />
+    <plug-in>
+        org.openjump.core.ui.plugin.task.TaskPropertiesPlugIn
+    </plug-in>
 
 	<!--- ======================= VIEW menu ================================= -->
 	<plug-in>
