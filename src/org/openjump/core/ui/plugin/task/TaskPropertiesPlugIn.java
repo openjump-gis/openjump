@@ -307,8 +307,8 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
                 Task selectedeTask = context.getTask();
                 selectedeTask
                         .setProperty(new QName(Task.PROJECT_SRS_KEY), epsg);
-                selectedeTask.setProperty(new QName(Task.PROJECT_UNIT), unit);
-                selectedeTask.setProperty(new QName(Task.PROJECT_METAINFO_KEY),
+                selectedeTask.setProperty(new QName(Task.PROJECT_UNIT_KEY), unit);
+                selectedeTask.setProperty(new QName(Task.PROJECT_COMMENT_KEY),
                         infoArea.getText());
                 // Utils.SaveProject(context);
                 dialog.pack();
@@ -356,9 +356,9 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
         infoPanel.setBorder(BorderFactory.createTitledBorder(EXTENT));
         Task selectedeTask = context.getTask();
         if (selectedeTask.getProperties().containsKey(
-                new QName(Task.PROJECT_METAINFO_KEY))) {
+                new QName(Task.PROJECT_COMMENT_KEY))) {
             this.info = selectedeTask.getProperty(
-                    new QName(Task.PROJECT_METAINFO_KEY)).toString();
+                    new QName(Task.PROJECT_COMMENT_KEY)).toString();
         } else {
             this.info = "";
         }
@@ -371,7 +371,8 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
         infoArea.setWrapStyleWord(true);
         infoArea.setColumns(45);
         infoArea.setRows(7);
-        infoArea.setPreferredSize(infoPanel.getSize());
+       //Removed as it won't show scrollbars <Giuseppe Aruta 20/05/2017>
+        //infoArea.setPreferredSize(infoPanel.getSize());
         JScrollPane layerPane = new JScrollPane(infoArea, 20, 31);
         infoPanel.setBorder(BorderFactory.createTitledBorder(INFO));
         infoPanel.add(layerPane);
