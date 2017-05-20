@@ -45,6 +45,10 @@ import javax.swing.JSplitPane;
 import javax.swing.Timer;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+import javax.xml.namespace.QName;
+
+import org.openjump.core.ccordsys.utils.SRSInfo;
+import org.openjump.core.ccordsys.utils.SridLookupTable;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -304,11 +308,36 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         updateTitle();
     }
 
-    protected void updateTitle() {
+    /** */
+    private String realTitle;
+
+    /**
+     * Gets the real title of the task frame excluding the SRS. Adapted from
+     * Kosmo 3.0 [Giuseppe Aruta 20/05/2017]
+     * 
+     * @return
+     */
+    public String getRealTitle() {
+        return realTitle;
+    }
+
+    public void updateTitle() {
         String title = task.getName();
         if (cloneIndex > 0) {
             title += " (View " + (cloneIndex + 1) + ")";
         }
+        realTitle = title;
+        if (task.getProperties().containsKey(new QName(Task.PROJECT_SRS_KEY))) {
+            SRSInfo srid = SridLookupTable.getSrsAndUnitFromCode(task
+                    .getProperty(new QName(Task.PROJECT_SRS_KEY)).toString());
+            if (!srid.getCode().matches("0")) {
+              String proj = srid.toString();
+              int endIndex = proj.lastIndexOf("[");
+              String description = proj.substring(0, endIndex);
+                title += " < " + description + " > ";
+            }
+        }
+
         setTitle(title);
     }
 

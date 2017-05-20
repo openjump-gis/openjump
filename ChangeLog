@@ -5,6 +5,10 @@
 
 * release 1.10 updated until here **********************************************
 
+ 2017-20-10 Giuseppe Aruta
+  * Task Frame title shows also projection description if it is set
+    and matches any value available into srid.txt SRS registry file
+
 2017-05-10 Giuseppe Aruta
   * Added TaskProperty plugin to read and modify project properties
 

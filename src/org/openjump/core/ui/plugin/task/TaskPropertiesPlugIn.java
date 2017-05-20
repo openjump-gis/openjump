@@ -51,6 +51,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.MultiTabInputDialog;
 import com.vividsolutions.jump.workbench.ui.SuggestTreeComboBox;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
@@ -310,6 +311,9 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
                 selectedeTask.setProperty(new QName(Task.PROJECT_UNIT_KEY), unit);
                 selectedeTask.setProperty(new QName(Task.PROJECT_COMMENT_KEY),
                         infoArea.getText());
+                TaskFrame taskFrame = context.getWorkbenchFrame()
+                    .getActiveTaskFrame();
+                taskFrame.updateTitle();
                 // Utils.SaveProject(context);
                 dialog.pack();
                 dialog.repaint();
