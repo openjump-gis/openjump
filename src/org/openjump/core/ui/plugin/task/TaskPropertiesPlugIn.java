@@ -270,16 +270,17 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
             final MultiInputDialog dialog) {
         if (dialog.getCheckBox(EDIT_METADATA).isSelected()) {
             dialog.setApplyVisible(true);
+            dialog.setOKEnabled(false);
             localSuggestTreeComboBox.setEnabled(true);
-            localSuggestTreeComboBox.setEditable(dialog.getCheckBox(
-                    EDIT_METADATA).isSelected());
+            localSuggestTreeComboBox.setEditable(true);
             localSuggestTreeComboBox.setBackground(Color.WHITE);
-            infoArea.setEditable(dialog.getCheckBox(EDIT_METADATA).isSelected());
+            infoArea.setEditable(true);
             infoArea.setBackground(Color.WHITE);
             infoArea.repaint();
             dialog.repaint();
         } else {
             dialog.setApplyVisible(false);
+            dialog.setOKEnabled(true);
             UIManager.put("ComboBox.disabledForeground", Color.black);
             localSuggestTreeComboBox.setSelectedItem(this.srsCode);
             localSuggestTreeComboBox.setEditable(false);
@@ -305,16 +306,21 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
                 String epsg = localSuggestTreeComboBox.getSelectedItem()
                         .toString();
                 String unit = sridTableInfo.getUnit().toString();
-                Task selectedeTask = context.getTask();
-                selectedeTask
+                Task selectedTask = context.getTask();
+                selectedTask
                         .setProperty(new QName(Task.PROJECT_SRS_KEY), epsg);
-                selectedeTask.setProperty(new QName(Task.PROJECT_UNIT_KEY), unit);
-                selectedeTask.setProperty(new QName(Task.PROJECT_COMMENT_KEY),
+                selectedTask.setProperty(new QName(Task.PROJECT_UNIT_KEY), unit);
+                selectedTask.setProperty(new QName(Task.PROJECT_COMMENT_KEY),
                         infoArea.getText());
                 TaskFrame taskFrame = context.getWorkbenchFrame()
                     .getActiveTaskFrame();
                 taskFrame.updateTitle();
                 // Utils.SaveProject(context);
+                
+                // finish editing, disable checkbox
+                dialog.getCheckBox(EDIT_METADATA).setSelected(false);
+                updateControls(context, dialog);
+                
                 dialog.pack();
                 dialog.repaint();
             } catch (Exception e1) {
