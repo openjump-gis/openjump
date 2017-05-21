@@ -66,30 +66,29 @@ public class Task implements LayerManagerProxy {
 
   /** The map of task properties. */
   private Map<QName, Object> properties = new HashMap<>();
-  
-  /** 
-   * Project File property, 
-   * Used to determine whether a project file has been moved away from its original location
+
+  /**
+   * Project File property, Used to determine whether a project file has been
+   * moved away from its original location
    */
   public static final String PROJECT_FILE_KEY = "Project File";
-  /** 
-   * Project Unit property, 
-   * Used to determine project unit (extract from SRS: metre, foot, etc)
+  /**
+   * Project Unit property, Used to determine project unit (extract from SRS:
+   * metre, foot, etc)
    */
   public static final String PROJECT_UNIT_KEY = "Project Unit";
-  /** 
-   * Project SRS property, 
-   * Used to determine spatial reference system of a project (saved as SRID: 32632, 4326, etc)
+  /**
+   * Project SRS property, Used to determine spatial reference system of a
+   * project (saved as SRID: 32632, 4326, etc)
    */
   public static final String PROJECT_SRS_KEY = "Project SRS ID";
-  /** 
-   * Project Information property, 
-   * Used to determine extra info as string text
+  /**
+   * Project Information property, Used to determine extra info as string text
    */
   public static final String PROJECT_COMMENT_KEY = "Project Commet";
-  /** 
-   * Project Time property, 
-   * Used to determine last modification time of a project
+  /**
+   * Project Time property, Used to determine last modification time of a
+   * project
    */
   public static final String PROJECT_TIME_KEY = "Project Date";
 
@@ -151,12 +150,14 @@ public class Task implements LayerManagerProxy {
   /**
    * Set the value for the named property.
    * 
-   * @param name The name of the property.
-   * @param value The value for the property.
+   * @param name
+   *          The name of the property.
+   * @param value
+   *          The value for the property.
    */
-  	public void setProperty(QName name, Object value) {
-   	 	properties.put(name, value);
-  	}
+  public void setProperty(QName name, Object value) {
+    properties.put(name, value);
+  }
 
   /**
    * <p>
@@ -178,162 +179,165 @@ public class Task implements LayerManagerProxy {
    * Integer i = task.getProperty(...)
    * </pre>
    * 
-   * @param name The name of the property.
+   * @param name
+   *          The name of the property.
    * @return value The value for the property.
    */
-  	@SuppressWarnings("unchecked")
-  	public <T> T getProperty(QName name) {
-    	return (T)properties.get(name);
-  	}
+  @SuppressWarnings("unchecked")
+  public <T> T getProperty(QName name) {
+    return (T) properties.get(name);
+  }
 
   /**
    * Get all the task properties.
    * 
    * @return The task properties.
    */
-  	public Map<QName, Object> getProperties() {
-    	return properties;
-  	}
+  public Map<QName, Object> getProperties() {
+    return properties;
+  }
 
   /**
    * Set all the task properties.
    * 
-   * @param properties The task properties.
+   * @param properties
+   *          The task properties.
    */
-  	public void setProperties(Map<QName, Object> properties) {
-    	this.properties.putAll(properties);
-  	}
+  public void setProperties(Map<QName, Object> properties) {
+    this.properties.putAll(properties);
+  }
 
-  	public String toString() {
-    	return getName();
-  	}
+  public String toString() {
+    return getName();
+  }
 
   /**
    * Interface: NameListener must respond to task name changing.
    */
-  	public interface NameListener {
-    	void taskNameChanged(String name);
-  	}
+  public interface NameListener {
+    void taskNameChanged(String name);
+  }
 
-	/*
-	 * The following getters and setters are for use by Java2XML to convert to and from XML
-	 */
-  
-	public Point getTaskWindowLocation() {
-		return taskWindowLocation;
-	}
+  /*
+   * The following getters and setters are for use by Java2XML to convert to and
+   * from XML
+   */
 
-	public int getTaskWindowLocationX() {
-		return taskWindowLocation.x;
-	}
+  public Point getTaskWindowLocation() {
+    return taskWindowLocation;
+  }
 
-	public int getTaskWindowLocationY() {
-		return taskWindowLocation.y;
-	}
+  public int getTaskWindowLocationX() {
+    return taskWindowLocation.x;
+  }
 
-	public void setTaskWindowLocation(Point taskWindowLocation) {
-		this.taskWindowLocation = taskWindowLocation;
-	}
+  public int getTaskWindowLocationY() {
+    return taskWindowLocation.y;
+  }
 
-	public void setTaskWindowLocationX(String x) {
-		if (taskWindowLocation == null)
-			taskWindowLocation = new Point();
-		this.taskWindowLocation.x = Integer.valueOf(x);
-	}
-	
-	public void setTaskWindowLocationY(String y) {
-		if (taskWindowLocation == null)
-			taskWindowLocation = new Point();
-		this.taskWindowLocation.y = Integer.valueOf(y);
-	}
+  public void setTaskWindowLocation(Point taskWindowLocation) {
+    this.taskWindowLocation = taskWindowLocation;
+  }
 
-	public Dimension getTaskWindowSize() {
-		return taskWindowSize;
-	}
+  public void setTaskWindowLocationX(String x) {
+    if (taskWindowLocation == null)
+      taskWindowLocation = new Point();
+    this.taskWindowLocation.x = Integer.valueOf(x);
+  }
 
-	public int getTaskWindowSizeWidth() {
-		return taskWindowSize.width;
-	}
+  public void setTaskWindowLocationY(String y) {
+    if (taskWindowLocation == null)
+      taskWindowLocation = new Point();
+    this.taskWindowLocation.y = Integer.valueOf(y);
+  }
 
-	public int getTaskWindowSizeHeight() {
-		return taskWindowSize.height;
-	}
+  public Dimension getTaskWindowSize() {
+    return taskWindowSize;
+  }
 
-	public void setTaskWindowSize(Dimension taskWindowSize) {
-		this.taskWindowSize = taskWindowSize;
-	}
-	
-	public void setTaskWindowSizeWidth(String width) {
-		if (taskWindowSize == null)
-			taskWindowSize = new Dimension();
-		taskWindowSize.width = Integer.valueOf(width);
-	}
-	
-	public void setTaskWindowSizeHeight(String height) {
-		if (taskWindowSize == null)
-			taskWindowSize = new Dimension();
-		this.taskWindowSize.height = Integer.valueOf(height);
-	}
+  public int getTaskWindowSizeWidth() {
+    return taskWindowSize.width;
+  }
 
-	public boolean getMaximized() {
-		return maximized;
-	}
+  public int getTaskWindowSizeHeight() {
+    return taskWindowSize.height;
+  }
 
-	public void setMaximized(boolean isMaximized) {
-		this.maximized = isMaximized;
-	}
+  public void setTaskWindowSize(Dimension taskWindowSize) {
+    this.taskWindowSize = taskWindowSize;
+  }
 
-	public Envelope getSavedViewEnvelope() {
-		return savedViewEnvelope;
-	}
-	
-	public double getTaskWindowZoomLeft() {
-		return savedViewEnvelope.getMinX();
-	}
+  public void setTaskWindowSizeWidth(String width) {
+    if (taskWindowSize == null)
+      taskWindowSize = new Dimension();
+    taskWindowSize.width = Integer.valueOf(width);
+  }
 
-	public double getTaskWindowZoomRight() {
-		return savedViewEnvelope.getMaxX();
-	}
+  public void setTaskWindowSizeHeight(String height) {
+    if (taskWindowSize == null)
+      taskWindowSize = new Dimension();
+    this.taskWindowSize.height = Integer.valueOf(height);
+  }
 
-	public double getTaskWindowZoomBottom() {
-		return savedViewEnvelope.getMinY();
-	}
+  public boolean getMaximized() {
+    return maximized;
+  }
 
-	public double getTaskWindowZoomTop() {
-		return savedViewEnvelope.getMaxY();
-	}
+  public void setMaximized(boolean isMaximized) {
+    this.maximized = isMaximized;
+  }
 
+  public Envelope getSavedViewEnvelope() {
+    return savedViewEnvelope;
+  }
 
-	public void setSavedViewEnvelope(Envelope savedViewEnvelope) {
-		this.savedViewEnvelope = savedViewEnvelope;
-	}
-	
-	private double left = 0d;
-	private double right = 0d;
-	private double bottom = 0d;
-	private double top = 0d;
-	
-	public void setTaskWindowZoomLeft(String left) {
-		this.left =Double.valueOf(left);
-	}
+  public double getTaskWindowZoomLeft() {
+    return savedViewEnvelope.getMinX();
+  }
 
-	public void setTaskWindowZoomRight(String right) {
-		this.right =Double.valueOf(right);
-	}
+  public double getTaskWindowZoomRight() {
+    return savedViewEnvelope.getMaxX();
+  }
 
-	public void setTaskWindowZoomBottom(String bottom) {
-		this.bottom =Double.valueOf(bottom);
-	}
+  public double getTaskWindowZoomBottom() {
+    return savedViewEnvelope.getMinY();
+  }
 
-	/**
-	 * This method must be called after all three previous have been done.
-	 * Java2XML does this.  This is necessary because all parameters must be known
-	 * before an Envelope can be created (unlike Point and Dimension).
-	 * @param top
-	 */
-	public void setTaskWindowZoomTop(String top) {
-		this. top =Double.valueOf(top);
-		savedViewEnvelope = new Envelope(this.left, this.right, this.top, this.bottom);
-	}
+  public double getTaskWindowZoomTop() {
+    return savedViewEnvelope.getMaxY();
+  }
+
+  public void setSavedViewEnvelope(Envelope savedViewEnvelope) {
+    this.savedViewEnvelope = savedViewEnvelope;
+  }
+
+  private double left = 0d;
+  private double right = 0d;
+  private double bottom = 0d;
+  private double top = 0d;
+
+  public void setTaskWindowZoomLeft(String left) {
+    this.left = Double.valueOf(left);
+  }
+
+  public void setTaskWindowZoomRight(String right) {
+    this.right = Double.valueOf(right);
+  }
+
+  public void setTaskWindowZoomBottom(String bottom) {
+    this.bottom = Double.valueOf(bottom);
+  }
+
+  /**
+   * This method must be called after all three previous have been done.
+   * Java2XML does this. This is necessary because all parameters must be known
+   * before an Envelope can be created (unlike Point and Dimension).
+   * 
+   * @param top
+   */
+  public void setTaskWindowZoomTop(String top) {
+    this.top = Double.valueOf(top);
+    savedViewEnvelope = new Envelope(this.left, this.right, this.top, this.bottom);
+  }
 
 }
