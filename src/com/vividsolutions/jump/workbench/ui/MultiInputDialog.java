@@ -204,7 +204,23 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
     public void setCancelVisible(boolean cancelVisible) {
         okCancelApplyPanel.setCancelVisible(cancelVisible);
     }
-    
+
+    public void setOKVisible(boolean okVisible) {
+      okCancelApplyPanel.setOKVisible(okVisible);
+    }
+
+    public void setApplyEnabled(boolean applyEnabled) {
+      okCancelApplyPanel.setApplyEnabled(applyEnabled);
+    }
+
+    public void setCancelEnabled(boolean cancelEnabled) {
+      okCancelApplyPanel.setCancelEnabled(cancelEnabled);
+    }
+
+    public void setOKEnabled(boolean okEnabled) {
+      okCancelApplyPanel.setOKEnabled(okEnabled);
+    }
+
     public boolean wasApplyPressed() {
         return okCancelApplyPanel.wasApplyPressed();
     }

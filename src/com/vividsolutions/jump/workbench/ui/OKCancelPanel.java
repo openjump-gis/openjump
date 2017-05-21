@@ -57,6 +57,10 @@ public class OKCancelPanel extends ButtonPanel {
         setSelectedButton(null);
     }
 
+    public void setOKVisible(boolean okVisible) {
+      getButton(I18N.get("ui.OKCancelPanel.ok")).setVisible(okVisible);
+    }
+
     public void setOKEnabled(boolean okEnabled) {
         getButton(I18N.get("ui.OKCancelPanel.ok")).setEnabled(okEnabled);
     }
@@ -69,5 +73,9 @@ public class OKCancelPanel extends ButtonPanel {
         if (!cancelVisible && innerButtonPanel.isAncestorOf(getButton( I18N.get("ui.OKCancelPanel.cancel")))) {
             innerButtonPanel.remove(getButton( I18N.get("ui.OKCancelPanel.cancel")));
         }
+    }
+
+    public void setCancelEnabled(boolean enabled) {
+      getButton(I18N.get("ui.OKCancelPanel.cancel")).setEnabled(enabled);
     }
 }
