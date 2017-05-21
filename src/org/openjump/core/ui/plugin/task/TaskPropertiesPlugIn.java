@@ -358,14 +358,8 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
         infoArea = new JTextArea();
         JPanel infoPanel = new JPanel(new GridBagLayout());
         infoPanel.setBorder(BorderFactory.createTitledBorder(EXTENT));
-        Task selectedeTask = context.getTask();
-        if (selectedeTask.getProperties().containsKey(
-                new QName(Task.PROJECT_COMMENT_KEY))) {
-            this.info = selectedeTask.getProperty(
-                    new QName(Task.PROJECT_COMMENT_KEY)).toString();
-        } else {
-            this.info = "";
-        }
+        Task selectedTask = context.getTask();
+        this.info = selectedTask.getProperty(new QName(Task.PROJECT_COMMENT_KEY),"").toString();
         infoArea.setBackground(dialog.getBackground());
         infoArea.setText(this.info);
         infoArea.setCaretPosition(0);
