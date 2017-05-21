@@ -189,6 +189,19 @@ public class Task implements LayerManagerProxy {
   }
 
   /**
+   * convenience method for {@link #getProperty(QName)} that returns a default
+   * value in case the named property is not defined
+   * 
+   * @param name
+   * @param defaultValue
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  public <T> T getProperty(QName name, Object defaultValue) {
+    return (T) properties.getOrDefault(name, defaultValue);
+  }
+
+  /**
    * Get all the task properties.
    * 
    * @return The task properties.
