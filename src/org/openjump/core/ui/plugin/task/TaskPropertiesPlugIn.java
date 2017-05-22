@@ -312,7 +312,9 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
                         .getSrsAndUnitFromCode(localSuggestTreeComboBox
                                 .getSelectedItem().toString());
                 sridTableInfo.complete();
-                srsDescription = sridTableInfo.toString();
+                String proj = sridTableInfo.toString();
+                int endIndex = proj.lastIndexOf("[");
+                srsDescription = proj.substring(0, endIndex);
                 projArea.setText(srsDescription);
                 String epsg = localSuggestTreeComboBox.getSelectedItem()
                         .toString();
