@@ -88,6 +88,8 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.edit-metadata");
     public static String TOOLTIP = I18N
             .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.tooltip");
+    public static String UNIT = I18N
+        .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.unit");
     public static String MODIFIED_LAYERS = "(*)"
             + I18N.get("ui.GenericNames.MODIFIED-LAYERS");
     public static String TEMPORARY_LAYERS = "(**)"
@@ -116,6 +118,7 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
     public static String SRS = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.SRS");
 
+    
     JLabel fileT = new JLabel(FILE);
     JLabel sridLabel = new JLabel(SEARCH_SRID);
     JLabel dateT = new JLabel(LAST_MODIFICATION);
@@ -123,11 +126,12 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
     JLabel descriptionT = new JLabel(PROJ_DESCRIPTION);
     JLabel extensionT = new JLabel(EXTENT);
     JLabel layersT = new JLabel(NUMBER_LAYERS);
+    JLabel unitLabel = new JLabel(UNIT);
 
     private JTextArea projArea, fileArea, infoArea;
 
     private JTextField textFieldXMin, textFieldYMin, textFieldXMax,
-            textFieldYMax, textFielddate, textFieldnumLyr;
+            textFieldYMax, textFielddate, textFieldnumLyr, textFieldUnit;
 
     private MultiTabInputDialog dialog;
     final Map<String, String> codes = new LinkedHashMap<String, String>(64);
@@ -231,11 +235,14 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
                 new EnableCheck[0], "");
         this.dialog.addRow("source", extensionPanel(context),
                 new EnableCheck[0], "");
-        this.dialog.addRow("source", descriptionT,
+     /*   this.dialog.addRow("source", descriptionT,
                 projectionPanel(srsDescription), new EnableCheck[0], "");
         this.dialog.addRow("source", sridLabel, localSuggestTreeComboBox,
-                new EnableCheck[0], TOOLTIP);
+                new EnableCheck[0], TOOLTIP);*/
         this.dialog.addRow("source", infoPanel(context), new EnableCheck[0],
+                TOOLTIP);
+
+        this.dialog.addRow("source", srsPanel(context), new EnableCheck[0],
                 TOOLTIP);
         this.dialog.addCheckBox(EDIT_METADATA, this.editInfo, TOOLTIP);
         dialog.getCheckBox(EDIT_METADATA).addActionListener(
@@ -265,7 +272,7 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
         return true;
     }
 
-    // Updates dialog if "Edit metadata" checkbox is ebnabled
+    // Updates dialog if "Edit metadata" checkbox is enabled
     protected void updateControls(PlugInContext context,
             final MultiInputDialog dialog) {
         if (dialog.getCheckBox(EDIT_METADATA).isSelected()) {
@@ -282,7 +289,11 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
             dialog.setApplyVisible(false);
             dialog.setOKEnabled(true);
             UIManager.put("ComboBox.disabledForeground", Color.black);
-            localSuggestTreeComboBox.setSelectedItem(this.srsCode);
+            //Removed otherwise Apply would reset combobox to previous value
+            //when metadata checkbox is deactivated
+           // localSuggestTreeComboBox.setSelectedItem(this.srsCode);
+            localSuggestTreeComboBox.setSelectedItem(localSuggestTreeComboBox
+                .getSelectedItem().toString());
             localSuggestTreeComboBox.setEditable(false);
             localSuggestTreeComboBox.setEnabled(false);
             localSuggestTreeComboBox.setBackground(dialog.getBackground());
@@ -319,7 +330,7 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
                 
                 // finish editing, disable checkbox
                 dialog.getCheckBox(EDIT_METADATA).setSelected(false);
-                updateControls(context, dialog);
+               updateControls(context, dialog);
                 
                 dialog.pack();
                 dialog.repaint();
@@ -330,6 +341,56 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
         }
     }
 
+    
+    private JPanel srsPanel(PlugInContext context) throws IOException {
+      JPanel srsPanel = new JPanel(new GridBagLayout());
+      srsPanel.setBorder(BorderFactory.createTitledBorder("SRS"));
+      this.codes.clear();
+      this.codes.putAll(Utils.mapSRIDS());
+      localSuggestTreeComboBox = new SuggestTreeComboBox(this.codes.keySet()
+              .toArray(new String[this.codes.size()]), 40);
+      Task selectedTask = context.getTask();
+      if (selectedTask.getProperties().containsKey(
+              new QName(Task.PROJECT_SRS_KEY))) {
+          this.srsCode = selectedTask.getProperty(
+                  new QName(Task.PROJECT_SRS_KEY)).toString();
+      } else {
+          this.srsCode = "0";
+      }
+      UIManager.put("ComboBox.disabledForeground", Color.black);
+      localSuggestTreeComboBox.setSelectedItem(this.srsCode);
+      localSuggestTreeComboBox.setPreferredSize(new Dimension(150, 20));
+      localSuggestTreeComboBox.setEditable(false);
+      localSuggestTreeComboBox.setEnabled(false);
+      localSuggestTreeComboBox.setBackground(dialog.getBackground());
+      Utils.removeButton(localSuggestTreeComboBox);
+      localSuggestTreeComboBox
+              .setPrototypeDisplayValue("abcdefghijklmnpqrstuvwxyz/0123456789");
+      SRSInfo srid = SridLookupTable
+              .getSrsAndUnitFromCode(localSuggestTreeComboBox
+                      .getSelectedItem().toString());
+      srid.complete();
+      String proj = srid.toString();
+      int endIndex = proj.lastIndexOf("[");
+      srsDescription = proj.substring(0, endIndex);
+      textFieldUnit = new JTextField();
+      textFieldUnit.setToolTipText("");
+      textFieldUnit.setMinimumSize(new Dimension(50, 20));
+      textFieldUnit.setPreferredSize(new Dimension(150, 20));
+      textFieldUnit.setText(srid.getUnit().toString());
+      textFieldUnit.setEditable(false);
+
+      // srsDescription = srid.toString();
+      FormUtils.addRowInGBL(srsPanel, 1, 0, sridLabel,
+              localSuggestTreeComboBox, false);
+      FormUtils.addRowInGBL(srsPanel, 2, 0, descriptionT,
+              projectionPanel(srsDescription), false);
+      FormUtils.addRowInGBL(srsPanel, 4, 0, unitLabel, textFieldUnit, false);
+      return srsPanel;
+  }
+
+    
+    
     // Return last modification time of a project file
     private String dateString(Task selectedTask) {
         String time;

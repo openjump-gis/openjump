@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openjump.core.ccordsys.utils.ProjUtils;
@@ -24,6 +27,7 @@ import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.TiffTags;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
@@ -36,6 +40,7 @@ import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 
 import de.latlon.deejump.wfs.jump.WFSLayer;
 
@@ -452,4 +457,27 @@ public class Utils {
         }
     }
 
+    public static Map<QName, Object> getSavedProperties(PlugInContext context,
+        File file){
+    Task sourceTask = null;
+    InputStream inputStream = null;
+    try {
+        inputStream = new FileInputStream(file);
+    } catch (FileNotFoundException e1) {
+       context.getWorkbenchFrame().warnUser(I18N
+                .get("org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn.File-not-found"));
+    }
+    PlugInManager plugInManager = context.getWorkbenchContext()
+            .getWorkbench().getPlugInManager();
+    ClassLoader pluginClassLoader = plugInManager.getClassLoader();
+    try {
+        sourceTask = (Task) new XML2Java(pluginClassLoader).read(
+                inputStream, Task.class);
+        sourceTask.getProperties();
+    } catch (Exception e) {
+        context.getWorkbenchFrame().warnUser(
+                "Missing class: " + e.getCause());
+    }
+    return sourceTask.getProperties();
+  }
 }
