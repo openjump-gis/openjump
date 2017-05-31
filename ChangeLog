@@ -5,6 +5,7 @@
 
 2017-05-31 mmichaud <m.michael.michaud@orange.fr>
   * ExtractPointsPlugIn : keep original feature id in attribute
+  * SpatialJoinPlugIn : A and B attribute prefix were reversed
 
 2017-05-20 Giuseppe Aruta
   * Task Frame title shows also projection description if it is set

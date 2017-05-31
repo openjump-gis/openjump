@@ -52,7 +52,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 */
 public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     
-    private Layer srcLayerA;
+    private Layer tgtLayerA;
     private Layer srcLayerB;
     private JTextField paramField;
     private Collection functionNames;
@@ -111,18 +111,18 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 
         // input-proofing
         if (functionToRun == null) return;
-        if (srcLayerA == null) return;
+        if (tgtLayerA == null) return;
         if (srcLayerB == null) return;
 
         monitor.report(
             I18N.get("ui.plugin.analysis.SpatialJoinPlugIn.Executing-join") +
                      " " + functionToRun.getName() + "...");
 
-        FeatureCollection srcAFC = srcLayerA.getFeatureCollectionWrapper();
+        FeatureCollection tgtAFC = tgtLayerA.getFeatureCollectionWrapper();
         FeatureCollection srcBFC = srcLayerB.getFeatureCollectionWrapper();
         //[sstein 28.Mar.2008] reversed order of input
         //(to be able to read from top to down the spatial relations) 
-        SpatialJoinExecuter executer = new SpatialJoinExecuter(srcBFC, srcAFC);
+        SpatialJoinExecuter executer = new SpatialJoinExecuter(srcBFC, tgtAFC);
         FeatureCollection resultFC = executer.getResultFC();
         executer.execute(monitor, functionToRun, params, resultFC);
 
@@ -152,7 +152,7 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 
         //Set initial layer values to the first and second layers in the layer list.
         //In #initialize we've already checked that the number of layers >= 1. [Jon Aquino]
-        Layer initLayer1 = (srcLayerA == null)? context.getCandidateLayer(0) : srcLayerA;
+        Layer initLayer1 = (tgtLayerA == null)? context.getCandidateLayer(0) : tgtLayerA;
         Layer initLayer2 = (srcLayerB == null)? context.getCandidateLayer(1) : srcLayerB;
 
         dialog.addLayerComboBox(LAYER_A, initLayer1, context.getLayerManager());
@@ -167,7 +167,7 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
     }
 
     private void getDialogValues(MultiInputDialog dialog) {
-        srcLayerA = dialog.getLayer(LAYER_A);
+        tgtLayerA = dialog.getLayer(LAYER_A);
         srcLayerB = dialog.getLayer(LAYER_B);
         funcNameToRun = dialog.getText(PREDICATE);
         functionToRun = GeometryPredicate.getPredicate(funcNameToRun);

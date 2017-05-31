@@ -17,8 +17,8 @@ import com.vividsolutions.jump.feature.*;
  */
 public class SpatialJoinExecuter
 {
-  private FeatureCollection srcAFC;
-  private FeatureCollection srcBFC;
+  private FeatureCollection tgtAFC; // Target layer
+  private FeatureCollection srcBFC; // Source layer
 
   private FeatureCollection queryFC;
 
@@ -28,9 +28,9 @@ public class SpatialJoinExecuter
   private Geometry geoms[] = new Geometry[2];
   private Set resultSet = new HashSet();
 
-  public SpatialJoinExecuter(FeatureCollection srcAFC, FeatureCollection srcBFC)
+  public SpatialJoinExecuter(FeatureCollection srcBFC, FeatureCollection tgtAFC)
   {
-    this.srcAFC = srcAFC;
+    this.tgtAFC = tgtAFC;
     this.srcBFC = srcBFC;
   }
 
@@ -43,7 +43,7 @@ public class SpatialJoinExecuter
   private void createQueryFeatureCollection(GeometryPredicate pred)
   {
     boolean buildIndex = false;
-    if (srcAFC.size() > 10) buildIndex = true;
+    if (tgtAFC.size() > 10) buildIndex = true;
     if (srcBFC.size() > 100) buildIndex = true;
     if (pred instanceof GeometryPredicate.DisjointPredicate) buildIndex = false;
 
@@ -89,7 +89,7 @@ public class SpatialJoinExecuter
   {
 	FeatureSchema resultFS = new FeatureSchema();
 	resultFS.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
-	copyAttributesToSchema(srcAFC.getFeatureSchema(), "A_", resultFS);
+	copyAttributesToSchema(tgtAFC.getFeatureSchema(), "A_", resultFS);
 	copyAttributesToSchema(srcBFC.getFeatureSchema(), "B_", resultFS);
 	return resultFS;
   }
@@ -133,31 +133,31 @@ public class SpatialJoinExecuter
   {
     createQueryFeatureCollection(func);
 
-    int total = srcAFC.size();
+    int total = tgtAFC.size();
     int count = 0;
-    for (Iterator iMask = srcAFC.iterator(); iMask.hasNext(); ) {
+    for (Iterator iMask = tgtAFC.iterator(); iMask.hasNext(); ) {
 
       monitor.report(count++, total, "features");
       if (monitor.isCancelRequested()) return;
 
-      Feature fMask = (Feature) iMask.next();
-      Geometry gMask = fMask.getGeometry();
+      Feature tgtFeat = (Feature) iMask.next();
+      Geometry tgtGeom = tgtFeat.getGeometry();
 
-      Iterator queryIt = query(func, params, gMask);
+      Iterator queryIt = query(func, params, tgtGeom);
       for (; queryIt.hasNext(); ) {
-        Feature fSrc = (Feature) queryIt.next();
+        Feature srcFeat = (Feature) queryIt.next();
 
         // optimization - if feature already in result no need to re-test
-        if (isInResult(fSrc))
+        if (isInResult(srcFeat))
           continue;
 
-        Geometry gSrc = fSrc.getGeometry();
-        geoms[0] = gSrc;
-        geoms[1] = gMask;
-        boolean isInResult = isTrue(func, gSrc, gMask, params);
+        Geometry srcGeom = srcFeat.getGeometry();
+        //geoms[0] = gSrc;
+        //geoms[1] = gMask;
+        boolean isInResult = isTrue(func, tgtGeom, srcGeom, params);
 
         if (isInResult) {
-          addToResult(fSrc, fMask, resultFC);
+          addToResult(tgtFeat, srcFeat, resultFC);
         }
       }
     }
@@ -172,8 +172,8 @@ public class SpatialJoinExecuter
 //	copyAttributesToFeature(fB, "B_", fResult);
 //  Ed Deen: Switched the above such that the right prefixes are used 
 //		     for the right features attribute names.	
-	copyAttributesToFeature(fA, "B_", fResult);
-	copyAttributesToFeature(fB, "A_", fResult);
+	copyAttributesToFeature(fA, "A_", fResult);
+	copyAttributesToFeature(fB, "B_", fResult);
     resultFC.add(fResult);
   }
 
@@ -189,10 +189,10 @@ public class SpatialJoinExecuter
 		  }
 	  }
   }
-  private boolean isTrue(GeometryPredicate func, Geometry geom0, Geometry geom1, double[] params)
+  private boolean isTrue(GeometryPredicate func, Geometry tgtGeom, Geometry srcGeom, double[] params)
   {
     try {
-      return func.isTrue(geom0, geom1, params);
+      return func.isTrue(tgtGeom, srcGeom, params);
     }
     catch (RuntimeException ex) {
       // simply eat exceptions and report them by returning null
