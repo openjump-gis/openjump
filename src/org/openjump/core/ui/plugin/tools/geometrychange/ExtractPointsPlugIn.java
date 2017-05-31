@@ -148,7 +148,6 @@ public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugI
     	 fsNew.addAttribute(SEQ_ID, AttributeType.INTEGER);
     	 //--
     	 FeatureDataset fd = new FeatureDataset(fsNew);
-    	 int count=0;
     	 for (Iterator iterator = features.iterator(); iterator.hasNext();) {
 			Feature f = (Feature) iterator.next();
 			ArrayList<Feature> points = FeatureCollectionTools.convertToPointFeature(f, this.deleteDoublePoints);
@@ -156,13 +155,12 @@ public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugI
 			for (Iterator iterator2 = points.iterator(); iterator2.hasNext();) {
 				Feature pt = (Feature) iterator2.next();
 				pt = FeatureCollectionTools.copyFeatureAndSetFeatureSchema(pt, fsNew);
-				pt.setAttribute(ITEM_ID, count);
+				pt.setAttribute(ITEM_ID, f.getID());
 				pt.setAttribute(SEQ_ID, seq_count);
 				fd.add(pt);
 			    seq_count++;
 			}			
- 		 	count++;
-		}	
+		}
     	context.addLayer(StandardCategoryNames.RESULT, this.itemlayer.getName() + "-" + sPoints, fd);
     }
 }
