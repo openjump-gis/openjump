@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-05-31 Nicolas Ribot <nicolas.ribot@gmail.com>
+  * PostgreSQL JDBC driver : set the ApplicationName driver's property to allow 
+    OpenJUMP to advertise its name to PostgreSQL backend
+
 2017-05-31 mmichaud <m.michael.michaud@orange.fr>
   * ExtractPointsPlugIn : keep original feature id in attribute
   * SpatialJoinPlugIn : A and B attribute prefix were reversed
