@@ -57,7 +57,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class TaskPropertiesPlugIn extends AbstractPlugIn {
 
-  //Giuseppe Aruta [2017-5-10] plugin to read and modify project properties
+    // Giuseppe Aruta [2017-5-10] plugin to read and modify project properties
     @Override
     public void initialize(PlugInContext context) throws Exception {
         super.initialize(context);
@@ -89,7 +89,7 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
     public static String TOOLTIP = I18N
             .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.tooltip");
     public static String UNIT = I18N
-        .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.unit");
+            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.unit");
     public static String MODIFIED_LAYERS = "(*)"
             + I18N.get("ui.GenericNames.MODIFIED-LAYERS");
     public static String TEMPORARY_LAYERS = "(**)"
@@ -118,7 +118,6 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
     public static String SRS = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.SRS");
 
-    
     JLabel fileT = new JLabel(FILE);
     JLabel sridLabel = new JLabel(SEARCH_SRID);
     JLabel dateT = new JLabel(LAST_MODIFICATION);
@@ -235,10 +234,12 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
                 new EnableCheck[0], "");
         this.dialog.addRow("source", extensionPanel(context),
                 new EnableCheck[0], "");
-     /*   this.dialog.addRow("source", descriptionT,
-                projectionPanel(srsDescription), new EnableCheck[0], "");
-        this.dialog.addRow("source", sridLabel, localSuggestTreeComboBox,
-                new EnableCheck[0], TOOLTIP);*/
+        /*
+         * this.dialog.addRow("source", descriptionT,
+         * projectionPanel(srsDescription), new EnableCheck[0], "");
+         * this.dialog.addRow("source", sridLabel, localSuggestTreeComboBox, new
+         * EnableCheck[0], TOOLTIP);
+         */
         this.dialog.addRow("source", infoPanel(context), new EnableCheck[0],
                 TOOLTIP);
 
@@ -277,6 +278,7 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
             final MultiInputDialog dialog) {
         if (dialog.getCheckBox(EDIT_METADATA).isSelected()) {
             dialog.setApplyVisible(true);
+            dialog.setCancelVisible(true);
             dialog.setOKEnabled(false);
             localSuggestTreeComboBox.setEnabled(true);
             localSuggestTreeComboBox.setEditable(true);
@@ -287,13 +289,14 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
             dialog.repaint();
         } else {
             dialog.setApplyVisible(false);
+            dialog.setCancelVisible(false);
             dialog.setOKEnabled(true);
             UIManager.put("ComboBox.disabledForeground", Color.black);
-            //Removed otherwise Apply would reset combobox to previous value
-            //when metadata checkbox is deactivated
-           // localSuggestTreeComboBox.setSelectedItem(this.srsCode);
+            // Removed otherwise Apply would reset combobox to previous value
+            // when metadata checkbox is deactivated
+            // localSuggestTreeComboBox.setSelectedItem(this.srsCode);
             localSuggestTreeComboBox.setSelectedItem(localSuggestTreeComboBox
-                .getSelectedItem().toString());
+                    .getSelectedItem().toString());
             localSuggestTreeComboBox.setEditable(false);
             localSuggestTreeComboBox.setEnabled(false);
             localSuggestTreeComboBox.setBackground(dialog.getBackground());
@@ -320,20 +323,20 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
                         .toString();
                 String unit = sridTableInfo.getUnit().toString();
                 Task selectedTask = context.getTask();
+                selectedTask.setProperty(new QName(Task.PROJECT_SRS_KEY), epsg);
                 selectedTask
-                        .setProperty(new QName(Task.PROJECT_SRS_KEY), epsg);
-                selectedTask.setProperty(new QName(Task.PROJECT_UNIT_KEY), unit);
+                        .setProperty(new QName(Task.PROJECT_UNIT_KEY), unit);
                 selectedTask.setProperty(new QName(Task.PROJECT_COMMENT_KEY),
                         infoArea.getText());
                 TaskFrame taskFrame = context.getWorkbenchFrame()
-                    .getActiveTaskFrame();
+                        .getActiveTaskFrame();
                 taskFrame.updateTitle();
                 // Utils.SaveProject(context);
-                
+
                 // finish editing, disable checkbox
                 dialog.getCheckBox(EDIT_METADATA).setSelected(false);
-               updateControls(context, dialog);
-                
+                updateControls(context, dialog);
+
                 dialog.pack();
                 dialog.repaint();
             } catch (Exception e1) {
@@ -343,56 +346,53 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
         }
     }
 
-    
     private JPanel srsPanel(PlugInContext context) throws IOException {
-      JPanel srsPanel = new JPanel(new GridBagLayout());
-      srsPanel.setBorder(BorderFactory.createTitledBorder("SRS"));
-      this.codes.clear();
-      this.codes.putAll(Utils.mapSRIDS());
-      localSuggestTreeComboBox = new SuggestTreeComboBox(this.codes.keySet()
-              .toArray(new String[this.codes.size()]), 40);
-      Task selectedTask = context.getTask();
-      if (selectedTask.getProperties().containsKey(
-              new QName(Task.PROJECT_SRS_KEY))) {
-          this.srsCode = selectedTask.getProperty(
-                  new QName(Task.PROJECT_SRS_KEY)).toString();
-      } else {
-          this.srsCode = "0";
-      }
-      UIManager.put("ComboBox.disabledForeground", Color.black);
-      localSuggestTreeComboBox.setSelectedItem(this.srsCode);
-      localSuggestTreeComboBox.setPreferredSize(new Dimension(150, 20));
-      localSuggestTreeComboBox.setEditable(false);
-      localSuggestTreeComboBox.setEnabled(false);
-      localSuggestTreeComboBox.setBackground(dialog.getBackground());
-      Utils.removeButton(localSuggestTreeComboBox);
-      localSuggestTreeComboBox
-              .setPrototypeDisplayValue("abcdefghijklmnpqrstuvwxyz/0123456789");
-      SRSInfo srid = SridLookupTable
-              .getSrsAndUnitFromCode(localSuggestTreeComboBox
-                      .getSelectedItem().toString());
-      srid.complete();
-      String proj = srid.toString();
-      int endIndex = proj.lastIndexOf("[");
-      srsDescription = proj.substring(0, endIndex);
-      textFieldUnit = new JTextField();
-      textFieldUnit.setToolTipText("");
-      textFieldUnit.setMinimumSize(new Dimension(50, 20));
-      textFieldUnit.setPreferredSize(new Dimension(150, 20));
-      textFieldUnit.setText(srid.getUnit().toString());
-      textFieldUnit.setEditable(false);
+        JPanel srsPanel = new JPanel(new GridBagLayout());
+        srsPanel.setBorder(BorderFactory.createTitledBorder("SRS"));
+        this.codes.clear();
+        this.codes.putAll(Utils.mapSRIDS());
+        localSuggestTreeComboBox = new SuggestTreeComboBox(this.codes.keySet()
+                .toArray(new String[this.codes.size()]), 40);
+        Task selectedTask = context.getTask();
+        if (selectedTask.getProperties().containsKey(
+                new QName(Task.PROJECT_SRS_KEY))) {
+            this.srsCode = selectedTask.getProperty(
+                    new QName(Task.PROJECT_SRS_KEY)).toString();
+        } else {
+            this.srsCode = "0";
+        }
+        UIManager.put("ComboBox.disabledForeground", Color.black);
+        localSuggestTreeComboBox.setSelectedItem(this.srsCode);
+        localSuggestTreeComboBox.setPreferredSize(new Dimension(150, 20));
+        localSuggestTreeComboBox.setEditable(false);
+        localSuggestTreeComboBox.setEnabled(false);
+        localSuggestTreeComboBox.setBackground(dialog.getBackground());
+        Utils.removeButton(localSuggestTreeComboBox);
+        localSuggestTreeComboBox
+                .setPrototypeDisplayValue("abcdefghijklmnpqrstuvwxyz/0123456789");
+        SRSInfo srid = SridLookupTable
+                .getSrsAndUnitFromCode(localSuggestTreeComboBox
+                        .getSelectedItem().toString());
+        srid.complete();
+        String proj = srid.toString();
+        int endIndex = proj.lastIndexOf("[");
+        srsDescription = proj.substring(0, endIndex);
+        textFieldUnit = new JTextField();
+        textFieldUnit.setToolTipText("");
+        textFieldUnit.setMinimumSize(new Dimension(50, 20));
+        textFieldUnit.setPreferredSize(new Dimension(150, 20));
+        textFieldUnit.setText(srid.getUnit().toString());
+        textFieldUnit.setEditable(false);
 
-      // srsDescription = srid.toString();
-      FormUtils.addRowInGBL(srsPanel, 1, 0, sridLabel,
-              localSuggestTreeComboBox, false);
-      FormUtils.addRowInGBL(srsPanel, 2, 0, descriptionT,
-              projectionPanel(srsDescription), false);
-      FormUtils.addRowInGBL(srsPanel, 4, 0, unitLabel, textFieldUnit, false);
-      return srsPanel;
-  }
+        // srsDescription = srid.toString();
+        FormUtils.addRowInGBL(srsPanel, 1, 0, sridLabel,
+                localSuggestTreeComboBox, false);
+        FormUtils.addRowInGBL(srsPanel, 2, 0, descriptionT,
+                projectionPanel(srsDescription), false);
+        FormUtils.addRowInGBL(srsPanel, 4, 0, unitLabel, textFieldUnit, false);
+        return srsPanel;
+    }
 
-    
-    
     // Return last modification time of a project file
     private String dateString(Task selectedTask) {
         String time;
@@ -428,7 +428,8 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
         JPanel infoPanel = new JPanel(new GridBagLayout());
         infoPanel.setBorder(BorderFactory.createTitledBorder(EXTENT));
         Task selectedTask = context.getTask();
-        this.info = selectedTask.getProperty(new QName(Task.PROJECT_COMMENT_KEY),"").toString();
+        this.info = selectedTask.getProperty(
+                new QName(Task.PROJECT_COMMENT_KEY), "").toString();
         infoArea.setBackground(dialog.getBackground());
         infoArea.setText(this.info);
         infoArea.setCaretPosition(0);
@@ -438,8 +439,8 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
         infoArea.setWrapStyleWord(true);
         infoArea.setColumns(45);
         infoArea.setRows(7);
-       //Removed as it won't show scrollbars <Giuseppe Aruta 20/05/2017>
-        //infoArea.setPreferredSize(infoPanel.getSize());
+        // Removed as it won't show scrollbars <Giuseppe Aruta 20/05/2017>
+        // infoArea.setPreferredSize(infoPanel.getSize());
         JScrollPane layerPane = new JScrollPane(infoArea, 20, 31);
         infoPanel.setBorder(BorderFactory.createTitledBorder(INFO));
         infoPanel.add(layerPane);
@@ -539,7 +540,7 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
     }
 
     // Layers list panel
-    private class LayersPanel extends HTMLPanel  {
+    private class LayersPanel extends HTMLPanel {
         /**
          * 
          */
@@ -582,7 +583,7 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
             append(infotext);
         }
 
-      }
+    }
 
     // Values for Layerable Table
     public String header(String layer, String type, String path, String proj) {
