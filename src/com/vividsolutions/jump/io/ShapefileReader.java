@@ -123,7 +123,6 @@ public class ShapefileReader extends AbstractJUMPReader {
      */
     public FeatureCollection read(DriverProperties dp) throws Exception {
 
-        //long t0 = System.currentTimeMillis();
         getExceptions().clear();
 
         // ATTENTION: this can contain a zip file path as well
@@ -147,102 +146,108 @@ public class ShapefileReader extends AbstractJUMPReader {
 
         DbfFile mydbf = getDbfFile(shpFileName, dp.getProperty(DataSource.COMPRESSED_KEY),
                 Charset.forName(charsetName));
-        InputStream shx = getShx(shpFileName, dp.getProperty(DataSource.COMPRESSED_KEY));
-        GeometryFactory factory = new GeometryFactory();
-        GeometryCollection collection = null;
-        try {
+
+        try(InputStream shx = getShx(shpFileName, dp.getProperty(DataSource.COMPRESSED_KEY))) {
+
+            GeometryFactory factory = new GeometryFactory();
+            GeometryCollection collection;
+            // Read the shapefile either from shx (if provided) or directly from shp
         	collection = shx == null ? myshape.read(factory) : myshape.readFromIndex(factory, shx);
-        } finally {
-            if (shx != null) shx.close();
-        	myshape.close(); //ensure we can delete input shape files before task is closed
-        }
-        FeatureSchema fs = new FeatureSchema();
 
-        // fill in schema
-        fs.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+            // Minimal schema for FeatureCollection (if no dbf is provided)
+            FeatureSchema fs = new FeatureSchema();
+            fs.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
 
-        FeatureCollection featureCollection;
+            FeatureCollection featureCollection;
 
-        if ( mydbf == null ) {
-            // handle shapefiles without dbf files.
-            featureCollection = new FeatureDataset(fs);
+            if ( mydbf == null ) {
+                // handle shapefiles without dbf files.
+                featureCollection = new FeatureDataset(fs);
 
-            int numGeometries = collection.getNumGeometries();
+                int numGeometries = collection.getNumGeometries();
 
-            for (int x = 0; x < numGeometries; x++) {
-                Feature feature = new BasicFeature(fs);
-                Geometry geo = collection.getGeometryN(x);
-
-                feature.setGeometry(geo);
-                featureCollection.add(feature);
-            }
-        } else {
-            // There is a DBF file so we have to set the Charset to use and
-            // to associate the attributes in the DBF file with the features.
-
-            int numfields = mydbf.getNumFields();
-
-            for (int j = 0; j < numfields; j++) {
-                AttributeType type = AttributeType.toAttributeType(mydbf.getFieldType(j));
-                fs.addAttribute( mydbf.getFieldName(j), type );
-            }
-
-            featureCollection = new FeatureDataset(fs);
-
-            for (int x = 0; x < Math.min(mydbf.getLastRec(), collection.getNumGeometries()); x++) {
-                Feature feature = new BasicFeature(fs);
-                Geometry geo = collection.getGeometryN(x);
-                // Get bytes rather than String to be able to read multibytes strings
-                byte[] s = mydbf.GetDbfRec(x); //[sstein 9.Sept.08]
-
-                for (int y = 0; y < numfields; y++) {
-                    feature.setAttribute(y + 1, mydbf.ParseRecordColumn(s, y));
-                }
-
-                feature.setGeometry(geo);
-                featureCollection.add(feature);
-            }
-
-            // [mmichaud 2013-10-07] if the number of shapes is greater than the number of records
-            // it is better to go on and create features with a geometry and null attributes
-            if (collection.getNumGeometries() > mydbf.getLastRec()) {
-                String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-gt-dbf",
-                        shpFileName, collection.getNumGeometries(), mydbf.getLastRec());
-                Logger.error(message);
-                getExceptions().add(new Exception(message));
-                for (int x = mydbf.getLastRec() ; x < collection.getNumGeometries() ; x++) {
+                for (int x = 0; x < numGeometries; x++) {
                     Feature feature = new BasicFeature(fs);
                     Geometry geo = collection.getGeometryN(x);
+
                     feature.setGeometry(geo);
                     featureCollection.add(feature);
                 }
-            }
-            if (collection.getNumGeometries() < mydbf.getLastRec()) {
-                String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-lt-dbf",
-                        shpFileName, collection.getNumGeometries(), mydbf.getLastRec());
-                Logger.error(message);
-                getExceptions().add(new Exception(message));
-                List emptyList = new ArrayList();
-                for (int x = collection.getNumGeometries() ; x < mydbf.getLastRec() ; x++) {
-                    Feature feature = new BasicFeature(fs);
-                    Geometry geo = factory.buildGeometry(emptyList);
-                    byte[] s = mydbf.GetDbfRec(x); //[sstein 9.Sept.08]
+            } else {
+                // There is a DBF file so we have to set the Charset to use and
+                // to associate the attributes in the DBF file with the features.
 
+                int numfields = mydbf.getNumFields();
+
+                for (int j = 0; j < numfields; j++) {
+                    AttributeType type = AttributeType.toAttributeType(mydbf.getFieldType(j));
+                    fs.addAttribute( mydbf.getFieldName(j), type );
+                }
+
+                featureCollection = new FeatureDataset(fs);
+
+                for (int x = 0; x < Math.min(mydbf.getLastRec(), collection.getNumGeometries()); x++) {
+
+                    // [sstein 9.Sept.08] Get bytes rather than String to be able to read multibytes strings
+                    byte[] s = mydbf.GetDbfRec(x);
+                    // [mmichaud 2017-06-10] skip deleted records
+                    if (s[0] == (byte)0x2A && System.getProperty("dbf.deleted.on")==null) {
+                        continue;
+                    }
+                    Feature feature = new BasicFeature(fs);
+                    Geometry geo = collection.getGeometryN(x);
                     for (int y = 0; y < numfields; y++) {
                         feature.setAttribute(y + 1, mydbf.ParseRecordColumn(s, y));
                     }
+
                     feature.setGeometry(geo);
                     featureCollection.add(feature);
                 }
-            }
 
-            mydbf.close();
+                // [mmichaud 2013-10-07] if the number of shapes is greater than the number of records
+                // it is better to go on and create features with a geometry and null attributes
+                if (collection.getNumGeometries() > mydbf.getLastRec()) {
+                    String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-gt-dbf",
+                            shpFileName, collection.getNumGeometries(), mydbf.getLastRec());
+                    Logger.error(message);
+                    getExceptions().add(new Exception(message));
+                    for (int x = mydbf.getLastRec() ; x < collection.getNumGeometries() ; x++) {
+                        Feature feature = new BasicFeature(fs);
+                        Geometry geo = collection.getGeometryN(x);
+                        feature.setGeometry(geo);
+                        featureCollection.add(feature);
+                    }
+                }
+                if (collection.getNumGeometries() < mydbf.getLastRec()) {
+                    String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-lt-dbf",
+                            shpFileName, collection.getNumGeometries(), mydbf.getLastRec());
+                    Logger.error(message);
+                    getExceptions().add(new Exception(message));
+                    List emptyList = new ArrayList();
+                    for (int x = collection.getNumGeometries() ; x < mydbf.getLastRec() ; x++) {
+                        Feature feature = new BasicFeature(fs);
+                        Geometry geo = factory.buildGeometry(emptyList);
+                        byte[] s = mydbf.GetDbfRec(x); //[sstein 9.Sept.08]
+                        // [mmichaud 2017-06-10] skip deleted records
+                        if (s[0] == (byte)0x2A && System.getProperty("dbf.deleted.on")==null) {
+                            continue;
+                        }
+                        for (int y = 0; y < numfields; y++) {
+                            feature.setAttribute(y + 1, mydbf.ParseRecordColumn(s, y));
+                        }
+                        feature.setGeometry(geo);
+                        featureCollection.add(feature);
+                    }
+                }
+            }
+            return featureCollection;
+        } finally {
             deleteTmpDbf(); // delete dbf file if it was decompressed
             deleteTmpShx(); // delete shx file if it was decompressed
             deleteTmpCpg(); // delete cpg file if it was decompressed
+            myshape.close(); //ensure we can delete input shape files before task is closed
+            if (mydbf != null) mydbf.close();
         }
-        //System.out.println("Shapfile read in " + (System.currentTimeMillis()-t0) + " ms");
-        return featureCollection;
     }
 
 
@@ -265,7 +270,7 @@ public class ShapefileReader extends AbstractJUMPReader {
         }
         // if we are in an archive that can hold multiple files compressedFname is defined and a String
         else if (compressedFname != null) {
-            byte[] b = new byte[16000];
+            byte[] b = new byte[4096];
             int len;
             boolean keepGoing = true;
 
@@ -350,7 +355,7 @@ public class ShapefileReader extends AbstractJUMPReader {
         }
         // if we are in an archive that can hold multiple files compressedFname is defined and a String
         else if (compressedFname != null) {
-            byte[] b = new byte[2048];
+            byte[] b = new byte[4096];
             int len;
             boolean keepGoing = true;
 
@@ -390,8 +395,7 @@ public class ShapefileReader extends AbstractJUMPReader {
 
 	/**
 	 * Get's a DbfFile.
-	 * For compatibilty reasons, this method is a wrapper to the new with
-	 * Charset functions.
+	 * Kept, for compatibilty. Use the method with charset parameter.
 	 *
 	 * @param srcFileName either a pass to a dbf or an archive file (*.zip etc.) accompanied by the compressedFname it contains
 	 * @param compressedFname the name of the compressed entry in the compressed file or null
@@ -417,7 +421,7 @@ public class ShapefileReader extends AbstractJUMPReader {
         }
         // if we are in an archive that can hold multiple files compressedFname is defined and a String
         else if (compressedFname != null) {
-            byte[] b = new byte[16000];
+            byte[] b = new byte[4096];
             int len;
             boolean keepGoing = true;
 
