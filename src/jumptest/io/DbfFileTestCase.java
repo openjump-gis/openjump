@@ -29,7 +29,8 @@ public class DbfFileTestCase extends TestCase {
     
     public void testParseDate() throws Exception {
         assertEquals(null, dbfFile.parseDate("        "));
-        assertEquals(dateFormatter.parse("0001-01-01"), dbfFile.parseDate("00000000"));
+        //assertEquals(dateFormatter.parse("0001-01-01"), dbfFile.parseDate("00000000"));
+        assertNull(dbfFile.parseDate("00000000"));
         try {
             Date date = dbfFile.parseDate("99999999");
             // cancel this test which is always false
