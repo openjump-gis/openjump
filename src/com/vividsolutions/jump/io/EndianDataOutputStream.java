@@ -41,7 +41,7 @@ import java.io.IOException;
  *  A class that gives most of the functionality of DataOutputStream, but is endian aware.
  *  Uses a real java.io.DataOutputStream to actually do the writing.
  */
-public class EndianDataOutputStream {
+public class EndianDataOutputStream implements AutoCloseable {
     private java.io.DataOutputStream outputStream;
 
     /** Creates new EndianDataOutputStream */

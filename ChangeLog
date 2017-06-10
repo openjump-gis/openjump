@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-06-10 mmichaud <m.michael.michaud@orange.fr>
+  * Shapefile : handling of dbf containing deleted records
+
 2017-05-31 Nicolas Ribot <nicolas.ribot@gmail.com>
   * PostgreSQL JDBC driver : set the ApplicationName driver's property to allow 
     OpenJUMP to advertise its name to PostgreSQL backend

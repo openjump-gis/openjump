@@ -192,6 +192,7 @@ public class ShapefileReader extends AbstractJUMPReader {
                     byte[] s = mydbf.GetDbfRec(x);
                     // [mmichaud 2017-06-10] skip deleted records
                     if (s[0] == (byte)0x2A && System.getProperty("dbf.deleted.on")==null) {
+                        Logger.debug("Skip deleted dbf record " + x);
                         continue;
                     }
                     Feature feature = new BasicFeature(fs);

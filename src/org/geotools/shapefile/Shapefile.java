@@ -5,11 +5,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.List;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.io.EndianDataInputStream;
 import com.vividsolutions.jump.io.EndianDataOutputStream;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * This class represents an ESRI Shape file.<p>
@@ -28,8 +28,6 @@ import com.vividsolutions.jump.io.EndianDataOutputStream;
  *
  * <a href="mailto:j.macgill@geog.leeds.ac.uk">Mail the Author</a>
  */
-
-// TODO: Replace system.out by log messages
 public class Shapefile  {
 
     static final int    SHAPEFILE_ID = 9994;
@@ -53,7 +51,7 @@ public class Shapefile  {
     //Types 2,4,6,7 and 9 were undefined at time or writeing
     
     private URL baseURL;
-    private InputStream myInputStream;
+    private InputStream shpInputStream;
     private int errors;
     
     /**
@@ -62,36 +60,40 @@ public class Shapefile  {
      */
     public Shapefile(URL url) {
         baseURL=url;
-        myInputStream= null;
+        shpInputStream= null;
         try {
             URLConnection uc = baseURL.openConnection();
             // a 16 kb buffer may be up to 20% faster than the default 2 kb buffer
-            myInputStream = new BufferedInputStream(uc.getInputStream(), 16*1024);
+            shpInputStream = new BufferedInputStream(uc.getInputStream(), 16*1024);
         }
-        catch (Exception e){}
+        catch (Exception e){
+            Logger.error(e);
+        }
     }
     
-    public Shapefile(InputStream IS) {
-        myInputStream = IS;
+    public Shapefile(InputStream is) {
+        shpInputStream = is;
     }
     
     public void close() {
         try {
-    		myInputStream.close();
+            shpInputStream.close();
     	}
-    	catch (IOException ex){}
+    	catch (IOException ex){
+            Logger.error(ex);
+        }
     }
     
     private EndianDataInputStream getInputStream() throws IOException {
-        if (myInputStream == null) {
-            throw new IOException("Could make a connection to the URL: " + baseURL);
+        if (shpInputStream == null) {
+            throw new IOException("Couldn't make a connection to the URL: " + baseURL);
         }
-        return new EndianDataInputStream(myInputStream);
+        return new EndianDataInputStream(shpInputStream);
     }
     
     private EndianDataOutputStream getOutputStream() throws IOException {
-        BufferedOutputStream in = new BufferedOutputStream(new FileOutputStream(baseURL.getFile()));
-        return new EndianDataOutputStream(in);
+        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(baseURL.getFile()));
+        return new EndianDataOutputStream(out);
     }
         
     
@@ -100,50 +102,53 @@ public class Shapefile  {
      * Use Shapefile(String) if you don't want to use LEDataInputStream directly (recommended)
      * @param geometryFactory the geometry factory to use to read the shapes
      */
-    public GeometryCollection read(GeometryFactory geometryFactory) throws IOException, ShapefileException, Exception {
-        
-        EndianDataInputStream file = getInputStream();
-        if(file==null) throw new IOException("Failed connection or no content for " + baseURL);
-        
-        ShapefileHeader mainHeader = new ShapefileHeader(file);
-        if(mainHeader.getVersion() < VERSION){System.err.println("Sf-->Warning, Shapefile format ("+mainHeader.getVersion()+") older that supported ("+VERSION+"), attempting to read anyway");}
-        if(mainHeader.getVersion() > VERSION){System.err.println("Sf-->Warning, Shapefile format ("+mainHeader.getVersion()+") newer that supported ("+VERSION+"), attempting to read anyway");}
-        
-        Geometry body;
-        ArrayList list = new ArrayList();
-        int type = mainHeader.getShapeType();
-        ShapeHandler handler = getShapeHandler(type);
-        if(handler==null) throw new ShapeTypeNotSupportedException("Unsuported shape type:" + type);
-        
-        int recordNumber=0;
-        int contentLength=0;
-        errors = 0;
-        try{
+    public GeometryCollection read(GeometryFactory geometryFactory) throws Exception {
+
+        ArrayList<Geometry> list = new ArrayList<>();
+        int pos = 0;
+        try (EndianDataInputStream file = getInputStream()) {
+
+            ShapefileHeader mainHeader = new ShapefileHeader(file);
+            if(mainHeader.getVersion() != VERSION){
+                Logger.warn(String.format("Unknown shapefile version (%s) : try to read anyway", mainHeader.getVersion()));
+            }
+            pos += 50;
+
+            Geometry body;
+
+            int type = mainHeader.getShapeType();
+            ShapeHandler handler = getShapeHandler(type);
+            if(handler==null) throw new ShapeTypeNotSupportedException("Unsuported shape type: " + type);
+
+            errors = 0;
+            int count = 1;
+
             while(true){
-                recordNumber=file.readIntBE();
-                contentLength=file.readIntBE();
+                int recordNumber=file.readIntBE(); pos+=2;
+                if (recordNumber != count) {
+                    Logger.warn("wrong record number (" + recordNumber + ")");
+                    continue;
+                }
+                int contentLength=file.readIntBE(); pos+=2;
+                if (contentLength <= 0) {
+                    Logger.warn("found a negative content length (" + contentLength + ")");
+                    continue;
+                }
                 try{
-                    body = handler.read(file,geometryFactory,contentLength); 
+                    body = handler.read(file,geometryFactory,contentLength);
+                    Logger.debug("" + recordNumber + " : from " + (pos-4) + " for " + contentLength + " (" + body.getNumPoints() + " pts)");
+                    pos += contentLength;
                     list.add(body);
+                    count++;
                     if (body.getUserData() != null) errors++;
-                    // System.out.println("Done record: " + recordNumber);
-                } catch(IllegalArgumentException r2d2) {
-                    System.err.println("Error processing record " +recordNumber + " : " + r2d2.getMessage());
-                    System.err.println("   an empty Geometry has been returned");
-                    r2d2.printStackTrace();
-                    list.add(handler.getEmptyGeometry(geometryFactory));
-                    errors++;
-                } catch(Exception c3p0) {
-                    System.err.println("Error processing record " +recordNumber + " : " + c3p0.getMessage());
-                    System.err.println("   an empty Geometry has been returned");
-                    c3p0.printStackTrace();
-                    list.add(handler.getEmptyGeometry(geometryFactory));
+                } catch(Exception e) {
+                    Logger.warn("Error processing record " +recordNumber + " : " + e.getMessage(), e);
                     errors++;
                 }
-                // System.out.println("processing:" +recordNumber);
             }
-        } catch(EOFException e) {}
-        
+        }
+        catch(EOFException e) {}
+
         return geometryFactory.createGeometryCollection((Geometry[])list.toArray(new Geometry[]{}));
     }
     
@@ -157,33 +162,32 @@ public class Shapefile  {
      * @param geometries geometry collection to write
      * @param ShapeFileDimension shapefile dimension (2=x,y ; 3=x,y,m ; 4=x,y,z,m)
      */
-    public  void write(GeometryCollection geometries, int ShapeFileDimension) throws IOException,Exception {
-        EndianDataOutputStream file = getOutputStream();
-        ShapefileHeader mainHeader = new ShapefileHeader(geometries,ShapeFileDimension);
-        mainHeader.write(file);
-        int pos = 50; // header length in WORDS
+    public  void write(GeometryCollection geometries, int ShapeFileDimension) throws Exception {
+        try(EndianDataOutputStream file = getOutputStream()) {
+            ShapefileHeader mainHeader = new ShapefileHeader(geometries, ShapeFileDimension);
+            mainHeader.write(file);
+            int pos = 50; // header length in WORDS
 
-        int numShapes = geometries.getNumGeometries();
-        Geometry body;
-        ShapeHandler handler;
-        
-        if (geometries.getNumGeometries() == 0) {
-            handler = new PointHandler(); //default
+            int numShapes = geometries.getNumGeometries();
+            Geometry body;
+            ShapeHandler handler;
+
+            if (geometries.getNumGeometries() == 0) {
+                handler = new PointHandler(); //default
+            } else {
+                handler = Shapefile.getShapeHandler(geometries.getGeometryN(0), ShapeFileDimension);
+            }
+
+            for (int i = 0; i < numShapes; i++) {
+                body = geometries.getGeometryN(i);
+                file.writeIntBE(i + 1);
+                file.writeIntBE(handler.getLength(body));
+                pos += 4; // length of header in WORDS
+                handler.write(body, file);
+                pos += handler.getLength(body); // length of shape in WORDS
+            }
+            file.flush();
         }
-        else {
-            handler = Shapefile.getShapeHandler(geometries.getGeometryN(0), ShapeFileDimension);
-        }
-        
-        for(int i=0 ; i<numShapes ; i++){
-            body = geometries.getGeometryN(i);
-            file.writeIntBE(i+1);
-            file.writeIntBE(handler.getLength(body));
-            pos+=4; // length of header in WORDS
-            handler.write(body,file);
-            pos+=handler.getLength(body); // length of shape in WORDS
-        }
-        file.flush();
-        file.close();
     }
   
   
@@ -196,7 +200,7 @@ public class Shapefile  {
      */
     public synchronized void writeIndex(GeometryCollection geometries,
                                         EndianDataOutputStream file,
-                                        int ShapeFileDimension) throws IOException, Exception {
+                                        int ShapeFileDimension) throws Exception {
         Geometry geom;    
         
         ShapeHandler handler ;
@@ -207,12 +211,12 @@ public class Shapefile  {
             handler = new PointHandler(); //default
         }
         else {
-               handler = Shapefile.getShapeHandler(geometries.getGeometryN(0), ShapeFileDimension);
+            handler = Shapefile.getShapeHandler(geometries.getGeometryN(0), ShapeFileDimension);
         }
         
         mainHeader.writeToIndex(file);
         int pos = 50;
-        int len = 0;
+        int len;
        
         for(int i=0 ; i<nrecords ; i++){
             geom = geometries.getGeometryN(i);
@@ -327,20 +331,7 @@ public class Shapefile  {
         
         return Shapefile.UNDEFINED;
     }
-    
-    public synchronized void readIndex(InputStream is) throws IOException {
-        EndianDataInputStream file = null;
-        try {
-            BufferedInputStream in = new BufferedInputStream(is);
-            file = new EndianDataInputStream(in);
-        }
-        catch(Exception e){
-            System.err.println(e);
-        }
-        ShapefileHeader head = new ShapefileHeader(file);
-        int pos=0, len=0;
-        file.close();
-    }
+
 
     /**
      * The purpose of this new reader [mmichaud 2015-04-11] is to read a shapefile using the shx
@@ -350,64 +341,49 @@ public class Shapefile  {
      * with a RandomAccessReader.
      * Because the shapefile may come from a compressed input stream, the method first write the
      * shapefile in a temporary file.
-     * @param geometryFactory
-     * @param is
+     * @param geometryFactory geometry factory to use to build geometries
+     * @param is shx input stream
      * @return a GeometryCollection containing all the shapes.
-     * @throws IOException
-     * @throws ShapefileException
-     * @throws Exception
      */
     public synchronized GeometryCollection readFromIndex(GeometryFactory geometryFactory, InputStream is)
             throws Exception {
 
         // Flush shapefile inputStream to a temporary file, because inputStream
         // may come from a zipped archive, and we want to access data in Random mode
-        File tmpShp = null;
-        RandomAccessFile raf = null;
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
-        try {
-            tmpShp = File.createTempFile("tmpshp", ".shp");
-            bis = new BufferedInputStream(myInputStream, 4096);
-            bos = new BufferedOutputStream(new FileOutputStream(tmpShp), 4096);
-            int nb = 0;
+        File tmpShp = File.createTempFile("tmpshp", ".shp");
+        ArrayList<Geometry> list = new ArrayList<>();
+        try (BufferedInputStream bis= new BufferedInputStream(shpInputStream, 4096);
+             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tmpShp), 4096);
+             RandomAccessFile raf = new RandomAccessFile(tmpShp, "r");
+             EndianDataInputStream shx = new EndianDataInputStream(is)) {
+            int nb;
             byte[] bytes = new byte[4096];
             while (-1 != (nb = bis.read(bytes))) {
                 bos.write(bytes, 0, nb);
             }
-            raf = new RandomAccessFile(tmpShp, "r");
-        } catch(IOException e) {
-            throw e;
-        } finally {
-            if (bis != null) bis.close();
-            if (bos != null) bos.close();
-        }
+            bos.flush();
+            // read shapefile header
+            bytes = new byte[100];
+            ByteBuffer bb = ByteBuffer.wrap(bytes);
+            raf.getChannel().read(bb);
 
-        // read shapefile header
-        byte[] bytes = new byte[100];
-        ByteBuffer bb = ByteBuffer.wrap(bytes);
-        raf.getChannel().read(bb);
-        EndianDataInputStream shp = new EndianDataInputStream(new ByteArrayInputStream(bytes));
-        if(shp==null) throw new IOException("Failed connection or no content for " + tmpShp);
-        ShapefileHeader shpMainHeader = new ShapefileHeader(shp);
-        if(shpMainHeader.getVersion() < VERSION){System.err.println("Sf-->Warning, Shapefile format ("+shpMainHeader.getVersion()+") older that supported ("+VERSION+"), attempting to read anyway");}
-        if(shpMainHeader.getVersion() > VERSION){System.err.println("Sf-->Warning, Shapefile format ("+shpMainHeader.getVersion()+") newer that supported ("+VERSION+"), attempting to read anyway");}
+            EndianDataInputStream shp = new EndianDataInputStream(new ByteArrayInputStream(bytes));
+            ShapefileHeader shpMainHeader = new ShapefileHeader(shp);
+            if (shpMainHeader.getVersion() != VERSION) {
+                Logger.warn(String.format("Unknown shp version (%s) : try to read anyway", shpMainHeader.getVersion()));
+            }
 
-        // read shx header
-        EndianDataInputStream shx = new EndianDataInputStream(is);
-        if(shx==null) throw new IOException("Failed connection to shx");
-        ShapefileHeader shxMainHeader = new ShapefileHeader(shx);
-        if(shxMainHeader.getVersion() < VERSION){System.err.println("Sf-->Warning, Shapefile format ("+shxMainHeader.getVersion()+") older that supported ("+VERSION+"), attempting to read anyway");}
-        if(shxMainHeader.getVersion() > VERSION){System.err.println("Sf-->Warning, Shapefile format ("+shxMainHeader.getVersion()+") newer that supported ("+VERSION+"), attempting to read anyway");}
+            ShapefileHeader shxMainHeader = new ShapefileHeader(shx);
+            if (shxMainHeader.getVersion() != VERSION) {
+                Logger.warn(String.format("Unknown shx version (%s) : try to read anyway", shxMainHeader.getVersion()));
+            }
 
-        Geometry body;
-        ArrayList list = new ArrayList();
-        int type = shpMainHeader.getShapeType();
-        ShapeHandler handler = getShapeHandler(type);
-        if(handler==null) throw new ShapeTypeNotSupportedException("Unsupported shape type:" + type);
+            Geometry body;
+            int type = shpMainHeader.getShapeType();
+            ShapeHandler handler = getShapeHandler(type);
+            if(handler==null) throw new ShapeTypeNotSupportedException("Unsupported shape type:" + type);
 
-        int recordNumber = 0;
-        try {
+            int recordNumber = 0;
             while (true) {
                 int offset = shx.readIntBE();
                 int length = shx.readIntBE();
@@ -418,33 +394,28 @@ public class Shapefile  {
                     raf.getChannel().read(bb, offset*2 + 8);
                     shp = new EndianDataInputStream(new ByteArrayInputStream(bytes));
                     body = handler.read(shp, geometryFactory, length);
+                    Logger.debug("" + recordNumber + " : from " + offset + " for " + length + " (" + body.getNumPoints() + " pts)");
                     list.add(body);
                     if (body.getUserData() != null) errors++;
-                    // System.out.println("Done record: " + recordNumber);
-                } catch(IllegalArgumentException r2d2) {
-                    System.err.println("Error processing record " + recordNumber + " : " + r2d2.getMessage());
-                    System.err.println("   an empty Geometry has been returned");
-                    r2d2.printStackTrace();
-                    list.add(handler.getEmptyGeometry(geometryFactory));
-                    errors++;
-                } catch(Exception c3p0) {
-                    System.err.println("Error processing record " + recordNumber + " : " + c3p0.getMessage());
-                    System.err.println("   an empty Geometry has been returned");
-                    c3p0.printStackTrace();
+                } catch(Exception e) {
+                    Logger.warn("Error processing record " + recordNumber + ": " + e.getMessage(), e);
+                    Logger.warn("an empty Geometry has been returned");
                     list.add(handler.getEmptyGeometry(geometryFactory));
                     errors++;
                 }
             }
-        } catch(EOFException e) {}
-        if (raf != null) {
-            raf.close();
+
         }
-        if (tmpShp != null && tmpShp.exists()) {
-            tmpShp.delete();
+        catch (EOFException e) {}
+        finally {
+            if (tmpShp.exists()) {
+                if (!tmpShp.delete()) {
+                    Logger.warn(tmpShp + " could not be deleted");
+                }
+            }
         }
 
-        return geometryFactory.createGeometryCollection((Geometry[])list.toArray(new Geometry[]{}));
-
+        return geometryFactory.createGeometryCollection(list.toArray(new Geometry[]{}));
     }
 }
 

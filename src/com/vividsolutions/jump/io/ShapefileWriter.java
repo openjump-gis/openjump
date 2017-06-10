@@ -340,10 +340,10 @@ public class ShapefileWriter implements JUMPWriter {
 
         // Write shx file
         shxfname = path + fname_withoutextention + ".shx";
-        BufferedOutputStream outputStream = 
-                new BufferedOutputStream(new FileOutputStream(shxfname));
-        EndianDataOutputStream sfile = new EndianDataOutputStream(outputStream);
-        myshape.writeIndex(gc, sfile, shapeType);
+        try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(shxfname));
+                EndianDataOutputStream sfile = new EndianDataOutputStream(outputStream)) {
+            myshape.writeIndex(gc, sfile, shapeType);
+        }
         
         // Delete sbn, sbx and qix index files
         deleteIndex(path, fname_withoutextention, "sbn");
@@ -396,10 +396,8 @@ public class ShapefileWriter implements JUMPWriter {
      * July 2, 2010 - modified by beckerl to read existing dbf file header
      * and use the existing numeric field definitions.
      */
-    private void writeDbf(FeatureCollection featureCollection, String fname, Charset charset)
-        throws Exception {
-        DbfFileWriter dbf;
-        FeatureSchema fs;
+    private void writeDbf(FeatureCollection featureCollection, String fname, Charset charset) throws Exception {
+
         int t;
         int f;
         int u;
@@ -407,17 +405,21 @@ public class ShapefileWriter implements JUMPWriter {
 
         HashMap<String,DbfFieldDef> fieldMap = null;
         if (new File(fname).exists()){
-        	DbfFile dbfFile = new DbfFile(fname);
-        	int numFields = dbfFile.getNumFields();
-        	fieldMap = new HashMap<>(numFields);
-        	for (int i = 0; i<numFields; i++) {
-        		String fieldName = dbfFile.getFieldName(i);
-        		fieldMap.put(fieldName, dbfFile.fielddef[i]);
-        	}
-        	dbfFile.close();
+            DbfFile dbfFile = null;
+            try {
+                dbfFile = new DbfFile(fname);
+                int numFields = dbfFile.getNumFields();
+                fieldMap = new HashMap<>(numFields);
+                for (int i = 0; i < numFields; i++) {
+                    String fieldName = dbfFile.getFieldName(i);
+                    fieldMap.put(fieldName, dbfFile.fielddef[i]);
+                }
+            } finally {
+                if (dbfFile != null) dbfFile.close();
+            }
         }
-        
-        fs = featureCollection.getFeatureSchema();
+
+        FeatureSchema fs = featureCollection.getFeatureSchema();
 
         // -1 because one of the columns is geometry
         DbfFieldDef[] fields = new DbfFieldDef[fs.getAttributeCount() - 1];
@@ -561,7 +563,7 @@ public class ShapefileWriter implements JUMPWriter {
         }
 
         // write header
-        dbf = new DbfFileWriter(fname);
+        DbfFileWriter dbf = new DbfFileWriter(fname);
 		dbf.setCharset(charset);
         dbf.writeHeader(fields, featureCollection.size());
 
@@ -673,7 +675,7 @@ public class ShapefileWriter implements JUMPWriter {
         dbf.close();
     }
 
-    // Prepare prj writing for post-1.10 version
+    // Prepare prj writing for 1.12 version
     private void writePrj(String fname, String registry, String code)
             throws Exception {
         System.out.println("writePrj");
@@ -840,7 +842,6 @@ public class ShapefileWriter implements JUMPWriter {
 	    int i= 0;
 	    Class firstClass = null;
 	    Geometry firstGeom = null;
-		//System.out.println("ShapeFileWriter: start mixed-geom-test");
 	    for (Iterator iter = featureCollection.iterator(); iter.hasNext();) {
 			Feature myf = (Feature) iter.next();
             // mmichaud 2014-03-15 consider that empty geometries are un-typed
