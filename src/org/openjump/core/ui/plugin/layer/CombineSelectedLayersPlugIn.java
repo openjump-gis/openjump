@@ -35,21 +35,13 @@ package org.openjump.core.ui.plugin.layer;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.Icon;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
@@ -57,9 +49,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedItemsPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorScheme;
@@ -71,6 +61,8 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
       .get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.LAYER");
   private static final String COMBINE_SELECTED_LAYERS = I18N
       .get("org.openjump.core.ui.plugin.layer.CombineSelectedLayers");
+
+  private String uniqueName = LAYER;
 
   @Override
   public String getName() {
@@ -89,13 +81,15 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
 
     Layer[] selectedLayers = context.getLayerNamePanel().getSelectedLayers();
 
+    Set<String> allAttributeNames = getAllAttributeNames(selectedLayers);
+    setUniqueAttributeName(allAttributeNames);
+
     FeatureSchema featureSchema = new FeatureSchema();
     featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
-    featureSchema.addAttribute(LAYER, AttributeType.STRING);
+    featureSchema.addAttribute(uniqueName, AttributeType.STRING);
     // add all attributes from selected layers
-    for (int i = 0; i < selectedLayers.length; i++) {
-      FeatureSchema schema = selectedLayers[i].getFeatureCollectionWrapper()
-          .getFeatureSchema();
+    for (Layer layer : selectedLayers) {
+      FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
       for (int j = 0; j < schema.getAttributeCount(); j++) {
         String name = schema.getAttributeName(j);
         if (AttributeType.GEOMETRY == schema.getAttributeType(name)) {
@@ -122,11 +116,10 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
         featureDataset);
 
     newLayer.setFeatureCollectionModified(true).setEditable(true);
-    Map attributeToStyleMap = new HashMap();
+    Map<Object,BasicStyle> attributeToStyleMap = new HashMap<>();
     ColorScheme colorScheme = ColorScheme.create("Set 3 (ColorBrewer)");
-    for (int i = 0; i < selectedLayers.length; i++) {
-      Layer layer = selectedLayers[i];
-      Collection features = layer.getFeatureCollectionWrapper().getFeatures();
+    for (Layer layer : selectedLayers) {
+      Collection<Feature> features = layer.getFeatureCollectionWrapper().getFeatures();
       newLayer.getFeatureCollectionWrapper().addAll(
           conform(features, featureSchema, layer.getName()));
       attributeToStyleMap.put(layer.getName(),
@@ -150,19 +143,37 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
     return type.toString().substring(0, 1);
   }
 
-  public static Collection conform(Collection features,
-      FeatureSchema targetFeatureSchema, String layerName) {
-    final ArrayList featureCopies = new ArrayList();
+  private Set<String> getAllAttributeNames(Layer[] layers) {
+    Set<String> set = new HashSet<>();
+    for (Layer layer : layers) {
+      FeatureCollection fc = layer.getFeatureCollectionWrapper();
+      for (int i = 0 ; i < fc.getFeatureSchema().getAttributeCount() ; i++) {
+        set.add(fc.getFeatureSchema().getAttributeName(i));
+      }
+    }
+    return set;
+  }
 
-    for (Iterator i = features.iterator(); i.hasNext();) {
-      Feature feature = (Feature) i.next();
+  private void setUniqueAttributeName(Set<String> set) {
+    if (!set.contains(LAYER)) uniqueName = LAYER;
+    else {
+      int i = 0;
+      while (set.contains(uniqueName)) uniqueName = LAYER + "_" + ++i;
+    }
+  }
+
+  public Collection<Feature> conform(Collection<Feature> features,
+      FeatureSchema targetFeatureSchema, String layerName) {
+    final ArrayList<Feature> featureCopies = new ArrayList<>();
+
+    for (Feature feature : features) {
       featureCopies.add(conform(feature, targetFeatureSchema, layerName));
     }
 
     return featureCopies;
   }
 
-  private static Feature conform(Feature original,
+  private Feature conform(Feature original,
       FeatureSchema targetFeatureSchema, String layerName) {
     // Transfer as many attributes as possible, matching on name. [Jon Aquino]
     Feature copy = new BasicFeature(targetFeatureSchema);
@@ -191,7 +202,7 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
 
       copy.setAttribute(newAttributeName, original.getAttribute(attributeName));
     }
-    copy.setAttribute(LAYER, layerName);
+    copy.setAttribute(uniqueName, layerName);
 
     return copy;
   }
