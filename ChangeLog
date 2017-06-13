@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-06-13 mmichaud <m.michael.michaud@orange.fr>
+  * WMS getCapability often timeout : increase read timeout to 20s
+
 2017-06-11 mmichaud <m.michael.michaud@orange.fr>
   * Fix combine layers : guarantee unique name for the new attribute
 
