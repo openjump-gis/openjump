@@ -1,5 +1,7 @@
 package com.vividsolutions.wms;
 
+import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
+import com.vividsolutions.jump.util.Blackboard;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +22,8 @@ import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.ui.network.ProxySettingsOptionsPanel;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 abstract public class AbstractWMSRequest implements WMSRequest {
 
@@ -69,9 +73,11 @@ abstract public class AbstractWMSRequest implements WMSRequest {
   protected HttpURLConnection prepareConnection() throws IOException {
     URL requestUrl = getURL();
     con = (HttpURLConnection) requestUrl.openConnection();
-
-    con.setConnectTimeout(WMService.TIMEOUT_OPEN);
-    con.setReadTimeout(WMService.TIMEOUT_READ);
+    
+    // nicolas ribot, 29 juin 2017: timeouts are now read from the conf.
+    Blackboard blackboard = PersistentBlackboardPlugIn.getInstance();
+    con.setConnectTimeout((Integer)blackboard.get(ProxySettingsOptionsPanel.CONNECTION_TIMEOUT_KEY));
+    con.setReadTimeout((Integer)blackboard.get(ProxySettingsOptionsPanel.READ_TIMEOUT_KEY));
 
     // add this service's auth info
     String userInfo = requestUrl.getUserInfo();

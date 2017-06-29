@@ -89,6 +89,11 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.OptionsPanelV2;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Formatter;
+import javax.swing.JFormattedTextField;
+import javax.swing.text.NumberFormatter;
 
 /**
  * Allows to configure the network connection (through a proxy HTTP or SOCKS)
@@ -106,6 +111,11 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
 
   /** long serialVersionUID field */
   private static final long serialVersionUID = 1L;
+  
+  /** default values for timeouts */
+  private static final int DEFAULT_TIMEOUT_OPEN =  5000;
+  private static final int DEFAULT_TIMEOUT_READ = 20000;
+
 
   /** Panel icon */
   public final static Icon ICON = IconLoader.icon("fugue/globe-network.png");
@@ -117,6 +127,10 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       .getName() + "-Settings";
   public final static String TEST_URL_KEY = ProxySettingsOptionsPanel.class
       .getName() + "-TestUrl";
+  public final static String READ_TIMEOUT_KEY = ProxySettingsOptionsPanel.class
+      .getName() + "-ReadTimeout";
+  public final static String CONNECTION_TIMEOUT_KEY = ProxySettingsOptionsPanel.class
+      .getName() + "-ConnectionTimeout";
 
   /** Connection status icons and labels */
   public final static Icon SUCCESSFULL_CONNECTION_ICON = IconLoader
@@ -149,6 +163,13 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   private JTextField proxyUserTextField;
   private JPasswordField proxyPasswordTextField;
 
+  /** Timeouts settings panel */
+  private JPanel timeoutSettingsPanel;
+  // uses formatted text fields to handle int values only
+  private JFormattedTextField connectionTimeoutTextField;
+  private JFormattedTextField readTimeoutTextField;
+  
+  
   private JTextField directConnectToTextField;
 
   private JTextField testUrlTextField;
@@ -180,7 +201,8 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     // Add the panels
     FormUtils.addRowInGBL(this, 0, 0, getProxySettingsPanel());
     FormUtils.addRowInGBL(this, 1, 0, getTestConnectionPanel());
-    FormUtils.addFiller(this, 2, 0);
+    FormUtils.addRowInGBL(this, 2, 0, getTimeoutSettingsPanel());
+    FormUtils.addFiller(this, 3, 0);
   }
 
   /**
@@ -372,6 +394,39 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   }
 
   /**
+   * New panel to configure connection and read timeout for OGC services and proxy connection
+   * @return the Timeout settings panel
+   */
+  private JPanel getTimeoutSettingsPanel() {
+    if (timeoutSettingsPanel == null) {
+      timeoutSettingsPanel = new JPanel(new GridBagLayout());
+      timeoutSettingsPanel.setBorder(BorderFactory
+          .createTitledBorder(getMessage("timeout")));
+
+      JLabel ogcServicesTimeoutLabel = new JLabel(getMessage("ogc-services-timeout"));
+      
+      
+      JLabel readTimeoutLabel = new JLabel(getMessage("read-timeout"));
+      NumberFormatter readFormatter = getIntegerFormatter(false, false);
+      readTimeoutTextField = new JFormattedTextField(readFormatter);
+      
+      JLabel connectionTimeoutLabel = new JLabel(getMessage("connection-timeout"));
+      NumberFormatter cnxFormatter = getIntegerFormatter(false, false);
+      connectionTimeoutTextField = new JFormattedTextField(cnxFormatter);
+      
+      // Add the components to the panel
+      FormUtils.addRowInGBL(timeoutSettingsPanel, 0, 0, ogcServicesTimeoutLabel,
+          new JLabel(""));
+      FormUtils.addRowInGBL(timeoutSettingsPanel, 1, 0, readTimeoutLabel,
+          readTimeoutTextField);
+      FormUtils.addRowInGBL(timeoutSettingsPanel, 2, 0, connectionTimeoutLabel,
+          connectionTimeoutTextField);
+
+    }
+    return timeoutSettingsPanel;
+  }
+
+  /**
    * Refresh the components editability depending on the http proxy checkbox
    */
   protected void refreshEditability() {
@@ -419,6 +474,24 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       testUrlTextField.setText(testUrl);
     else
       testUrlTextField.setText(DEFAULT_TEST_URL);
+    
+    // recover new timeout values
+    Integer connectionTimeout = (Integer) blackboard.get(CONNECTION_TIMEOUT_KEY);
+    if (connectionTimeout != null)
+      connectionTimeoutTextField.setText(connectionTimeout.toString());
+    else
+      connectionTimeoutTextField.setText(
+          String.valueOf(
+              ProxySettingsOptionsPanel.DEFAULT_TIMEOUT_OPEN));
+    
+    Integer readTimeout = (Integer) blackboard.get(READ_TIMEOUT_KEY);
+    if (readTimeout != null)
+      readTimeoutTextField.setText(readTimeout.toString());
+    else
+      readTimeoutTextField.setText(
+          String.valueOf(
+              ProxySettingsOptionsPanel.DEFAULT_TIMEOUT_READ));
+    
 
     refreshEditability();
 
@@ -449,6 +522,25 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       blackboard.put(TEST_URL_KEY, testUrl);
     else
       blackboard.remove(TEST_URL_KEY);
+    
+    // save timeout value as Integer, after converting them from a potentially formatted int (with thousand separator
+    // for instance) to a non-formatted value to store in bboard:
+    Integer readTimeout = null;
+    Integer cnxTimeout = null;
+    try {
+      readTimeout = NumberFormat.getInstance().parse(
+          readTimeoutTextField.getText().trim()).intValue();
+    } catch (ParseException pe) {
+      readTimeout = ProxySettingsOptionsPanel.DEFAULT_TIMEOUT_READ;
+    }
+    try {
+      cnxTimeout = NumberFormat.getInstance().parse(
+          connectionTimeoutTextField.getText().trim()).intValue();
+    } catch (ParseException pe) {
+      cnxTimeout = ProxySettingsOptionsPanel.DEFAULT_TIMEOUT_OPEN;
+    }
+    blackboard.put(READ_TIMEOUT_KEY, readTimeout);
+    blackboard.put(CONNECTION_TIMEOUT_KEY, cnxTimeout);
   }
 
   /**
@@ -620,8 +712,23 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   }
 
   private void tuneConnection(URLConnection con) {
-    con.setConnectTimeout(5000);
-    con.setReadTimeout(5000);
+    Integer readTimeout = null;
+    Integer cnxTimeout = null;
+    try {
+      readTimeout = NumberFormat.getInstance().parse(
+          readTimeoutTextField.getText().trim()).intValue();
+    } catch (ParseException pe) {
+      readTimeout = ProxySettingsOptionsPanel.DEFAULT_TIMEOUT_READ;
+    }
+    try {
+      cnxTimeout = NumberFormat.getInstance().parse(
+          connectionTimeoutTextField.getText().trim()).intValue();
+    } catch (ParseException pe) {
+      cnxTimeout = ProxySettingsOptionsPanel.DEFAULT_TIMEOUT_OPEN;
+    }
+
+    con.setConnectTimeout(cnxTimeout);
+    con.setReadTimeout(readTimeout);
     con.setUseCaches(false);
   }
 
@@ -743,6 +850,20 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     }
     System.out.println(out);
   }
+  
+    private NumberFormatter getIntegerFormatter(boolean allowInvalid, boolean commitsOnValidEdit) {
+    NumberFormat format = NumberFormat.getInstance();
+    NumberFormatter formatter = new NumberFormatter(format);
+    formatter.setValueClass(Integer.class);
+    formatter.setMinimum(0);
+    formatter.setMaximum(Integer.MAX_VALUE);
+    formatter.setAllowsInvalid(allowInvalid);
+    // If you want the value to be committed on each keystroke instead of focus lost
+    formatter.setCommitsOnValidEdit(commitsOnValidEdit);
+    
+    return formatter;
+  }
+
 }
 
 class DNSResolver implements Runnable {
@@ -769,4 +890,5 @@ class DNSResolver implements Runnable {
   public synchronized InetAddress get() {
     return inetAddr;
   }
+  
 }

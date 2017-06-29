@@ -1,5 +1,8 @@
 package de.latlon.deejump.wfs.client;
 
+import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.workbench.ui.network.ProxySettingsOptionsPanel;
+import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import java.io.IOException;
 import java.net.URL;
 
@@ -53,9 +56,11 @@ public class WFSHttpClient extends HttpClient {
 
   private void _init() {
     HttpClientParams clientPars = new HttpClientParams();
-    // set timeout to 5s
-    clientPars.setConnectionManagerTimeout(WMService.TIMEOUT_OPEN);
-    clientPars.setSoTimeout(WMService.TIMEOUT_READ);
+    // Nicolas Ribot, 29 juin 2017: timeout values are now read from options
+    Blackboard blackboard = PersistentBlackboardPlugIn.getInstance();
+
+    clientPars.setConnectionManagerTimeout((Integer)blackboard.get(ProxySettingsOptionsPanel.CONNECTION_TIMEOUT_KEY));
+    clientPars.setSoTimeout((Integer)blackboard.get(ProxySettingsOptionsPanel.READ_TIMEOUT_KEY));
     clientPars.setContentCharset("UTF-8");
     this.setParams(clientPars);
 

@@ -3,6 +3,12 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-06-29 Nicolas Ribot <nicolas.ribot@gmail.com>
+  * New Network Properties options: connection and read timeouts are now 
+    configurable in the Network Properties options' tab.
+    These timeout values are also applied to WMS and WFS Web Services 
+    connections
+
 2017-06-13 mmichaud <m.michael.michaud@orange.fr>
   * WMS getCapability often timeout : increase read timeout to 20s
 

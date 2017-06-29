@@ -68,10 +68,6 @@ public class WMService {
   private String wmsVersion = WMS_1_1_1;
   private Capabilities cap;
 
-  // timeouts in ms
-  public static final int TIMEOUT_OPEN =  5000;
-  public static final int TIMEOUT_READ = 20000;
-
   /**
    * Constructs a WMService object from a server URL.
    * 
