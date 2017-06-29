@@ -4,6 +4,9 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2017-06-29 Nicolas Ribot <nicolas.ribot@gmail.com>
+  * Corrected properties files after bad unicode conversions.
+
+2017-06-29 Nicolas Ribot <nicolas.ribot@gmail.com>
   * New Network Properties options: connection and read timeouts are now 
     configurable in the Network Properties options' tab.
     These timeout values are also applied to WMS and WFS Web Services 
