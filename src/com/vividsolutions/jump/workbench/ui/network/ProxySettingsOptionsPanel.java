@@ -403,9 +403,6 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       timeoutSettingsPanel.setBorder(BorderFactory
           .createTitledBorder(getMessage("timeout")));
 
-      JLabel ogcServicesTimeoutLabel = new JLabel(getMessage("ogc-services-timeout"));
-      
-      
       JLabel readTimeoutLabel = new JLabel(getMessage("read-timeout"));
       NumberFormatter readFormatter = getIntegerFormatter(false, false);
       readTimeoutTextField = new JFormattedTextField(readFormatter);
@@ -415,11 +412,9 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
       connectionTimeoutTextField = new JFormattedTextField(cnxFormatter);
       
       // Add the components to the panel
-      FormUtils.addRowInGBL(timeoutSettingsPanel, 0, 0, ogcServicesTimeoutLabel,
-          new JLabel(""));
-      FormUtils.addRowInGBL(timeoutSettingsPanel, 1, 0, readTimeoutLabel,
+      FormUtils.addRowInGBL(timeoutSettingsPanel, 0, 0, readTimeoutLabel,
           readTimeoutTextField);
-      FormUtils.addRowInGBL(timeoutSettingsPanel, 2, 0, connectionTimeoutLabel,
+      FormUtils.addRowInGBL(timeoutSettingsPanel, 1, 0, connectionTimeoutLabel,
           connectionTimeoutTextField);
 
     }
