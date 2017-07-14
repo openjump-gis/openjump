@@ -421,6 +421,37 @@ public class Utils {
         }
     }
 
+    
+    public static String[] mapSRIDasString() throws IOException {
+      String[] arr = null;
+      List<String> codes = new ArrayList<String>();
+      InputStream localInputStream = ProjUtils.class
+              .getResourceAsStream("srid.txt");
+      try {
+
+          BufferedReader localBufferedReader = new BufferedReader(
+                  new InputStreamReader(localInputStream));
+
+          String str1;
+          while (null != (str1 = localBufferedReader.readLine())) {
+              if (str1.startsWith("<")) {
+                  String str3 = str1.substring(1, str1.indexOf(">"));
+                  codes.add(str3);
+
+              }
+          }
+          arr = codes.toArray(new String[codes.size()]);
+          return arr;
+      } finally {
+          if (localInputStream != null) {
+              try {
+                  localInputStream.close();
+              } catch (IOException localIOException2) {
+              }
+          }
+      }
+  }
+    
     public static void removeButton(Container container) {
         Component[] components = container.getComponents();
         for (Component component : components) {
