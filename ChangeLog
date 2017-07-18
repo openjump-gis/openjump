@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-07-18 Nicolas Ribot <nicolas.ribot@gmail.com>
+  * Network Properties translation files missing from previous commit
+
 2017-06-29 Nicolas Ribot <nicolas.ribot@gmail.com>
   * Corrected properties files after bad unicode conversions.
 
