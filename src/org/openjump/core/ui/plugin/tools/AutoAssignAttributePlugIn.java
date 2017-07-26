@@ -97,7 +97,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     private boolean assignFromSource = false;
     private String sourceAttribute;
     
-    private boolean assignValue = false;
+    private boolean assignValue = true;
     private String textToAssign;
 	    
 	public void initialize(PlugInContext context) throws Exception {
@@ -167,8 +167,13 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
 
         final JComboBox targetAttributeComboBox = 
             dialog.addAttributeComboBox(TARGET_ATTRIBUTE_COMBO_BOX, LAYER_COMBO_BOX,
-                    new AttributeTypeFilter(AttributeTypeFilter.DATE | AttributeTypeFilter.STRING |
-                    AttributeTypeFilter.DOUBLE | AttributeTypeFilter.INTEGER), "");
+                    new AttributeTypeFilter(
+                            AttributeTypeFilter.DATE |
+                                    AttributeTypeFilter.STRING |
+                                    AttributeTypeFilter.DOUBLE |
+                                    AttributeTypeFilter.INTEGER |
+                                    AttributeTypeFilter.LONG |
+                                    AttributeTypeFilter.BOOLEAN), "");
 
         for (int i = 0 ; i < targetAttributeComboBox.getModel().getSize() ; i++) {
             Object item = targetAttributeComboBox.getModel().getElementAt(i);
@@ -177,13 +182,13 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
         
         // Auto-increment options
         dialog.addSeparator();
-        final JCheckBox autoIncCheckBox = dialog.addCheckBox(AUTOINC_CHECK_BOX, autoIncrement);
+        final JRadioButton autoIncRB = dialog.addRadioButton(AUTOINC_CHECK_BOX, "MODE", autoIncrement, null);
         dialog.addTextField(AUTOINC_PATTERN_BOX, pattern, 4, null, AUTOINC_DESCRIPTION_2);
         dialog.addIntegerField(INC_VALUE_EDIT_BOX, 1, 4, "");
         
         // From other attribute option
         dialog.addSeparator();
-        final JCheckBox fromSourceCheckBox = dialog.addCheckBox(FROM_SOURCE_CHECK_BOX, assignFromSource);
+        final JRadioButton fromSourceRB = dialog.addRadioButton(FROM_SOURCE_CHECK_BOX, "MODE", assignFromSource, null);
         final JComboBox sourceAttributeComboBox = 
             dialog.addAttributeComboBox(SOURCE_COMBO_BOX, LAYER_COMBO_BOX,
                                         AttributeTypeFilter.ALL_FILTER, 
@@ -196,22 +201,38 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
         initEnableChecks(dialog);
         
         dialog.addSeparator();
-        final JCheckBox assignValueCheckBox = dialog.addCheckBox(ASSIGN_VALUE_CHECK_BOX, assignValue);
+        final JRadioButton assignValueRB = dialog.addRadioButton(ASSIGN_VALUE_CHECK_BOX, "MODE", assignValue, null);
         dialog.addTextField(ASSIGN_VALUE_TEXT_BOX, "", 15, null, "");
         
         updateControls(dialog);
-        
-        autoIncCheckBox.addActionListener(new ActionListener() {
+
+        targetAttributeComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Layer layer = dialog.getLayer(LAYER_COMBO_BOX);
+                FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+                String attribute = dialog.getText(TARGET_ATTRIBUTE_COMBO_BOX);
+                if (schema.getAttributeType(attribute) == AttributeType.BOOLEAN && autoIncrement) {
+                    assignValueRB.setSelected(true);
+                }
+                if (schema.getAttributeType(attribute) == AttributeType.DATE && autoIncrement) {
+                    assignValueRB.setSelected(true);
+                }
+                updateControls(dialog);
+            }
+        });
+
+        autoIncRB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateControls(dialog);
             }
         });
-        fromSourceCheckBox.addActionListener(new ActionListener() {
+        fromSourceRB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateControls(dialog);
             }
         });
-        assignValueCheckBox.addActionListener(new ActionListener() {
+        assignValueRB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateControls(dialog);
             }
@@ -221,22 +242,27 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     }
     
     private void updateControls(MultiInputDialog dialog) {
-        assignFromSource = dialog.getCheckBox(FROM_SOURCE_CHECK_BOX).isSelected();
-        autoIncrement = dialog.getBoolean(AUTOINC_CHECK_BOX);
-        assignValue = dialog.getBoolean(ASSIGN_VALUE_CHECK_BOX);
         layer = dialog.getLayer(LAYER_COMBO_BOX);
         FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+
+        targetAttribute = dialog.getText(TARGET_ATTRIBUTE_COMBO_BOX);
+        destinationAttributeType = schema.getAttributeType(schema.getAttributeIndex(targetAttribute));
+
+        assignFromSource = dialog.getBoolean(FROM_SOURCE_CHECK_BOX);
+        autoIncrement = dialog.getBoolean(AUTOINC_CHECK_BOX);
+        assignValue = dialog.getBoolean(ASSIGN_VALUE_CHECK_BOX);
+
         boolean fromAttributeValid = schema.getAttributeCount() > 1;
         
-        dialog.setFieldEnabled(AUTOINC_CHECK_BOX, !assignFromSource && !assignValue);
-        dialog.setFieldEnabled(AUTOINC_PATTERN_BOX, autoIncrement && !assignFromSource && !assignValue);
-        dialog.setFieldEnabled(INC_VALUE_EDIT_BOX, autoIncrement && !assignFromSource && !assignValue);
+        //dialog.setFieldEnabled(AUTOINC_CHECK_BOX, !assignFromSource && !assignValue);
+        dialog.setFieldEnabled(AUTOINC_PATTERN_BOX, autoIncrement);
+        dialog.setFieldEnabled(INC_VALUE_EDIT_BOX, autoIncrement);
         
-        dialog.setFieldEnabled(FROM_SOURCE_CHECK_BOX, !autoIncrement && !assignValue && fromAttributeValid);
-        dialog.setFieldEnabled(SOURCE_COMBO_BOX, assignFromSource && !autoIncrement && !assignValue && fromAttributeValid);
+        //dialog.setFieldEnabled(FROM_SOURCE_CHECK_BOX, !autoIncrement && !assignValue && fromAttributeValid);
+        dialog.setFieldEnabled(SOURCE_COMBO_BOX, assignFromSource);
         
-        dialog.setFieldEnabled(ASSIGN_VALUE_CHECK_BOX, !assignFromSource && !autoIncrement);
-        dialog.setFieldEnabled(ASSIGN_VALUE_TEXT_BOX, assignValue && !assignFromSource && !autoIncrement);
+        //dialog.setFieldEnabled(ASSIGN_VALUE_CHECK_BOX, !assignFromSource && !autoIncrement);
+        dialog.setFieldEnabled(ASSIGN_VALUE_TEXT_BOX, assignValue);
         
         if (assignValue) dialog.setSideBarDescription(ASSIGN_VALUE_DESCRIPTION);
         else if (autoIncrement) dialog.setSideBarDescription(AUTOINC_DESCRIPTION_1 + "\n\n" + AUTOINC_DESCRIPTION_2);
@@ -317,7 +343,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
             });
             put(AttributeType.BOOLEAN, new Converter() {
                 public Object convert(String d) {
-                    if (d==null) return null;
+                    if (d==null || d.isEmpty()) return null;
                     try {
                         return Boolean.parseBoolean(d);
                     } catch(NumberFormatException nfe) {
@@ -389,7 +415,8 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
                 else
                     s = pattern.replaceFirst(numeric, value);
             } else if (assignFromSource) {
-                s = feature.getAttribute(sourceAttribute).toString();
+                Object v = feature.getAttribute(sourceAttribute);
+                s = v == null ? null : v.toString();
             } else {
                 s = textToAssign;
             }
