@@ -179,14 +179,13 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
             Object item = targetAttributeComboBox.getModel().getElementAt(i);
             if (item.equals(targetAttribute)) targetAttributeComboBox.setSelectedIndex(i);
         }
-        
-        // Auto-increment options
+
+        // Set new value
         dialog.addSeparator();
-        final JRadioButton autoIncRB = dialog.addRadioButton(AUTOINC_CHECK_BOX, "MODE", autoIncrement, null);
-        dialog.addTextField(AUTOINC_PATTERN_BOX, pattern, 4, null, AUTOINC_DESCRIPTION_2);
-        dialog.addIntegerField(INC_VALUE_EDIT_BOX, 1, 4, "");
-        
-        // From other attribute option
+        final JRadioButton assignValueRB = dialog.addRadioButton(ASSIGN_VALUE_CHECK_BOX, "MODE", assignValue, null);
+        dialog.addTextField(ASSIGN_VALUE_TEXT_BOX, "", 15, null, "");
+
+        // Set value from another attribute
         dialog.addSeparator();
         final JRadioButton fromSourceRB = dialog.addRadioButton(FROM_SOURCE_CHECK_BOX, "MODE", assignFromSource, null);
         final JComboBox sourceAttributeComboBox = 
@@ -197,13 +196,17 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
             Object item = sourceAttributeComboBox.getModel().getElementAt(i);
             if (item.equals(sourceAttribute)) sourceAttributeComboBox.setSelectedIndex(i);
         }
-
         initEnableChecks(dialog);
-        
+
+
+        // Auto-incremented value
         dialog.addSeparator();
-        final JRadioButton assignValueRB = dialog.addRadioButton(ASSIGN_VALUE_CHECK_BOX, "MODE", assignValue, null);
-        dialog.addTextField(ASSIGN_VALUE_TEXT_BOX, "", 15, null, "");
-        
+        final JRadioButton autoIncRB = dialog.addRadioButton(AUTOINC_CHECK_BOX, "MODE", autoIncrement, null);
+        dialog.addTextField(AUTOINC_PATTERN_BOX, pattern, 4, null, AUTOINC_DESCRIPTION_2);
+        dialog.addIntegerField(INC_VALUE_EDIT_BOX, 1, 4, "");
+
+        // Update controls
+
         updateControls(dialog);
 
         targetAttributeComboBox.addActionListener(new ActionListener() {

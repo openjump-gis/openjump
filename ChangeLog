@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-07-27 mmichaud <m.michael.michaud@orange.fr>
+  * AutoAssignAttributePlugIn : inverse options order (simple to more complex)
+  * Deprecate ReplaceValuePlugIn (redundant with the previous one, not undoable)
+
 2017-07-26 mmichaud <m.michael.michaud@orange.fr>
   * AutoAssignAttributePlugIn : accept boolean and long as target attributes
 

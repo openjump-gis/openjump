@@ -56,8 +56,9 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  * @version 25 juil. 06
  *
  * license Licence CeCILL http://www.cecill.info/
+ * @deprecated this plugin is not undoable - moreover, it is redundant with AutoAssignAttribute
  */
-
+@Deprecated
 public class ReplaceValuePlugIn extends AbstractPlugIn implements ThreadedPlugIn {
  
   //-- replace later with correct language
@@ -232,14 +233,24 @@ public class ReplaceValuePlugIn extends AbstractPlugIn implements ThreadedPlugIn
 	  for (Feature f : selectedFC) {
 
 		  if (!byAttribute) {
-			  // remplacement par la valeur saisie
-			  if (type == AttributeType.DOUBLE) {
-				  f.setAttribute(attrName, new Double (value));
-			  } else if (type == AttributeType.INTEGER)  {
-				  f.setAttribute(attrName, new Integer (value));
-			  } else if (type == AttributeType.STRING) {
-				  f.setAttribute(attrName, value);
-			  }
+		  	try {
+				// remplacement par la valeur saisie
+				if (type != AttributeType.STRING && value == null || value.trim().isEmpty()) {
+					f.setAttribute(attrName, null);
+				} else if (type == AttributeType.DOUBLE) {
+					f.setAttribute(attrName, new Double(value));
+				} else if (type == AttributeType.INTEGER) {
+					f.setAttribute(attrName, new Integer(value));
+				} else if (type == AttributeType.LONG) {
+					f.setAttribute(attrName, new Long(value));
+				} else if (type == AttributeType.BOOLEAN) {
+					f.setAttribute(attrName, Boolean.parseBoolean(value));
+				} else if (type == AttributeType.STRING) {
+					f.setAttribute(attrName, value);
+				}
+			} catch(NumberFormatException e) {
+				f.setAttribute(attrName, null);
+			}
 		  }
 	  }
 
@@ -264,6 +275,10 @@ public class ReplaceValuePlugIn extends AbstractPlugIn implements ThreadedPlugIn
 
 			  } else if (typeDest == AttributeType.STRING) {
 				  f.setAttribute(attrNameDest, attrValue);
+			  } else if (typeDest == AttributeType.LONG) {
+				  f.setAttribute(attrNameDest, new Long(attrValue));
+			  } else if (typeDest == AttributeType.BOOLEAN) {
+				  f.setAttribute(attrNameDest, Boolean.parseBoolean(attrValue));
 			  }
 		  }
 	  }
