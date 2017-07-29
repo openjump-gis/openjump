@@ -60,74 +60,74 @@ public class AttributeType implements Serializable {
 
   // String attributes
   public final static AttributeType STRING = new AttributeType(
-      "STRING", String.class); //$NON-NLS-1$
+      "STRING", String.class);
   public final static AttributeType CHAR = new AttributeType(
-      "CHAR", String.class); //$NON-NLS-1$
+      "CHAR", String.class);
   public final static AttributeType VARCHAR = new AttributeType(
-      "VARCHAR", String.class); //$NON-NLS-1$
+      "VARCHAR", String.class);
   public final static AttributeType LONGVARCHAR = new AttributeType(
-      "LONGVARCHAR", String.class); //$NON-NLS-1$
+      "LONGVARCHAR", String.class);
   public final static AttributeType TEXT = new AttributeType(
-      "TEXT", String.class); //$NON-NLS-1$
+      "TEXT", String.class);
 
   // Boolean attributes
   public final static AttributeType BOOLEAN = new AttributeType(
-      "BOOLEAN", Boolean.class); //$NON-NLS-1$
+      "BOOLEAN", Boolean.class);
   public final static AttributeType BIT = new AttributeType(
-      "BIT", Boolean.class); //$NON-NLS-1$    
+      "BIT", Boolean.class);    
 
   // Short attributes
   public final static AttributeType SMALLINT = new AttributeType(
-      "SMALLINT", Short.class); //$NON-NLS-1$
+      "SMALLINT", Short.class);
   public final static AttributeType TINYINT = new AttributeType(
-      "TINYINT", Short.class); //$NON-NLS-1$
+      "TINYINT", Short.class);
 
   // Integer attributes
   public final static AttributeType INTEGER = new AttributeType(
-      "INTEGER", Integer.class); //$NON-NLS-1$
+      "INTEGER", Integer.class);
 
   // Long attributes
-  public final static AttributeType LONG = new AttributeType("LONG", Long.class); //$NON-NLS-1$
+  public final static AttributeType LONG = new AttributeType("LONG", Long.class);
   public final static AttributeType BIGINT = new AttributeType(
-      "BIGINT", Long.class); //$NON-NLS-1$
+      "BIGINT", Long.class);
 
   // BigDecimal attributes
   public final static AttributeType DECIMAL = new AttributeType(
-      "DECIMAL", BigDecimal.class); //$NON-NLS-1$
+      "DECIMAL", BigDecimal.class);
   public final static AttributeType NUMERIC = new AttributeType(
-      "NUMERIC", BigDecimal.class); //$NON-NLS-1$
+      "NUMERIC", BigDecimal.class);
   public final static AttributeType BIGDECIMAL = new AttributeType(
-      "BIGDECIMAL", BigDecimal.class); //$NON-NLS-1$
+      "BIGDECIMAL", BigDecimal.class);
 
   // Float attributes
   public final static AttributeType FLOAT = new AttributeType(
-      "FLOAT", Float.class); //$NON-NLS-1$
+      "FLOAT", Float.class);
 
   // Double attributes
   public final static AttributeType DOUBLE = new AttributeType(
-      "DOUBLE", Double.class); //$NON-NLS-1$
+      "DOUBLE", Double.class);
   public final static AttributeType REAL = new AttributeType(
-      "REAL", Double.class); //$NON-NLS-1$
+      "REAL", Double.class);
 
   // Date attributes
   public final static AttributeType DATE = new AttributeType(
-      "DATE", java.sql.Date.class); //$NON-NLS-1$
+      "DATE", java.sql.Date.class);
 
   // Time attributes
   public final static AttributeType TIME = new AttributeType(
-      "TIME", java.sql.Time.class); //$NON-NLS-1$
+      "TIME", java.sql.Time.class);
 
   // Timestamp attributes
   public final static AttributeType TIMESTAMP = new AttributeType(
-      "TIMESTAMP", java.sql.Timestamp.class); //$NON-NLS-1$
+      "TIMESTAMP", java.sql.Timestamp.class);
 
   // Geometry attributes
   public final static AttributeType GEOMETRY = new AttributeType(
-      "GEOMETRY", Geometry.class); //$NON-NLS-1$
+      "GEOMETRY", Geometry.class);
 
   // Other attribute types
   public final static AttributeType OBJECT = new AttributeType(
-      "OBJECT", Object.class); //$NON-NLS-1$
+      "OBJECT", Object.class);
 
   /** Attribute type name */
   private String name;
