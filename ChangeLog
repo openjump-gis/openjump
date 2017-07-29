@@ -5,6 +5,7 @@
 
 2017-07-29 mmichaud <m.michael.michaud@orange.fr>
   * BlendLineStringsPlugIn : improve quality, performance and make it undoable
+  * Deactivate ReplaceValuePlugIn (use AutoAssignAttributePlugIn instead)
 
 2017-07-27 mmichaud <m.michael.michaud@orange.fr>
   * AutoAssignAttributePlugIn : inverse options order (simple to more complex)
