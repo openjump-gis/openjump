@@ -59,6 +59,7 @@ import javax.swing.table.DefaultTableCellRenderer;
  * in FlexibleDateParser.txt).
  */
 public class FlexibleDateParser {
+    private static FlexibleDateParser instance = null;
 
     private static Collection<SimpleDateFormat> lenientFormatters = null;
     private static Collection<SimpleDateFormat> unlenientFormatters = null;
@@ -222,7 +223,8 @@ public class FlexibleDateParser {
             }
 
             try {
-                return parse(s, formatter);
+              Date d = parse(s, formatter);
+                return d;
             } catch (ParseException e) {
                 if (firstParseException == null) {
                     firstParseException = e;
@@ -331,5 +333,11 @@ public class FlexibleDateParser {
 
     public void setVerbose(boolean b) {
         verbose = b;
+    }
+
+    public static FlexibleDateParser getDefaultInstance() {
+      if (instance == null)
+        instance = new FlexibleDateParser();
+      return instance;
     }
 }
