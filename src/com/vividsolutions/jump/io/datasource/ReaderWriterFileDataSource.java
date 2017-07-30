@@ -48,6 +48,8 @@ import com.vividsolutions.jump.io.JUMPWriter;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorSupport;
 import com.vividsolutions.jump.task.TaskMonitorUtil;
+import com.vividsolutions.jump.util.Timer;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * Adapts the old JUMP I/O API (Readers and Writers) to the new JUMP I/O API
@@ -97,7 +99,11 @@ public class ReaderWriterFileDataSource extends FileDataSource {
                         createDescriptiveName(uri)));
           }
 
+          long start = Timer.milliSecondsSince(0);
           FeatureCollection fc = reader.read(dp);
+          String filename = UriUtil.getFileName(uri);
+          Logger.info("Reading '"+filename+"' took "+Timer.secondsSinceString(start)+"s.");
+
           exceptions.addAll(reader.getExceptions());
           return fc;
         } catch (Exception e) {
