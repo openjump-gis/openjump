@@ -31,23 +31,44 @@
  */
 package com.vividsolutions.jump.io;
 
-import com.vividsolutions.jts.geom.*;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.regex.Pattern;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.feature.FlexibleFeature;
+import com.vividsolutions.jump.feature.FlexibleFeatureSchema;
 import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorSupport;
 import com.vividsolutions.jump.task.TaskMonitorUtil;
 import com.vividsolutions.jump.util.Timer;
-
-import org.xml.sax.*;
-import org.xml.sax.helpers.DefaultHandler;
-
-import java.io.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 /**
  * GMLReader is a {@link JUMPReader} specialized to read GML files.
@@ -264,7 +285,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
   private Feature currentFeature;
   private int currentGeometryNumb = 1;
   private FeatureCollection fc;
-  private FeatureSchema fcmd; // list of geometries
+  private FlexibleFeatureSchema fcmd; // list of geometries
   private Geometry finalGeometry; // list of geometrycollections - list of list of
                           // geometry
   private String current_geom_qname = "";
@@ -287,7 +308,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
                                          // (Coordinate)
   private Polygon polygon; // polygon
 
-  // higherlevel geomery object
+  // higher level geometry object
   private ArrayList<ArrayList> recursivegeometry = new ArrayList<>();
 
   // low-level geometry objects
@@ -304,6 +325,15 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
    * store all the results
    */
   public boolean multiItemsAsLists = false;
+
+  // precompiled patterns for performance reasons
+  private static Pattern regex_geomMultiPoint, regex_geomMultiLineString, regex_geomMultiPolygon, regex_geomLinearRing;
+  static {
+    regex_geomMultiPoint = Pattern.compile("^(?i)(gml:)?multipoint$");
+    regex_geomMultiLineString = Pattern.compile("^(?i)(gml:)?multilinestring$");
+    regex_geomMultiPolygon = Pattern.compile("^(?i)(gml:)?multipolygon$");
+    regex_geomLinearRing = Pattern.compile("^(?i)(gml:)?linearring$");
+  }
 
   /**
    * Constructor - make a SAXParser and have this GMLReader be its
@@ -435,13 +465,13 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
             linearRing = null;
           }
 
-          if (current_geom_qname.matches("^(?i)(gml:)?multipoint$"))
+          if (regex_geomMultiPoint.matcher(current_geom_qname).matches())
             finalGeometry = geometryFactory
                 .createMultiPoint(geometry.toArray(new Point[0]));
-          else if (current_geom_qname.matches("^(?i)(gml:)?multilinestring$"))
+          else if (regex_geomMultiLineString.matcher(current_geom_qname).matches())
             finalGeometry = geometryFactory
                 .createMultiLineString((geometry.toArray(new LineString[0])));
-          else if (current_geom_qname.matches("^(?i)(gml:)?multipolygon$"))
+          else if (regex_geomMultiPolygon.matcher(current_geom_qname).matches())
             finalGeometry = geometryFactory
                 .createMultiPolygon((geometry.toArray(new Polygon[0])));
 //          else if (current_geom_qname.matches("^(?i)(gml:)?linearring$"))
@@ -841,7 +871,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
           && (qName.compareToIgnoreCase(GMLinput.featureTag) == 0)) {
         // found the feature tag
         // System.out.println("found feature");
-        currentFeature = new BasicFeature(fcmd);
+        currentFeature = new FlexibleFeature(fcmd);
         STATE = STATE_GET_COLUMNS;
         SRID = 0;// default SRID (reset for each feature, but should be constant
                  // for a featurecollection)

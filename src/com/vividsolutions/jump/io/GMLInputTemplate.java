@@ -36,7 +36,10 @@ package com.vividsolutions.jump.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -46,7 +49,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.feature.FlexibleFeatureSchema;
 import com.vividsolutions.jump.util.FlexibleDateParser;
 
 
@@ -87,6 +90,16 @@ public class GMLInputTemplate extends DefaultHandler {
     private String lastStartTag_qName;
     private Attributes lastStartTag_atts;
 
+    // a list of date attrib types that are treated differently
+    static private ArrayList<AttributeType> dateAttributeTypes = new ArrayList();
+    static {
+      dateAttributeTypes.add(AttributeType.DATE);
+      dateAttributeTypes.add(AttributeType.TIMESTAMP);
+      dateAttributeTypes.add(AttributeType.TIME);
+    }
+
+    private HashMap<AttributeType, Constructor> constructorCache = new HashMap();
+
     /**
      * constructor - makes a new org.apache.xerces.parser and makes this class be the SAX
      *  content and error handler.
@@ -114,13 +127,13 @@ public class GMLInputTemplate extends DefaultHandler {
     /**
      * Converts this GMLInputTemplate to a feature schema.
      */
-    public FeatureSchema toFeatureSchema() throws ParseException {
+    public FlexibleFeatureSchema toFeatureSchema() throws ParseException {
         if (!(loaded)) {
             throw new ParseException(
                 "requested toFeatureSchema w/o loading the template");
         }
 
-        FeatureSchema fcmd = new FeatureSchema();
+        FlexibleFeatureSchema fcmd = new FlexibleFeatureSchema();
 
         fcmd.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
 
@@ -291,86 +304,110 @@ public class GMLInputTemplate extends DefaultHandler {
             val = xmlAtts.getValue(cd.valueAttribute);
         }
 
-        //have the value as a string, make it an object
-        if (cd.type == AttributeType.STRING ||
-                cd.type == AttributeType.VARCHAR ||
-                cd.type == AttributeType.LONGVARCHAR ||
-                cd.type == AttributeType.CHAR ||
-                cd.type == AttributeType.TEXT) {
-            return val;
-        }
-
-        if (cd.type == AttributeType.INTEGER ||
-                cd.type == AttributeType.SMALLINT ||
-                cd.type == AttributeType.TINYINT) {
-            try {
-                //Was Long, but JUMP expects AttributeType.INTEGER to hold Integers.
-                //e.g. open JML file then save as Shapefile => get ClassCastException.
-                //Dave Blasby says there was a reason for changing it to Long, but
-                //can't remember -- suspects there were datasets whose INTEGER
-                //values didn't fit in an Integer. [Jon Aquino 1/13/2004]
-                
-                //Compromise -- try Long if Integer fails. Some other parts of JUMP
-                //won't like it (exceptions), but it's better than null. Actually I don't like
-                //this null business -- future: warn the user. [Jon Aquino 1/13/2004]
-                return Integer.parseInt(val);
-            } catch (Exception e) {
-                return null;
+        //try running the default constructor from string for the class defined in AttributeType
+        if (!dateAttributeTypes.contains(cd.type))
+          try {
+            Constructor c = null;
+            c = constructorCache.get(cd.type);
+            if (c == null) {
+              c = cd.type.toJavaClass().getConstructor(new Class[] { String.class });
+              constructorCache.put(cd.type, c);
             }
-        }
-
-        if (cd.type == AttributeType.LONG || cd.type == AttributeType.BIGINT) {
-            try {
-                return Long.parseLong(val);
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
-        if (cd.type == AttributeType.DOUBLE ||
-                cd.type == AttributeType.REAL ||
-                cd.type == AttributeType.FLOAT ||
-                cd.type == AttributeType.NUMERIC ||
-                cd.type == AttributeType.DECIMAL ||
-                cd.type == AttributeType.BIGDECIMAL) {
-            try {
-                return new Double(val);
-            } catch (Exception e) {
-                return null;
-            }
+    
+            return c.newInstance(val);
+          } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+              | SecurityException e) {
+            // TODO not sure if ignoring is safe, on the other hand we are currently
+            // processing lots of attributes, we can't just spit out a plethora of
+            // error
+          } catch (NoSuchMethodException e) {
+            // TODO maybe printing warning for classes without a String
+            // constructor?;
+          }
+        
+        // we can return the string safely as the attrib is lazily converted by FlexibleFeature
+        // REASON: utilizing FlexibleDateParser slowed down reading JML by magnitudes here
+        if (dateAttributeTypes.contains(cd.type)) {
+          return val;
         }
         
-        //Adding date support. Can we throw an exception if an exception
-        //occurs or if the type is unrecognized? [Jon Aquino]
-        if (cd.type == AttributeType.DATE ||
-                cd.type == AttributeType.TIMESTAMP ||
-                cd.type == AttributeType.TIME) {
-            try {
-                return dateParser.parse(val, false);
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
-        if (cd.type == AttributeType.BOOLEAN || cd.type == AttributeType.BIT) {
-            try {
-                return Boolean.parseBoolean(val);
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
-        if (cd.type == AttributeType.OBJECT)
-        {
-        	return val; // the GML file has text in it and we want to convert it to an "object"
-        	            // just return a String since we dont know anything else about it!
-        }
+        // previous code for attrib parsing, rplaced by the above 07.2017 [ede]
+//        //have the value as a string, make it an object
+//        if (cd.type == AttributeType.STRING ||
+//                cd.type == AttributeType.VARCHAR ||
+//                cd.type == AttributeType.LONGVARCHAR ||
+//                cd.type == AttributeType.CHAR ||
+//                cd.type == AttributeType.TEXT) {
+//            return val;
+//        }
+//
+//        if (cd.type == AttributeType.INTEGER ||
+//                cd.type == AttributeType.SMALLINT ||
+//                cd.type == AttributeType.TINYINT) {
+//            try {
+//                //Was Long, but JUMP expects AttributeType.INTEGER to hold Integers.
+//                //e.g. open JML file then save as Shapefile => get ClassCastException.
+//                //Dave Blasby says there was a reason for changing it to Long, but
+//                //can't remember -- suspects there were datasets whose INTEGER
+//                //values didn't fit in an Integer. [Jon Aquino 1/13/2004]
+//                
+//                //Compromise -- try Long if Integer fails. Some other parts of JUMP
+//                //won't like it (exceptions), but it's better than null. Actually I don't like
+//                //this null business -- future: warn the user. [Jon Aquino 1/13/2004]
+//                return Integer.parseInt(val);
+//            } catch (Exception e) {
+//                return null;
+//            }
+//        }
+//
+//        if (cd.type == AttributeType.LONG || cd.type == AttributeType.BIGINT) {
+//            try {
+//                return Long.parseLong(val);
+//            } catch (Exception e) {
+//                return null;
+//            }
+//        }
+//
+//        if (cd.type == AttributeType.DOUBLE ||
+//                cd.type == AttributeType.REAL ||
+//                cd.type == AttributeType.FLOAT ||
+//                cd.type == AttributeType.NUMERIC ||
+//                cd.type == AttributeType.DECIMAL ||
+//                cd.type == AttributeType.BIGDECIMAL) {
+//            try {
+//                return new Double(val);
+//            } catch (Exception e) {
+//                return null;
+//            }
+//        }
+//        
+////        //Adding date support. Can we throw an exception if an exception
+////        //occurs or if the type is unrecognized? [Jon Aquino]
+////        if (dateAttributeTypes.contains(cd.type)) {
+////            try {
+////                return dateParser.parse(val, false);
+////            } catch (Exception e) {
+////                return null;
+////            }
+////        }
+//
+//        if (cd.type == AttributeType.BOOLEAN || cd.type == AttributeType.BIT) {
+//            try {
+//                return Boolean.parseBoolean(val);
+//            } catch (Exception e) {
+//                return null;
+//            }
+//        }
+//
+//        if (cd.type == AttributeType.OBJECT)
+//        {
+//        	return val; // the GML file has text in it and we want to convert it to an "object"
+//        	            // just return a String since we dont know anything else about it!
+//        }
 
         return null; //unknown type
     }
     
-    private FlexibleDateParser dateParser = new FlexibleDateParser();
-
     ////////////////////////////////////////////////////////////////////
     // Error handlers.
     ////////////////////////////////////////////////////////////////////
