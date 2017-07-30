@@ -76,7 +76,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     private static final String DATE_FORMAT_KEY = ViewOptionsPlugIn.DATE_FORMAT_KEY;
     private static final String SELECTION_SYNC_KEY = ViewOptionsPlugIn.SELECTION_SYNC_KEY;
 
-    private static SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
+    private static SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     private Blackboard blackboard;
 
