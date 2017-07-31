@@ -101,6 +101,7 @@ public class OpenFileWizardState {
   public void setupFileLoaders(File[] files, FileLayerLoader fileLayerLoader) {
     Set<File> fileSet = new TreeSet<File>(Arrays.asList(files));
     multiLoaderFiles.clear();
+    fileLoaderFiles.clear();
     // explicit loader chosen
     if (fileLayerLoader != null) {
       fileLoaderMap.clear();

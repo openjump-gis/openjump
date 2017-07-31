@@ -121,7 +121,11 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanelV
   }
 
   private void initialize() {
+    // make sure we only initialize once
+    if (initialized)
+      return;
     initialized = true;
+
     blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
     Registry registry = workbenchContext.getRegistry();
 
@@ -176,22 +180,31 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanelV
 
     
     PropertyChangeListener changeListener = new PropertyChangeListener() {
+      Object lastNew = null;
+      
       // user selected something in the fc
       public void propertyChange(PropertyChangeEvent evt) {
+        // for some reason JFC calls this once with the File and then
+        // again with a File array for multiselection. NO NEED to update
+        // it two times if only one file was selected though
+        Object newNew = evt.getNewValue();
+        if (newNew instanceof File[] && !(lastNew instanceof File[])){
+          File[] newFiles = (File[])newNew;
+          if (newFiles.length == 1){
+            Object newFile = newFiles[0];
+            if (newFile.equals(lastNew))
+              return;
+          }
+        }
+        lastNew=newNew;
+
         // only listen to fc changes while we're on _this_ panel
         // OSX fc weirdly fires events even when we're on the next panel
         if (state.getCurrentPanel() != KEY){
           return;
         }
           
-        FileLayerLoader fileLayerLoader = null;
-        File[] files = getSelectedFiles();
-        FileFilter selectedFileFilter = getFileFilter();
-        if (selectedFileFilter instanceof FileLayerLoaderExtensionFilter) {
-          FileLayerLoaderExtensionFilter filter = (FileLayerLoaderExtensionFilter)selectedFileFilter;
-          fileLayerLoader = filter.getFileLoader();
-        }
-        state.setupFileLoaders(files, fileLayerLoader);
+        changeState();
         fireInputChanged();
       }
     };
@@ -200,10 +213,31 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanelV
     addActionListener(new InvokeMethodActionListener(dialog, "next"));
   }
 
+  /**
+   * updating state if file selection changed
+   */
+  private void changeState(){
+    FileLayerLoader fileLayerLoader = null;
+    File[] files = getSelectedFiles();
+    FileFilter selectedFileFilter = getFileFilter();
+    if (selectedFileFilter instanceof FileLayerLoaderExtensionFilter) {
+      FileLayerLoaderExtensionFilter filter = (FileLayerLoaderExtensionFilter)selectedFileFilter;
+      fileLayerLoader = filter.getFileLoader();
+    }
+    state.setupFileLoaders(files, fileLayerLoader);
+  }
+  
   public void enteredFromLeft(final Map dataMap) {
     initialize();
     rescanCurrentDirectory();
     state.setCurrentPanel(KEY);
+    // this is needed so that on reopening, when JFC still holds the
+    // old selection, the next button gets activated properly in case
+    // the user really wants to reopen the same file
+    // NOTE: the file is mentioned in the textfield, but no gui selection
+    //       is visible, that is a known JFC bug as far as i could find out
+    changeState();
+    fireInputChanged();
   }
   
   public void enteredFromRight() throws Exception {
