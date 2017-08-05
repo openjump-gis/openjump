@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-08-05
+  * Improvement from ioan to honour IncrementalAngle constraint even on the first
+    segment
+
 2017-07-29 mmichaud <m.michael.michaud@orange.fr>
   * BlendLineStringsPlugIn : improve quality, performance and make it undoable
   * Deactivate ReplaceValuePlugIn (use AutoAssignAttributePlugIn instead)
