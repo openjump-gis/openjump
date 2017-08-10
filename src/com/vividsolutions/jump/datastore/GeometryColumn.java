@@ -42,6 +42,19 @@ public class GeometryColumn {
     /**
      * Ctor with boolean parameter telling if column is indexed
      * @param name the name of the geometry column
+     * @param coordDimension the dimension of coordinates (2D, 3D)
+     * @param srid the SRID of the geometry column
+     * @param type the geometric native type of the geometry column (GEOMETRY, SDO_GEOMETRY...)
+     * @param indexed true if the geometry column is indexed
+     */
+    public GeometryColumn(String name, int coordDimension, int srid, String type, boolean indexed) {
+        this(name, coordDimension, srid, type);
+        this.indexed = indexed;
+    }
+    
+    /**
+     * Ctor with boolean parameter telling if column is indexed
+     * @param name the name of the geometry column
      * @param srid the SRID of the geometry column
      * @param type the geometric native type of the geometry column (GEOMETRY, SDO_GEOMETRY...)
      * @param indexed true if the geometry column is indexed

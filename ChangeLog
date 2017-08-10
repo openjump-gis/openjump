@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-08-10 Nicolas Ribot <nicolas.ribot@gmail.com>
+  * Spatial Index support for SQLite/Spatialte datasources: checks if geometry
+    columns are indexed and builds custom SQL queries to use index according to
+    detetected SQLite flavors
+
 2017-08-05
   * Improvement from ioan to honour IncrementalAngle constraint even on the first
     segment

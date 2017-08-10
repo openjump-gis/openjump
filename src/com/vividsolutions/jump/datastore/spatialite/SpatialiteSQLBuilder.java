@@ -5,6 +5,7 @@ import java.util.Locale;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
+import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -40,9 +41,9 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
 
     //System.out.println(qs);
     String s = String.format(ret, cols, this.datasetName, bbox, and, lim);
-//    JUMPWorkbench.getInstance().getFrame().log(
-//        "SQL query to get Spatial table features:\n\t"
-//        + s, this.getClass());
+    JUMPWorkbench.getInstance().getFrame().log(
+        "SQL query to get Spatial table features:\n\t"
+        + s, this.getClass());
 
     return s;
   }
@@ -111,9 +112,10 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
   protected String buildBoxFilter(FilterQuery query) {
     Envelope env = query.getFilterGeometry().getEnvelopeInternal();
     String ret = "1";
+    String indexQuery = buildSpatialIndexFilter(query);
     // Example of Spatialite SQL: 
-    // select nom_comm from commune where st_envIntersects(wkt_geometry, bbox(516707,6279239,600721,6347851)
     SpatialiteDSMetadata dsm = (SpatialiteDSMetadata) getDbMetadata();
+    
     if (dsm.isSpatialiteLoaded()) {
       GeometricColumnType gcType = dsm.getGeoColTypesdMap().get(
           query.getDatasetName().toLowerCase() + "." + query.getGeometryAttributeName().toLowerCase());
@@ -128,10 +130,46 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
         ret = String.format(Locale.US, "st_envIntersects(st_geomFromText(%s), %f,%f,%f,%f)", query.getGeometryAttributeName(), env.getMinX(),
             env.getMinY(), env.getMaxX(), env.getMaxY());
       } else {
-        // TODO: log
-        System.out.println("BAD gc column type: " + gcType);
+        JUMPWorkbench.getInstance().getFrame().log(
+          "Spatialite SQL builder: invalid geometric column type: " + gcType ,
+            this.getClass());
       }
     }
+    ret += indexQuery;
+    return ret;
+  }
+
+  /**
+   * Builds a SQL filter to use spatial index, if concerned geometry column supports
+   * it.
+   * @param query the query to build the filter for
+   * @return the spatial index filter query, or an empty string if geometry 
+   * column is not spatially indexed
+   */
+  protected String buildSpatialIndexFilter(FilterQuery query) {
+    String ret = "";
+    
+    Envelope env = query.getFilterGeometry().getEnvelopeInternal();
+    SpatialiteDSMetadata dsm = (SpatialiteDSMetadata) getDbMetadata();
+    // test if geometry column is indexed, if so, builds special query according to type:
+    GeometryColumn gc = dsm.getGeometryColumn(query.getDatasetName(), query.getGeometryAttributeName());
+    if (gc.isIndexed()) {
+      if (dsm.getGeometryColumnsLayout() == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
+        ret = String.format(Locale.US,
+          " AND ROWID IN (SELECT id FROM rtree_%s_%s WHERE minx > %f and maxx < %f and miny > %f and maxy < %f) ",
+          query.getDatasetName(), query.getGeometryAttributeName(), 
+          env.getMinX(), env.getMaxX(), env.getMinY(), env.getMaxY());
+      } else if (dsm.isSpatialiteLoaded()) {
+        // always use spatialIndex table if spatialite
+        ret = String.format(Locale.US,
+          " AND ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name = '%s' AND search_frame = BuildMbr(%f,%f,%f,%f))",
+          query.getDatasetName(), env.getMinX(), env.getMinY(), env.getMaxX(), env.getMaxY());
+      } else {
+        // TODO other cases: no idx
+        ret = "";
+      }
+    }
+    
     return ret;
   }
 }

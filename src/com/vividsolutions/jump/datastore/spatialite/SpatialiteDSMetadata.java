@@ -1,6 +1,7 @@
 package com.vividsolutions.jump.datastore.spatialite;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.spatialdatabases.*;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
@@ -9,7 +10,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -47,7 +52,19 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
    * suitable SQL query OJ can read
    */
   private String geoColumnTypesQuery = null;
-
+  
+  /**
+   * the query to know if a geometry is indexed or not.
+   */
+  private String spatialIndexQuery = null;
+  
+  /**
+   * The map of geometryColumn list for each dataset: stores it locally as it is accessed
+   * several times for spatialite: at UI init, and when loading a layer
+   */
+  private Map<String, List<GeometryColumn>> geometryColumnListMap = null;
+  
+  
   /**
    *
    * @param con
@@ -58,6 +75,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     this.spatialiteVersion = "";
     this.geometryColumnsLayout = GeometryColumnsLayout.NO_LAYOUT;
     this.geoColTypesdMap = new HashMap<String, GeometricColumnType>();
+    this.geometryColumnListMap = new HashMap<String, List<GeometryColumn>>();
 
     checkSpatialiteLoaded();
     setGeoColLayout();
@@ -123,6 +141,72 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     } else {
       coordDimQuery = "SELECT coord_dimension FROM geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
     }
+    
+    // spatial index query
+    
+    
+    if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
+      spatialIndexQuery = "select exists(SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'rtree_%s_%s')";
+    } else if (this.spatialiteLoaded) {
+      // for all cases where spatialite is detected: normal function should be used
+      spatialIndexQuery = "SELECT CASE WHEN CheckSpatialIndex('%s', '%s') = 1 then 1 else 0 end as isindexed";
+    } else if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_SPATIALITE_LAYOUT) {
+      spatialIndexQuery = "select spatial_index_enabled from geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
+    } else {
+      // TODO: 
+      spatialIndexQuery = "";
+    }
+    
+    // TODO: remove in prod.
+//    JUMPWorkbench.getInstance().getFrame().log(
+//        "Spatialite MD:\n\t"
+//            + "geo col layout: " + geometryColumnsLayout + "\n\t"
+//            + "spatialite loaded: " + spatialiteLoaded + "\n\t"
+//            + "version: " + spatialiteVersion, 
+//        this.getClass());
+  }
+  
+  /**
+   * Overriden to deal with indexed geo columns, as queries to get features are different
+   * if spatial index is detected on the column.
+   * Buids a GeometryColumn object with 5 params ctor.
+   * @param sql
+   * @param datasetName
+   * @return 
+   */
+  @Override
+  protected List<GeometryColumn> getGeometryAttributes(String sql, String datasetName) {
+    if (this.geometryColumnListMap.get(datasetName) == null) {
+      final List<GeometryColumn> geometryAttributes = new ArrayList<GeometryColumn>();
+      //System.out.println("getting geom Attribute for dataset: " + datasetName + " with query: " + sql);
+
+      JDBCUtil.execute(
+          conn.getJdbcConnection(), sql,
+          new ResultSetBlock() {
+            public void yield(ResultSet resultSet) throws SQLException {
+              while (resultSet.next()) {
+                // TODO: escape single quotes in geo column name ?
+                geometryAttributes.add(new GeometryColumn(
+                        resultSet.getString(1),
+                        resultSet.getInt(2),
+                        resultSet.getInt(3),
+                        resultSet.getString(4)));
+              }
+            }
+          });
+
+      // sets geo columns index information by querying spatialite function or direct
+      // index table
+      for (Iterator<GeometryColumn> iterator = geometryAttributes.iterator(); iterator.hasNext();) {
+        GeometryColumn gc = iterator.next();
+        setIndexInfo(datasetName, gc);
+
+      }
+      this.geometryColumnListMap.put(datasetName, geometryAttributes);
+      
+    }
+    
+    return this.geometryColumnListMap.get(datasetName);
   }
 
   @Override
@@ -218,28 +302,28 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
    * 
    * Geometry_columns metadata table may have 4 layouts:
    * options used to create the table or using a geo package (http://www.geopackage.org/) layout
-   * 1°) the "FDO provider for spatialite (https://trac.osgeo.org/fdo/wiki/FDORfc16)", as used in "regular sqlite database" (cf.ogr spatialite format doc):
+   * 1?) the "FDO provider for spatialite (https://trac.osgeo.org/fdo/wiki/FDORfc16)", as used in "regular sqlite database" (cf.ogr spatialite format doc):
    *                f_table_name	        TEXT	
    *                f_geometry_column	TEXT	
    *                geometry_type	        INTEGER	
    *                coord_dimension	INTEGER	
    *                srid	                INTEGER	
    *                geometry_format	TEXT
-   * 2°) the "OGC Spatialite" flavour, as understood by qgis for instance, as used in spatialite-enabled sqlite database:
+   * 2?) the "OGC Spatialite" flavour, as understood by qgis for instance, as used in spatialite-enabled sqlite database:
    *                f_table_name          VARCHAR
    *                f_geometry_column     VARCHAR
    *                type                  VARCHAR
    *                coord_dimension       INTEGER 
    *                srid                  INTEGER
    *                spatial_index_enabled INTEGER 
-   * 3°) the "OGC OGR" layout: 
+   * 3?) the "OGC OGR" layout: 
    *                f_table_name          VARCHAR
    *                f_geometry_column     VARCHAR
    *                geometry_type         VARCHAR
    *                coord_dimension       INTEGER 
    *                srid                  INTEGER
    *                spatial_index_enabled INTEGER 
-   * 3°) the "OGC GeoPackage" layout, as specificed by standard:
+   * 3?) the "OGC GeoPackage" layout, as specificed by standard:
    *                table_name         TEXT NOT NULL,
    *                column_name        TEXT NOT NULL,
    *                geometry_type_name TEXT NOT NULL,
@@ -298,7 +382,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
               geometryColumnsLayout = GeometryColumnsLayout.OGC_OGR_LAYOUT;
             } else {
               geometryColumnsLayout = GeometryColumnsLayout.NO_LAYOUT;
-            };
+            }
             rs.close();
           }
         }
@@ -358,6 +442,52 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
 
   public Map<String, GeometricColumnType> getGeoColTypesdMap() {
     return geoColTypesdMap;
+  }
+  
+  /**
+   * set if given gc column is spatially indexed (true/false) according to spatialite
+   * DB type
+   * @param datasetName the name of the dataset this column belongs to
+   * @param gc the geometry column to set
+   */
+  private void setIndexInfo(String datasetName, final GeometryColumn gc) {
+    String q = String.format(Locale.US, spatialIndexQuery, datasetName, gc.getName());
+    try {
+      JDBCUtil.execute(
+          conn.getJdbcConnection(),
+          q,
+          new ResultSetBlock() {
+            public void yield(ResultSet resultSet) throws SQLException {
+              while (resultSet.next()) {
+                gc.setIndexed(resultSet.getBoolean(1));
+              }
+            }
+          });
+    } catch (Exception e) {
+      //TODO...
+      e.printStackTrace();
+    }
+  }
+  
+  /**
+   * Convenience method to get a geometryColumn object from this metadata
+   * @param datasetName the name of the dataset
+   * @param geoCol the name of the geo column
+   * @return 
+   */
+  public GeometryColumn getGeometryColumn(String datasetName, String geoCol) {
+    List<GeometryColumn> l = this.geometryColumnListMap.get(datasetName);
+    if (l == null) {
+      return null;
+    }
+    
+    for (Iterator<GeometryColumn> iterator = l.iterator(); iterator.hasNext();) {
+      GeometryColumn gc = iterator.next();
+      if (gc.getName().equals(geoCol)) {
+        return gc;
+      }
+    }
+    return null;
   }
 
 }
