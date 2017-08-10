@@ -156,9 +156,9 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
     if (gc.isIndexed()) {
       if (dsm.getGeometryColumnsLayout() == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
         ret = String.format(Locale.US,
-          " AND ROWID IN (SELECT id FROM rtree_%s_%s WHERE minx > %f and maxx < %f and miny > %f and maxy < %f) ",
+          " AND ROWID IN (SELECT id FROM rtree_%s_%s WHERE minx < %f and maxx > %f and miny < %f and maxy > %f) ",
           query.getDatasetName(), query.getGeometryAttributeName(), 
-          env.getMinX(), env.getMaxX(), env.getMinY(), env.getMaxY());
+          env.getMaxX(), env.getMinX(), env.getMaxY(), env.getMinY());
       } else if (dsm.isSpatialiteLoaded()) {
         // always use spatialIndex table if spatialite
         ret = String.format(Locale.US,

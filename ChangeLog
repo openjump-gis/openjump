@@ -4,6 +4,10 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2017-08-10 Nicolas Ribot <nicolas.ribot@gmail.com>
+  * Spatial Index support for SQLite/Spatialte datasources: wrong test for 
+    GeoPackage spatial query bbox overlaping
+
+2017-08-10 Nicolas Ribot <nicolas.ribot@gmail.com>
   * Spatial Index support for SQLite/Spatialte datasources: checks if geometry
     columns are indexed and builds custom SQL queries to use index according to
     detetected SQLite flavors
