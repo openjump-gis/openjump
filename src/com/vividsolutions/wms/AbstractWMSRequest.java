@@ -73,11 +73,11 @@ abstract public class AbstractWMSRequest implements WMSRequest {
   protected HttpURLConnection prepareConnection() throws IOException {
     URL requestUrl = getURL();
     con = (HttpURLConnection) requestUrl.openConnection();
-    
-    // nicolas ribot, 29 juin 2017: timeouts are now read from the conf.
-    Blackboard blackboard = PersistentBlackboardPlugIn.getInstance();
-    con.setConnectTimeout((Integer)blackboard.get(ProxySettingsOptionsPanel.CONNECTION_TIMEOUT_KEY));
-    con.setReadTimeout((Integer)blackboard.get(ProxySettingsOptionsPanel.READ_TIMEOUT_KEY));
+
+    con.setConnectTimeout(Integer.parseInt(
+        ProxySettingsOptionsPanel.getInstance().getSetting(ProxySettingsOptionsPanel.OPEN_TIMEOUT_KEY).toString()));
+    con.setReadTimeout(Integer.parseInt(
+        ProxySettingsOptionsPanel.getInstance().getSetting(ProxySettingsOptionsPanel.OPEN_TIMEOUT_KEY).toString()));
 
     // add this service's auth info
     String userInfo = requestUrl.getUserInfo();

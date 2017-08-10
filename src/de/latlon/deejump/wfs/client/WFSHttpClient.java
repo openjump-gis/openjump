@@ -56,11 +56,12 @@ public class WFSHttpClient extends HttpClient {
 
   private void _init() {
     HttpClientParams clientPars = new HttpClientParams();
-    // Nicolas Ribot, 29 juin 2017: timeout values are now read from options
-    Blackboard blackboard = PersistentBlackboardPlugIn.getInstance();
 
-    clientPars.setConnectionManagerTimeout((Integer)blackboard.get(ProxySettingsOptionsPanel.CONNECTION_TIMEOUT_KEY));
-    clientPars.setSoTimeout((Integer)blackboard.get(ProxySettingsOptionsPanel.READ_TIMEOUT_KEY));
+    // timeout values
+    clientPars.setConnectionManagerTimeout(Integer.parseInt(
+        ProxySettingsOptionsPanel.getInstance().getSetting(ProxySettingsOptionsPanel.OPEN_TIMEOUT_KEY).toString()));
+    clientPars.setSoTimeout(Integer.parseInt(
+        ProxySettingsOptionsPanel.getInstance().getSetting(ProxySettingsOptionsPanel.READ_TIMEOUT_KEY).toString()));
     clientPars.setContentCharset("UTF-8");
     this.setParams(clientPars);
 

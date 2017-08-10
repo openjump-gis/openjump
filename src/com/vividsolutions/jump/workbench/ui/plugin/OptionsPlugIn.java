@@ -94,9 +94,7 @@ public class OptionsPlugIn extends AbstractPlugIn {
     dialog(context).addTab(I18N.get("ui.DatasetOptionsPanel.datasetOptions"),
         new DatasetOptionsPanel(context.getWorkbenchContext()));
     // add proxy panel
-    OptionsPanelV2 proxypanel = new ProxySettingsOptionsPanel(
-        PersistentBlackboardPlugIn.get(context.getWorkbenchContext()
-            .getWorkbench().getBlackboard()));
+    OptionsPanelV2 proxypanel = ProxySettingsOptionsPanel.getInstance();
     dialog(context).addTab(proxypanel);
   }
 
