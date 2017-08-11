@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.GeometryColumn;
+import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -39,8 +40,8 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
     String and = query.getCondition() == null ? "1" : query.getCondition();
     String lim = (query.getLimit() != 0 && query.getLimit() != Integer.MAX_VALUE) ? " LIMIT " + query.getLimit() : "";
 
-    //System.out.println(qs);
-    String s = String.format(ret, cols, this.datasetName, bbox, and, lim);
+    // quotes identifier to manage several cases. TODO: escape single/double quotes ?
+    String s = String.format(ret, cols, SQLUtil.quote(this.datasetName), bbox, and, lim);
     JUMPWorkbench.getInstance().getFrame().log(
         "SQL query to get Spatial table features:\n\t"
         + s, this.getClass());
@@ -155,10 +156,11 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
     GeometryColumn gc = dsm.getGeometryColumn(query.getDatasetName(), query.getGeometryAttributeName());
     if (gc.isIndexed()) {
       if (dsm.getGeometryColumnsLayout() == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
+        String idxName = SQLUtil.quote(String.format("rtree_%s_%s", 
+            query.getDatasetName(), query.getGeometryAttributeName()));
         ret = String.format(Locale.US,
-          " AND ROWID IN (SELECT id FROM rtree_%s_%s WHERE minx < %f and maxx > %f and miny < %f and maxy > %f) ",
-          query.getDatasetName(), query.getGeometryAttributeName(), 
-          env.getMaxX(), env.getMinX(), env.getMaxY(), env.getMinY());
+          " AND ROWID IN (SELECT id FROM %s WHERE minx < %f and maxx > %f and miny < %f and maxy > %f) ",
+          idxName, env.getMaxX(), env.getMinX(), env.getMaxY(), env.getMinY());
       } else if (dsm.isSpatialiteLoaded()) {
         // always use spatialIndex table if spatialite
         ret = String.format(Locale.US,

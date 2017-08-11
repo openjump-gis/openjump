@@ -2,6 +2,7 @@ package com.vividsolutions.jump.datastore.spatialite;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.GeometryColumn;
+import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.spatialdatabases.*;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
@@ -255,14 +256,16 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
    */
   @Override
   public String getGeoColumnsQuery(String datasetName) {
-    // No schema in SQLite
-    return String.format(this.geoColumnsQuery, getTableName(datasetName));
+    // No schema in SQLite, escape single quotes in name:
+      return String.format(this.geoColumnsQuery, SQLUtil.escapeSingleQuote(getTableName(datasetName)));
   }
 
   @Override
   public String getSridQuery(String schemaName, String tableName, String colName) {
     // no schema in sqlite
-    return String.format(this.sridQuery, tableName, colName);
+    return String.format(this.sridQuery, 
+        SQLUtil.escapeSingleQuote(tableName), 
+        SQLUtil.escapeSingleQuote(colName));
   }
 
   private void checkSpatialiteLoaded() {
