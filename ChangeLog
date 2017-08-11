@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-08-11 ede
+  * PLUS: update to latest sqlite-jdbc-3.20.0.jar
+
 2017-08-10 Nicolas Ribot <nicolas.ribot@gmail.com>
   * Spatial Index support for SQLite/Spatialte datasources: wrong test for 
     GeoPackage spatial query bbox overlaping
