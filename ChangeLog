@@ -17,11 +17,11 @@
 2017-08-10 Nicolas Ribot <nicolas.ribot@gmail.com>
   * Spatial Index support for SQLite/Spatialte datasources: checks if geometry
     columns are indexed and builds custom SQL queries to use index according to
-    detetected SQLite flavors
+    detected SQLite flavors
 
-2017-08-05
-  * Improvement from ioan to honour IncrementalAngle constraint even on the first
-    segment
+2017-08-05 mmichaud <m.michael.michaud@orange.fr>
+  * Improvement from ioan to honor IncrementalAngle constraint even on the
+    first segment
 
 2017-07-29 mmichaud <m.michael.michaud@orange.fr>
   * BlendLineStringsPlugIn : improve quality, performance and make it undoable
@@ -58,7 +58,7 @@
     Skeletonizer
 
 2017-05-31 Nicolas Ribot <nicolas.ribot@gmail.com>
-  * PostgreSQL JDBC driver : set the ApplicationName driver's property to allow 
+  * PostgreSQL JDBC driver : set the ApplicationName driver's property to allow
     OpenJUMP to advertise its name to PostgreSQL backend
 
 2017-05-31 mmichaud <m.michael.michaud@orange.fr>
