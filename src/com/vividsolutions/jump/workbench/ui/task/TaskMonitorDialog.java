@@ -219,7 +219,7 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
         subtaskProgress = "";
     }
 
-    public void report(int subtasksDone, int totalSubtasks,
+    public void report(long subtasksDone, long totalSubtasks,
         String subtaskDescription) {
         subtaskProgress = "";
         subtaskProgress += subtasksDone;
@@ -229,6 +229,11 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
         }
 
         subtaskProgress += (" " + subtaskDescription);
+    }
+
+    public void report(int subtasksDone, int totalSubtasks,
+        String subtaskDescription) {
+        report(subtasksDone, totalSubtasks, subtaskDescription);
     }
 
     public void allowCancellationRequests() {
