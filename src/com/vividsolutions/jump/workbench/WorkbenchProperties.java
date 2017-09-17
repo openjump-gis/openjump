@@ -42,7 +42,7 @@ public interface WorkbenchProperties {
   public static final String KEY_OUTPUT_DRIVER = "output-driver";
   public static final String KEY_SEPARATOR = "separator";
   public static final String KEY_LAYOUT = "layout";
-  
+
   public static final String KEY_MENUS = "menus";
   public static final String KEY_MAINMENU = "main-menu";
   public static final String KEY_CATEGORYPOPUP = "category-popup";
@@ -51,7 +51,8 @@ public interface WorkbenchProperties {
   public static final String KEY_LAYERNAMEPOPUP_WMS = "layername-popup-wms";
   public static final String KEY_LAYERNAMEPOPUP_RASTER = "layername-popup-raster";
   public static final String KEY_ATTRIBUTETABPOPUP = "attributetab-popup";
-  
+  public static final String KEY_MAINTOOLBAR = "main-toolbar";
+
   public static final String ATTR_CHECKBOX = "checkbox";
   public static final String ATTR_MENUTYPE = "menutype";
   public static final String ATTR_INITIALIZE = "initialize";
