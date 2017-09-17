@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-09-17 ede
+  * fix bug 460: "Create Grid may jam OpenJUMP"
+    CreateGridPlugIn is now cancellable and shows progress
+
 2017-08-11 Nicolas Ribot <nicolas.ribot@gmail.com>
   * Spatial Index support for SQLite/Spatialte datasources: quotes identifiers
     when generating SQL queries

@@ -9,19 +9,20 @@ import java.util.Collection;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.openjump.core.ui.images.IconLoader;
+import org.openjump.core.ui.plugin.AbstractUiPlugIn;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
-
+import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
@@ -29,29 +30,32 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.task.TaskMonitorUtil;
+import com.vividsolutions.jump.task.TaskMonitorV2Util;
+import com.vividsolutions.jump.util.Timer;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
-import org.openjump.core.ui.images.IconLoader;
-import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 
 /**
  * Create a grid or graticule for the map.
  * @author micha&euml;l michaud
  */
-public class CreateGridPlugIn extends AbstractUiPlugIn {
-    
+public class CreateGridPlugIn extends AbstractUiPlugIn implements ThreadedPlugIn{
+
     private final static String EXTENT            = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.extent");
     private final static String ALL_LAYERS        = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.all-layers");
     private final static String SELECTED_LAYERS   = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.selected-layers");
     private final static String SELECTED_FEATURES = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.selected-features");
-    private final static String VIEW 			  = I18N.get("ui.MenuNames.VIEW");
+    private final static String VIEW              = I18N.get("ui.MenuNames.VIEW");
     private final static String SYNCHRONIZE       = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.synchronize");
     private final static String DX                = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.dx");
     private final static String DY                = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.dy");
@@ -71,11 +75,13 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
     boolean createPoints = false;
     boolean createLines  = true;
     boolean createPolys  = false;
+    
+    TaskMonitor taskMonitor = null;
 
     public CreateGridPlugIn() {
     }
-    
-        @Override
+
+    @Override
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addMainMenuItem(
             new String[] { MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
@@ -83,7 +89,7 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
             new JMenuItem(getName()+"...", IconLoader.icon("create_grid.gif")),
             createEnableCheck(context.getWorkbenchContext()), -1);
     }
-    
+
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
         return new MultiEnableCheck()
@@ -105,10 +111,18 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
             return false;
         }
         getDialogValues(dialog);
-        createGrid(context);
+
         return true;
     }
-    
+
+    @Override
+    public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+      this.taskMonitor = monitor;
+      TaskMonitorV2Util.setTitle(monitor, "Create Grid");
+      monitor.allowCancellationRequests();
+      createGrid(context);
+    }
+
     private void initDialog(final MultiInputDialog dialog, PlugInContext context) {
         final JComboBox extentComboBox = dialog.addComboBox(
             EXTENT,
@@ -151,7 +165,7 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
 
         GUIUtil.centreOnWindow(dialog);
     }
-    
+
     private void getDialogValues(MultiInputDialog dialog) {
         extent       = dialog.getText(EXTENT);
         dx           = dialog.getDouble(DX);
@@ -160,22 +174,35 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
         createLines  = dialog.getBoolean(CREATE_LINES);
         createPolys  = dialog.getBoolean(CREATE_POLYS);
     }
-    
+
     public void createGrid(PlugInContext context) {
-        Envelope env = getEnvelope(context);
-        double xm = Math.floor(env.getMinX()/dx)*dx;
-        double ym = Math.floor(env.getMinY()/dy)*dy;
-        double xM = Math.ceil(env.getMaxX()/dx)*dx;
-        double yM = Math.ceil(env.getMaxY()/dy)*dy;
-        if (!env.isNull()) {
-            if (createPoints) createPoints(context, xm, ym, xM, yM);
-            if (createLines)  createLines(context, xm, ym, xM, yM);
-            if (createPolys)  createPolys(context, xm, ym, xM, yM);
-        } else {
-            context.getWorkbenchFrame().warnUser(NULL_EXTENT);
-        }
+      Envelope env = getEnvelope(context);
+      if (env.isNull()) {
+        context.getWorkbenchFrame().warnUser(NULL_EXTENT);
+        return;
+      }
+
+      double xm = Math.floor(env.getMinX() / dx) * dx;
+      double ym = Math.floor(env.getMinY() / dy) * dy;
+      double xM = Math.ceil(env.getMaxX() / dx) * dx;
+      double yM = Math.ceil(env.getMaxY() / dy) * dy;
+      if (createPoints) {
+        FeatureCollection fc = createPoints(context, xm, ym, xM, yM);
+        if (!isCancelled())
+          context.getLayerManager().addLayer(StandardCategoryNames.WORKING, POINT_GRID, fc);
+      }
+      if (createLines) {
+        FeatureCollection fc = createLines(context, xm, ym, xM, yM);
+        if (!isCancelled())
+          context.getLayerManager().addLayer(StandardCategoryNames.WORKING, LINE_GRID, fc);
+      }
+      if (createPolys) {
+        FeatureCollection fc = createPolys(context, xm, ym, xM, yM);
+        if (!isCancelled())
+          context.getLayerManager().addLayer(StandardCategoryNames.WORKING, POLY_GRID, fc);
+      }
     }
-    
+
     private Envelope getEnvelope(PlugInContext context) {
         Envelope env = new Envelope();
         if (extent.equals(ALL_LAYERS)) {
@@ -201,33 +228,43 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
         }
         return env;
     }
-    
-    
-    private void createPoints(PlugInContext context, double xm, double ym, double xM, double yM) {
+
+    private FeatureCollection createPoints(PlugInContext context, double xm, double ym, double xM, double yM) {
+        TaskMonitorV2Util.report(taskMonitor,getName());
         FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
         fs.addAttribute("NUM", AttributeType.STRING);
         FeatureCollection ds = new FeatureDataset(fs);
         GeometryFactory gf = new GeometryFactory();
-        for (double x = xm ; x <= xM ; x+=dx) {
-            for (double y = yM ; y >= ym ; y-=dy) {
+        long numPoints = (long)( ((xM-xm+dx)/dx) * ((yM-ym+dy)/dy) );
+        long curPoint = 0;
+        for (double x = xm ; x <= xM && !isCancelled(); x+=dx) {
+            for (double y = yM ; y >= ym && !isCancelled(); y-=dy) {
                 Geometry point = gf.createPoint(new Coordinate(x, y));
                 Feature f = new BasicFeature(fs);
                 f.setGeometry(point);
                 f.setAttribute("NUM", ""+x+"-"+y);
                 ds.add(f);
+                reportItems(++curPoint, numPoints, CREATE_POINTS);
             }
         }
-        context.getLayerManager().addLayer(StandardCategoryNames.WORKING, POINT_GRID, ds);
+        return ds;
     }
-    
-    private void createLines(PlugInContext context, double xm, double ym, double xM, double yM) {
+
+    private FeatureCollection createLines(PlugInContext context, double xm, double ym, double xM, double yM) {
         FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
         fs.addAttribute("NUM", AttributeType.STRING);
-        FeatureCollection ds = new FeatureDataset(fs);
+        final long numLines = (long)((xM-xm)/dx + (yM-ym)/dy);
+        FeatureCollection ds = new FeatureDataset(fs){
+          @Override
+          public void add(Feature feature) {
+            super.add(feature);
+            reportItems(getFeatures().size(), numLines, CREATE_LINES);
+          }
+        };
         GeometryFactory gf = new GeometryFactory();
-        for (double x = xm ; x <= xM ; x+=dx) {
+        for (double x = xm ; x <= xM && !isCancelled(); x+=dx) {
             Geometry line = gf.createLineString(new Coordinate[]{
                     new Coordinate(x, yM), new Coordinate(x, ym)});
             Feature f = new BasicFeature(fs);
@@ -235,7 +272,7 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
             f.setAttribute("NUM", ""+x);
             ds.add(f);
         }
-        for (double y = yM ; y >= ym ; y-=dy) {
+        for (double y = yM ; y >= ym && !isCancelled(); y-=dy) {
             Geometry line = gf.createLineString(new Coordinate[]{
                     new Coordinate(xm, y), new Coordinate(xM, y)});
             Feature f = new BasicFeature(fs);
@@ -243,17 +280,24 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
             f.setAttribute("NUM", ""+y);
             ds.add(f);
         }
-        context.getLayerManager().addLayer(StandardCategoryNames.WORKING, LINE_GRID, ds);
+        return ds;
     }
-    
-    private void createPolys(PlugInContext context, double xm, double ym, double xM, double yM) {
+
+    private FeatureCollection createPolys(PlugInContext context, double xm, double ym, double xM, double yM) {
         FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
         fs.addAttribute("NUM", AttributeType.STRING);
-        FeatureCollection ds = new FeatureDataset(fs);
+        final long numPolys = (long)(((xM-xm)/dx) * ((yM-ym)/dx));
+        FeatureCollection ds = new FeatureDataset(fs){
+          @Override
+          public void add(Feature feature) {
+            super.add(feature);
+            reportItems(getFeatures().size(), numPolys, CREATE_POLYS);
+          }
+        };
         GeometryFactory gf = new GeometryFactory();
-        for (double x = xm ; x <= xM-dx ; x+=dx) {
-            for (double y = yM ; y >= ym+dy ; y-=dy) {
+        for (double x = xm ; x <= xM-dx && !isCancelled(); x+=dx) {
+            for (double y = yM ; y >= ym+dy && !isCancelled(); y-=dy) {
                 Geometry poly = gf.createPolygon(gf.createLinearRing(new Coordinate[]{
                     new Coordinate(x, y),
                     new Coordinate(x+dx, y),
@@ -267,7 +311,22 @@ public class CreateGridPlugIn extends AbstractUiPlugIn {
                 ds.add(f);
             }
         }
-        context.getLayerManager().addLayer(StandardCategoryNames.WORKING, POLY_GRID, ds);
+        return ds;
     }
-    
+
+    private long lastMsg = 0;
+    private long interval = 300;
+    // report only every <interval> millisecs
+    private void reportItems(long itemsDone, long itemsTotal, String message ){
+      long now = Timer.milliSecondsSince(0);
+      // show status every .5s
+      if (now - interval >= lastMsg) {
+        lastMsg = now;
+        TaskMonitorV2Util.report(this.taskMonitor, itemsDone, itemsTotal, message);
+      }
+    }
+
+    private boolean isCancelled(){
+      return taskMonitor.isCancelRequested();
+    }
 }
