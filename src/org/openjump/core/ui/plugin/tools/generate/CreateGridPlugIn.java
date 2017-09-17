@@ -118,7 +118,7 @@ public class CreateGridPlugIn extends AbstractUiPlugIn implements ThreadedPlugIn
     @Override
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
       this.taskMonitor = monitor;
-      TaskMonitorV2Util.setTitle(monitor, "Create Grid");
+      TaskMonitorV2Util.setTitle(monitor, getName());
       monitor.allowCancellationRequests();
       createGrid(context);
     }
