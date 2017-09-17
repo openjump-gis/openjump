@@ -48,6 +48,7 @@ import com.vividsolutions.jump.io.JUMPWriter;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorSupport;
 import com.vividsolutions.jump.task.TaskMonitorUtil;
+import com.vividsolutions.jump.task.TaskMonitorV2Util;
 import com.vividsolutions.jump.util.Timer;
 import com.vividsolutions.jump.workbench.Logger;
 
@@ -91,7 +92,7 @@ public class ReaderWriterFileDataSource extends FileDataSource {
           URI uri = new URI(dp.getProperty(DataSource.URI_KEY));
           if (reader instanceof TaskMonitorSupport) {
             ((TaskMonitorSupport) reader).setTaskMonitor(monitor);
-            TaskMonitorUtil
+            TaskMonitorV2Util
                 .setTitle(
                     monitor,
                     I18N.getMessage(
@@ -129,7 +130,7 @@ public class ReaderWriterFileDataSource extends FileDataSource {
         URI uri = new URI(dp.getProperty(DataSource.URI_KEY));
         if (writer instanceof TaskMonitorSupport) {
           ((TaskMonitorSupport) writer).setTaskMonitor(monitor);
-          TaskMonitorUtil
+          TaskMonitorV2Util
               .setTitle(
                   monitor,
                   I18N.getMessage(

@@ -37,4 +37,7 @@ public interface TaskMonitorV2 extends TaskMonitor{
 
     void setTitle( String title );
 
+    // report more than Int max items
+    void report(long itemsDone, long totalItems, String itemDescription);
+
 }
