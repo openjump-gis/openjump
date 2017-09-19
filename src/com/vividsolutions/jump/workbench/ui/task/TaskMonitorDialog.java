@@ -55,12 +55,13 @@ import javax.swing.UIManager;
 import javax.swing.text.JTextComponent;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.task.RefreshRated;
 import com.vividsolutions.jump.task.TaskMonitorV2;
 import com.vividsolutions.jump.workbench.ui.AnimatedClockPanel;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 
 
-public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
+public class TaskMonitorDialog extends JDialog implements TaskMonitorV2, RefreshRated {
     private JPanel mainPanel = new JPanel();
     private JPanel labelPanel = new JPanel();
 
@@ -233,7 +234,7 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2 {
 
     public void report(int subtasksDone, int totalSubtasks,
         String subtaskDescription) {
-        report(subtasksDone, totalSubtasks, subtaskDescription);
+        report((long)subtasksDone, (long)totalSubtasks, subtaskDescription);
     }
 
     public void allowCancellationRequests() {

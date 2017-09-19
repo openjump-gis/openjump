@@ -30,6 +30,7 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.task.RefreshRated;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorUtil;
 import com.vividsolutions.jump.task.TaskMonitorV2Util;
@@ -77,6 +78,8 @@ public class CreateGridPlugIn extends AbstractUiPlugIn implements ThreadedPlugIn
     boolean createPolys  = false;
     
     TaskMonitor taskMonitor = null;
+    // interval (milliseconds) that taskmonitor is updated
+    private int interval = 300;
 
     public CreateGridPlugIn() {
     }
@@ -120,6 +123,8 @@ public class CreateGridPlugIn extends AbstractUiPlugIn implements ThreadedPlugIn
       this.taskMonitor = monitor;
       TaskMonitorV2Util.setTitle(monitor, getName());
       monitor.allowCancellationRequests();
+      if (monitor instanceof RefreshRated)
+        ((RefreshRated)monitor).setRefreshRate(interval);
       createGrid(context);
     }
 
@@ -315,11 +320,10 @@ public class CreateGridPlugIn extends AbstractUiPlugIn implements ThreadedPlugIn
     }
 
     private long lastMsg = 0;
-    private long interval = 300;
     // report only every <interval> millisecs
     private void reportItems(long itemsDone, long itemsTotal, String message ){
       long now = Timer.milliSecondsSince(0);
-      // show status every .5s
+      // update status every interval millisecs
       if (now - interval >= lastMsg) {
         lastMsg = now;
         TaskMonitorV2Util.report(this.taskMonitor, itemsDone, itemsTotal, message);
