@@ -152,7 +152,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
     private static String CRS = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.SRS");
     private static String COORDINATE_SYSTEM = I18N
-            .get("datasource.FileDataSourceQueryChooser.coordinate-system-of-file");
+            .get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system");
     private final String NODATASOURCELAYER = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.nodatasourcelayer.message");
     private final String MODIFIED = I18N
