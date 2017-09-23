@@ -15,7 +15,7 @@
     CreateGridPlugIn is now cancelable and shows progress
 
 2017-08-11 Nicolas Ribot <nicolas.ribot@gmail.com>
-  * Spatial Index support for SQLite/Spatialte datasources: quotes identifiers
+  * Spatial Index support for SQLite/Spatialite datasources: quotes identifiers
     when generating SQL queries
 
 2017-08-11 ede
