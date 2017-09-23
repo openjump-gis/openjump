@@ -8,11 +8,11 @@
 
 2017-09-22 Giuseppe Aruta
   * Added radius/circumference/area display to DrawConstrainedCircleTool as
-    suggested by Jucca  [JPP-Devel] Show area while drawing circles? Sept 21 2017
+    suggested by Jucca [JPP-Devel] Show area while drawing circles? Sept 21 2017
 
 2017-09-17 ede
   * fix bug 460: "Create Grid may jam OpenJUMP"
-    CreateGridPlugIn is now cancellable and shows progress
+    CreateGridPlugIn is now cancelable and shows progress
 
 2017-08-11 Nicolas Ribot <nicolas.ribot@gmail.com>
   * Spatial Index support for SQLite/Spatialte datasources: quotes identifiers
