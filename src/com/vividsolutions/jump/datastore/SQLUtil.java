@@ -5,6 +5,7 @@ import com.vividsolutions.jts.io.WKBWriter;
 import com.vividsolutions.jump.feature.AttributeType;
 
 import java.sql.Types;
+import java.text.Normalizer;
 
 /**
  * Utililty class containing methods to manipulate SQL Strings
@@ -120,14 +121,19 @@ public class SQLUtil {
      */
     public static String normalize(String name) {
         if (name == null) return null;
+        // NFKD is stronger than NFD, for example decompose single charater
+        // \u0308 (ffi_ligature into ffi (three letters)
+        name = Normalizer.normalize(name, Normalizer.Form.NFKD);
+        name = name.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
         StringBuilder sb = new StringBuilder(name.length());
         for (int i = 0 ; i < name.length() ; i++) {
             char c = name.charAt(i);
             if(i==0) {
-                if (Character.isLetter(c) || c == '_') sb.append(Character.toLowerCase(c));
+                if (Character.isDigit(c)) sb.append("_").append(Character.toLowerCase(c));
+                else if (c < 128 && (Character.isLetter(c) || c == '_')) sb.append(Character.toLowerCase(c));
                 else sb.append('_');
             } else {
-                if (Character.isLetterOrDigit(c) || c == '_') sb.append(Character.toLowerCase(c));
+                if (c < 128 && (Character.isLetterOrDigit(c)) || c == '_') sb.append(Character.toLowerCase(c));
                 else sb.append('_');
             }
         }

@@ -49,7 +49,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
   /**
    * The map of SRIDs found for these MD
    */
-  protected Map sridMap = new HashMap();
+  protected Map<String,SpatialReferenceSystemID> sridMap = new HashMap();
 
   /**
    * query to get list of spatial tables from the connection. Must return
@@ -498,9 +498,9 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * Returns the CREATE TABLE statement corresponding to this feature schema.
    * The statement includes column names and data types, but neither geometry
    * column nor primary key.
-   * @fSchema client feature schema
-   * @schemaName unquoted schema name or null to use default schema
-   * @tableName unquoted table name
+   * @param fSchema client feature schema
+   * @param schemaName unquoted schema name or null to use default schema
+   * @param tableName unquoted table name
    * @param normalizeColumnNames whether column names must be normalized (lowercased
    *                              and without special characters) or not
    */
@@ -565,8 +565,8 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * <p>Note 1 : In PostGIS 2.x, srid=-1 is automatically converted to srid=0 by
    * AddGeometryColumn function.</p>
    * <p>Note 2 : To stay compatible with PostGIS 1.x, last argument of
-   * AddGeometryColumn is omitted. As a consequence, geometry type is inserted
-   * a the column type rather than a constraint (new default behaviour in 2.x)</p>
+   * AddGeometryColumn is omitted. As a consequence, geometry type uses type modifier
+   * rather than constraints (new default behaviour in 2.x)</p>
    * <p>The geometry column name must have its final form. Attribute name normalization
    * is the responsability of the calling method.</p>
    */
@@ -592,7 +592,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * Return standard SQL data type for OpenJUMP AttributeType.
    * This method must be overloaded by specific database oj2dbType
    * @param type OpenJUMP attribute type
-   * @return
+   * @return the database datatype
    */
   protected String getDbTypeName(AttributeType type) {
     if (type == AttributeType.GEOMETRY)      return "varbinary";
@@ -607,13 +607,13 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
     else return "varchar";
   }
 
-  /**
-   * Return the JDBC datatype from the native datatype.
-   * This method is implemented for PostgreSQL datatypes. It must be overloaded
-   * by specific database mapping.
-   * @param sqlType
-   * @return
-   */
+  ///**
+  // * Return the JDBC datatype from the native datatype.
+  // * This method is implemented for PostgreSQL datatypes. It must be overloaded
+  // * by specific database mapping.
+  // * @param sqlType
+  // * @return
+  // */
   //protected int getJdbcTypeFromSQL(String sqlType) {
   //  if (sqlType.equals("character"))                return Types.VARCHAR;
   //  else if (sqlType.equals("character varying"))   return Types.VARCHAR;
