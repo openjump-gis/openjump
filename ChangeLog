@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-10-06 mmichaud <m.michael.michaud@orange.fr>
+  * Add postgis driver options to narrow database geometry type
+
 2017-09-23 Giuseppe Aruta
   * Added Syncronize windows zoom (only) tool
 
