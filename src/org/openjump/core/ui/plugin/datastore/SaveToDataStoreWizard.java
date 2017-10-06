@@ -66,13 +66,23 @@ public class SaveToDataStoreWizard extends AbstractWizardGroup {
             false,
             context.getWorkbenchContext());
 
-    writableDS.getProperties().put(WritableDataStoreDataSource.CONNECTION_DESCRIPTOR_KEY, dialog.getData(WritableDataStoreDataSource.CONNECTION_DESCRIPTOR_KEY));
-    writableDS.getProperties().put(WritableDataStoreDataSource.DATASET_NAME_KEY, dialog.getData(WritableDataStoreDataSource.DATASET_NAME_KEY));
-    writableDS.getProperties().put(WritableDataStoreDataSource.CREATE_PK, dialog.getData(WritableDataStoreDataSource.CREATE_PK));
-    writableDS.getProperties().put(WritableDataStoreDataSource.GEOM_DIM_KEY, dialog.getData(WritableDataStoreDataSource.GEOM_DIM_KEY));
-    writableDS.getProperties().put(WritableDataStoreDataSource.NAN_Z_TO_VALUE_KEY, dialog.getData(WritableDataStoreDataSource.NAN_Z_TO_VALUE_KEY));
+    writableDS.getProperties().put(WritableDataStoreDataSource.CONNECTION_DESCRIPTOR_KEY,
+            dialog.getData(WritableDataStoreDataSource.CONNECTION_DESCRIPTOR_KEY));
+    writableDS.getProperties().put(WritableDataStoreDataSource.DATASET_NAME_KEY,
+            dialog.getData(WritableDataStoreDataSource.DATASET_NAME_KEY));
+    writableDS.getProperties().put(WritableDataStoreDataSource.CREATE_PK,
+            dialog.getData(WritableDataStoreDataSource.CREATE_PK));
+    writableDS.getProperties().put(WritableDataStoreDataSource.GEOM_DIM_KEY,
+            dialog.getData(WritableDataStoreDataSource.GEOM_DIM_KEY));
+    writableDS.getProperties().put(WritableDataStoreDataSource.NAN_Z_TO_VALUE_KEY,
+            dialog.getData(WritableDataStoreDataSource.NAN_Z_TO_VALUE_KEY));
+    writableDS.getProperties().put(WritableDataStoreDataSource.NARROW_GEOMETRY_TYPE_KEY,
+            dialog.getData(WritableDataStoreDataSource.NARROW_GEOMETRY_TYPE_KEY));
+    writableDS.getProperties().put(WritableDataStoreDataSource.CONVERT_TO_MULTIGEOMETRY_KEY,
+            dialog.getData(WritableDataStoreDataSource.CONVERT_TO_MULTIGEOMETRY_KEY));
     if ((boolean)dialog.getData(WritableDataStoreDataSource.CREATE_PK)) {
-      writableDS.getProperties().put(WritableDataStoreDataSource.EXTERNAL_PK_KEY, WritableDataStoreDataSource.DEFAULT_PK_NAME);
+      writableDS.getProperties().put(WritableDataStoreDataSource.EXTERNAL_PK_KEY,
+              WritableDataStoreDataSource.DEFAULT_PK_NAME);
     }
 
     writableDS.getProperties().put(

@@ -33,19 +33,22 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
 
     public static final String KEY = DataStoreSaveDriverPanel.class.getName();
 
-    private static final String WRITE_3D_GEOM           = I18N.get(KEY + ".write-3d-geometries");
-    private static final String CONVERT_NAN_Z           = I18N.get(KEY + ".convert-nan-z");
-    private static final String CREATE_DB_PK            = I18N.get(KEY + ".create-database-primary-key");
-    private static final String NORMALIZED_TABLE_NAME   = I18N.get(KEY + ".normalized-table-name-key");
-    private static final String NORMALIZED_COLUMN_NAMES = I18N.get(KEY + ".normalized-column-names-key");
+    private static final String WRITE_3D_GEOM            = I18N.get(KEY + ".write-3d-geometries");
+    private static final String CONVERT_NAN_Z            = I18N.get(KEY + ".convert-nan-z");
+    private static final String NARROW_GEOMETRY_TYPE     = I18N.get(KEY + ".narrow-geometry-type");
+    private static final String CONVERT_TO_MULTIGEOMETRY = I18N.get(KEY + ".convert-to-multigeometry");
+    private static final String CREATE_DB_PK             = I18N.get(KEY + ".create-database-primary-key");
+    private static final String NORMALIZED_TABLE_NAME    = I18N.get(KEY + ".normalized-table-name-key");
+    private static final String NORMALIZED_COLUMN_NAMES  = I18N.get(KEY + ".normalized-column-names-key");
 
     // UI elements
     private ConnectionPanel connectionPanel;
     private JComboBox<String> tableComboBox;
     private JCheckBox createPrimaryKeyCheckBox;
     private JCheckBox write3dGeomCheckBox;
-    //private JCheckBox writeMultiGeomCheckBox;
     private JTextField convertNaNZTextField;
+    private JCheckBox narrowGeometryTypeCheckBox;
+    private JCheckBox convertToMultiGeometryCheckBox;
     private JCheckBox normalizedTableNameCheckBox;
     private JCheckBox normalizedColumnNamesCheckBox;
     private OKCancelPanel okCancelPanel = new OKCancelPanel();
@@ -119,13 +122,6 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
         add(createPrimaryKeyCheckBox);
 
         // Geometry dimension key checkbox
-        //writeMultiGeomCheckBox = new JCheckBox(WRITE_MULTI_GEOM);
-        //writeMultiGeomCheckBox.setSelected(false);
-        //gbConstraints.gridy += 1;
-        //gbLayout.setConstraints(writeMultiGeomCheckBox, gbConstraints);
-        //add(writeMultiGeomCheckBox);
-
-        // Geometry dimension key checkbox
         write3dGeomCheckBox = new JCheckBox(WRITE_3D_GEOM);
         write3dGeomCheckBox.setSelected(false);
         gbConstraints.gridy += 1;
@@ -157,6 +153,21 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
                 convertNaNZTextField.setEditable(((JCheckBox) e.getSource()).isSelected());
             }
         });
+
+        // narrowGeometryTypeCheckBox checkbox
+        narrowGeometryTypeCheckBox = new JCheckBox(NARROW_GEOMETRY_TYPE);
+        narrowGeometryTypeCheckBox.setSelected(false);
+        gbConstraints.gridx = 0;
+        gbConstraints.gridy += 1;
+        gbLayout.setConstraints(narrowGeometryTypeCheckBox, gbConstraints);
+        add(narrowGeometryTypeCheckBox);
+
+        // convertToMultiGeometryCheckBox checkbox
+        convertToMultiGeometryCheckBox = new JCheckBox(CONVERT_TO_MULTIGEOMETRY);
+        convertToMultiGeometryCheckBox.setSelected(false);
+        gbConstraints.gridy += 1;
+        gbLayout.setConstraints(convertToMultiGeometryCheckBox, gbConstraints);
+        add(convertToMultiGeometryCheckBox);
 
         // Normalize column names checkbox
         normalizedTableNameCheckBox = new JCheckBox(NORMALIZED_TABLE_NAME);
@@ -271,6 +282,14 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
 
     public double nanZToValue() {
         return Double.parseDouble(convertNaNZTextField.getText());
+    }
+
+    public boolean isNarrowGeometryType() {
+        return narrowGeometryTypeCheckBox.isSelected();
+    }
+
+    public boolean isConvertToMultiGeometry() {
+        return convertToMultiGeometryCheckBox.isSelected();
     }
 
     public boolean isNormalizedTableName() {

@@ -80,8 +80,8 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
         }
 
         // Get features
-        FeatureInputStream featureInputStream = null;
-        FeatureDataset featureDataset = null;
+        FeatureInputStream featureInputStream;
+        FeatureDataset featureDataset;
         try {
             featureInputStream = pgConnection.execute(adhocQuery);
             featureDataset = new FeatureDataset(featureInputStream.getFeatureSchema());
@@ -146,19 +146,7 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
      * its reference in the PostGIS's geometry_columns table (PostGIS < 2).
      */
     protected void deleteTableQuery(SpatialDatabasesDSConnection conn) throws SQLException {
-        try {
-            // Try to delete dbTable AND the corresponding rows in geometry_columns table
-            if (schemaName == null) {
-                conn.getJdbcConnection().createStatement().execute("SELECT DropGeometryTable( '" +
-                        tableName + "' );");
-            } else {
-                conn.getJdbcConnection().createStatement().execute("SELECT DropGeometryTable( '" +
-                        schemaName + "' , '" + tableName + "' );");
-            }
-        } catch(SQLException e) {
-            // If DropGeometryTable failed, try a simple DROP TABLE statement
-            conn.getJdbcConnection().createStatement().execute("DROP TABLE " + SQLUtil.compose(schemaName, tableName) + ";");
-        }
+        conn.getJdbcConnection().createStatement().execute("DROP TABLE " + SQLUtil.compose(schemaName, tableName) + ";");
     }
 
     /**
@@ -169,7 +157,7 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
      * @param geometryType geometry type
      * @param dim geometry dimension
      * @param normalizedColumnNames whether columns names have to be normalized or not
-     * @throws SQLException
+     * @throws SQLException if an exception occured during the query processing
      */
     protected void createAndPopulateTable(
             SpatialDatabasesDSConnection conn,

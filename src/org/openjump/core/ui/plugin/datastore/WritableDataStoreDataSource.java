@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
+import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -51,13 +52,14 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     public static final String MANAGE_CONFLICTS  = "Manage conflicts";
 
     // Update options (write to database) : don't translate, these are map keys
-    public static final String EXTERNAL_PK_KEY         = "External PK";
-    public static final String SRID_KEY                = "SRID";
-    public static final String MULTI_GEOMETRY_KEY      = "MultiGeometries";
-    public static final String GEOM_DIM_KEY            = "Dimension";
-    public static final String NAN_Z_TO_VALUE_KEY      = "NaN Z to value";
-    public static final String CREATE_PK               = "Create PK";
-    public static final String NORMALIZED_COLUMN_NAMES = "Normalized Column Names";
+    public static final String EXTERNAL_PK_KEY              = "External PK";
+    public static final String SRID_KEY                     = "SRID";
+    public static final String GEOM_DIM_KEY                 = "Dimension";
+    public static final String NAN_Z_TO_VALUE_KEY           = "NaN Z to value";
+    public static final String NARROW_GEOMETRY_TYPE_KEY     = "Narrow geometry type";
+    public static final String CONVERT_TO_MULTIGEOMETRY_KEY = "Convert to multigeometry";
+    public static final String CREATE_PK                    = "Create PK";
+    public static final String NORMALIZED_COLUMN_NAMES      = "Normalized Column Names";
 
     public static final String DEFAULT_PK_NAME   = "gid";
 
@@ -119,7 +121,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     }
 
     public void setMultiGeometry(boolean multi) {
-        getProperties().put(MULTI_GEOMETRY_KEY, multi);
+        getProperties().put(CONVERT_TO_MULTIGEOMETRY_KEY, multi);
     }
 
     public void setCoordDimension(int dbCoordDim) {
@@ -192,11 +194,14 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 String[] datasetName = SQLUtil.splitTableName((String) getProperties().get(DATASET_NAME_KEY));
                 schemaName = datasetName[0];
                 tableName = datasetName[1];
-                String geometryColumn = (String)getProperties().get(WritableDataStoreDataSource.GEOMETRY_ATTRIBUTE_NAME_KEY);
+                //String geometryColumn = (String)getProperties().get(WritableDataStoreDataSource.GEOMETRY_ATTRIBUTE_NAME_KEY);
                 boolean createPrimaryKey = (Boolean)getProperties().get(WritableDataStoreDataSource.CREATE_PK);
                 int srid = getProperties().get(SRID_KEY)==null ? 0 : (Integer)getProperties().get(SRID_KEY);
-                boolean multi = getProperties().get(MULTI_GEOMETRY_KEY) == null ?
-                        false : (boolean)getProperties().get(MULTI_GEOMETRY_KEY);
+                boolean narrow = getProperties().get(NARROW_GEOMETRY_TYPE_KEY) != null &&
+                        (boolean)getProperties().get(NARROW_GEOMETRY_TYPE_KEY);
+                boolean multi = getProperties().get(CONVERT_TO_MULTIGEOMETRY_KEY) != null &&
+                        (boolean)getProperties().get(CONVERT_TO_MULTIGEOMETRY_KEY);
+                Class geometryType = getGeometryType(featureCollection, narrow, multi);
                 int dim = getProperties().get(GEOM_DIM_KEY)==null?
                         getGeometryDimension(featureCollection, 3) :
                         (Integer)getProperties().get(GEOM_DIM_KEY);
@@ -219,8 +224,14 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                         // if createPrimaryKey=true, it will be re-created
                         // if createPrimaryKey=false, old gid will be considered as a normal attribute
                         featureCollection.getFeatureSchema().removeExternalPrimaryKey();
-                        createAndPopulateTable(conn,
-                                featureCollection, srid, "GEOMETRY", multi, dim, normalizedColumnNames);
+                        createAndPopulateTable(
+                                conn,
+                                featureCollection,
+                                srid,
+                                geometryType.getSimpleName(),
+                                multi,
+                                dim,
+                                normalizedColumnNames);
                         if (createPrimaryKey) {
                             addDBPrimaryKey(conn, DEFAULT_PK_NAME);
                             // @TODO reload part is kept out of the transaction because it uses
@@ -351,13 +362,12 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         boolean quoted = schema.getAttributeType(schema.getExternalPrimaryKeyIndex()) == AttributeType.STRING;
         String quoteKey = quoted ? "'" : "";
 
-        StringBuilder sb = new StringBuilder("UPDATE ")
-                .append(SQLUtil.compose(schemaName, tableName))
-                .append(" SET \"").append(schema.getAttributeName(attribute)).append("\" = ?")
-                .append(" WHERE \"").append(primaryKeyName).append("\" = ")
-                .append(quoteKey).append(feature.getAttribute(primaryKeyName)).append(quoteKey).append(";");
+        String query = "UPDATE " + SQLUtil.compose(schemaName, tableName) +
+                       " SET \"" + schema.getAttributeName(attribute) + "\" = ?" +
+                       " WHERE \"" + primaryKeyName + "\" = " + quoteKey +
+                       feature.getAttribute(primaryKeyName) + quoteKey + ";";
 
-        PreparedStatement pstmt = conn.getJdbcConnection().prepareStatement(sb.toString());
+        PreparedStatement pstmt = conn.getJdbcConnection().prepareStatement(query);
         AttributeType type = schema.getAttributeType(attribute);
         if (feature.getAttribute(attribute) == null) pstmt.setObject(1, null);
         else if (type == AttributeType.STRING)   pstmt.setString(1, feature.getString(attribute));
@@ -607,6 +617,45 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             if (!Double.isNaN(c.z)) return 3;
         }
         return 2;
+    }
+
+    /**
+     * Determine database geometry type according to
+     * <ul>
+     *   <li>values present in the feature collection</li>
+     *   <li>narrow attribute : true means that we want to use the most specific
+     *   attribute type able to represent all geometries of the collection</li>
+     *   <li>multi parameter : true means that we previously transform single
+     *   geometry types into multigeometry types to be able to use the same
+     *   type (multi) for geometries of same dimension (single or multi)</li>
+     * </ul>
+     */
+    private static Class getGeometryType(FeatureCollection coll, boolean narrow, boolean multi) {
+        if (!narrow && !multi) return Geometry.class;
+        Class[] classes = new Class[]{
+                Point.class,
+                LineString.class,
+                Polygon.class,
+                MultiPoint.class,
+                MultiLineString.class,
+                MultiPolygon.class
+        };
+        int[] types = new int[]{0,0,0,0,0,0};
+        for (Iterator it = coll.iterator() ; it.hasNext() ; ) {
+            Geometry geom = ((Feature)it.next()).getGeometry();
+            Class currentClazz = geom.getClass();
+            if (currentClazz == GeometryCollection.class) return Geometry.class;
+            int index = geom.getDimension() + ((geom instanceof GeometryCollection)?3:0);
+            types[index]++;
+        }
+        if (multi) types = new int[]{0,0,0,types[0]+types[3],types[1]+types[4],types[2]+types[5]};
+        Class firstClass = null, lastClass = null;
+        for (int i = 0 ; i < 6 ; i++) {
+            if (firstClass == null && types[i]>0) firstClass = classes[i];
+            if (types[i]>0) lastClass = classes[i];
+        }
+        if (firstClass == lastClass) return firstClass;
+        else return Geometry.class;
     }
 
 }

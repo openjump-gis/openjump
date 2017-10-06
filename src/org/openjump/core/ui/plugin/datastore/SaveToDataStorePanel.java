@@ -85,6 +85,8 @@ public class SaveToDataStorePanel extends DataStoreSaveDriverPanel implements Wi
     setData(WritableDataStoreDataSource.DATASET_NAME_KEY, null);
     setData(WritableDataStoreDataSource.GEOM_DIM_KEY, null);
     setData(WritableDataStoreDataSource.NAN_Z_TO_VALUE_KEY, null);
+    setData(WritableDataStoreDataSource.NARROW_GEOMETRY_TYPE_KEY, null);
+    setData(WritableDataStoreDataSource.CONVERT_TO_MULTIGEOMETRY_KEY, null);
     setData(WritableDataStoreDataSource.CREATE_PK, null);
     //setData(WritableDataStoreDataSource.DATAKEY_NORMALIZE_TABLE_NAME, null);
     setData(WritableDataStoreDataSource.NORMALIZED_COLUMN_NAMES, null);
@@ -96,9 +98,10 @@ public class SaveToDataStorePanel extends DataStoreSaveDriverPanel implements Wi
 
     setData(WritableDataStoreDataSource.CONNECTION_DESCRIPTOR_KEY, getConnectionDescriptor());
     setData(WritableDataStoreDataSource.DATASET_NAME_KEY, getData(SaveWizardPlugIn.DATAKEY_SIMPLIFIED_LAYERNAME));
-    //setData(WritableDataStoreDataSource.MULTI_GEOMETRY_KEY, writeCreateMultiGeometriesSelected());
     setData(WritableDataStoreDataSource.GEOM_DIM_KEY, writeCreate3dGeometriesSelected()?3:2);
     setData(WritableDataStoreDataSource.NAN_Z_TO_VALUE_KEY, nanZToValue());
+    setData(WritableDataStoreDataSource.NARROW_GEOMETRY_TYPE_KEY, isNarrowGeometryType());
+    setData(WritableDataStoreDataSource.CONVERT_TO_MULTIGEOMETRY_KEY, isConvertToMultiGeometry());
     setData(WritableDataStoreDataSource.CREATE_PK, isCreatePrimaryKeyColumnSelected());
     //setData(WritableDataStoreDataSource.DATAKEY_NORMALIZE_TABLE_NAME, isNormalizedTableName());
     setData(WritableDataStoreDataSource.NORMALIZED_COLUMN_NAMES, isNormalizedColumnNames());

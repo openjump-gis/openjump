@@ -42,7 +42,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         this.dataSource = dataSource;
         this.context = context;
         panel = new PostGISSaveDriverPanel(context);
-        properties = new HashMap<String,Object>();
+        properties = new HashMap<>();
     }
 
     /**
@@ -72,7 +72,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         ((WritableDataStoreDataSource)query.getDataSource()).setTableAlreadyCreated(false);
         query.getDataSource().getProperties().put(
                 WritableDataStoreDataSource.NORMALIZED_COLUMN_NAMES, panel.isNormalizedColumnNames());
-        List<DataSourceQuery> queries = new ArrayList<DataSourceQuery>();
+        List<DataSourceQuery> queries = new ArrayList<>();
         queries.add(query);
 
         return queries;
@@ -136,6 +136,8 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
         properties.put(WritableDataStoreDataSource.CREATE_PK, panel.isCreatePrimaryKeyColumnSelected());
         properties.put(WritableDataStoreDataSource.GEOM_DIM_KEY, panel.writeCreate3dGeometriesSelected()?3:2);
         properties.put(WritableDataStoreDataSource.NAN_Z_TO_VALUE_KEY, panel.nanZToValue());
+        properties.put(WritableDataStoreDataSource.NARROW_GEOMETRY_TYPE_KEY, panel.isNarrowGeometryType());
+        properties.put(WritableDataStoreDataSource.CONVERT_TO_MULTIGEOMETRY_KEY, panel.isConvertToMultiGeometry());
         if (panel.isCreatePrimaryKeyColumnSelected()) {
             properties.put(WritableDataStoreDataSource.EXTERNAL_PK_KEY, WritableDataStoreDataSource.DEFAULT_PK_NAME);
         }
