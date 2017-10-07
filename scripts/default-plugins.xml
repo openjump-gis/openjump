@@ -907,6 +907,14 @@
 	<plug-in> org.openjump.core.ui.plugin.raster.RasterQueryPlugIn
 	</plug-in>
 
+	<!--- ======================= PLUGINS menu ============================== -->
+	<plug-in>
+		org.openjump.core.ui.plugin.cts.CTSPlugIn
+		<menus>
+			<main-menu menupath="MenuNames.PLUGINS" install="true" />
+		</menus>
+	</plug-in>
+
 	<!--- ======================= WINDOW menu =============================== -->
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.OutputWindowPlugIn
