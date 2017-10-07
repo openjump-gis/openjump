@@ -76,7 +76,6 @@ public class CTSPlugIn extends ThreadedBasePlugIn implements Iconified, EnableCh
 
         final String SOURCE = "source";
         final String TARGET = "target";
-        System.out.println("!!!!!!!!!");
         MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
 
         // Try to get the srid (epsg) of selected layers
@@ -93,7 +92,7 @@ public class CTSPlugIn extends ThreadedBasePlugIn implements Iconified, EnableCh
         }
 
         final JComboBox<String> registry_cb =
-                dialog.addComboBox(REGISTRY, registry, Arrays.asList("EPSG", "IGNF"),"");
+                dialog.addComboBox(REGISTRY, registry, Arrays.asList(EPSG, IGNF),"");
 
         codes.clear();
         codes.putAll(getAvailableCRS(context, (String)registry_cb.getSelectedItem()));
@@ -367,11 +366,10 @@ public class CTSPlugIn extends ThreadedBasePlugIn implements Iconified, EnableCh
                                     return HETEROGEN_SRC;
                                 if (cs != CoordinateSystem.UNSPECIFIED && csi == CoordinateSystem.UNSPECIFIED)
                                     return HETEROGEN_SRC;
-                                //try {
-                                    if (cs != null && cs.getEPSGCode() != csi.getEPSGCode())
+                                if (cs != null && cs != CoordinateSystem.UNSPECIFIED &&
+                                        csi != CoordinateSystem.UNSPECIFIED &&
+                                        cs.getEPSGCode() != csi.getEPSGCode())
                                         return HETEROGEN_SRC;
-                                //} catch (UnsupportedOperationException e) {
-                                //}
                                 if (srid != null && sridi != null && srid.getSRID() != sridi.getSRID())
                                     return HETEROGEN_SRC;
                             }
