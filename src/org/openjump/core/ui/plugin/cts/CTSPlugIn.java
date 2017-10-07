@@ -76,6 +76,7 @@ public class CTSPlugIn extends ThreadedBasePlugIn implements Iconified, EnableCh
 
         final String SOURCE = "source";
         final String TARGET = "target";
+        System.out.println("!!!!!!!!!");
         MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
 
         // Try to get the srid (epsg) of selected layers
@@ -135,7 +136,7 @@ public class CTSPlugIn extends ThreadedBasePlugIn implements Iconified, EnableCh
     }
 
     public void run(TaskMonitor monitor, PlugInContext context)
-            throws RegistryException, CRSException {
+            throws RegistryException, CRSException, CoordinateOperationException {
         reportNothingToUndoYet(context);
         if (srcCode == null) {
             throw new RegistryException(INVALID_SRC_CRS);
@@ -150,13 +151,13 @@ public class CTSPlugIn extends ThreadedBasePlugIn implements Iconified, EnableCh
             } else if (registry.equals("IGNF")) {
                 registryManager.addRegistry(new IGNFRegistry());
             }
-            //CoordinateReferenceSystem srcCRS = registryManager.getRegistry(registry)
-            //        .getCoordinateReferenceSystem(new Identifier(registry, srcCode, null));
-            //CoordinateReferenceSystem tgtCRS = registryManager.getRegistry(registry)
-            //        .getCoordinateReferenceSystem(new Identifier(registry, tgtCode, null));
-//
-            //commitChanges(monitor, context, srcCRS, tgtCRS);
-            //report(context, srcCRS, tgtCRS);
+            CoordinateReferenceSystem srcCRS = registryManager.getRegistry(registry)
+                    .getCoordinateReferenceSystem(new Identifier(registry, srcCode, null));
+            CoordinateReferenceSystem tgtCRS = registryManager.getRegistry(registry)
+                    .getCoordinateReferenceSystem(new Identifier(registry, tgtCode, null));
+
+            commitChanges(monitor, context, srcCRS, tgtCRS);
+            report(context, srcCRS, tgtCRS);
         }
     }
 

@@ -911,7 +911,10 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.cts.CTSPlugIn
 		<menus>
-			<main-menu menupath="MenuNames.PLUGINS" install="true" />
+			<main-menu
+					menupath="MenuNames.PLUGINS"
+					icon="world.png"
+					install="true" />
 		</menus>
 	</plug-in>
 
