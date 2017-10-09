@@ -40,6 +40,7 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -197,6 +198,7 @@ public class GMLWriter implements JUMPWriter {
             for (int u = 0; u < outputTemplate.featureText.size(); u++) {
                 pre = outputTemplate.featureText.get(u);
                 token = outputTemplate.codingText.get(u);
+
                 //[mmichaud 2012-04-27] write directly into the writer instead
                 // of getting string which are hard to handle for multi-million
                 // coordinates geometries
@@ -222,6 +224,7 @@ public class GMLWriter implements JUMPWriter {
         // this should take care of really _all_ XML1.0 invalid chars
         // see https://commons.apache.org/proper/commons-lang/javadocs/api-3.5/org/apache/commons/lang3/StringEscapeUtils.html#escapeXml10-java.lang.String-
         return StringEscapeUtils.escapeXml10(s);
+
         
         // kept for reference
 //        StringBuilder sb = new StringBuilder(s);
@@ -323,6 +326,9 @@ public class GMLWriter implements JUMPWriter {
         }
     }
     
+    // precompile pattern for performance reasons
+    Pattern closingTagPattern = Pattern.compile(">$");
+    
     private void evaluateToken(Feature f, String pre, String token, Writer writer)
         throws Exception {
         String column;
@@ -352,13 +358,14 @@ public class GMLWriter implements JUMPWriter {
             column = token.substring(6);
             column = column.trim();
 
-            //  System.out.println("column = " + column);
             result = toString(f, column);
 
             //need to ensure that the output is XML okay
             result = escapeXML(result);
-            if (result == null) writer.append(pre.replaceAll(">$"," xsi:nil=\"true\">"));
-            else writer.append(pre).append(result);
+            if (result == null)
+              writer.append(closingTagPattern.matcher(pre).replaceAll(" xsi:nil=\"true\">"));
+            else
+              writer.append(pre).append(result);
             //writer.append(result);
             //return result;
         } else if (cmd.equalsIgnoreCase("geometry")) {
@@ -427,7 +434,7 @@ public class GMLWriter implements JUMPWriter {
 
             if (t != fcmd.getGeometryIndex()) {
                 //not geometry
-                colText = colHeader + "          <property name=\"" + colName +
+                colText = colHeader + "          <property name=\"" + escapeXML(colName) +
                     "\">";
                 colCode = "=column " + colName;
                 colHeader = "</property>\n";
@@ -477,14 +484,14 @@ public class GMLWriter implements JUMPWriter {
             if (t != fcmd.getGeometryIndex()) {
                 colDef = "     <column>\n";
 
-                colDef = colDef + "          <name>" + colName + "</name>\n";
+                colDef = colDef + "          <name>" + escapeXML(colName) + "</name>\n";
                 attributeType = fcmd.getAttributeType(t);
-                colDef = colDef + "          <type>" + attributeType +
+                colDef = colDef + "          <type>" + escapeXML(attributeType.toString()) +
                     "</type>\n";
 
                 colDef = colDef +
                     "          <valueElement elementName=\"property\" attributeName=\"name\" attributeValue=\"" +
-                    colName + "\"/>\n";
+                    escapeXML(colName) + "\"/>\n";
                 colDef = colDef +
                     "          <valueLocation position=\"body\"/>\n";
 
