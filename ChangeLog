@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-10-21 Giuseppe Aruta
+  * Upgraded ColorChooser to version 9: 
+   - correct #461 ColorChooser creates inconsistent schema
+   - enlarged color icons 
+
 2017-10-09 ede
   * bugfix 462: jml does not support special characters everywhere
 
