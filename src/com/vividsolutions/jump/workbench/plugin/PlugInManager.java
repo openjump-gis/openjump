@@ -52,6 +52,8 @@ import com.vividsolutions.jump.util.Timer;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.WorkbenchProperties;
+import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.CursorToolPluginWrapper;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
@@ -245,22 +247,35 @@ public class PlugInManager {
 
           // make sure we use the plugin classloader for plugins
           plugInClass = classLoader.loadClass(className);
-          PlugIn plugIn = (PlugIn) plugInClass.newInstance();
+          if (plugInClass == null)
+            throw new JUMPException("class '"+className+"' is not available in the class path!");
+
+          Object o = plugInClass.newInstance();
+          PlugIn plugIn;
+          if (o instanceof CursorTool) {
+            plugIn = new CursorToolPluginWrapper((CursorTool) o);
+          } else {
+            plugIn = (PlugIn) o;
+          }
 
           plugIn.initialize(pc);
-          
+
           // get plugin's menu settings
           Map<String, Map> menuSettings = props.getSettings(new String[] {
               WorkbenchProperties.KEY_PLUGIN, className,
               WorkbenchProperties.KEY_MENUS});
-          
+
           // interpret menu settings
           for (Map.Entry<String, Map> entry : menuSettings.entrySet()) {
-            
+
             String menuKey = entry.getKey();
-            if (pc.getFeatureInstaller().fetchMenuForKey(menuKey)==null)
+            if (pc.getFeatureInstaller().fetchMenuForKey(menuKey)==null){
+              if (menuKey != "order_id")
+                Logger.error("'"+menuKey+"' is an invalid menu handle.");
+
               continue;
-            
+            }
+
             // install me to menu?
             String installSetting = props.getSetting(new String[] {
                 WorkbenchProperties.KEY_PLUGIN, className,
