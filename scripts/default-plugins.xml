@@ -1134,10 +1134,10 @@
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
-	<plug-in initialize="false">
-		org.openjump.core.ui.plugin.layer.CTSPlugIn
+	<plug-in>
+		org.openjump.core.ui.plugin.cts.CTSPlugIn
 		<menus>
-			<layername-popup />
+			<layername-popup install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>

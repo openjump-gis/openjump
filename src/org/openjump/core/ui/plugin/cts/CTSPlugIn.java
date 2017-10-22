@@ -17,6 +17,7 @@ import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.SuggestTreeComboBox;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import org.cts.CRSFactory;
 import org.cts.Identifier;
@@ -69,7 +70,7 @@ public class CTSPlugIn extends ThreadedBasePlugIn implements Iconified, EnableCh
     private final Map<String,String> codes = new LinkedHashMap<>(64);
 
     public ImageIcon getIcon(){
-        return new ImageIcon(this.getClass().getResource("world.png"));
+        return IconLoader.icon("world.png");
     }
 
     public boolean execute(final PlugInContext context) throws Exception {
