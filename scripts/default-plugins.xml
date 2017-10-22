@@ -1,5 +1,5 @@
 <workbench>
-	<!-- ====================== plugins without menu entry ================== -->
+	<!-- ====================== plugins without menu entry ================ -->
 	<plug-in>
 		com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn
 	</plug-in>
@@ -600,7 +600,7 @@
 
 	<!--- ======================= TOOLS menu =============================== -->
 
-	<!--- ========= Query ==================== / -->
+	<!--- ========= Query ==================== -->
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialQueryPlugIn
 	</plug-in>
@@ -614,7 +614,7 @@
 		org.openjump.core.ui.plugin.queries.SearchAllAttributes
 	</plug-in>
 
-	<!--- ========= Analysis ==================== / -->
+	<!--- ========= Analysis ==================== -->
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn
 	</plug-in>
@@ -663,7 +663,7 @@
 
 	<!--plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn</plug-in -->
 
-	<!--- ========= Statistics ==================== / -->
+	<!--- ========= Statistics ==================== -->
 	<plug-in>
 		org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn
 	</plug-in>
@@ -689,7 +689,7 @@
 		com.vividsolutions.jump.workbench.ui.plugin.FeatureStatisticsPlugIn
 	</plug-in>
 
-	<!--- ========= Generate ==================== / -->
+	<!--- ========= Generate ==================== -->
 	<!--plug-in>org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn</plug-in -->
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.test.RandomTrianglesPlugIn
@@ -716,7 +716,7 @@
 		org.openjump.core.ui.plugin.tools.generate.LinearReferencingOnSelectionPlugIn
 	</plug-in>
 
-	<!--- ========= WARP ==================== / -->
+	<!--- ========= WARP ==================== -->
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.warp.WarpingPlugIn
 	</plug-in>
@@ -727,7 +727,7 @@
 		com.vividsolutions.jump.plugin.edit.AffineTransformationPlugIn
 	</plug-in>
 
-	<!--- ========= QA ==================== / -->
+	<!--- ========= QA ==================== -->
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.ValidateSelectedLayersPlugIn
 	</plug-in>
@@ -747,9 +747,9 @@
 		org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn
 	</plug-in>
 
-	<!--- ========= Edit Geometry ======================================= / -->
+	<!--- ========= Edit Geometry ======================================= -->
 
-	<!--- ========= Edit Geometry - Convert ==================== / -->
+	<!--- ========= Edit Geometry - Convert ==================== -->
 	<plug-in>
 		org.openjump.core.ui.plugin.tools.geometrychange.ExtractPointsPlugIn
 	</plug-in>
@@ -766,7 +766,7 @@
 		org.openjump.core.ui.plugin.tools.PlanarGraphPlugIn
 	</plug-in>
 
-	<!--- ========= Edit Geometry - Convert Selected... ================= / -->
+	<!--- ========= Edit Geometry - Convert Selected... ================= -->
 	<plug-in>
 		de.soldin.jumpcore.geomconv.GCPlugin
 	</plug-in>
@@ -801,7 +801,7 @@
 		org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn
 	</plug-in>
 
-	<!--- ========= Edit Attributes ==================== / -->
+	<!--- ========= Edit Attributes ==================== -->
 	<!--plug-in>
 		org.openjump.core.ui.plugin.tools.ReplaceValuePlugIn
 	</plug-in-->
@@ -840,7 +840,7 @@
 	</plug-in>
 
 
-	<!--- ========= Generalization ==================== / -->
+	<!--- ========= Generalization ==================== -->
 	<plug-in>
 		org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn
 	</plug-in>
@@ -851,13 +851,13 @@
 		org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn
 	</plug-in>
 
-	<!--- ========= Tools Root ==================== / -->
+	<!--- ========= Tools Root ==================== -->
 	<plug-in>
 		org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn
 	</plug-in>
 
 
-	<!--- ====================== Raster ================================= / -->
+	<!--- ====================== Raster ================================= -->
 	<plug-in>
 		org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn
 	</plug-in>
