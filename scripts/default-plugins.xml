@@ -22,7 +22,7 @@
 		<!-- shows selection summary in status bar time field -->
 		org.openjump.core.ui.plugin.view.ShowFullPathPlugIn
 	</plug-in>
-  <!--add Spatial databases datastore extensions-->
+	<!--add Spatial databases datastore extensions -->
 	<extension>
 		com.vividsolutions.jump.datastore.oracle.OracleDataStoreExtension
 	</extension>
@@ -126,9 +126,9 @@
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
 	</plug-in>
-	<!-- override DB Query plugin placement/icon in PLUS, don't initialize, as it might 
-		be missing in CORE. initialization with installation is done via DB Query extension 
-		anyway -->
+	<!-- override DB Query plugin placement/icon in PLUS, don't initialize,
+		as it might be missing in CORE. initialization with installation is
+		done via DB Query extension anyway -->
 	<plug-in initialize="false">
 		org.freevoice.jumpdbqueryextension.JumpDbQueryPlugin
 		<menus>
@@ -191,7 +191,8 @@
 	<plug-in initialize="false">
 		com.isa.jump.plugin.PrintPlugIn
 		<menus>
-			<main-menu name="I18N.ui.MenuNames.PRINT.SkyPrinter" menupath="MenuNames.FILE/MenuNames.PRINT" />
+			<main-menu name="I18N.ui.MenuNames.PRINT.SkyPrinter"
+				menupath="MenuNames.FILE/MenuNames.PRINT" />
 		</menus>
 	</plug-in>
 
@@ -294,7 +295,7 @@
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn
-	<menus>
+		<menus>
 			<main-menu menupath="MenuNames.EDIT" install="true" />
 		</menus>
 	</plug-in>
@@ -316,10 +317,10 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.edit.ClipToFencePlugIn
 	</plug-in>
-    <separator />
-    <plug-in>
-        org.openjump.core.ui.plugin.task.TaskPropertiesPlugIn
-    </plug-in>
+	<separator />
+	<plug-in>
+		org.openjump.core.ui.plugin.task.TaskPropertiesPlugIn
+	</plug-in>
 
 	<!--- ======================= VIEW menu ================================= -->
 	<plug-in>
@@ -340,19 +341,22 @@
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn
 		<menus>
-			<main-menu menupath="MenuNames.VIEW" checkbox="true" install="true" />
+			<main-menu menupath="MenuNames.VIEW" checkbox="true"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.MapToolTipsPlugIn
 		<menus>
-			<main-menu menupath="MenuNames.VIEW" checkbox="true" install="true" />
+			<main-menu menupath="MenuNames.VIEW" checkbox="true"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.zoom.ZoomBarPlugIn
 		<menus>
-			<main-menu menupath="MenuNames.VIEW" checkbox="true" install="true" />
+			<main-menu menupath="MenuNames.VIEW" checkbox="true"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
@@ -505,19 +509,22 @@
 	<plug-in>
 		de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn
 		<menus>
-			<main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" install="true" />
+			<main-menu menupath="MenuNames.LAYER/MenuNames.STYLE"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.style.CopyStylesPlugIn
 		<menus>
-			<main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" install="true" />
+			<main-menu menupath="MenuNames.LAYER/MenuNames.STYLE"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.style.PasteStylesPlugIn
 		<menus>
-			<main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" install="true" />
+			<main-menu menupath="MenuNames.LAYER/MenuNames.STYLE"
+				install="true" />
 		</menus>
 	</plug-in>
 
@@ -532,7 +539,8 @@
 	<plug-in>
 		de.latlon.deejump.plugin.SaveLegendPlugIn
 		<menus>
-			<main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" install="true" />
+			<main-menu menupath="MenuNames.LAYER/MenuNames.STYLE"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
@@ -555,13 +563,11 @@
 	</plug-in>
 	<separator />
 	<plug-in>
-	org.openjump.core.ui.plugin.layer.ExportLayerableEnvelopeAsGeometryPlugIn
-	<menus>
+		org.openjump.core.ui.plugin.layer.ExportLayerableEnvelopeAsGeometryPlugIn
+		<menus>
 			<main-menu menupath="MenuNames.LAYER" install="true" />
 		</menus>
 	</plug-in>
-
-	
 
 
 	<!-- ====================== CUSTOMIZE menu ================================== -->
@@ -587,15 +593,9 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.view.EasyButtonsPlugin
 	</plug-in>
-	<!--plug-in>
-		com.vividsolutions.jump.workbench.plugin.StartMacroPlugIn
-	</plug-in>
-	<plug-in>
-		com.vividsolutions.jump.workbench.plugin.StopMacroPlugIn
-	</plug-in>
-	<plug-in>
-		com.vividsolutions.jump.workbench.plugin.RunMacroPlugIn
-	</plug-in-->
+	<!--plug-in> com.vividsolutions.jump.workbench.plugin.StartMacroPlugIn </plug-in> 
+		<plug-in> com.vividsolutions.jump.workbench.plugin.StopMacroPlugIn </plug-in> 
+		<plug-in> com.vividsolutions.jump.workbench.plugin.RunMacroPlugIn </plug-in -->
 
 
 	<!--- ======================= TOOLS menu =============================== -->
@@ -747,7 +747,7 @@
 		org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn
 	</plug-in>
 
-	<!--- ========= Edit Geometry ========================================= / -->
+	<!--- ========= Edit Geometry ======================================= / -->
 
 	<!--- ========= Edit Geometry - Convert ==================== / -->
 	<plug-in>
@@ -766,7 +766,7 @@
 		org.openjump.core.ui.plugin.tools.PlanarGraphPlugIn
 	</plug-in>
 
-	<!--- ========= Edit Geometry - Convert Selected... =================== / -->
+	<!--- ========= Edit Geometry - Convert Selected... ================= / -->
 	<plug-in>
 		de.soldin.jumpcore.geomconv.GCPlugin
 	</plug-in>
@@ -857,41 +857,46 @@
 	</plug-in>
 
 
-	<!--- ====================== Raster ==================================== / -->
+	<!--- ====================== Raster ================================= / -->
 	<plug-in>
 		org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn
-                
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn
- 		 
 	</plug-in>
 	<plug-in>
-		org.openjump.core.ui.plugin.raster.statistics.DEMStatisticsPlugIn 
- 		 <menus>
-			<main-menu menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER" install="true"/>
+		org.openjump.core.ui.plugin.raster.statistics.DEMStatisticsPlugIn
+		<menus>
+			<main-menu menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER"
+				install="true" />
 		</menus>
 	</plug-in>
-	
-		
+
+
 	<plug-in>
-		org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn 
- <menus>
-			<main-menu menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA" install="true"/>
+		org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn
+		<menus>
+			<main-menu
+				menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
+				install="true" />
 		</menus>
- 	</plug-in>
+	</plug-in>
 
 	<plug-in>
 		org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn
-<menus>
-			<main-menu menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA" install="true"/>
+		<menus>
+			<main-menu
+				menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
+				install="true" />
 		</menus>
- 	</plug-in>
- 		
+	</plug-in>
+
 	<plug-in>
 		org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn
-<menus>
-			<main-menu menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA" install="true"/>
+		<menus>
+			<main-menu
+				menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
+				install="true" />
 		</menus>
 	</plug-in>
 	<separator />
@@ -900,21 +905,20 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn
 	</plug-in>
-	<plug-in> 
+	<plug-in>
 		org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn
 	</plug-in>
-	
-	<plug-in> org.openjump.core.ui.plugin.raster.RasterQueryPlugIn
+
+	<plug-in>
+		org.openjump.core.ui.plugin.raster.RasterQueryPlugIn
 	</plug-in>
 
 	<!--- ======================= PLUGINS menu ============================== -->
 	<plug-in>
 		org.openjump.core.ui.plugin.cts.CTSPlugIn
 		<menus>
-			<main-menu
-					menupath="MenuNames.PLUGINS"
-					icon="world.png"
-					install="true" />
+			<main-menu menupath="MenuNames.PLUGINS" icon="world.png"
+				install="true" />
 		</menus>
 	</plug-in>
 
@@ -1054,8 +1058,8 @@
 
 	<!-- ================ LayerName Popup Menu =============================== -->
 	<plug-in>
-        org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn
-    </plug-in>
+		org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn
+	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.EditablePlugIn
 		<menus>
@@ -1112,24 +1116,24 @@
 	</plug-in>
 
 	<separator />
-    <!-- <plug-in> -->
-    <!-- org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn -->
-    <!-- <menus> -->
-    <!--    <layername-popup install="true" /> -->
-    <!-- </menus> -->
-    <!-- </plug-in> -->
-    <plug-in>
+	<!-- <plug-in> -->
+	<!-- org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn -->
+	<!-- <menus> -->
+	<!-- <layername-popup install="true" /> -->
+	<!-- </menus> -->
+	<!-- </plug-in> -->
+	<plug-in>
 		com.vividsolutions.jump.workbench.ui.zoom.ZoomToLayerPlugIn
 		<menus>
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
-        org.openjump.core.ui.plugin.layer.NewLayerPropertiesPlugIn
-    <menus>
-            <layername-popup install="true" />
-    </menus>
-    </plug-in>
+		org.openjump.core.ui.plugin.layer.NewLayerPropertiesPlugIn
+		<menus>
+			<layername-popup install="true" />
+		</menus>
+	</plug-in>
 	<plug-in initialize="false">
 		org.openjump.core.ui.plugin.layer.CTSPlugIn
 		<menus>
@@ -1210,8 +1214,8 @@
 		</menus>
 	</plug-in>
 
-	<!--plug-in> org.openjump.core.ui.plugin.layer.ReprojectionPlugIn <menus> <layername-popup 
-		install="false" /> </menus> </plug-in -->
+	<!--plug-in> org.openjump.core.ui.plugin.layer.ReprojectionPlugIn <menus> 
+		<layername-popup install="false" /> </menus> </plug-in -->
 
 	<plug-in>
 		org.openjump.core.ui.plugin.datastore.EditDataStoreQueryPlugIn
@@ -1219,7 +1223,8 @@
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.datastore.RefreshDataStoreLayerPlugin
 		<menus>
-			<layername-popup menupath="MenuNames.DATASTORE" install="true" />
+			<layername-popup menupath="MenuNames.DATASTORE"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
@@ -1260,11 +1265,11 @@
 			<layername-popup install="true" />
 		</menus>
 	</plug-in>
-	
+
 	<plug-in>
-	     org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn
-	</plug-in> 
-	
+		org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn
+	</plug-in>
+
 	<plug-in>
 		org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn
 	</plug-in>
@@ -1310,8 +1315,8 @@
 		</menus>
 	</plug-in>
 	<plug-in>
-	org.openjump.core.ui.plugin.wms.WMSStylePlugIn
-	<menus>
+		org.openjump.core.ui.plugin.wms.WMSStylePlugIn
+		<menus>
 			<layername-popup-wms install="true" />
 		</menus>
 	</plug-in>
@@ -1371,13 +1376,14 @@
 	</plug-in>
 
 	<separator />
-       
+
 
 	<!-- ================ Sextante Raster LayerName Popup Menu =============== -->
 	<plug-in>
 		org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn
 		<menus>
-			<layername-popup-raster install="true" checkbox="true" />
+			<layername-popup-raster install="true"
+				checkbox="true" />
 		</menus>
 	</plug-in>
 
@@ -1391,14 +1397,13 @@
 	</plug-in>
 
 
-	
-	       <plug-in>
+	<plug-in>
 		org.openjump.core.ui.plugin.layer.pirolraster.ChangeRasterImagePropertiesPlugIn
 		<menus>
 			<layername-popup-raster install="true" />
 		</menus>
 	</plug-in>
- 
+
 	<plug-in>
 		org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage
 		<menus>
@@ -1561,15 +1566,13 @@
 
 	<separator />
 
-	
-	
 	<plug-in>
 		org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn
 		<menus>
 			<layerview-popup install="true" />
 		</menus>
 	</plug-in>
-	
+
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.CombineSelectedFeaturesPlugIn
 		<menus>
@@ -1588,7 +1591,7 @@
 			<layerview-popup install="true" />
 		</menus>
 	</plug-in>
-	
+
 	<plug-in>
 		org.openjump.core.ui.plugin.mousemenu.ReverseOrientationPlugIn
 	</plug-in>
@@ -1618,51 +1621,57 @@
 		org.openjump.core.ui.plugin.mousemenu.SplitPolygonsNodeLinesPlugIn
 	</plug-in>
 
-	
+
 	<plug-in>
 		org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn
 		<menus>
-			<layerview-popup menupath="MenuNames.TOOLS_OTHERS" install="true" />
+			<layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+				install="true" />
 		</menus>
 	</plug-in>
-        <plug-in>
+	<plug-in>
 		org.openjump.core.ui.plugin.mousemenu.RotatePlugIn
 		<menus>
-			<layerview-popup menupath="MenuNames.TOOLS_OTHERS" install="true" />
+			<layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.mousemenu.MeasureSelectedPlugIn
 		<menus>
-			<layerview-popup menupath="MenuNames.TOOLS_OTHERS" install="true" />
+			<layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn
 		<menus>
-			<layerview-popup menupath="MenuNames.TOOLS_OTHERS" install="true" />
+			<layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn
 		<menus>
-			<layerview-popup menupath="MenuNames.TOOLS_OTHERS" install="true" />
+			<layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopyThisCoordinatePlugIn
 		<menus>
-			<layerview-popup menupath="MenuNames.TOOLS_OTHERS" install="true" />
+			<layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+				install="true" />
 		</menus>
 	</plug-in>
 	<plug-in>
 		com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn
 		<menus>
-
-			<layerview-popup menupath="MenuNames.TOOLS_OTHERS" install="true" />
+			<layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+				install="true" />
 		</menus>
 	</plug-in>
-	
+
 
 	<!-- ================ AttributeTab Popup Menu ============================== -->
 	<plug-in>
@@ -1775,5 +1784,13 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManagerPlugIn
 	</plug-in>
+
+	<!-- ====================== Toolbar =================================== -->
+	<!-- plug-in>
+		com.vividsolutions.jump.workbench.ui.zoom.ZoomTool
+		<menus>
+			<main-toolbar install="true" />
+		</menus>
+	</plug-in -->
 
 </workbench>
