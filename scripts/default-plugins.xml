@@ -555,6 +555,14 @@
 			<main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" />
 		</menus>
 	</plug-in>
+	<separator />
+	<plug-in>
+		org.openjump.core.ui.plugin.cts.CTSPlugIn
+		<menus>
+			<main-menu menupath="MenuNames.LAYER" icon="world.png"
+				install="true" />
+		</menus>
+	</plug-in>
 	<plug-in>
 		org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn
 		<menus>
@@ -914,13 +922,6 @@
 	</plug-in>
 
 	<!-- ======================= PLUGINS menu ============================== -->
-	<plug-in>
-		org.openjump.core.ui.plugin.cts.CTSPlugIn
-		<menus>
-			<main-menu menupath="MenuNames.PLUGINS" icon="world.png"
-				install="true" />
-		</menus>
-	</plug-in>
 
 	<!-- ======================= WINDOW menu =============================== -->
 	<plug-in>
