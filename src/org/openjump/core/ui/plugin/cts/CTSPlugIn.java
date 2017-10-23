@@ -70,7 +70,7 @@ public class CTSPlugIn extends ThreadedBasePlugIn implements Iconified, EnableCh
     private final Map<String,String> codes = new LinkedHashMap<>(64);
 
     public ImageIcon getIcon(){
-        return IconLoader.icon("world.png");
+        return IconLoader.icon("world-grid.png");
     }
 
     public boolean execute(final PlugInContext context) throws Exception {

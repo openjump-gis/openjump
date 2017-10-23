@@ -559,7 +559,7 @@
 	<plug-in>
 		org.openjump.core.ui.plugin.cts.CTSPlugIn
 		<menus>
-			<main-menu menupath="MenuNames.LAYER" icon="world.png"
+			<main-menu menupath="MenuNames.LAYER"
 				install="true" />
 		</menus>
 	</plug-in>
