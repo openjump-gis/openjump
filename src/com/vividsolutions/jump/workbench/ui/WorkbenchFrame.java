@@ -1854,7 +1854,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         // Giuseppe Aruta -June 30 2015 - warning and save selected
         // project before closing Openjump
         try {
-          int res = JOptionPane.showConfirmDialog(null, SAVE_PROJECT,
+          int res = JOptionPane.showConfirmDialog(mainFrame, SAVE_PROJECT,
               EXIT_OPENJUMP, JOptionPane.YES_NO_CANCEL_OPTION,
               JOptionPane.DEFAULT_OPTION, null);
 
@@ -1876,7 +1876,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
               String projectName = context.getTask().getProjectFile()
                   .getAbsolutePath();
 
-              JOptionPane.showMessageDialog(null, PROJECT_SAVED + projectName,
+              JOptionPane.showMessageDialog(mainFrame, PROJECT_SAVED + projectName,
                   EXIT_OPENJUMP, JOptionPane.PLAIN_MESSAGE);
             }
             // failure to save is handled like a 'Cancel exit' for now 
@@ -1938,7 +1938,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                 // Giuseppe Aruta -June 30 2015 - simple warning that a project
                 // is being closed
                 try {
-                    int res = JOptionPane.showConfirmDialog(null,
+                    int res = JOptionPane.showConfirmDialog(this,
                             CLOSE_PROJECT_QUESTION, CLOSE_PROJECT,
                             JOptionPane.OK_CANCEL_OPTION,
                             JOptionPane.DEFAULT_OPTION, null);
