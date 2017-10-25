@@ -3,6 +3,12 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-10-25 Giuseppe Aruta
+  * Upgraded CadTools to version 0.3 - Feature request #257:
+    CAD tools to show area in real time when drawing closed geometries. 
+   - added area, perimeter and other info display to circle, parallelogram
+     and elliple tools
+
 2017-10-24 Matthias Scholz <ms@jammerhund.de>
   * small multimonitor fix: place some popups during closing OpenJUMP or a
     project on the same monitor as OpenJUMP is running.
