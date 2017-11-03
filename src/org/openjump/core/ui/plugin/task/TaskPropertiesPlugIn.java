@@ -17,9 +17,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -30,7 +28,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.xml.namespace.QName;
-
 
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.ccordsys.utils.SridLookupTable;
@@ -135,7 +132,7 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
 
     private MultiTabInputDialog dialog;
     String[] codes;
-   // final Map<String, String> codes = new LinkedHashMap<String, String>(64);
+    // final Map<String, String> codes = new LinkedHashMap<String, String>(64);
     public static SuggestTreeComboBox localSuggestTreeComboBox;
 
     private LayersPanel layersPanel;
@@ -181,13 +178,13 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
         dialog.setMinimumSize(new Dimension(400, 270));
         dialog.setCancelVisible(false);
         dialog.setResizable(true);
-        //    this.codes.clear();
-        //    this.codes.putAll(Utils.mapSRIDS());
-        //     localSuggestTreeComboBox = new SuggestTreeComboBox(this.codes.keySet()
-        //           .toArray(new String[this.codes.size()]), 40);
-         codes = Utils.mapSRIDasString();
-         localSuggestTreeComboBox = new SuggestTreeComboBox(
-             codes, 40);
+        // this.codes.clear();
+        // this.codes.putAll(Utils.mapSRIDS());
+        // localSuggestTreeComboBox = new
+        // SuggestTreeComboBox(this.codes.keySet()
+        // .toArray(new String[this.codes.size()]), 40);
+        codes = Utils.mapSRIDasString();
+        localSuggestTreeComboBox = new SuggestTreeComboBox(codes, 40);
         if (selectedTask.getProperties().containsKey(
                 new QName(Task.PROJECT_SRS_KEY))) {
             this.srsCode = selectedTask.getProperty(
@@ -324,6 +321,7 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
                 int endIndex = proj.lastIndexOf("[");
                 srsDescription = proj.substring(0, endIndex);
                 projArea.setText(srsDescription);
+                textFieldUnit.setText(sridTableInfo.getUnit().toString());
                 String epsg = localSuggestTreeComboBox.getSelectedItem()
                         .toString();
                 String unit = sridTableInfo.getUnit().toString();
@@ -354,13 +352,13 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
     private JPanel srsPanel(PlugInContext context) throws IOException {
         JPanel srsPanel = new JPanel(new GridBagLayout());
         srsPanel.setBorder(BorderFactory.createTitledBorder("SRS"));
-       //    this.codes.clear();
-       //    this.codes.putAll(Utils.mapSRIDS());
-       //     localSuggestTreeComboBox = new SuggestTreeComboBox(this.codes.keySet()
-       //           .toArray(new String[this.codes.size()]), 40);
+        // this.codes.clear();
+        // this.codes.putAll(Utils.mapSRIDS());
+        // localSuggestTreeComboBox = new
+        // SuggestTreeComboBox(this.codes.keySet()
+        // .toArray(new String[this.codes.size()]), 40);
         codes = Utils.mapSRIDasString();
-        localSuggestTreeComboBox = new SuggestTreeComboBox(
-            codes, 40);
+        localSuggestTreeComboBox = new SuggestTreeComboBox(codes, 40);
         Task selectedTask = context.getTask();
         if (selectedTask.getProperties().containsKey(
                 new QName(Task.PROJECT_SRS_KEY))) {
