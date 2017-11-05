@@ -70,10 +70,9 @@ public class DbfFile implements DbfConsts, AutoCloseable {
      * Constructor, opens the file and reads the header infomation.
      * @param file The file to be opened, includes path and .dbf
      * @exception IOException If the file can't be opened.
-     * @exception DbfFileException If there is an error reading header.
      */
-    public DbfFile(String file, Charset charset) throws IOException, DbfFileException {
-		this.charset = charset;
+    public DbfFile(String file, Charset charset) throws IOException {
+		    this.charset = charset;
         Logger.debug("DbfFile constructor");
         // InputStream to read the header and read the file sequentially
         InputStream in = new FileInputStream(file);

@@ -36,12 +36,7 @@
  */
 package com.vividsolutions.jump.io;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
@@ -109,6 +104,7 @@ public class ShapefileReader extends AbstractJUMPReader {
     private File delete_this_tmp_dbf = null;
     private File delete_this_tmp_shx = null;
     private File delete_this_tmp_cpg = null;
+    //private File delete_this_tmp_prj = null;
 
     /** Creates new ShapeReader */
     public ShapefileReader() {
@@ -146,6 +142,8 @@ public class ShapefileReader extends AbstractJUMPReader {
 
         DbfFile mydbf = getDbfFile(shpFileName, dp.getProperty(DataSource.COMPRESSED_KEY),
                 Charset.forName(charsetName));
+
+        //int srid = getPrj(shpFileName, dp);
 
         try(InputStream shx = getShx(shpFileName, dp.getProperty(DataSource.COMPRESSED_KEY))) {
 
@@ -246,6 +244,7 @@ public class ShapefileReader extends AbstractJUMPReader {
             deleteTmpDbf(); // delete dbf file if it was decompressed
             deleteTmpShx(); // delete shx file if it was decompressed
             deleteTmpCpg(); // delete cpg file if it was decompressed
+            //deleteTmpPrj(); // delete prj file if it was decompressed
             myshape.close(); //ensure we can delete input shape files before task is closed
             if (mydbf != null) mydbf.close();
         }
@@ -394,6 +393,95 @@ public class ShapefileReader extends AbstractJUMPReader {
         return null;
     }
 
+    // prj file parsing is done from DataSourceFileLayerLoader
+    // (it does not handle compressed file but can set the srid)
+    //protected int getPrj(String shpFileName, DriverProperties dp) throws Exception {
+//
+    //    // default charset used to read dbf is platform default charset
+    //    int sridValue = 0;
+//
+    //    // if a cpg file is found, charset used is the one defined in the cpg file
+    //    //BufferedReader cpgCharsetReader = null;
+    //    try (InputStream prjInputStream =
+    //                 getPrjInputStream(shpFileName, dp.getProperty(DataSource.COMPRESSED_KEY))) {
+    //        if (prjInputStream != null) {
+    //            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    //            int nRead;
+    //            byte[] data = new byte[8192];
+    //            while ((nRead = prjInputStream.read(data, 0, data.length)) != -1) {
+    //                buffer.write(data, 0, nRead);
+    //            }
+    //            buffer.flush();
+    //            String prjString = new String(buffer.toByteArray());
+    //            CoordinateReferenceSystem crs = new CRSFactory().createFromPrj(prjString);
+    //            if (crs.getAuthorityName().equalsIgnoreCase("EPSG")) {
+    //                dp.setProperty(DataSource.COORDINATE_SYSTEM_REGISTRY,"EPSG");
+    //                dp.setProperty(DataSource.COORDINATE_SYSTEM_CODE,crs.getAuthorityKey());
+    //                sridValue = Integer.parseInt(crs.getAuthorityKey());
+    //                //return Integer.parseInt(crs.getAuthorityKey());
+    //            }
+    //        }
+    //    } catch(Exception e) {
+    //        throw new Exception("Could not read prj for " + shpFileName);
+    //    }
+    //    return sridValue;
+    //}
+
+    // prj file parsing is done from DataSourceFileLayerLoader
+    // (it does not handle compressed file but can set the srid)
+    //protected InputStream getPrjInputStream(String srcFileName, String compressedFname) throws Exception {
+    //    FileInputStream prjInputStream;
+//
+    //    // default is a *.cpg src file
+    //    if (srcFileName.matches("(?i).*\\.shp$")) {
+    //        // replace file name extension of compressedFname (probably .shp) with .cpg
+    //        srcFileName = srcFileName.replaceAll("\\.[^.]*$", ".prj");
+    //        File prjFile = new File(srcFileName);
+    //        if (prjFile.exists()) {
+    //            return new FileInputStream(srcFileName);
+    //        }
+    //    }
+    //    // if we are in an archive that can hold multiple files compressedFname is defined and a String
+    //    else if (compressedFname != null) {
+    //        byte[] b = new byte[4096];
+    //        int len;
+    //        boolean keepGoing = true;
+//
+    //        // copy the file then use that copy
+    //        File file = File.createTempFile("prj", ".prj");
+    //        FileOutputStream out = new FileOutputStream(file);
+//
+    //        // replace file name extension of compressedFname (probably .shp) with .dbf
+    //        compressedFname = compressedFname.replaceAll("\\.[^.]*$", ".prj");
+//
+    //        try {
+    //            InputStream in = CompressedFile.openFile(srcFileName,compressedFname);
+//
+    //            while (keepGoing) {
+    //                len = in.read(b);
+//
+    //                if (len > 0) {
+    //                    out.write(b, 0, len);
+    //                }
+//
+    //                keepGoing = (len != -1);
+    //            }
+//
+    //            in.close();
+    //            out.close();
+//
+    //            prjInputStream = new FileInputStream(file.toString());
+    //            delete_this_tmp_prj = file; // to be deleted later on
+    //            return prjInputStream;
+    //        } catch (Exception e) {
+    //            Logger.warn(e.getMessage());
+    //        }
+    //    }
+//
+    //    return null;
+    //}
+
+
 	/**
 	 * Get's a DbfFile.
 	 * Kept, for compatibilty. Use the method with charset parameter.
@@ -403,12 +491,22 @@ public class ShapefileReader extends AbstractJUMPReader {
 	 * @return a DbfFile object for the dbf file named FileName
 	 * @throws Exception
 	 */
-    protected DbfFile getDbfFile(String srcFileName, String compressedFname) throws Exception {
-		return getDbfFile(srcFileName, compressedFname, Charset.defaultCharset());
-	}
+    //protected DbfFile getDbfFile(String srcFileName, String compressedFname) throws Exception {
+		//    return getDbfFile(srcFileName, compressedFname, Charset.defaultCharset());
+	  //}
 
+    /**
+     * Get's a DbfFile.
+     * Kept, for compatibilty. Use the method with charset parameter.
+     *
+     * @param srcFileName either a pass to a dbf or an archive file (*.zip etc.) accompanied by the compressedFname it contains
+     * @param compressedFname the name of the compressed entry in the compressed file or null
+     * @param charset the charset to use to read this dbf file
+     * @return a DbfFile object for the dbf file named FileName
+     * @throws IOException if an I/O error occurs during dbf file reading
+     */
     protected DbfFile getDbfFile(String srcFileName, String compressedFname, Charset charset)
-        throws Exception {
+        throws IOException {
 
         DbfFile mydbf;
 
@@ -481,6 +579,13 @@ public class ShapefileReader extends AbstractJUMPReader {
             delete_this_tmp_cpg = null;
         }
     }
+
+    //private void deleteTmpPrj() {
+    //    if (delete_this_tmp_prj != null) {
+    //        delete_this_tmp_prj.delete();
+    //        delete_this_tmp_prj = null;
+    //    }
+    //}
 
     private static final Pattern CODE_PAGE = Pattern.compile(".*?(\\d\\d\\d++)");
 

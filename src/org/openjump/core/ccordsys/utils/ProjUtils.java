@@ -6,6 +6,7 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.JUMPWorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -13,6 +14,10 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataS
 
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.io.FilenameUtils;
+import org.cts.CRSFactory;
+import org.cts.crs.CRSException;
+import org.cts.crs.CoordinateReferenceSystem;
+import org.openjump.core.ccordsys.Unit;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.TiffTags;
@@ -116,6 +121,21 @@ public class ProjUtils {
                 textProj = scanner.nextLine();
                 srsInfo = new SRSInfo().setSource(projectSourceFilePrj);
                 scanner.close();
+                try {
+                    // Use new crs library to parse prj file if possible
+                    CoordinateReferenceSystem crs = new CRSFactory().createFromPrj(textProj);
+                    if (crs.getAuthorityKey() != null && !crs.getAuthorityKey().equals("0")) {
+                        srsInfo.setRegistry(crs.getAuthorityName());
+                        srsInfo.setCode(crs.getAuthorityKey());
+                        srsInfo.setUnit(Unit.find(crs.getCoordinateSystem().getUnit(0).toString()));
+                        srsInfo.setDescription(crs.getName());
+                        srsInfo.complete();
+                        return srsInfo;
+                    }
+                }
+                catch(CRSException e) {
+                    e.printStackTrace();
+                }
             }
         } else if (new File(projectSourceRFilePrj).exists()) {
             Scanner scanner = new Scanner(new File(projectSourceRFilePrj));

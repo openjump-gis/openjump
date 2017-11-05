@@ -39,6 +39,7 @@ import com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource;
 import com.vividsolutions.jump.io.geojson.GeoJSONReader;
 import com.vividsolutions.jump.io.geojson.GeoJSONWriter;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -53,6 +54,7 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 
+import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.DatasetOptionsPanel;
 import org.openjump.core.ui.swing.ComboBoxComponentPanel;
 import org.openjump.core.ui.swing.factory.field.ComboBoxFieldComponentFactory;
@@ -107,6 +109,13 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
                       .getSelectedItem();
                 }
                 properties.put(DataSource.CHARSET_KEY, charsetName);
+                for (Layer layer : context.getLayerableNamePanel().getSelectedLayers()) {
+                  SRIDStyle sridStyle;
+                  if (null != (sridStyle = (SRIDStyle) layer.getStyle(SRIDStyle.class))) {
+                    properties.put(DataSource.COORDINATE_SYSTEM_REGISTRY, "EPSG");
+                    properties.put(DataSource.COORDINATE_SYSTEM_CODE, sridStyle.getSRID());
+                  }
+                }
 
                 return properties;
               }

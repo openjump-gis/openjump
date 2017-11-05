@@ -243,6 +243,7 @@ public class ShapefileWriter implements JUMPWriter {
         String dbffname;
         String shxfname;
         String cpgfname;
+        String prjfname;
 
         String path;
         String fname;
@@ -272,7 +273,7 @@ public class ShapefileWriter implements JUMPWriter {
             // probably using the wrong path separator character.
             throw new Exception(
                 I18N.getMessage("io.ShapefileWriter.path-separator-not-found", 
-                                new Object[]{File.separatorChar}));
+                                File.separatorChar));
         } else {
             path = shpfileName.substring(0, loc + 1); // ie. "/data1/hills.shp" -> "/data1/"
             fname = shpfileName.substring(loc + 1); // ie. "/data1/hills.shp" -> "hills.shp"
@@ -287,13 +288,9 @@ public class ShapefileWriter implements JUMPWriter {
         fname_withoutextention = fname.substring(0, loc); // ie. "hills.shp" -> "hills."
         dbffname = path + fname_withoutextention + ".dbf";
 
-		String charsetName = dp.getProperty(DataSource.CHARSET_KEY);
-		if (charsetName == null) charsetName = Charset.defaultCharset().name();
+		    String charsetName = dp.getProperty(DataSource.CHARSET_KEY);
+		    if (charsetName == null) charsetName = Charset.defaultCharset().name();
         writeDbf(featureCollection, dbffname, Charset.forName(charsetName));
-        // Prepare prj file writing for post 1.10 version
-        //String registry = dp.getProperty("SrsRegistry", "EPSG");
-        //String code = dp.getProperty("SrsCode", "0");
-        //writePrj(path + fname_withoutextention + ".prj", registry, code);
 
         PrintWriter pw = null;
         try {
@@ -302,6 +299,19 @@ public class ShapefileWriter implements JUMPWriter {
             pw.write(java_cp_2_esri(charsetName));
         } finally {
             if (pw != null) pw.close();
+        }
+
+        String registry = dp.getProperty(DataSource.COORDINATE_SYSTEM_REGISTRY, "EPSG");
+        String code = dp.getProperty(DataSource.COORDINATE_SYSTEM_CODE, "0");
+        String prjString = getPrjString(path + fname_withoutextention + ".prj", registry, code);
+        if (prjString != null) {
+            try {
+                prjfname = path + fname_withoutextention + ".prj";
+                pw = new PrintWriter(new FileOutputStream(prjfname));
+                pw.write(prjString);
+            } finally {
+                if (pw != null) pw.close();
+            }
         }
 
         // this gc will be a collection of either multi-points, multi-polygons, or multi-linestrings
@@ -676,22 +686,21 @@ public class ShapefileWriter implements JUMPWriter {
     }
 
     // Prepare prj writing for 1.12 version
-    private void writePrj(String fname, String registry, String code)
+    private String getPrjString(String fname, String registry, String code)
             throws Exception {
-        System.out.println("writePrj");
-        System.out.println(registry);
-        System.out.println(code);
-        if (code.equals("0")) return;
-        if (!code.matches("\\d+")) return;
-        System.out.println("test org.cts.CRSFactory");
-        //if (Class.forName("org.cts.CRSFactory") != null) {
-        //    org.cts.CRSFactory crsFactory = new org.cts.CRSFactory();
-        //    org.cts.registry.RegistryManager registryManager = crsFactory.getRegistryManager();
-        //    if (registry.equals("EPSG")) registryManager.addRegistry(new org.cts.registry.EPSGRegistry());
-        //    if (registry.equals("ESRI")) registryManager.addRegistry(new org.cts.registry.ESRIRegistry());
-        //    org.cts.crs.CoordinateReferenceSystem crs = crsFactory.getCRS(registry + ":" + code);
-        //    System.out.println(crs.toWKT());
-        //}
+        if (code.equals("0")) return null;
+        if (!code.matches("\\d+")) return null;
+        if (Class.forName("org.cts.CRSFactory") != null) {
+            org.cts.CRSFactory crsFactory = new org.cts.CRSFactory();
+            org.cts.registry.RegistryManager registryManager = crsFactory.getRegistryManager();
+            if (registry.equals("EPSG")) registryManager.addRegistry(new org.cts.registry.EPSGRegistry());
+            if (registry.equals("ESRI")) registryManager.addRegistry(new org.cts.registry.ESRIRegistry());
+            org.cts.crs.CoordinateReferenceSystem crs = crsFactory.getCRS(registry + ":" + code);
+            //System.out.println(crs.toWKT());
+            return crs.toWKT();
+        } else {
+            throw new Exception("Class org.cts.CRSFactory has not been found");
+        }
     }
 
     private String removeCount(String s, int count) {

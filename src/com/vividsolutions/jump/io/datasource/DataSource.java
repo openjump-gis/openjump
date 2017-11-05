@@ -94,6 +94,20 @@ public abstract class DataSource {
   public static final String CHARSET_KEY = "charset";
 
   /**
+   * A property used to define the Spatial Referebce System registry (ex. EPSG)
+   * May replace COORDINATE_SYSTEM_KEY and be used in conjonction with
+   * COORDINATE_SYSTEM_CODE and the new cts library
+   */
+  public static final String COORDINATE_SYSTEM_REGISTRY = "SrsRegistry";
+
+  /**
+   * A property used to define the Spatial Reference System code (ex. 4326)
+   * May replace COORDINATE_SYSTEM_KEY and be used in conjonction with
+   * COORDINATE_SYSTEM_REGISTRY and the new cts library
+   */
+  public static final String COORDINATE_SYSTEM_CODE = "SrsCode";
+
+  /**
    * Coordinate-system property, used for files and other DataSources that have
    * a single CoordinateSystem
    */
