@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-11-07 Giuseppe Aruta
+  * Add ShowCenterView plugin: it shows a red crosshair in the center of 
+    the view. See Feature request #201 "Add crosshair to synchonised projects"
+ 
 2017-11-05 mmichaud <m.michael.michaud@orange.fr>
   * Start support of prj file through crs library
 
