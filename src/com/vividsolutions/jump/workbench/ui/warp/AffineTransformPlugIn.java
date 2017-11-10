@@ -63,6 +63,7 @@ import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.warp.AffineTransform;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.model.Category;
@@ -83,6 +84,8 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
  * @date 2015_06_18 Giuseppe Aruta (giuseppe_aruta[AT]yahoo.it) Modified plugin.
  *       It allowas now to perform a 3-vector affine transformation either to a
  *       vector or to an image loaded via Sextante Raster Framework.
+ * @date 2017_11_10 Giuseppe Aruta (giuseppe_aruta[AT]yahoo.it) Added some
+ *       method to call it from WarpPanel
  */
 
 public class AffineTransformPlugIn extends AbstractPlugIn {
@@ -98,11 +101,13 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
 
     }
 
+    @Override
     public String getName() {
         return I18N
                 .get("com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn");
     }
 
+    @Override
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addMainMenuPlugin(this,
                 new String[] { MenuNames.TOOLS, MenuNames.TOOLS_WARP },
@@ -113,7 +118,7 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
     @Override
     public boolean execute(final PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
-        Layerable layer = (Layerable) LayerTools.getSelectedLayerable(context,
+        Layerable layer = LayerTools.getSelectedLayerable(context,
                 Layerable.class);
 
         if (layer instanceof RasterImageLayer) {
@@ -334,4 +339,41 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
     public Icon createEnableCheck(WorkbenchContext workbenchContext) {
         return null;
     }
+
+    private static Coordinate vectorCoordinatePublic(int n, boolean tip,
+            WarpingVectorLayerFinder vectorLayerManager) {
+        LineString vector = (LineString) vectorLayerManager.getVectors().get(n);
+
+        return tip ? vector.getCoordinateN(1) : vector.getCoordinateN(0);
+    }
+
+    public static AffineTransform affineTransformPublic() {
+        WarpingVectorLayerFinder vlm = new WarpingVectorLayerFinder(
+                JUMPWorkbench.getInstance().getContext());
+
+        switch (vlm.getVectors().size()) {
+        case 1:
+            return new AffineTransform(vectorCoordinatePublic(0, false, vlm),
+                    vectorCoordinatePublic(0, true, vlm));
+        case 2:
+            return new AffineTransform(vectorCoordinatePublic(0, false, vlm),
+                    vectorCoordinatePublic(0, true, vlm),
+                    vectorCoordinatePublic(1, false, vlm),
+                    vectorCoordinatePublic(1, true, vlm));
+        case 3:
+            return new AffineTransform(vectorCoordinatePublic(0, false, vlm),
+                    vectorCoordinatePublic(0, true, vlm),
+                    vectorCoordinatePublic(1, false, vlm),
+                    vectorCoordinatePublic(1, true, vlm),
+                    vectorCoordinatePublic(2, false, vlm),
+                    vectorCoordinatePublic(2, true, vlm));
+        }
+
+        JUMPWorkbench.getInstance().getFrame().getContext().getLayerViewPanel()
+                .getContext()
+                .warnUser(I18N.get("ui.warp.WarpingPanel.warning_1"));
+
+        return null;
+    }
+
 }
