@@ -347,7 +347,7 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
         return tip ? vector.getCoordinateN(1) : vector.getCoordinateN(0);
     }
 
-    public static AffineTransform affineTransformPublic() {
+    public static AffineTransform getTransform() {
         WarpingVectorLayerFinder vlm = new WarpingVectorLayerFinder(
                 JUMPWorkbench.getInstance().getContext());
 

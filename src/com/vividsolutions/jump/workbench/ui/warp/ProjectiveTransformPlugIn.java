@@ -214,7 +214,7 @@ public class ProjectiveTransformPlugIn extends AbstractPlugIn {
         return tip ? vector.getCoordinateN(1) : vector.getCoordinateN(0);
     }
 
-    public static ProjectiveTransform projectiveTransformPublic() {
+    public static ProjectiveTransform getTransform() {
 
         WarpingVectorLayerFinder vlm = new WarpingVectorLayerFinder(
                 JUMPWorkbench.getInstance().getContext());
