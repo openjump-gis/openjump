@@ -379,8 +379,9 @@
     <plug-in>
         org.openjump.core.ui.plugin.view.NorthArrowPlugIn
     </plug-in>
-     
-
+     <plug-in>
+        org.openjump.core.ui.plugin.view.showcenter.ShowViewCenterPlugIn
+    </plug-in>
     <separator />
 
     <plug-in>
