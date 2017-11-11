@@ -1781,6 +1781,9 @@
     <plug-in>
         org.openjump.core.ui.plugin.edittoolbox.FillPolygonPlugIn
     </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.RemodelerPlugIn
+    </plug-in>
 
     <plug-in>
         org.openjump.core.ui.plugin.view.ViewOptionsPlugIn
