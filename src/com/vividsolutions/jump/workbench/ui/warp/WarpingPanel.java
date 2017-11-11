@@ -77,6 +77,7 @@ import com.vividsolutions.jump.warp.BilinearInterpolatedTransform;
 import com.vividsolutions.jump.warp.CoordinateTransform;
 import com.vividsolutions.jump.warp.DummyTransform;
 import com.vividsolutions.jump.warp.Triangulator;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEvent;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -1314,7 +1315,7 @@ public class WarpingPanel extends JPanel {
         outputLayer.getBlackboard().put(MODIFIED_OUTSIDE_WARP_KEY, false);
         outputLayer.getBlackboard().put(RECONSTRUCTION_VECTORS_KEY,
                 clone(warpingVectors));
-
+        checkValid(featureCollection);
     }
 
     //
@@ -1343,7 +1344,7 @@ public class WarpingPanel extends JPanel {
         outputLayer.getBlackboard().put(MODIFIED_OUTSIDE_WARP_KEY, false);
         outputLayer.getBlackboard().put(RECONSTRUCTION_VECTORS_KEY,
                 clone(warpingVectors));
-
+        checkValid(featureCollection);
     }
 
     //
@@ -1608,6 +1609,28 @@ public class WarpingPanel extends JPanel {
                         }
                     }
                 }, toolbox.getContext(), false));
+    }
+
+    // [Giuseppe Aruta 2017-11-11]
+    // Ensure that the transformed geometries are valid
+
+    public static void checkValid(FeatureCollection featureCollection) {
+        for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
+            Feature feature = (Feature) i.next();
+
+            if (!feature.getGeometry().isValid()) {
+                JUMPWorkbench
+                        .getInstance()
+                        .getFrame()
+                        .getContext()
+                        .getLayerViewPanel()
+                        .getContext()
+                        .warnUser(
+                                I18N.get("ui.warp.AffineTransformPlugIn.some-geometries-are-not-valid"));
+
+                return;
+            }
+        }
     }
 
 }
