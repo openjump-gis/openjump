@@ -175,6 +175,12 @@ public class RemodelerTool extends MultiClickTool {
     LinearLocation loc2 = selectionIndexedLine.indexOf(newPath.getEndPoint().getCoordinate());
     //boolean direct = loc1.compareTo(loc2) <= 0;
 
+    // Z-interpolation
+    newPath.getPointN(0).getCoordinate().z = interpolateZ(loc1,selection);
+    newPath.getPointN(newPath.getNumPoints()-1).getCoordinate().z = interpolateZ(loc2,selection);
+    interpolateZ(newPath);
+    // end of z-interpolation
+
     LinearLocation locMin = loc1.compareTo(loc2) <= 0 ? loc1 : loc2;
     LinearLocation locMax = loc1.compareTo(loc2) <= 0 ? loc2 : loc1;
 
@@ -190,6 +196,7 @@ public class RemodelerTool extends MultiClickTool {
     if (d1 < d2) {
       // subLinePathThrough0 is replaced by newPath
       if (locMin == loc1) newPath = (LineString)newPath.reverse();
+
       list = new CoordinateList();
       for (int i = 0 ; i < oppositeSubLine.getNumPoints()-1 ; i++) {
         list.add(oppositeSubLine.getCoordinateN(i), false);
@@ -203,6 +210,7 @@ public class RemodelerTool extends MultiClickTool {
     else {
       // oppositeSubLine is replaced by newPath
       if (locMin == loc2) newPath = (LineString)newPath.reverse();
+
       list = new CoordinateList();
       for (int i = 0 ; i < subLinePassingThrough0.getNumPoints()-1 ; i++) {
         list.add(subLinePassingThrough0.getCoordinateN(i), false);
@@ -230,7 +238,14 @@ public class RemodelerTool extends MultiClickTool {
     CoordinateList list = new CoordinateList();
     list.add(selectionIndexedLine.extractLine(selectionIndexedLine.getStartIndex(),
             (direct?loc1:loc2)).getCoordinates(), false);
-    if (!direct) newPath = (LineString)newPath.reverse();
+    if (!direct) {
+      newPath = (LineString)newPath.reverse();
+    }
+    // Z-interpolation
+    newPath.getPointN(0).getCoordinate().z = interpolateZ(direct?loc1:loc2,selection);
+    newPath.getPointN(newPath.getNumPoints()-1).getCoordinate().z = interpolateZ(direct?loc2:loc1,selection);
+    interpolateZ(newPath);
+    // end of z-interpolation
     for (int i = 1 ; i < newPath.getNumPoints()-1 ; i++) {
       list.add(newPath.getCoordinateN(i), false);
     }
@@ -281,6 +296,50 @@ public class RemodelerTool extends MultiClickTool {
 
   private LineString getLineString() throws NoninvertibleTransformException {
     return new GeometryFactory().createLineString(toArray(getCoordinates()));
+  }
+
+  private double interpolateZ(LinearLocation loc, LineString lineString) {
+    if (loc.getSegmentFraction()==0.0) {
+      return lineString.getPointN(loc.getSegmentIndex()).getCoordinate().z;
+    } else {
+      double previousZ = lineString.getPointN(loc.getSegmentIndex()).getCoordinate().z;
+      double nextZ = lineString.getPointN(loc.getSegmentIndex()+1).getCoordinate().z;
+      if (Double.isNaN(previousZ) && Double.isNaN(nextZ)) return Double.NaN;
+      else if (Double.isNaN(previousZ)) return nextZ;
+      else if (Double.isNaN(nextZ)) return previousZ;
+      else {
+        return previousZ + (nextZ-previousZ)*loc.getSegmentFraction();
+      }
+    }
+  }
+
+  private void interpolateZbetweenIndices(LineString lineString, int start, int end) {
+    double zi = lineString.getCoordinateN(start).z;
+    double zj = lineString.getCoordinateN(end).z;
+    if (Double.isNaN(zi) || Double.isNaN(zj)) return;
+    double totalLength = 0;
+    for (int i = start ; i < end ; i++) {
+      totalLength += lineString.getPointN(i).distance(lineString.getPointN(i+1));
+    }
+    double dz = zj-zi;
+    double partialLength = 0;
+    for (int i = start+1 ; i < end ; i++) {
+      partialLength += lineString.getPointN(i).distance(lineString.getPointN(i+1));
+      lineString.getPointN(i).getCoordinate().z = zi + dz * (partialLength/totalLength);
+    }
+  }
+
+  private void interpolateZ(LineString lineString) {
+    int start = -1;
+    for (int i = 0 ; i < lineString.getNumPoints() ; i++) {
+      if (!Double.isNaN(lineString.getPointN(i).getCoordinate().z)) {
+        if (start==-1) start = i;
+        else {
+          interpolateZbetweenIndices(lineString, start, i);
+          start = -1;
+        }
+      }
+    }
   }
 
 }
