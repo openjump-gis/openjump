@@ -251,6 +251,9 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         if (rLayer.getImageFileName().contains(
                 System.getProperty("java.io.tmpdir"))) {
             info += property(FILE_NAME, NOT_SAVED, bgColor1);
+            info = info + header("", COORDINATE_SYSTEM);
+            info = info + property(PROJECTION, proj_coordinate, bgColor1);
+            info = info + property(FILE_NAME, proj_file_path, bgColor0);
         } else {
             info += property(FILE_TYPE, file_type, bgColor0);
             info += property(FILE_NAME, file_path, bgColor1);
@@ -488,16 +491,22 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
     // RasterImageLayer metadata
     private void setInfoProjection(RasterImageLayer layer) throws Exception {
         SRSInfo srsInfo;
-        String srsCode = (String) layer.getMetaInformation().getMetaData()
-                .get("srid");
-        srsInfo = SridLookupTable.getSrsAndUnitFromCode(srsCode);
-        proj_coordinate = srsInfo.toString();
-        String srsLocation = (String) layer.getMetaInformation().getMetaData()
-                .get("srid-location");
-        if (srsLocation.equals(layer.getImageFileName())) {
-            proj_file_path = GEO_METADATA;
-        } else {
-            proj_file_path = srsLocation;
+        try {
+            String srsCode = (String) layer.getMetaInformation().getMetaData()
+                    .get("srid");
+
+            srsInfo = SridLookupTable.getSrsAndUnitFromCode(srsCode);
+            proj_coordinate = srsInfo.toString();
+            String srsLocation = (String) layer.getMetaInformation()
+                    .getMetaData().get("srid-location");
+            if (srsLocation.equals(layer.getImageFileName())) {
+                proj_file_path = GEO_METADATA;
+            } else {
+                proj_file_path = srsLocation;
+            }
+        } catch (Exception e) {
+            proj_coordinate = "0";
+            proj_file_path = "";
         }
     }
 
