@@ -505,7 +505,8 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
                 proj_file_path = srsLocation;
             }
         } catch (Exception e) {
-            proj_coordinate = "0";
+            srsInfo = SridLookupTable.getSrsAndUnitFromCode("0");
+            proj_coordinate = srsInfo.toString();
             proj_file_path = "";
         }
     }
