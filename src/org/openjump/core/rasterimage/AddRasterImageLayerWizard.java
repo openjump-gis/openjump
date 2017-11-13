@@ -208,7 +208,12 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         // reused
         // by the plugins
         mih.addMetaInformation("srid", rLayer.getSRSInfo().getCode());
-        mih.addMetaInformation("srid-location", rLayer.getSRSInfo().getSource());
+        if (rLayer.getSRSInfo().getCode().equals("0")) {
+            mih.addMetaInformation("srid-location", "");
+        } else {
+            mih.addMetaInformation("srid-location", rLayer.getSRSInfo()
+                    .getSource());
+        }
 
         // ###################################
         context.getLayerManager().addLayerable(catName, rLayer);

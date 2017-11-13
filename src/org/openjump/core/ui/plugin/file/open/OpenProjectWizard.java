@@ -463,7 +463,12 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         mih.addMetaInformation(I18N.get("real-world-height"), ril
                 .getWholeImageEnvelope().getHeight());
         mih.addMetaInformation("srid", ril.getSRSInfo().getCode());
-        mih.addMetaInformation("srid-location", ril.getSRSInfo().getSource());
+        if (ril.getSRSInfo().getCode().equals("0")) {
+            mih.addMetaInformation("srid-location", "");
+        } else {
+            mih.addMetaInformation("srid-location", ril.getSRSInfo()
+                    .getSource());
+        }
 
         // ###################################
         context.getLayerManager().addLayerable(category.getName(), ril);
