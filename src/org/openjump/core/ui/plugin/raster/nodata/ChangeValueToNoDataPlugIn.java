@@ -56,13 +56,13 @@ public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
      *              inverse operation set nodata cells to the input value
      * @version 01 (Giuseppe Aruta) [2015_02_27] first version
      * @version 02 (Giuseppe Aruta) [2015_03_22] Add output file selection
-     * @version 03 (Giuseppe Aruta) [2015_03_25] Add Inverse operation to set nodata cells to the
-     *          input value
-     * @date 2015_19_5 (Giuseppe Aruta) Correct bug introduced with new RasterImageLayer.cellvalue
-     *        Substitute export to .flt file to .asc file   
-     * @date 2015_15_11  (Giuseppe Aruta) Improved GUI            
-     */         
-    
+     * @version 03 (Giuseppe Aruta) [2015_03_25] Add Inverse operation to set
+     *          nodata cells to the input value
+     * @date 2015_19_5 (Giuseppe Aruta) Correct bug introduced with new
+     *       RasterImageLayer.cellvalue Substitute export to .flt file to .asc
+     *       file
+     * @date 2015_15_11 (Giuseppe Aruta) Improved GUI
+     */
 
     // Language codes: 11
     public static final String PLUGINNAME = I18N
@@ -100,18 +100,21 @@ public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
 
     }
 
+    @Override
     public String getName() {
         return PLUGINNAME;
     }
 
- public boolean execute(PlugInContext context) throws Exception {
-        
+    @Override
+    public boolean execute(PlugInContext context) throws Exception {
+
         return true;
     }
 
-    public void run(TaskMonitor monitor, PlugInContext context)      throws Exception {
-    	monitor.report(I18N
-                .get("jump.plugin.edit.NoderPlugIn.processing"));
+    @Override
+    public void run(TaskMonitor monitor, PlugInContext context)
+            throws Exception {
+        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.processing"));
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
         String nome = getName() + " (" + rLayer.getName() + ")";
@@ -163,6 +166,7 @@ public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
         JButton jButton_Dir = new javax.swing.JButton();
         jTextField_RasterOut.setText("");
         jButton_Dir.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_RasterOutActionPerformed(evt);
             }
@@ -316,7 +320,7 @@ public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
     private void jButton_RasterOutActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton_RasterOutActionPerformed
 
         File outputPathFile = null;
-        JFileChooser chooser =  new GUIUtil.FileChooserWithOverwritePrompting();
+        JFileChooser chooser = new GUIUtil.FileChooserWithOverwritePrompting();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setSelectedFile(FileOperations.lastVisitedFolder);
         chooser.setDialogType(JFileChooser.SAVE_DIALOG);

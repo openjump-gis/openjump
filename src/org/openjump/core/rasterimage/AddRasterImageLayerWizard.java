@@ -27,7 +27,6 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
-import com.vividsolutions.jump.workbench.model.LayerEventType;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -35,8 +34,6 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
-
-import java.awt.Color;
 
 public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
@@ -58,6 +55,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     protected boolean zoomToInsertedImage = false;
     private String imageFileName = "";
     private String cachedLayer = "default-layer-name";
+    public static String KEY_PATH = "path";
 
     // ------
 
@@ -77,6 +75,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         // initPanels(workbenchContext);
     }
 
+    @Override
     public void initialize(WorkbenchContext workbenchContext,
             WizardDialog dialog) {
         initPanels(workbenchContext);
@@ -137,7 +136,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                         selectedFilename.lastIndexOf(File.separator) + 1,
                         selectedFilename.lastIndexOf("."));
 
-//                boolean imageAdded = false;
+                // boolean imageAdded = false;
 
                 Point imageDimensions = RasterImageIO
                         .getImageDimensions(selectedFilename);
@@ -146,8 +145,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                         this.workbenchContext);
 
                 if (env != null) {
-                    addImage(workbenchContext, env,
-                            imageDimensions);
+                    addImage(workbenchContext, env, imageDimensions);
                 }
 
                 OpenRecentPlugIn.get(workbenchContext).addRecentFile(file);
@@ -163,10 +161,10 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     private void addImage(WorkbenchContext context, Envelope envelope,
             Point imageDimensions) throws NoninvertibleTransformException {
 
-        if(context.getTask() == null) {
+        if (context.getTask() == null) {
             context.getWorkbench().getFrame().addTaskFrame();
         }
-        
+
         String newLayerName = context.getLayerManager().uniqueLayerName(
                 cachedLayer);
 
@@ -185,12 +183,13 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
         RasterImageLayer rLayer = new RasterImageLayer(newLayerName,
                 context.getLayerManager(), imageFileName, null, envelope);
-        //[Giuseppe Aruta 04/01/2017] Store SRS info into RasterImageLayer.class metadata
+        // [Giuseppe Aruta 04/01/2017] Store SRS info into
+        // RasterImageLayer.class metadata
         try {
-          rLayer.setSRSInfo(ProjUtils.getSRSInfoFromLayerSource(rLayer));
+            rLayer.setSRSInfo(ProjUtils.getSRSInfoFromLayerSource(rLayer));
         } catch (Exception e1) {
-          e1.printStackTrace();
-      }
+            e1.printStackTrace();
+        }
         // #################################
 
         MetaInformationHandler mih = new MetaInformationHandler(rLayer);
@@ -204,10 +203,16 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         // Double(envelope.getHeight()));
         mih.addMetaInformation("real-world-width", envelope.getWidth());
         mih.addMetaInformation("real-world-height", envelope.getHeight());
+        // [Giuseppe Aruta 2017/11/13] Ass SRID and project source as
+        // metadata. Those datas are saved into OJ project file and can be
+        // reused
+        // by the plugins
+        mih.addMetaInformation("srid", rLayer.getSRSInfo().getCode());
+        mih.addMetaInformation("srid-location", rLayer.getSRSInfo().getSource());
 
         // ###################################
         context.getLayerManager().addLayerable(catName, rLayer);
-        
+
         if (zoomToInsertedImage || layersAsideImage == 0) {
             // logger.printDebug("zooming to image, layers: " +
             // layersAsideImage);
@@ -217,7 +222,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 // logger.printDebug(e.getMessage());
             }
         }
-        
+
     }
 
     /**
@@ -246,7 +251,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
         this.worldFileHandler = new WorldFileHandler(fileName,
                 allwaysLookForTFWExtension);
-       
+
         if (imageDimensions == null) {
             // logger.printError("can not determine image dimensions");
             context.getWorkbench()
@@ -372,7 +377,8 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
                 env = new Envelope(upperLeft, lowerRight);
 
-            } else if (fileName.toLowerCase().endsWith(".asc") || fileName.toLowerCase().endsWith(".txt")) {
+            } else if (fileName.toLowerCase().endsWith(".asc")
+                    || fileName.toLowerCase().endsWith(".txt")) {
                 isGeoTiff = true;
                 GridAscii ga = new GridAscii(fileName);
 

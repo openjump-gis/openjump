@@ -24,7 +24,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageIOUtils;
 import org.openjump.core.rasterimage.RasterImageLayer;
@@ -38,7 +37,6 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -52,12 +50,14 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
     /**
      * 
      * @author Giuseppe Aruta
-     * @date 2015_3_25 (Giuseppe Aruta) This class allows to change a range allows values to
-     *       nodata Reverse operation extracts the input range of value and set
-     *       the others to nodata The output is a ESRI float file
-     * @date 2015_19_5  (Giuseppe Aruta) Correct bug introduced with new RasterImageLayer.cellvalue
-     *        Substitute export to .flt file to .asc file  
-     * @date 2015_15_11 (Giuseppe Aruta) Improved GUI   
+     * @date 2015_3_25 (Giuseppe Aruta) This class allows to change a range
+     *       allows values to nodata Reverse operation extracts the input range
+     *       of value and set the others to nodata The output is a ESRI float
+     *       file
+     * @date 2015_19_5 (Giuseppe Aruta) Correct bug introduced with new
+     *       RasterImageLayer.cellvalue Substitute export to .flt file to .asc
+     *       file
+     * @date 2015_15_11 (Giuseppe Aruta) Improved GUI
      */
 
     private Properties properties = null;
@@ -124,14 +124,16 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
         return multiEnableCheck;
     }
 
+    @Override
     public boolean execute(PlugInContext context) throws Exception {
-        
+
         return true;
     }
 
-    public void run(TaskMonitor monitor, PlugInContext context)      throws Exception {
-    	monitor.report(I18N
-                .get("jump.plugin.edit.NoderPlugIn.processing"));
+    @Override
+    public void run(TaskMonitor monitor, PlugInContext context)
+            throws Exception {
+        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.processing"));
         reportNothingToUndoYet(context);
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
@@ -201,6 +203,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
         JButton jButton_Dir = new javax.swing.JButton();
         jTextField_RasterOut.setText("");
         jButton_Dir.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_RasterOutActionPerformed(evt);
             }
@@ -223,7 +226,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
         if (!dialog.wasOKPressed()) {
-            return ;
+            return;
         } else {
             // Get the path of file
             String path = jTextField_RasterOut.getText();
@@ -257,13 +260,13 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
             RasterImageIOUtils.loadASC(flt_outFile, context, catName);
 
         }
-        return ;
+        return;
     }
 
     // This code derives from AdBToolbox 1.7 - Set the output file name
     private void jButton_RasterOutActionPerformed(java.awt.event.ActionEvent evt) {
         File outputPathFile = null;
-        JFileChooser chooser =  new GUIUtil.FileChooserWithOverwritePrompting();
+        JFileChooser chooser = new GUIUtil.FileChooserWithOverwritePrompting();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setSelectedFile(FileOperations.lastVisitedFolder);
         chooser.setDialogType(JFileChooser.SAVE_DIALOG);
