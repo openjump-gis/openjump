@@ -30,6 +30,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.openjump.core.apitools.LayerTools;
+import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.ccordsys.utils.SridLookupTable;
 import org.openjump.core.rasterimage.RasterImageLayer;
@@ -494,20 +495,16 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         try {
             String srsCode = (String) layer.getMetaInformation().getMetaData()
                     .get("srid");
-
-            srsInfo = SridLookupTable.getSrsAndUnitFromCode(srsCode);
-            proj_coordinate = srsInfo.toString();
             String srsLocation = (String) layer.getMetaInformation()
                     .getMetaData().get("srid-location");
-            if (srsLocation.equals(layer.getImageFileName())) {
-                proj_file_path = GEO_METADATA;
-            } else {
-                proj_file_path = srsLocation;
-            }
-        } catch (Exception e) {
-            srsInfo = SridLookupTable.getSrsAndUnitFromCode("0");
+            srsInfo = SridLookupTable.getSrsAndUnitFromCode(srsCode);
             proj_coordinate = srsInfo.toString();
-            proj_file_path = "";
+            proj_file_path = srsLocation;
+
+        } catch (Exception e) {
+            srsInfo = ProjUtils.getSRSInfoFromLayerSource(layer);
+            proj_coordinate = srsInfo.toString();
+            proj_file_path = srsInfo.getSource();
         }
     }
 

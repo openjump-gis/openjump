@@ -1,32 +1,37 @@
 package org.openjump.core.ccordsys.utils;
 
-import org.openjump.core.ccordsys.Unit;
-
-import java.io.UnsupportedEncodingException;
-
 import static org.openjump.core.ccordsys.utils.SRSInfo.Registry.EPSG;
 import static org.openjump.core.ccordsys.utils.SRSInfo.Registry.ESRI;
 import static org.openjump.core.ccordsys.utils.SRSInfo.Registry.SRID;
 
+import java.io.UnsupportedEncodingException;
+
+import org.openjump.core.ccordsys.Unit;
+
 /**
- * Small container for SRS information.
- * This class does not contain all information to perform coordinate transformation,
- * but enough to return metadata about SRS code or map unit
+ * Small container for SRS information. This class does not contain all
+ * information to perform coordinate transformation, but enough to return
+ * metadata about SRS code or map unit
  */
 public class SRSInfo {
 
     public static final String UNDEFINED = "0";
     public static final String USERDEFINED = "USER-DEFINED";
 
-    public enum Registry{SRID, EPSG, ESRI, IGNF, SRORG}
+    public enum Registry {
+        SRID, EPSG, ESRI, IGNF, SRORG
+    }
 
-    private String source;            // The source of SRS information (ex. prj file path)
-    private Registry registry = EPSG; // The registry in which this SRS is referenced
-    private String code = UNDEFINED;  // The code of the SRS
-    private String description = "";  // The name or description of the SRS
+    private String source = ""; // The source of SRS information (ex. prj file
+                                // path)
+    private Registry registry = EPSG; // The registry in which this SRS is
+                                      // referenced
+    private String code = UNDEFINED; // The code of the SRS
+    private String description = ""; // The name or description of the SRS
     private Unit unit = Unit.UNKNOWN; // The unit used by this SRS
 
-    public SRSInfo() {}
+    public SRSInfo() {
+    }
 
     public String getSource() {
         return source;
@@ -39,9 +44,12 @@ public class SRSInfo {
 
     public Registry getRegistry() {
         if (code == null && description == null)
-            throw new IllegalStateException("SRSInfo must have a code or a description");
-        if (registry != null) return registry;
-        else return guessRegistry(getCode());
+            throw new IllegalStateException(
+                    "SRSInfo must have a code or a description");
+        if (registry != null)
+            return registry;
+        else
+            return guessRegistry(getCode());
     }
 
     public SRSInfo setRegistry(Registry registry) {
@@ -56,7 +64,8 @@ public class SRSInfo {
 
     public String getCode() {
         if (code == null && description == null)
-            throw new IllegalStateException("SRSInfo must have a code or a description");
+            throw new IllegalStateException(
+                    "SRSInfo must have a code or a description");
         return code;
     }
 
@@ -67,7 +76,8 @@ public class SRSInfo {
 
     public String getDescription() {
         if (code == null && description == null)
-            throw new IllegalStateException("SRSInfo must have a code or a description");
+            throw new IllegalStateException(
+                    "SRSInfo must have a code or a description");
         return description;
     }
 
@@ -78,7 +88,8 @@ public class SRSInfo {
 
     public Unit getUnit() {
         if (code == null && description == null)
-            throw new IllegalStateException("SRSInfo must have a code or a description");
+            throw new IllegalStateException(
+                    "SRSInfo must have a code or a description");
         return unit;
     }
 
@@ -107,19 +118,27 @@ public class SRSInfo {
 
     @Override
     public String toString() {
-        return getRegistry().toString() + ':' + getCode() + ' ' + getDescription() + " [" + getUnit() + ']';
+        return getRegistry().toString() + ':' + getCode() + ' '
+                + getDescription() + " [" + getUnit() + ']';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         SRSInfo srsInfo = (SRSInfo) o;
 
-        if (registry != null ? !registry.equals(srsInfo.registry) : srsInfo.registry != null) return false;
-        if (code != null ? !code.equals(srsInfo.code) : srsInfo.code != null) return false;
-        if (description != null ? !description.equals(srsInfo.description) : srsInfo.description != null) return false;
+        if (registry != null ? !registry.equals(srsInfo.registry)
+                : srsInfo.registry != null)
+            return false;
+        if (code != null ? !code.equals(srsInfo.code) : srsInfo.code != null)
+            return false;
+        if (description != null ? !description.equals(srsInfo.description)
+                : srsInfo.description != null)
+            return false;
         return unit != null ? unit.equals(srsInfo.unit) : srsInfo.unit == null;
 
     }
@@ -128,7 +147,8 @@ public class SRSInfo {
     public int hashCode() {
         int result = registry != null ? registry.hashCode() : 0;
         result = 31 * result + (code != null ? code.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result
+                + (description != null ? description.hashCode() : 0);
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
         return result;
     }
