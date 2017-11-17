@@ -145,6 +145,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 import com.vividsolutions.jump.workbench.ui.zoom.ZoomToCoordinatePlugIn;
+import java.util.List;
 
 /**
  * This class is responsible for the main window of the JUMP application.
@@ -405,6 +406,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     private Set choosableStyleClasses = new HashSet();
 
     private ArrayList<TaskListener> taskListeners = new ArrayList<TaskListener>();
+    
+    private ArrayList<ApplicationExitHandler> applicationExitHandlers = new ArrayList<>();
 
     private Map nodeClassToLayerNamePopupMenuMap = CollectionUtil
             .createMap(new Object[] { Layer.class, layerNamePopupMenu,
@@ -1377,6 +1380,13 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     }
 
     private void closeApplication() {
+        // run all applicationExitHandlers
+        Object[] handlers = applicationExitHandlers.toArray();
+        for (Object handler : handlers) {
+            ((ApplicationExitHandler)handler).exitApplication(this);
+        }
+        
+        // for compatibilty reasons run the old applicationExitHandler as last
         applicationExitHandler.exitApplication(this);
     }
 
@@ -1808,12 +1818,56 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         internalFrameCloseHandler = value;
     }
 
+    /**
+     * You should use the new addApplicationExitHandler(),
+     * removeApplicationExitHandler(), getApplicationExitHandlers() methods.
+     * 
+     * @return
+     * @deprecated
+     */
+    @Deprecated
     public ApplicationExitHandler getApplicationExitHandler() {
         return applicationExitHandler;
     }
 
+    /**
+     * You should use the new addApplicationExitHandler(),
+     * removeApplicationExitHandler(), getApplicationExitHandlers() methods.
+     * 
+     * @return
+     * @deprecated
+     */
+    @Deprecated
     public void setApplicationExitHandler(ApplicationExitHandler value) {
         applicationExitHandler = value;
+    }
+    
+    /**
+     * Gets the ApplicationExitHandlers.
+     * 
+     * @return the ApplicationExitHandlers
+     */
+    public List<ApplicationExitHandler> getApplicationExitHandlers() {
+        return applicationExitHandlers;
+    }
+    
+    /**
+     * Adds an ApplicationExitHandler, wich will be executed if the
+     * WorkbenchFrame gets closing.
+     * 
+     * @param aeh the ApplicationExitHandler to add
+     */
+    public void addApplicationExitHandler(ApplicationExitHandler aeh) {
+        applicationExitHandlers.add(aeh);
+    }
+    
+    /**
+     * Remove's the given ApplicationExitHandler.
+     * 
+     * @param aeh the ApplicationExitHandler to remove
+     */
+    public void removeApplicationExitHandler(ApplicationExitHandler aeh) {
+        applicationExitHandlers.remove(aeh);
     }
 
     private class DefaultInternalFrameCloser implements

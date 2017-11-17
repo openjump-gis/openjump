@@ -73,17 +73,14 @@ public class ConnectionManager {
         });
         
         // close all connections on exit
-        final ApplicationExitHandler oldApplicationExitHandler = context
-            .getWorkbench().getFrame().getApplicationExitHandler();
         context.getWorkbench().getFrame()
-            .setApplicationExitHandler(new ApplicationExitHandler() {
+            .addApplicationExitHandler(new ApplicationExitHandler() {
               public void exitApplication(JFrame mainFrame) {
                 try {
                   closeConnections();
                 } catch (DataStoreException e) {
                   throw new RuntimeException(e);
                 }
-                oldApplicationExitHandler.exitApplication(mainFrame);
               }
             });
     }
