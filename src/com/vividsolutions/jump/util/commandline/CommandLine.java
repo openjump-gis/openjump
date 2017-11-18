@@ -93,8 +93,17 @@ public class CommandLine {
   }
 
   public String printDoc() {
+    return printDoc(null);
+  }
+  
+  public String printDoc(Exception e) {
 
-    String out = "Syntax:\n  oj_starter [-option [<parameter>]]... [<project_file>]... [<data_file>]...\n\nOptions:\n";
+    String out = "";
+        
+    if (e instanceof Exception )
+      out += "Error:\n  " + e.getMessage() + "\n\n";
+
+    out += "Syntax:\n  oj_starter [-option [<parameter>]]... [<project_file>]... [<data_file>]...\n\nOptions:\n";
 
     for (OptionSpec optionSpec : optSpecs) {
       String names = "";

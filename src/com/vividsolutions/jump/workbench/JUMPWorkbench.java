@@ -679,7 +679,12 @@ public class JUMPWorkbench {
     commandLine.addOptionSpec(new OptionSpec(new String[] { "p",
         "print-properties" }, 0, "print a list of runtime properties"));
 
-    commandLine.parse(args);
+    try {
+      commandLine.parse(args);
+    } catch (ParseException e) {
+      printProperly(commandLine.printDoc(e));
+      System.exit(1);
+    }
   }
 
   public PlugInManager getPlugInManager() {

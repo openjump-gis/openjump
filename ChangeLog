@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-11-18 ede
+  * always print help output when a wrong parameter/option was given
+  * added --help switch as users might expect it
+
 2017-11-17 Matthias Scholz <ms@jammerhund.de>
   * added methods for handling multiple ApplicationExitHandler in the
     WorkbenchFrame. Set the old getApplicationExitHandler() and
