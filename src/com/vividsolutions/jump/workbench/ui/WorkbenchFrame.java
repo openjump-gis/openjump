@@ -1827,7 +1827,12 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      */
     @Deprecated
     public ApplicationExitHandler getApplicationExitHandler() {
-        return applicationExitHandler;
+        // return just a stub, functionality is replaced by addApplicationExitHandler()
+        return new ApplicationExitHandler() {
+          @Override
+          public void exitApplication(JFrame mainFrame) {
+          }
+        };
     }
 
     /**
@@ -1839,9 +1844,9 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      */
     @Deprecated
     public void setApplicationExitHandler(ApplicationExitHandler value) {
-        applicationExitHandler = value;
+        addApplicationExitHandler(value);
     }
-    
+
     /**
      * Gets the ApplicationExitHandlers.
      * 
@@ -1850,7 +1855,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     private List<ApplicationExitHandler> getApplicationExitHandlers() {
         return applicationExitHandlers;
     }
-    
+
     /**
      * Adds an ApplicationExitHandler, wich will be executed if the
      * WorkbenchFrame gets closing.
@@ -1858,9 +1863,11 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      * @param aeh the ApplicationExitHandler to add
      */
     public void addApplicationExitHandler(ApplicationExitHandler aeh) {
-        applicationExitHandlers.add(aeh);
+      if (aeh == null)
+        throw new IllegalArgumentException("ApplicationExitHandler must not be null!");
+      applicationExitHandlers.add(aeh);
     }
-    
+
     /**
      * Remove's the given ApplicationExitHandler.
      * 
