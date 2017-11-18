@@ -1847,7 +1847,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      * 
      * @return the ApplicationExitHandlers
      */
-    public List<ApplicationExitHandler> getApplicationExitHandlers() {
+    private List<ApplicationExitHandler> getApplicationExitHandlers() {
         return applicationExitHandlers;
     }
     
