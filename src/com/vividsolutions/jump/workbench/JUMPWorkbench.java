@@ -670,7 +670,7 @@ public class JUMPWorkbench {
     commandLine.addOptionSpec(new OptionSpec(new String[] { "v", "verbosity" }, 1,
         "logging verbosity, either: off, error, warn, info, debug, trace, all"));
     // add help
-    commandLine.addOptionSpec(new OptionSpec(new String[] { "h", "help" }, 0,
+    commandLine.addOptionSpec(new OptionSpec(new String[] { "h", "help", "-help" }, 0,
         "show this help"));
     // add version
     commandLine.addOptionSpec(new OptionSpec(new String[] { "version", "-version" },
