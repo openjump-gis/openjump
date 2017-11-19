@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-11-19 mmichaud <m.michael.michaud@orange.fr>
+  * hack to solve #448 about creating new folders in JFCWithEnterAction
+
 2017-11-18 ede
   * always print help output when a wrong parameter/option was given
   * added --help switch as users might expect it

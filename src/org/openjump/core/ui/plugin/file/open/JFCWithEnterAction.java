@@ -1,12 +1,12 @@
 package org.openjump.core.ui.plugin.file.open;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.lang.reflect.Method;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
 
@@ -30,7 +30,10 @@ public class JFCWithEnterAction extends JFileChooser {
       }
 
       public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+        // The test on e.getSource() makes sure that we are not validating an edit operation
+        // on a folder name in the JViewport(edit operation in the directory structure)
+        if (e.getKeyCode() == KeyEvent.VK_ENTER && e.getSource() instanceof Component &&
+                SwingUtilities.getAncestorOfClass(JViewport.class, (Component)e.getSource())== null) {
           FileChooserUI ui = getUI();
           // emulate the action that is usually performed on the approve button
           if (ui instanceof BasicFileChooserUI) {
