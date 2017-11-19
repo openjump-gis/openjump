@@ -7,6 +7,13 @@ import java.util.Iterator;
 
 import javax.swing.Icon;
 
+import com.vividsolutions.jump.io.datasource.Connection;
+import com.vividsolutions.jump.parameter.ParameterList;
+import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
+import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionManagerToolboxPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionPanel;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.apitools.objecttyperoles.FeatureCollectionRole;
 import org.openjump.core.apitools.objecttyperoles.RoleOutline;
@@ -77,17 +84,6 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
         return IconLoader.icon("envelope.png");
     }
 
-    /*
-     * public void initialize(PlugInContext context) throws Exception {
-     * 
-     * context.getFeatureInstaller().addMainMenuPlugin( this, new String[] {
-     * MenuNames.PLUGINS }, // new String[] {MenuNames.PLUGINS, //
-     * I18NPlug.getI18N("RasterInfo_Extension")}, getName(), false,
-     * IconLoader.icon("envelope.png"),
-     * createEnableCheck(context.getWorkbenchContext()));
-     * 
-     * }
-     */
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(
                 workbenchContext);
@@ -98,33 +94,8 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
                         1, Layerable.class));
     }
 
-    protected static FeatureSchema defaultSchema = null;
 
-    public ExportLayerableEnvelopeAsGeometryPlugIn() {
-        // super(new PersonalLogger(DebugUserIds.OLE));
-
-        if (ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema == null) {
-            ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema = new FeatureSchema();
-
-            ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema.addAttribute(
-                    "GEOMETRY", AttributeType.GEOMETRY);
-            ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema.addAttribute(
-                    LAYER, AttributeType.STRING);
-            ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema.addAttribute(
-                    SOURCE_PATH, AttributeType.STRING);
-            ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema.addAttribute(
-                    SRID, AttributeType.STRING);
-            ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema.addAttribute(
-                    minX, AttributeType.DOUBLE);
-            ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema.addAttribute(
-                    maxX, AttributeType.DOUBLE);
-            ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema.addAttribute(
-                    minY, AttributeType.DOUBLE);
-            ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema.addAttribute(
-                    maxY, AttributeType.DOUBLE);
-
-        }
-    }
+    public ExportLayerableEnvelopeAsGeometryPlugIn() { }
 
     /**
      * @inheritDoc
@@ -154,11 +125,9 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
                 Layerable.class);
         final WorkbenchContext wbcontext = context.getWorkbenchContext();
         Envelope envelope = new Envelope();
-        int size = -1;// Layer size
-        size = context.getSelectedLayerables().size();// Get number
-        for (Iterator i = wbcontext.getLayerNamePanel()
-                .selectedNodes(Layerable.class).iterator(); i.hasNext();) {
-            Layerable slayer = (Layerable) i.next();
+
+        for (Object layerable : wbcontext.getLayerableNamePanel().selectedNodes(Layerable.class)) {
+            Layerable slayer = (Layerable)layerable;
             if (slayer instanceof WMSLayer) {
                 envelope.expandToInclude(((WMSLayer) slayer).getEnvelope());
             } else if (slayer instanceof WFSLayer) {
@@ -183,75 +152,56 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
 
         }
 
-        String name = null;
-        String sourceClass = "";
-        String sourcePath = NOTSAVED;
+        Geometry geom;
+        GeometryFactory gf = new GeometryFactory();
+        Envelope envCopy = new Envelope(envelope);
+        if (envCopy.isNull()) {
+            geom = gf.createPolygon(gf.createLinearRing(new Coordinate[0]));
+        } else {
+            if (envCopy.getArea() == 0) {
+                envCopy.expandBy(1E-6);
 
-        Geometry geom = new GeometryFactory()
-                .createPolygon(new GeometryFactory()
-                        .createLinearRing(new Coordinate[] {
-                                new Coordinate(envelope.getMinX(), envelope
-                                        .getMinY()),
-                                new Coordinate(envelope.getMinX(), envelope
-                                        .getMaxY()),
-                                new Coordinate(envelope.getMaxX(), envelope
-                                        .getMaxY()),
-                                new Coordinate(envelope.getMaxX(), envelope
-                                        .getMinY()),
-                                new Coordinate(envelope.getMinX(), envelope
-                                        .getMinY()) }), null);
+            }
+            geom = gf.toGeometry(envCopy);
+        }
 
-        FeatureCollection newFeaturecollection = new FeatureDataset(
-                ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema.clone());
+        FeatureSchema schema = getFeatureSchema();
+        FeatureCollection newFeaturecollection = new FeatureDataset(schema);
+        BasicFeature feature = new BasicFeature(schema);
 
-        BasicFeature feature = new BasicFeature(
-                ExportLayerableEnvelopeAsGeometryPlugIn.defaultSchema.clone());
+        feature.setGeometry(geom);
 
-        feature.setAttribute("GEOMETRY", geom);
-
-        if (size == 1) {
+        int size = context.getSelectedLayerables().size(); // Get number
+        String name;
+        String path = NOTSAVED;
+        String srid = null;
+        if (size == 1 && layer != null) {
             name = layer.getName();
-            feature.setAttribute(LAYER, name);
             if (layer instanceof WMSLayer) {
-                feature.setAttribute(SOURCE_PATH,
-                        ((WMSLayer) layer).getServerURL());
-
-                feature.setAttribute(SRID, ((WMSLayer) layer).getSRS());
+                path = ((WMSLayer)layer).getServerURL();
+                srid = ((WMSLayer) layer).getSRS();
             } else if (layer instanceof WFSLayer) {
-                feature.setAttribute(SOURCE_PATH,
-                        ((WFSLayer) layer).getServerURL());
-                feature.setAttribute(SRID, ((WFSLayer) layer).getCrs());
+                path = ((WFSLayer)layer).getServerURL();
+                srid = ((WFSLayer)layer).getCrs();
             } else if (layer instanceof RasterImageLayer) {
-                sourcePath = ((RasterImageLayer) layer).getImageFileName();
-                setInfoProjection((RasterImageLayer) layer);
-                feature.setAttribute(SOURCE_PATH, sourcePath);
-                feature.setAttribute(SRID, srsCode);
-
+                path = ((RasterImageLayer)layer).getImageFileName();
+                srid = getInfoProjection((RasterImageLayer)layer).getCode();
             } else if (layer instanceof Layer
                     && ((Layer) layer).getStyle(ReferencedImageStyle.class) == null) {
-
-                DataSourceQuery dsq = ((Layer) layer).getDataSourceQuery();
-                if (dsq != null) {
-                    String dsqSourceClass = dsq.getDataSource().getClass()
-                            .getName();
-                    if (sourceClass.equals(""))
-                        sourceClass = dsqSourceClass;
-                    Object fnameObj = dsq.getDataSource().getProperties()
-                            .get("File");
+                DataSourceQuery dsq = ((Layer)layer).getDataSourceQuery();
+                if (dsq != null && dsq.getDataSource() != null) {
+                    Object fnameObj = dsq.getDataSource().getProperties().get("File");
                     if (fnameObj == null) {
                         fnameObj = dsq
                                 .getDataSource()
                                 .getProperties()
                                 .get(DataStoreDataSource.CONNECTION_DESCRIPTOR_KEY);
-                    }
-                    if (fnameObj != null) {
-                        sourcePath = fnameObj.toString().replace("%20", " ");
+                        path = ((ConnectionDescriptor)fnameObj).getParametersString();
+                    } else {
+                        path = fnameObj.toString().replace("%20", " ");
                     }
                 }
-                setInfoProjection((Layer) layer);
-                feature.setAttribute(SOURCE_PATH, sourcePath);
-                feature.setAttribute(SRID, srsCode);
-
+                srid = getInfoProjection((Layer)layer).getCode();
             } else if (layer instanceof Layer
                     && ((Layer) layer).getStyle(ReferencedImageStyle.class) != null) {
 
@@ -259,28 +209,27 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
                         .getFeatureCollectionWrapper();
                 for (Iterator i = featureCollection.iterator(); i.hasNext();) {
                     Feature feat = (Feature) i.next();
-                    sourcePath = feat.getString("IMG_URI");
-                    if (sourcePath != null) {
-                        sourcePath = sourcePath.substring(5)
+                    path = feat.getString("IMG_URI");
+                    if (path != null) {
+                        path = path.substring(5)
                                 .replace("%20", " ");
                     }
 
                 }
-                setInfoProjection((Layer) layer);
-                feature.setAttribute(SOURCE_PATH, sourcePath);
-                feature.setAttribute(SRID, srsCode);
+                srid = getInfoProjection((Layer)layer).getCode();
             }
         } else {
             name = MULTIPLESOURCE;
-            feature.setAttribute(LAYER, name);
-            feature.setAttribute(SOURCE_PATH, MULTIPLESOURCE);
-            feature.setAttribute(SRID, null);
+            path = MULTIPLESOURCE;
         }
+        feature.setAttribute(LAYER, name);
+        feature.setAttribute(SOURCE_PATH, path);
+        feature.setAttribute(SRID, srid);
 
-        feature.setAttribute(minX, roundOff(envelope.getMinX()));
-        feature.setAttribute(maxX, roundOff(envelope.getMaxX()));
-        feature.setAttribute(minY, roundOff(envelope.getMinY()));
-        feature.setAttribute(maxY, roundOff(envelope.getMaxX()));
+        feature.setAttribute(minX, envelope.isNull() ? null : roundOff(envelope.getMinX()));
+        feature.setAttribute(maxX, envelope.isNull() ? null : roundOff(envelope.getMaxX()));
+        feature.setAttribute(minY, envelope.isNull() ? null : roundOff(envelope.getMinY()));
+        feature.setAttribute(maxY, envelope.isNull() ? null : roundOff(envelope.getMaxY()));
         newFeaturecollection.add(feature);
 
         addLayer(ENVELOPE + "_" + name, newFeaturecollection, context,
@@ -296,30 +245,40 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
                 context, role);
     }
 
+    private FeatureSchema getFeatureSchema() {
+        FeatureSchema defaultSchema = new FeatureSchema();
+        defaultSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+        defaultSchema.addAttribute(LAYER, AttributeType.STRING);
+        defaultSchema.addAttribute(SOURCE_PATH, AttributeType.STRING);
+        defaultSchema.addAttribute(SRID, AttributeType.STRING);
+        defaultSchema.addAttribute(minX, AttributeType.DOUBLE);
+        defaultSchema.addAttribute(maxX, AttributeType.DOUBLE);
+        defaultSchema.addAttribute(minY, AttributeType.DOUBLE);
+        defaultSchema.addAttribute(maxY, AttributeType.DOUBLE);
+        return defaultSchema;
+    }
+
     // Use BigDecimal to round off decimals
     public static double roundOff(double number) {
         BigDecimal bigDecimal = new BigDecimal(number);
-        BigDecimal roundedWithScale = bigDecimal.setScale(3,
+        BigDecimal roundedWithScale = bigDecimal.setScale(6,
                 BigDecimal.ROUND_HALF_EVEN);
         double rounded = roundedWithScale.doubleValue();
         return rounded;
     }
 
-    WorkbenchContext workbenchContext;
-
-    String srsCode = "0";
-
-    private void setInfoProjection(Layer layer) throws Exception {
+    private SRSInfo getInfoProjection(Layer layer) throws Exception {
         SRSInfo srsInfo;
         try {
             srsInfo = ProjUtils.getSRSInfoFromLayerStyleOrSource(layer);
         } catch (Exception e) {
             srsInfo = ProjUtils.getSRSInfoFromLayerSource(layer);
         }
-        srsCode = srsInfo.getCode();
+        if (srsInfo == null) srsInfo = new SRSInfo();
+        return srsInfo;
     }
 
-    private void setInfoProjection(RasterImageLayer layer) throws Exception {
+    private SRSInfo getInfoProjection(RasterImageLayer layer) throws Exception {
         String fileSourcePath = layer.getImageFileName();
         String extension = FileUtil.getExtension(fileSourcePath).toLowerCase();
         SRSInfo srsInfo;
@@ -338,7 +297,8 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
             srsInfo = ProjUtils.getSRSInfoFromAuxiliaryFile(fileSourcePath);
 
         }
-        srsCode = srsInfo.getCode();
+        if (srsInfo == null) srsInfo = new SRSInfo();
+        return srsInfo;
     }
 
 }
