@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-11-26 mmichaud <m.michael.michaud@orange.fr>
+  * add appendToClassPathForInstrumentation method to PlugInClassLoader
+    so that it can be started from IDE using code instrumentation
+
 2017-11-19 mmichaud <m.michael.michaud@orange.fr>
   * hack to solve #448 about creating new folders in JFCWithEnterAction
 

@@ -1,7 +1,10 @@
 package com.vividsolutions.jump.workbench.plugin;
 
+import sun.net.www.ParseUtil;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.InvalidPathException;
@@ -125,6 +128,32 @@ public class PlugInClassLoader extends URLClassLoader {
       // we cannot use Logger during VM init, so we simply print to STDERR
       ignore.printStackTrace(System.err);
       return null;
+    }
+  }
+
+  /**
+   * This class loader supports dynamic additions to the class path
+   * at runtime.
+   *
+   * @see java.lang.instrument.Instrumentation#appendToSystemClassLoaderSearch
+   */
+  private  void appendToClassPathForInstrumentation(String path) {
+    assert(Thread.holdsLock(this));
+
+    // addURL is a no-op if path already contains the URL
+    super.addURL( getFileURL(new File(path)) );
+  }
+
+  static  URL getFileURL(File file) {
+    try {
+      file = file.getCanonicalFile();
+    } catch (IOException e) {}
+
+    try {
+      return ParseUtil.fileToEncodedURL(file);
+    } catch (MalformedURLException e) {
+      // Should never happen since we specify the protocol...
+      throw new InternalError();
     }
   }
 };
