@@ -73,6 +73,7 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.imagery.geoimg.GeoImageFactoryFileLayerLoader;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
@@ -223,13 +224,15 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
         trans.compose(fromOriginTrans);
 
         trans.translate(transX, transY);
-        if (dialog.getBoolean(FORCE_IMAGEWARP)) {
+        // Image transformation should work only for ReferencedImageLayer
+        Layer layer = context.getLayerManager().getLayer(layerName);
+        if (dialog.getBoolean(FORCE_IMAGEWARP)
+                & layer.getStyle(ReferencedImageStyle.class) != null) {
             forceImageToWarp(context, trans);
 
         }
 
-        FeatureCollection fc = context.getLayerManager().getLayer(layerName)
-                .getFeatureCollectionWrapper();
+        FeatureCollection fc = layer.getFeatureCollectionWrapper();
 
         FeatureCollection resultFC = new FeatureDataset(fc.getFeatureSchema());
 
