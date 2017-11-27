@@ -73,7 +73,7 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
-import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImagesLayer;
 import com.vividsolutions.jump.workbench.imagery.geoimg.GeoImageFactoryFileLayerLoader;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
@@ -126,6 +126,8 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
             .get("jump.plugin.edit.AffineTransformationPlugIn.save");
     private static final String RESIZE_IMAGE_TOOLTIP = I18N
             .get("jump.plugin.edit.AffineTransformationPlugIn.resize-image-tooltip");
+    JFileChooser fileChooser = GUIUtil
+            .createJFileChooserWithOverwritePrompting();
 
     // private static final String IMAGE_OPTIONS = "Image layer options";
     // private static final String FORCE_IMAGEWARP =
@@ -227,7 +229,7 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
         // Image transformation should work only for ReferencedImageLayer
         Layer layer = context.getLayerManager().getLayer(layerName);
         if (dialog.getBoolean(FORCE_IMAGEWARP)
-                & layer.getStyle(ReferencedImageStyle.class) != null) {
+                & ReferencedImagesLayer.class.isInstance(layer)) {
             forceImageToWarp(context, trans);
 
         }
@@ -548,8 +550,7 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
     public void forceImageToWarp(PlugInContext context,
             AffineTransformation trans) throws Exception {
         try {
-            JFileChooser fileChooser = GUIUtil
-                    .createJFileChooserWithOverwritePrompting();
+
             fileChooser.setDialogTitle(SAVE);
             // fileChooser.setFileFilter(filter);
             if (PersistentBlackboardPlugIn.get(context.getWorkbenchContext())
@@ -564,94 +565,97 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
             option = fileChooser.showSaveDialog(context.getWorkbenchFrame());
             if (option == JFileChooser.APPROVE_OPTION) {
                 outFile = fileChooser.getSelectedFile();
+                String filePath = outFile.getAbsolutePath();
+                outFile = new File(filePath + ".png");
+                Layer lyr = context.getLayerManager().getLayer(layerName);
+                Envelope inEnvelope = new Envelope();
+                // Get the bufferedImage from a ReferencedImage layer
+                BufferedImage InImageBuffer = ImageryUtils
+                        .getBufferFromReferenceImageLayer(lyr);
+                // Ad alpha chanel
+                InImageBuffer = ImageryUtils.addAlphaChannel(InImageBuffer);
+                if (dialog.getBoolean(RESIZE_IMAGE)) {
+                    InImageBuffer = ImageryUtils.resizeImage(InImageBuffer,
+                            InImageBuffer.getWidth() / 2,
+                            InImageBuffer.getHeight() / 2);
+                }
+                inEnvelope.expandToInclude(lyr.getFeatureCollectionWrapper()
+                        .getEnvelope());
+                Geometry P0 = new GeometryFactory().createPoint(new Coordinate(
+                        inEnvelope.getMinX(), inEnvelope.getMinY()));
+                Geometry P1 = new GeometryFactory().createPoint(new Coordinate(
+                        inEnvelope.getMaxX(), inEnvelope.getMinY()));
+                Geometry P2 = new GeometryFactory().createPoint(new Coordinate(
+                        inEnvelope.getMaxX(), inEnvelope.getMaxY()));
+                Geometry P3 = new GeometryFactory().createPoint(new Coordinate(
+                        inEnvelope.getMinX(), inEnvelope.getMaxY()));
+                Geometry P0_ = trans.transform(P0);
+                Geometry P1_ = trans.transform(P1);
+                Geometry P2_ = trans.transform(P2);
+                Geometry P3_ = trans.transform(P3);
+                // Apply transformation from source points to target points
+                // To use for the image buffer
+                WarpPerspective warp = new WarpPerspective(
+                        PerspectiveTransform.getQuadToQuad(
+                                P0.getCoordinate().x, P0.getCoordinate().y,
+                                P1.getCoordinate().x, P1.getCoordinate().y,
+                                P2.getCoordinate().x, P2.getCoordinate().y,
+                                P3.getCoordinate().x, P3.getCoordinate().y,
+                                P0_.getCoordinate().x, P0_.getCoordinate().y,
+                                P1_.getCoordinate().x, P1_.getCoordinate().y,
+                                P2_.getCoordinate().x, P2_.getCoordinate().y,
+                                P3_.getCoordinate().x, P3_.getCoordinate().y));
+                // Apply transformation to the image buffer
+                // outImageBuffer to use for transformed Image
+
+                ParameterBlock pb = new ParameterBlock();
+                pb.addSource(InImageBuffer);
+                pb.add(warp);
+                pb.add(new InterpolationNearest());
+                RenderedOp outputOp = JAI.create("warp", pb);
+                BufferedImage outImageBuffer = outputOp.getAsBufferedImage();
+                GeometryFactory gf = new GeometryFactory();
+                final Geometry outGeometry = trans.transform(gf
+                        .toGeometry(inEnvelope));
+                // Get Envelope from out Geometry
+                // outoutEnvelope to use for transformed Image
+                final Envelope outEnvelope = outGeometry.getEnvelope()
+                        .getEnvelopeInternal();
+                // Set input raster layer to invisible
+                lyr.setVisible(false);
+                // Save output (affined transformed) image TIF file
+                // String path = System.getProperty("java.io.tmpdir");
+                // File outFile = new File(path.concat(File.separator)
+                // .concat(lyr.getName()).concat(".tif"));
+                // outImageBuffer = imageToBufferedImage(outImageBuffer);
+                ImageryUtils.saveToPng(outFile, outImageBuffer);
+                // RasterImageIOUtils.saveImage(outFile, "tif",
+                // imageToBufferedImage(outImageBuffer), outEnvelope);
+                WorldFileHandler worldFileHandler = new WorldFileHandler(
+                        outFile.getAbsolutePath(), false);
+                worldFileHandler.writeWorldFile(outEnvelope,
+                        outImageBuffer.getWidth(), outImageBuffer.getHeight());
+                Registry registry = context.getWorkbenchContext().getRegistry();
+                @SuppressWarnings("unchecked")
+                List<FileLayerLoader> loaders = registry
+                        .getEntries(FileLayerLoader.KEY);
+                FileLayerLoader loader = null;
+                for (FileLayerLoader fileLayerLoader : loaders) {
+                    if (fileLayerLoader instanceof GeoImageFactoryFileLayerLoader)
+                        loader = fileLayerLoader;
+                }
+                URI uri = outFile.toURI();
+                Map<String, Object> dp = new HashMap<String, Object>();
+                dp.put(DataSource.URI_KEY, outFile.toURI().toString());
+                dp.put(DataSource.FILE_KEY, outFile);
+                dp.put(ImageryLayerDataset.ATTR_TYPE, "png");
+                // dp.put(context.toString(), StandardCategoryNames.WORKING);
+                loader.open(null, uri, dp);
+            } else if (option == JFileChooser.CANCEL_OPTION) {
+
+                return;
             }
 
-            String filePath = outFile.getAbsolutePath();
-            outFile = new File(filePath + ".png");
-            Layer lyr = context.getLayerManager().getLayer(layerName);
-            Envelope inEnvelope = new Envelope();
-            // Get the bufferedImage from a ReferencedImage layer
-            BufferedImage InImageBuffer = ImageryUtils
-                    .getBufferFromReferenceImageLayer(lyr);
-            // Ad alpha chanel
-            InImageBuffer = ImageryUtils.addAlphaChannel(InImageBuffer);
-            if (dialog.getBoolean(RESIZE_IMAGE)) {
-                InImageBuffer = ImageryUtils.resizeImage(InImageBuffer,
-                        InImageBuffer.getWidth() / 2,
-                        InImageBuffer.getHeight() / 2);
-            }
-            inEnvelope.expandToInclude(lyr.getFeatureCollectionWrapper()
-                    .getEnvelope());
-            Geometry P0 = new GeometryFactory().createPoint(new Coordinate(
-                    inEnvelope.getMinX(), inEnvelope.getMinY()));
-            Geometry P1 = new GeometryFactory().createPoint(new Coordinate(
-                    inEnvelope.getMaxX(), inEnvelope.getMinY()));
-            Geometry P2 = new GeometryFactory().createPoint(new Coordinate(
-                    inEnvelope.getMaxX(), inEnvelope.getMaxY()));
-            Geometry P3 = new GeometryFactory().createPoint(new Coordinate(
-                    inEnvelope.getMinX(), inEnvelope.getMaxY()));
-            Geometry P0_ = trans.transform(P0);
-            Geometry P1_ = trans.transform(P1);
-            Geometry P2_ = trans.transform(P2);
-            Geometry P3_ = trans.transform(P3);
-            // Apply transformation from source points to target points
-            // To use for the image buffer
-            WarpPerspective warp = new WarpPerspective(
-                    PerspectiveTransform.getQuadToQuad(P0.getCoordinate().x,
-                            P0.getCoordinate().y, P1.getCoordinate().x,
-                            P1.getCoordinate().y, P2.getCoordinate().x,
-                            P2.getCoordinate().y, P3.getCoordinate().x,
-                            P3.getCoordinate().y, P0_.getCoordinate().x,
-                            P0_.getCoordinate().y, P1_.getCoordinate().x,
-                            P1_.getCoordinate().y, P2_.getCoordinate().x,
-                            P2_.getCoordinate().y, P3_.getCoordinate().x,
-                            P3_.getCoordinate().y));
-            // Apply transformation to the image buffer
-            // outImageBuffer to use for transformed Image
-
-            ParameterBlock pb = new ParameterBlock();
-            pb.addSource(InImageBuffer);
-            pb.add(warp);
-            pb.add(new InterpolationNearest());
-            RenderedOp outputOp = JAI.create("warp", pb);
-            BufferedImage outImageBuffer = outputOp.getAsBufferedImage();
-            GeometryFactory gf = new GeometryFactory();
-            final Geometry outGeometry = trans.transform(gf
-                    .toGeometry(inEnvelope));
-            // Get Envelope from out Geometry
-            // outoutEnvelope to use for transformed Image
-            final Envelope outEnvelope = outGeometry.getEnvelope()
-                    .getEnvelopeInternal();
-            // Set input raster layer to invisible
-            lyr.setVisible(false);
-            // Save output (affined transformed) image TIF file
-            // String path = System.getProperty("java.io.tmpdir");
-            // File outFile = new File(path.concat(File.separator)
-            // .concat(lyr.getName()).concat(".tif"));
-            // outImageBuffer = imageToBufferedImage(outImageBuffer);
-            ImageryUtils.saveToPng(outFile, outImageBuffer);
-            // RasterImageIOUtils.saveImage(outFile, "tif",
-            // imageToBufferedImage(outImageBuffer), outEnvelope);
-            WorldFileHandler worldFileHandler = new WorldFileHandler(
-                    outFile.getAbsolutePath(), false);
-            worldFileHandler.writeWorldFile(outEnvelope,
-                    outImageBuffer.getWidth(), outImageBuffer.getHeight());
-            Registry registry = context.getWorkbenchContext().getRegistry();
-            @SuppressWarnings("unchecked")
-            List<FileLayerLoader> loaders = registry
-                    .getEntries(FileLayerLoader.KEY);
-            FileLayerLoader loader = null;
-            for (FileLayerLoader fileLayerLoader : loaders) {
-                if (fileLayerLoader instanceof GeoImageFactoryFileLayerLoader)
-                    loader = fileLayerLoader;
-            }
-            URI uri = outFile.toURI();
-            Map<String, Object> dp = new HashMap<String, Object>();
-            dp.put(DataSource.URI_KEY, outFile.toURI().toString());
-            dp.put(DataSource.FILE_KEY, outFile);
-            dp.put(ImageryLayerDataset.ATTR_TYPE, "tif");
-            // dp.put(context.toString(), StandardCategoryNames.WORKING);
-            loader.open(null, uri, dp);
         } catch (RuntimeException localRuntimeException) {
             JOptionPane.showMessageDialog(null, ALLOWED_IMAGES, null,
                     JOptionPane.INFORMATION_MESSAGE);
