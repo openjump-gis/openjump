@@ -1,7 +1,5 @@
 package com.vividsolutions.jump.workbench.ui.plugin.imagery;
 
-import it.geosolutions.imageio.plugins.tiff.TIFFImageWriteParam;
-
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -62,7 +60,7 @@ public class ImageryUtils {
             // setup writer
             ios = ImageIO.createImageOutputStream(tiffFile);
             writer.setOutput(ios);
-            TIFFImageWriteParam writeParam = new TIFFImageWriteParam(
+            ImageWriteParam writeParam = new ImageWriteParam(
                     Locale.ENGLISH);
             writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             writeParam.setCompressionType("LZW");
