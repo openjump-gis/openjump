@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-11-28 Giuseppe Aruta
+  * add Plugin to open OpenJUMP wiki pages on default internet browser.
+    Online links available on help menu
+
 2017-11-26 Giuseppe Aruta
   * add support to affine trasformatio to image layers
     to "Affine Trasformation (from parameters)" plugin
