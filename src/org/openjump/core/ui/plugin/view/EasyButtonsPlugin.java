@@ -35,9 +35,9 @@ import java.awt.BorderLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -49,15 +49,32 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
 public class EasyButtonsPlugin extends ToolboxPlugIn {
 
-  public static final String TOOLBOX_NAME = I18N
+  static final String TOOLBOX_NAME = I18N
       .get("org.openjump.core.ui.plugin.view.EasyButtonsPlugin.EZ-Buttons");
-  public static final ImageIcon ICON = IconLoader.icon("fugue/keyboard-smiley.png");
+  private static final ImageIcon ICON = IconLoader.icon("fugue/keyboard-smiley.png");
 
-  private JPopupMenu popup = new JPopupMenu();
+  //private JPopupMenu popup = new JPopupMenu();
+  private EasyPanel buttonPanel = null;
 
-  public void initialize(PlugInContext context) throws Exception {
+  public void initialize(final PlugInContext context) throws Exception {
     createMainMenuItem(new String[] { MenuNames.CUSTOMIZE }, getIcon(),
         context.getWorkbenchContext());
+    // Wait 2 seconds because EasyButtonsPlugIn needs all menu items
+    // to be initialized first
+    // Initialization is done here rather than in initializeToolbox because
+    // we want to be able to use EZKeys just after OpenJUMP initialization
+    // (and before the first use of the plugin)
+    new Thread() {
+      @Override public void run() {
+        try {
+          Thread.sleep(2000);
+          initializeToolbox(getToolbox(context.getWorkbenchContext()));
+        } catch(InterruptedException e) {
+          Logger.warn("Could not initialize EasyButtonsPlugin", e);
+        }
+      }
+    }.start();
+
   }
 
   public String getName() {
@@ -69,7 +86,8 @@ public class EasyButtonsPlugin extends ToolboxPlugIn {
   }
 
   protected void initializeToolbox(ToolboxDialog toolbox) {
-    EasyPanel buttonPanel = new EasyPanel(toolbox);
+    if (buttonPanel != null) return;
+    buttonPanel = new EasyPanel(toolbox);
     toolbox.getCenterPanel().add(buttonPanel, BorderLayout.CENTER);
     toolbox.setInitialLocation(new GUIUtil.Location(10, true, 10, true));
     toolbox.setResizable(false);

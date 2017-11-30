@@ -39,10 +39,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 
 import javax.swing.JButton;
@@ -73,7 +70,7 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 
 public class EasyPanel extends JPanel {
 
-  public final static String EZ_LIST_KEY = EasyPanel.class.getName()
+  private final static String EZ_LIST_KEY = EasyPanel.class.getName()
       + "EZ_LIST_KEY";
 
   // private final String UNUSED_BUTTON_NAME = "Right Click to Assign Button F";
@@ -94,7 +91,7 @@ public class EasyPanel extends JPanel {
   private JPopupMenu masterPopup = new JPopupMenu();
   // private JMenu rightClickMenu = new JMenu(RIGHT_CLICK_MENU);
   private ArrayList<JMenuItem> menuItemList = new ArrayList<JMenuItem>();
-  private ArrayList<String> menuNameList = new ArrayList<String>();
+  private ArrayList<String> menuNameList = new ArrayList<>();
   private HashMap<Integer,String> persistentButtonMap;
   private ToolboxDialog toolbox;
 
@@ -105,7 +102,7 @@ public class EasyPanel extends JPanel {
     if (o instanceof List) {
       // restore old style arraylist entries
       List<String> list = (List) o;
-      persistentButtonMap = new HashMap<Integer, String>();
+      persistentButtonMap = new HashMap<>();
       for (int i = 0; i < list.size(); i++) {
         persistentButtonMap.put(i, list.get(i));
       }
@@ -114,7 +111,7 @@ public class EasyPanel extends JPanel {
     } else if (o instanceof HashMap) {
       persistentButtonMap = (HashMap) o;
     } else {
-      persistentButtonMap = new HashMap();
+      persistentButtonMap = new HashMap<>();
       blackboard.put(EZ_LIST_KEY, persistentButtonMap);
     }
 
@@ -147,8 +144,8 @@ public class EasyPanel extends JPanel {
 
   private void recallButtonAssignments() {
     int buttonNumber; String name;
-    for (Iterator i = persistentButtonMap.entrySet().iterator(); i.hasNext();) {
-      Entry<Integer,String> e = (Entry) i.next();
+    for (Iterator<Entry<Integer,String>> i = persistentButtonMap.entrySet().iterator(); i.hasNext();) {
+      Entry<Integer,String> e = i.next();
       buttonNumber = e.getKey();
       name = e.getValue();
       int index = menuNameList.indexOf(name);
@@ -168,9 +165,9 @@ public class EasyPanel extends JPanel {
   private void buttonActionPerformed(ActionEvent e) {
     String name = e.getActionCommand();
     CustomButton button = null;
-    for (int i = 0; i < buttons.length; i++) {
-      if (buttons[i].getText().equalsIgnoreCase(name)) {
-        button = buttons[i];
+    for (CustomButton b : buttons) {
+      if (b.getText().equalsIgnoreCase(name)) {
+        button = b;
         break;
       }
     }
@@ -218,6 +215,8 @@ public class EasyPanel extends JPanel {
         JMenuItem jMenuItemRef = (JMenuItem) jPopupMenu.getComponent(j);
         JMenuItem jMenuItem = new CustomJMenuItem(jMenuItemRef);
         jMenuItem.setIcon(jMenuItemRef.getIcon());
+        menuNameList.add(jMenuItem.getText());
+        menuItemList.add(jMenuItemRef);
         rightClickMenu.add(jMenuItem);
         jMenuItem.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -261,7 +260,7 @@ public class EasyPanel extends JPanel {
     String name = e.getActionCommand();
     if (activeButton != null) {
       if (source instanceof JMenuItem
-          && ((JMenuItem) source).getText() == UNSET_BUTTON) {
+          && ((JMenuItem) source).getText().equals(UNSET_BUTTON)) {
         activeButton.unsetMenuItem();
       }
       if (source instanceof CustomJMenuItem) {
@@ -361,21 +360,19 @@ public class EasyPanel extends JPanel {
         if (component instanceof JMenu) {
           JMenu jMenu = (JMenu) component;
           MenuListener[] menuListeners = jMenu.getMenuListeners();
-          for (int i = 0; i < menuListeners.length; i++) {
-            if (menuListeners[i] instanceof FeatureInstaller.JumpMenuListener) {
-              ((FeatureInstaller.JumpMenuListener) menuListeners[i])
-                  .menuSelected(null);
+          for (MenuListener listener : menuListeners) {
+            if (listener instanceof FeatureInstaller.JumpMenuListener) {
+              listener.menuSelected(null);
             }
           }
         } else {
           JPopupMenu popupMenu = ((JPopupMenu) jMenuItem.getParent());
           PopupMenuListener[] listeners = popupMenu
               .getListeners(PopupMenuListener.class);
-          for (int i = 0; i < listeners.length; i++) {
-            if (listeners[i] instanceof PopupMenuListener) {
-              ((PopupMenuListener) listeners[i])
-                  .popupMenuWillBecomeVisible(new PopupMenuEvent(popupMenu));
-            }
+          for (PopupMenuListener listener : listeners) {
+            listener.popupMenuWillBecomeVisible(
+                    new PopupMenuEvent(popupMenu)
+            );
           }
         }
         SwingUtilities.invokeLater(new Runnable() {

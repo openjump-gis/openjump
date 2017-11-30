@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-11-30 mmichaud <m.michael.michaud@orange.fr>
+  * Fix EZButtons : fix save/restore shortcuts
+
 2017-11-28 Giuseppe Aruta
   * add Plugin to open OpenJUMP wiki pages on default internet browser.
     Online links available on help menu
