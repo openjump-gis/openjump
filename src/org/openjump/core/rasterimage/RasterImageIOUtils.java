@@ -28,6 +28,7 @@ import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlug
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
@@ -169,6 +170,24 @@ public class RasterImageIOUtils {
     };
 
     /**
+     * Export selected monoband raster to ArcView Gridded Ascii (ASC)
+     * 
+     * @param file
+     *            file to save es D:/Openjump/test.asc
+     * @param context
+     *            Plugin Context
+     * @param rLayer
+     *            Selected Raster Image Layer (RasterImageLayer.class)
+     * @throws IOException
+     */
+
+    public static void saveASC(File outfile, PlugInContext context,
+            RasterImageLayer rLayer) throws IOException {
+        saveASC(outfile, context, rLayer, 0);
+        return;
+    }
+
+    /**
      * Export selected raster to ArcView Gridded Ascii (ASC)
      * 
      * @param file
@@ -304,13 +323,14 @@ public class RasterImageIOUtils {
                     + Double.toString(rstLayer.getLayerCellSize().x));
 
             String sNoDataVal = Double.toString(rstLayer.getNoDataValue());
-            //Uncomment this code. It seems to rewrite original nodata value with
-            //a fix value modifying raster statistics if nodata cells exists
-          /*  if (Math.floor(defaultNoData) == defaultNoData)
-                sNoDataVal = Integer.toString((int) defaultNoData);
-            else {
-                sNoDataVal = Double.toString(defaultNoData);
-            }*/
+            // Uncomment this code. It seems to rewrite original nodata value
+            // with
+            // a fix value modifying raster statistics if nodata cells exists
+            /*
+             * if (Math.floor(defaultNoData) == defaultNoData) sNoDataVal =
+             * Integer.toString((int) defaultNoData); else { sNoDataVal =
+             * Double.toString(defaultNoData); }
+             */
             o.println("NODATA_value " + sNoDataVal);
             o.println("byteorder " + byteOrder);
             o.close();
@@ -327,6 +347,23 @@ public class RasterImageIOUtils {
             if (out != null)
                 out.close();
         }
+    }
+
+    /**
+     * Export selected monoband raster to ArcView Gridded Binary data (FLT)
+     * 
+     * @param file
+     *            file to save es D:/Openjump/test.flt
+     * @param context
+     *            Plugin Context
+     * @param rLayer
+     *            Selected Raster Image Layer (RasterImageLayer.class)
+     * @throws IOException
+     */
+    public static void saveFLT(File outfile, PlugInContext context,
+            RasterImageLayer rLayer) throws IOException {
+        saveFLT(outfile, context, rLayer, 0);
+        return;
     }
 
     /**
@@ -404,6 +441,24 @@ public class RasterImageIOUtils {
             if (out != null)
                 out.close();
         }
+    }
+
+    /**
+     * Export selected monoband raster to Surfer ASCII Grid (GRD)
+     * 
+     * @param file
+     *            file to save es D:/Openjump/test.grd
+     * @param context
+     *            . Plugin Context
+     * @param rLayer
+     *            . Selected Raster Image Layer (RasterImageLayer.class)
+     * @param band
+     * @throws IOException
+     */
+    public static void saveSurferGRD(File outfile, PlugInContext context,
+            RasterImageLayer rLayer) throws IOException {
+        saveSurferGRD(outfile, context, rLayer, 0);
+        return;
     }
 
     /**
@@ -568,9 +623,8 @@ public class RasterImageIOUtils {
                     if (Math.floor(value0) == value0
                             || Math.floor(value1) == value1
                             || Math.floor(value2) == value2)
-                        b.append(Xf + "\t" + Yf + "\t" + (double) value0 + "\t"
-                                + (double) value1 + "\t" + (double) value2
-                                + "\n");
+                        b.append(Xf + "\t" + Yf + "\t" + value0 + "\t" + value1
+                                + "\t" + value2 + "\n");
                     else {
                         b.append(Xf + "\t" + Yf + "\t" + value0 + value1
                                 + value2 + "\n");
@@ -593,6 +647,112 @@ public class RasterImageIOUtils {
         } finally {
             if (out != null)
                 out.close();
+        }
+    }
+
+    /**
+     * Test. Export selected raster to GRASS file.
+     * 
+     * @param file
+     *            file to save es D:/Openjump/test
+     * @param context
+     *            . Plugin Context
+     * @param rLayer
+     *            . Selected Raster Image Layer (RasterImageLayer.class)
+     * @throws IOException
+     */
+
+    public static void saveGrass(File file, PlugInContext context,
+            RasterImageLayer rLayer, int band) throws IOException {
+        OutputStream out = null;
+        try {
+            OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
+            rstLayer.create(rLayer);
+
+            out = new FileOutputStream(file);
+            cellFormat = NumberFormat.getNumberInstance();
+            cellFormat.setMaximumFractionDigits(3);
+            cellFormat.setMinimumFractionDigits(0);
+            properties = new Properties();
+            try {
+                FileInputStream fis = new FileInputStream(propertiesFile);
+                properties.load(fis);
+                properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                fis.close();
+            } catch (FileNotFoundException localFileNotFoundException) {
+            } catch (IOException e) {
+                context.getWorkbenchFrame().warnUser(GenericNames.ERROR);
+            }
+            PrintStream o = new PrintStream(out);
+            o.println("north: " + rLayer.getActualImageEnvelope().getMaxY());
+
+            o.println("south: " + rLayer.getActualImageEnvelope().getMinY());
+
+            o.println("east: " + rLayer.getActualImageEnvelope().getMinX());
+
+            o.println("west: " + rLayer.getActualImageEnvelope().getMaxY());
+            Raster r = rLayer.getRasterData(null);
+            o.println("rows: " + r.getWidth());
+
+            o.println("cols: " + r.getHeight());
+
+            GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
+                    rstLayer, rstLayer.getLayerGridExtent());
+            int nx = rstLayer.getLayerGridExtent().getNX();
+            int ny = rstLayer.getLayerGridExtent().getNY();
+            for (int y = 0; y < ny; y++) {
+                StringBuffer b = new StringBuffer();
+                for (int x = 0; x < nx; x++) {
+                    double value = gwrapper.getCellValueAsDouble(x, y, band);
+
+                    if (Double.isNaN(value)) {
+                        value = -9999;
+                    } else {
+                        b.append(value + " ");
+                    }
+                }
+                o.println(b);
+            }
+            o.close();
+        } catch (Exception e) {
+            context.getWorkbenchFrame()
+                    .warnUser(
+                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+            context.getWorkbenchFrame()
+                    .getOutputFrame()
+                    .addText(
+                            "SaveImageToRasterPlugIn Exception:Export Part of GRASS or modify raster to ASC not yet implemented. Please Use Sextante Plugin");
+        } finally {
+            if (out != null)
+                out.close();
+        }
+    }
+
+    /**
+     * Load TIF/ASC/FLT file into OpenJUMP workbench
+     * 
+     * @param File
+     *            file to load es D:/Openjump/test.tif
+     * @param PlugInContext
+     *            Plugin Context
+     * @param Category
+     *            . Name of the category to load the file
+     * @throws NoninvertibleTransformException
+     *             , TiffReadingException, Exception
+     */
+
+    public static void load(File file, PlugInContext context, String category)
+            throws NoninvertibleTransformException, TiffReadingException,
+            Exception {
+
+        String extension = FileUtil.getExtension(file);
+        if (extension.equals("tif")) {
+            loadTIF(file, context, category);
+        } else if (extension.equals("asc")) {
+            loadASC(file, context, category);
+        } else if (extension.equals("flt")) {
+            loadFLT(file, context, category);
         }
     }
 
