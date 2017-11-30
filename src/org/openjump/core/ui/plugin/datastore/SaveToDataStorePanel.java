@@ -22,7 +22,8 @@ public class SaveToDataStorePanel extends DataStoreSaveDriverPanel implements Wi
 
   public static final String KEY = SaveToDataStorePanel.class.getName();
 
-  private static final String LASTCONNECTION = null;
+  private static final String LASTCONNECTION = SaveToDataStorePanel.class.getName()
+          + " - LAST CONNECTION";
 
   private WorkbenchContext workbenchContext;
   private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();

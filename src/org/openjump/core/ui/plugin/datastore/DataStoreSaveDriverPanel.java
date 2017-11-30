@@ -33,6 +33,8 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
 
     public static final String KEY = DataStoreSaveDriverPanel.class.getName();
 
+    private static final String TABLE                    = I18N.get(KEY + ".table");
+
     private static final String WRITE_3D_GEOM            = I18N.get(KEY + ".write-3d-geometries");
     private static final String CONVERT_NAN_Z            = I18N.get(KEY + ".convert-nan-z");
     private static final String NARROW_GEOMETRY_TYPE     = I18N.get(KEY + ".narrow-geometry-type");
@@ -100,7 +102,7 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
         add(connectionPanel);
 
         // table
-        JLabel tableLabel = new JLabel("Table");
+        JLabel tableLabel = new JLabel(TABLE);
         gbConstraints.gridx = 0;
         gbConstraints.gridy += 1;
         gbConstraints.gridwidth = 1;
