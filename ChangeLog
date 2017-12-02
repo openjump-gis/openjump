@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-11-28 Giuseppe Aruta
+  * Updated ColorChooser plugin to version 1.0
+    - added recent color submenu
+    - adopted fugue icons to plugins
+
 2017-11-30 mmichaud <m.michael.michaud@orange.fr>
   * Fix EZButtons : fix save/restore shortcuts
 
