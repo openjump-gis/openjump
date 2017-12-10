@@ -193,9 +193,9 @@ public final class I18N {
    */
   @Deprecated
   public String getText(final String key) {
-      return getMessage(key);
+    return getMessage(this, key);
   }
-  
+
   /**
    * Convenience wrapper for {@link #getMessage(Object, String, Object...)}
    * 
@@ -227,19 +227,25 @@ public final class I18N {
    * categoryPrefixOrPath = new File("language/wfs/messages") then
    * resourcebundle is looked up as /language/wfs/messages[_locale].properties
    * 
-   * @param categoryPrefixOrPath
+   * @param categoryPrefixOrPathOrI18N
    *          The category.
    * @return The instance.
    */
-  private static I18N getInstance(final Object categoryPrefixOrPath) {
-    I18N instance = instances.get(categoryPrefixOrPath);
+  private static I18N getInstance(final Object categoryPrefixOrPathOrI18N) {
+    // needed for legacy methods like this.getText(String)
+    if (categoryPrefixOrPathOrI18N instanceof I18N)
+      return (I18N) categoryPrefixOrPathOrI18N;
+    
+    I18N instance = instances.get(categoryPrefixOrPathOrI18N);
     if (instance == null) {
-      if (categoryPrefixOrPath instanceof File)
-        instance = new I18N((File) categoryPrefixOrPath);
-      else
-        instance = new I18N(categoryPrefixOrPath.toString());
-      instances.put(categoryPrefixOrPath, instance);
+      if (categoryPrefixOrPathOrI18N instanceof File) {
+        instance = new I18N((File) categoryPrefixOrPathOrI18N);
+      } else {
+        instance = new I18N(categoryPrefixOrPathOrI18N.toString());
+      }
+      instances.put(categoryPrefixOrPathOrI18N, instance);
     }
+
     return instance;
   }
 
@@ -389,27 +395,30 @@ public final class I18N {
    * 
    * Examples:
    * 
-   * categoryPrefixOrPath = new String("org.openjump.myplugin") then
+   * categoryPrefixOrPathOrI18N instanceof I18N
+   * legacy option, mainly for the instance method this.getText(String)
+   * 
+   * categoryPrefixOrPathOrI18N = new String("org.openjump.myplugin") then
    * resourcebundle is looked up as
    * /org/openjump/myplugin/language/jump[_locale].properties
    * 
    * categoryPrefixOrPath = new File("language/wfs/messages") then
    * resourcebundle is looked up as /language/wfs/messages[_locale].properties
    * 
-   * @param categoryPrefixOrPath
-   *          The category.
+   * @param categoryPrefixOrPathOrI18n
+   *          The categoryPrefix or path object or i18n object.
    * @param label
    *          Label with argument insertion : {0}
    * @param objects values of parameters contained in the key
    * 
    * @return i18n label
    */
-  private static String getMessage(final Object categoryPrefixOrPath,
+  private static String getMessage(final Object categoryPrefixOrPathOrI18n,
       final String label, final Object... objects) {
-    I18N i18n = categoryPrefixOrPath != null ? getInstance(categoryPrefixOrPath)
+    I18N i18n = categoryPrefixOrPathOrI18n != null ? getInstance(categoryPrefixOrPathOrI18n)
         : getInstance();
-    if (label.contains("ShortenLinePlugIn"))
-        System.out.println(label);
+//    if (label.contains("ShortenLinePlugIn"))
+//        System.out.println(label);
     try {
       // IMPORTANT: trailing spaces break the Malayalam translation, 
       //            so we trim here, just to make sure
