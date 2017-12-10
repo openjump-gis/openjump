@@ -103,8 +103,13 @@ for /f "delims=. tokens=1-3" %%v in ("%JAVAVER%") do (
     set JAVAVER_PATCH=%%x
 )
 
-rem -- explicitly export some packages as needed since java9 --
-if /i "%JAVAVER_MAJOR%"=="9-ea" set JAVA_OPTS=%JAVA_OPTS% --add-exports java.base/jdk.internal.loader=ALL-UNNAMED --add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED --add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED
+rem -- java9 needs some packages explicitly added/exported --
+if /i "%JAVAVER_MAJOR:~0,1%"=="9" (
+  set JAVA_OPTS=%JAVA_OPTS% --add-exports java.base/jdk.internal.loader=ALL-UNNAMED ^
+--add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED ^
+--add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED ^
+--add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-modules java.se.ee
+)
 
 rem -- detect if java is 64bit --
 for /f "delims=" %%v in ('echo "%JAVA_VERSIONSTRING%"^|findstr /I "64-Bit"') do (
