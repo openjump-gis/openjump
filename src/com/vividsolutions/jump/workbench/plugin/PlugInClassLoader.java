@@ -83,6 +83,23 @@ public class PlugInClassLoader extends URLClassLoader {
   }
 
   /**
+   * this is a workaround! java9 fails to resolve if the resource contains a leading slash
+   * e.g.   /org/freevoice/jumpdbqueryextension/dbquerystrings.properties
+   *      fails with 
+   *        null
+   *      while
+   *        org/freevoice/jumpdbqueryextension/dbquerystrings.properties
+   *      will properly resolve to
+   *        jar:file:lib/plus/jumpdbquery.jar!/org/freevoice/jumpdbqueryextension/dbquerystrings.properties
+   */
+  @Override
+  public URL getResource(String name) {
+    if (name.startsWith("/"))
+      name = name.replaceAll("^/+", "");
+    return super.findResource(name);
+  }
+
+  /**
    * allow adding urls, any time
    * 
    * @param urls
