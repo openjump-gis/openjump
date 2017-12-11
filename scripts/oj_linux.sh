@@ -237,6 +237,15 @@ JAVA_OPTS="$JAVA_OPTS -Djump.home=."
 [ -n "$JAVA_LOOKANDFEEL" ] && JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=$JAVA_LOOKANDFEEL"
 JAVA_OPTS="$JAVA_OPTS $JAVA_OPTS_OVERRIDE"
 
+# java9 needs some packages explicitly added/exported
+if awk "BEGIN{if($JAVA_VERSION >= 9)exit 0;else exit 1}"; then
+  JAVA_OPTS="--add-exports java.base/jdk.internal.loader=ALL-UNNAMED \
+--add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED \
+--add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED \
+--add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-modules java.se.ee \
+$JAVA_OPTS"
+fi
+
 # in case some additional archives were placed in native dir inbetween
 extract_libs "$JUMP_NATIVE_DIR"
 
