@@ -3,6 +3,12 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2017-12-10 ede
+  * final bugfix: "#463 Starting OJ with java9 throws several exceptions"
+    OJ should be generally java 9 ready now
+  * bugfix: KML extension couldn't find it's strings as OJ's I18N didn't use 
+    the proper resource bundle
+
 2017-12-03 mmichaud <m.michael.michaud@orange.fr>
   * Remove Manifest sealed instruction from VertexSymbols.jar and
     JumpChart.jar as it throws Exception with java 9
