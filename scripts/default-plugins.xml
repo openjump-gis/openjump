@@ -935,6 +935,12 @@
             <main-menu menupath="MenuNames.WINDOW" install="true" />
         </menus>
     </plug-in>
+    <!-- plug-in>
+    org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.WINDOW" install="true" />
+        </menus>
+    </plug-in-->
     <plug-in>
         com.vividsolutions.jump.workbench.ui.plugin.GenerateLogPlugIn
         <menus>
