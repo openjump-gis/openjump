@@ -20,7 +20,7 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
  *
  * @author volaya
  *
- *         This frame is a refactoring of Sextante
+ *         This class is a refactoring of Sextante
  *         es.unex.sextante.gui.additionalResults.AdditionalResults It has been
  *         extended to OpenJUMP output results objects. Methods to open a frame
  *         to show results are added to this class.
