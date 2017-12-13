@@ -90,7 +90,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 public class ShowViewCenterPlugIn extends AbstractPlugIn {
 
-    public static String NAME = "Show a crosshair in the center of the view";
+    public static String NAME = I18N
+            .get("org.openjump.core.ui.plugin.view.showcenter.name");
 
     public static String DIMENSION = I18N.get("ui.FontChooser.size");
 
