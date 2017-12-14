@@ -30,9 +30,9 @@ public class FeatureCollectionPanel extends JPanel {
     private static final long serialVersionUID = 1L;
     private static FeatureCollection featureCollection;
     private static DefaultTableModel model = new DefaultTableModel();
-    private static JScrollPane pane = new JScrollPane();
-    private static JTable jTable = new JTable();
-    private static JLabel jLabel = new JLabel();
+    private JScrollPane pane = new JScrollPane();
+    private JTable jTable = new JTable();
+    private JLabel jLabel = new JLabel();
     private final Color LIGHT_GRAY = new Color(230, 230, 230);
 
     @SuppressWarnings("static-access")
