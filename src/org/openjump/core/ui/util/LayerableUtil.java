@@ -267,18 +267,44 @@ public abstract class LayerableUtil {
     public static boolean isMixedGeometryType(Layer layer) {
         FeatureCollectionWrapper featureCollection = layer
                 .getFeatureCollectionWrapper();
-        @SuppressWarnings("unchecked")
         List<Feature> featureList = featureCollection.getFeatures();
         BitSet layerBit = new BitSet();
         BitSet currFeatureBit = new BitSet();
         if (featureList.size() > 0) {
-            Geometry firstGeo = ((Feature) featureList.iterator().next())
-                    .getGeometry();
+            Geometry firstGeo = featureList.iterator().next().getGeometry();
             layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
                                                             // type
         }
         for (Iterator<Feature> i = featureList.iterator(); i.hasNext();) {
-            Feature feature = (Feature) i.next();
+            Feature feature = i.next();
+            Geometry geo = feature.getGeometry();
+            currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
+        }
+        if ((layerBit.get(GeoUtils.pointBit) && currFeatureBit
+                .get(GeoUtils.lineBit))
+                || (layerBit.get(GeoUtils.polyBit) && currFeatureBit
+                        .get(GeoUtils.lineBit))
+                || (layerBit.get(GeoUtils.pointBit) && currFeatureBit
+                        .get(GeoUtils.polyBit))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isMixedGeometryType(
+            FeatureCollection featureCollection) {
+
+        List<Feature> featureList = featureCollection.getFeatures();
+        BitSet layerBit = new BitSet();
+        BitSet currFeatureBit = new BitSet();
+        if (featureList.size() > 0) {
+            Geometry firstGeo = featureList.iterator().next().getGeometry();
+            layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
+                                                            // type
+        }
+        for (Iterator<Feature> i = featureList.iterator(); i.hasNext();) {
+            Feature feature = i.next();
             Geometry geo = feature.getGeometry();
             currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
         }
@@ -302,7 +328,7 @@ public abstract class LayerableUtil {
         boolean multipleGeoTypes = false;
         for (@SuppressWarnings("unchecked")
         Iterator<Feature> i = fcw.getFeatures().iterator(); i.hasNext();) {
-            geo = ((Feature) i.next()).getGeometry();
+            geo = i.next().getGeometry();
             if (geo != null) {
                 if (geoClass.equals(""))
                     geoClass = geo.getClass().getName();
@@ -799,8 +825,7 @@ public abstract class LayerableUtil {
         String filePath1 = null;
         for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
-            sourcePathImage = (String) feature
-                    .getString(ImageryLayerDataset.ATTR_URI);
+            sourcePathImage = feature.getString(ImageryLayerDataset.ATTR_URI);
             sourcePathImage = sourcePathImage.substring(5);
             File f = new File(sourcePathImage);
             String filePath = f.getAbsolutePath();
@@ -823,8 +848,7 @@ public abstract class LayerableUtil {
         String worldPath = null;
         for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
             Feature feature = (Feature) i.next();
-            sourcePathImage = (String) feature
-                    .getString(ImageryLayerDataset.ATTR_URI);
+            sourcePathImage = feature.getString(ImageryLayerDataset.ATTR_URI);
             sourcePathImage = sourcePathImage.substring(5);
             File f = new File(sourcePathImage);
             String filePath = f.getAbsolutePath();

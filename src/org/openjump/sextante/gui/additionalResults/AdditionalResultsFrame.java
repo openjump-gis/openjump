@@ -40,13 +40,17 @@ import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
 import org.math.plot.PlotPanel;
+import org.openjump.core.apitools.IOTools;
 import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 import org.openjump.core.ui.swing.DetachableInternalFrame;
+import org.openjump.core.ui.util.LayerableUtil;
 import org.openjump.sextante.core.ObjectAndDescription;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser;
+import com.vividsolutions.jump.workbench.ui.FeatureCollectionPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.HTMLPanel;
 import com.vividsolutions.jump.workbench.ui.OKCancelApplyPanel;
@@ -356,6 +360,39 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                 final ObjectAndDescription oad = (ObjectAndDescription) node
                         .getUserObject();
                 final Component c = (Component) oad.getObject();
+                if (c instanceof FeatureCollectionPanel) {
+                    final FeatureCollectionPanel panel = (FeatureCollectionPanel) c;
+                    FeatureCollection fcoll = panel.getFeatureCollection();
+                    fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
+                            FILE_BROWSER_HEIGHT));
+                    if (LAST_DIR != null) {
+                        fc.setCurrentDirectory(new File(LAST_DIR));
+                    } else {
+                        fc.setCurrentDirectory(filedir);
+                    }
+                    FileNameExtensionFilter filter;
+                    if (LayerableUtil.isMixedGeometryType(fcoll)) {
+                        filter = new FileNameExtensionFilter("JML", "jml");
+                    } else {
+                        filter = new FileNameExtensionFilter("SHP", "shp");
+                    }
+                    fc.setFileFilter(filter);
+                    fc.addChoosableFileFilter(filter);
+                    final int returnVal = fc.showSaveDialog(this);
+                    FILE_BROWSER_WIDTH = fc.getWidth();
+                    FILE_BROWSER_HEIGHT = fc.getHeight();
+                    if (returnVal == JFileChooser.APPROVE_OPTION) {
+                        if (LayerableUtil.isMixedGeometryType(fcoll)) {
+                            file = new File(fc.getSelectedFile() + ".jml");
+                            IOTools.saveJMLFile(fcoll, file.getAbsolutePath());
+                        } else {
+                            file = new File(fc.getSelectedFile() + ".shp");
+                            IOTools.saveShapefile(fcoll, file.getAbsolutePath());
+                        }
+                        saved(file);
+                    }
+                } else
+
                 if (c instanceof JScrollPane) {
                     final JScrollPane pane = (JScrollPane) c;
                     final Component view = pane.getViewport().getView();

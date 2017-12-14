@@ -32,8 +32,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
     private JScrollPane scrollPane = new JScrollPane();
     private JEditorPane editorPane = new JEditorPane();
     private int currentIndex = -1;
-    private  JButton saveButton = new JButton();
-
+    private JButton saveButton = new JButton();
 
     public HTMLPanel() {
         try {
@@ -50,10 +49,11 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
     }
 
     public JButton getSaveButton() {
-      return saveButton;
-   }
-    
-     public int getCurrentIndex() {
+        return saveButton;
+    }
+
+    @Override
+    public int getCurrentIndex() {
         return currentIndex;
     }
 
@@ -73,6 +73,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
         final String document = (String) history.get(currentIndex);
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 editorPane.setText("<HTML>" + document + "</HTML>");
             }
@@ -144,12 +145,12 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
                         0, 0, 0, 0), 0, 0));
 
         /*
-         * Giuseppe Aruta 2015_01_03 
-         * Add Button to save view as HTML
+         * Giuseppe Aruta 2015_01_03 Add Button to save view as HTML
          */
         saveButton = new JButton(
                 I18N.get("deejump.plugin.SaveLegendPlugIn.Save")); //$NON-NLS-1$
         saveButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 saveButton_actionPerformed(e);
             }
@@ -161,9 +162,18 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
         scrollPane.getViewport().add(editorPane, null);
     }
 
+    public String lastString() {
+        String text = "";
+        for (int i = 0; i < history.size(); i++) {
+            text = history.get(i).toString();
+        }
+        return text;
+
+    }
+
     /*
-     * Giuseppe Aruta 2015_01_03
-     * Modified from code from Kosmo 2.0 to save to HTML
+     * Giuseppe Aruta 2015_01_03 Modified from code from Kosmo 2.0 to save to
+     * HTML
      */
     protected void saveButton_actionPerformed(ActionEvent e) {
         JFileChooser chooser;
@@ -184,8 +194,8 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
             try {
                 String texto = history.get(currentIndex).toString();
                 String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
-                .format(Calendar.getInstance().getTime());
-                String all = texto + "<B>" + timeStamp+"</B>";
+                        .format(Calendar.getInstance().getTime());
+                String all = texto + "<B>" + timeStamp + "</B>";
                 FileUtil.setContents(archivo.getAbsolutePath(), all);
             } catch (Exception e1) {
                 Logger.error(e1);
@@ -215,6 +225,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
         // The text is set using #invokeLater, so the scroll-to-top must
         // also be done using #invokeLater. [Jon Aquino]
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 editorPane.setCaretPosition(0);
             }
@@ -231,11 +242,13 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
         recordPanel.updateAppearance();
     }
 
+    @Override
     public void setCurrentIndex(int index) {
         this.currentIndex = index;
         setEditorPaneText();
     }
 
+    @Override
     public int getRecordCount() {
         return history.size();
     }
