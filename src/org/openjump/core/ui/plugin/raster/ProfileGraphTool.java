@@ -84,12 +84,13 @@ import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ProfileGraphTool extends MultiClickTool {
-    
-  /**  2015_01_31. Giuseppe Aruta 
-    * Add new panel which display profile info: length, mean slope, coordinates of starting
-      and ending points, cell dimension, cell statistics.
-    */
-    
+
+    /**
+     * 2015_01_31. Giuseppe Aruta Add new panel which display profile info:
+     * length, mean slope, coordinates of starting and ending points, cell
+     * dimension, cell statistics.
+     */
+
     private final static String CANCEL = I18N.get("ui.OKCancelPanel.cancel");
     private final static String sDistance = I18N
             .get("org.openjump.core.ui.plugin.tools.MeasureM_FTool.Distance");
@@ -132,6 +133,7 @@ public class ProfileGraphTool extends MultiClickTool {
 
     private Coordinate currCoord;
     private OpenJUMPSextanteRasterLayer rstLayer = null;
+    private RasterImageLayer rLayer = null;
     private GeometryFactory gf = new GeometryFactory();
     private FeatureCollection resultFC = null;
     private FeatureSchema resultFSchema = null;
@@ -156,18 +158,21 @@ public class ProfileGraphTool extends MultiClickTool {
         this.resultFC = new FeatureDataset(this.resultFSchema);
     }
 
+    @Override
     public Icon getIcon() {
         return IconLoader.icon("profile.png");
     }
 
+    @Override
     public Cursor getCursor() {
         for (int i = 0; i < savedCoordinates.size(); i++) {
-            add((Coordinate) savedCoordinates.get(i));
+            add(savedCoordinates.get(i));
         }
         return createCursor(IconLoader.icon("profile_icon.gif").getImage());
 
     }
 
+    @Override
     public void mouseLocationChanged(MouseEvent e) {
         try {
             if (isShapeOnScreen()) {
@@ -185,13 +190,15 @@ public class ProfileGraphTool extends MultiClickTool {
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         super.mousePressed(e);
         savedCoordinates = new ArrayList<Coordinate>(getCoordinates());
     }
 
+    @Override
     protected void gestureFinished() throws NoninvertibleTransformException,
-            IOException {
+            IOException, RasterImageLayer.RasterDataNotFoundException {
         reportNothingToUndoYet();
         savedCoordinates.clear();
 
@@ -200,9 +207,8 @@ public class ProfileGraphTool extends MultiClickTool {
         display(getCoordinates(), getPanel());
 
         // -- [sstein] now all the raster profile stuff
-        RasterImageLayer rLayer = (RasterImageLayer) LayerTools
-                .getSelectedLayerable(this.getWorkbench().getContext(),
-                        RasterImageLayer.class);
+        this.rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(this
+                .getWorkbench().getContext(), RasterImageLayer.class);
         if (rLayer == null) {
             getPanel()
                     .getContext()
@@ -266,15 +272,14 @@ public class ProfileGraphTool extends MultiClickTool {
         double distance = 0;
 
         for (int i = 1; i < coordinates.size(); i++) {
-            distance += ((Coordinate) coordinates.get(i - 1))
-                    .distance((Coordinate) coordinates.get(i));
+            distance += coordinates.get(i - 1).distance(coordinates.get(i));
         }
 
         if ((currCoord != null) && (coordinates.size() > 1)) {
-            distance -= ((Coordinate) coordinates.get(coordinates.size() - 2))
-                    .distance((Coordinate) coordinates.get(coordinates.size() - 1));
-            distance += ((Coordinate) coordinates.get(coordinates.size() - 2))
-                    .distance(currCoord);
+            distance -= coordinates.get(coordinates.size() - 2).distance(
+                    coordinates.get(coordinates.size() - 1));
+            distance += coordinates.get(coordinates.size() - 2).distance(
+                    currCoord);
         }
 
         return distance;
@@ -283,7 +288,8 @@ public class ProfileGraphTool extends MultiClickTool {
     // HTMLPanel outpanel;
 
     private void calculateProfile(List<Coordinate> coordinates,
-            WorkbenchContext context) {
+            WorkbenchContext context) throws IOException,
+            RasterImageLayer.RasterDataNotFoundException {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(this.getWorkbench().getContext(),
                         RasterImageLayer.class);
@@ -344,7 +350,7 @@ public class ProfileGraphTool extends MultiClickTool {
                                                                        // profile
             tooltip += "<b>" + MEAN_SLOPE + ": </b>"
                     + df.format(Math.atan((max - min) / line.getLength()))
-                    + "Â°<br>";// Slope
+                    + "°<br>";// Slope
             tooltip += "<b>" + STARTING_POINT + ": </b>" + df.format(start.x)
                     + " - " + df.format(start.y) + "<br>";// Coordinate of
                                                           // starting point of
@@ -399,6 +405,7 @@ public class ProfileGraphTool extends MultiClickTool {
                 }
             };
             okButton.addActionListener(new java.awt.event.ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     frame.dispose();
                     return;
@@ -433,7 +440,8 @@ public class ProfileGraphTool extends MultiClickTool {
 
     }
 
-    private void processLine(Geometry line) {
+    private void processLine(Geometry line) throws IOException,
+            RasterImageLayer.RasterDataNotFoundException {
 
         double x, y, x2, y2;
         Coordinate[] coords = line.getCoordinates();
@@ -448,7 +456,8 @@ public class ProfileGraphTool extends MultiClickTool {
 
     }
 
-    private void processSegment(double x, double y, double x2, double y2) {
+    private void processSegment(double x, double y, double x2, double y2)
+            throws RasterImageLayer.RasterDataNotFoundException, IOException {
 
         double dx, dy, d, n;
 
@@ -483,12 +492,14 @@ public class ProfileGraphTool extends MultiClickTool {
 
     }
 
-    private void addPoint(double x, double y) {
+    private void addPoint(double x, double y)
+            throws RasterImageLayer.RasterDataNotFoundException, IOException {
 
         double z;
         double dDX, dDY, dDZ;
 
-        z = this.rstLayer.getValueAt(x, y);
+        // z = this.rstLayer.getValueAt(x, y);
+        z = this.rLayer.getCellValue(x, y, 0);
 
         if (this.nPoints == 0) {
             dDist = 0.0;
@@ -542,7 +553,7 @@ final class ShowProfile extends JFrame {
         // Build a 2D data set
         double[][] datas1 = new double[fc.size()][2];
         for (int j = 0; j < fc.size(); j++) {
-            Feature f = (Feature) fc.getFeatures().get(j);
+            Feature f = fc.getFeatures().get(j);
             datas1[j][0] = (Double) f.getAttribute("PlaneDist");
             datas1[j][1] = (Double) f.getAttribute("Z");
         }
