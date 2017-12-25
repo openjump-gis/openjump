@@ -44,69 +44,67 @@ import com.vividsolutions.jts.util.Assert;
  */
 public abstract class FeatureCollectionWrapper implements FeatureCollection {
 
-	private FeatureCollection fc;
+  private FeatureCollection fc;
 
-	/**
-	 * Constructs a FeatureCollectionWrapper that delegates to the given
-	 * FeatureCollection.
-	 */
-	public FeatureCollectionWrapper(FeatureCollection fc) {
-		this.fc = fc;
-	}
+  /**
+   * Constructs a FeatureCollectionWrapper that delegates to the given
+   * FeatureCollection.
+   */
+  public FeatureCollectionWrapper(FeatureCollection fc) {
+    this.fc = fc;
+  }
 
-	/**
-	 * Returns the non-wrapper FeatureCollection wrapped by this wrapper and
-	 * possibly by other wrappers in-between. Intended to get at the "real"
-	 * FeatureCollection underneath several layers of FeatureCollectionWrappers.
-	 * 
-	 * @see #getWrappee()
-	 */
-	public FeatureCollection getUltimateWrappee() {
-		FeatureCollection currentWrappee = fc;
-		while (currentWrappee instanceof FeatureCollectionWrapper) {
-			currentWrappee = ((FeatureCollectionWrapper) currentWrappee).fc;
-		}
-		return currentWrappee;
-	}
+  /**
+   * Returns the non-wrapper FeatureCollection wrapped by this wrapper and
+   * possibly by other wrappers in-between. Intended to get at the "real"
+   * FeatureCollection underneath several layers of FeatureCollectionWrappers.
+   * 
+   * @see #getWrappee()
+   */
+  public FeatureCollection getUltimateWrappee() {
+    FeatureCollection currentWrappee = fc;
+    while (currentWrappee instanceof FeatureCollectionWrapper) {
+      currentWrappee = ((FeatureCollectionWrapper) currentWrappee).fc;
+    }
+    return currentWrappee;
+  }
 
-	/**
-	 * Throws an AssertionFailedException if this FeatureCollectionWrapper wraps
-	 * (directly or indirectly) another FeatureCollectionWrapper having the same
-	 * class (or descendant class thereof). A consistency check that is useful
-	 * for some FeatureCollectionWrapper implementations.
-	 */
-	public void checkNotWrappingSameClass() {
-		Assert
-				.isTrue(!(fc instanceof FeatureCollectionWrapper && ((FeatureCollectionWrapper) fc)
-						.hasWrapper(getClass())));
-	}
+  /**
+   * Throws an AssertionFailedException if this FeatureCollectionWrapper wraps
+   * (directly or indirectly) another FeatureCollectionWrapper having the same
+   * class (or descendant class thereof). A consistency check that is useful for
+   * some FeatureCollectionWrapper implementations.
+   */
+  public void checkNotWrappingSameClass() {
+    Assert.isTrue(!(fc instanceof FeatureCollectionWrapper && ((FeatureCollectionWrapper) fc).hasWrapper(getClass())));
+  }
 
-	@Override
-	public Collection<Feature> remove(Envelope env) {
-		return fc.remove(env);
-	}
+  @Override
+  public Collection<Feature> remove(Envelope env) {
+    return fc.remove(env);
+  }
 
-	/**
-	 * Returns whether this FeatureCollectionWrapper (or a
-	 * FeatureCollectionWrapper that it wraps, directly or indirectly) is an
-	 * instance of the given class (or one of its descendants).
-	 */
-	public boolean hasWrapper(Class c) {
-		Assert.isTrue(FeatureCollectionWrapper.class.isAssignableFrom(c));
+  /**
+   * Returns whether this FeatureCollectionWrapper (or a
+   * FeatureCollectionWrapper that it wraps, directly or indirectly) is an
+   * instance of the given class (or one of its descendants).
+   */
+  public boolean hasWrapper(Class c) {
+    Assert.isTrue(FeatureCollectionWrapper.class.isAssignableFrom(c));
 
-		if (c.isInstance(this)) {
-			return true;
-		}
+    if (c.isInstance(this)) {
+      return true;
+    }
 
-		return fc instanceof FeatureCollectionWrapper
-				&& ((FeatureCollectionWrapper) fc).hasWrapper(c);
-	}
+    return fc instanceof FeatureCollectionWrapper && ((FeatureCollectionWrapper) fc).hasWrapper(c);
+  }
 
-	/**
-	 * Return the wrapper matching the given class or null, if there is none.
-	 * @param c
-	 * @return
-	 */
+  /**
+   * Return the wrapper matching the given class or null, if there is none.
+   * 
+   * @param c
+   * @return
+   */
   public FeatureCollection getWrappee(Class c) {
     Assert.isTrue(FeatureCollectionWrapper.class.isAssignableFrom(c));
 
@@ -121,83 +119,83 @@ public abstract class FeatureCollectionWrapper implements FeatureCollection {
     return null;
   }
 
-	/**
-	 * Returns the FeatureCollection that this wrapper delegates to (possibly
-	 * another FeatureCollectionWrapper).
-	 * 
-	 * @see #getUltimateWrappee()
-	 */
-	public FeatureCollection getWrappee() {
-		return fc;
-	}
+  /**
+   * Returns the FeatureCollection that this wrapper delegates to (possibly
+   * another FeatureCollectionWrapper).
+   * 
+   * @see #getUltimateWrappee()
+   */
+  public FeatureCollection getWrappee() {
+    return fc;
+  }
 
-	@Override
-	public FeatureSchema getFeatureSchema() {
-		return fc.getFeatureSchema();
-	}
+  @Override
+  public FeatureSchema getFeatureSchema() {
+    return fc.getFeatureSchema();
+  }
 
-	@Override
-	public Envelope getEnvelope() {
-		return fc.getEnvelope();
-	}
+  @Override
+  public Envelope getEnvelope() {
+    return fc.getEnvelope();
+  }
 
-	@Override
-	public int size() {
-		return fc.size();
-	}
+  @Override
+  public int size() {
+    return fc.size();
+  }
 
-	@Override
-	public boolean isEmpty() {
-		return fc.isEmpty();
-	}
+  @Override
+  public boolean isEmpty() {
+    return fc.isEmpty();
+  }
 
-	@Override
-	public List<Feature> getFeatures() {
-		return fc.getFeatures();
-	}
+  @Override
+  public List<Feature> getFeatures() {
+    return fc.getFeatures();
+  }
 
-	@Override
-	public Iterator<Feature> iterator() {
-		return fc.iterator();
-	}
+  @Override
+  public Iterator<Feature> iterator() {
+    return fc.iterator();
+  }
 
-	@Override
-	public List<Feature> query(Envelope envelope) {
-		return fc.query(envelope);
-	}
+  @Override
+  public List<Feature> query(Envelope envelope) {
+    return fc.query(envelope);
+  }
 
-	@Override
-	public void add(Feature feature) {
-		fc.add(feature);
-	}
+  @Override
+  public void add(Feature feature) {
+    fc.add(feature);
+  }
 
-	@Override
-	public void remove(Feature feature) {
-		fc.remove(feature);
-	}
+  @Override
+  public void remove(Feature feature) {
+    fc.remove(feature);
+  }
 
-	@Override
-	public void addAll(Collection<Feature> features) {
-		fc.addAll(features);
-	}
+  @Override
+  public void addAll(Collection<Feature> features) {
+    fc.addAll(features);
+  }
 
-	@Override
-	public void removeAll(Collection<Feature> features) {
-		fc.removeAll(features);
-	}
+  @Override
+  public void removeAll(Collection<Feature> features) {
+    fc.removeAll(features);
+  }
 
-	@Override
-	public void clear() {
-		//Create a new ArrayList to avoid a ConcurrentModificationException.
-		// [Jon Aquino]
-		removeAll(new ArrayList<>(getFeatures()));
-	}
+  @Override
+  public void clear() {
+    // Create a new ArrayList to avoid a ConcurrentModificationException.
+    // [Jon Aquino]
+    removeAll(new ArrayList<>(getFeatures()));
+  }
 
-	protected FeatureCollection getFeatureCollection() {
-		return fc;
-	}
+  protected FeatureCollection getFeatureCollection() {
+    return fc;
+  }
 
-	protected void setFeatureCollection(FeatureCollection featureCollection) {
-		this.fc = featureCollection;
-	}
+  protected void setFeatureCollection(FeatureCollection featureCollection) {
+    this.fc = featureCollection;
+  }
 }
