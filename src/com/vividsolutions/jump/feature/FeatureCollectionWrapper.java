@@ -103,6 +103,25 @@ public abstract class FeatureCollectionWrapper implements FeatureCollection {
 	}
 
 	/**
+	 * Return the wrapper matching the given class or null, if there is none.
+	 * @param c
+	 * @return
+	 */
+  public FeatureCollection getWrappee(Class c) {
+    Assert.isTrue(FeatureCollectionWrapper.class.isAssignableFrom(c));
+
+    if (c.isInstance(this)) {
+      return this;
+    }
+
+    if (fc instanceof FeatureCollectionWrapper) {
+      return ((FeatureCollectionWrapper) fc).getWrappee(c);
+    }
+
+    return null;
+  }
+
+	/**
 	 * Returns the FeatureCollection that this wrapper delegates to (possibly
 	 * another FeatureCollectionWrapper).
 	 * 
