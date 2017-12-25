@@ -2,10 +2,12 @@ package com.vividsolutions.jump.workbench.datasource;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -24,16 +26,17 @@ public abstract class AbstractSaveDatasetAsPlugIn
                 + dataSourceQuery.toString() + "...");
 
         Connection connection = dataSourceQuery.getDataSource().getConnection();
+        Layer layer = context.getSelectedLayer(0);
+        FeatureCollection fc = (FeatureCollection)layer.getFeatureCollectionWrapper();
         try {
             connection.executeUpdate(
                     dataSourceQuery.getQuery(),
-                    context.getSelectedLayer(0).getFeatureCollectionWrapper(),
+                    fc,
                     monitor);
+            layer.setDataSourceQuery(dataSourceQuery).setFeatureCollectionModified(false);
         } finally {
             connection.close();
         }
-        context.getSelectedLayer(0).setDataSourceQuery(dataSourceQuery)
-                .setFeatureCollectionModified(false);
     }
 
     public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
