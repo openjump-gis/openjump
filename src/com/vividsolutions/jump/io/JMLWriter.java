@@ -67,35 +67,35 @@ import com.vividsolutions.jump.io.datasource.DataSource;
  * </table><br>
  * </p>
  */
-public class JMLWriter implements JUMPWriter {
+public class JMLWriter extends GMLWriter /*implements JUMPWriter */ {
 
-    /** Creates new JMLWriter */
-    public JMLWriter() {
-    }
-
-    /**
-     * Writes the feature collection to the specified file in JML format.
-     * @param featureCollection features to write
-     * @param dp 'OutputFile' or 'DefaultValue' to specify what file to write.
-     */
-    public void write(FeatureCollection featureCollection, DriverProperties dp)
-        throws Exception {
-        GMLWriter gmlWriter;
-        String outputFname;
-
-        outputFname = dp.getProperty(DataSource.FILE_KEY);
-
-        if (outputFname == null) {
-            outputFname = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
-        }
-
-        if (outputFname == null) {
-            throw new IllegalParametersException(
-                "call to JMLWriter.write() has DataProperties w/o a OutputFile specified");
-        }
-
-        gmlWriter = new GMLWriter();
-
-        gmlWriter.write(featureCollection, dp);
-    }
+//    /** Creates new JMLWriter */
+//    public JMLWriter() {
+//    }
+//
+//    /**
+//     * Writes the feature collection to the specified file in JML format.
+//     * @param featureCollection features to write
+//     * @param dp 'OutputFile' or 'DefaultValue' to specify what file to write.
+//     */
+//    public void write(FeatureCollection featureCollection, DriverProperties dp)
+//        throws Exception {
+//        GMLWriter gmlWriter;
+//        String outputFname;
+//
+//        outputFname = dp.getProperty(DataSource.FILE_KEY);
+//
+//        if (outputFname == null) {
+//            outputFname = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
+//        }
+//
+//        if (outputFname == null) {
+//            throw new IllegalParametersException(
+//                "call to JMLWriter.write() has DataProperties w/o a OutputFile specified");
+//        }
+//
+//        gmlWriter = new GMLWriter();
+//
+//        gmlWriter.write(featureCollection, dp);
+//    }
 }
