@@ -95,7 +95,7 @@ public abstract class DataSource {
 
   /**
    * A property used to define the Spatial Referebce System registry (ex. EPSG)
-   * May replace COORDINATE_SYSTEM_KEY and be used in conjonction with
+   * May replace COORDINATE_SYSTEM_KEY and be used in conjunction with
    * COORDINATE_SYSTEM_CODE and the new cts library
    */
   public static final String COORDINATE_SYSTEM_REGISTRY = "SrsRegistry";
