@@ -8,10 +8,11 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.log4j.Appender;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
+import org.apache.log4j.PatternLayout;
 
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.plugin.GenerateLogPlugIn;
 
 /**
@@ -141,6 +142,11 @@ public class Logger {
       msg = t.getMessage();
       if (msg == null || msg.isEmpty() )
         msg = t.getClass().getName();
+    }
+
+    // just in case log4j init failed add a default console appender for us to see errors printed
+    if (!logger.getAllAppenders().hasMoreElements()) {
+      logger.addAppender(new ConsoleAppender(new PatternLayout("[%p] %d{HH:mm:ss.SSS} %m%n"),"System.out"));
     }
 
     logger.log(logLevel, msg + msgAppend, t);
