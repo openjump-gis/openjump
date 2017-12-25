@@ -9,6 +9,7 @@ import java.util.Iterator;
 
 import javax.swing.JInternalFrame;
 
+import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
@@ -66,10 +67,19 @@ public class EnsureAllLayersHaveSRIDStylePlugIn extends AbstractPlugIn {
             return;
         }
         SRIDStyle sridStyle = new SRIDStyle();
-        if (layer.getFeatureCollectionWrapper().size() > 0) {
-            sridStyle.setSRID(((Feature) layer.getFeatureCollectionWrapper()
-                    .iterator().next()).getGeometry().getSRID());
+        int srid = sridStyle.getSRID();
+        
+        // freshly loaded featcolls only set the featureschema's property
+        CoordinateSystem cs = layer.getFeatureCollectionWrapper().getFeatureSchema().getCoordinateSystem();
+        if (!cs.equals(CoordinateSystem.UNSPECIFIED)) {
+          srid = cs.getEPSGCode();
         }
+        // OR fetch it from first geometry
+        else if (layer.getFeatureCollectionWrapper().size() > 0) {
+            srid = ((Feature) layer.getFeatureCollectionWrapper()
+                    .iterator().next()).getGeometry().getSRID();
+        }
+        sridStyle.setSRID(srid);
         layer.addStyle(sridStyle);
     }
     private void initializeCurrentAndFutureInternalFrames(
