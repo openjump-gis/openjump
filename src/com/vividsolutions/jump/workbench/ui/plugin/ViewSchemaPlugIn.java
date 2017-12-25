@@ -152,6 +152,8 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                 }
             }
             //-- END: added/modyfied by Ole
+            // keep srid
+            newSchema.setCoordinateSystem(oldSchema.getCoordinateSystem());
         }
 
         List originalFeatures = layer.getFeatureCollectionWrapper().getFeatures();
