@@ -5,9 +5,6 @@ import java.util.Iterator;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
-import com.vividsolutions.jump.coordsys.Geographic;
-import com.vividsolutions.jump.coordsys.Planar;
-import com.vividsolutions.jump.coordsys.Projection;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEvent;
@@ -23,6 +20,11 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 public class SRIDStyle implements Style {
 
     private int srid = 0;
+    private int lastUpdateSrid = srid;
+
+    public SRIDStyle() {
+      super();
+    }
 
     public void paint(Feature f, Graphics2D g, Viewport viewport)
             throws Exception {
@@ -34,6 +36,7 @@ public class SRIDStyle implements Style {
         if (initialized) {
             return;
         }
+
         updateSRIDs(layer);
         layer.getLayerManager().addLayerListener(new LayerListener() {
             public void featuresChanged(FeatureEvent e) {
@@ -51,9 +54,18 @@ public class SRIDStyle implements Style {
     }
 
     public void updateSRIDs(Layer layer) {
-        for (Object feature : layer.getFeatureCollectionWrapper().getFeatures()) {
-            ((Feature)feature).getGeometry().setSRID(srid);
-        }
+      // nothing to do
+      if (lastUpdateSrid == srid)
+        return;
+      
+      // apply srid to whole layer (btw. of FeatureSchema)
+      layer.getFeatureCollectionWrapper().getFeatureSchema().setCoordinateSystem(new CoordinateSystem("", srid, null));
+      // apply srid for each geometry
+      for (Object feature : layer.getFeatureCollectionWrapper().getFeatures()) {
+          ((Feature)feature).getGeometry().setSRID(srid);
+      }
+      
+      lastUpdateSrid = srid;
     }
 
     public Object clone() {
