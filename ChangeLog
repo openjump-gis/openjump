@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-01-03 Nicolas Ribot <nicolas.ribot@gmail.com>
+  * Icons for layers according to geometry type in the Data Store Layer panel
+
 2017-12-10 ede
   * final bugfix: "#463 Starting OJ with java9 throws several exceptions"
     OJ should be generally java 9 ready now
