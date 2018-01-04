@@ -278,7 +278,7 @@ public class GMLGeometryWriter {
    * @param writer Writer to write coordinates to
    */
   private void write(Coordinate[] coords, int level, Writer writer) throws IOException {
-    startLine(writer, level, "<gml:coordinates>");
+    startLine(writer, level, "<gml:coordinates>\n");
     int dim = 2;
 
     // [mmichaud 2012-05-05] if there is a single z value, I want to keep it 
@@ -289,7 +289,7 @@ public class GMLGeometryWriter {
         }
     }
 
-    boolean isNewLine = false;
+    boolean isNewLine = true;
     for (int i = 0; i < coords.length; i++) {
       if (isNewLine) {
         startLine(writer, level, "  ");
@@ -314,7 +314,8 @@ public class GMLGeometryWriter {
         isNewLine = true;
       }
     }
-    writer.append("</gml:coordinates>\n");
+    writer.append("\n");
+    startLine(writer, level, "</gml:coordinates>\n");
   }
   
 }
