@@ -35,15 +35,34 @@ package com.vividsolutions.jump.coordsys;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jump.feature.Feature;
 
 
 /**
  * The source and destination coordinate reference systems must have
  * the same datum (for example, WGS 84).
+ * 
+ * @deprecated
  */
+@Deprecated
 public class Reprojector {
-    private static Reprojector instance = new Reprojector();
+    // [12/2017 ede] reprojection is not properly implemented as of right now
+    // therefore use a dummy reprojector that does nothing
+    private static Reprojector instance = new Reprojector(){
+
+      @Override
+      public boolean wouldChangeValues(CoordinateSystem source, CoordinateSystem destination) {
+        return false;
+      }
+
+      @Override
+      public void reproject(Coordinate coordinate, CoordinateSystem source, CoordinateSystem destination) {
+      }
+
+      @Override
+      public void reproject(Geometry geometry, CoordinateSystem source, CoordinateSystem destination) {
+      }
+      
+    };
 
     private Reprojector() {
     }

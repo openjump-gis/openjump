@@ -148,14 +148,17 @@ public class LayerManager {
 
     public void addLayerable(String categoryName, Layerable layerable) {
 
+
         if (layerable instanceof Layer) {
             if (size() == 0 && getCoordinateSystem() == CoordinateSystem.UNSPECIFIED) {
                 setCoordinateSystem(((Layer) layerable)
                         .getFeatureCollectionWrapper().getFeatureSchema()
                         .getCoordinateSystem());
-            } else {
-                reproject((Layer) layerable, coordinateSystem);
             }
+// [12/2017 ede] reprojection is not properly implemented as of right now
+//            else {
+//                reproject((Layer) layerable, coordinateSystem);
+//            }
             layerReferencesToDispose.add(new WeakReference<>(layerable));
         }
         addCategory(categoryName);

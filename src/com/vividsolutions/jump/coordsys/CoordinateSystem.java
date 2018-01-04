@@ -77,8 +77,13 @@ public class CoordinateSystem implements Comparable, Serializable {
         return name;
     }
 
+    /**
+     * @deprecated reprojection will be implemented differently at a later point
+     */
+    @Deprecated
     public Projection getProjection() {
-        return projection;
+        throw new UnsupportedOperationException();
+        //return projection;
     }
 
     public int getEPSGCode() {
