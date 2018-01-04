@@ -1,8 +1,5 @@
 package com.vividsolutions.jump.task;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-
 public class TaskMonitorV2Util extends TaskMonitorUtil{
 
   /**
@@ -13,6 +10,14 @@ public class TaskMonitorV2Util extends TaskMonitorUtil{
       ((TaskMonitorV2) monitor).setTitle(title);
   }
 
+  /**
+   * support more than int max items for {@link TaskMonitorV2}
+   * 
+   * @param monitor
+   * @param itemsDone
+   * @param totalItems
+   * @param itemDescription
+   */
   public static void report(TaskMonitor monitor, long itemsDone, long totalItems,
       String itemDescription) {
     if (monitor == null)
