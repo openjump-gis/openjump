@@ -36,6 +36,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -406,11 +407,10 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
     }
   }
 
-
-
-
-
   private boolean compareToIgnoreCaseWithOptionalGmlColonPrefix( String value1, String value2 ){
+    if (value1 == null || value2 == null)
+      throw new InvalidParameterException("no null values allowed. value1/"+value1+", value2/"+value2);
+
     if (value1.equalsIgnoreCase(value2))
       return true;
 
@@ -644,7 +644,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
       }
       
       if ((STATE == STATE_WAIT_FEATURE_TAG)
-          && compareToIgnoreCaseWithOptionalGmlColonPrefix(qName, GMLinput.crsTag) ) {
+          && GMLinput.crsTag != null && compareToIgnoreCaseWithOptionalGmlColonPrefix(qName, GMLinput.crsTag) ) {
         // found the crs1 tag
 
         return;
