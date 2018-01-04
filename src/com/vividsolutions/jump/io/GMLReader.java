@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
@@ -58,12 +59,15 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FlexibleFeature;
-import com.vividsolutions.jump.feature.FlexibleFeatureSchema;
+import com.vividsolutions.jump.feature.FeatureSchema;
+//import com.vividsolutions.jump.feature.FlexibleFeature;
+//import com.vividsolutions.jump.feature.FlexibleFeatureSchema;
 import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorSupport;
@@ -246,7 +250,8 @@ import com.vividsolutions.jump.util.Timer;
 public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitorSupport {
 
   private static int STATE_GET_COLUMNS = 3;
-  private Collection<Exception> exceptions;
+  private Collection<Exception> exceptions = new ArrayList<Exception>();
+  private Locator locator;
 
   /**
    * STATE MEANING <br>
@@ -263,6 +268,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
   private static int STATE_PARSE_GEOM_SIMPLE = 4;
   private static int STATE_WAIT_COLLECTION_TAG = 1;
   private static int STATE_WAIT_FEATURE_TAG = 2;
+  private static int STATE_WAIT_CRS_TAG = 8;
 
   private final static List<String> simpleGeoms = new ArrayList<>();
   private final static List<String> multiGeoms = new ArrayList<>();
@@ -283,9 +289,9 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
   private int STATE = STATE_INIT; // list of points
   private Point apoint;
   private Feature currentFeature;
-  private int currentGeometryNumb = 1;
+//  private int currentGeometryNumb = 1;
   private FeatureCollection fc;
-  private FlexibleFeatureSchema fcmd; // list of geometries
+  private FeatureSchema fcmd; // list of geometries
   private Geometry finalGeometry; // list of geometrycollections - list of list of
                           // geometry
   private String current_geom_qname = "";
@@ -346,6 +352,11 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
     xr.setErrorHandler(this);
   }
 
+  // get current location for throw errors
+  public void setDocumentLocator(Locator locator) {
+      this.locator = locator;
+  }
+
   /**
    * parse SRID information in geometry tags
    * 
@@ -395,259 +406,21 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
     }
   }
 
-  /**
-   * SAX HANDLER - move to state 0
-   */
-  public void endDocument() {
-    // System.out.println("End document");
-    STATE = STATE_INIT;
-  }
 
-  /**
-   * SAX handler - handle state information and transitions based on ending
-   * elements Most of the work of the parser is done here.
-   *
-   * @param uri
-   *          Description of the Parameter
-   * @param name
-   *          Description of the Parameter
-   * @param qName
-   *          Description of the Parameter
-   * @exception SAXException
-   *              Description of the Exception
-   */
-  public void endElement(String uri, String name, String qName)
-      throws SAXException {
-    
-    // allow cancellation
-    if (getTaskMonitor().isCancelRequested()) throw new SAXCancelledException();
-    
-    try {
-      int index;
 
-      // System.out.println("End element: " + qName);
-      if (STATE == STATE_INIT) {
-        tagBody = new StringBuffer();
 
-        return; // something wrong
-      }
 
-      if (STATE > STATE_GET_COLUMNS) {
-        if (isMultiGeometryTag(qName)) {
-          if (STATE == STATE_PARSE_GEOM_NESTED) {
-            STATE = STATE_PARSE_GEOM_SIMPLE; // finished - no action. geometry
-                                             // is correct
-          } else {
-            // build the geometry that was in that collection
-            Geometry g;
+  private boolean compareToIgnoreCaseWithOptionalGmlColonPrefix( String value1, String value2 ){
+    if (value1.equalsIgnoreCase(value2))
+      return true;
 
-            g = geometryFactory.buildGeometry(geometry);
-            geometry = (ArrayList) recursivegeometry.get(STATE
-                - STATE_PARSE_GEOM_NESTED - 1);
-            geometry.add(g);
-            recursivegeometry.remove(STATE - STATE_PARSE_GEOM_NESTED);
-            g = null;
-
-            STATE--;
-          }
-        }
-
-        //System.out.println("wrap-element: " + qName);
-        // finalize geometry and add to feature
-        if (GMLinput.isGeometryElement(qName)) {
-          tagBody = new StringBuffer();
-          STATE = STATE_GET_COLUMNS;
-
-          // -- [sstein] 14.March.2009
-          // read LinearRings even if we don't have polygons
-          if ( linearRing != null ) {
-            geometry.add(linearRing);
-            linearRing = null;
-          }
-
-          if (regex_geomMultiPoint.matcher(current_geom_qname).matches())
-            finalGeometry = geometryFactory
-                .createMultiPoint(geometry.toArray(new Point[0]));
-          else if (regex_geomMultiLineString.matcher(current_geom_qname).matches())
-            finalGeometry = geometryFactory
-                .createMultiLineString((geometry.toArray(new LineString[0])));
-          else if (regex_geomMultiPolygon.matcher(current_geom_qname).matches())
-            finalGeometry = geometryFactory
-                .createMultiPolygon((geometry.toArray(new Polygon[0])));
-//          else if (current_geom_qname.matches("^(?i)(gml:)?linearring$"))
-//            finalGeometry = (Geometry) geometry.get(0);
-          else
-            finalGeometry = geometryFactory.buildGeometry(geometry);
-
-          // System.out.println("end geom: "+finalGeometry.toString() );
-          currentFeature.setGeometry(finalGeometry);
-          currentGeometryNumb++;
-
-          // reset multi qname
-          current_geom_qname = "";
-          return;
-        }
-        
-        
-        //System.out.println("geom-element: " + qName);
-        // these correspond to <coord><X>0.0</X><Y>0.0</Y></coord>
-        if ((qName.compareToIgnoreCase("X") == 0)
-            || (qName.compareToIgnoreCase("gml:X") == 0)) {
-          singleCoordinate.x = Double.parseDouble(tagBody.toString());
-        } else if ((qName.compareToIgnoreCase("Y") == 0)
-            || (qName.compareToIgnoreCase("gml:y") == 0)) {
-          singleCoordinate.y = Double.parseDouble(tagBody.toString());
-        } else if ((qName.compareToIgnoreCase("Z") == 0)
-            || (qName.compareToIgnoreCase("gml:z") == 0)) {
-          singleCoordinate.z = Double.parseDouble(tagBody.toString());
-        } else if ((qName.compareToIgnoreCase("COORD") == 0)
-            || (qName.compareToIgnoreCase("gml:coord") == 0)) {
-          pointList.add(new Coordinate(singleCoordinate)); // remember it
-        }
-        // this corresponds to
-        // <gml:coordinates>1195156.78946687,382069.533723461</gml:coordinates>
-        else if ((qName.compareToIgnoreCase("COORDINATES") == 0)
-            || (qName.compareToIgnoreCase("gml:coordinates") == 0)) {
-          // tagBody has a wack-load of points in it - we need
-          // to parse them into the pointList list.
-          // assume that the x,y,z coordinate are "," separated, and the points
-          // are " " separated
-          parsePoints(tagBody.toString(), geometryFactory);
-        } else if ((qName.compareToIgnoreCase("linearring") == 0)
-            || (qName.compareToIgnoreCase("gml:linearring") == 0)) {
-          Coordinate[] c = new Coordinate[0];
-
-          c = pointList.toArray(c);
-
-          linearRing = geometryFactory.createLinearRing(c);
-        } else if ((qName.compareToIgnoreCase("outerBoundaryIs") == 0)
-            || (qName.compareToIgnoreCase("gml:outerBoundaryIs") == 0)) {
-          outerBoundary = linearRing;
-          linearRing = null;
-        } else if ((qName.compareToIgnoreCase("innerBoundaryIs") == 0)
-            || (qName.compareToIgnoreCase("gml:innerBoundaryIs") == 0)) {
-          innerBoundaries.add(linearRing);
-          linearRing = null;
-        } else if ((qName.compareToIgnoreCase("polygon") == 0)
-            || (qName.compareToIgnoreCase("gml:polygon") == 0)) {
-          // LinearRing[] lrs = new LinearRing[1];
-          LinearRing[] lrs = new LinearRing[0];
-          lrs = innerBoundaries.toArray(lrs);
-          polygon = geometryFactory.createPolygon(outerBoundary, lrs);
-          geometry.add(polygon);
-        } else if ((qName.compareToIgnoreCase("linestring") == 0)
-            || (qName.compareToIgnoreCase("gml:linestring") == 0)) {
-          Coordinate[] c = new Coordinate[0];
-
-          c = pointList.toArray(c);
-
-          lineString = geometryFactory.createLineString(c);
-          geometry.add(lineString);
-        } else if ((qName.compareToIgnoreCase("point") == 0)
-            || (qName.compareToIgnoreCase("gml:point") == 0)) {
-          apoint = geometryFactory
-              .createPoint(pointList.size() > 0 ? pointList.get(0) : null);
-          geometry.add(apoint);
-        }
-      } else if (STATE == STATE_GET_COLUMNS) {
-        if (qName.compareToIgnoreCase(GMLinput.featureTag) == 0) {
-          tagBody = new StringBuffer();
-          STATE = STATE_WAIT_FEATURE_TAG;
-
-          // System.out.println("end feature");
-          // create a feature and put it inside the featurecollection
-          if (currentFeature.getGeometry() == null) {
-            Geometry g = currentFeature.getGeometry();
-
-            if (g != null) {
-              //System.out.println(g.toString());
-            }
-
-            throw new ParseException("no geometry specified in feature");
-          }
-
-          fc.add(currentFeature);
-          report(fc.size());
-
-          currentFeature = null;
-
-          return;
-        } else {
-          // check to see if this was a tag we want to store as a column
-          // DB: added 2nd check for GML like <a><b></b></a>
-          // the "b" tag is the "lastStartTag_qName" for "</b>" and "</a>" we
-          // only need to
-          // process it once.
-          try {
-            if (((index = GMLinput.match(lastStartTag_qName, lastStartTag_atts)) > -1)
-                && (lastStartTag_qName.equalsIgnoreCase(qName))) {
-              // System.out.println("value of " +
-              // GMLinput.columnName(index)+" : " +
-              // GMLinput.getColumnValue(index,tagBody, lastStartTag_atts) );
-
-              // if the column already has a value and multiItems support is
-              // turned on ..and its type ==object
-              if ((multiItemsAsLists)
-                  && (currentFeature.getAttribute(GMLinput.columnName(index)) != null)
-                  && (((ColumnDescription) (GMLinput.columnDefinitions
-                      .get(index))).type == AttributeType.OBJECT)) {
-                Object oldValue = currentFeature.getAttribute(GMLinput
-                    .columnName(index));
-                if (oldValue instanceof List) {
-                  // already a list there - just stuff another thing in!
-                  ((List) oldValue).add(GMLinput.getColumnValue(index,
-                      tagBody.toString(), lastStartTag_atts));
-                } else {
-                  // no list currently there - make a list and replace
-                  List l = new ArrayList();
-                  l.add(oldValue);
-                  l.add(GMLinput.getColumnValue(index, tagBody.toString(),
-                      lastStartTag_atts)); // new value
-                  currentFeature.setAttribute(GMLinput.columnName(index), l);
-                }
-              } else // handle normally
-              {
-                currentFeature.setAttribute(GMLinput.columnName(index),
-                    GMLinput.getColumnValue(index, tagBody.toString(),
-                        lastStartTag_atts));
-              }
-            }
-          } catch (Exception e) {
-            // dont actually do anything with the parse problem - just ignore
-            // it,
-            // we cannot send it back because the function its overiding doesnt
-            // allow
-            e.printStackTrace();
-          }
-
-          tagBody = new StringBuffer();
-        }
-      } else if (STATE == STATE_WAIT_FEATURE_TAG) {
-        if (qName.compareToIgnoreCase(GMLinput.collectionTag) == 0) {
-          STATE = STATE_INIT; // finish
-
-          // System.out.println("DONE!");
-          tagBody = new StringBuffer();
-
-          return;
-        }
-      } else if (STATE == STATE_WAIT_COLLECTION_TAG) {
-        tagBody = new StringBuffer();
-
-        return; // still look for start collection tag
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new SAXException(e.getMessage());
-    }
-  }
-
-  public void error(SAXParseException exception) throws SAXException {
-    throw exception;
-  }
-
-  public void fatalError(SAXParseException exception) throws SAXException {
-    throw exception;
+    // retry making sure both are prefixed
+    String prefix = "gml:";
+    if (!value1.toLowerCase().startsWith(prefix))
+        value1 = prefix + value1;
+    if (!value2.toLowerCase().startsWith(prefix))
+        value2 = prefix + value2;
+    return value1.equalsIgnoreCase(value2);
   }
 
   /**
@@ -847,13 +620,16 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
     if (getTaskMonitor().isCancelRequested()) throw new SAXCancelledException();
     
     try {
-      // System.out.println("Start element: " + qName);
+      //System.out.println("Start element: " + qName);
       tagBody = new StringBuffer();
       lastStartTag_uri = uri;
       lastStartTag_name = name;
       lastStartTag_qName = qName;
       lastStartTag_atts = atts;
 
+//      if (STATE == STATE_WAIT_COLLECTION_TAG)
+//        System.out.println("(STATE == STATE_WAIT_COLLECTION_TAG)");
+      
       if (STATE == STATE_INIT) {
         return; // something wrong
       }
@@ -866,17 +642,47 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
 
         return;
       }
+      
+      if ((STATE == STATE_WAIT_FEATURE_TAG)
+          && compareToIgnoreCaseWithOptionalGmlColonPrefix(qName, GMLinput.crsTag) ) {
+        // found the crs1 tag
+
+        return;
+      }
+
+      if ((STATE == STATE_WAIT_FEATURE_TAG)
+          && compareToIgnoreCaseWithOptionalGmlColonPrefix(qName, "Box") ) {
+        // found the crs2 box tag
+
+        // fetch srid id
+        for (int i = 0; i < atts.getLength(); i++) {
+          String attName = atts.getQName(i);
+          if (attName.equalsIgnoreCase("srsName")){
+            String attValue = atts.getValue(i);
+            String sridString = attValue.substring(attValue.lastIndexOf("#") + 1);
+
+            try {
+              SRID = Integer.valueOf(sridString);
+            } catch (NumberFormatException e) {
+              addParseException("srid '"+sridString+"'is not a number.", e);
+            }
+          }
+        }
+        STATE = STATE_WAIT_FEATURE_TAG;
+
+        return;
+      }
 
       if ((STATE == STATE_WAIT_FEATURE_TAG)
           && (qName.compareToIgnoreCase(GMLinput.featureTag) == 0)) {
         // found the feature tag
         // System.out.println("found feature");
-        currentFeature = new FlexibleFeature(fcmd);
+        currentFeature = new BasicFeature(fcmd);
         STATE = STATE_GET_COLUMNS;
-        SRID = 0;// default SRID (reset for each feature, but should be constant
-                 // for a featurecollection)
-        if (geometryFactory.getSRID() != SRID)
-          geometryFactory = new GeometryFactory(new PrecisionModel(), SRID);
+//        SRID = 0;// default SRID (reset for each feature, but should be constant
+//                 // for a featurecollection)
+//        if (geometryFactory.getSRID() != SRID)
+//          geometryFactory = new GeometryFactory(new PrecisionModel(), SRID);
 
         return;
       }
@@ -956,14 +762,281 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
       }
 
     } catch (Exception e) {
+      e.printStackTrace(System.err);
       throw new SAXException(e.getMessage());
     }
+  }
+
+  /**
+   * SAX handler - handle state information and transitions based on ending
+   * elements Most of the work of the parser is done here.
+   *
+   * @param uri
+   *          Description of the Parameter
+   * @param name
+   *          Description of the Parameter
+   * @param qName
+   *          Description of the Parameter
+   * @exception SAXException
+   *              Description of the Exception
+   */
+  public void endElement(String uri, String name, String qName)
+      throws SAXException {
+    
+    // allow cancellation
+    if (getTaskMonitor().isCancelRequested()) throw new SAXCancelledException();
+    
+    try {
+      int index;
+
+      // System.out.println("End element: " + qName);
+      if (STATE == STATE_INIT) {
+        tagBody = new StringBuffer();
+
+        return; // something wrong
+      }
+
+      if (STATE > STATE_GET_COLUMNS) {
+        if (isMultiGeometryTag(qName)) {
+          if (STATE == STATE_PARSE_GEOM_NESTED) {
+            STATE = STATE_PARSE_GEOM_SIMPLE; // finished - no action. geometry
+                                             // is correct
+          } else {
+            // build the geometry that was in that collection
+            Geometry g;
+
+            g = geometryFactory.buildGeometry(geometry);
+            geometry = (ArrayList) recursivegeometry.get(STATE
+                - STATE_PARSE_GEOM_NESTED - 1);
+            geometry.add(g);
+            recursivegeometry.remove(STATE - STATE_PARSE_GEOM_NESTED);
+            g = null;
+
+            STATE--;
+          }
+        }
+
+        //System.out.println("wrap-element: " + qName);
+        // finalize geometry and add to feature
+        if (GMLinput.isGeometryElement(qName)) {
+          tagBody = new StringBuffer();
+          STATE = STATE_GET_COLUMNS;
+
+          // -- [sstein] 14.March.2009
+          // read LinearRings even if we don't have polygons
+          if ( linearRing != null ) {
+            geometry.add(linearRing);
+            linearRing = null;
+          }
+
+          if (regex_geomMultiPoint.matcher(current_geom_qname).matches())
+            finalGeometry = geometryFactory
+                .createMultiPoint(geometry.toArray(new Point[0]));
+          else if (regex_geomMultiLineString.matcher(current_geom_qname).matches())
+            finalGeometry = geometryFactory
+                .createMultiLineString((geometry.toArray(new LineString[0])));
+          else if (regex_geomMultiPolygon.matcher(current_geom_qname).matches())
+            finalGeometry = geometryFactory
+                .createMultiPolygon((geometry.toArray(new Polygon[0])));
+//          else if (current_geom_qname.matches("^(?i)(gml:)?linearring$"))
+//            finalGeometry = (Geometry) geometry.get(0);
+          else
+            finalGeometry = geometryFactory.buildGeometry(geometry);
+
+          // System.out.println("end geom: "+finalGeometry.toString() );
+          currentFeature.setGeometry(finalGeometry);
+//          currentGeometryNumb++;
+
+          // reset multi qname
+          current_geom_qname = "";
+          return;
+        }
+        
+        
+        //System.out.println("geom-element: " + qName);
+        // these correspond to <coord><X>0.0</X><Y>0.0</Y></coord>
+        if ((qName.compareToIgnoreCase("X") == 0)
+            || (qName.compareToIgnoreCase("gml:X") == 0)) {
+          singleCoordinate.x = Double.parseDouble(tagBody.toString());
+        } else if ((qName.compareToIgnoreCase("Y") == 0)
+            || (qName.compareToIgnoreCase("gml:y") == 0)) {
+          singleCoordinate.y = Double.parseDouble(tagBody.toString());
+        } else if ((qName.compareToIgnoreCase("Z") == 0)
+            || (qName.compareToIgnoreCase("gml:z") == 0)) {
+          singleCoordinate.z = Double.parseDouble(tagBody.toString());
+        } else if ((qName.compareToIgnoreCase("COORD") == 0)
+            || (qName.compareToIgnoreCase("gml:coord") == 0)) {
+          pointList.add(new Coordinate(singleCoordinate)); // remember it
+        }
+        // this corresponds to
+        // <gml:coordinates>1195156.78946687,382069.533723461</gml:coordinates>
+        else if ((qName.compareToIgnoreCase("COORDINATES") == 0)
+            || (qName.compareToIgnoreCase("gml:coordinates") == 0)) {
+          // tagBody has a wack-load of points in it - we need
+          // to parse them into the pointList list.
+          // assume that the x,y,z coordinate are "," separated, and the points
+          // are " " separated
+          parsePoints(tagBody.toString(), geometryFactory);
+        } else if ((qName.compareToIgnoreCase("linearring") == 0)
+            || (qName.compareToIgnoreCase("gml:linearring") == 0)) {
+          Coordinate[] c = new Coordinate[0];
+
+          c = pointList.toArray(c);
+
+          linearRing = geometryFactory.createLinearRing(c);
+        } else if ((qName.compareToIgnoreCase("outerBoundaryIs") == 0)
+            || (qName.compareToIgnoreCase("gml:outerBoundaryIs") == 0)) {
+          outerBoundary = linearRing;
+          linearRing = null;
+        } else if ((qName.compareToIgnoreCase("innerBoundaryIs") == 0)
+            || (qName.compareToIgnoreCase("gml:innerBoundaryIs") == 0)) {
+          innerBoundaries.add(linearRing);
+          linearRing = null;
+        } else if ((qName.compareToIgnoreCase("polygon") == 0)
+            || (qName.compareToIgnoreCase("gml:polygon") == 0)) {
+          // LinearRing[] lrs = new LinearRing[1];
+          LinearRing[] lrs = new LinearRing[0];
+          lrs = innerBoundaries.toArray(lrs);
+          polygon = geometryFactory.createPolygon(outerBoundary, lrs);
+          geometry.add(polygon);
+        } else if ((qName.compareToIgnoreCase("linestring") == 0)
+            || (qName.compareToIgnoreCase("gml:linestring") == 0)) {
+          Coordinate[] c = new Coordinate[0];
+
+          c = pointList.toArray(c);
+
+          lineString = geometryFactory.createLineString(c);
+          geometry.add(lineString);
+        } else if ((qName.compareToIgnoreCase("point") == 0)
+            || (qName.compareToIgnoreCase("gml:point") == 0)) {
+          apoint = geometryFactory
+              .createPoint(pointList.size() > 0 ? pointList.get(0) : null);
+          geometry.add(apoint);
+        }
+      } else if (STATE == STATE_GET_COLUMNS) {
+        if (qName.compareToIgnoreCase(GMLinput.featureTag) == 0) {
+          tagBody = new StringBuffer();
+          STATE = STATE_WAIT_FEATURE_TAG;
+
+          // System.out.println("end feature");
+          // create a feature and put it inside the featurecollection
+          if (currentFeature.getGeometry() == null) {
+            Geometry g = currentFeature.getGeometry();
+
+            if (g != null) {
+              //System.out.println(g.toString());
+            }
+
+            throw new ParseException("no geometry specified in feature");
+          }
+
+          fc.add(currentFeature);
+          report(fc.size());
+
+          currentFeature = null;
+
+          return;
+        } else {
+          // check to see if this was a tag we want to store as a column
+          // DB: added 2nd check for GML like <a><b></b></a>
+          // the "b" tag is the "lastStartTag_qName" for "</b>" and "</a>" we
+          // only need to
+          // process it once.
+          try {
+            if (((index = GMLinput.match(lastStartTag_qName, lastStartTag_atts)) > -1)
+                && (lastStartTag_qName.equalsIgnoreCase(qName))) {
+              // System.out.println("value of " +
+              // GMLinput.columnName(index)+" : " +
+              // GMLinput.getColumnValue(index,tagBody, lastStartTag_atts) );
+
+              // if the column already has a value and multiItems support is
+              // turned on ..and its type ==object
+              if ((multiItemsAsLists)
+                  && (currentFeature.getAttribute(GMLinput.columnName(index)) != null)
+                  && (((ColumnDescription) (GMLinput.columnDefinitions
+                      .get(index))).type == AttributeType.OBJECT)) {
+                Object oldValue = currentFeature.getAttribute(GMLinput
+                    .columnName(index));
+                if (oldValue instanceof List) {
+                  // already a list there - just stuff another thing in!
+                  ((List) oldValue).add(GMLinput.getColumnValue(index,
+                      tagBody.toString(), lastStartTag_atts));
+                } else {
+                  // no list currently there - make a list and replace
+                  List l = new ArrayList();
+                  l.add(oldValue);
+                  l.add(GMLinput.getColumnValue(index, tagBody.toString(),
+                      lastStartTag_atts)); // new value
+                  currentFeature.setAttribute(GMLinput.columnName(index), l);
+                }
+              } else // handle normally
+              {
+                currentFeature.setAttribute(GMLinput.columnName(index),
+                    GMLinput.getColumnValue(index, tagBody.toString(),
+                        lastStartTag_atts));
+              }
+            }
+          } catch (Exception e) {
+            // dont actually do anything with the parse problem - just ignore
+            // it,
+            // we cannot send it back because the function its overiding doesnt
+            // allow
+            e.printStackTrace();
+          }
+
+          tagBody = new StringBuffer();
+        }
+      } else if (STATE == STATE_WAIT_FEATURE_TAG) {
+        if (qName.compareToIgnoreCase(GMLinput.collectionTag) == 0) {
+          STATE = STATE_INIT; // finish
+
+          // System.out.println("DONE!");
+          tagBody = new StringBuffer();
+
+          return;
+        }
+      } else if (STATE == STATE_WAIT_COLLECTION_TAG) {
+        tagBody = new StringBuffer();
+
+        return; // still look for start collection tag
+      } else if (STATE == STATE_WAIT_CRS_TAG) {
+        if (compareToIgnoreCaseWithOptionalGmlColonPrefix(qName, "Box")) {
+          STATE = STATE_WAIT_COLLECTION_TAG;
+        }
+        return; // still looking for <gml:Box/>
+      }
+      
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new SAXException(e.getMessage());
+    }
+  }
+
+  /**
+   * SAX HANDLER - move to state 0
+   */
+  public void endDocument() {
+    // System.out.println("End document");
+    
+    // apply srid if not unset
+    if (SRID > 0)
+      fc.getFeatureSchema().setCoordinateSystem(new CoordinateSystem("", SRID, null));
+    STATE = STATE_INIT;
   }
 
   // //////////////////////////////////////////////////////////////////
   // Error handlers.
   // //////////////////////////////////////////////////////////////////
   public void warning(SAXParseException exception) throws SAXException {
+    exceptions.add(exception);
+  }
+
+  public void error(SAXParseException exception) throws SAXException {
+    exceptions.add(exception);
+  }
+
+  public void fatalError(SAXParseException exception) throws SAXException {
     throw exception;
   }
 
@@ -1111,19 +1184,26 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
       int semicolonLoc = srsName.lastIndexOf(':');
       if (semicolonLoc == -1)
         return 0;
-      srsName = srsName.substring(semicolonLoc + 1).trim();
-      return Integer.parseInt(srsName);
-    } catch (Exception e) {
+      return Integer.parseInt(srsName.substring(semicolonLoc + 1).trim());
+    } catch (NumberFormatException e) {
+      addParseException( "srid '"+srsName+"'is not a number.", e);
       return 0;
     }
+  }
+
+  protected void addException(Exception e){
+    exceptions.add(e);
+  }
+
+  protected void addParseException(String message, Exception cause) {
+    exceptions.add(
+        new ParseException(message, streamName, locator.getLineNumber(), locator.getColumnNumber(), cause));
   }
 
   /**
    * @return exceptions collected during the reading process.
    */
   public Collection<Exception> getExceptions() {
-    if (exceptions == null)
-      exceptions = new ArrayList<>();
     return exceptions;
   }
 

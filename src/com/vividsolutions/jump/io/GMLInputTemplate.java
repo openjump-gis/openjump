@@ -66,6 +66,7 @@ public class GMLInputTemplate extends DefaultHandler {
     boolean loaded = false;
     String collectionTag;
     String featureTag;
+    String crsTag;
     ArrayList<ColumnDescription> columnDefinitions = new ArrayList<>(); //list of type ColumnDescription
 
     private XMLReader xr;
@@ -75,6 +76,7 @@ public class GMLInputTemplate extends DefaultHandler {
     private boolean havecollectionTag = false;
     private boolean havefeatureTag = false;
     private boolean havegeometryElement = false;
+    private boolean havecrsTag = false;
 
     //for the jcs column definition
     private int columnDef_valueType = 0; // 0 - undef, 1 = body, 2 = attribute
@@ -548,6 +550,14 @@ public class GMLInputTemplate extends DefaultHandler {
                 havefeatureTag = true;
 
                 return;
+            }
+
+            if (qName.equalsIgnoreCase("CRSElement")) {
+              tagBody = tagBody.trim();
+              crsTag = tagBody;
+              havecrsTag = true;
+
+              return;
             }
 
             if (qName.equalsIgnoreCase("name")) {

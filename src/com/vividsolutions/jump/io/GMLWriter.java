@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
@@ -44,11 +45,19 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.task.DummyTaskMonitor;
+import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.task.TaskMonitorSupport;
+import com.vividsolutions.jump.task.TaskMonitorUtil;
+import com.vividsolutions.jump.util.Timer;
 
 
 /**
@@ -109,18 +118,18 @@ import com.vividsolutions.jump.feature.FeatureSchema;
  * </pre>
  * 
  */
-public class GMLWriter implements JUMPWriter {
+public class GMLWriter implements JUMPWriter, TaskMonitorSupport {
 
     // Standard tags for the auto-generated outputTemplate.
-    private static String standard_geom = "geometry";
-    private static String standard_feature = "feature";
-    private static String standard_featureCollection = "featureCollection";
+    private static final String standard_geom = "geometry";
+    private static final String standard_feature = "feature";
+    private static final String standard_featureCollection = "featureCollection";
     private GMLOutputTemplate outputTemplate = null;
     private GMLGeometryWriter geometryWriter = new GMLGeometryWriter();
 
     /** constructor**/
     public GMLWriter() {
-        geometryWriter.setLinePrefix("                ");
+        geometryWriter.setLinePrefix("      ");
     }
 
     /**
@@ -146,7 +155,7 @@ public class GMLWriter implements JUMPWriter {
 
         if (dp.getProperty("TemplateFile") == null) {
             //we're going create the output template
-            gmlTemplate = GMLWriter.makeOutputTemplate(featureCollection.getFeatureSchema());
+            gmlTemplate = makeOutputTemplate(featureCollection);
         } else {
             // load the template
             java.io.Reader r;
@@ -192,7 +201,29 @@ public class GMLWriter implements JUMPWriter {
 
         buffWriter.write(outputTemplate.headerText);
 
-        for (Iterator t = featureCollection.iterator(); t.hasNext();) {
+        // write a bounded by box definition setting an srid for the whole dataset
+        // Workaround or convenience as OGC writes in the WFS 2.0 standard:
+        //   11.3.6 Inheritance rules for srsName values
+        if (getSrid(featureCollection) > 0){
+          Envelope env = featureCollection.getEnvelope();
+          DecimalFormat df = new DecimalFormat("#,##0.00");
+          df.setGroupingUsed(false);
+          String envString = df.format(env.getMinX()) + "," + df.format(env.getMinY()) + " " + df.format(env.getMaxX())
+              + "," + df.format(env.getMaxY());
+          buffWriter.write(
+            "  <gml:boundedBy>\n" +
+            "    <gml:Box srsName=\"http://www.opengis.net/gml/srs/epsg.xml#"+getSrid(featureCollection)+"\">\n" +
+            "      <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">" + envString + "</gml:coordinates>\n" +
+            "    </gml:Box>\n" +
+            "  </gml:boundedBy>\n");
+        }
+
+        long milliSeconds = 0;
+        int count = 0;
+        int size = featureCollection.size();
+        TaskMonitorUtil.report(getTaskMonitor(),
+            I18N.getMessage("Writer.writing-features"));
+        for (Iterator t = featureCollection.iterator(); t.hasNext() && !getTaskMonitor().isCancelRequested();) {
             f = (Feature) t.next();
 
             for (int u = 0; u < outputTemplate.featureText.size(); u++) {
@@ -207,6 +238,14 @@ public class GMLWriter implements JUMPWriter {
 
             buffWriter.write(outputTemplate.featureTextfooter);
             buffWriter.write("\n");
+            
+            long now = Timer.milliSecondsSince(0);
+            count++;
+            // show status every .5s
+            if (now - 500 >= milliSeconds) {
+              milliSeconds = now;
+              TaskMonitorUtil.report(getTaskMonitor(), count, size, "");
+            }
         }
 
         buffWriter.write(outputTemplate.footerText);
@@ -224,41 +263,22 @@ public class GMLWriter implements JUMPWriter {
         // this should take care of really _all_ XML1.0 invalid chars
         // see https://commons.apache.org/proper/commons-lang/javadocs/api-3.5/org/apache/commons/lang3/StringEscapeUtils.html#escapeXml10-java.lang.String-
         return StringEscapeUtils.escapeXml10(s);
+    }
 
-        
-        // kept for reference
-//        StringBuilder sb = new StringBuilder(s);
-//        char c;
-//
-//        for (int t = 0; t < sb.length(); t++) {
-//            c = sb.charAt(t);
-//
-//            if (c == '<') {
-//                sb.replace(t, t + 1, "&lt;");
-//            }
-//
-//            if (c == '>') {
-//                sb.replace(t, t + 1, "&gt;");
-//            }
-//
-//            if (c == '&') {
-//                sb.replace(t, t + 1, "&amp;");
-//            }
-//
-//            if (c == '\'') {
-//                sb.replace(t, t + 1, "&apos;");
-//            }
-//
-//            if (c == '"') {
-//                sb.replace(t, t + 1, "&quot;");
-//            }
-//
-//            if ((int)c < 20 && c != '\t' && c != '\n' && c != '\r') {
-//                sb.replace(t, t + 1, "");
-//            }
-//        }
-//
-//        return sb.toString();
+    /**
+     * utility function to retrieve srid from a feature collection or -1 if none
+     * 
+     * @param featureCollection
+     * @return srid
+     */
+    private static int getSrid( FeatureCollection featureCollection ){
+      Integer srid = -1;
+      CoordinateSystem cs = featureCollection.getFeatureSchema().getCoordinateSystem();
+      if (!cs.equals(CoordinateSystem.UNSPECIFIED)) {
+        srid = cs.getEPSGCode();
+      }
+
+      return srid.intValue();
     }
 
     /**
@@ -327,7 +347,7 @@ public class GMLWriter implements JUMPWriter {
     }
     
     // precompile pattern for performance reasons
-    Pattern closingTagPattern = Pattern.compile(">$");
+    static Pattern closingTagPattern = Pattern.compile(">$");
     
     private void evaluateToken(Feature f, String pre, String token, Writer writer)
         throws Exception {
@@ -399,18 +419,18 @@ public class GMLWriter implements JUMPWriter {
         return attribute.toString();
     }
 
+    private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
     protected String format(Date date) {
         return dateFormatter.format(date);
     }
-    
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     /**
      * Given a FeatureSchema, make an output template
      * in the JCS  format
      * @param fcmd input featureSchema
      */
-    private static GMLOutputTemplate makeOutputTemplate(FeatureSchema fcmd) {
+    private static GMLOutputTemplate makeOutputTemplate(FeatureCollection fc) {
         GMLOutputTemplate result;
         String inputTemplate;
         int t;
@@ -418,39 +438,40 @@ public class GMLWriter implements JUMPWriter {
         String colText;
         String colCode;
         String colHeader;
+        FeatureSchema fcmd = fc.getFeatureSchema();
 
         result = new GMLOutputTemplate();
 
-        inputTemplate = makeInputTemplate(fcmd);
+        inputTemplate = makeInputTemplate(fc);
 
         result.setHeaderText(
             "<?xml version='1.0' encoding='UTF-8'?>\n<JCSDataFile xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2000/10/XMLSchema-instance\" >\n" +
             inputTemplate + "<" + standard_featureCollection + ">\n");
 
-        colHeader = "     <" + standard_feature + "> \n";
+        colHeader = "  <" + standard_feature + "> \n";
 
         for (t = 0; t < fcmd.getAttributeCount(); t++) {
             colName = fcmd.getAttributeName(t);
 
             if (t != fcmd.getGeometryIndex()) {
                 //not geometry
-                colText = colHeader + "          <property name=\"" + escapeXML(colName) +
+                colText = colHeader + "    <property name=\"" + escapeXML(colName) +
                     "\">";
                 colCode = "=column " + colName;
                 colHeader = "</property>\n";
             } else {
                 //geometry
-                colText = colHeader + "          <" + standard_geom + ">\n";
+                colText = colHeader + "    <" + standard_geom + ">\n";
                 colCode = "=geometry";
-                colHeader = "          </" + standard_geom + ">\n";
+                colHeader = "    </" + standard_geom + ">\n";
             }
 
             result.addItem(colText, colCode);
         }
 
-        result.setFeatureFooter(colHeader + "     </" + standard_feature +
+        result.setFeatureFooter(colHeader + "  </" + standard_feature +
             ">\n");
-        result.setFooterText("     </" + standard_featureCollection +
+        result.setFooterText("  </" + standard_featureCollection +
             ">\n</JCSDataFile>\n");
 
         return result;
@@ -463,15 +484,21 @@ public class GMLWriter implements JUMPWriter {
      *
      * @param fcmd the featureSchema to describe
      */
-    private static String makeInputTemplate(FeatureSchema fcmd) {
-        String result;
+    private static String makeInputTemplate(FeatureCollection fc) {
+        String result = "";
         int t;
+        FeatureSchema fcmd = fc.getFeatureSchema(); 
 
-        result = "<JCSGMLInputTemplate>\n<CollectionElement>" +
-            standard_featureCollection +
-            "</CollectionElement> \n<FeatureElement>" + standard_feature +
-            "</FeatureElement>\n<GeometryElement>" + standard_geom +
-            "</GeometryElement>\n<ColumnDefinitions>\n";
+        result += "<JCSGMLInputTemplate>\n";
+        result += "<CollectionElement>" + standard_featureCollection + "</CollectionElement>\n";
+        result += "<FeatureElement>" + standard_feature + "</FeatureElement>\n";
+        result += "<GeometryElement>" + standard_geom + "</GeometryElement>\n";
+        // write a bounded by box definition setting an srid for the whole dataset
+        // Workaround or convenience as OGC writes in the WFS 2.0 standard:
+        //   11.3.6 Inheritance rules for srsName values
+        if (getSrid(fc) > 0)
+          result += "<CRSElement>boundedBy</CRSElement>\n";
+        result += "<ColumnDefinitions>\n";
 
         //fill in each of the column defs
         for (t = 0; t < fcmd.getAttributeCount(); t++) {
@@ -504,5 +531,15 @@ public class GMLWriter implements JUMPWriter {
         result = result + "</ColumnDefinitions>\n</JCSGMLInputTemplate>\n\n";
 
         return result;
+    }
+
+    private TaskMonitor taskMonitor = new DummyTaskMonitor();
+
+    public void setTaskMonitor(TaskMonitor taskMonitor) {
+      this.taskMonitor = taskMonitor;
+    }
+
+    public TaskMonitor getTaskMonitor() {
+      return taskMonitor;
     }
 }
