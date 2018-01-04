@@ -53,6 +53,10 @@ public class ParseException extends JUMPException {
         super(message);
     }
 
+    public ParseException(String message, Throwable cause) {
+      super(message, cause);
+    }
+
     /**
      * More explictly construct a parse exception.
      * Resulting message will be :message + " in file '" + newFname +"', line " + newLineno + ", char " + newCpos
@@ -63,8 +67,12 @@ public class ParseException extends JUMPException {
      * @param newCharPos character position on the line
      */
     public ParseException(String message, String newFileName, int newLineNumber, int newCharPos) {
-        super(message + " in file '" + newFileName + "', line " + newLineNumber +
-            ", char " + newCharPos);
+      this(message, newFileName, newLineNumber, newCharPos, null);
+    }
+
+    public ParseException(String message, String newFileName, int newLineNumber, int newCharPos, Throwable cause) {
+        this(message + " in file '" + newFileName + "', line " + newLineNumber +
+            ", char " + newCharPos, cause);
 
         fileName = newFileName;
         lineNumber = newLineNumber;
