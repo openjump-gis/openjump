@@ -18,8 +18,10 @@ public class SRSInfo {
     public static final String UNDEFINED = "0";
     public static final String USERDEFINED = "USER-DEFINED";
 
+    // Add LOCAL_CoordinateReferenceSystem to manage internal identifiers
+    // attributed by CTS library for new Coordinate Reference System
     public enum Registry {
-        SRID, EPSG, ESRI, IGNF, SRORG
+        SRID, EPSG, ESRI, IGNF, SRORG, LOCAL_CoordinateReferenceSystem
     }
 
     private String source = ""; // The source of SRS information (ex. prj file
