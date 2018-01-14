@@ -6,14 +6,29 @@
 2018-01-07 mmichaud <m.michael.michaud@orange.fr>
   * Update CADExtension to 0.6 (fixes and improvements)
 
+2018-01-04 ede
+  * commented/disabled on-the-fly reprojection, which was never implemented 
+    completely anyway
+  * JML/GML Reader/Writer add EPSG SRID support via WFS 
+    gml:boundedBy->gml:Box tag
+    JML/GML Writer
+    - is now cancelable via TaskMonitor button
+    - reports feature count written so far now
+
 2018-01-03 Nicolas Ribot <nicolas.ribot@gmail.com>
   * Icons for layers according to geometry type in the Data Store Layer panel
+
+2017-12-26 ede
+  * ChangeSRIDPlugin
+    - setting SRID tags the feature collection to modified now
+    - no change in setting does nothing, no change when cancelled
+    - ok button disabled when no change or invalid input
 
 2017-12-10 ede
   * final bugfix: "#463 Starting OJ with java9 throws several exceptions"
     OJ should be generally java 9 ready now
-  * bugfix: KML extension couldn't find it's strings as OJ's I18N didn't use 
-    the proper resource bundle
+  * bugfix: KML extension couldn't find it's translation strings as OJ's I18N 
+    didn't use the proper resource bundle
 
 2017-12-03 mmichaud <m.michael.michaud@orange.fr>
   * Remove Manifest sealed instruction from VertexSymbols.jar and
