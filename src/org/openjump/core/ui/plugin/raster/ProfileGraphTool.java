@@ -59,8 +59,6 @@ import javax.swing.border.Border;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.attributeoperations.AttributeOp;
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
-import org.openjump.core.rasterimage.sextante.rasterWrappers.GridExtent;
 import org.openjump.core.ui.plot.Plot2DPanelOJ;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -82,6 +80,7 @@ import com.vividsolutions.jump.workbench.ui.HTMLPanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+//import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 
 public class ProfileGraphTool extends MultiClickTool {
 
@@ -132,7 +131,7 @@ public class ProfileGraphTool extends MultiClickTool {
     private List<Coordinate> savedCoordinates = new ArrayList<Coordinate>();
 
     private Coordinate currCoord;
-    private OpenJUMPSextanteRasterLayer rstLayer = null;
+    // private OpenJUMPSextanteRasterLayer rstLayer = null;
     private RasterImageLayer rLayer = null;
     private GeometryFactory gf = new GeometryFactory();
     private FeatureCollection resultFC = null;
@@ -216,23 +215,25 @@ public class ProfileGraphTool extends MultiClickTool {
                             I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return;
         }
-        this.rstLayer = new OpenJUMPSextanteRasterLayer();
+        // this.rstLayer = new OpenJUMPSextanteRasterLayer();
         // [mmichaud 2013-05-25] false : this is a temporary image not a file
         // based image
-        this.rstLayer.create(rLayer, false);
-        this.rstLayer.setFullExtent(); // not sure why this needs to be done but
-                                       // it seems to
-                                       // be necessary (otherwise I get an NPE
-                                       // when
-                                       // doing
-                                       // this.rstLayer.getWindowCellSize())
-        GridExtent extent = this.rstLayer.getWindowGridExtent(); // not sure if
-                                                                 // this needs
-                                                                 // to be done -
-                                                                 // but it was
-                                                                 // in the
-                                                                 // Sextante
-                                                                 // class
+        // this.rstLayer.create(rLayer, false);
+        // this.rstLayer.setFullExtent(); // not sure why this needs to be done
+        // but
+        // it seems to
+        // be necessary (otherwise I get an NPE
+        // when
+        // doing
+        // this.rstLayer.getWindowCellSize())
+        // GridExtent extent = this.rstLayer.getWindowGridExtent(); // not sure
+        // if
+        // this needs
+        // to be done -
+        // but it was
+        // in the
+        // Sextante
+        // class
         // -- clear the resultFC
         this.resultFC.clear();
         this.nPoints = 0;
@@ -466,15 +467,15 @@ public class ProfileGraphTool extends MultiClickTool {
 
         if (dx > 0.0 || dy > 0.0) {
             if (dx > dy) {
-                dx /= this.rstLayer.getWindowCellSize().x;
+                dx /= rLayer.getMetadata().getOriginalCellSize();// this.rstLayer.getWindowCellSize().x;
                 n = dx;
                 dy /= dx;
-                dx = this.rstLayer.getWindowCellSize().x;
+                dx = rLayer.getMetadata().getOriginalCellSize();// this.rstLayer.getWindowCellSize().x;
             } else {
-                dy /= this.rstLayer.getWindowCellSize().y;
+                dy /= rLayer.getMetadata().getOriginalCellSize();// this.rstLayer.getWindowCellSize().y;
                 n = dy;
                 dx /= dy;
-                dy = this.rstLayer.getWindowCellSize().y;
+                dy = rLayer.getMetadata().getOriginalCellSize();// this.rstLayer.getWindowCellSize().y;
             }
 
             if (x2 < x) {
@@ -507,8 +508,10 @@ public class ProfileGraphTool extends MultiClickTool {
         } else {
             dDX = x - m_dLastX;
             dDY = y - m_dLastY;
-            if (this.rstLayer.isNoDataValue(z)
-                    || this.rstLayer.isNoDataValue(m_dLastZ)) {
+            if (z == rLayer.getNoDataValue()
+                    || m_dLastZ == rLayer.getNoDataValue()) {
+                // if (this.rstLayer.isNoDataValue(z)
+                // || this.rstLayer.isNoDataValue(m_dLastZ)) {
                 dDZ = 0.0;
             } else {
                 dDZ = z - m_dLastZ;
