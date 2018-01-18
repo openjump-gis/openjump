@@ -38,9 +38,11 @@ import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -206,7 +208,7 @@ public class GMLWriter implements JUMPWriter, TaskMonitorSupport {
         //   11.3.6 Inheritance rules for srsName values
         if (getSrid(featureCollection) > 0){
           Envelope env = featureCollection.getEnvelope();
-          DecimalFormat df = new DecimalFormat("#,##0.00");
+          DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.US));
           df.setGroupingUsed(false);
           String envString = df.format(env.getMinX()) + "," + df.format(env.getMinY()) + " " + df.format(env.getMaxX())
               + "," + df.format(env.getMaxY());
