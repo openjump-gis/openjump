@@ -34,9 +34,8 @@ import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.ccordsys.utils.SridLookupTable;
 import org.openjump.core.rasterimage.RasterImageLayer;
+import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
 import org.openjump.core.rasterimage.TiffTags;
-import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
-import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 import org.openjump.core.ui.swing.DetachableInternalFrame;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
@@ -69,13 +68,14 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  *          Remove statistic panel as already implemented as in the Raster
  *          Statistics plugin. Added a minimal raster projection display:
  *          currently it only displays simple project definition (not EPSG).
+ * @version 0.6 2018_01_19 (Giuseppe Aruta) added Valid/nodata cell number to
+ *          grid section
  */
 
 public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 
     // Components
     private JSlider transparencySlider = new JSlider();
-    @SuppressWarnings("rawtypes")
     private JPanel transparencySliderPanel = new JPanel(new GridBagLayout());
     private String layer_name;
     private String file_path;
@@ -86,6 +86,8 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
     private int extent_columns;
     private int extent_rows;
     private String extent_cellnumber;
+    private String extent_cellnumbervalid;
+    private String extent_cellnumbernodata;
     private String extent_area;
     private String extent_width;
     private String extent_height;
@@ -147,6 +149,10 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_cell");
     private final static String EXTENT_CELL_NUM = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cellnum");
+    private final static String EXTENT_CELL_NODATA = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.nodatacell");
+    private final static String EXTENT_CELL_VALID = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.validcells");
     private final static String EXTENT_AREA = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.area");
     private final static String BAND = I18N
@@ -171,8 +177,6 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.mean");
     private static final String R_STD = I18N
             .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev");
-    private static final String GEO_METADATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.geographic_metadata");
     private static final String PROJECTION = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.projection");
 
@@ -274,13 +278,19 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         info += property(EXTENT_CELL_SIZE, extent_cellSizeX + ", "
                 + extent_cellSizeY, bgColor1);
         info += property(EXTENT_CELL_NUM, extent_cellnumber, bgColor0);
+        if (rLayer.getNumBands() == 1) {
+            info += property(EXTENT_CELL_VALID, extent_cellnumbervalid,
+                    bgColor1);
+            info += property(EXTENT_CELL_NODATA, extent_cellnumbernodata,
+                    bgColor0);
+        }
         info += header("", RASTER);
         info += property(RASTER_DPI, raster_dpi, bgColor0);
         info += property(RASTER_DATATYPE, raster_datatype, bgColor1);
         info += property(RASTER_COLORDEPTH, raster_colordepth, bgColor0);
         info += property(RASTER_BANDS, raster_bands, bgColor1);
         if (rLayer.getNumBands() == 1) {
-            info += property(RASTER_NODATA, raster_nodata, bgColor0);
+            info += property(RASTER_NODATA + " Pap", raster_nodata, bgColor0);
         }
         for (int b = 0; b < numBands; b++) {
             int numerobanda = b + 1;
@@ -304,12 +314,11 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
 
     }
 
-    @SuppressWarnings("unchecked")
     private JPanel Transparency(final RasterImageLayer layer) {
         transparencySliderPanel.setBorder(BorderFactory
                 .createTitledBorder(PROPORTIONAL_TRANSPARENCY_ADJUSTER));
         Box box = new Box(1);
-        Dictionary sliderLabelDictionary = new Hashtable();
+        Dictionary<Integer, JLabel> sliderLabelDictionary = new Hashtable<Integer, JLabel>();
         for (int i = 0; i <= 100; i += 25) {
             sliderLabelDictionary.put(i, new JLabel(i + "%"));
         }
@@ -456,6 +465,12 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         raster_nodata = String.valueOf(rLayer.getNoDataValue());
         int numBands = rLayer.getNumBands();
         raster_bands = String.valueOf(numBands);
+        if (rLayer.getNumBands() == 1) {
+            extent_cellnumbervalid = String.valueOf(getValidCellsNumber(raster,
+                    rLayer.getNoDataValue()));
+            extent_cellnumbernodata = String.valueOf(getNodataCellNumber(
+                    raster, rLayer.getNoDataValue()));
+        }
         // Its is never used. Why it was calculated ?
         // Stats stats = rLayer.getMetadata().getStats();
         // for (int b = 0; b < numBands; b++) {
@@ -643,20 +658,20 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
     }
 
     /*
-     * Counts the number of no data cells. This code is deactivated
+     * Count the number of cells (of a Sextante monoband raster layer) with no
+     * data value
      */
-    public int getNodataCellsNumber(RasterImageLayer rLayer) throws IOException {
-        OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
-        rstLayer.create(rLayer);
+
+    public int getNodataCellNumber(Raster ras, double nodata)
+            throws IOException, RasterDataNotFoundException {
         int counter = 0;
-        GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
-                rstLayer, rstLayer.getLayerGridExtent());
-        int nx = rstLayer.getLayerGridExtent().getNX();
-        int ny = rstLayer.getLayerGridExtent().getNY();
+
+        int nx = ras.getWidth();
+        int ny = ras.getHeight();
         for (int y = 0; y < ny; y++) {
             for (int x = 0; x < nx; x++) {
-                double value = gwrapper.getCellValueAsDouble(x, y, 0);
-                if (value == rstLayer.getNoDataValue())
+                double value = ras.getSampleDouble(x, y, 0);
+                if (value == nodata)
                     counter++;
             }
         }
@@ -666,10 +681,11 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
     /*
      * Counts the number of valid cells. This code is deactivated
      */
-    public int getValidCellsNumber(RasterImageLayer rLayer) throws IOException {
-        Raster raster = rLayer.getRasterData(null);
+    public int getValidCellsNumber(Raster raster, double nodata)
+            throws IOException, RasterDataNotFoundException {
+
         return raster.getWidth() * raster.getHeight()
-                - getNodataCellsNumber(rLayer);
+                - getNodataCellNumber(raster, nodata);
     }
 
 }
