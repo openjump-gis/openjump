@@ -33,7 +33,8 @@
 package org.openjump.core.ui.plugin.raster.statistics;
 
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.image.Raster;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Iterator;
@@ -42,8 +43,8 @@ import java.util.Locale;
 import javax.swing.Icon;
 
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
-import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
+import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
+import org.openjump.sextante.gui.additionalResults.AdditionalResults;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
@@ -52,15 +53,19 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.HTMLFrame;
+import com.vividsolutions.jump.workbench.ui.HTMLPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
- * Giuseppe Aruta [2015_01_27] Computes various statistics for selected layers.
- * Giuseppe Aruta [2015_01_27] added header with the number of selected raster layers Giuseppe
- * Giuseppe Aruta [2015_04_09] Reduce display of large nodata values (es QGIS) to
- * readable number
- * Giuseppe Aruta [2015_05_16] Added X*Y Cell size
+ * @author Giuseppe Aruta [2015_01_27] Computes various statistics for selected
+ *         layers.
+ * @author Giuseppe Aruta [2015_01_27] added header with the number of selected
+ *         raster layers
+ * @author Giuseppe Aruta [2015_04_09] Reduce display of large nodata values (es
+ *         QGIS) to readable number
+ * @author Giuseppe Aruta [2015_05_16] Added X*Y Cell size
+ * @author Giuseppe Aruta [2018_01_19] Removed depency to
+ *         OpenJUMPSextanteRasterLayer class. Clean the code
  */
 public class DEMStatisticsPlugIn extends AbstractPlugIn {
 
@@ -86,14 +91,14 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
             .get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.columns");
     private final static String ROWS = I18N
             .get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.rows");
-    private final static String UNSPECIFIED = I18N
-            .get("coordsys.CoordinateSystem.unspecified");
+    private final static String LAYERS = I18N
+            .get("org.openjump.core.ui.plugin.queries.SimpleQuery.selected-layers")
+            + " :";
 
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(
                 workbenchContext);
-
         return new MultiEnableCheck()
                 .add(checkFactory
                         .createWindowWithLayerNamePanelMustBeActiveCheck())
@@ -108,23 +113,23 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
      * data value
      */
 
-    public int nodata(PlugInContext context,
-            OpenJUMPSextanteRasterLayer rstLayer) {
+    public int nodata(Raster ras, double nodata) throws IOException,
+            RasterDataNotFoundException {
         int counter = 0;
-        GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
-                rstLayer, rstLayer.getLayerGridExtent());
-        int nx = rstLayer.getLayerGridExtent().getNX();
-        int ny = rstLayer.getLayerGridExtent().getNY();
+
+        int nx = ras.getWidth();
+        int ny = ras.getHeight();
         for (int y = 0; y < ny; y++) {
             for (int x = 0; x < nx; x++) {
-                double value = gwrapper.getCellValueAsDouble(x, y, 0);
-                if (value == rstLayer.getNoDataValue())
+                double value = ras.getSampleDouble(x, y, 0);
+                if (value == nodata)
                     counter++;
             }
         }
         return counter;
     }
 
+    @Override
     public boolean execute(PlugInContext context) throws Exception {
 
         Locale locale = new Locale("en", "UK");
@@ -132,12 +137,11 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
         DecimalFormat df = (DecimalFormat) NumberFormat
                 .getNumberInstance(locale);
         df.applyPattern(pattern);
-
         final WorkbenchContext wbcontext = context.getWorkbenchContext();
-
         int ras = wbcontext.getLayerNamePanel()
                 .selectedNodes(RasterImageLayer.class).size();
-        HTMLFrame out = context.getOutputFrame();
+        HTMLPanel out = new HTMLPanel();
+        out.setRecordNavigationControlVisible(false);
         out.createNewDocument();
         out.setBackground(Color.lightGray);
         out.addHeader(1, NUM_LAYER + ": " + ras);
@@ -158,84 +162,67 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
         for (Iterator i = wbcontext.getLayerNamePanel()
                 .selectedNodes(RasterImageLayer.class).iterator(); i.hasNext();) {
             RasterImageLayer slayer = (RasterImageLayer) i.next();
-
-            OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
-            rstLayer.create(slayer);
-
-            slayer.getNumBands();
-
-            String min = df.format(rstLayer.getMinValue());// Min value of
-                                                           // cells
-            String max = df.format(rstLayer.getMaxValue());// Max value of
-            df.format(rstLayer.getMeanValue());
-
+            Raster raster = slayer.getRasterData(null);
+            Double nodata = slayer.getNoDataValue();
+            double minRas = slayer.getMetadata().getStats().getMin(0);
+            double maxRas = slayer.getMetadata().getStats().getMax(0);
+            double meanRas = slayer.getMetadata().getStats().getMean(0);
             Envelope extent = slayer.getWholeImageEnvelope(); // Envelope of
                                                               // layer
+            String min = df.format(minRas);// Min value of
+                                           // cells
+            String max = df.format(maxRas);// Max value of
+            df.format(meanRas);
 
             Locale locale1 = new Locale("en", "UK");
             String pattern1 = "###.## ";
             DecimalFormat df1 = (DecimalFormat) NumberFormat
                     .getNumberInstance(locale1);
             df.applyPattern(pattern1);
-            String cellSizex = df1.format(rstLayer.getLayerCellSize().x);// Cell
-                                                                         // size
-            String cellSizey = df1.format(rstLayer.getLayerCellSize().y);
+            String cellSizex = df1.format(cellSizeX(raster, extent));// Cell
+                                                                     // size
+            String cellSizey = df1.format(cellSizeY(raster, extent));
             String cellSize = cellSizex + "x" + cellSizey;
             String minx = df.format(extent.getMinX());
             String miny = df.format(extent.getMinY());
-            int X = rstLayer.getNX(); // Number of columns
-            int Y = rstLayer.getNY(); // Number of rows
-            
-            
-            /*
-             * Giuseppe Aruta Nov. 2015
-             *  workaround for OpenJUMP bug 410 (Sextante), If nodata value is -3.40282346639E38
-     		 *  and min value -9999, -99999 or 1.70141E38. Those two values are displayed in red
-  			 *  on DEMStatistic table
-             */
-            String nodata = null;
-            String texmin = df.format(rstLayer.getMinValue());
-            double nda = slayer.getNoDataValue();
-            String begin ="<b><font color='red'>";
-            String end = "</font></b>";
-            if (nda == -3.40282346639E38 || rstLayer.getNoDataValue() == -1.79769313486E308) {
-            	 if (rstLayer.getMinValue() == -9999
-                         || rstLayer.getMinValue() == -99999
-                         || rstLayer.getMinValue() == 1.70141E38){
-            		 nodata = begin+nodata+end;
-            		 min = begin+texmin+end;
-            	 } else{
-            		 nodata = Double.toString(nda); 
-            		 min = texmin;
-            	 }
-            	
-            } else{
-            	nodata = Double.toString(nda); 
-       		 	min = texmin;
-            	
-            }
-            
-            
-            
-            /*
-            
-            
-            
-            if (nda == -3.4028234e+038) {
-                nodata = "<b><font color='red'>-3.4028234e+038</font></b>";
-            } else {
-                nodata = Double.toString(nda);
-            }*/
+            int X = raster.getWidth(); // Number of columns
+            int Y = raster.getHeight(); // Number of rows
 
-            int validcells = X * Y - nodata(context, rstLayer);// Number of
-                                                               // valid
-                                                               // cells
-            int nodatacells = nodata(context, rstLayer);// number of no data
-                                                        // cells
+            /*
+             * Giuseppe Aruta Nov. 2015 workaround for OpenJUMP bug 410
+             * (Sextante), If nodata value is -3.40282346639E38 and min value
+             * -9999, -99999 or 1.70141E38. Those two values are displayed in
+             * red on DEMStatistic table
+             */
+            String nodataText = null;
+            String texmin = df.format(minRas);
+            double nda = slayer.getNoDataValue();
+            String begin = "<b><font color='red'>";
+            String end = "</font></b>";
+            if (nda == -3.40282346639E38 || nodata == -1.79769313486E308) {
+                if (minRas == -9999 || minRas == -99999 || minRas == 1.70141E38) {
+                    nodataText = begin + nodata + end;
+                    min = begin + texmin + end;
+                } else {
+                    nodataText = Double.toString(nda);
+                    min = texmin;
+                }
+
+            } else {
+                nodataText = Double.toString(nda);
+                min = texmin;
+
+            }
+            int nodatacells = nodata(raster, nodata);// number of no data
+            // cells
+            int validcells = X * Y - nodatacells;// Number of
+                                                 // valid
+                                                 // cells
+
             out.append("</td><td align='right'>" + slayer.getName()
                     + "</td><td align='right'>" + min
                     + "</td><td align='right'>" + max
-                    + "</td><td align='right'>" + nodata
+                    + "</td><td align='right'>" + nodataText
                     + "</td><td align='right'>" + validcells
                     + "</td><td align='right'>" + nodatacells
                     + "</td><td align='right'>" + X + "</td><td align='right'>"
@@ -244,14 +231,17 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
                     + "</td><td align='right'>" + cellSize + "</td></tr>");
 
         }
-
         out.append("</table>");
-        out.setPreferredSize(new Dimension(800, 100));
-        out.setMinimumSize(new Dimension(800, 100));
-        out.surface();
+        AdditionalResults.addAdditionalResultAndShow(getName() + "[" + LAYERS
+                + +ras + "]", out, true);
+
+        // out.setPreferredSize(new Dimension(800, 100));
+        // out.setMinimumSize(new Dimension(800, 100));
+        // out.surface();
         return true;
     }
 
+    @Override
     public String getName() {
         return I18N
                 .get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.name");
@@ -259,6 +249,17 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
 
     public Icon getIcon() {
         return IconLoader.icon("grid_statistics.png");
+    }
+
+    /*
+     * Gets cell size
+     */
+    public double cellSizeX(Raster r, Envelope env) throws IOException {
+        return env.getWidth() / r.getWidth();
+    }
+
+    public double cellSizeY(Raster r, Envelope env) throws IOException {
+        return env.getHeight() / r.getHeight();
     }
 
 }
