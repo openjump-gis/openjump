@@ -206,19 +206,21 @@ public class GMLWriter implements JUMPWriter, TaskMonitorSupport {
         // write a bounded by box definition setting an srid for the whole dataset
         // Workaround or convenience as OGC writes in the WFS 2.0 standard:
         //   11.3.6 Inheritance rules for srsName values
+        String srsAttrib="";
         if (getSrid(featureCollection) > 0){
-          Envelope env = featureCollection.getEnvelope();
-          DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.US));
-          df.setGroupingUsed(false);
-          String envString = df.format(env.getMinX()) + "," + df.format(env.getMinY()) + " " + df.format(env.getMaxX())
-              + "," + df.format(env.getMaxY());
-          buffWriter.write(
-            "  <gml:boundedBy>\n" +
-            "    <gml:Box srsName=\"http://www.opengis.net/gml/srs/epsg.xml#"+getSrid(featureCollection)+"\">\n" +
-            "      <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">" + envString + "</gml:coordinates>\n" +
-            "    </gml:Box>\n" +
-            "  </gml:boundedBy>\n");
+          srsAttrib=" srsName=\"http://www.opengis.net/gml/srs/epsg.xml#"+getSrid(featureCollection)+"\"";
         }
+        Envelope env = featureCollection.getEnvelope();
+        DecimalFormat df = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.US));
+        df.setGroupingUsed(false);
+        String envString = df.format(env.getMinX()) + "," + df.format(env.getMinY()) + " " + df.format(env.getMaxX())
+            + "," + df.format(env.getMaxY());
+        buffWriter.write(
+          "  <gml:boundedBy>\n" +
+          "    <gml:Box"+srsAttrib+">\n" +
+          "      <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">" + envString + "</gml:coordinates>\n" +
+          "    </gml:Box>\n" +
+          "  </gml:boundedBy>\n");
 
         long milliSeconds = 0;
         int count = 0;
@@ -450,7 +452,7 @@ public class GMLWriter implements JUMPWriter, TaskMonitorSupport {
             "<?xml version='1.0' encoding='UTF-8'?>\n<JCSDataFile xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2000/10/XMLSchema-instance\" >\n" +
             inputTemplate + "<" + standard_featureCollection + ">\n");
 
-        colHeader = "  <" + standard_feature + "> \n";
+        colHeader = "  <" + standard_feature + ">\n";
 
         for (t = 0; t < fcmd.getAttributeCount(); t++) {
             colName = fcmd.getAttributeName(t);
@@ -471,9 +473,8 @@ public class GMLWriter implements JUMPWriter, TaskMonitorSupport {
             result.addItem(colText, colCode);
         }
 
-        result.setFeatureFooter(colHeader + "  </" + standard_feature +
-            ">\n");
-        result.setFooterText("  </" + standard_featureCollection +
+        result.setFeatureFooter(colHeader + "  </" + standard_feature + ">");
+        result.setFooterText("</" + standard_featureCollection +
             ">\n</JCSDataFile>\n");
 
         return result;
@@ -498,8 +499,7 @@ public class GMLWriter implements JUMPWriter, TaskMonitorSupport {
         // write a bounded by box definition setting an srid for the whole dataset
         // Workaround or convenience as OGC writes in the WFS 2.0 standard:
         //   11.3.6 Inheritance rules for srsName values
-        if (getSrid(fc) > 0)
-          result += "<CRSElement>boundedBy</CRSElement>\n";
+        result += "<CRSElement>boundedBy</CRSElement>\n";
         result += "<ColumnDefinitions>\n";
 
         //fill in each of the column defs
