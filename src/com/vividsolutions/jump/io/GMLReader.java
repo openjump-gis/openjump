@@ -269,7 +269,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
   private static int STATE_PARSE_GEOM_SIMPLE = 4;
   private static int STATE_WAIT_COLLECTION_TAG = 1;
   private static int STATE_WAIT_FEATURE_TAG = 2;
-  private static int STATE_WAIT_CRS_TAG = 8;
+  private static int STATE_WAIT_GMLBOX_TAG = 8;
 
   private final static List<String> simpleGeoms = new ArrayList<>();
   private final static List<String> multiGeoms = new ArrayList<>();
@@ -642,37 +642,6 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
 
         return;
       }
-      
-      if ((STATE == STATE_WAIT_FEATURE_TAG)
-          && GMLinput.crsTag != null && compareToIgnoreCaseWithOptionalGmlColonPrefix(qName, GMLinput.crsTag) ) {
-        // found the crs1 tag
-
-        return;
-      }
-
-      if ((STATE == STATE_WAIT_FEATURE_TAG)
-          && compareToIgnoreCaseWithOptionalGmlColonPrefix(qName, "Box") ) {
-        // found the crs2 box tag
-
-        // fetch srid id
-        for (int i = 0; i < atts.getLength(); i++) {
-          String attName = atts.getQName(i);
-          if (attName.equalsIgnoreCase("srsName")){
-            String attValue = atts.getValue(i);
-            String sridString = attValue.substring(attValue.lastIndexOf("#") + 1);
-
-            try {
-              SRID = Integer.valueOf(sridString);
-            } catch (NumberFormatException e) {
-              addParseException("srid '"+sridString+"'is not a number.", e);
-            }
-          }
-        }
-        STATE = STATE_WAIT_FEATURE_TAG;
-
-        return;
-      }
-
       if ((STATE == STATE_WAIT_FEATURE_TAG)
           && (qName.compareToIgnoreCase(GMLinput.featureTag) == 0)) {
         // found the feature tag
@@ -759,6 +728,35 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
       
       if ((STATE > STATE_GET_COLUMNS) && isSimpleGeometryTag(qName) && current_geom_qname.isEmpty()) {
         current_geom_qname = qName;
+      }
+
+      if ((STATE == STATE_WAIT_FEATURE_TAG)
+          && GMLinput.crsTag != null && compareToIgnoreCaseWithOptionalGmlColonPrefix(qName, GMLinput.crsTag) ) {
+        // found the crs1 tag
+        STATE = STATE_WAIT_GMLBOX_TAG;
+
+        return;
+      }
+      if ((STATE == STATE_WAIT_GMLBOX_TAG)
+          && compareToIgnoreCaseWithOptionalGmlColonPrefix(qName, "Box") ) {
+        // found the crs2 box tag
+
+        // fetch srid id
+        for (int i = 0; i < atts.getLength(); i++) {
+          String attName = atts.getQName(i);
+          if (attName.equalsIgnoreCase("srsName")){
+            String attValue = atts.getValue(i);
+            String sridString = attValue.substring(attValue.lastIndexOf("#") + 1);
+
+            try {
+              SRID = Integer.valueOf(sridString);
+            } catch (NumberFormatException e) {
+              addParseException("srid '"+sridString+"'is not a number.", e);
+            }
+          }
+        }
+        STATE = STATE_WAIT_FEATURE_TAG;
+        return;
       }
 
     } catch (Exception e) {
@@ -999,14 +997,14 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
         tagBody = new StringBuffer();
 
         return; // still look for start collection tag
-      } else if (STATE == STATE_WAIT_CRS_TAG) {
-        if (compareToIgnoreCaseWithOptionalGmlColonPrefix(qName, "Box")) {
-          STATE = STATE_WAIT_COLLECTION_TAG;
-        }
-        return; // still looking for <gml:Box/>
       }
-      
-      
+      else if (STATE == STATE_WAIT_GMLBOX_TAG && 
+          compareToIgnoreCaseWithOptionalGmlColonPrefix(qName, "boundedBy")) {
+        // found </gml:boundedBy>, return to feature parsing
+        STATE = STATE_WAIT_FEATURE_TAG;
+        return;
+      }
+
     } catch (Exception e) {
       e.printStackTrace();
       throw new SAXException(e.getMessage());
