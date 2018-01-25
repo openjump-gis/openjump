@@ -150,11 +150,8 @@ public class RasterQueryCursorTool extends NClickTool {
                                 coord.y, b);
                         if (cellValue != null) {
                             if (rLayer.isNoData(cellValue)) {
-                                cellValues = "("
-                                        + RASTER_NODATA
-                                        + ") "
-                                        + cellValues.concat(Double
-                                                .toString(cellValue));
+                                cellValues = cellValues.concat(Double
+                                        .toString(cellValue));
                             } else {
                                 cellValues = cellValues.concat(Double
                                         .toString(cellValue));
@@ -185,7 +182,8 @@ public class RasterQueryCursorTool extends NClickTool {
                                     .getFeatureSchema()));
                 }
                 getPanel().getContext().setStatusMessage(
-                        "(" + name + ") " + VALUE + ": " + lastClick);
+                        "[" + LAYER + ": " + name + "] " + VALUE + ": "
+                                + lastClick);
                 getPanel().setViewportInitialized(true);
             } else {
                 getPanel()
@@ -322,7 +320,11 @@ public class RasterQueryCursorTool extends NClickTool {
                         tentativeCoordinate.y, b);
                 if (cellValue != null) {
                     if (aLayer.isNoData(cellValue)) {
-                        cellValues = Double.toString(Double.NaN);
+                        cellValues = cellValues.concat(Double
+                                .toString(cellValue))
+                                + "("
+                                + RASTER_NODATA
+                                + ") ";
                     } else {
                         cellValues = cellValues.concat(Double
                                 .toString(cellValue));
@@ -349,6 +351,7 @@ public class RasterQueryCursorTool extends NClickTool {
         // + cellValues.toString());
 
         getPanel().getContext().setStatusMessage(
-                "(" + name + ") " + VALUE + ": " + cellValues.toString());
+                "[" + LAYER + ": " + name + "] " + VALUE + ": "
+                        + cellValues.toString());
     }
 }
