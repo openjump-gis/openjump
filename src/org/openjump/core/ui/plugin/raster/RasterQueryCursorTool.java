@@ -83,8 +83,9 @@ public class RasterQueryCursorTool extends NClickTool {
      * SHIFT to display only last measure. Moving cursor on image shows raster
      * cell value on lower panel
      * 
-     * [2014_02_24] Giuseppe Aruta - Fixed minor bug on lower panel
-     * [2015_07_08] Giuseppe Aruta - Fixed bug #407 Sextante raster : displaying cell values throws NPE 
+     * [2014_02_24] Giuseppe Aruta - Fixed minor bug on lower panel [2015_07_08]
+     * Giuseppe Aruta - Fixed bug #407 Sextante raster : displaying cell values
+     * throws NPE
      */
 
     protected Coordinate tentativeCoordinate;
@@ -92,7 +93,8 @@ public class RasterQueryCursorTool extends NClickTool {
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.values");
     public static final String LAYER = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.layer");
-
+    private final static String RASTER_NODATA = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
     private String lastClick = "-";
     // protected int width, height; // The dimensions of the image
 
@@ -107,10 +109,12 @@ public class RasterQueryCursorTool extends NClickTool {
 
     }
 
+    @Override
     public Icon getIcon() {
         return IconLoader.icon("information_16x16.png");
     }
 
+    @Override
     public Cursor getCursor() {
         // [ede 03.2103] linux currently support only 2 color cursors
         Image i = !CheckOS.isLinux() ? IconLoader
@@ -119,6 +123,7 @@ public class RasterQueryCursorTool extends NClickTool {
         return createCursor(i);
     }
 
+    @Override
     protected void gestureFinished() throws NoninvertibleTransformException,
             IOException, RasterDataNotFoundException {
         reportNothingToUndoYet();
@@ -127,7 +132,7 @@ public class RasterQueryCursorTool extends NClickTool {
 
         final WorkbenchContext wbcontext = this.getWorkbench().getContext();
         RasterImageLayer aLayer = null;
-       
+
         Layerable[] ls = (Layerable[]) wbcontext.getLayerNamePanel()
                 .selectedNodes(RasterImageLayer.class)
                 .toArray(new Layerable[] {});
@@ -145,7 +150,11 @@ public class RasterQueryCursorTool extends NClickTool {
                                 coord.y, b);
                         if (cellValue != null) {
                             if (rLayer.isNoData(cellValue)) {
-                                cellValues = Double.toString(Double.NaN);
+                                cellValues = "("
+                                        + RASTER_NODATA
+                                        + ") "
+                                        + cellValues.concat(Double
+                                                .toString(cellValue));
                             } else {
                                 cellValues = cellValues.concat(Double
                                         .toString(cellValue));
@@ -284,6 +293,7 @@ public class RasterQueryCursorTool extends NClickTool {
      * TODO: if user drag on image, measures on lower panel are no more
      * displayed. Try to find a solution
      */
+    @Override
     public void mouseDragged(MouseEvent e) {
         // mouseLocationChanged(e);
     }
@@ -293,6 +303,7 @@ public class RasterQueryCursorTool extends NClickTool {
      */
     PlugInContext gContext;
 
+    @Override
     public void mouseMoved(MouseEvent me) {
 
         final WorkbenchContext wbcontext = this.getWorkbench().getContext();
