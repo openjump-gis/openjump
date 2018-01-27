@@ -5,6 +5,9 @@
 
 2018-01-27 mmichaud <m.michael.michaud@orange.fr>
   * For LayerProperties, don't read srs with cts library
+  * Update graph extension to 0.5.6 (new finnish translation)
+  * Update csv-driver extension to 1.0.2 (new finnish translation)
+  * Update topology extension to 0.9.2 (new finnish translation)
 
 2018-01-07 mmichaud <m.michael.michaud@orange.fr>
   * Update CADExtension to 0.6 (fixes and improvements)
