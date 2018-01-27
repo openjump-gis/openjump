@@ -118,6 +118,7 @@ public class ProjUtils {
                 textProj = scanner.nextLine();
                 srsInfo = new SRSInfo().setSource(projectSourceFilePrj);
                 scanner.close();
+                /*
                 try {
                     // Use new crs library to parse prj file if possible
                     CoordinateReferenceSystem crs = new CRSFactory()
@@ -135,6 +136,7 @@ public class ProjUtils {
                 } catch (CRSException e) {
                     e.printStackTrace();
                 }
+                */
             }
         } else if (new File(projectSourceRFilePrj).exists()) {
             Scanner scanner = new Scanner(new File(projectSourceRFilePrj));
