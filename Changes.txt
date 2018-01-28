@@ -105,7 +105,9 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * Updated ColorChooser plugin to version 1.0
     - added recent color submenu
     - adopted fugue icons to plugins
-  * Update ColorChooser to version 1.1 with new Finnic translation
+  * Update ColorChooser to version 1.1 with new Finnish translation
+  * Upgrade Cadplan VertexSymbol plugin to 0.181 (new finnish translation)
+  * Upgrade Cadplan JumpPrinter plugin to 1.88 (new finnish translation)
 
 
 Version 1.11 release rev.5434 (released on 13. April 2017)
