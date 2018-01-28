@@ -3,10 +3,109 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   Highlights
 
   New Features
+  * Added TaskProperty plugin to read and modify project properties
+  * New Network Properties options: connection and read timeouts are now 
+    configurable in the Network Properties options' tab.
+    These timeout values are also applied to WMS and WFS Web Services 
+    connections
+  * Added Synchronize windows zoom (only) tool
+  * Integration of Coordinate Transformation PlugIn in OpenJUMP core
+  * Add ShowCenterView plugin: it shows a red crosshair in the center of 
+    the view. See Feature request #201 "Add crosshair to synchronized projects"
+  * Add a Arcgis-like remodeler tool in editing toolbox
+  * add Plugin to open OpenJUMP wiki pages on default internet browser.
+    Online links available on help menu
 
   Improvements
+  * Task Frame title shows also projection description if it is set
+    and matches any value available into srid.txt SRS registry file
+  * PostgreSQL JDBC driver : set the ApplicationName driver's property to allow
+    OpenJUMP to advertise its name to PostgreSQL backend
+  * AutoAssignAttributePlugIn : accept boolean and long as target attributes
+  * AutoAssignAttributePlugIn : inverse options order (simple to more complex)
+  * BlendLineStringsPlugIn : improve quality, performance and make it undoable
+  * Deactivate ReplaceValuePlugIn (use AutoAssignAttributePlugIn instead)
+  * Improvement from ioan to honor IncrementalAngle constraint even on the
+    first segment
+  * Spatial Index support for SQLite/Spatialte datasources: checks if geometry
+    columns are indexed and builds custom SQL queries to use index according to
+    detected SQLite flavors
+  * Spatial Index support for SQLite/Spatialite datasources: quotes identifiers
+    when generating SQL queries
+  * Added radius/circumference/area display to DrawConstrainedCircleTool as
+    suggested by Jukka [JPP-Devel] Show area while drawing circles? Sept 21 2017
+  * Add postgis driver options to narrow database geometry type
+  * Add z-interpolation to remodeler tool
+  * RasterImageLayer <Sextante>: Spatial reference system srid and its location
+    are now stored as metadata on loading file. Updated Raster Info plugin.
+  * added methods for handling multiple ApplicationExitHandler in the
+    WorkbenchFrame. Set the old getApplicationExitHandler() and
+    setApplicationExitHandler() methods deprecated.
+  * ConnectionManager adjusted for the new ApplicationExitHandler stuff.
+  * always print help output when a wrong parameter/option was given
+  * added --help switch as users might expect it
+  * add appendToClassPathForInstrumentation method to PlugInClassLoader
+    so that it can be started from IDE using code instrumentation
+  * add support of image layers to "Affine Transformation (from parameters)"
+    plugin, only BMP, GIF, JPG, JP2, PNG and TIF are supported
+  * ChangeSRIDPlugin
+    - setting SRID tags the feature collection to modified now
+    - no change in setting does nothing, no change when cancelled
+    - ok button disabled when no change or invalid input
+  * Icons for layers according to geometry type in the Data Store Layer panel
+  * commented/disabled on-the-fly reprojection, which was never implemented 
+    completely anyway
+  * JML/GML Reader/Writer add EPSG SRID support via WFS 
+    gml:boundedBy->gml:Box tag
+    JML/GML Writer
+    - is now cancelable via TaskMonitor button
+    - reports feature count written so far now
 
   Bug Fixes
+  * ExtractPointsPlugIn : keep original feature id in attribute
+  * SpatialJoinPlugIn : A and B attribute prefix were reversed
+  * Shapefile : handling of dbf containing deleted records
+  * Fix combine layers : guarantee unique name for the new attribute
+  * fix bug 460: "Create Grid may jam OpenJUMP"
+    CreateGridPlugIn is now cancelable and shows progress
+  * bugfix 462: jml does not support special characters everywhere
+  * small multimonitor fix: place some popups during closing OpenJUMP or a
+    project on the same monitor as OpenJUMP is running.
+  * Enhanced Warp panel plugin adding affine and projective transformation
+  * Bug corrected. Added output of srid for Layer and RasterImageLayer
+  * workaround to solve #448 about creating new folders in JFCWithEnterAction
+  * Fix EZButtons : fix save/restore shortcuts
+  * Remove Manifest sealed instruction from VertexSymbols.jar and
+    JumpChart.jar as it throws Exception with java 9
+  * final bugfix: "#463 Starting OJ with java9 throws several exceptions"
+    OJ should be generally java 9 ready now
+  * bugfix: KML extension couldn't find it's translation strings as OJ's I18N 
+    didn't use the proper resource bundle
+
+  PLUS
+  * PLUS/GraphToolBox : adds HydrographicNetworkAnalysis plugin and improves
+    Skeletonizer
+  * PLUS: update to latest sqlite-jdbc-3.20.0.jar
+  * Upgraded CadTools to version 0.3 - Feature request #257:
+    CAD tools to show area in real time when drawing closed geometries. 
+   - added area, perimeter and other info display to circle, parallelogram
+     and ellipse tools
+  * Upgraded CadTools Extension to version 0.4:
+    - added Block and Annotation tools and 
+    - added more line decoration for layer style
+  * Update CADExtension to 0.6 (fixes and improvements)
+  * Update graph extension to 0.5.6 (new finnish translation)
+  * Update csv-driver extension to 1.0.2 (new finnish translation)
+  * Update topology extension to 0.9.2 (new finnish translation)
+  * Update Sextante: Sextante help opens as OpenJUMP
+    internal frame
+  * Upgraded ColorChooser to version 9: 
+   - correct #461 ColorChooser creates inconsistent schema
+   - enlarged color icons
+  * Updated ColorChooser plugin to version 1.0
+    - added recent color submenu
+    - adopted fugue icons to plugins
+  * Update ColorChooser to version 1.1 with new Finnic translation
 
 
 Version 1.11 release rev.5434 (released on 13. April 2017)
