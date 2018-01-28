@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-01-28 Giuseppe Aruta
+  * Update Sextante: Sextante help opens as OpenJUMP
+    internal frame
+
 2018-01-27 mmichaud <m.michael.michaud@orange.fr>
   * For LayerProperties, don't read srs with cts library
   * Update graph extension to 0.5.6 (new finnish translation)
