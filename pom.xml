@@ -1061,7 +1061,9 @@
         <dependency>
            <groupId>it.geosolutions.imageio-ext</groupId>
            <artifactId>imageio-ext-tiff</artifactId>
-            <version>${imageio-ext.version}</version>
+           <!-- downgrade, as > 1.1.13 does not load single band TIFFs properly -->
+           <version>1.1.13</version>
+           <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.deegree2</groupId>
