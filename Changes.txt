@@ -97,8 +97,8 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * Update graph extension to 0.5.6 (new finnish translation)
   * Update csv-driver extension to 1.0.2 (new finnish translation)
   * Update topology extension to 0.9.2 (new finnish translation)
-  * Update Sextante: Sextante help opens as OpenJUMP
-    internal frame
+  * Update Sextante: Toolbox frame and Sextante help  open as OpenJUMP
+    internal frames
   * Upgraded ColorChooser to version 9: 
    - correct #461 ColorChooser creates inconsistent schema
    - enlarged color icons

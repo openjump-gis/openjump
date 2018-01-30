@@ -5,6 +5,10 @@
 
 * Changes.txt updated until here **********************************************
 
+2018-01-30 Giuseppe Aruta
+   * Upgraded Sextante building to version gen2018a to solve a bug on 
+     exporting raster data. Moved Toolboxframe as OJ internal frame
+
 2018-01-28 mmichaud <m.michael.michaud@orange.fr>
   * Update Cadplan VertexSymbol (finnish translation + java 1.7 compatibility)
   * Update Cadplan JumpPrinter (finnish translation + OpenJUMP 1.11 compatibility)
