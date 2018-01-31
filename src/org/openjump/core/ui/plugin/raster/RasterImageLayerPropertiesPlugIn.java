@@ -290,7 +290,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         info += property(RASTER_COLORDEPTH, raster_colordepth, bgColor0);
         info += property(RASTER_BANDS, raster_bands, bgColor1);
         if (rLayer.getNumBands() == 1) {
-            info += property(RASTER_NODATA + " Pap", raster_nodata, bgColor0);
+            info += property(RASTER_NODATA, raster_nodata, bgColor0);
         }
         for (int b = 0; b < numBands; b++) {
             int numerobanda = b + 1;
