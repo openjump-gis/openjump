@@ -90,7 +90,7 @@ public class JTSAdapter {
     public static com.vividsolutions.jts.geom.Geometry export( Geometry gmObject )
             throws GeometryException {
 
-        com.vividsolutions.jts.geom.Geometry geometry = null;
+        com.vividsolutions.jts.geom.Geometry geometry;
         if (gmObject instanceof Point) {
             geometry = export((Point) gmObject);
         } else if (gmObject instanceof MultiPoint) {
@@ -134,7 +134,7 @@ public class JTSAdapter {
     public static Geometry wrap( com.vividsolutions.jts.geom.Geometry geometry, CoordinateSystem crs )
             throws GeometryException {
 
-        Geometry gmObject = null;
+        Geometry gmObject;
         if (geometry instanceof com.vividsolutions.jts.geom.Point) {
             gmObject = wrap((com.vividsolutions.jts.geom.Point) geometry, crs);
         } else if (geometry instanceof com.vividsolutions.jts.geom.MultiPoint) {

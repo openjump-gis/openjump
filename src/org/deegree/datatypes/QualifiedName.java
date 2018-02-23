@@ -44,8 +44,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.framework.log.ILogger;
-import org.deegree.framework.log.LoggerFactory;
 import org.deegree.framework.util.StringTools;
 
 import com.vividsolutions.jump.workbench.Logger;
@@ -73,18 +71,12 @@ public class QualifiedName implements Serializable {
 
     private String s = null;
 
-    private static Map<URI, String> nsp = null;
-    static {
-        if ( nsp == null ) {
-            nsp = Collections.synchronizedMap( new HashMap<URI, String>() );
-        }
-    }
+    private static Map<URI, String> nsp =
+            Collections.synchronizedMap( new HashMap<URI, String>() );
 
 
     /**
      * Creates a new <code>QualifiedName</code> instance from a <code>QName</code>
-     *
-     * @param name
      */
     public QualifiedName( QName name ) {
         try {
@@ -154,6 +146,7 @@ public class QualifiedName implements Serializable {
 
     /**
      * @param prefix
+     *            prefix to be used for this QualifiedName
      * @param localName
      *            local/simple name (e.g. deegree)
      * @param namespace
@@ -167,7 +160,7 @@ public class QualifiedName implements Serializable {
     }
 
     private void buildString() {
-        StringBuffer sb = new StringBuffer( 50 );
+        StringBuilder sb = new StringBuilder( 50 );
         if ( prefix != null && prefix.length() != 0 ) {
             sb.append( prefix ).append( ':' );
         }
@@ -236,17 +229,14 @@ public class QualifiedName implements Serializable {
      */
     public boolean isInNamespace( URI ns ) {
         if ( ns == null ) {
-            if ( this.namespace == null ) {
-                return true;
-            }
-            return false;
+            return this.namespace == null;
         }
         return ns.equals( this.namespace );
     }
 
     @Override
     public String toString() {
-        StringBuffer result = new StringBuffer( 150 );
+        StringBuilder result = new StringBuilder( 150 );
         result.append( this.s );
         if ( this.prefix != null && this.prefix.length() > 0 ) {
             result.append( " (" );

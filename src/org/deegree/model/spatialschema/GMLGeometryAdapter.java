@@ -160,7 +160,7 @@ public class GMLGeometryAdapter {
      * </ul>
      * <p>
      * 
-     * @param element
+     * @param element XML element
      * @param srsName default SRS for the geometry
      * @return corresponding <code>Geometry</code> instance
      * @throws GeometryException if type unsupported or conversion failed
@@ -1438,7 +1438,7 @@ public class GMLGeometryAdapter {
      * creates a GML expression of a point geometry
      * 
      * @param point point geometry
-     * @return
+     * @param pw the PrintWriter to print to
      */
     protected static void exportPoint( Point point, PrintWriter pw ) {
 
@@ -1477,7 +1477,7 @@ public class GMLGeometryAdapter {
      * creates a GML expression of a curve geometry
      * 
      * @param o curve geometry
-     * @return
+     * @param pw the PrintWriter to print to
      * @throws GeometryException
      */
     protected static void exportCurve( Curve o, PrintWriter pw ) throws GeometryException {
@@ -1524,7 +1524,8 @@ public class GMLGeometryAdapter {
     }
 
     /**
-     * @param sur
+     * @param surface surface to print
+     * @param pw the PrintWriter to print to
      * @throws RemoteException
      * @throws GeometryException
      */
@@ -1550,7 +1551,7 @@ public class GMLGeometryAdapter {
             pw.println("</gml:Polygon>");
         } else {
 
-            String srs = null;
+            String srs;
             if (crs != null) {
                 srs = "<gml:Surface srsName='" + crs + "'>";
             } else {
@@ -1576,8 +1577,9 @@ public class GMLGeometryAdapter {
     }
 
     /**
-     * @param surface
-     * @param pw
+     * Print the surface interior rings
+     * @param surface surface to print
+     * @param pw the PrintWriter to print to
      * @param patch
      */
     protected static void printInteriorRing( Surface surface, PrintWriter pw, SurfacePatch patch,
@@ -1608,8 +1610,9 @@ public class GMLGeometryAdapter {
     }
 
     /**
-     * @param surface
-     * @param pw
+     * Print the surface exterior ring
+     * @param surface surface to print
+     * @param pw the PrintWriter to print to
      * @param patch
      */
     protected static void printExteriorRing( Surface surface, PrintWriter pw, SurfacePatch patch,
@@ -1642,9 +1645,9 @@ public class GMLGeometryAdapter {
      * TODO using this method for exporting Surfaces will change to output, so it must be tested
      * carefully
      * 
-     * @param pw
-     * @param ring
-     * @param coordinateDimension
+     * @param pw the PrintWriter to print to
+     * @param ring the ring to print
+     * @param coordinateDimension coordinate dimension of the segment
      */
     protected static void printRing( PrintWriter pw, Ring ring, int coordinateDimension,
             String formatType ) {
@@ -1658,9 +1661,9 @@ public class GMLGeometryAdapter {
     }
 
     /**
-     * @param pw
-     * @param segment
-     * @param coordinateDimension
+     * @param pw the PrintWriter to print to
+     * @param segment the segment to print
+     * @param coordinateDimension coordinate dimension of the segment
      */
     private static void printCurveSegment( PrintWriter pw, CurveSegment segment,
             int coordinateDimension, String formatType ) {
@@ -1670,9 +1673,9 @@ public class GMLGeometryAdapter {
     }
 
     /**
-     * @param pw
-     * @param p
-     * @param coordinateDimension
+     * @param pw the PrintWriter to print to
+     * @param p positions to print
+     * @param coordinateDimension coordinate dimension of positions
      */
     private static void printPositions( PrintWriter pw, Position[] p, int coordinateDimension,
             String formatType ) {
@@ -1711,8 +1714,6 @@ public class GMLGeometryAdapter {
     }
 
     /**
-     * @param mp
-     * @return
      * @throws RemoteException
      */
     protected static void exportMultiPoint( MultiPoint mp, PrintWriter pw ) {
@@ -1746,8 +1747,6 @@ public class GMLGeometryAdapter {
     }
 
     /**
-     * @param multiCurve
-     * @return
      * @throws RemoteException
      * @throws GeometryException
      */
@@ -1802,8 +1801,6 @@ public class GMLGeometryAdapter {
     }
 
     /**
-     * @param multiSurface
-     * @return
      * @throws RemoteException
      * @throws GeometryException
      */
@@ -1859,7 +1856,7 @@ public class GMLGeometryAdapter {
      * <code>Geometry</code>. Notice that GML Boxes will be converted to Surfaces because in ISO
      * 19107 Envelopes are no geometries.
      * 
-     * @param gml
+     * @param gml gml string
      * @return corresponding geometry object
      * @throws GeometryException
      * @throws XMLParsingException
@@ -1891,7 +1888,7 @@ public class GMLGeometryAdapter {
      * </ul>
      * <p>
      * 
-     * @param gml
+     * @param gml gml element
      * @return the corresponding <tt>Geometry</tt>
      * @throws GeometryException if type unsupported or conversion failed
      * @deprecated this method cannot provide default SRS information, please use
@@ -1920,10 +1917,10 @@ public class GMLGeometryAdapter {
     }
 
     /**
-     * Corrects the rings if its necessary
+     * Corrects the ring if it is necessary
      * 
-     * @param createPositions
-     * @return
+     * @param ringPositions positions of the ring vertices
+     * @return a valid ring
      */
     private static Position[] correctRing( Position[] ringPositions ) {
 
