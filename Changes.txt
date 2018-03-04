@@ -1,6 +1,10 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
   Highlights
+  * OJ should be generally java 9 ready now
+  * enhanced SRID support
+  * network timeouts are now configurable in settings
+  * several new plugins (see below)
 
   New Features
   * Added TaskProperty plugin to read and modify project properties
@@ -27,7 +31,7 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * Deactivate ReplaceValuePlugIn (use AutoAssignAttributePlugIn instead)
   * Improvement from ioan to honor IncrementalAngle constraint even on the
     first segment
-  * Spatial Index support for SQLite/Spatialte datasources: checks if geometry
+  * Spatial Index support for SQLite/Spatialite datasources: checks if geometry
     columns are indexed and builds custom SQL queries to use index according to
     detected SQLite flavors
   * Spatial Index support for SQLite/Spatialite datasources: quotes identifiers
