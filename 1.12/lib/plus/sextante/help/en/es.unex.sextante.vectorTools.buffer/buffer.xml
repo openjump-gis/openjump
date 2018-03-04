@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm creates a new polygons layer with buffers around features in the input layer&#10;" description="Description" type="0">
+			<image description="" file="zona_de_influencia.png">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LAYER" text="The layer with features to buffer" description="Input layer" type="3">
+		</element>
+		<element name="FIELD" text="If the buffer distance is taken from the attributes table of the layer, the field with the distance must be selected in this parameter" description="Distance field" type="3">
+		</element>
+		<element name="DISTANCE" text="If a fixed distance is used to buffer all features, it must be introduced in this field" description="Distance" type="3">
+		</element>
+		<element name="METHOD" text="the following methods are available&#10;* Fixed distance: the same buffer distance for all features.&#10;* Distance from table field: buffer distance is taken from the attributes associated with each feature." description="Type of distance" type="3">
+		</element>
+		<element name="TYPE" text="The following methods are available&#10;* Inside the polygon: &#10;* Inside and outside the polygon: &#10;* Outside the polygon: " description="Buffer type" type="3">
+		</element>
+		<element name="RINGS" text="The number of concentric rings" description="Number of concentric rings" type="3">
+		</element>
+		<element name="NOTROUNDED" text="If selected, resulting polygons will not be rounded" description="Do not round resulting polygons" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The resulting buffer layer" description="Buffer" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

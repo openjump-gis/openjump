@@ -1,0 +1,34 @@
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>E:\test\target\izpack\Install_OpenJUMP-20120122-r2666-CORE.jar</jar>
+  <outfile>E:\test\target\izpack\test.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl>http://openjump.org</supportUrl>
+  <customProcName>true</customProcName>
+  <stayAlive>false</stayAlive>
+  <manifest>../../launcher/launch4j-3.0.2-win32/manifest/uac.exe.manifest</manifest>
+  <icon>../../icon/openjump_icon3.ico</icon>
+  <jre>
+    <path></path>
+    <minVersion>1.5.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+  </jre>
+  <versionInfo>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0.0.0</txtFileVersion>
+    <fileDescription>OpenJUMP native windows launcher</fileDescription>
+    <copyright>oj team</copyright>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0.0.0</txtProductVersion>
+    <productName>OpenJUMP</productName>
+    <companyName>openjump.org</companyName>
+    <internalName>OpenJUMP</internalName>
+    <originalFilename>OpenJUMP.exe</originalFilename>
+  </versionInfo>
+</launch4jConfig>

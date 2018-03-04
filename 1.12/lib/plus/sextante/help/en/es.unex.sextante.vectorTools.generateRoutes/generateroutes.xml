@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm creates a number of new alternative routes based on an original route, linking the same starting and end points." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="ROUTE" text="the original route layer. If the layer has many lines, the first line is taken." description="Original route" type="3">
+		</element>
+		<element name="NROUTES" text="The number of new routes to create" description="Number of new routes" type="3">
+		</element>
+		<element name="METHOD" text="The following methods are available:&#10;* Constrained brownian motion&#10;* Recombination" description="Method" type="3">
+		</element>
+		<element name="SINUOSITY" text="Th ratio between the total distance and the euclidian distance for the resulting lines if the constrained brownian motion method is used." description="Sinuosity" type="3">
+		</element>
+		<element name="USESINUOSITY" text="If this is selected, the above field will not have any effect and the sinousity of the base route will be applied." description="Use base route sinuosity" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="A line with new routes. The number of lines in the layer will be the number of routes to calculate entered in the corresponding field." description="Routes" type="2">
+			<image description="Constrained brownian motion (Layer of communication line with 10 new routes)" file="generar_rutas_alternativas_mov_browniano.jpg">
+			</image>
+			<image description="Recombination (Layer of communication line with 10 new routes)" file="generar_rutas_alternativas_recombinacion.jpg">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

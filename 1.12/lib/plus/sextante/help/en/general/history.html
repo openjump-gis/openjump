@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>The SEXTANTE history manager</TITLE>
+<META NAME="description" CONTENT="The SEXTANTE history manager">
+<META NAME="keywords" CONTENT="IntroductionToSEXTANTE">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="IntroductionToSEXTANTE.css">
+
+</HEAD>
+
+<BODY >
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html272"
+  HREF="node8.html#SECTION00810000000000000000">Introduction</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00800000000000000000">
+The SEXTANTE history manager</A>
+</H1>
+
+<P>
+
+<H1><A NAME="SECTION00810000000000000000">
+Introduction</A>
+</H1>
+
+<P>
+Every time you execute a SEXTANTE algorithm, information about the process is stored in the SEXTANTE history manager. Along with the parameters used, the date and time of the execution are also saved.
+
+<P>
+This way, it is easy to track the and control all the work that has been developed using SEXTANTE, and easily reproduce it.
+
+<P>
+The SEXTANTE history manager is a set of registries grouped according to their date of execution, making it easier to find information about an algorithm executed at any particular moment.
+
+<P>
+<DIV ALIGN="CENTER">
+<IMG
+  WIDTH="651" HEIGHT="381" ALIGN="BOTTOM" BORDER="0"
+ SRC="./history.png"
+ ALT="Image history">
+
+</DIV>
+
+<P>
+Process information is kept as a command-line expression, even if the algorithm was launched from the toolbox. This makes it also useful for those learning how to use the command-lin interface, since they can call an algorithm using the toolbox and then check the history manager to see how that same algorithm could be called from the command line.
+
+<P>
+Apart from browsing the entries in the registry, processes can be re-executed, simply double-clicking on the corresponding entry.
+
+<P>
+You can also right click on a process (the command-line sentence must start with ``runalg'') and select <SPAN  CLASS="textit">Open algorithm dialog</SPAN>. This will show the dialog used to execute the algorithm, already filled with the parameter values corresponding to the selected command.
+<BR><HR>
+<ADDRESS>
+
+</ADDRESS>
+</BODY>
+</HTML>
