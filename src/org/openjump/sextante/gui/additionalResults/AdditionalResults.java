@@ -40,7 +40,7 @@ public class AdditionalResults {
             return;
         }
 
-        AdditionalResultsFrame additionalResults = new AdditionalResultsFrame(
+        final AdditionalResultsFrame additionalResults = new AdditionalResultsFrame(
                 m_Components);
 
         additionalResults.setVisible(true);
@@ -85,7 +85,7 @@ public class AdditionalResults {
     public static void addComponentAndShow(final ObjectAndDescription oad) {
 
         m_Components.add(oad);
-        for (JInternalFrame iFrame : wFrame.getInternalFrames()) {
+        for (final JInternalFrame iFrame : wFrame.getInternalFrames()) {
             if (iFrame instanceof AdditionalResultsFrame) {
 
                 iFrame.toFront();
@@ -93,7 +93,7 @@ public class AdditionalResults {
 
             }
         }
-        AdditionalResultsFrame additionalResultsFrame = new AdditionalResultsFrame(
+        final AdditionalResultsFrame additionalResultsFrame = new AdditionalResultsFrame(
                 m_Components);
 
         // additionalResults.setVisible(true);
@@ -125,7 +125,7 @@ public class AdditionalResults {
     public static void addAdditionalResult(final String name,
             final Object object) {
 
-        ObjectAndDescription ob = new ObjectAndDescription(name, object);
+        final ObjectAndDescription ob = new ObjectAndDescription(name, object);
         addComponent(ob);
     }
 
@@ -144,8 +144,8 @@ public class AdditionalResults {
             final Object[] objects) {
 
         for (int i = 0; i < objects.length; i++) {
-            ObjectAndDescription ob = new ObjectAndDescription(name + "_" + i,
-                    objects[i]);
+            final ObjectAndDescription ob = new ObjectAndDescription(name + "_"
+                    + i, objects[i]);
 
             addComponent(ob);
         }
@@ -168,9 +168,9 @@ public class AdditionalResults {
     public static void addAdditionalResultAndShow(final String name,
             final Object object, boolean hideLeftPanel) {
 
-        ObjectAndDescription ob = new ObjectAndDescription(name, object);
+        final ObjectAndDescription ob = new ObjectAndDescription(name, object);
         addComponent(ob);
-        for (JInternalFrame iFrame : wFrame.getInternalFrames()) {
+        for (final JInternalFrame iFrame : wFrame.getInternalFrames()) {
             if (iFrame instanceof AdditionalResultsFrame) {
                 ((AdditionalResultsFrame) iFrame).update();
                 iFrame.toFront();
@@ -178,11 +178,11 @@ public class AdditionalResults {
 
             }
         }
-        AdditionalResultsFrame additionalResultsFrame = new AdditionalResultsFrame(
+        final AdditionalResultsFrame additionalResultsFrame = new AdditionalResultsFrame(
                 m_Components);
         additionalResultsFrame.update();
         if (hideLeftPanel) {
-            additionalResultsFrame.getLeftPanel().setVisible(false);
+            additionalResultsFrame.getLeftPanel().setVisible(true);
         }
         // additionalResults.setVisible(true);
         wFrame.addInternalFrame(additionalResultsFrame, true, true);
@@ -222,12 +222,12 @@ public class AdditionalResults {
             final Object[] objects) {
 
         for (int i = 0; i < objects.length; i++) {
-            ObjectAndDescription ob = new ObjectAndDescription(name + "_" + i,
-                    objects[i]);
+            final ObjectAndDescription ob = new ObjectAndDescription(name + "_"
+                    + i, objects[i]);
 
             addComponent(ob);
         }
-        for (JInternalFrame iFrame : wFrame.getInternalFrames()) {
+        for (final JInternalFrame iFrame : wFrame.getInternalFrames()) {
             if (iFrame instanceof AdditionalResultsFrame) {
                 ((AdditionalResultsFrame) iFrame).update();
                 iFrame.toFront();
@@ -236,7 +236,7 @@ public class AdditionalResults {
 
             }
         }
-        AdditionalResultsFrame additionalResultsFrame = new AdditionalResultsFrame(
+        final AdditionalResultsFrame additionalResultsFrame = new AdditionalResultsFrame(
                 m_Components);
 
         // additionalResults.setVisible(true);

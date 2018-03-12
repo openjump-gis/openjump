@@ -19,6 +19,7 @@ import java.util.Enumeration;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -53,7 +54,8 @@ import com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChoos
 import com.vividsolutions.jump.workbench.ui.FeatureCollectionPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.HTMLPanel;
-import com.vividsolutions.jump.workbench.ui.OKCancelApplyPanel;
+//-da rimuovere
+//import com.vividsolutions.jump.workbench.ui.OKCancelApplyPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public class AdditionalResultsFrame extends DetachableInternalFrame {
@@ -70,27 +72,32 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
     // Main components of a AdditionalResultsFrame
 
-    private String name = I18N
+    private final String name = I18N
             .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Result-viewer");
-    private String sMenu = I18N
+    private final String sMenu = I18N
             .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Menu");
-    private String sRemove = I18N
+    private final String sRemove = I18N
             .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Remove");
-    private String sRename = I18N
+    private final String sRename = I18N
             .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Rename");
-    private String sSave = I18N.get("deejump.plugin.SaveLegendPlugIn.Save");
-    private String sWriteName = I18N
+    private final String sSave = I18N
+            .get("deejump.plugin.SaveLegendPlugIn.Save");
+    private final String sWriteName = I18N
             .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Write-name");
-    private String sChangeName = I18N
+    private final String sChangeName = I18N
             .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Change-name");
-    private String sSaved = I18N
+    private final String sSaved = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
-    private String SCouldNotSave = I18N
+    private final String SCouldNotSave = I18N
             .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
-    private String sProcessing = I18N
+    private final String sProcessing = I18N
             .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Processing");
-    private String sResult = I18N
+    private final String sResult = I18N
             .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Result");
+    private final String SAVE = I18N
+            .get("deejump.plugin.SaveLegendPlugIn.Save");
+    private final String CLOSE = I18N
+            .get("ui.plugin.imagery.ImageLayerManagerDialog.Close");
 
     private static final long serialVersionUID = 1L;
     private JSplitPane jSplitPane;
@@ -105,7 +112,10 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
     private static int FILE_BROWSER_WIDTH = 800;
     private static int FILE_BROWSER_HEIGHT = 600;
     private static String LAST_DIR = null;
-    final protected OKCancelApplyPanel okCancelApplyPanel = new OKCancelApplyPanel();
+
+    // --da rimuovere
+    // final protected OKCancelApplyPanel okCancelApplyPanel = new
+    // OKCancelApplyPanel();
 
     public AdditionalResultsFrame(final ArrayList<?> components) {
 
@@ -121,7 +131,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
     }
 
     public Icon getColorIcon() {
-        ImageIcon icon = new ImageIcon(getClass().getResource(
+        final ImageIcon icon = new ImageIcon(getClass().getResource(
                 "application_view.png"));
         return GUIUtil.toSmallIcon(icon);
     }
@@ -131,20 +141,23 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
         final JPanel panel = new JPanel();
         final BorderLayout thisLayout = new BorderLayout();
         panel.setLayout(thisLayout);
-        this.setContentPane(panel);
+        setContentPane(panel);
 
         if (components.size() == 0) {
             return false;
         }
         try {
             {
-                this.setPreferredSize(new java.awt.Dimension(700, 350));
+                setPreferredSize(new java.awt.Dimension(700, 350));
                 this.setSize(new java.awt.Dimension(700, 350));
                 {
                     jSplitPane = new JSplitPane();
 
                     panel.add(jSplitPane, BorderLayout.CENTER);
-                    panel.add(okCancelApplyPanel, BorderLayout.SOUTH);
+
+                    // --Da rimuovere
+                    // panel.add(okCancelApplyPanel, BorderLayout.SOUTH);
+                    panel.add(getOKSavePanel(), BorderLayout.SOUTH);
 
                     {
                         jTree = new JTree();
@@ -156,7 +169,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
                                 m_Path = jTree.getPathForLocation(e.getX(),
                                         e.getY());
-                                DefaultMutableTreeNode node = (DefaultMutableTreeNode) m_Path
+                                final DefaultMutableTreeNode node = (DefaultMutableTreeNode) m_Path
                                         .getLastPathComponent();
                                 if (node.getUserObject() instanceof ObjectAndDescription) {
                                     showComponent();
@@ -255,20 +268,21 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
             });
             popupMenu.add(menuItemRename);
 
-            okCancelApplyPanel.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(final ActionEvent evt) {
+            // ---Da rimuovere
+            // okCancelApplyPanel.addActionListener(new ActionListener() {
+            // @Override
+            // public void actionPerformed(final ActionEvent evt) {
 
-                    try {
-                        dispose();
-                    } catch (final Exception e) {
-                    }
-
-                }
-            });
-            okCancelApplyPanel.setApplyVisible(false);
-            okCancelApplyPanel.setCancelVisible(false);
-            okCancelApplyPanel.setOKEnabled(true);
+            // try {
+            // dispose();
+            // } catch (final Exception e) {
+            // }
+            //
+            // }
+            // });
+            // okCancelApplyPanel.setApplyVisible(false);
+            // okCancelApplyPanel.setCancelVisible(false);
+            // okCancelApplyPanel.setOKEnabled(true);
             panel.updateUI();
             return true;
         } catch (final Exception e) {
@@ -349,7 +363,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
     protected void save() {
         final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
-        File filedir = new File((String) PersistentBlackboardPlugIn.get(
+        final File filedir = new File((String) PersistentBlackboardPlugIn.get(
                 JUMPWorkbench.getInstance().getContext()).get(
                 FILE_CHOOSER_DIRECTORY_KEY));
         final File file;
@@ -362,7 +376,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                 final Component c = (Component) oad.getObject();
                 if (c instanceof FeatureCollectionPanel) {
                     final FeatureCollectionPanel panel = (FeatureCollectionPanel) c;
-                    FeatureCollection fcoll = panel.getFeatureCollection();
+                    final FeatureCollection fcoll = panel
+                            .getFeatureCollection();
                     fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
                             FILE_BROWSER_HEIGHT));
                     if (LAST_DIR != null) {
@@ -406,7 +421,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         } else {
                             fc.setCurrentDirectory(filedir);
                         }
-                        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                        final FileNameExtensionFilter filter = new FileNameExtensionFilter(
                                 "HTML", "html");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
@@ -438,7 +453,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         } else {
                             fc.setCurrentDirectory(filedir);
                         }
-                        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                        final FileNameExtensionFilter filter = new FileNameExtensionFilter(
                                 "HTML", "html");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
@@ -470,7 +485,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         } else {
                             fc.setCurrentDirectory(filedir);
                         }
-                        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                        final FileNameExtensionFilter filter = new FileNameExtensionFilter(
                                 "HTML", "html");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
@@ -503,7 +518,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         } else {
                             fc.setCurrentDirectory(filedir);
                         }
-                        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                        final FileNameExtensionFilter filter = new FileNameExtensionFilter(
                                 "Comma-Separated Values (csv)", "cvs");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
@@ -514,9 +529,9 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                             try {
                                 file = new File(fc.getSelectedFile() + ".csv");
                                 LAST_DIR = file.getParent();
-                                FileWriter fw = new FileWriter(
+                                final FileWriter fw = new FileWriter(
                                         file.getAbsoluteFile());
-                                BufferedWriter bw = new BufferedWriter(fw);
+                                final BufferedWriter bw = new BufferedWriter(fw);
 
                                 for (int j = 0; j < table.getColumnCount(); j++) {
                                     bw.write(table.getModel().getColumnName(j)
@@ -551,7 +566,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     } else {
                         fc.setCurrentDirectory(filedir);
                     }
-                    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    final FileNameExtensionFilter filter = new FileNameExtensionFilter(
                             "Portable Network Graphics (png)", "png");
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
@@ -574,7 +589,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     } else {
                         fc.setCurrentDirectory(filedir);
                     }
-                    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    final FileNameExtensionFilter filter = new FileNameExtensionFilter(
                             "Comma-Separated Values (csv)", "cvs");
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
@@ -585,9 +600,9 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         try {
                             file = new File(fc.getSelectedFile() + ".csv");
                             LAST_DIR = file.getParent();
-                            FileWriter fw = new FileWriter(
+                            final FileWriter fw = new FileWriter(
                                     file.getAbsoluteFile());
-                            BufferedWriter bw = new BufferedWriter(fw);
+                            final BufferedWriter bw = new BufferedWriter(fw);
 
                             for (int j = 0; j < table.getColumnCount(); j++) {
                                 bw.write(table.getModel().getColumnName(j)
@@ -614,7 +629,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     }
                 } else if (c instanceof HTMLPanel) {
                     final HTMLPanel panel = (HTMLPanel) c;
-                    String text = panel.lastString();
+                    final String text = panel.lastString();
                     fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
                             FILE_BROWSER_HEIGHT));
                     if (LAST_DIR != null) {
@@ -623,7 +638,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         fc.setCurrentDirectory(filedir);
                     }
 
-                    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    final FileNameExtensionFilter filter = new FileNameExtensionFilter(
                             "HTML", "html");
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
@@ -647,11 +662,11 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     }
                 } else if (c instanceof JPanel) {
                     final JPanel panel = (JPanel) c;
-                    int w = panel.getWidth();
-                    int h = panel.getHeight();
-                    BufferedImage bi = new BufferedImage(w, h,
+                    final int w = panel.getWidth();
+                    final int h = panel.getHeight();
+                    final BufferedImage bi = new BufferedImage(w, h,
                             BufferedImage.TYPE_INT_RGB);
-                    Graphics2D g = bi.createGraphics();
+                    final Graphics2D g = bi.createGraphics();
                     panel.paint(g);
                     fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
                             FILE_BROWSER_HEIGHT));
@@ -660,7 +675,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     } else {
                         fc.setCurrentDirectory(filedir);
                     }
-                    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    final FileNameExtensionFilter filter = new FileNameExtensionFilter(
                             "Portable Network Graphics (png)", "png");
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
@@ -757,7 +772,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
     }
 
     public static void Logger(Class<?> plugin, Exception e) {
-        Logger LOG = Logger.getLogger(plugin);
+        final Logger LOG = Logger.getLogger(plugin);
         JUMPWorkbench
                 .getInstance()
                 .getFrame()
@@ -766,36 +781,80 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
         LOG.error(plugin.getName() + " Exception: ", e);
     }
 
-    public void setApplyVisible(boolean applyVisible) {
-        okCancelApplyPanel.setApplyVisible(applyVisible);
-    }
+    // Da rimuovere
+    // public void setApplyVisible(boolean applyVisible) {
+    // okCancelApplyPanel.setApplyVisible(applyVisible);
+    // }
 
-    public void setCancelVisible(boolean cancelVisible) {
-        okCancelApplyPanel.setCancelVisible(cancelVisible);
-    }
+    // public void setCancelVisible(boolean cancelVisible) {
+    // okCancelApplyPanel.setCancelVisible(cancelVisible);
+    // }
 
-    public void setOKVisible(boolean okVisible) {
-        okCancelApplyPanel.setOKVisible(okVisible);
-    }
+    // public void setOKVisible(boolean okVisible) {
+    // okCancelApplyPanel.setOKVisible(okVisible);
+    // }
 
-    public void setApplyEnabled(boolean applyEnabled) {
-        okCancelApplyPanel.setApplyEnabled(applyEnabled);
-    }
+    // public void setApplyEnabled(boolean applyEnabled) {
+    // okCancelApplyPanel.setApplyEnabled(applyEnabled);
+    // }
 
-    public void setCancelEnabled(boolean cancelEnabled) {
-        okCancelApplyPanel.setCancelEnabled(cancelEnabled);
-    }
+    // public void setCancelEnabled(boolean cancelEnabled) {
+    // okCancelApplyPanel.setCancelEnabled(cancelEnabled);
+    // }
 
-    public void setOKEnabled(boolean okEnabled) {
-        okCancelApplyPanel.setOKEnabled(okEnabled);
-    }
+    // public void setOKEnabled(boolean okEnabled) {
+    // okCancelApplyPanel.setOKEnabled(okEnabled);
+    // }
 
-    public boolean wasApplyPressed() {
-        return okCancelApplyPanel.wasApplyPressed();
-    }
+    // public boolean wasApplyPressed() {
+    // return okCancelApplyPanel.wasApplyPressed();
+    // }
 
-    public boolean wasOKPressed() {
-        return okCancelApplyPanel.wasOKPressed();
-    }
+    // public boolean wasOKPressed() {
+    // return okCancelApplyPanel.wasOKPressed();
+    // }
 
+    protected JPanel getOKSavePanel() {
+        final JPanel okPanel = new JPanel();
+        final JButton saveButton = new JButton(SAVE) {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(100, 25);
+            }
+        };
+        final JButton closeButton = new JButton(CLOSE) {
+            private static final long serialVersionUID = 2L;
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(100, 25);
+            }
+        };
+
+        saveButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                save();
+                // frame.dispose();
+                return;
+            }
+        });
+        closeButton.addActionListener(new java.awt.event.ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                dispose();
+
+                return;
+            }
+        });
+        okPanel.add(saveButton, BorderLayout.WEST);
+        okPanel.add(closeButton, BorderLayout.EAST);
+        return okPanel;
+
+    }
 }
