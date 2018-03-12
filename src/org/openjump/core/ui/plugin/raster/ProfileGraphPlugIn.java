@@ -29,68 +29,184 @@
  * USA
  *
  * (850)862-7321
- * www.ashs.isa.com
  */
 
 package org.openjump.core.ui.plugin.raster;
 
-import javax.swing.Icon;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
+import javax.swing.Icon;
+import javax.swing.JRadioButton;
+
+import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-public class ProfileGraphPlugIn extends AbstractPlugIn {
-    ProfileGraphTool profileTool;
-    private final static String sErrorSeeOutputWindow = I18N
-            .get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
-    private String sName = "Create Thiessen Polygons";
+//import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 
+public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
+
+    /**
+     * 2015_01_31. Giuseppe Aruta Add new panel which display profile info:
+     * length, mean slope, coordinates of starting and ending points, cell
+     * dimension, cell statistics.
+     */
+
+    private final List<Coordinate> savedCoordinates = new ArrayList<Coordinate>();
+
+    private RasterImageLayer rLayer = null;
+
+    final static String drawn = I18N
+            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.draw-linstring-as-trace");
+    final static String selected = I18N
+            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.use-selected-linstring-as-trace");;
+    private String sName;
+    private final String warning = I18N
+            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.select-one-linstring");;
+    final static String MONITOR_STRING = "Calculating profile...";
+
+    private boolean drawnType = true;
+    private boolean selectedType = false;
+    public static MultiInputDialog dialog;
+    JRadioButton radioButton1 = new JRadioButton(drawn, drawnType);
+    JRadioButton radioButton2 = new JRadioButton(selected, selectedType);
+
+    @Override
     public void initialize(PlugInContext context) throws Exception {
-
-        this.sName = I18N
+        sName = I18N
                 .get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
-
-        // context.getWorkbenchContext().getWorkbench().getFrame().getToolBar().addPlugIn(getIcon(),
-        // this, new MultiEnableCheck(), context.getWorkbenchContext());
         context.getFeatureInstaller().addMainMenuPlugin(this,
-                new String[] { MenuNames.RASTER }, this.sName + "...", false,
+                new String[] { MenuNames.RASTER }, sName + "...", false,
                 getIcon(), createEnableCheck(context.getWorkbenchContext()));
-        profileTool = new ProfileGraphTool();
     }
 
-    public boolean execute(PlugInContext context) throws Exception {
-        try {
-            context.getLayerViewPanel().setCurrentCursorTool(profileTool);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            context.getWorkbenchFrame().warnUser(sErrorSeeOutputWindow);
-            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-            context.getWorkbenchFrame().getOutputFrame()
-                    .addText("MeasureM_FPlugIn Exception:" + e.toString());
-            return false;
+    public static MultiEnableCheck createEnableCheck(
+            WorkbenchContext workbenchContext) {
+        final EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
+        final MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
+
+        multiEnableCheck.add(
+                checkFactory.createExactlyNLayerablesMustBeSelectedCheck(1,
+                        RasterImageLayer.class)).add(
+                checkFactory
+                        .createRasterImageLayerExactlyNBandsMustExistCheck(1));
+
+        return multiEnableCheck;
+    }
+
+    private void getDialogValues(MultiInputDialog dialog) {
+        drawnType = dialog.getBoolean(drawn);
+        selectedType = dialog.getBoolean(selected);
+        // dialog.getLayer(CLAYER);
+    }
+
+    private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
+        final String OUTPUT_GROUP = "Match Type";
+        dialog.setTitle(sName);
+        dialog.addRadioButton(drawn, OUTPUT_GROUP, drawnType, null);
+
+        final Collection<Feature> features = context.getLayerViewPanel()
+                .getSelectionManager().getFeaturesWithSelectedItems();
+        if (features.size() == 0 || features.size() > 1) {
+            dialog.addRadioButton(selected, OUTPUT_GROUP, selectedType, null)
+                    .setEnabled(false);
+        } else {
+            dialog.addRadioButton(selected, OUTPUT_GROUP, selectedType, null)
+                    .setEnabled(true);
         }
+
+        dialog.setResizable(false);
+
     }
 
-    private Icon getIcon() {
+    public Icon getIcon() {
         return IconLoader.icon("profile.png");
     }
 
-    public MultiEnableCheck createEnableCheck(
-            final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
-        return new MultiEnableCheck().add(
-                checkFactory.createTaskWindowMustBeActiveCheck()).add(
-                checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1,
-                        RasterImageLayer.class));
+    @Override
+    public boolean execute(PlugInContext context) throws Exception {
+
+        dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(),
+                true);
+        setDialogValues(dialog, context);
+        GUIUtil.centreOnWindow(dialog);
+        dialog.setVisible(true);
+        return true;
+    }
+
+    @Override
+    public void run(TaskMonitor monitor, PlugInContext context)
+            throws Exception {
+        if (ProfileUtils.resultFC != null || ProfileUtils.nPoints > 0) {
+            ProfileUtils.resultFC.clear();
+            ProfileUtils.nPoints = 0;
+        }
+
+        savedCoordinates.clear();
+        rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context,
+                RasterImageLayer.class);
+        if (rLayer == null) {
+            context.getLayerViewPanel()
+                    .getContext()
+                    .warnUser(
+                            I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
+            return;
+        }
+
+        if (!dialog.wasOKPressed()) {
+            return;
+        }
+
+        getDialogValues(dialog);
+
+        if (drawnType) {
+            final ProfileGraphTool profileTool = new ProfileGraphTool();
+            context.getLayerViewPanel().setCurrentCursorTool(profileTool);
+        }
+
+        else if (selectedType) {
+
+            final Collection<Feature> features = context.getLayerViewPanel()
+                    .getSelectionManager().getFeaturesWithSelectedItems();
+            if (features.size() == 0 || features.size() > 1) {
+                JUMPWorkbench
+                        .getInstance()
+                        .getFrame()
+                        .warnUser(
+                                I18N.getMessage(
+                                        "com.vividsolutions.jump.workbench.plugin.Exactly-n-features-must-be-selected", //$NON-NLS-1$
+                                        new Object[] { 1 }));
+
+            } else {
+                final Geometry geom = features.iterator().next().getGeometry();
+                if (geom instanceof LineString) {
+                    final Coordinate[] coords = geom.getCoordinates();
+                    ProfileUtils.calculateProfile(coords);
+                } else {
+                    JUMPWorkbench.getInstance().getFrame().warnUser(warning);
+                }
+
+            }
+        }
+
     }
 }
