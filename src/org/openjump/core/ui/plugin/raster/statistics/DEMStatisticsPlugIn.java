@@ -97,7 +97,7 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
 
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
+        final EnableCheckFactory checkFactory = new EnableCheckFactory(
                 workbenchContext);
         return new MultiEnableCheck()
                 .add(checkFactory
@@ -117,13 +117,14 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
             RasterDataNotFoundException {
         int counter = 0;
 
-        int nx = ras.getWidth();
-        int ny = ras.getHeight();
+        final int nx = ras.getWidth();
+        final int ny = ras.getHeight();
         for (int y = 0; y < ny; y++) {
             for (int x = 0; x < nx; x++) {
-                double value = ras.getSampleDouble(x, y, 0);
-                if (value == nodata)
+                final double value = ras.getSampleDouble(x, y, 0);
+                if (value == nodata) {
                     counter++;
+                }
             }
         }
         return counter;
@@ -132,15 +133,15 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
     @Override
     public boolean execute(PlugInContext context) throws Exception {
 
-        Locale locale = new Locale("en", "UK");
-        String pattern = "###.########";
-        DecimalFormat df = (DecimalFormat) NumberFormat
+        final Locale locale = new Locale("en", "UK");
+        final String pattern = "###.########";
+        final DecimalFormat df = (DecimalFormat) NumberFormat
                 .getNumberInstance(locale);
         df.applyPattern(pattern);
         final WorkbenchContext wbcontext = context.getWorkbenchContext();
-        int ras = wbcontext.getLayerNamePanel()
+        final int ras = wbcontext.getLayerNamePanel()
                 .selectedNodes(RasterImageLayer.class).size();
-        HTMLPanel out = new HTMLPanel();
+        final HTMLPanel out = new HTMLPanel();
         out.setRecordNavigationControlVisible(false);
         out.createNewDocument();
         out.setBackground(Color.lightGray);
@@ -159,34 +160,35 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
                 + "</td><td bgcolor=#CCCCCC align='center'> " + YMIN
                 + "</td><td bgcolor=#CCCCCC align='center'> " + CELL_SIZE
                 + "</td></tr>");
-        for (Iterator i = wbcontext.getLayerNamePanel()
+        for (final Iterator i = wbcontext.getLayerNamePanel()
                 .selectedNodes(RasterImageLayer.class).iterator(); i.hasNext();) {
-            RasterImageLayer slayer = (RasterImageLayer) i.next();
-            Raster raster = slayer.getRasterData(null);
-            Double nodata = slayer.getNoDataValue();
-            double minRas = slayer.getMetadata().getStats().getMin(0);
-            double maxRas = slayer.getMetadata().getStats().getMax(0);
-            double meanRas = slayer.getMetadata().getStats().getMean(0);
-            Envelope extent = slayer.getWholeImageEnvelope(); // Envelope of
-                                                              // layer
+            final RasterImageLayer slayer = (RasterImageLayer) i.next();
+            final Raster raster = slayer.getRasterData(null);
+            final Double nodata = slayer.getNoDataValue();
+            final double minRas = slayer.getMetadata().getStats().getMin(0);
+            final double maxRas = slayer.getMetadata().getStats().getMax(0);
+            final double meanRas = slayer.getMetadata().getStats().getMean(0);
+            final Envelope extent = slayer.getWholeImageEnvelope(); // Envelope
+                                                                    // of
+            // layer
             String min = df.format(minRas);// Min value of
                                            // cells
-            String max = df.format(maxRas);// Max value of
+            final String max = df.format(maxRas);// Max value of
             df.format(meanRas);
 
-            Locale locale1 = new Locale("en", "UK");
-            String pattern1 = "###.## ";
-            DecimalFormat df1 = (DecimalFormat) NumberFormat
+            final Locale locale1 = new Locale("en", "UK");
+            final String pattern1 = "###.## ";
+            final DecimalFormat df1 = (DecimalFormat) NumberFormat
                     .getNumberInstance(locale1);
             df.applyPattern(pattern1);
-            String cellSizex = df1.format(cellSizeX(raster, extent));// Cell
-                                                                     // size
-            String cellSizey = df1.format(cellSizeY(raster, extent));
-            String cellSize = cellSizex + "x" + cellSizey;
-            String minx = df.format(extent.getMinX());
-            String miny = df.format(extent.getMinY());
-            int X = raster.getWidth(); // Number of columns
-            int Y = raster.getHeight(); // Number of rows
+            final String cellSizex = df1.format(cellSizeX(raster, extent));// Cell
+            // size
+            final String cellSizey = df1.format(cellSizeY(raster, extent));
+            final String cellSize = cellSizex + "x" + cellSizey;
+            final String minx = df.format(extent.getMinX());
+            final String miny = df.format(extent.getMinY());
+            final int X = raster.getWidth(); // Number of columns
+            final int Y = raster.getHeight(); // Number of rows
 
             /*
              * Giuseppe Aruta Nov. 2015 workaround for OpenJUMP bug 410
@@ -195,10 +197,10 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
              * red on DEMStatistic table
              */
             String nodataText = null;
-            String texmin = df.format(minRas);
-            double nda = slayer.getNoDataValue();
-            String begin = "<b><font color='red'>";
-            String end = "</font></b>";
+            final String texmin = df.format(minRas);
+            final double nda = slayer.getNoDataValue();
+            final String begin = "<b><font color='red'>";
+            final String end = "</font></b>";
             if (nda == -3.40282346639E38 || nodata == -1.79769313486E308) {
                 if (minRas == -9999 || minRas == -99999 || minRas == 1.70141E38) {
                     nodataText = begin + nodata + end;
@@ -213,11 +215,11 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
                 min = texmin;
 
             }
-            int nodatacells = nodata(raster, nodata);// number of no data
+            final int nodatacells = nodata(raster, nodata);// number of no data
             // cells
-            int validcells = X * Y - nodatacells;// Number of
-                                                 // valid
-                                                 // cells
+            final int validcells = X * Y - nodatacells;// Number of
+            // valid
+            // cells
 
             out.append("</td><td align='right'>" + slayer.getName()
                     + "</td><td align='right'>" + min
@@ -233,7 +235,7 @@ public class DEMStatisticsPlugIn extends AbstractPlugIn {
         }
         out.append("</table>");
         AdditionalResults.addAdditionalResultAndShow(getName() + "[" + LAYERS
-                + +ras + "]", out, true);
+                + +ras + "]", out);
 
         // out.setPreferredSize(new Dimension(800, 100));
         // out.setMinimumSize(new Dimension(800, 100));
