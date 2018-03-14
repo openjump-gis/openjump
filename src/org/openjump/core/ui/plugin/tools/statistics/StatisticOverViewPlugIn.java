@@ -119,7 +119,6 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn {
 
         return true;
 
-        return true;
     }
 
     public MultiEnableCheck createEnableCheck(
