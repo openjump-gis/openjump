@@ -6,6 +6,10 @@
 * Changes.txt updated until here **********************************************
 
 2018-03-14 Giuseppe Aruta
+      * Raster>Profile. Added export profile to .dxf on Additional Frame 
+        output options
+
+2018-03-14 Giuseppe Aruta
      * Smal enhancement on AdditionalResul Frame, JSplitPanel divider and
        added dxf export for plot (only on jFileChooser, not yer working)
      * Moved Statistics>Plot>(All) and Statistic>Classify attributes output
