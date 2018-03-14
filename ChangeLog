@@ -5,6 +5,12 @@
 
 * Changes.txt updated until here **********************************************
 
+2018-03-14 Giuseppe Aruta
+     * Smal enhancement on AdditionalResul Frame, JSplitPanel divider and
+       added dxf export for plot (only on jFileChooser, not yer working)
+     * Moved Statistics>Plot>(All) and Statistic>Classify attributes output
+       plot into AdditionalResul Frame 
+
 2018-03-12 Giuseppe Aruta
     * Activated  Additional Result framemork: outputs other than vector or 
       raster are loaded as objects into a convenient frame where user can  

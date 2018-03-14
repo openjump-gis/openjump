@@ -109,8 +109,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
     private JMenuItem menuItemRemove;
     private JMenuItem menuItemRename;
 
-    private static int FILE_BROWSER_WIDTH = 800;
-    private static int FILE_BROWSER_HEIGHT = 600;
+    private static int FILE_BROWSER_WIDTH = 600;
+    private static int FILE_BROWSER_HEIGHT = 400;
     private static String LAST_DIR = null;
 
     // --da rimuovere
@@ -126,7 +126,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
         setIconifiable(true);
         setMaximizable(true);
 
-        setSize(800, 500);
+        setSize(900, 700);
         setLayer(JLayeredPane.MODAL_LAYER);
     }
 
@@ -148,15 +148,16 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
         }
         try {
             {
-                setPreferredSize(new java.awt.Dimension(700, 350));
-                this.setSize(new java.awt.Dimension(700, 350));
+                setPreferredSize(new Dimension(900, 450));
+                this.setSize(new Dimension(900, 450));
                 {
                     jSplitPane = new JSplitPane();
-
+                    jSplitPane.setDividerSize(9);
+                    jSplitPane.setContinuousLayout(true);
+                    jSplitPane.setOneTouchExpandable(true);
+                    jSplitPane.setDividerLocation(200);
                     panel.add(jSplitPane, BorderLayout.CENTER);
 
-                    // --Da rimuovere
-                    // panel.add(okCancelApplyPanel, BorderLayout.SOUTH);
                     panel.add(getOKSavePanel(), BorderLayout.SOUTH);
 
                     {
@@ -203,7 +204,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
                         jScrollPane.setPreferredSize(new Dimension(200, 450));
-                        jScrollPane.setMinimumSize(new Dimension(200, 450));
+                        // jScrollPane.setMinimumSize(new Dimension(200, 450));
                         jScrollPane.setMaximumSize(new Dimension(200, 450));
                     }
                     {
@@ -363,9 +364,17 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
     protected void save() {
         final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
+        // fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
+        // FILE_BROWSER_HEIGHT));
         final File filedir = new File((String) PersistentBlackboardPlugIn.get(
                 JUMPWorkbench.getInstance().getContext()).get(
                 FILE_CHOOSER_DIRECTORY_KEY));
+        FileNameExtensionFilter filter;
+        if (LAST_DIR != null) {
+            fc.setCurrentDirectory(new File(LAST_DIR));
+        } else {
+            fc.setCurrentDirectory(filedir);
+        }
         final File file;
         if (m_Path != null) {
             try {
@@ -378,14 +387,6 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     final FeatureCollectionPanel panel = (FeatureCollectionPanel) c;
                     final FeatureCollection fcoll = panel
                             .getFeatureCollection();
-                    fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
-                            FILE_BROWSER_HEIGHT));
-                    if (LAST_DIR != null) {
-                        fc.setCurrentDirectory(new File(LAST_DIR));
-                    } else {
-                        fc.setCurrentDirectory(filedir);
-                    }
-                    FileNameExtensionFilter filter;
                     if (LayerableUtil.isMixedGeometryType(fcoll)) {
                         filter = new FileNameExtensionFilter("JML", "jml");
                     } else {
@@ -394,8 +395,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
                     final int returnVal = fc.showSaveDialog(this);
-                    FILE_BROWSER_WIDTH = fc.getWidth();
-                    FILE_BROWSER_HEIGHT = fc.getHeight();
+                    // FILE_BROWSER_WIDTH = fc.getWidth();
+                    // FILE_BROWSER_HEIGHT = fc.getHeight();
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         if (LayerableUtil.isMixedGeometryType(fcoll)) {
                             file = new File(fc.getSelectedFile() + ".jml");
@@ -406,23 +407,13 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         }
                         saved(file);
                     }
-                } else
-
-                if (c instanceof JScrollPane) {
+                } else if (c instanceof JScrollPane) {
                     final JScrollPane pane = (JScrollPane) c;
                     final Component view = pane.getViewport().getView();
                     if (view instanceof JTextPane) {
                         final JTextPane text = (JTextPane) pane.getViewport()
                                 .getView();
-                        fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
-                                FILE_BROWSER_HEIGHT));
-                        if (LAST_DIR != null) {
-                            fc.setCurrentDirectory(new File(LAST_DIR));
-                        } else {
-                            fc.setCurrentDirectory(filedir);
-                        }
-                        final FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                                "HTML", "html");
+                        filter = new FileNameExtensionFilter("HTML", "html");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
                         final int returnVal = fc.showSaveDialog(this);
@@ -446,15 +437,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         }
                     } else if (view instanceof JLabel) {
                         final String text = ((JLabel) view).getText();
-                        fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
-                                FILE_BROWSER_HEIGHT));
-                        if (LAST_DIR != null) {
-                            fc.setCurrentDirectory(new File(LAST_DIR));
-                        } else {
-                            fc.setCurrentDirectory(filedir);
-                        }
-                        final FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                                "HTML", "html");
+                        filter = new FileNameExtensionFilter("HTML", "html");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
                         final int returnVal = fc.showSaveDialog(this);
@@ -478,15 +461,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         }
                     } else if (view instanceof JTextArea) {
                         final String text = ((JLabel) view).getText();
-                        fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
-                                FILE_BROWSER_HEIGHT));
-                        if (LAST_DIR != null) {
-                            fc.setCurrentDirectory(new File(LAST_DIR));
-                        } else {
-                            fc.setCurrentDirectory(filedir);
-                        }
-                        final FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                                "HTML", "html");
+                        filter = new FileNameExtensionFilter("HTML", "html");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
                         final int returnVal = fc.showSaveDialog(this);
@@ -511,15 +486,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     } else if (view instanceof JTable) {
                         final JTable table = (JTable) pane.getViewport()
                                 .getView();
-                        fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
-                                FILE_BROWSER_HEIGHT));
-                        if (LAST_DIR != null) {
-                            fc.setCurrentDirectory(new File(LAST_DIR));
-                        } else {
-                            fc.setCurrentDirectory(filedir);
-                        }
-                        final FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                                "Comma-Separated Values (csv)", "cvs");
+                        filter = new FileNameExtensionFilter(
+                                "Comma-Separated Values (csv)", "csv");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
                         final int returnVal = fc.showSaveDialog(this);
@@ -559,37 +527,41 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     }
                 } else if (c instanceof PlotPanel) {
                     final PlotPanel panel = (PlotPanel) c;
-                    fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
-                            FILE_BROWSER_HEIGHT));
-                    if (LAST_DIR != null) {
-                        fc.setCurrentDirectory(new File(LAST_DIR));
-                    } else {
-                        fc.setCurrentDirectory(filedir);
-                    }
-                    final FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    // final JFileChooser chooser =
+                    // SaveGUI.getFileChooser(panel);
+                    // chooser.showSaveDialog(this);
+
+                    filter = new FileNameExtensionFilter(
                             "Portable Network Graphics (png)", "png");
+                    final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
+                            "Drawing Interchange Format(dxf)", "dxf");
+
+                    if (oad.getDescription()
+                            .contains(
+                                    I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot"))) {
+                        fc.setFileFilter(filter2);
+                    }
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
                     final int returnVal = fc.showSaveDialog(this);
                     FILE_BROWSER_WIDTH = fc.getWidth();
                     FILE_BROWSER_HEIGHT = fc.getHeight();
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
-                        file = new File(fc.getSelectedFile() + ".png");
-                        LAST_DIR = file.getParent();
-                        panel.toGraphicFile(file);
-                        saved(file);
+                        if (fc.getFileFilter().equals(filter)) {
+                            file = new File(fc.getSelectedFile() + ".png");
+                            LAST_DIR = file.getParent();
+                            panel.toGraphicFile(file);
+                            saved(file);
+                        } else if (fc.getFileFilter().equals(filter2)) {
+
+                            JUMPWorkbench.getInstance().getFrame()
+                                    .warnUser("Test: not yet implemented");
+                        }
                     }
+
                 } else if (c instanceof JTable) {
                     final JTable table = (JTable) c;
-
-                    fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
-                            FILE_BROWSER_HEIGHT));
-                    if (LAST_DIR != null) {
-                        fc.setCurrentDirectory(new File(LAST_DIR));
-                    } else {
-                        fc.setCurrentDirectory(filedir);
-                    }
-                    final FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    filter = new FileNameExtensionFilter(
                             "Comma-Separated Values (csv)", "cvs");
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
@@ -630,16 +602,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                 } else if (c instanceof HTMLPanel) {
                     final HTMLPanel panel = (HTMLPanel) c;
                     final String text = panel.lastString();
-                    fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
-                            FILE_BROWSER_HEIGHT));
-                    if (LAST_DIR != null) {
-                        fc.setCurrentDirectory(new File(LAST_DIR));
-                    } else {
-                        fc.setCurrentDirectory(filedir);
-                    }
-
-                    final FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                            "HTML", "html");
+                    filter = new FileNameExtensionFilter("HTML", "html");
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
                     final int returnVal = fc.showSaveDialog(this);
@@ -668,14 +631,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                             BufferedImage.TYPE_INT_RGB);
                     final Graphics2D g = bi.createGraphics();
                     panel.paint(g);
-                    fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
-                            FILE_BROWSER_HEIGHT));
-                    if (LAST_DIR != null) {
-                        fc.setCurrentDirectory(new File(LAST_DIR));
-                    } else {
-                        fc.setCurrentDirectory(filedir);
-                    }
-                    final FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                    filter = new FileNameExtensionFilter(
                             "Portable Network Graphics (png)", "png");
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
