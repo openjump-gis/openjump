@@ -64,9 +64,10 @@ import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.FeatureCollectionPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.HTMLPanel;
+
+import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
 //-da rimuovere
 //import com.vividsolutions.jump.workbench.ui.OKCancelApplyPanel;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public class AdditionalResultsFrame extends DetachableInternalFrame {
 
@@ -370,19 +371,22 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
     private static final String FILE_CHOOSER_DIRECTORY_KEY = SaveFileDataSourceQueryChooser.class
             .getName() + " - FILE CHOOSER DIRECTORY";
 
-    protected void save() {
-        final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
+    public void save() {
+        // final JFileChooser fc = new
+        // GUIUtil.FileChooserWithOverwritePrompting();
+
         // fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
         // FILE_BROWSER_HEIGHT));
-        final File filedir = new File((String) PersistentBlackboardPlugIn.get(
-                JUMPWorkbench.getInstance().getContext()).get(
-                FILE_CHOOSER_DIRECTORY_KEY));
+        // final File filedir = new File((String)
+        // PersistentBlackboardPlugIn.get(
+        // JUMPWorkbench.getInstance().getContext()).get(
+        // FILE_CHOOSER_DIRECTORY_KEY));
         FileNameExtensionFilter filter;
-        if (LAST_DIR != null) {
-            fc.setCurrentDirectory(new File(LAST_DIR));
-        } else {
-            fc.setCurrentDirectory(filedir);
-        }
+        // if (LAST_DIR != null) {
+        // fc.setCurrentDirectory(new File(LAST_DIR));
+        // } else {
+        // fc.setCurrentDirectory(filedir);
+        // }
         final File file;
         if (m_Path != null) {
             try {
@@ -392,6 +396,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         .getUserObject();
                 final Component c = (Component) oad.getObject();
                 if (c instanceof FeatureCollectionPanel) {
+
                     final FeatureCollectionPanel panel = (FeatureCollectionPanel) c;
                     final FeatureCollection fcoll = panel
                             .getFeatureCollection();
@@ -400,9 +405,12 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     } else {
                         filter = new FileNameExtensionFilter("SHP", "shp");
                     }
+                    final JFileChooser fc = new JFileChooser(
+                            PirolPlugInSettings.configDirectory());
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
-                    final int returnVal = fc.showSaveDialog(this);
+                    final int returnVal = fc
+                            .showSaveDialog(AdditionalResultsFrame.this);
                     // FILE_BROWSER_WIDTH = fc.getWidth();
                     // FILE_BROWSER_HEIGHT = fc.getHeight();
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -421,10 +429,13 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     if (view instanceof JTextPane) {
                         final JTextPane text = (JTextPane) pane.getViewport()
                                 .getView();
+                        final JFileChooser fc = new JFileChooser(
+                                PirolPlugInSettings.configDirectory());
                         filter = new FileNameExtensionFilter("HTML", "html");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
-                        final int returnVal = fc.showSaveDialog(this);
+                        final int returnVal = fc
+                                .showSaveDialog(AdditionalResultsFrame.this);
                         fc.getWidth();
                         fc.getHeight();
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -446,9 +457,12 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     } else if (view instanceof JLabel) {
                         final String text = ((JLabel) view).getText();
                         filter = new FileNameExtensionFilter("HTML", "html");
+                        final JFileChooser fc = new JFileChooser(
+                                PirolPlugInSettings.configDirectory());
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
-                        final int returnVal = fc.showSaveDialog(this);
+                        final int returnVal = fc
+                                .showSaveDialog(AdditionalResultsFrame.this);
                         fc.getWidth();
                         fc.getHeight();
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -470,9 +484,12 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     } else if (view instanceof JTextArea) {
                         final String text = ((JLabel) view).getText();
                         filter = new FileNameExtensionFilter("HTML", "html");
+                        final JFileChooser fc = new JFileChooser(
+                                PirolPlugInSettings.configDirectory());
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
-                        final int returnVal = fc.showSaveDialog(this);
+                        final int returnVal = fc
+                                .showSaveDialog(AdditionalResultsFrame.this);
                         fc.getWidth();
                         fc.getHeight();
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -496,9 +513,12 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                                 .getView();
                         filter = new FileNameExtensionFilter(
                                 "Comma-Separated Values (csv)", "csv");
+                        final JFileChooser fc = new JFileChooser(
+                                PirolPlugInSettings.configDirectory());
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
-                        final int returnVal = fc.showSaveDialog(this);
+                        final int returnVal = fc
+                                .showSaveDialog(AdditionalResultsFrame.this);
                         fc.getWidth();
                         fc.getHeight();
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -543,7 +563,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                             "Portable Network Graphics (png)", "png");
                     final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
                             "Drawing Interchange Format(dxf)", "dxf");
-
+                    final JFileChooser fc = new JFileChooser(
+                            PirolPlugInSettings.configDirectory());
                     if (oad.getDescription()
                             .contains(
                                     I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot"))) {
@@ -551,7 +572,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     }
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
-                    final int returnVal = fc.showSaveDialog(this);
+                    final int returnVal = fc
+                            .showSaveDialog(AdditionalResultsFrame.this);
                     fc.getWidth();
                     fc.getHeight();
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -577,10 +599,13 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                 } else if (c instanceof JTable) {
                     final JTable table = (JTable) c;
                     filter = new FileNameExtensionFilter(
-                            "Comma-Separated Values (csv)", "cvs");
+                            "Comma-Separated Values (csv)", "csv");
+                    final JFileChooser fc = new JFileChooser(
+                            PirolPlugInSettings.configDirectory());
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
-                    final int returnVal = fc.showSaveDialog(this);
+                    final int returnVal = fc
+                            .showSaveDialog(AdditionalResultsFrame.this);
                     fc.getWidth();
                     fc.getHeight();
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -618,9 +643,12 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     final HTMLPanel panel = (HTMLPanel) c;
                     final String text = panel.lastString();
                     filter = new FileNameExtensionFilter("HTML", "html");
+                    final JFileChooser fc = new JFileChooser(
+                            PirolPlugInSettings.configDirectory());
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
-                    final int returnVal = fc.showSaveDialog(this);
+                    final int returnVal = fc
+                            .showSaveDialog(AdditionalResultsFrame.this);
                     fc.getWidth();
                     fc.getHeight();
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -648,9 +676,12 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     panel.paint(g);
                     filter = new FileNameExtensionFilter(
                             "Portable Network Graphics (png)", "png");
+                    final JFileChooser fc = new JFileChooser(
+                            PirolPlugInSettings.configDirectory());
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
-                    final int returnVal = fc.showSaveDialog(this);
+                    final int returnVal = fc
+                            .showSaveDialog(AdditionalResultsFrame.this);
                     fc.getWidth();
                     fc.getHeight();
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
