@@ -6,6 +6,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,9 +24,12 @@ import java.util.Enumeration;
 import java.util.Locale;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -64,10 +68,6 @@ import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.FeatureCollectionPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.HTMLPanel;
-
-import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
-//-da rimuovere
-//import com.vividsolutions.jump.workbench.ui.OKCancelApplyPanel;
 
 public class AdditionalResultsFrame extends DetachableInternalFrame {
 
@@ -109,6 +109,10 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
             .get("deejump.plugin.SaveLegendPlugIn.Save");
     private final String CLOSE = I18N
             .get("ui.plugin.imagery.ImageLayerManagerDialog.Close");
+    public final static String HEIGHT = I18N
+            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values");
+    public final static String WIDTH = I18N
+            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.2d-distance");
 
     private static final long serialVersionUID = 1L;
     private JSplitPane jSplitPane;
@@ -278,21 +282,6 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
             });
             popupMenu.add(menuItemRename);
 
-            // ---Da rimuovere
-            // okCancelApplyPanel.addActionListener(new ActionListener() {
-            // @Override
-            // public void actionPerformed(final ActionEvent evt) {
-
-            // try {
-            // dispose();
-            // } catch (final Exception e) {
-            // }
-            //
-            // }
-            // });
-            // okCancelApplyPanel.setApplyVisible(false);
-            // okCancelApplyPanel.setCancelVisible(false);
-            // okCancelApplyPanel.setOKEnabled(true);
             panel.updateUI();
             return true;
         } catch (final Exception e) {
@@ -405,8 +394,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     } else {
                         filter = new FileNameExtensionFilter("SHP", "shp");
                     }
-                    final JFileChooser fc = new JFileChooser(
-                            PirolPlugInSettings.configDirectory());
+                    final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
                     final int returnVal = fc
@@ -429,8 +417,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     if (view instanceof JTextPane) {
                         final JTextPane text = (JTextPane) pane.getViewport()
                                 .getView();
-                        final JFileChooser fc = new JFileChooser(
-                                PirolPlugInSettings.configDirectory());
+                        final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
+                                "html");
                         filter = new FileNameExtensionFilter("HTML", "html");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
@@ -457,8 +445,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     } else if (view instanceof JLabel) {
                         final String text = ((JLabel) view).getText();
                         filter = new FileNameExtensionFilter("HTML", "html");
-                        final JFileChooser fc = new JFileChooser(
-                                PirolPlugInSettings.configDirectory());
+                        final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
+                                "html");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
                         final int returnVal = fc
@@ -484,8 +472,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     } else if (view instanceof JTextArea) {
                         final String text = ((JLabel) view).getText();
                         filter = new FileNameExtensionFilter("HTML", "html");
-                        final JFileChooser fc = new JFileChooser(
-                                PirolPlugInSettings.configDirectory());
+                        final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
+                                "html");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
                         final int returnVal = fc
@@ -513,8 +501,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                                 .getView();
                         filter = new FileNameExtensionFilter(
                                 "Comma-Separated Values (csv)", "csv");
-                        final JFileChooser fc = new JFileChooser(
-                                PirolPlugInSettings.configDirectory());
+                        final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
+                                "csv");
                         fc.setFileFilter(filter);
                         fc.addChoosableFileFilter(filter);
                         final int returnVal = fc
@@ -555,16 +543,12 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     }
                 } else if (c instanceof PlotPanel) {
                     final PlotPanel panel = (PlotPanel) c;
-                    // final JFileChooser chooser =
-                    // SaveGUI.getFileChooser(panel);
-                    // chooser.showSaveDialog(this);
 
                     filter = new FileNameExtensionFilter(
                             "Portable Network Graphics (png)", "png");
                     final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
                             "Drawing Interchange Format(dxf)", "dxf");
-                    final JFileChooser fc = new JFileChooser(
-                            PirolPlugInSettings.configDirectory());
+                    final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
                     if (oad.getDescription()
                             .contains(
                                     I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot"))) {
@@ -576,6 +560,29 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                             .showSaveDialog(AdditionalResultsFrame.this);
                     fc.getWidth();
                     fc.getHeight();
+                    final Box box = new Box(BoxLayout.Y_AXIS);
+                    box.add(Box.createRigidArea(new Dimension(5, 180)));
+                    final JPanel jPanelSize = new JPanel(new FlowLayout(
+                            FlowLayout.LEFT));
+                    final JCheckBox worldFileCheckBox = new javax.swing.JCheckBox();
+                    worldFileCheckBox
+                            .setText(I18N
+                                    .get("ui.plugin.SaveImageAsPlugIn.write-world-file"));
+                    jPanelSize.add(worldFileCheckBox);
+                    box.add(jPanelSize);
+                    fc.setAccessory(box);
+                    if (fc.getFileFilter().equals(filter)) {
+                        worldFileCheckBox.setEnabled(false);
+                        ;
+                        ;
+                        fc.repaint();
+                    } else if (fc.getFileFilter().equals(filter2)) {
+                        worldFileCheckBox.setEnabled(true);
+                        ;
+                        ;
+                        fc.repaint();
+                    }
+
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         if (fc.getFileFilter().equals(filter)) {
                             file = new File(fc.getSelectedFile() + ".png");
@@ -600,8 +607,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     final JTable table = (JTable) c;
                     filter = new FileNameExtensionFilter(
                             "Comma-Separated Values (csv)", "csv");
-                    final JFileChooser fc = new JFileChooser(
-                            PirolPlugInSettings.configDirectory());
+                    final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
+                            "csv");
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
                     final int returnVal = fc
@@ -643,8 +650,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     final HTMLPanel panel = (HTMLPanel) c;
                     final String text = panel.lastString();
                     filter = new FileNameExtensionFilter("HTML", "html");
-                    final JFileChooser fc = new JFileChooser(
-                            PirolPlugInSettings.configDirectory());
+                    final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
+                            "html");
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
                     final int returnVal = fc
@@ -676,8 +683,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     panel.paint(g);
                     filter = new FileNameExtensionFilter(
                             "Portable Network Graphics (png)", "png");
-                    final JFileChooser fc = new JFileChooser(
-                            PirolPlugInSettings.configDirectory());
+                    final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
+                            "png");
                     fc.setFileFilter(filter);
                     fc.addChoosableFileFilter(filter);
                     final int returnVal = fc
@@ -827,9 +834,14 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
     }
 
+    public static Integer round100(Integer b) {
+        return b - (b % 100);
+    }
+
     // [Giuseppe Aruta 2018-3-14] The following code derives from AdbToolbox
     // Raster>Topography>Section code.
     // see also class it.betastudio.adbtoolbox.libs.DxfExport
+    // [Giuseppe Aruta 2018-3-22] Enhenced dxf output
 
     public static void exportToDxf(String fileName, double[][] points) {
 
@@ -858,34 +870,38 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
             final DecimalFormatSymbols dfs = new DecimalFormatSymbols(
                     Locale.ENGLISH);
             DecimalFormat twoPlaces = null;
+
             final String twoPlacesS = "0.00";
             twoPlaces = new DecimalFormat(twoPlacesS, dfs);
 
             final int pointsCount = points.length;
-            int interPointsCount = 0;
-            final int txtHight = 10;
-            double baseElev = 0.0D;
+
+            final int txtHight = 14;
+            final int txtHight2 = 22;
+
+            // min elevation of the grid, 200m below the min elevation of the
+            // profile
+            final int b = ((int) minY - 99) / 100 * 100;
+            final double baseElev = b - 100;
+
+            // max elevation of the grid, 200m above the max elevation of the
+            // profile
+            final int a = ((int) maxY + 99) / 100 * 100;
+            final double topElev = a + 200;
+
             final int sepSpacing = 10 * txtHight;
             final String layNameProf = "PROFILE";
-            final String layNameNeatLines = "BASE";
-            final String layNameText = "TEXT";
-
-            if (baseElev < minY) {
-                minY = baseElev;
-            } else {
-                baseElev = minY;
-            }
+            final String baseSectionLayer = "BASE";
+            final String partialValuesLayer = "PARTIAL_VALUES";
+            final String gridLayer = "GRID";
+            final String layNameText = "GRID_TEXT";
 
             // Main points coords
-            final double sep1Y = minY - txtHight * 2;
+            final double sep1Y = baseElev - txtHight * 2;
             final double sep2Y = sep1Y - sepSpacing;
-            final double sep3Y = sep2Y - sepSpacing;
-
+            final double sep3Y = topElev;
+            final double leg5Y = sep3Y + sepSpacing;
             final double legX = minX - (txtHight * 30);
-            final double leg1Y = minY + 0.5 * txtHight;
-            final double leg2Y = sep1Y + txtHight;
-            final double leg3Y = sep2Y + 0.5 * sepSpacing;
-            final double leg4Y = sep3Y + 0.5 * sepSpacing;
 
             final DxfExport dxfExp = new DxfExport();
 
@@ -907,8 +923,10 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
             dxfExp.writeTableStart();
             dxfExp.writeLayersStart();
-            dxfExp.writeLayer(layNameProf, 1);
-            dxfExp.writeLayer(layNameNeatLines, 5);
+            dxfExp.writeLayer(layNameProf, 5);
+            dxfExp.writeLayer(baseSectionLayer, 0);
+            dxfExp.writeLayer(partialValuesLayer, 8);
+            dxfExp.writeLayer(gridLayer, 9);
             dxfExp.writeLayer(layNameText, 7);
             dxfExp.writeTableEnd();
 
@@ -919,18 +937,6 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
             dxfExp.writeEntStart();
             dxfExp.writePolyline(layNameProf, points);
 
-            // Write bounding lines
-            // dxfExp.writeLine(layNameNeatLines, minX, minY, minX,
-            // points[0][1]);
-            dxfExp.writeLine(layNameNeatLines, legX, minY, maxX, minY);
-            // dxfExp.writeLine(layNameNeatLines, maxX, minY, maxX,
-            // points[pointsCount-1][1]);
-
-            // Write separators
-            dxfExp.writeLine(layNameNeatLines, legX, sep1Y, maxX, sep1Y);
-            dxfExp.writeLine(layNameNeatLines, legX, sep2Y, maxX, sep2Y);
-            dxfExp.writeLine(layNameNeatLines, legX, sep3Y, maxX, sep3Y);
-
             // Write legend
 
             final Task selectedTask = workbenchContext.getTask();
@@ -938,20 +944,21 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
             if (selectedTask.getProperties().containsKey(
                     new QName(Task.PROJECT_UNIT_KEY))) {
-                unitsDistLabel = selectedTask.getProperty(
-                        new QName(Task.PROJECT_UNIT_KEY)).toString();
+                unitsDistLabel = " ["
+                        + selectedTask.getProperty(
+                                new QName(Task.PROJECT_UNIT_KEY)).toString()
+                        + "]";
             } else {
                 unitsDistLabel = "";
             }
-            dxfExp.writeText(layNameText, legX, leg1Y, 0, 0, 0, 0, txtHight, 0,
-                    0, 0, "Reference height: " + twoPlaces.format(baseElev)
-                            + " " + unitsDistLabel);
-            dxfExp.writeText(layNameText, 0, 0, 0, legX, leg2Y, 0, txtHight, 0,
-                    0, 2, "Partial distance" + unitsDistLabel);
-            dxfExp.writeText(layNameText, 0, 0, 0, legX, leg3Y, 0, txtHight, 0,
-                    0, 2, "Progressive distance" + unitsDistLabel);
-            dxfExp.writeText(layNameText, 0, 0, 0, legX, leg4Y, 0, txtHight, 0,
-                    0, 2, "Height" + unitsDistLabel);
+
+            // Text of X axe
+            dxfExp.writeText(layNameText, 0, 0, 0, (maxX - minX) / 2, sep2Y, 0,
+                    txtHight2, 0, 0, 2, WIDTH + unitsDistLabel);
+
+            // Text of Y axe
+            dxfExp.writeText(partialValuesLayer, 0, 0, 0, (maxX - minX) / 2,
+                    leg5Y, 0, txtHight2, 0, 0, 2, HEIGHT + unitsDistLabel);
 
             // Write interpoints labels and ticks
             double p1x = 0;
@@ -963,12 +970,13 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
             double alPt2y = 0;
             String labelText = null;
 
+            int interPointsCount = 0;
             // Count interpoints
             double[] interStepD = null;
 
             interStepD = new double[1];
             // Define 100 meters for length/height steps
-            interStepD[0] = 100;
+            interStepD[0] = 100D;
             interPointsCount = (int) ((maxX - minX) / interStepD[0]) + 2;
 
             // Prepare x positions
@@ -1025,50 +1033,91 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
             for (int ip = 0; ip < interPointsCount; ip++) { // OKKIO
 
-                // Vertical lines
-                p1x = interPointsDists[ip];
-                p1y = interPointsElev[ip];
-                p2x = interPointsDists[ip];
-                p2y = minY;
-                dxfExp.writeLine(layNameNeatLines, p1x, p1y, p2x, p2y);
+                if (baseElev + interPointsDists[ip] < topElev
+                        || baseElev + interPointsDists[ip] == topElev) {
 
-                if (ip < interPointsCount - 1) {
-                    // Partial distance labels
-                    alPt1x = (interPointsDists[ip] + interPointsDists[ip + 1]) / 2;
-                    alPt1y = sep1Y + txtHight;
-                    labelText = twoPlaces.format(interPointsDists[ip + 1]
-                            - interPointsDists[ip]);
+                    dxfExp.writeText(layNameText, 0, 0, 0, minX - 200,
+                            interPointsDists[5], 0, txtHight2, 90, 0, 2, HEIGHT
+                                    + unitsDistLabel);
+                    // Grid - orizontal lines every 100 m
+                    p1x = maxX;
+                    p1y = interPointsDists[ip] + baseElev;
+                    p2x = minX;
+                    p2y = interPointsDists[ip] + baseElev;
+                    dxfExp.writeLineType(gridLayer, "DOTTINY", p1x, p1y, p2x,
+                            p2y);
+
+                    // Heights (Y) - text on right and left part of the profile
+                    // every 100m
+                    alPt1x = minX - 100;// sep1Y + txtHight;
+                    final double alPt1ax = maxX + txtHight;//
+                    alPt1y = interPointsDists[ip] + baseElev;
+                    labelText = twoPlaces.format(interPointsDists[ip]
+                            + baseElev);
                     dxfExp.writeText(layNameText, 0, 0, 0, alPt1x, alPt1y, 0,
-                            txtHight, 0, 4, 2, labelText);
-                }
+                            txtHight, 0, 0, 2, labelText);
+                    dxfExp.writeText(layNameText, 0, 0, 0, alPt1ax, alPt1y, 0,
+                            txtHight, 0, 0, 2, labelText);
 
-                // Progressive distance labels
+                    // Heights (Y) - small tracks on right and left part of the
+                    // profile
+                    alPt1x = minX;
+                    alPt1y = interPointsDists[ip] + baseElev;
+                    final double alPt2x = minX - (txtHight / 2);
+                    dxfExp.writeLine(baseSectionLayer, alPt1x, alPt1y, alPt2x,
+                            alPt1y);
+                    final double alPt2x2 = maxX + (txtHight / 2);
+                    dxfExp.writeLine(baseSectionLayer, maxX, alPt1y, alPt2x2,
+                            alPt1y);
+
+                }
+            }
+
+            for (int ip = 0; ip < interPointsCount; ip++) { // OKKIO
+
+                // Grid - vertical lines every 100 m
+                p1x = interPointsDists[ip];
+                p1y = topElev;// interPointsElev[ip];
+                p2x = interPointsDists[ip];
+                p2y = baseElev;// minY;
+                dxfExp.writeLineType(gridLayer, "DOTTINY", p1x, p1y, p2x, p2y);
+
+                // Widths (X axe) - texts below the X line, every 100 m
                 alPt1x = interPointsDists[ip];
-                alPt1y = sep2Y + txtHight;
+                alPt1y = sep1Y - 4 * txtHight;
                 labelText = twoPlaces.format(interPointsDists[ip]);
                 dxfExp.writeText(layNameText, 0, 0, 0, alPt1x, alPt1y, 0,
                         txtHight, 90, 0, 2, labelText);
 
-                // Elevation lables
+                // Widths (X axe) - small tracks above the texts
+                alPt1x = interPointsDists[ip];
+                alPt1y = baseElev;
+                alPt2y = baseElev - (txtHight / 2);
+                dxfExp.writeLine(baseSectionLayer, alPt1x, alPt1y, alPt1x,
+                        alPt2y);
+
+                // Partial heights - texts per every 100 width
                 alPt1x = interPointsDists[ip];
                 alPt1y = sep3Y + txtHight;
                 labelText = twoPlaces.format(points[interPointsIds[ip]][1]);
-                dxfExp.writeText(layNameText, 0, 0, 0, alPt1x, alPt1y, 0,
-                        txtHight, 90, 0, 2, labelText);
+                dxfExp.writeText(partialValuesLayer, 0, 0, 0, alPt1x, alPt1y,
+                        0, txtHight, 90, 0, 2, labelText);
 
-                // Ticks
-                alPt1x = interPointsDists[ip];
-                alPt1y = sep2Y;
-                alPt2y = sep2Y + (txtHight / 2);
-                dxfExp.writeLine(layNameNeatLines, alPt1x, alPt1y, alPt1x,
-                        alPt2y);
+                // Partial heights - small tracks
                 alPt1y = sep3Y;
                 alPt2y = sep3Y + (txtHight / 2);
-                dxfExp.writeLine(layNameNeatLines, alPt1x, alPt1y, alPt1x,
+                dxfExp.writeLine(partialValuesLayer, alPt1x, alPt1y, alPt1x,
                         alPt2y);
 
             }
 
+            // Width - X line of the profile
+            dxfExp.writeLine(baseSectionLayer, minX, baseElev, maxX, baseElev);
+            // Height - Y lines of the profile
+            dxfExp.writeLine(baseSectionLayer, minX, baseElev, minX, topElev);
+            dxfExp.writeLine(baseSectionLayer, maxX, baseElev, maxX, topElev);
+            // Partial heights width line
+            dxfExp.writeLine(partialValuesLayer, minX, sep3Y, maxX, sep3Y);
             // Finalize DXF
             dxfExp.writeEnding();
             final int ret = dxfExp.exportDxf(fileName);
@@ -1086,4 +1135,5 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
     public static WorkbenchContext workbenchContext = JUMPWorkbench
             .getInstance().getContext();
+
 }

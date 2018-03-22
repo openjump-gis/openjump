@@ -3,8 +3,8 @@ package it.betastudio.adbtoolbox.libs;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import javax.swing.JOptionPane;
 
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -12,13 +12,13 @@ import javax.swing.JOptionPane;
  */
 public class DxfExport {
 
-    public DxfExport(){
+    public DxfExport() {
 
         dxfOut = new String();
 
     }
 
-    public void writeHeader(double minX, double minY, double maxX, double maxY){
+    public void writeHeader(double minX, double minY, double maxX, double maxY) {
 
         dxfOut = "0";
         appString("SECTION");
@@ -45,7 +45,7 @@ public class DxfExport {
         appString(maxY);
         appString(30);
         appString(0);
-        
+
         appString(9);
         appString("$LIMMIN");
         appString(10);
@@ -58,51 +58,51 @@ public class DxfExport {
         appString(maxX);
         appString(20);
         appString(maxY);
-//        appString(9);
-//        appString("$CLAYER");
-//        appString(8);
-//        appString(layerName);
+        // appString(9);
+        // appString("$CLAYER");
+        // appString(8);
+        // appString(layerName);
         appString(0);
         appString("ENDSEC");
 
     }
 
-    public void writeStartSec(){
+    public void writeStartSec() {
 
         appString(0);
         appString("SECTION");
 
     }
 
-    public void writeEndSec(){
+    public void writeEndSec() {
 
         appString(0);
         appString("ENDSEC");
 
     }
 
-    public void writeTablesStart(){
-        
+    public void writeTablesStart() {
+
         appString(2);
-        appString("TABLES");        
-    
-    }
-    
-    public void writeTableStart(){
-    
-        appString(0);
-        appString("TABLE");       
-        
+        appString("TABLES");
+
     }
 
-    public void writeTableEnd(){
-        
+    public void writeTableStart() {
+
         appString(0);
-        appString("ENDTAB");      
-    
+        appString("TABLE");
+
     }
-    
-    public void writeLayersStart(){
+
+    public void writeTableEnd() {
+
+        appString(0);
+        appString("ENDTAB");
+
+    }
+
+    public void writeLayersStart() {
 
         appString(2);
         appString("LAYER");
@@ -111,7 +111,7 @@ public class DxfExport {
 
     }
 
-    public void writeLayer(String layName, int colourNr){
+    public void writeLayer(String layName, int colourNr) {
 
         appString(0);
         appString("LAYER");
@@ -125,8 +125,9 @@ public class DxfExport {
         appString("CONTINUOUS");
 
     }
-    
-    public void writeVPort(double centerX, double centerY, double minX, double minY, double maxX, double maxY){
+
+    public void writeVPort(double centerX, double centerY, double minX,
+            double minY, double maxX, double maxY) {
 
         appString(2);
         appString("VPORT");
@@ -215,16 +216,16 @@ public class DxfExport {
         appString(78);
         appString(0);
 
-    }    
+    }
 
-    public void writeEntStart(){
-        
+    public void writeEntStart() {
+
         appString(2);
         appString("ENTITIES");
 
     }
 
-    public void writeAppId(){
+    public void writeAppId() {
 
         appString(2);
         appString("APPID");
@@ -246,7 +247,7 @@ public class DxfExport {
         appString("ACAD");
         appString(70);
         appString(0);
-        
+
     }
 
     public void writeEnding() {
@@ -259,7 +260,8 @@ public class DxfExport {
 
     }
 
-    public void writeLine(String layName, double p1x, double p1y, double p2x, double p2y){
+    public void writeLine(String layName, double p1x, double p1y, double p2x,
+            double p2y) {
 
         appString("0");
         appString("LINE");
@@ -276,30 +278,59 @@ public class DxfExport {
 
     }
 
-    public void writePolyline(String layName, double[][] vertices){
+    /**
+     * @param layName
+     * @param lineType
+     *            ( DASHED - DOTTED -DOTTINY etc)
+     * @param p1x
+     * @param p1y
+     * @param p2x
+     * @param p2y
+     */
+    public void writeLineType(String layName, String lineType, double p1x,
+            double p1y, double p2x, double p2y) {
+
+        appString("0");
+        appString("LINE");
+        appString(8);
+        appString(layName);
+        appString(6);
+        appString(lineType);
+        appString("10");
+        appString(p1x);
+        appString("20");
+        appString(p1y);
+        appString("11");
+        appString(p2x);
+        appString("21");
+        appString(p2y);
+
+    }
+
+    public void writePolyline(String layName, double[][] vertices) {
 
         appString(0);
         appString("POLYLINE");
         appString(8);
         appString(layName);
         appString(62);
-        appString(1);
+        appString(5);
         appString(66);
         appString(1);
 
-        for(int v=0; v<vertices.length; v++){
+        for (final double[] vertice : vertices) {
             appString(0);
             appString("VERTEX");
             appString(8);
             appString(layName);
-            appString(10);  // X value
-            appString(vertices[v][0]);
-            appString(20);  // Y value
-            appString(vertices[v][1]);
-//            appString(30);  // Z value
-//            appString(vertices[v][2]);
-            appString(70);  // Vertex flag
-            appString(4);  // Vertex flags:
+            appString(10); // X value
+            appString(vertice[0]);
+            appString(20); // Y value
+            appString(vertice[1]);
+            // appString(30); // Z value
+            // appString(vertices[v][2]);
+            appString(70); // Vertex flag
+            appString(4); // Vertex flags:
         }
 
         appString("0");
@@ -307,37 +338,72 @@ public class DxfExport {
 
     }
 
-    public void writeLwPolyLine(double[][] vertices){
+    public void writePolyline(String layName, String lineType,
+            double[][] vertices, int colourNr) {
 
+        appString(0);
+        appString("POLYLINE");
+        appString(8);
+        appString(layName);
+        appString(lineType);
+        appString(62);
+        appString(colourNr);
+        // appString(1);
+        appString(66);
+        appString(1);
 
+        for (final double[] vertice : vertices) {
+            appString(0);
+            appString("VERTEX");
+            appString(8);
+            appString(layName);
+            appString(10); // X value
+            appString(vertice[0]);
+            appString(20); // Y value
+            appString(vertice[1]);
+            // appString(30); // Z value
+            // appString(vertices[v][2]);
+            appString(70); // Vertex flag
+            appString(4); // Vertex flags:
+        }
+
+        appString("0");
+        appString("SEQEND");
 
     }
 
-    public void writeText(String layName, double alignPoint1x, double alignPoint1y, double alignPoint1z, double alignPoint2x, double alignPoint2y, double alignPoint2z, int textHight, double textRotation, int horizJust, int vertAlign, String text){
+    public void writeLwPolyLine(double[][] vertices) {
+
+    }
+
+    public void writeText(String layName, double alignPoint1x,
+            double alignPoint1y, double alignPoint1z, double alignPoint2x,
+            double alignPoint2y, double alignPoint2z, int textHight,
+            double textRotation, int horizJust, int vertAlign, String text) {
 
         appString(0);
         appString("TEXT");
         appString(8);
         appString(layName);
-        appString(10);            // Alignment point x
+        appString(10); // Alignment point x
         appString(alignPoint1x);
-        appString(20);            // Alignment point y
+        appString(20); // Alignment point y
         appString(alignPoint1y);
-        appString(30);            // Alignment point z
+        appString(30); // Alignment point z
         appString(alignPoint1z);
-        appString(40);            // Text hight
+        appString(40); // Text hight
         appString(textHight);
-        appString(50);            // Text rotation
+        appString(50); // Text rotation
         appString(textRotation);
-        appString(1);             // Text
+        appString(1); // Text
         appString(text);
 
-        if(horizJust != 0 || vertAlign != 0){
-            appString(11);            // Alignment point x
+        if (horizJust != 0 || vertAlign != 0) {
+            appString(11); // Alignment point x
             appString(alignPoint2x);
-            appString(21);            // Alignment point y
+            appString(21); // Alignment point y
             appString(alignPoint2y);
-            appString(31);            // Alignment point z
+            appString(31); // Alignment point z
             appString(alignPoint2z);
             appString(72);
             appString(horizJust);
@@ -348,33 +414,36 @@ public class DxfExport {
 
     }
 
-    private void appString(String appEnd){
+    private void appString(String appEnd) {
         dxfOut = dxfOut + lineFeed + appEnd;
     }
 
-    private void appString(int appEnd){
+    private void appString(int appEnd) {
         dxfOut = dxfOut + lineFeed + Integer.toString(appEnd);
     }
 
-    private void appString(double appEnd){
+    private void appString(double appEnd) {
         dxfOut = dxfOut + lineFeed + Double.toString(appEnd);
     }
 
-    public int exportDxf(String dxfFullFileName){
+    public int exportDxf(String dxfFullFileName) {
 
-        try{
-            BufferedWriter buffWrite = new BufferedWriter(new FileWriter(new File(dxfFullFileName)));
+        try {
+            final BufferedWriter buffWrite = new BufferedWriter(new FileWriter(
+                    new File(dxfFullFileName)));
             buffWrite.write(dxfOut, 0, dxfOut.length());
             buffWrite.close();
             return 0;
-        }catch(Exception ex){
-            JOptionPane.showMessageDialog(null, "Errore durante la scrittura del DXF: " + ex, "Errore", JOptionPane.ERROR_MESSAGE);
+        } catch (final Exception ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Errore durante la scrittura del DXF: " + ex, "Errore",
+                    JOptionPane.ERROR_MESSAGE);
             return 1;
         }
 
     }
 
     private String dxfOut = null;
-    private String lineFeed = System.getProperty("line.separator");
+    private final String lineFeed = System.getProperty("line.separator");
 
 }
