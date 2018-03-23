@@ -956,9 +956,15 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
             dxfExp.writeText(layNameText, 0, 0, 0, (maxX - minX) / 2, sep2Y, 0,
                     txtHight2, 0, 0, 2, WIDTH + unitsDistLabel);
 
-            // Text of Y axe
             dxfExp.writeText(partialValuesLayer, 0, 0, 0, (maxX - minX) / 2,
                     leg5Y, 0, txtHight2, 0, 0, 2, HEIGHT + unitsDistLabel);
+            // Text of Y axe
+            dxfExp.writeText(layNameText, 0, 0, 0, minX - 200,
+                    (topElev + baseElev) / 2, 0, txtHight2, 90, 0, 2, HEIGHT
+                            + unitsDistLabel);
+            dxfExp.writeText(layNameText, 0, 0, 0, maxX + 200,
+                    (topElev + baseElev) / 2, 0, txtHight2, 270, 0, 2, HEIGHT
+                            + unitsDistLabel);
 
             // Write interpoints labels and ticks
             double p1x = 0;
@@ -1036,9 +1042,6 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                 if (baseElev + interPointsDists[ip] < topElev
                         || baseElev + interPointsDists[ip] == topElev) {
 
-                    dxfExp.writeText(layNameText, 0, 0, 0, minX - 200,
-                            interPointsDists[5], 0, txtHight2, 90, 0, 2, HEIGHT
-                                    + unitsDistLabel);
                     // Grid - orizontal lines every 100 m
                     p1x = maxX;
                     p1y = interPointsDists[ip] + baseElev;
