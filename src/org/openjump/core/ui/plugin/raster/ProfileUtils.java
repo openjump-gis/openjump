@@ -309,6 +309,7 @@ public class ProfileUtils {
         plot2dA.getAxis(1).setLabelPosition(-0.15, 0.5);
         // change axis title angle relatively to the base of the plot
         plot2dA.getAxis(1).setLabelAngle(-Math.PI / 2);
+        plot2dA.setFixedBounds(0, 0, width);
         return plot2dA;
 
     }
