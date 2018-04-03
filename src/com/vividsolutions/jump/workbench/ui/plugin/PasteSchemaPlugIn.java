@@ -35,10 +35,12 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 
 import java.awt.Toolkit;
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 
@@ -54,147 +56,167 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
- * Apply a Feature Schema to a FeatureCollection.
- * Attributes already in the FeatureCollection schema are ignored.
- */ 
+ * Apply a Feature Schema to a FeatureCollection. Attributes already in the
+ * FeatureCollection schema are ignored.
+ */
 public class PasteSchemaPlugIn extends AbstractPlugIn {
-	
-	public static ImageIcon ICON = IconLoader.icon("schema_paste.png");    
-    
+
+    public static ImageIcon ICON = IconLoader.icon("schema_paste.png");
+
+    @Override
     public void initialize(PlugInContext context) throws Exception {
-        
-        WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
-        
-        JPopupMenu layerNamePopupMenu = 
-            context
-            .getWorkbenchContext()
-            .getWorkbench()
-            .getFrame()
-            .getLayerNamePopupMenu();
-                
-        featureInstaller.addPopupMenuItem(layerNamePopupMenu, this, 
-        		new String[] { I18N.get("ui.MenuNames.SCHEMA") }, 
-        		getName(),
-                false, 
-                getIcon(),
+
+        final WorkbenchContext workbenchContext = context.getWorkbenchContext();
+        final FeatureInstaller featureInstaller = new FeatureInstaller(
+                workbenchContext);
+
+        final JPopupMenu layerNamePopupMenu = context.getWorkbenchContext()
+                .getWorkbench().getFrame().getLayerNamePopupMenu();
+
+        featureInstaller.addPopupMenuItem(layerNamePopupMenu, this,
+                new String[] { I18N.get("ui.MenuNames.SCHEMA") }, getName(),
+                false, getIcon(),
                 CopySchemaPlugIn.createEnableCheck(workbenchContext));
     }
 
+    @Override
     public boolean execute(PlugInContext context) throws Exception {
-        
-        Transferable transferable = GUIUtil.getContents(Toolkit.getDefaultToolkit().getSystemClipboard());
+
+        final Transferable transferable = GUIUtil.getContents(Toolkit
+                .getDefaultToolkit().getSystemClipboard());
 
         if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-        	String schemaString = (String) transferable.getTransferData(DataFlavor.stringFlavor);
-        	if (!schemaString.endsWith("\n"))
-        		schemaString = schemaString + "\n";
-        	FeatureSchema cbFeatureSchema = new FeatureSchema();
-        	boolean isSchema = (schemaString.length() > 0);
-        	
-        	if (isSchema) {
-        		int tabIndex = schemaString.indexOf("\t");
-        		int crIndex = schemaString.indexOf("\n");
-        		boolean endOfString = ((tabIndex < 0) || (crIndex < 0));
-        		
-	        	while (!endOfString) {
-	        		String name = schemaString.substring(0, tabIndex);
-	        		String typeStr = schemaString.substring(tabIndex + 1, crIndex);
-	        		AttributeType type = AttributeType.STRING;
-	        		
-	        		if (typeStr.compareToIgnoreCase("STRING") == 0) 
-	        			type = AttributeType.STRING;
-	        		else if (typeStr.compareToIgnoreCase("DOUBLE") == 0)
-	        			type = AttributeType.DOUBLE;
-	        		else if (typeStr.compareToIgnoreCase("INTEGER") == 0)
-	        			type = AttributeType.INTEGER;
-	        		else if (typeStr.compareToIgnoreCase("DATE") == 0)
-	        			type = AttributeType.DATE;
-	        		else if (typeStr.compareToIgnoreCase("GEOMETRY") == 0)
-	        			type = AttributeType.GEOMETRY;
-	        		else if (typeStr.compareToIgnoreCase("OBJECT") == 0)
-	        			type = AttributeType.OBJECT;
-	        		else {
-	        			isSchema = false;
-	        			break;
-	        		}
-	        		
-	        		cbFeatureSchema.addAttribute(name, type);
-	        		schemaString = schemaString.substring(crIndex + 1);
-	        		tabIndex = schemaString.indexOf("\t");
-	        		crIndex = schemaString.indexOf("\n");
-	        		endOfString = ((tabIndex < 0) || (crIndex < 0));
-	        	}
-        	    
-	        	isSchema = (cbFeatureSchema.getAttributeCount() > 0);
-        	}
-        	
-        	if (isSchema) {
-	        	Collection layerCollection = (Collection) context.getWorkbenchContext().getLayerNamePanel().selectedNodes(Layer.class);
-	        	
-	            for (Iterator i = layerCollection.iterator(); i.hasNext();) {
-	            	Layer layer = (Layer) i.next();
-	            	FeatureSchema layerSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-	            	int numAttributes = cbFeatureSchema.getAttributeCount();
-	            	boolean changedSchema = false;
-	            	
-	            	for (int index = 0; index < numAttributes; index++) {
-	            		String name = cbFeatureSchema.getAttributeName(index);
-	            		AttributeType type = cbFeatureSchema.getAttributeType(index);
-	            		
-		            	if (!layerSchema.hasAttribute(name)) {
-		            		if ((type == AttributeType.STRING) ||
-		            			(type == AttributeType.DOUBLE) ||
-		            			(type == AttributeType.INTEGER) ||
-		            			(type == AttributeType.DATE) ||
-		            			(type == AttributeType.OBJECT)) {
-		            		    layerSchema.addAttribute(name, type);
-		            		    changedSchema = true;
-		            		}
-		            	}
-	            	}
-	            	
-	            	if (changedSchema) {
-		                List layerFeatures = layer.getFeatureCollectionWrapper().getFeatures();
+            String schemaString = (String) transferable
+                    .getTransferData(DataFlavor.stringFlavor);
+            if (!schemaString.endsWith("\n")) {
+                schemaString = schemaString + "\n";
+            }
+            final FeatureSchema cbFeatureSchema = new FeatureSchema();
+            boolean isSchema = (schemaString.length() > 0);
 
-	            		for (int j = 0; j < layerFeatures.size(); j++) {
-	            			Feature newFeature = new BasicFeature(layerSchema);
-		                    Feature origFeature = (Feature) layerFeatures.get(j);
-		                    int numAttribs = origFeature.getAttributes().length;
-		                    
-		                    for (int k = 0; k < numAttribs; k++)
-		                    	newFeature.setAttribute(k, origFeature.getAttribute(k));
-		                    
-		                    origFeature.setSchema(newFeature.getSchema());
-		                    origFeature.setAttributes(newFeature.getAttributes());
-		                }
-	            		
-		            	layer.setFeatureCollectionModified(true);
-		            	layer.fireLayerChanged(LayerEventType.METADATA_CHANGED);
-	            	}
-	            }
-        	}
+            if (isSchema) {
+                int tabIndex = schemaString.indexOf("\t");
+                int crIndex = schemaString.indexOf("\n");
+                boolean endOfString = ((tabIndex < 0) || (crIndex < 0));
+
+                while (!endOfString) {
+                    final String name = schemaString.substring(0, tabIndex);
+                    final String typeStr = schemaString.substring(tabIndex + 1,
+                            crIndex);
+                    AttributeType type = AttributeType.STRING;
+
+                    if (typeStr.compareToIgnoreCase("STRING") == 0) {
+                        type = AttributeType.STRING;
+                    } else if (typeStr.compareToIgnoreCase("DOUBLE") == 0) {
+                        type = AttributeType.DOUBLE;
+                    } else if (typeStr.compareToIgnoreCase("INTEGER") == 0) {
+                        type = AttributeType.INTEGER;
+                    } else if (typeStr.compareToIgnoreCase("DATE") == 0) {
+                        type = AttributeType.DATE;
+                    } else if (typeStr.compareToIgnoreCase("GEOMETRY") == 0) {
+                        type = AttributeType.GEOMETRY;
+                    } else if (typeStr.compareToIgnoreCase("BOOLEAN") == 0) {
+                        type = AttributeType.BOOLEAN;
+                    } else if (typeStr.compareToIgnoreCase("LONG") == 0) {
+                        type = AttributeType.LONG;
+                    } else if (typeStr.compareToIgnoreCase("OBJECT") == 0) {
+                        type = AttributeType.OBJECT;
+                    } else {
+                        isSchema = false;
+                        break;
+                    }
+
+                    cbFeatureSchema.addAttribute(name, type);
+                    schemaString = schemaString.substring(crIndex + 1);
+                    tabIndex = schemaString.indexOf("\t");
+                    crIndex = schemaString.indexOf("\n");
+                    endOfString = ((tabIndex < 0) || (crIndex < 0));
+                }
+
+                isSchema = (cbFeatureSchema.getAttributeCount() > 0);
+            }
+
+            if (isSchema) {
+                final Collection layerCollection = context
+                        .getWorkbenchContext().getLayerNamePanel()
+                        .selectedNodes(Layer.class);
+
+                for (final Iterator i = layerCollection.iterator(); i.hasNext();) {
+                    final Layer layer = (Layer) i.next();
+                    final FeatureSchema layerSchema = layer
+                            .getFeatureCollectionWrapper().getFeatureSchema();
+                    final int numAttributes = cbFeatureSchema
+                            .getAttributeCount();
+                    boolean changedSchema = false;
+
+                    for (int index = 0; index < numAttributes; index++) {
+                        final String name = cbFeatureSchema
+                                .getAttributeName(index);
+                        final AttributeType type = cbFeatureSchema
+                                .getAttributeType(index);
+
+                        if (!layerSchema.hasAttribute(name)) {
+                            if ((type == AttributeType.STRING)
+                                    || (type == AttributeType.DOUBLE)
+                                    || (type == AttributeType.INTEGER)
+                                    || (type == AttributeType.DATE)
+                                    || (type == AttributeType.BOOLEAN)
+                                    || (type == AttributeType.LONG)
+                                    || (type == AttributeType.OBJECT)) {
+                                layerSchema.addAttribute(name, type);
+                                changedSchema = true;
+                            }
+                        }
+                    }
+
+                    if (changedSchema) {
+                        final List layerFeatures = layer
+                                .getFeatureCollectionWrapper().getFeatures();
+
+                        for (int j = 0; j < layerFeatures.size(); j++) {
+                            final Feature newFeature = new BasicFeature(
+                                    layerSchema);
+                            final Feature origFeature = (Feature) layerFeatures
+                                    .get(j);
+                            final int numAttribs = origFeature.getAttributes().length;
+
+                            for (int k = 0; k < numAttribs; k++) {
+                                newFeature.setAttribute(k,
+                                        origFeature.getAttribute(k));
+                            }
+
+                            origFeature.setSchema(newFeature.getSchema());
+                            origFeature.setAttributes(newFeature
+                                    .getAttributes());
+                        }
+
+                        layer.setFeatureCollectionModified(true);
+                        layer.fireLayerChanged(LayerEventType.METADATA_CHANGED);
+                    }
+                }
+            }
         }
         return true;
     }
 
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-        
+    public static MultiEnableCheck createEnableCheck(
+            WorkbenchContext workbenchContext) {
+        final EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
+
         return new MultiEnableCheck()
-            .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-            .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1))
-            .add(checkFactory.createSelectedLayersMustBeEditableCheck());
-    }  
-  
+                .add(checkFactory
+                        .createWindowWithSelectionManagerMustBeActiveCheck())
+                .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1))
+                .add(checkFactory.createSelectedLayersMustBeEditableCheck());
+    }
+
     public ImageIcon getIcon() {
         return ICON;
     }
-    
+
 }

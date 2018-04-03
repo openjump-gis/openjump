@@ -5,6 +5,9 @@
 
 * Changes.txt updated until here **********************************************
 
+2018-04-03 Giuseppe Aruta
+      * Added Boolen and Long attributes to Paste Schema plugin
+
 2018-03-14 Giuseppe Aruta
       * Raster>Profile. Added export profile to .dxf on Additional Frame 
         output options
