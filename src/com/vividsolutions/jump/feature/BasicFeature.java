@@ -58,35 +58,38 @@ public class BasicFeature extends AbstractBasicFeature implements Serializable {
 
 
     /**
-     * A low-level accessor that is not normally used. It is called by ViewSchemaPlugIn.
+     * A low-level accessor that is not normally used. It is called by
+     * ViewSchemaPlugIn.
      */
     public void setAttributes(Object[] attributes) {
-    	Object[] attributesOld = this.attributes;
-    	this.attributes = attributes;
-    	if (attributes != null)
-    		if (attributesOld.length != attributes.length) 
-    			modified = true;
-    		else {
-    			for (int i=0; i<attributes.length; i++) {
-    				if ( attributesOld[i] != null && attributesOld[i] != attributes[i]) {
-    					modified = true;
-    				}
-    			}
-    		}
+      Object[] attributesOld = this.attributes;
+      this.attributes = attributes;
+      if (attributes != null)
+        if (attributesOld.length != attributes.length)
+          modified = true;
+        else {
+          for (int i = 0; i < attributes.length; i++) {
+            if (attributesOld[i] != null && attributesOld[i] != attributes[i]) {
+              modified = true;
+            }
+          }
+        }
     }
-
+  
     /**
      * Sets the specified attribute.
      *
-     *@param  attributeIndex  the array index at which to put the new attribute
-     *@param  newAttribute    the new attribute
+     * @param attributeIndex
+     *          the array index at which to put the new attribute
+     * @param newAttribute
+     *          the new attribute
      */
     public void setAttribute(int attributeIndex, Object newAttribute) {
-    	modCount++;
-    	if (attributes[attributeIndex] != null || modCount > attributes.length) {
-    		modified = true;
-    	}	        	                                  
-        attributes[attributeIndex] = newAttribute;
+      modCount++;
+      if (attributes[attributeIndex] != null || modCount > attributes.length) {
+        modified = true;
+      }
+      attributes[attributeIndex] = newAttribute;
     }
 
     /**
@@ -125,10 +128,11 @@ public class BasicFeature extends AbstractBasicFeature implements Serializable {
     }
     
     /**
-     * @param modified - allows the modified flag to be set or reset
+     * @param modified
+     *          - allows the modified flag to be set or reset
      */
     public void setModified(boolean modified) {
-    	this.modified = modified;
-    	modCount = 0;
+      this.modified = modified;
+      modCount = 0;
     }
  }
