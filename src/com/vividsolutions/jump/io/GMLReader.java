@@ -67,8 +67,7 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
-//import com.vividsolutions.jump.feature.FlexibleFeature;
-//import com.vividsolutions.jump.feature.FlexibleFeatureSchema;
+import com.vividsolutions.jump.feature.FlexibleFeature;
 import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorSupport;
@@ -646,7 +645,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
           && (qName.compareToIgnoreCase(GMLinput.featureTag) == 0)) {
         // found the feature tag
         // System.out.println("found feature");
-        currentFeature = new BasicFeature(fcmd);
+        currentFeature = new FlexibleFeature(fcmd);
         STATE = STATE_GET_COLUMNS;
 //        SRID = 0;// default SRID (reset for each feature, but should be constant
 //                 // for a featurecollection)
