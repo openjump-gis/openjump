@@ -29,9 +29,6 @@ package com.vividsolutions.jump.workbench.ui;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.math.BigDecimal;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -113,170 +110,124 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 
     private class MyTable extends JTable {
 
-        MyTable() {
-            //We want table-size changes to be absorbed by the last column.
-            //By default, AUTO_RESIZE_LAST_COLUMN will not achieve this
-            //(it works for column-size changes only). But I am overriding
-            //#sizeColumnsToFit (for J2SE 1.3) and
-            //JTableHeader#getResizingColumn (for J2SE 1.4)
-            //#so that it will work for table-size changes. [Jon Aquino]
-            setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-            GUIUtil.doNotRoundDoubles(this);
-            blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
-            DateFormat formatter;
-            try {
-                formatter = blackboard.get(DATE_FORMAT_KEY) == null ?
-                        DEFAULT_DATE_FORMAT :
-                        new SimpleDateFormat(blackboard.get(DATE_FORMAT_KEY).toString());
-            } catch (IllegalArgumentException e) {
-                formatter = DEFAULT_DATE_FORMAT;
-            }
-            //setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor(formatter));
+      MyTable() {
+          //We want table-size changes to be absorbed by the last column.
+          //By default, AUTO_RESIZE_LAST_COLUMN will not achieve this
+          //(it works for column-size changes only). But I am overriding
+          //#sizeColumnsToFit (for J2SE 1.3) and
+          //JTableHeader#getResizingColumn (for J2SE 1.4)
+          //#so that it will work for table-size changes. [Jon Aquino]
+          setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+          GUIUtil.doNotRoundDoubles(this);
+          blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+          DateFormat formatter;
+          try {
+              formatter = blackboard.get(DATE_FORMAT_KEY) == null ?
+                      DEFAULT_DATE_FORMAT :
+                      new SimpleDateFormat(blackboard.get(DATE_FORMAT_KEY).toString());
+          } catch (IllegalArgumentException e) {
+              formatter = DEFAULT_DATE_FORMAT;
+          }
+          //setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor(formatter));
 
-            NullifyMouseAdapter nullifyMouseAdapter = new NullifyMouseAdapter(MyTable.this);
+          NullifyMouseAdapter nullifyMouseAdapter = new NullifyMouseAdapter(MyTable.this);
 
-            DefaultCellEditor dateCellEditor = new FlexibleDateParser.CellEditor(formatter);
-            // I don't know why it does not work for Date cells
-            // It is not a big problem as one can empty the date field to nullify date value
-            //dateCellEditor.getComponent().addMouseListener(nullifyMouseAdapter);
-            setDefaultEditor(Date.class, dateCellEditor);
+          DefaultCellEditor dateCellEditor = new FlexibleDateParser.CellEditor(formatter);
+          // I don't know why it does not work for Date cells
+          // It is not a big problem as one can empty the date field to nullify date value
+          //dateCellEditor.getComponent().addMouseListener(nullifyMouseAdapter);
+          setDefaultEditor(Date.class, dateCellEditor);
 
-            JTextField nullableTextField = new JTextField();
-            nullableTextField.addMouseListener(nullifyMouseAdapter);
-            setDefaultEditor(String.class, new DefaultCellEditor(nullableTextField));
+          JTextField nullableTextField = new JTextField();
+          nullableTextField.addMouseListener(nullifyMouseAdapter);
+          setDefaultEditor(String.class, new DefaultCellEditor(nullableTextField));
 
-            JCheckBox nullableCheckBox = new JCheckBox();
-            nullableCheckBox.addMouseListener(nullifyMouseAdapter);
-            setDefaultEditor(Boolean.class, new DefaultCellEditor(nullableCheckBox));
+          JCheckBox nullableCheckBox = new JCheckBox();
+          nullableCheckBox.addMouseListener(nullifyMouseAdapter);
+          setDefaultEditor(Boolean.class, new DefaultCellEditor(nullableCheckBox));
 
+      }
+
+      //Row-stripe colour recommended in
+      //Java Look and Feel Design Guidelines: Advanced Topics [Jon Aquino]
+      private final Color LIGHT_GRAY = new Color(230, 230, 230);
+
+      private GeometryCellRenderer geomCellRenderer = new GeometryCellRenderer();
+
+      @Override
+      public TableCellRenderer getCellRenderer(int row, int column) {
+        // this is the geometry column
+        if (isEditButtonColumn(column)) {
+          return geomCellRenderer;
         }
-
-        //Row-stripe colour recommended in
-        //Java Look and Feel Design Guidelines: Advanced Topics [Jon Aquino]
-        private final Color LIGHT_GRAY = new Color(230, 230, 230);
-
-        private GeometryCellRenderer geomCellRenderer = new GeometryCellRenderer();
-        
-		@Override
-        public TableCellRenderer getCellRenderer(int row, int column) {
-            if (!isEditButtonColumn(column)) {
-                final JComponent renderer = (JComponent) super.getCellRenderer(row,
-                        column);
-                // Get the prefered date formatter from the PersistentBlackboard
-                DateFormat _formatter;
-                try {
-                    _formatter = blackboard.get(DATE_FORMAT_KEY) == null ?
-                            DEFAULT_DATE_FORMAT :
-                            new SimpleDateFormat(blackboard.get(DATE_FORMAT_KEY).toString());
-                } catch (IllegalArgumentException e) {
-                    _formatter = DEFAULT_DATE_FORMAT;
-                }
-                // We need a final formatter to be used in innerClass
-                final DateFormat formatter = _formatter;
-
-                setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-                    public void setValue(Object value) {
-                        if (value == null) {
-                            setIcon(nullObject);
-                            setHorizontalAlignment(SwingConstants.CENTER);
-                        }
-                        else setText(value.toString());
-                    }
-                });
-                setDefaultRenderer(Date.class, new DefaultTableCellRenderer() {
-                    public void setValue(Object value) {
-                        if (value == null) {
-                            setIcon(nullString);
-                            setHorizontalAlignment(SwingConstants.CENTER);
-                        }
-                        else setText(formatter.format(value));
-                    }
-                });
-                setDefaultRenderer(Time.class, new DefaultTableCellRenderer() {
-                    public void setValue(Object value) {
-                        if (value == null) {
-                            setIcon(nullString);
-                            setHorizontalAlignment(SwingConstants.CENTER);
-                        }
-                        else setText(formatter.format(value));
-                    }
-                });
-                setDefaultRenderer(Timestamp.class, new DefaultTableCellRenderer() {
-                    public void setValue(Object value) {
-                        if (value == null) {
-                            setIcon(nullString);
-                            setHorizontalAlignment(SwingConstants.CENTER);
-                        }
-                        else setText(formatter.format(value));
-                    }
-                });
-                // Set default editor here too, as we want date display and date editing
-                // to be synchronized
-                setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor(formatter));
-                setDefaultRenderer(String.class, new DefaultTableCellRenderer() {
-                    public void setValue(Object value) {
-                        if (value == null) {
-                            setIcon(nullString);
-                            setHorizontalAlignment(SwingConstants.CENTER);
-                        }
-                        else setText(value.toString());
-                    }
-                });
-                setDefaultRenderer(Integer.class, new DefaultTableCellRenderer() {
-                    public void setValue(Object value) {
-                        if (value == null) {
-                            setIcon(nullString);
-                            setHorizontalAlignment(SwingConstants.CENTER);
-                        }
-                        else setText(value.toString());
-                    }
-                });
-                setDefaultRenderer(Long.class, new DefaultTableCellRenderer() {
-                    public void setValue(Object value) {
-                        if (value == null) {
-                            setIcon(nullString);
-                            setHorizontalAlignment(SwingConstants.CENTER);
-                        }
-                        else setText(value.toString());
-                    }
-                });
-                setDefaultRenderer(Double.class, new DefaultTableCellRenderer() {
-                    public void setValue(Object value) {
-                        if (value == null) {
-                            setIcon(nullString);
-                            setHorizontalAlignment(SwingConstants.CENTER);
-                        }
-                        else setText(value.toString());
-                    }
-                });
-                setDefaultRenderer(BigDecimal.class, new DefaultTableCellRenderer() {
-                    public void setValue(Object value) {
-                        if (value == null) {
-                            setIcon(nullString);
-                            setHorizontalAlignment(SwingConstants.CENTER);
-                        }
-                        else setText(value.toString());
-                    }
-                });
-                setDefaultRenderer(Boolean.class, new NullableCheckBox());
-
-                if (AttributeTablePanel.this.getModel().getLayer().isEditable()
-						&& !AttributeTablePanel.this.getModel()
-							.isCellEditable(row, column))
-					// Shade readonly cells light gray
-					renderer.setBackground(LIGHT_GRAY);
-				else {
-					// If not editable, use row striping, as recommended in
-					// Java Look and Feel Design Guidelines: Advanced Topics
-					// [Jon Aquino]
-					renderer.setBackground((AttributeTablePanel.this.getModel()
-							.getLayer().isEditable() || ((row % 2) == 0)) ? Color.white
-							: LIGHT_GRAY);
-				}
-				return (TableCellRenderer) renderer;
-            }
-            return geomCellRenderer;
+  
+        // now create some renderers according to value type
+        final JComponent renderer = (JComponent) super.getCellRenderer(row, column);
+  
+        // Get the preferred date formatter from the PersistentBlackboard
+        DateFormat dateFormatter = null;
+        try {
+          dateFormatter = blackboard.get(DATE_FORMAT_KEY) == null ? DEFAULT_DATE_FORMAT
+              : new SimpleDateFormat(blackboard.get(DATE_FORMAT_KEY).toString());
+        } catch (IllegalArgumentException e) {
+          dateFormatter = DEFAULT_DATE_FORMAT;
         }
+        final DateFormat finalDateFormatter = dateFormatter;
+  
+        // date renderer for all date objects
+        TableCellRenderer dateRenderer = new DefaultTableCellRenderer() {
+          public void setValue(Object value) {
+            // System.out.println("date: "+value.getClass() + "/" + value);
+            if (value == null || value.toString().isEmpty()) {
+              setIcon(nullString);
+              setHorizontalAlignment(SwingConstants.CENTER);
+            } else {
+              setText(finalDateFormatter.format(value));
+            }
+          }
+        };
+  
+        // java.sql.Date,Time,Timestamp are all subclasses of java.util.Date
+        setDefaultRenderer(Date.class, dateRenderer);
+  
+        // boolean get a neat checkbox
+        setDefaultRenderer(Boolean.class, new NullableCheckBox());
+  
+        // toStringRenderer for all non-special cases
+        TableCellRenderer toStringRenderer = new DefaultTableCellRenderer() {
+          public void setValue(Object value) {
+            // System.out.println("toString: "+value.getClass() + "/" + value);
+            if (value == null) {
+              setIcon(nullObject);
+              setHorizontalAlignment(SwingConstants.CENTER);
+            } else
+              setText(value.toString());
+          }
+        };
+  
+        // fallthrough, currently renders Strings, Numbers as well (Integer,
+        // Double etc.)
+        setDefaultRenderer(Object.class, toStringRenderer);
+  
+        // Set default editor for time fields, as we want date display and date
+        // editing
+        // to be synchronized
+        setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor(finalDateFormatter));
+  
+        // render table cell backgrounds according to editability status
+        if (AttributeTablePanel.this.getModel().getLayer().isEditable()
+            && !AttributeTablePanel.this.getModel().isCellEditable(row, column))
+          // Shade _readonly_ cells light gray
+          renderer.setBackground(LIGHT_GRAY);
+        else {
+          // If not editable, use row striping, as recommended in Java Look and
+          // Feel Design Guidelines: Advanced Topics [Jon Aquino]
+          renderer.setBackground((AttributeTablePanel.this.getModel().getLayer().isEditable() || ((row % 2) == 0))
+              ? Color.white : LIGHT_GRAY);
+        }
+  
+        return (TableCellRenderer) renderer;
+      }
     }
 
     private class NullableCheckBox extends JCheckBox implements TableCellRenderer {
