@@ -69,21 +69,26 @@ public class FlexibleDateParser {
     //The problems vanished when I turned it into a static class. I didn't
     //investigate further. [Jon Aquino]
     public static final class CellEditor extends DefaultCellEditor {
+        private Object value;
+        DateFormat formatter;
+
         public CellEditor(DateFormat formatter) {
             super(new JTextField());
             //Same formatter as used by JTable.DateRenderer. [Jon Aquino]
             this.formatter = formatter;
         }
-        private Object value;
-        private FlexibleDateParser parser = new FlexibleDateParser();
-        DateFormat formatter;
 
         public boolean stopCellEditing() {
+            String newValue = (String) super.getCellEditorValue();
             try {
-                value = parser.parse((String) super.getCellEditorValue(), true);
+              // allow nullification
+              if (newValue == null || newValue.isEmpty())
+                this.value = null;
+              else
+                this.value = FlexibleDateParser.getDefaultInstance().parse(newValue, true);
             } catch (Exception e) {
+                // red alert ;) please try again
                 ((JComponent) getComponent()).setBorder(new LineBorder(Color.red));
-
                 return false;
             }
 
@@ -101,18 +106,23 @@ public class FlexibleDateParser {
 
             return super.getTableCellEditorComponent(
                 table,
-                format((Date) value),
+                format(value),
                 isSelected,
                 row,
                 column);
         }
 
-        private String format(Date date) {
-            return (date == null) ? "" : formatter.format(date);
+        private String format(Object date) {
+          if (date == null || date.toString().isEmpty())
+            return "";
+          if (date instanceof Date)
+            return formatter.format(date);
+          else
+            return date.toString();
         }
 
         public Object getCellEditorValue() {
-            return value;
+            return format(value);
         }
     }
     
@@ -329,6 +339,7 @@ public class FlexibleDateParser {
 
     public static void main(String[] args) throws Exception {
         //System.out.println(new FlexibleDateParser().parse("03-Mars-1998", false));
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").parse("2008-11-11T00:00:00.000+0200"));
     }
 
     public void setVerbose(boolean b) {
@@ -340,4 +351,5 @@ public class FlexibleDateParser {
         instance = new FlexibleDateParser();
       return instance;
     }
+    
 }
