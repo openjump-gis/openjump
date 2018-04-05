@@ -1348,7 +1348,7 @@ public class GUIUtil {
         (int) other.getLocationOnScreen().getY()
             + (location.fromBottom ? (other.getHeight()
                 - componentToMove.getHeight() - location.y) : location.y));
-    if (!(componentToMove instanceof Window) && !(componentToMove instanceof JInternalFrame)) {
+    if (!(componentToMove instanceof Window) /*&& !(componentToMove instanceof JInternalFrame) */) {
       SwingUtilities.convertPointFromScreen(p, componentToMove.getParent());
     }
     componentToMove.setBounds(p.x, p.y, width, height);
