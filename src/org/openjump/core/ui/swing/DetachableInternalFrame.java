@@ -22,6 +22,7 @@ import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
 /**
  * A detacheable JInternalFrame. DetachableInternalFrame extends JInternalFrame
@@ -171,6 +172,9 @@ public class DetachableInternalFrame extends JInternalFrame {
 		// create a new JFrame instance with the content of the internalframe
 		detachedFrame = getFrame();
 
+		// keep icon of frame
+		detachedFrame.setIconImage(GUIUtil.toImage(this.getFrameIcon()));
+		
 		// on closing the detached JFrame, we attach it back to the application
 		// so we define it here
 		detachedFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
