@@ -58,6 +58,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.GrayFilter;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -797,6 +798,29 @@ public class GUIUtil {
   }
 
   /**
+   * convert Icon to Image
+   * 
+   * @param icon
+   * @return
+   */
+  public static Image toImage(Icon icon) {
+    if (icon instanceof ImageIcon) {
+      return ((ImageIcon) icon).getImage();
+    } else {
+      int w = icon.getIconWidth();
+      int h = icon.getIconHeight();
+      GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      GraphicsDevice gd = ge.getDefaultScreenDevice();
+      GraphicsConfiguration gc = gd.getDefaultConfiguration();
+      BufferedImage image = gc.createCompatibleImage(w, h);
+      Graphics2D g = image.createGraphics();
+      icon.paintIcon(null, g, 0, 0);
+      g.dispose();
+      return image;
+    }
+  }
+  
+  /**
    * resize to a square, even non square images
    * 
    * @param icon imageIcon to resize
@@ -1348,9 +1372,9 @@ public class GUIUtil {
         (int) other.getLocationOnScreen().getY()
             + (location.fromBottom ? (other.getHeight()
                 - componentToMove.getHeight() - location.y) : location.y));
-    if (!(componentToMove instanceof Window) /*&& !(componentToMove instanceof JInternalFrame) */) {
-      SwingUtilities.convertPointFromScreen(p, componentToMove.getParent());
-    }
+    // recalc to others coord system, if not a freefloating window
+    if (!(componentToMove instanceof Window))
+      SwingUtilities.convertPointFromScreen(p, other);
     componentToMove.setBounds(p.x, p.y, width, height);
   }
 
