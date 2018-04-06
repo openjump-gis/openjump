@@ -79,6 +79,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.HTMLPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.AlphaSetting;
@@ -213,7 +214,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             frame.setTitle(LAYER_PROPERTIES + ": " + MULTIPLE_SOURCES);
         }
         frame.setIconifiable(true);
-        frame.setFrameIcon(IconLoader.icon("information_16x16.png"));
+        frame.setFrameIcon(GUIUtil.pad(IconLoader.icon("information_12x12.png"),1));
         Border mainComponentBorder = BorderFactory.createCompoundBorder(
                 BorderFactory.createEtchedBorder(),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5));
