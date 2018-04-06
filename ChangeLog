@@ -5,6 +5,10 @@
 
 * Changes.txt updated until here **********************************************
 
+2018-04-06 Giuseppe Aruta
+      * Enhanced version of Feature Schema Panel: added Copy/Paste/Save to 
+        file/Load from file schema actions to Schema toolbar
+
 2018-04-03 Giuseppe Aruta
       * Added Boolen and Long attributes to Paste Schema plugin
 
