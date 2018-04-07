@@ -5,7 +5,7 @@
 
 * Changes.txt updated until here **********************************************
 
-2018-04-07
+2018-04-07 mmichaud <m.michael.michaud@orange.fr>
   * WritableDataStoreDataSource can now have their own TransactionManager
 
 2018-04-06 Giuseppe Aruta
@@ -20,7 +20,7 @@
     output options
 
 2018-03-14 Giuseppe Aruta
-  * Smal enhancement on AdditionalResul Frame, JSplitPanel divider and
+  * Small enhancement on AdditionalResult Frame, JSplitPanel divider and
     added dxf export for plot (only on jFileChooser, not yer working)
   * Moved Statistics>Plot>(All) and Statistic>Classify attributes output
     plot into AdditionalResul Frame
@@ -32,10 +32,10 @@
     The following objects can be saved into the Additional Result frame:
       - Texts in Jlabel, JtextPane, JtextArea, HTMLPane: saved as .html file
       - JTabel objects: saved as .csv file
-      - graphics added to PlotPane: saved as .png file
-      -  Other object: saved to .png file
+      - Graphics added to PlotPane: saved as .png file
+      - Other object: saved to .png file
       - FeatureCollection into a FeatureCollectionPanel: saved to .jml/.shp
-      Additional Results framework has been adapted from Sextante.
+    Additional Results framework has been adapted from Sextante.
   * Added option to ProfileGraphPlugIn to use selected line as profile trace
     Graphics and table Outputs are saved  into Additional Result frame
 
