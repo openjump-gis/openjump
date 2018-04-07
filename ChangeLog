@@ -5,40 +5,45 @@
 
 * Changes.txt updated until here **********************************************
 
+2018-04-07
+  * WritableDataStoreDataSource can now have their own TransactionManager
+
 2018-04-06 Giuseppe Aruta
-      * Enhanced version of Feature Schema Panel: added Copy/Paste/Save to 
-        file/Load from file schema actions to Schema toolbar
+  * Enhanced version of Feature Schema Panel: added Copy/Paste/Save to
+    file/Load from file schema actions to Schema toolbar
 
 2018-04-03 Giuseppe Aruta
-      * Added Boolen and Long attributes to Paste Schema plugin
+  * Added Boolen and Long attributes to Paste Schema plugin
 
 2018-03-14 Giuseppe Aruta
-      * Raster>Profile. Added export profile to .dxf on Additional Frame 
-        output options
+  * Raster>Profile. Added export profile to .dxf on Additional Frame
+    output options
 
 2018-03-14 Giuseppe Aruta
-     * Smal enhancement on AdditionalResul Frame, JSplitPanel divider and
-       added dxf export for plot (only on jFileChooser, not yer working)
-     * Moved Statistics>Plot>(All) and Statistic>Classify attributes output
-       plot into AdditionalResul Frame 
+  * Smal enhancement on AdditionalResul Frame, JSplitPanel divider and
+    added dxf export for plot (only on jFileChooser, not yer working)
+  * Moved Statistics>Plot>(All) and Statistic>Classify attributes output
+    plot into AdditionalResul Frame
 
 2018-03-12 Giuseppe Aruta
-    * Activated  Additional Result framemork: outputs other than vector or 
-      raster are loaded as objects into a convenient frame where user can  
-      save/delete/rename these objects.
-      The following objects can be saved into the Additional Result frame:
+  * Activated  Additional Result framemork: outputs other than vector or
+    raster are loaded as objects into a convenient frame where user can
+    save/delete/rename these objects.
+    The following objects can be saved into the Additional Result frame:
       - Texts in Jlabel, JtextPane, JtextArea, HTMLPane: saved as .html file
       - JTabel objects: saved as .csv file
       - graphics added to PlotPane: saved as .png file
       -  Other object: saved to .png file
       - FeatureCollection into a FeatureCollectionPanel: saved to .jml/.shp
       Additional Results framework has been adapted from Sextante.
-     * Added option to ProfileGraphPlugIn to use selected line as profile trace
-       Graphics and table Outputs are saved  into Additional Result frame
+  * Added option to ProfileGraphPlugIn to use selected line as profile trace
+    Graphics and table Outputs are saved  into Additional Result frame
+
+* release 1.12 *****************************************************************
 
 2018-01-30 Giuseppe Aruta
-   * Upgraded Sextante building to version gen2018a to solve a bug on 
-     exporting raster data. Moved Toolboxframe as OJ internal frame
+  * Upgraded Sextante building to version gen2018a to solve a bug on
+    exporting raster data. Moved Toolboxframe as OJ internal frame
 
 2018-01-28 mmichaud <m.michael.michaud@orange.fr>
   * Update Cadplan VertexSymbol (finnish translation + java 1.7 compatibility)
