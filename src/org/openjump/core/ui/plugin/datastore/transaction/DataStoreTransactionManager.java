@@ -39,15 +39,24 @@ public class DataStoreTransactionManager {
 
     final String KEY = DataStoreTransactionManager.class.getName();
 
-    private static DataStoreTransactionManager TXMANAGER = new DataStoreTransactionManager();
-    private WeakHashMap<Layer,Task> registeredLayers = new WeakHashMap<Layer, Task>();
-    private WeakHashMap<Task,LayerListener> registeredListeners = new WeakHashMap<Task, LayerListener>();
+    private static DataStoreTransactionManager TXMANAGER;
+    private WeakHashMap<Layer,Task> registeredLayers = new WeakHashMap<>();
+    private WeakHashMap<Task,LayerListener> registeredListeners = new WeakHashMap<>();
+
+    /**
+     * Don't use this constructor. Use getTransactionManager instead.
+     * The constructor is made protected to be able to sublass it.
+     */
+    protected DataStoreTransactionManager() {}
 
     /**
      * Get the unique DataStoreTransactionManager.
      * @return JUMPWorkbench's DataStoreTransactionManager
      */
     public static DataStoreTransactionManager getTransactionManager() {
+        if (TXMANAGER == null) {
+          TXMANAGER = new DataStoreTransactionManager();
+        }
         return TXMANAGER;
     }
 
@@ -68,9 +77,9 @@ public class DataStoreTransactionManager {
         Logger.info("Register layer '" + layer.getName() + "' (" + task.getName() + ") in the DataStoreTransactionManager");
     }
 
-    private boolean containsLayerManager(Task task) {
-        return registeredLayers.containsValue(task);
-    }
+    //private boolean containsLayerManager(Task task) {
+    //    return registeredLayers.containsValue(task);
+    //}
 
     private LayerListener getLayerListener() {
         return new LayerAdapter() {
@@ -141,9 +150,9 @@ public class DataStoreTransactionManager {
                         if (((Layer) e.getLayerable()).getDataSourceQuery().getDataSource() instanceof WritableDataStoreDataSource) {
                             ((WritableDataStoreDataSource)((Layer) e.getLayerable()).getDataSourceQuery().getDataSource()).getUncommittedEvolutions().clear();
                         }
+                        registeredLayers.remove(e.getLayerable());
+                        Logger.info("Unregister layer " + e.getLayerable().getName() + " from the DataStoreTransactionManager");
                     }
-                    registeredLayers.remove(e.getLayerable());
-                    Logger.info("Unregister layer " + e.getLayerable().getName() + " from the DataStoreTransactionManager");
                 }
             }
         };
@@ -161,7 +170,7 @@ public class DataStoreTransactionManager {
     }
 
     public Collection<Layer> getLayers(Task task) {
-        Collection<Layer> layers = new ArrayList<Layer>();
+        Collection<Layer> layers = new ArrayList<>();
         for (Map.Entry<Layer,Task> entry : registeredLayers.entrySet()) {
             if (entry.getValue() == task) layers.add(entry.getKey());
         }
@@ -170,7 +179,7 @@ public class DataStoreTransactionManager {
 
     /**
      * Commit all edits performed on this layer since last commit.
-     * @param layer
+     * @param layer commit features from this layer
      */
     private boolean commit(Layer layer) throws Exception {
         DataSource source = layer.getDataSourceQuery().getDataSource();
@@ -195,13 +204,13 @@ public class DataStoreTransactionManager {
 
     /**
      * Update this layer from the datasource
-     * @param layer
+     * @param layer Layer to be updated
      */
     private int update(TaskFrame taskFrame, Layer layer) {
         DataSource source = layer.getDataSourceQuery().getDataSource();
         if (source instanceof WritableDataStoreDataSource) {
             WritableDataStoreDataSource writableSource = (WritableDataStoreDataSource)source;
-            int conflicts = 0;
+            int conflicts;
             try {
                 Logger.info("Update layer \"" + layer.getName() + "\"");
                 FeatureCollection fc = writableSource.getConnection().executeQuery(null, new DummyTaskMonitor());
@@ -324,7 +333,7 @@ public class DataStoreTransactionManager {
         String pk = dataSource.getProperties().get(WritableDataStoreDataSource.EXTERNAL_PK_KEY).toString();
         boolean manageConflicts = (Boolean)dataSource.getProperties().get(WritableDataStoreDataSource.MANAGE_CONFLICTS);
         int conflicts = 0;
-        Collection toBeDeleted = new ArrayList();
+        Collection<Feature> toBeDeleted = new ArrayList<>();
         for (Object feature : fc.getFeatures()) {
             // For each feature of fc, check if this feature is also in the table of current evolutions
             // If a feature just updated from the server is still in the evolution map, we may have

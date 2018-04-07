@@ -21,6 +21,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.FeatureInputStream;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
+import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager;
 
 /**
  * A {@link WritableDataStoreDataSource} for PostGIS.
@@ -42,8 +43,11 @@ public class PostGISDataStoreDataSource extends WritableDataStoreDataSource {
             String datasetName,
             String geometryAttributeName,
             String identifierAttributeName,
+            DataStoreTransactionManager txManager,
             WorkbenchContext context) {
-        super(connectionDescriptor, datasetName, geometryAttributeName, identifierAttributeName, context);
+        super(connectionDescriptor,
+                datasetName, geometryAttributeName, identifierAttributeName,
+                txManager, context);
     }
 
     /**

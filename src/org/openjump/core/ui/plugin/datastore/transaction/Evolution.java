@@ -123,7 +123,7 @@ public class Evolution {
     public String toString() {
         if (type == Type.CREATION) return "Creation: fid=" + newFeature.getID();
         if (type == Type.SUPPRESSION) return "Suppression: fid=" + oldFeature.getID();
-        else return "Change from: fid=" + oldFeature.getID() + "to: fid=" + newFeature.getID();
+        else return "Change from: fid=" + oldFeature.getID() + " to: fid=" + newFeature.getID();
     }
 
 }

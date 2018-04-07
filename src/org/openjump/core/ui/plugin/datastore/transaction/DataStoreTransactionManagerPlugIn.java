@@ -39,14 +39,14 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
     private static final String KEY = DataStoreTransactionManagerPlugIn.class.getName();
     private static final String INSTANCE_KEY = KEY + " - INSTANCE";
 
-    TransactionManagerPanel transactionManagerPanel;
-    WorkbenchContext context;
+    private TransactionManagerPanel transactionManagerPanel;
+    private WorkbenchContext context;
 
     public DataStoreTransactionManagerPlugIn() {
     }
 
 
-    public static final DataStoreTransactionManagerPlugIn instance(Blackboard blackboard) {
+    public static DataStoreTransactionManagerPlugIn instance(Blackboard blackboard) {
         if (blackboard.get(INSTANCE_KEY) == null) {
             blackboard.put(INSTANCE_KEY, new DataStoreTransactionManagerPlugIn());
         }
@@ -72,7 +72,7 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
                 java.util.List<Layer> layers = task.getLayerManager().getLayers();
                 for (Layer layer : layers) {
                     if (layer.getDataSourceQuery().getDataSource() instanceof WritableDataStoreDataSource) {
-                        DataStoreTransactionManager.getTransactionManager().registerLayer(layer, task);
+                        getTransactionManager().registerLayer(layer, task);
                     }
                 }
                 addListenerToTaskFrame(task);
@@ -83,7 +83,7 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
                 java.util.List<Layer> layers = taskEvent.getTask().getLayerManager().getLayers();
                 for (Layer layer : layers) {
                     if (layer.getDataSourceQuery().getDataSource() instanceof WritableDataStoreDataSource) {
-                        DataStoreTransactionManager.getTransactionManager().registerLayer(layer, task);
+                        getTransactionManager().registerLayer(layer, task);
                     }
                 }
                 addListenerToTaskFrame(task);
@@ -91,9 +91,13 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
         });
     }
 
+    protected DataStoreTransactionManager getTransactionManager() {
+      return DataStoreTransactionManager.getTransactionManager();
+    }
+
     protected void initializeToolbox(final ToolboxDialog toolbox) {
-        DataStoreTransactionManager txManager = DataStoreTransactionManager.getTransactionManager();
-        transactionManagerPanel = new TransactionManagerPanel(txManager,
+        //DataStoreTransactionManager txManager = DataStoreTransactionManager.getTransactionManager();
+        transactionManagerPanel = new TransactionManagerPanel(getTransactionManager(),
                 toolbox.getContext().getErrorHandler(), toolbox.getContext());
         //transactionManagerPanel.init(toolbox.getContext());
         transactionManagerPanel.updateListener(toolbox.getContext().getTask());
@@ -128,7 +132,9 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
 
     public boolean execute(PlugInContext context) throws Exception {
         boolean b = super.execute(context);
-        if (transactionManagerPanel != null) transactionManagerPanel.updateTextArea(context.getTask());
+        if (transactionManagerPanel != null) {
+          transactionManagerPanel.updateTextArea(context.getTask());
+        }
         return b;
     }
 

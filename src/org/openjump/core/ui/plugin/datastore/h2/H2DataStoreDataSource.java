@@ -16,6 +16,7 @@ import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
+import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,8 +41,11 @@ public class H2DataStoreDataSource extends WritableDataStoreDataSource {
             String datasetName,
             String geometryAttributeName,
             String identifierAttributeName,
+            DataStoreTransactionManager txManager,
             WorkbenchContext context) {
-        super(connectionDescriptor, datasetName, geometryAttributeName, identifierAttributeName, context);
+        super(connectionDescriptor,
+                datasetName, geometryAttributeName, identifierAttributeName,
+                txManager, context);
     }
 
     /**

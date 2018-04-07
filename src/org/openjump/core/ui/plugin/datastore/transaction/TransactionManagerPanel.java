@@ -10,7 +10,6 @@ import java.util.Collection;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -42,13 +41,11 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
 
     private static final String KEY = TransactionManagerPanel.class.getName();
 
-
-
-    final DataStoreTransactionManager transactionManager;
-    final ErrorHandler errorHandler;
-    final JTextArea textArea;
-    LayerListener layerListener;
-    WorkbenchContext context;
+    private final DataStoreTransactionManager transactionManager;
+    private final ErrorHandler errorHandler;
+    private final JTextArea textArea;
+    private LayerListener layerListener;
+    private WorkbenchContext context;
 
     public TransactionManagerPanel(DataStoreTransactionManager transactionManager,
                                    ErrorHandler errorHandler, WorkbenchContext context) {
@@ -58,7 +55,7 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
         init(context);
     }
 
-    private void init(WorkbenchContext context) {
+    protected void init(WorkbenchContext context) {
         this.context = context;
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         textArea.setFont(textArea.getFont().deriveFont(11f));

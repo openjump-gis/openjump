@@ -7,6 +7,7 @@ import javax.swing.Icon;
 
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 import org.openjump.core.ui.plugin.datastore.SaveToDataStoreWizard;
+import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager;
 import org.openjump.core.ui.plugin.file.save.SaveToFileWizard;
 import org.openjump.core.ui.swing.wizard.WizardGroup;
 import org.openjump.core.ui.swing.wizard.WizardGroupDialog;
@@ -66,7 +67,9 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
     addWizard(context.getWorkbenchContext(), new SaveToFileWizard(context));
     // datastores are experimental for now
     if (!JUMPVersion.getRelease().equalsIgnoreCase("release"))
-      addWizard(context.getWorkbenchContext(), new SaveToDataStoreWizard(context));
+      addWizard(context.getWorkbenchContext(),
+              new SaveToDataStoreWizard(context,
+                      DataStoreTransactionManager.getTransactionManager()));
   }
 
   public boolean execute(PlugInContext pluginContext) throws Exception {

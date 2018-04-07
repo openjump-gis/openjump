@@ -12,6 +12,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
+import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 
 
@@ -23,13 +24,16 @@ public class SaveToDataStoreWizard extends AbstractWizardGroup {
   /** The key for the wizard. */
   public static final String KEY = SaveToDataStoreWizard.class.getName();
 
+  private DataStoreTransactionManager txManager;
+
   /** The plugin context. */
   private PlugInContext context;
 
   //private File file;
 
-  public SaveToDataStoreWizard(final PlugInContext context) {
+  public SaveToDataStoreWizard(final PlugInContext context, DataStoreTransactionManager txManager) {
     super(I18N.get(KEY), IconLoaderFamFam.icon("database_save.png"), SaveToDataStorePanel.KEY);
+    this.txManager = txManager;
     this.context = context;
   }
 
@@ -64,6 +68,7 @@ public class SaveToDataStoreWizard extends AbstractWizardGroup {
             geometryAttributeName,
             WritableDataStoreDataSource.DEFAULT_PK_NAME,
             false,
+            txManager,
             context.getWorkbenchContext());
 
     writableDS.getProperties().put(WritableDataStoreDataSource.CONNECTION_DESCRIPTOR_KEY,

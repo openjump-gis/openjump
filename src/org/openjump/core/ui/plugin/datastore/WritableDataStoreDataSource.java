@@ -67,6 +67,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     // Map is indexed by FID in order to merge successive evolutions of a feature efficiently
     final private LinkedHashMap<Integer,Evolution> evolutions = new LinkedHashMap<>();
 
+    private DataStoreTransactionManager txManager;
+
     // See setTableAlreadyCreated()
     private boolean tableAlreadyCreated = true;
 
@@ -92,6 +94,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                                        String datasetName,
                                        String geometryAttributeName,
                                        String externalPKName,
+                                       DataStoreTransactionManager txManager,
                                        WorkbenchContext context) {
         setProperties(CollectionUtil.createMap(new Object[]{
                 CONNECTION_DESCRIPTOR_KEY, connectionDescriptor,
@@ -109,6 +112,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         //getProperties().put(CREATE_TABLE, false);
         getProperties().put(CREATE_PK, false);
         getProperties().put(SRID_KEY, 0);
+        this.txManager = txManager;
         this.context = context;
     }
 
@@ -580,8 +584,9 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 selectedLayers[0].setFeatureCollection(conn.executeQuery(null, monitor));
                 // We connect to a new table : the transaction manager must listen to it
                 if (!tableAlreadyCreated) {
-                    DataStoreTransactionManager.getTransactionManager().registerLayer(selectedLayers[0],
-                        JUMPWorkbench.getInstance().getContext().getTask());
+                    //DataStoreTransactionManager.getTransactionManager().registerLayer(selectedLayers[0],
+                    txManager.registerLayer(selectedLayers[0],
+                            JUMPWorkbench.getInstance().getContext().getTask());
                     tableAlreadyCreated = true;
                 }
             } finally {

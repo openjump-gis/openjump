@@ -3,7 +3,7 @@ package org.openjump.core.ui.plugin.datastore;
 import java.awt.Color;
 import java.util.Collection;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager;
@@ -38,13 +38,32 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
 
     private AddWritableDataStoreLayerWizardPanel dataStoreWizardPanel;
 
+    private DataStoreTransactionManager txManager;
+
     private WorkbenchContext workbenchContext;
 
     private ChooseProjectPanel chooseProjectPanel;
 
-    public AddWritableDataStoreLayerWizard(WorkbenchContext workbenchContext) {
+    public AddWritableDataStoreLayerWizard(
+            String name,
+            ImageIcon icon,
+            WorkbenchContext workbenchContext,
+            DataStoreTransactionManager txManager) {
+        super(name, icon,
+                AddWritableDataStoreLayerWizardPanel.class.getName());
+        this.txManager = txManager;
+        this.workbenchContext = workbenchContext;
+        dataStoreWizardPanel = new AddWritableDataStoreLayerWizardPanel(workbenchContext);
+        addPanel(dataStoreWizardPanel);
+        chooseProjectPanel = new ChooseProjectPanel(workbenchContext, dataStoreWizardPanel.getID());
+        addPanel(chooseProjectPanel);
+    }
+
+    public AddWritableDataStoreLayerWizard(WorkbenchContext workbenchContext,
+            DataStoreTransactionManager txManager) {
         super(I18N.get(KEY), IconLoader.icon("database_writable_add.png"),
                 AddWritableDataStoreLayerWizardPanel.class.getName());
+        this.txManager = txManager;
         this.workbenchContext = workbenchContext;
         dataStoreWizardPanel = new AddWritableDataStoreLayerWizardPanel(workbenchContext);
         addPanel(dataStoreWizardPanel);
@@ -118,7 +137,8 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
         WritableDataStoreDataSource ds =
                 DataStoreDataSourceFactory.createWritableDataStoreDataSource(
                         connectionDescriptor, datasetName, geometryAttributeName,
-                        identifierAttributeName, true, workbenchContext);
+                        identifierAttributeName, true,
+                        txManager, workbenchContext);
         ds.setMaxFeature(limit);
         ds.setWhereClause(whereClause);
         ds.setLimitedToView(limitedToView);
@@ -157,7 +177,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
             layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
         }
         finally {layerManager.setFiringEvents(true);}
-        DataStoreTransactionManager.getTransactionManager().registerLayer(layer, workbenchContext.getTask());
+        txManager.registerLayer(layer, workbenchContext.getTask());
         return layer;
     }
 
