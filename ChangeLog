@@ -8,21 +8,21 @@
 2018-04-07 Giuseppe Aruta
 
   * Updated plugins
-    1) JumpChart plugin ver.  1.00. Correct a bug(*)
+    1) JumpChart plugin ver. 1.00. Correct a bug(*)
     added Italian language file. Homologate frame button bar to OpenJUMP 
     dialog style
     2) VertexSymbols plugin ver. 0.19. Correct a bug(*).
     Homologate frame button bar to OpenJUMP dialog style
-    3) Sextante plugin ver. apr_2018. Homologate Sextante result outputs 
+    3) Sextante plugin ver. apr_2018. Moved Sextante result outputs 
     (like text, table, image) to OpenJUMP Additional result frame
-    4) CAD Toolbox plugin ver. 0.97: some enhencements on toolbox frame. 
-    Line decoration symbols are drawn at an equispace distance along the 
-    linestring instead to one per segments of linestring
+    4) CAD Toolbox plugin ver. 0.97: some enhancements on toolbox frame. 
+    Line decoration symbols are drawn equispaced along the linestring 
+    instead to one per segment of linestring
     5) JumpFillPattern plugin ver. 0.3: moved JumpFillPattern About panel to 
     Help menu and added to it some info on how create and use patterns
-    (*)<when the dialog was closed using "x" upper right button the charts or
-       or the symbols were calculate and drwan anyhow>
-       
+    (*) when the dialog was closed using "x" upper right button the plugin
+        was not cancelled but executed anyhow
+
 2018-04-07 mmichaud <m.michael.michaud@orange.fr>
   * WritableDataStoreDataSource can now have their own TransactionManager
 
@@ -30,8 +30,17 @@
   * Enhanced version of Feature Schema Panel: added Copy/Paste/Save to
     file/Load from file schema actions to Schema toolbar
 
+2018-04-06 ede
+  * beautify layer info internal frame with a smaller 14x14 icon
+  * keep frame icons when detaching detachable frames
+  * bugfix: positioning internal frames resulted in an NPE on java9
+
+2018-04-05 ede
+  * bugfix: place internal frames in the top left corner of desktop pane again
+  * bugfix: handling date/time fields of JML datasets was broken
+
 2018-04-03 Giuseppe Aruta
-  * Added Boolen and Long attributes to Paste Schema plugin
+  * Added Boolean and Long attributes to Paste Schema plugin
 
 2018-03-14 Giuseppe Aruta
   * Raster>Profile. Added export profile to .dxf on Additional Frame
