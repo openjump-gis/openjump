@@ -255,7 +255,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
         autoIncrement = dialog.getBoolean(AUTOINC_CHECK_BOX);
         assignValue = dialog.getBoolean(ASSIGN_VALUE_CHECK_BOX);
 
-        boolean fromAttributeValid = schema.getAttributeCount() > 1;
+        //boolean fromAttributeValid = schema.getAttributeCount() > 1;
         
         //dialog.setFieldEnabled(AUTOINC_CHECK_BOX, !assignFromSource && !assignValue);
         dialog.setFieldEnabled(AUTOINC_PATTERN_BOX, autoIncrement);
@@ -302,14 +302,13 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     
     private void initEnableChecks(final MultiInputDialog dialog) {
         dialog.addEnableChecks(SOURCE_COMBO_BOX,
-            Arrays.asList(new EnableCheck[] {new EnableCheck() {
+            Collections.singletonList(new EnableCheck() {
                 public String check(JComponent component) {
                     return assignFromSource && 
                            dialog.getText(TARGET_ATTRIBUTE_COMBO_BOX)
                                  .equals(dialog.getText(SOURCE_COMBO_BOX)) ? 
                                  SOURCE_DIFF_DESTINATION : null;
                 }
-            }
         }));
     }
 
