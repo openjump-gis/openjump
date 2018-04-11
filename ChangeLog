@@ -5,6 +5,9 @@
 
 * Changes.txt updated until here **********************************************
 
+2018-04-12 mmichaud <m.michael.michaud@orange.fr>
+  * Fix #473 : shapefile driver no more limited to 4G files
+
 2018-04-07 Giuseppe Aruta
 
   * Updated plugins

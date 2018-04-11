@@ -385,7 +385,7 @@ public class Shapefile  {
 
             int recordNumber = 0;
             while (true) {
-                int offset = shx.readIntBE();
+                long offset = shx.readIntBE() & 0x00000000ffffffffL;
                 int length = shx.readIntBE();
                 recordNumber++;
                 try{
