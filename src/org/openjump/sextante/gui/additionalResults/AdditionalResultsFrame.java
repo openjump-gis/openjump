@@ -138,7 +138,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-
+        setPreferredSize(new Dimension(900, 700));
         setSize(900, 700);
         setLayer(JLayeredPane.MODAL_LAYER);
     }
