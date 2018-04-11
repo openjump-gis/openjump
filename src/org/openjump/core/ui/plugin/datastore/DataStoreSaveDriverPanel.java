@@ -338,6 +338,9 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
         Layer[] layers = wbContext.getLayerableNamePanel().getSelectedLayers();
         if (layers.length == 1) {
             String layerName = layers[0].getName();
+            if (normalizedTableNameCheckBox.isSelected()) {
+                layerName = SQLUtil.normalize(layerName);
+            }
             addItemToTableList(tableList, layerName);
             tableComboBox.setSelectedItem(layerName);
         }
