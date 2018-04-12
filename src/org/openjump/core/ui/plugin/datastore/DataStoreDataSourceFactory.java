@@ -21,19 +21,21 @@ public class DataStoreDataSourceFactory {
             String geometryAttributeName,
             String externalPKName,
             boolean tableAlreadyCreated,
-            DataStoreTransactionManager txManager,
+            String txManagerClass,
             WorkbenchContext context)  throws Exception {
         WritableDataStoreDataSource source;
         String driverName = connectionDescriptor.getDataStoreDriverClassName();
         if (driverName.equals(com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver.class.getName())) {
             source = new PostGISDataStoreDataSource(
                     connectionDescriptor, datasetName, geometryAttributeName, externalPKName,
-                    txManager, context);
+                    txManagerClass,
+                    context);
             source.setTableAlreadyCreated(tableAlreadyCreated);
         } else if (driverName.equals(com.vividsolutions.jump.datastore.h2.H2DataStoreDriver.class.getName())) {
             source = new H2DataStoreDataSource(
                     connectionDescriptor, datasetName, geometryAttributeName, externalPKName,
-                    txManager, context);
+                    txManagerClass,
+                    context);
             source.setTableAlreadyCreated(tableAlreadyCreated);
         } else {
             throw new Exception(I18N.getMessage(KEY + ".no-writable-datastore-datasource", driverName));

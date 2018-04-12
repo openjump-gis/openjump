@@ -138,7 +138,8 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
                 DataStoreDataSourceFactory.createWritableDataStoreDataSource(
                         connectionDescriptor, datasetName, geometryAttributeName,
                         identifierAttributeName, true,
-                        txManager, workbenchContext);
+                        "org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager",
+                        workbenchContext);
         ds.setMaxFeature(limit);
         ds.setWhereClause(whereClause);
         ds.setLimitedToView(limitedToView);

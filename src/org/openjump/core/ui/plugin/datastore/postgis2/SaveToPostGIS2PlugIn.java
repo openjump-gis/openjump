@@ -1,6 +1,8 @@
 package org.openjump.core.ui.plugin.datastore.postgis2;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooserManager;
+import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
@@ -21,7 +23,6 @@ public class SaveToPostGIS2PlugIn implements PlugIn {
      */
     public void initialize(PlugInContext context) {
         WritableDataStoreDataSource dataSource = new PostGISDataStoreDataSource();
-
         saveChooser = new PostGISSaveDataSourceQueryChooser(dataSource, context);
 
         DataSourceQueryChooserManager.get(

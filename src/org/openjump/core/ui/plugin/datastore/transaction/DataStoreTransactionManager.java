@@ -1,11 +1,6 @@
 package org.openjump.core.ui.plugin.datastore.transaction;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 
@@ -39,7 +34,9 @@ public class DataStoreTransactionManager {
 
     final String KEY = DataStoreTransactionManager.class.getName();
 
-    private static DataStoreTransactionManager TXMANAGER;
+    private final static Map<String, DataStoreTransactionManager> transactionManagers = new HashMap();
+
+    //private static DataStoreTransactionManager TXMANAGER;
     private WeakHashMap<Layer,Task> registeredLayers = new WeakHashMap<>();
     private WeakHashMap<Task,LayerListener> registeredListeners = new WeakHashMap<>();
 
@@ -49,16 +46,37 @@ public class DataStoreTransactionManager {
      */
     protected DataStoreTransactionManager() {}
 
+    public static <T extends DataStoreTransactionManager> T getTxInstance(String clazz) {
+        try {
+            synchronized( transactionManagers ) {
+                DataStoreTransactionManager tx = transactionManagers.get(clazz);
+                if(null == tx) {
+                    tx = (DataStoreTransactionManager)Class.forName(clazz).newInstance();
+                    transactionManagers.put(clazz, tx);
+                }
+                @SuppressWarnings("unchecked")
+                T tmp = (T) tx;
+                return tmp;
+            }
+
+        } catch (Exception e) {
+            Logger.info( "Unable to create DataStoreTransactionManager for " + clazz );
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Get the unique DataStoreTransactionManager.
      * @return JUMPWorkbench's DataStoreTransactionManager
      */
-    public static DataStoreTransactionManager getTransactionManager() {
-        if (TXMANAGER == null) {
-          TXMANAGER = new DataStoreTransactionManager();
-        }
-        return TXMANAGER;
-    }
+    //public static DataStoreTransactionManager getTransactionManager() {
+    //    if (TXMANAGER == null) {
+    //      TXMANAGER = new DataStoreTransactionManager();
+    //    }
+    //    return TXMANAGER;
+    //}
+
+
 
     /**
      * Register a new Layer in the DataStoreTransactionManager.

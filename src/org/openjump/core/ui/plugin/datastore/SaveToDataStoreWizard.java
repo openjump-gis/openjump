@@ -68,7 +68,7 @@ public class SaveToDataStoreWizard extends AbstractWizardGroup {
             geometryAttributeName,
             WritableDataStoreDataSource.DEFAULT_PK_NAME,
             false,
-            txManager,
+            "org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager",
             context.getWorkbenchContext());
 
     writableDS.getProperties().put(WritableDataStoreDataSource.CONNECTION_DESCRIPTOR_KEY,

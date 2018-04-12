@@ -92,7 +92,8 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
     }
 
     protected DataStoreTransactionManager getTransactionManager() {
-      return DataStoreTransactionManager.getTransactionManager();
+      //return DataStoreTransactionManager.getTransactionManager();
+        return DataStoreTransactionManager.getTxInstance("org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager");
     }
 
     protected void initializeToolbox(final ToolboxDialog toolbox) {

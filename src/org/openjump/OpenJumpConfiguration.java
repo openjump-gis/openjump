@@ -148,7 +148,8 @@ public class OpenJumpConfiguration {
     // [mmichaud 2013-11-08] add new AddWritableDataStoreLayerWizard
       AddWritableDataStoreLayerWizard addWritableDataStoreLayerWizard =
               new AddWritableDataStoreLayerWizard(
-              workbenchContext, DataStoreTransactionManager.getTransactionManager());
+              workbenchContext, DataStoreTransactionManager.getTxInstance(
+                      "org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager"));
       OpenWizardPlugIn.addWizard(workbenchContext, addWritableDataStoreLayerWizard);
     
     // [mmichaud 2012-09-01] changed how RasterImageLayerRendererFactory is initialized to fix bug 3526653

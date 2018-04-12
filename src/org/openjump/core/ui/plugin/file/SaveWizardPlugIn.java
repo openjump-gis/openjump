@@ -69,7 +69,7 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
     if (!JUMPVersion.getRelease().equalsIgnoreCase("release"))
       addWizard(context.getWorkbenchContext(),
               new SaveToDataStoreWizard(context,
-                      DataStoreTransactionManager.getTransactionManager()));
+                      DataStoreTransactionManager.getTxInstance("org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager")));
   }
 
   public boolean execute(PlugInContext pluginContext) throws Exception {

@@ -60,14 +60,13 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     public static final String CONVERT_TO_MULTIGEOMETRY_KEY = "Convert to multigeometry";
     public static final String CREATE_PK                    = "Create PK";
     public static final String NORMALIZED_COLUMN_NAMES      = "Normalized Column Names";
+    public static final String TX_MANAGER_KEY               = "TxManager";
 
     public static final String DEFAULT_PK_NAME   = "gid";
 
     // Ordered Map of evolutions
     // Map is indexed by FID in order to merge successive evolutions of a feature efficiently
-    final private LinkedHashMap<Integer,Evolution> evolutions = new LinkedHashMap<>();
-
-    private DataStoreTransactionManager txManager;
+    final protected LinkedHashMap<Integer,Evolution> evolutions = new LinkedHashMap<>();
 
     // See setTableAlreadyCreated()
     private boolean tableAlreadyCreated = true;
@@ -78,6 +77,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     protected String tableName;
     // primary key name
     protected String primaryKeyName = DEFAULT_PK_NAME;
+
+    private String txManagerClass;
 
     public WritableDataStoreDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]
@@ -94,13 +95,14 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                                        String datasetName,
                                        String geometryAttributeName,
                                        String externalPKName,
-                                       DataStoreTransactionManager txManager,
+                                       String txManager,
                                        WorkbenchContext context) {
         setProperties(CollectionUtil.createMap(new Object[]{
                 CONNECTION_DESCRIPTOR_KEY, connectionDescriptor,
                 DATASET_NAME_KEY, datasetName,
                 GEOMETRY_ATTRIBUTE_NAME_KEY, geometryAttributeName,
                 EXTERNAL_PK_KEY, externalPKName,
+                TX_MANAGER_KEY, txManager
 
         }));
         // default options
@@ -112,7 +114,6 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         //getProperties().put(CREATE_TABLE, false);
         getProperties().put(CREATE_PK, false);
         getProperties().put(SRID_KEY, 0);
-        this.txManager = txManager;
         this.context = context;
     }
 
@@ -585,6 +586,9 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 // We connect to a new table : the transaction manager must listen to it
                 if (!tableAlreadyCreated) {
                     //DataStoreTransactionManager.getTransactionManager().registerLayer(selectedLayers[0],
+                    DataStoreTransactionManager txManager =
+                            DataStoreTransactionManager.getTxInstance(
+                                    "org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager");
                     txManager.registerLayer(selectedLayers[0],
                             JUMPWorkbench.getInstance().getContext().getTask());
                     tableAlreadyCreated = true;
@@ -599,7 +603,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * Return 3 if coll contains at least one 3d geometry, 2 if coll contains
      * only 2d geometries and defaultDim if coll is empty.
      */
-    private static int getGeometryDimension(FeatureCollection coll, int defaultDim) {
+    protected static int getGeometryDimension(FeatureCollection coll, int defaultDim) {
         if (coll.size() > 0) {
             // will explore up to 1000 features regularly distributed in the dataset
             // if none of these feature has dim = 3, return 2, else return 3
@@ -635,7 +639,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      *   type (multi) for geometries of same dimension (single or multi)</li>
      * </ul>
      */
-    private static Class getGeometryType(FeatureCollection coll, boolean narrow, boolean multi) {
+    protected static Class getGeometryType(FeatureCollection coll, boolean narrow, boolean multi) {
         if (!narrow && !multi) return Geometry.class;
         Class[] classes = new Class[]{
                 Point.class,

@@ -41,11 +41,14 @@ public class H2DataStoreDataSource extends WritableDataStoreDataSource {
             String datasetName,
             String geometryAttributeName,
             String identifierAttributeName,
-            DataStoreTransactionManager txManager,
+            String txManagerClass,
             WorkbenchContext context) {
         super(connectionDescriptor,
-                datasetName, geometryAttributeName, identifierAttributeName,
-                txManager, context);
+                datasetName,
+                geometryAttributeName,
+                identifierAttributeName,
+                txManagerClass,
+                context);
     }
 
     /**
