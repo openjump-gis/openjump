@@ -107,9 +107,11 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanelV
 
   public void setState(OpenFileWizardState state) {
     this.state = state;
-    for (FileFilter filter : getChoosableFileFilters()) {
-      removeChoosableFileFilter(filter);
-    }
+    // [2018.04 ede] deactivated as it makes no sense to delete & recreate file
+    // filters on every display of the same file chooser
+    // for (FileFilter filter : getChoosableFileFilters()) {
+    // removeChoosableFileFilter(filter);
+    // }
   }
 
   public WizardDialog getDialog() {
@@ -124,7 +126,6 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanelV
     // make sure we only initialize once
     if (initialized)
       return;
-    initialized = true;
 
     blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
     Registry registry = workbenchContext.getRegistry();
@@ -211,6 +212,8 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanelV
     addPropertyChangeListener(changeListener);
 
     addActionListener(new InvokeMethodActionListener(dialog, "next"));
+
+    initialized = true;
   }
 
   /**
