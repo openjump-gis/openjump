@@ -165,6 +165,8 @@ public class ProfileUtils {
             y2 = coords[i + 1].y;
             processSegment(x, y, x2, y2);
         }
+        // Giuseppe Aruta (2018-4-17) Missing last point of the profile
+        addPoint(coords[coords.length - 1].x, coords[coords.length - 1].y);
     }
 
     public static void addPoint(double x, double y)
