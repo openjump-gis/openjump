@@ -87,12 +87,12 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
                 ((String)datasetComboBox.getSelectedItem()).trim() : null;
     }
 
-    GeometryColumn getGeometryColumn() {
+    public GeometryColumn getGeometryColumn() {
         return geometryAttributeComboBox.getSelectedItem() != null ?
                 ((GeometryColumn)geometryAttributeComboBox.getSelectedItem()) : null;
     }
 
-    private PrimaryKeyColumn getIdentifierColumn() throws Exception {
+    public PrimaryKeyColumn getIdentifierColumn() throws Exception {
         Object selectedItem = identifierAttributeComboBox.getSelectedItem();
         if (selectedItem != null) {
             if (selectedItem instanceof PrimaryKeyColumn) {
@@ -105,12 +105,12 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         }
     }
 
-    String getGeometryAttributeName() {
+    public String getGeometryAttributeName() {
         return geometryAttributeComboBox.getSelectedItem() != null ?
                 getGeometryColumn().getName().trim() : null;
     }
 
-    String getIdentifierAttributeName() throws Exception {
+    public String getIdentifierAttributeName() throws Exception {
         return identifierAttributeComboBox.getSelectedItem() != null ?
                 getIdentifierColumn().getName().trim() : null;
     }
@@ -118,19 +118,19 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
     /**
      * @return Integer.MAX_VALUE if the user has left the Max Features text field blank.
      */
-    Integer getMaxFeatures() {
+    public Integer getMaxFeatures() {
         if (maxFeaturesTextField.getText() == null) return Integer.MAX_VALUE;
         if (maxFeaturesTextField.getText().trim().length() == 0) return Integer.MAX_VALUE;
         if (maxFeaturesTextField.getText().trim().equals("-")) return Integer.MAX_VALUE;
         return new Integer(maxFeaturesTextField.getText().trim());
     }
 
-    String getWhereClause() {
+    public String getWhereClause() {
         return getWhereClauseProper().toLowerCase().startsWith("where") ?
                 getWhereClauseProper().substring("where".length()).trim() : getWhereClauseProper();
     }
 
-    String getWhereClauseProper() {
+    public String getWhereClauseProper() {
         return whereTextArea.getText().trim();
     }
 
@@ -142,7 +142,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
     //    getCachingCheckBox().setSelected( caching );
     //}
 
-    boolean isLimitedToView() {
+    public boolean isLimitedToView() {
         return getLimitedToViewCheckBox().isSelected();
     }
 
@@ -150,7 +150,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         getLimitedToViewCheckBox().setSelected( limitedToView );
     }
 
-    boolean isManageConfictsActive() {
+    public boolean isManageConfictsActive() {
         return getManageConflictsCheckBox().isSelected();
     }
 

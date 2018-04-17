@@ -38,7 +38,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
 
     private AddWritableDataStoreLayerWizardPanel dataStoreWizardPanel;
 
-    private DataStoreTransactionManager txManager;
+    private String txManagerName;
 
     private WorkbenchContext workbenchContext;
 
@@ -48,10 +48,10 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
             String name,
             ImageIcon icon,
             WorkbenchContext workbenchContext,
-            DataStoreTransactionManager txManager) {
+            String txManagerName) {
         super(name, icon,
                 AddWritableDataStoreLayerWizardPanel.class.getName());
-        this.txManager = txManager;
+        this.txManagerName = txManagerName;
         this.workbenchContext = workbenchContext;
         dataStoreWizardPanel = new AddWritableDataStoreLayerWizardPanel(workbenchContext);
         addPanel(dataStoreWizardPanel);
@@ -60,10 +60,10 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
     }
 
     public AddWritableDataStoreLayerWizard(WorkbenchContext workbenchContext,
-            DataStoreTransactionManager txManager) {
+            String txManagerName) {
         super(I18N.get(KEY), IconLoader.icon("database_writable_add.png"),
                 AddWritableDataStoreLayerWizardPanel.class.getName());
-        this.txManager = txManager;
+        this.txManagerName = txManagerName;
         this.workbenchContext = workbenchContext;
         dataStoreWizardPanel = new AddWritableDataStoreLayerWizardPanel(workbenchContext);
         addPanel(dataStoreWizardPanel);
@@ -115,7 +115,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
         }
     }
 
-    private Layer createLayer(final AddWritableDataStoreLayerPanel panel,
+    protected Layer createLayer(final AddWritableDataStoreLayerPanel panel,
                               TaskMonitor monitor) throws Exception {
 
         String datasetName = panel.getDatasetName();
@@ -138,7 +138,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
                 DataStoreDataSourceFactory.createWritableDataStoreDataSource(
                         connectionDescriptor, datasetName, geometryAttributeName,
                         identifierAttributeName, true,
-                        "org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager",
+                        txManagerName,
                         workbenchContext);
         ds.setMaxFeature(limit);
         ds.setWhereClause(whereClause);
@@ -177,7 +177,11 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
 
             layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
         }
-        finally {layerManager.setFiringEvents(true);}
+        finally {
+            layerManager.setFiringEvents(true);
+        }
+        DataStoreTransactionManager txManager =
+                DataStoreTransactionManager.getTxInstance(txManagerName);
         txManager.registerLayer(layer, workbenchContext.getTask());
         return layer;
     }
