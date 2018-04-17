@@ -107,7 +107,7 @@ public class ProfileUtils {
 
             AdditionalResults.addAdditionalResult(
                     PLOT + "-" + dateFormat.format(date) + " " + PROFILE_INFO,
-                    getStatisticPanel(rLayer, line));
+                    getStatisticPanel(rLayer));
             // AdditionalResults.addAdditionalResult(namePlot + "-"
             // + "Collection of data", fcpan);
             AdditionalResults.addAdditionalResultAndShow(PLOT + "-"
@@ -221,12 +221,18 @@ public class ProfileUtils {
         resultFC.add(fpoint);
     }
 
-    public static HTMLPanel getStatisticPanel(RasterImageLayer rLayer,
-            LineString line) {
+    // Giuseppe Aruta (2018-4-17) Terrain distance from FeatureCollection rather
+    // then from Geometry
+    public static HTMLPanel getStatisticPanel(RasterImageLayer rLayer) {
         final HTMLPanel outpanel = new HTMLPanel();
         outpanel.getRecordPanel().removeAll();
-        final Coordinate end = line.getEndPoint().getCoordinate();
-        final Coordinate start = line.getStartPoint().getCoordinate();
+        final Feature first = resultFC.getFeatures().get(0);
+        final Feature last = resultFC.getFeatures().get(resultFC.size() - 1);
+        final double xmin = (double) first.getAttribute("X");
+        final double ymin = (double) first.getAttribute("Y");
+        final double xmax = (double) last.getAttribute("X");
+        final double ymax = (double) last.getAttribute("Y");
+
         max = AttributeOp.evaluateAttributes(AttributeOp.MAX,
                 resultFC.getFeatures(), "Z");
         min = AttributeOp.evaluateAttributes(AttributeOp.MIN,
@@ -248,11 +254,12 @@ public class ProfileUtils {
         final DecimalFormat df = (DecimalFormat) NumberFormat
                 .getNumberInstance(locale);
         df.applyPattern(pattern);
-        slope = (Math.atan((max - min) / line.getLength()) * 100);
+        slope = (Math.atan((max - min) / width) * 100);
         cellsize = (rLayer.getWholeImageEnvelope().getMaxX() - rLayer
                 .getWholeImageEnvelope().getMinX())
                 / rLayer.getOrigImageWidth();
-        profLenght = new Double(line.getLength());
+        profLenght = AttributeOp.evaluateAttributes(AttributeOp.MAX,
+                resultFC.getFeatures(), "TerrainDist");
 
         String htmlString = "<HTML><BODY>";
         htmlString += "<b><font face=\"" + darkLabelFont + "\">" + LAYER_NAME
@@ -266,11 +273,11 @@ public class ProfileUtils {
         htmlString += "<b><font face=\"" + darkLabelFont + "\">" + MEAN_SLOPE
                 + ": </b>" + df.format(slope) + "%<br>";
         htmlString += "<b><font face=\"" + darkLabelFont + "\">"
-                + STARTING_POINT + ": </b>" + df.format(start.x) + " - "
-                + df.format(start.y) + "<br>";
+                + STARTING_POINT + ": </b>" + df.format(xmin) + " - "
+                + df.format(ymin) + "<br>";
         htmlString += "<b><font face=\"" + darkLabelFont + "\">" + ENDING_POINT
-                + ": </b>" + df.format(end.x) + " - " + df.format(end.y)
-                + "<br>";
+                + ": </b>" + df.format(xmax) + " - " + df.format(ymax) + "<br>";
+
         htmlString += "<b><font face=\"" + darkLabelFont + "\">" + MIN
                 + ": </b>" + new Double(min) + "<br>";
         htmlString += "<b><font face=\"" + darkLabelFont + "\">" + MAX
