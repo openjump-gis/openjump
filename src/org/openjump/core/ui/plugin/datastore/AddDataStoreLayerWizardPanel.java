@@ -12,6 +12,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.AddDatastoreLayerPa
 import com.vividsolutions.jump.workbench.ui.wizard.AbstractWizardPanel;
 
 public class AddDataStoreLayerWizardPanel extends AbstractWizardPanel {
+
   private static final String KEY = AddDataStoreLayerWizardPanel.class.getName();
 
   private static final String TITLE = I18N.get(KEY);
@@ -46,7 +47,7 @@ public class AddDataStoreLayerWizardPanel extends AbstractWizardPanel {
   /**
    * @return the dataStorePanel
    */
-  AddDatastoreLayerPanel getDataStorePanel() {
+  public AddDatastoreLayerPanel getDataStorePanel() {
     return dataStorePanel;
   }
 

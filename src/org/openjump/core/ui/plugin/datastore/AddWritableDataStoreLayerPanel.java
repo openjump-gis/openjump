@@ -15,6 +15,7 @@ import com.vividsolutions.jump.workbench.ui.ValidatingTextField;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.ConnectionPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.PasswordPrompter;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -41,7 +42,6 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
     private JComboBox<PrimaryKeyColumn> identifierAttributeComboBox = null;
     private JTextField maxFeaturesTextField = null;
     private JTextArea whereTextArea = null;
-    //private JCheckBox cachingCheckBox = null;
     private JCheckBox limitedToViewCheckBox = null;
     private JCheckBox manageConflictsCheckBox = null;
 
@@ -51,6 +51,13 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         getConnectionComboBox().addActionListener(new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
                 getDatasetComboBox().setSelectedItem( null );
+                Component c = AddWritableDataStoreLayerPanel.this;
+                while ((c = c.getParent()) != null) {
+                    if (c instanceof WizardPanel) {
+                        ((AddWritableDataStoreLayerWizardPanel) c).selectionChanged();
+                        break;
+                    }
+                }
             }
         });
     }
@@ -69,7 +76,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
                         return description;
                     }
 
-                    public boolean execute(PlugInContext context) throws Exception {
+                    public boolean execute(PlugInContext context) {
                         return true;
                     }
 
@@ -134,14 +141,6 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         return whereTextArea.getText().trim();
     }
 
-    //public boolean isCaching() {
-    //    return getCachingCheckBox().isSelected();
-    //}
-
-    //public void setCaching( boolean caching ) {
-    //    getCachingCheckBox().setSelected( caching );
-    //}
-
     public boolean isLimitedToView() {
         return getLimitedToViewCheckBox().isSelected();
     }
@@ -159,8 +158,9 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
     }
 
     public String validateInput() {
-        if ( super.validateInput() != null ) {
-            return super.validateInput();
+        String validation = super.validateInput();
+        if ( validation != null ) {
+            return validation;
         }
         if (((String) LangUtil.ifNull(getDatasetName(), "")).length() == 0) {
             return I18N.get(KEY + ".missing-dataset-name");
@@ -201,6 +201,13 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
                             populateIdentifierAttributeComboBox();
                             if ( identifierAttributeComboBox.getItemCount() > 0 ) {
                                 identifierAttributeComboBox.setSelectedIndex( 0 );
+                            }
+                            Component c = AddWritableDataStoreLayerPanel.this;
+                            while ((c = c.getParent()) != null) {
+                                if (c instanceof WizardPanel) {
+                                    ((AddWritableDataStoreLayerWizardPanel) c).selectionChanged();
+                                    break;
+                                }
                             }
                         }
                     } );
@@ -494,6 +501,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         addRow("Where", sp, null, true );
         addRow(null, getLimitedToViewCheckBox(), null, false );
         addRow(null, getManageConflictsCheckBox(), null, true );
+
     }
 
     /**

@@ -110,7 +110,6 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
             }
             else throw new Exception(dataStorePanel.validateInput());
         } catch (Exception e) {
-            monitor.report(e);
             throw e;
         }
     }

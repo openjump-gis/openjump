@@ -2,17 +2,18 @@ package org.openjump.core.ui.plugin.datastore;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.ui.InputChangedListener;
-import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
+import com.vividsolutions.jump.workbench.ui.wizard.AbstractWizardPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Map;
 
 /**
  * WizardPanel to connect to a read/write datastore.
  */
-public class AddWritableDataStoreLayerWizardPanel extends JPanel implements WizardPanel {
+public class AddWritableDataStoreLayerWizardPanel extends AbstractWizardPanel {
 
     private static final String KEY = AddWritableDataStoreLayerWizardPanel.class.getName();
 
@@ -23,12 +24,16 @@ public class AddWritableDataStoreLayerWizardPanel extends JPanel implements Wiza
     private AddWritableDataStoreLayerPanel dataStorePanel;
 
     public AddWritableDataStoreLayerWizardPanel(WorkbenchContext context) {
-        super(new BorderLayout());
+        super(KEY, TITLE, INSTRUCTIONS);
+        setLayout(new BorderLayout());
         dataStorePanel = new AddWritableDataStoreLayerPanel(context);
+        dataStorePanel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selectionChanged();
+            }
+        });
         add(new JScrollPane(dataStorePanel), BorderLayout.CENTER);
-    }
-
-    public void add(InputChangedListener listener) {
     }
 
     public void enteredFromLeft(Map dataMap) {
@@ -38,33 +43,21 @@ public class AddWritableDataStoreLayerWizardPanel extends JPanel implements Wiza
     public void exitingToRight() throws Exception {
     }
 
-    public String getID() {
-        return KEY;
-    }
-
-    public String getInstructions() {
-        return INSTRUCTIONS;
-    }
-
-    public String getNextID() {
-        return null;
-    }
-
-    public String getTitle() {
-        return TITLE;
+    /**
+     * expose the input listeners fire for the wrapped panel to use
+     */
+    public void selectionChanged(){
+        fireInputChanged();
     }
 
     public boolean isInputValid() {
-        return true;
-    }
-
-    public void remove(InputChangedListener listener) {
+        return dataStorePanel.validateInput() == null;
     }
 
     /**
      * @return the dataStorePanel
      */
-    AddWritableDataStoreLayerPanel getDataStorePanel() {
+    public AddWritableDataStoreLayerPanel getDataStorePanel() {
         return dataStorePanel;
     }
 }

@@ -41,12 +41,12 @@ public interface WizardPanel {
     /**
      * Called when the user presses Next on this panel's previous panel
      */
-    public void enteredFromLeft(Map dataMap);
+    void enteredFromLeft(Map dataMap);
 
     /**
      * Called when the user presses Next on this panel
      */
-    public void exitingToRight() throws Exception;
+    void exitingToRight() throws Exception;
 
     /**
      * Tip: Delegate to an InputChangedFirer.
@@ -54,20 +54,20 @@ public interface WizardPanel {
      * WizardDialog, which needs to know when to update the enabled state of
      * the buttons.
      */
-    public void add(InputChangedListener listener);
+    void add(InputChangedListener listener);
 
-    public void remove(InputChangedListener listener);
+    void remove(InputChangedListener listener);
 
-    public String getTitle();
+    String getTitle();
 
-    public String getID();
+    String getID();
 
-    public String getInstructions();
+    String getInstructions();
 
-    public boolean isInputValid();
+    boolean isInputValid();
 
     /**
      * @return null to turn the Next button into a Finish button
      */
-    public String getNextID();
+    String getNextID();
 }
