@@ -393,15 +393,18 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                             "Comma-Separated Values (csv)", "csv");
                     final FileNameExtensionFilter filter3 = new FileNameExtensionFilter(
                             "JUMP Markup Language (JML)", "jml");
-                    final FileNameExtensionFilter filter4 = new FileNameExtensionFilter(
-                            "dBase database file (DBF)", "dbf");
+                    // Deactivate as it still has some problems on saving.
+                    // Possibly on geometry->String (Giuseppe Aruta)
+                    // final FileNameExtensionFilter filter4 = new
+                    // FileNameExtensionFilter(
+                    // "dBase database file (DBF)", "dbf");
                     filter = new FileNameExtensionFilter(
                             "ESRI Shapefile (SHP)", "shp");
                     final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
                     if (!LayerableUtil.isMixedGeometryType(fcoll)) {
                         fc.setFileFilter(filter);
                     }
-                    fc.setFileFilter(filter4);
+                    // fc.setFileFilter(filter4);
                     fc.setFileFilter(filter3);
                     fc.setFileFilter(filter2);
                     fc.addChoosableFileFilter(filter2);
@@ -420,11 +423,12 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                             file = new File(fc.getSelectedFile() + ".shp");
                             IOTools.saveShapefile(fcoll, file.getAbsolutePath());
                             saved(file);
-                        } else if (fc.getFileFilter().equals(filter4)) {
-                            file = new File(fc.getSelectedFile() + ".dbf");
-                            IOTools.saveDbfFile(fcoll, file.getAbsolutePath());
-                            saved(file);
                         }
+                        // else if (fc.getFileFilter().equals(filter4)) {
+                        // file = new File(fc.getSelectedFile() + ".dbf");
+                        // IOTools.saveDbfFile(fcoll, file.getAbsolutePath());
+                        // saved(file);
+                        // }
 
                         else if (fc.getFileFilter().equals(filter2)) {
                             final JTable table = panel.getTable();

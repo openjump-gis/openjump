@@ -33,6 +33,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
+import com.vividsolutions.jump.workbench.ui.FeatureCollectionPanel;
 import com.vividsolutions.jump.workbench.ui.HTMLPanel;
 
 public class ProfileUtils {
@@ -104,12 +105,20 @@ public class ProfileUtils {
             final DateFormat dateFormat = new SimpleDateFormat(
                     "yyyy/MM/dd HH:mm:ss");
             final Date date = new Date();
-
+            final FeatureCollectionPanel fPan = new FeatureCollectionPanel(
+                    resultFC);
+            fPan.getCommandPanel().setVisible(false);
             AdditionalResults.addAdditionalResult(
                     PLOT + "-" + dateFormat.format(date) + " " + PROFILE_INFO,
                     getStatisticPanel(rLayer));
-            // AdditionalResults.addAdditionalResult(namePlot + "-"
-            // + "Collection of data", fcpan);
+            AdditionalResults
+                    .addAdditionalResult(
+                            PLOT
+                                    + "-"
+                                    + dateFormat.format(date)
+                                    + " "
+                                    + I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values"),
+                            fPan);
             AdditionalResults.addAdditionalResultAndShow(PLOT + "-"
                     + dateFormat.format(date), getPlotPanel(resultFC));
 

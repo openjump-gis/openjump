@@ -202,4 +202,13 @@ public class FeatureCollectionPanel extends JPanel {
         return model;
     }
 
+    /**
+     * Gets the lower panel where loacting tools
+     * 
+     * @return
+     */
+    public JPanel getCommandPanel() {
+        return southPanel();
+    }
+
 }
