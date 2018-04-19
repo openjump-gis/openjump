@@ -389,27 +389,74 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     final FeatureCollectionPanel panel = (FeatureCollectionPanel) c;
                     final FeatureCollection fcoll = panel
                             .getFeatureCollection();
-                    if (LayerableUtil.isMixedGeometryType(fcoll)) {
-                        filter = new FileNameExtensionFilter("JML", "jml");
-                    } else {
-                        filter = new FileNameExtensionFilter("SHP", "shp");
-                    }
+                    final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
+                            "Comma-Separated Values (csv)", "csv");
+                    final FileNameExtensionFilter filter3 = new FileNameExtensionFilter(
+                            "JUMP Markup Language (JML)", "jml");
+                    final FileNameExtensionFilter filter4 = new FileNameExtensionFilter(
+                            "dBase database file (DBF)", "dbf");
+                    filter = new FileNameExtensionFilter(
+                            "ESRI Shapefile (SHP)", "shp");
                     final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
-                    fc.setFileFilter(filter);
-                    fc.addChoosableFileFilter(filter);
+                    if (!LayerableUtil.isMixedGeometryType(fcoll)) {
+                        fc.setFileFilter(filter);
+                    }
+                    fc.setFileFilter(filter4);
+                    fc.setFileFilter(filter3);
+                    fc.setFileFilter(filter2);
+                    fc.addChoosableFileFilter(filter2);
                     final int returnVal = fc
                             .showSaveDialog(AdditionalResultsFrame.this);
+
                     // FILE_BROWSER_WIDTH = fc.getWidth();
                     // FILE_BROWSER_HEIGHT = fc.getHeight();
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
-                        if (LayerableUtil.isMixedGeometryType(fcoll)) {
+
+                        if (fc.getFileFilter().equals(filter3)) {
                             file = new File(fc.getSelectedFile() + ".jml");
                             IOTools.saveJMLFile(fcoll, file.getAbsolutePath());
-                        } else {
+                            saved(file);
+                        } else if (fc.getFileFilter().equals(filter)) {
                             file = new File(fc.getSelectedFile() + ".shp");
                             IOTools.saveShapefile(fcoll, file.getAbsolutePath());
+                            saved(file);
+                        } else if (fc.getFileFilter().equals(filter4)) {
+                            file = new File(fc.getSelectedFile() + ".dbf");
+                            IOTools.saveDbfFile(fcoll, file.getAbsolutePath());
+                            saved(file);
                         }
-                        saved(file);
+
+                        else if (fc.getFileFilter().equals(filter2)) {
+                            final JTable table = panel.getTable();
+                            try {
+                                file = new File(fc.getSelectedFile() + ".csv");
+                                LAST_DIR = file.getParent();
+                                final FileWriter fw = new FileWriter(
+                                        file.getAbsoluteFile());
+                                final BufferedWriter bw = new BufferedWriter(fw);
+
+                                for (int j = 0; j < table.getColumnCount(); j++) {
+                                    bw.write(table.getModel().getColumnName(j)
+                                            + ",");
+                                }
+                                bw.write("\n");
+                                for (int i = 0; i < table.getRowCount(); i++) {
+                                    for (int j = 0; j < table.getColumnCount(); j++) {
+                                        bw.write(table.getModel().getValueAt(i,
+                                                j)
+                                                + ",");
+                                    }
+                                    bw.write("\n");
+                                }
+                                bw.close();
+                                fw.close();
+                                saved(file);
+                            } catch (final Exception e) {
+                                notsaved();
+                                Logger(this.getClass(), e);
+                            }
+                        }
+
                     }
                 } else if (c instanceof JScrollPane) {
                     final JScrollPane pane = (JScrollPane) c;

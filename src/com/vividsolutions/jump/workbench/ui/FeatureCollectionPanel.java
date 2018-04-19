@@ -39,13 +39,13 @@ public class FeatureCollectionPanel extends JPanel {
      * The style (Renderer) of the table reminds AttributePanel renderer
      */
     private static final long serialVersionUID = 1L;
-    private FeatureCollection featureCollection;
+    private final FeatureCollection featureCollection;
 
     private JScrollPane pane = new JScrollPane();
-    private JPanel filterPanel = new JPanel(new BorderLayout());
+    private final JPanel filterPanel = new JPanel(new BorderLayout());
     private JTable jTable = new JTable();
-    private JLabel jLabel = new JLabel();
-    private DefaultTableModel model = new DefaultTableModel();
+    private final JLabel jLabel = new JLabel();
+    private final DefaultTableModel model = new DefaultTableModel();
     private final Color LIGHT_GRAY = new Color(230, 230, 230);
 
     public FeatureCollectionPanel(FeatureCollection featureCollection) {
@@ -53,9 +53,18 @@ public class FeatureCollectionPanel extends JPanel {
         this.featureCollection = featureCollection;
         try {
             jbInit();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(e);
         }
+    }
+
+    /**
+     * gets the JTable associate to the panel
+     * 
+     * @return JTable
+     */
+    public JTable getTable() {
+        return jTable;
     }
 
     private void jbInit() throws Exception {
@@ -77,8 +86,8 @@ public class FeatureCollectionPanel extends JPanel {
             public Component getTableCellRendererComponent(JTable table,
                     Object value, boolean isSelected, boolean hasFocus,
                     int row, int column) {
-                Component c = super.getTableCellRendererComponent(table, value,
-                        isSelected, hasFocus, row, column);
+                final Component c = super.getTableCellRendererComponent(table,
+                        value, isSelected, hasFocus, row, column);
                 c.setBackground(row % 2 == 0 ? Color.white : LIGHT_GRAY);
                 if (isSelected) {
                     c.setBackground(Color.black);
@@ -110,18 +119,18 @@ public class FeatureCollectionPanel extends JPanel {
         final JTextField txtFilter = new JTextField();
 
         // Search Button
-        JButton btnOK = new JButton(IconLoader.icon("search.png"));
+        final JButton btnOK = new JButton(IconLoader.icon("search.png"));
         btnOK.setToolTipText("Search");
         btnOK.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                String expr = txtFilter.getText();
+                final String expr = txtFilter.getText();
                 sorter.setRowFilter(RowFilter.regexFilter(expr));
                 sorter.setSortKeys(null);
             }
         });
         // Save Button, not yet implemented
-        JButton btSave = new JButton(IconLoader.icon("disk.png"));
+        final JButton btSave = new JButton(IconLoader.icon("disk.png"));
         btSave.setToolTipText("Save search");
         btSave.addActionListener(new ActionListener() {
             @Override
@@ -131,7 +140,7 @@ public class FeatureCollectionPanel extends JPanel {
             }
         });
         // btnOK.setBounds(336, 144, 59, 23);
-        JPanel jbuttonpan = new JPanel();
+        final JPanel jbuttonpan = new JPanel();
         jbuttonpan.add(btnOK, BorderLayout.WEST);
         jbuttonpan.add(btSave, BorderLayout.EAST);
         filterPanel.add(txtFilter, BorderLayout.CENTER);
@@ -165,8 +174,8 @@ public class FeatureCollectionPanel extends JPanel {
         String[] fields;
         int iCount;
         iCount = featureCollection.getFeatures().size();
-        FeatureSchema schema = featureCollection.getFeatureSchema();
-        ArrayList<String> ar = new ArrayList<String>();
+        final FeatureSchema schema = featureCollection.getFeatureSchema();
+        final ArrayList<String> ar = new ArrayList<String>();
         String name;
         for (int j = 0; j < schema.getAttributeNames().size(); j++) {
             name = schema.getAttributeName(j).toString();
@@ -175,13 +184,13 @@ public class FeatureCollectionPanel extends JPanel {
         fields = ar.toArray(new String[0]);
         final String[][] data = new String[iCount][fields.length];
         for (int i = 0; i < featureCollection.size(); i++) {
-            Feature feat = featureCollection.getFeatures().get(i);
+            final Feature feat = featureCollection.getFeatures().get(i);
             for (int j = 0; j < schema.getAttributeCount(); j++) {
                 if (feat.getSchema().getAttributeType(j) != AttributeType.GEOMETRY) {
                     data[i][j] = feat.getAttribute(j).toString();
                 } else {
                     String geomType = feat.getGeometry().getClass().getName();
-                    int dotPos = geomType.lastIndexOf(".");
+                    final int dotPos = geomType.lastIndexOf(".");
                     if (dotPos > 0) {
                         geomType = geomType.substring(dotPos + 1);
                     }
