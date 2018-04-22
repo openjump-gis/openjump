@@ -572,7 +572,7 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
         String tableQName = SQLUtil.compose(dbSchema, dbTable);
         StringBuilder sb = new StringBuilder("UPDATE " + tableQName + " SET (");
         sb.append(conn.getMetadata().createColumnList(schema, false, true, false, false, normalizedColumnNames))
-          .append(") = (");
+          .append(") = ROW(");
         boolean first = true;
         for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
             if (schema.getExternalPrimaryKeyIndex() == i) continue;
@@ -617,8 +617,13 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     private PreparedStatement setPrimaryKeyValue(PreparedStatement pstmt, Feature feature, String primaryKey)
             throws SQLException {
         // primaryKey is the last parameter of the preparedStatement
-        pstmt.setObject(pstmt.getParameterMetaData().getParameterCount(), feature.getAttribute(primaryKey));
-        return pstmt;
+        try {
+            pstmt.setObject(pstmt.getParameterMetaData().getParameterCount(), feature.getAttribute(primaryKey));
+            return pstmt;
+        } catch(SQLException e) {
+            throw new SQLException("Erreur dans le PreparedStatement\n" + pstmt + "(setObject(?," +
+                    feature.getAttribute(primaryKey) + ")\n" + e.getMessage());
+        }
     }
     
     private void reloadDataFromDataStore(Connection conn, ConnectionDescriptor connectionDescriptor,
