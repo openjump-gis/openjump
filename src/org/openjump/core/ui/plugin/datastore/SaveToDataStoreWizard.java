@@ -29,8 +29,6 @@ public class SaveToDataStoreWizard extends AbstractWizardGroup {
   /** The plugin context. */
   private PlugInContext context;
 
-  //private File file;
-
   public SaveToDataStoreWizard(final PlugInContext context, DataStoreTransactionManager txManager) {
     super(I18N.get(KEY), IconLoaderFamFam.icon("database_save.png"), SaveToDataStorePanel.KEY);
     this.txManager = txManager;
@@ -39,14 +37,10 @@ public class SaveToDataStoreWizard extends AbstractWizardGroup {
 
   @Override
   public void initialize(WorkbenchContext workbenchContext, WizardDialog dialog) {
-//    //for debugging
-//    removeAllPanels();
     // already initialized
     if (!getPanels().isEmpty())
       return;
-
     SaveToDataStorePanel saveToDataStorePanel = new SaveToDataStorePanel(workbenchContext);
-    saveToDataStorePanel.setDialog(dialog);
     addPanel(saveToDataStorePanel);
   }
 

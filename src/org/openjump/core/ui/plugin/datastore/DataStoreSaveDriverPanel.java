@@ -44,16 +44,16 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
     private static final String NORMALIZED_COLUMN_NAMES  = I18N.get(KEY + ".normalized-column-names-key");
 
     // UI elements
-    private ConnectionPanel connectionPanel;
-    private JComboBox<String> tableComboBox;
-    private JCheckBox createPrimaryKeyCheckBox;
-    private JCheckBox write3dGeomCheckBox;
-    private JTextField convertNaNZTextField;
-    private JCheckBox narrowGeometryTypeCheckBox;
-    private JCheckBox convertToMultiGeometryCheckBox;
-    private JCheckBox normalizedTableNameCheckBox;
-    private JCheckBox normalizedColumnNamesCheckBox;
-    private OKCancelPanel okCancelPanel = new OKCancelPanel();
+    ConnectionPanel connectionPanel;
+    JComboBox<String> tableComboBox;
+    JCheckBox createPrimaryKeyCheckBox;
+    JCheckBox write3dGeomCheckBox;
+    JTextField convertNaNZTextField;
+    JCheckBox narrowGeometryTypeCheckBox;
+    JCheckBox convertToMultiGeometryCheckBox;
+    JCheckBox normalizedTableNameCheckBox;
+    JCheckBox normalizedColumnNamesCheckBox;
+    OKCancelPanel okCancelPanel = new OKCancelPanel();
 
     // context variables
     private WorkbenchContext wbContext;
@@ -234,6 +234,11 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
 
 
     public String getValidationError() {
+        if (connectionPanel.getConnectionDescriptor() == null)
+            return I18N.getMessage("org.openjump.core.ui.plugin.datastore.postgis.PostGISSaveDataSourceQueryChooser.no-connection-choosen");
+        if (tableComboBox.getSelectedItem() == null ||
+                tableComboBox.getSelectedItem().equals(""))
+            return I18N.getMessage("org.openjump.core.ui.plugin.datastore.postgis.PostGISSaveDataSourceQueryChooser.no-table-choosen");
         return null;
     }
 
