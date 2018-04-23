@@ -53,7 +53,7 @@ public class GeometryColumn {
     }
     
     /**
-     * Ctor with boolean parameter telling if column is indexed
+     * Constructor with boolean parameter telling if column is indexed
      * @param name the name of the geometry column
      * @param srid the SRID of the geometry column
      * @param type the geometric native type of the geometry column (GEOMETRY, SDO_GEOMETRY...)
@@ -85,7 +85,9 @@ public class GeometryColumn {
     }
 
     public String toString() {
-        return name + " (" + type + ", srid=" + srid + ")";
+        return name +
+                " (" + type + (getCoordDimension()==3?"Z":"") +
+                ", srid=" + srid + ")";
     }
 
     public boolean isIndexed() {

@@ -28,7 +28,7 @@ public class DataStoreLayer {
         this.where = "";
         this.schema = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Default");
         
-        // find schema from name: schema.name.
+        // find schema and name from qualified name schema.name
         // If no schema found -> Default
         String[] a = this.fullName.split("\\.");
         if (a.length == 1) {
@@ -65,7 +65,6 @@ public class DataStoreLayer {
     
     /**
      * Returns the where clause with WHERE keyword removed
-     * @return 
      */
     public String getWhereClause() {
         return where.trim().toLowerCase().startsWith("where")

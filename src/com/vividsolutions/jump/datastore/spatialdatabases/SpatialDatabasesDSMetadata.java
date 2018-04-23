@@ -295,7 +295,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
   }
 
   protected List<GeometryColumn> getGeometryAttributes(String sql, String datasetName) {
-    final List<GeometryColumn> geometryAttributes = new ArrayList<GeometryColumn>();
+    final List<GeometryColumn> geometryAttributes = new ArrayList<>();
     //System.out.println("getting geom Attribute for dataset: " + datasetName + " with query: " + sql);
 
     JDBCUtil.execute(

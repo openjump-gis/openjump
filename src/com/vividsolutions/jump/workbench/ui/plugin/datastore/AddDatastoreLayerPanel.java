@@ -49,9 +49,9 @@ import java.sql.SQLException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-// TODO             String s1 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Prevents-unnecessary-queries-to-the-datastore");
-//            String s2 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.The-recommended-setting-is-to-leave-this-checked");
-//            cachingCheckBox.setToolTipText("<html>" + s1 + "<br>" + s2 + "</html>");
+// TODO String s1 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Prevents-unnecessary-queries-to-the-datastore");
+//      String s2 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.The-recommended-setting-is-to-leave-this-checked");
+//      cachingCheckBox.setToolTipText("<html>" + s1 + "<br>" + s2 + "</html>");
 public class AddDatastoreLayerPanel extends ConnectionPanel {
 
   private Map connectionDescriptorToDatasetNamesMap = new HashMap();
@@ -76,10 +76,8 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         initialize();
       }
     });
-    //initialize();
     getConnectionComboBox().addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        //getDatasetComboBox().setSelectedItem( null );
         getDatasetOutline();
       }
     });
@@ -157,8 +155,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
               ErrorDialog.show(panel, 
                   I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.SQL-error"),
                   I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Invalid-layer-where-clause") 
-                      + " " + ((DataStoreLayer) o).getFullName(),
-                  s);
+                      + " " + ((DataStoreLayer) o).getFullName(), s);
             }
           }
         }
@@ -237,12 +234,13 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     }
 
     // reset the list first, in case the request doesn't return any (eg. in case of error)
-    LinkedHashMap<String, ArrayList<DataStoreLayer>> root = new LinkedHashMap<String, ArrayList<DataStoreLayer>>();
+    LinkedHashMap<String, ArrayList<DataStoreLayer>> root = new LinkedHashMap<>();
     datasetTreeModel = new DataStoreLayerTreeModel(root);
 
     Throwable t = null;
     try {
-      //loads list of layers from the given connection and builds the datasetTreeModel object for these layers
+      //loads list of layers from the given connection
+      // and builds the datasetTreeModel object for these layers
       loadDatasetList(getConnectionDescriptor());
     } catch (ThreadDeath td) {
       t = td;
@@ -252,7 +250,6 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
       if (t != null) {
         getContext().getErrorHandler().handleThrowable(t);
       }
-      //datasetTreeModel = new DataStoreLayerTreeModel(root);
       datasetOutlineModel = DefaultOutlineModel.createOutlineModel(
           datasetTreeModel, new DataStoreLayerRowModel(), true,
           I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Dataset"));
@@ -267,9 +264,9 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
    * Layers (geo layers) If given datasetNames is null, returns an empty list
    * build with one node displaying given message and no children
    *
-   * @param datasetNames
-   * @param message
-   * @return
+   * @param datasetNames array of dataset names
+   * @param message message displayed if the node (database schema) has no child (no geo layer)
+   * @return a HashMap mapping database schemas to a list of tables in this schema
    * @throws Exception
    */
   private LinkedHashMap<String, ArrayList<DataStoreLayer>> getTreeModelData(
@@ -278,7 +275,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
 
     final ConnectionDescriptor connectionDescriptor = getConnectionDescriptor();
 
-    LinkedHashMap<String, ArrayList<DataStoreLayer>> ret = new LinkedHashMap<String, ArrayList<DataStoreLayer>>();
+    LinkedHashMap<String, ArrayList<DataStoreLayer>> ret = new LinkedHashMap<>();
     if (datasetNames == null || datasetNames.length == 0) {
       // builds an empty list with message
       ret.put(message, new ArrayList<DataStoreLayer>());
@@ -293,14 +290,14 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
       for (String dsName : datasetNames) {
         for (GeometryColumn geo : md.getGeometryAttributes(dsName)) {
           DataStoreLayer layer = new DataStoreLayer(dsName, geo);
-          ArrayList<DataStoreLayer> newEntry = new ArrayList<DataStoreLayer>();
+          ArrayList<DataStoreLayer> newEntry = new ArrayList<>();
           newEntry.add(layer);
           // ON Java 8:
 //                    ArrayList<DataStoreLayer> list = ret.putIfAbsent(layer.getSchema(), newEntry);
           // On Java 6, 7
           ArrayList<DataStoreLayer> list = ret.get(layer.getSchema());
           if (list == null) {
-            list = ret.put(layer.getSchema(), newEntry);
+            ret.put(layer.getSchema(), newEntry);
           } else {
             // this schema exists: add newEntry into existing list
             list.addAll(newEntry);
@@ -331,8 +328,10 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         new Block() {
           public Object yield() throws Exception {
             //Gets the list of datasets 
-            String[] dsNames = new PasswordPrompter().getOpenConnection(connectionManager(), connectionDescriptor, AddDatastoreLayerPanel.this)
-            .getMetadata().getDatasetNames();
+            String[] dsNames = new PasswordPrompter()
+                    .getOpenConnection(connectionManager(), connectionDescriptor, AddDatastoreLayerPanel.this)
+                    .getMetadata()
+                    .getDatasetNames();
 
             AddDatastoreLayerPanel.this.datasetTreeModel = new DataStoreLayerTreeModel(
                 getTreeModelData(dsNames, msgGeoT));
@@ -341,14 +340,11 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
         });
     // Don't cache the dataset array if it is empty, as a problem
     // likely occurred. [Jon Aquino 2005-03-14]
-    // // if task is cancelled, datasetNames can be null [Nicolas Ribot 2015-10-13]
+    // if task is cancelled, datasetNames can be null [Nicolas Ribot 2015-10-13]
     if (datasetNames != null && datasetNames.length != 0) {
       connectionDescriptorToDatasetNamesMap.put(connectionDescriptor,
           datasetNames);
     }
-    //}
-    //return (String[]) connectionDescriptorToDatasetNamesMap.get(connectionDescriptor);
-    return;
   }
 
   private void initialize() {
@@ -358,9 +354,8 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     addRow("Dataset", sp, null, false);
   }
 
-  public static interface Block {
-
-    public Object yield() throws Exception;
+  public interface Block {
+    Object yield() throws Exception;
   }
 
   /**
@@ -369,7 +364,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
    * error is found.
    */
   private String checkSelectedLayer(DataStoreLayer layer) {
-    final StringBuffer ret = new StringBuffer();
+    final StringBuilder ret = new StringBuilder();
     final ConnectionDescriptor connectionDescriptor = getConnectionDescriptor();
     DataStoreConnection conn = null;
 
