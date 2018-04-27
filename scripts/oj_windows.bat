@@ -103,8 +103,9 @@ for /f "delims=. tokens=1-3" %%v in ("%JAVAVER%") do (
     set JAVAVER_PATCH=%%x
 )
 
-rem -- java9 needs some packages explicitly added/exported --
-if /i "%JAVAVER_MAJOR:~0,1%"=="9" (
+rem -- java9+ needs some packages explicitly added/exported --
+set /a JAVAVER_NUMBER=JAVAVER_MAJOR
+if %JAVAVER_NUMBER% geq 9 (
   set JAVA_OPTS=%JAVA_OPTS% --add-exports java.base/jdk.internal.loader=ALL-UNNAMED ^
 --add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED ^
 --add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED ^
