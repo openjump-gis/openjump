@@ -5,7 +5,12 @@
 
 * Changes.txt updated until here **********************************************
 
-2018-04-18  mmichaud <m.michael.michaud@orange.fr>
+2018-04-27 mmichaud <m.michael.michaud@orange.fr>
+  * Add a new PlugIn called AddNewLayerViewPlugIn in the Layer context menu
+    It creates a Layer which is just a view on another layer data.
+    Useful to add symbols/labels on an existing layer without duplicating data
+
+2018-04-18 mmichaud <m.michael.michaud@orange.fr>
   * improve WritableDataStoreLayer wizard (user interaction)
 
 2018-04-12 mmichaud <m.michael.michaud@orange.fr>

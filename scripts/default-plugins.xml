@@ -1181,6 +1181,13 @@
     </plug-in>
 
     <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerViewPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <plug-in>
         de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn
         <menus>
             <layername-popup menupath="MenuNames.STYLE" install="true" />

@@ -52,6 +52,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.TreeCellRenderer;
 
+import com.vividsolutions.jump.workbench.model.LayerView;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -86,7 +87,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             .getName() + " - USE CLOCK ANIMATION";
 
     private final static Color UNSELECTED_EDITABLE_FONT_COLOR = Color.red;
-    private final static Color SELECTED_EDITABLE_FONT_COLOR = Color.yellow;
+    private final static Color SELECTED_EDITABLE_FONT_COLOR   = Color.yellow;
+    private final static Color LAYER_VIEW_COLOR               = Color.gray;
     protected JCheckBox checkBox = new JCheckBox();
 
     private LayerColorPanel colorPanel = new LayerColorPanel(13);
@@ -241,7 +243,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
      */
     public Component getListCellRendererComponent(JList list, String value,
             int index, boolean isSelected, boolean cellHasFocus) {
-        label.setText((String) value);
+        label.setText(value);
         imageLabel.setVisible(false);
         colorPanel.setVisible(false);
         if (isSelected) {
@@ -272,7 +274,11 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 
         // assign layername to list entry
         Layerable layerable = (Layerable) value;
-        label.setText(layerable.getName());
+        if (layerable instanceof LayerView) {
+          label.setText("-> " + layerable.getName());
+        } else {
+          label.setText(layerable.getName());
+        }
         // show if allowed
         label.setVisible(showLabel);
 
@@ -370,6 +376,9 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             }
             label.setForeground(isSelected ? SELECTED_EDITABLE_FONT_COLOR
                     : UNSELECTED_EDITABLE_FONT_COLOR);
+            if (layerable instanceof LayerView) {
+              label.setForeground(LAYER_VIEW_COLOR);
+            }
         } else {
             label.setFont(font);
         }
@@ -509,9 +518,12 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             setBackground(tree.getBackground());
         }
         if (indicatingEditability && layerable instanceof Layer) {
-            if (((Layer) layerable).isEditable()) {
+            if (layerable.isEditable()) {
                 label.setForeground(selected ? SELECTED_EDITABLE_FONT_COLOR
                         : UNSELECTED_EDITABLE_FONT_COLOR);
+            }
+            if (!selected && layerable instanceof LayerView) {
+                label.setForeground(LAYER_VIEW_COLOR);
             }
         }
 

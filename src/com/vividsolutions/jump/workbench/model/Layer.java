@@ -253,7 +253,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
     return featureCollectionWrapper;
   }
 
-  private void setFeatureCollectionWrapper(
+  protected void setFeatureCollectionWrapper(
       FeatureCollectionWrapper featureCollectionWrapper) {
     this.featureCollectionWrapper = featureCollectionWrapper;
     // To set FeatureSchema's dynamic attributes (AKA Operations), we need

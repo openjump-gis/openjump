@@ -37,6 +37,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerView;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
@@ -179,6 +180,7 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
 		Map<Layer,List<Feature>> layerToFeaturesMap = new HashMap();
         for (Iterator i = panel.getLayerManager().iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();
+            if (layer instanceof LayerView) continue;
             Map<Feature,List<Geometry>> featureToSelectedItemsMapForLayer = featureToSelectedItemsMap(layer);
             // For each feature of layer, put selected items into a general
             // featureToSelectedItemsMap
