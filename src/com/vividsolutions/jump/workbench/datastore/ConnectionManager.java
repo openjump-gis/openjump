@@ -45,13 +45,11 @@ public class ConnectionManager {
      *            a collection that is kept up to date by the ConnectionManager
      */
     private ConnectionManager(WorkbenchContext context,
-                              final Collection connectionDescriptors) {
+                              final Collection<ConnectionDescriptor> connectionDescriptors) {
       this.context = context;
-        for (Iterator i = connectionDescriptors.iterator(); i.hasNext();) {
-            ConnectionDescriptor connectionDescriptor = (ConnectionDescriptor) i
-                    .next();
+        for (Object connectionDescriptor : connectionDescriptors) {
             if (connectionDescriptor == null) continue;
-            connectionDescriptorToConnectionMap.put(connectionDescriptor,
+            connectionDescriptorToConnectionMap.put((ConnectionDescriptor) connectionDescriptor,
                     DUMMY_CONNECTION);
         }
         addListener(new Listener() {
@@ -85,7 +83,8 @@ public class ConnectionManager {
             });
     }
 
-    private Map connectionDescriptorToConnectionMap = new HashMap();
+    private Map<ConnectionDescriptor,DataStoreConnection> connectionDescriptorToConnectionMap =
+            new HashMap<>();
 
     public DataStoreConnection getOpenConnection(
             ConnectionDescriptor connectionDescriptor) throws Exception {
@@ -160,14 +159,14 @@ public class ConnectionManager {
                     DUMMY_CONNECTION);
             fireConnectionDescriptorAdded(connectionDescriptor);
         }
-        return (DataStoreConnection) connectionDescriptorToConnectionMap
+        return connectionDescriptorToConnectionMap
                 .get(connectionDescriptor);
     }
 
-    public Collection getConnectionDescriptors() {
-        return Collections
-                .unmodifiableCollection(connectionDescriptorToConnectionMap
-                        .keySet());
+    public Collection<ConnectionDescriptor> getConnectionDescriptors() {
+        return Collections.unmodifiableCollection(
+                connectionDescriptorToConnectionMap.keySet()
+        );
     }
 
     /**
@@ -186,16 +185,14 @@ public class ConnectionManager {
 
     private void fireConnectionDescriptorAdded(
             ConnectionDescriptor connectionDescriptor) {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            Listener listener = (Listener) i.next();
+        for (Listener listener : listeners) {
             listener.connectionDescriptorAdded(connectionDescriptor);
         }
     }
 
     private void fireConnectionDescriptorRemoved(
             ConnectionDescriptor connectionDescriptor) {
-        for (Iterator i = listeners.iterator(); i.hasNext();) {
-            Listener listener = (Listener) i.next();
+        for (Listener listener : listeners) {
             listener.connectionDescriptorRemoved(connectionDescriptor);
         }
     }
@@ -209,25 +206,23 @@ public class ConnectionManager {
             // [Jon Aquino 2005-03-11]
             blackboard.put(INSTANCE_KEY, new ConnectionManager(
                 context,
-                    (Collection) PersistentBlackboardPlugIn.get(blackboard)
+                    (Collection<ConnectionDescriptor>) PersistentBlackboardPlugIn.get(blackboard)
                             .get(
                                     ConnectionManager.class.getName()
                                             + " - CONNECTION DESCRIPTORS",
-                                    new ArrayList())));
+                                    new ArrayList<ConnectionDescriptor>())));
         }
         return (ConnectionManager) blackboard.get(INSTANCE_KEY);
     }
 
-    private List listeners = new ArrayList();
+    private List<Listener> listeners = new ArrayList<>();
 
     public void addListener(Listener listener) {
         listeners.add(listener);
     }
 
     public void closeConnections() throws DataStoreException {
-        for (Iterator i = getConnectionDescriptors().iterator(); i.hasNext();) {
-            ConnectionDescriptor connectionDescriptor = (ConnectionDescriptor) i
-                    .next();
+        for (ConnectionDescriptor connectionDescriptor : getConnectionDescriptors()) {
             if (!getConnection(connectionDescriptor).isClosed()) {
                 getConnection(connectionDescriptor).close();
             }

@@ -87,17 +87,16 @@ public class ConnectionDescriptor
   }
 
   public boolean equals(Object other) {
-    return equals((ConnectionDescriptor) other);
+    return other instanceof ConnectionDescriptor
+      && equals((ConnectionDescriptor) other);
   }
 
   private boolean equals(ConnectionDescriptor other) {
-    if (!(other instanceof ConnectionDescriptor)) {
-      // This case includes null. [Jon Aquino 2005-03-16]
-      return false;
-        }
-        return getDataStoreDriverClassName().equals(other.getDataStoreDriverClassName())
-                && getParameterListWithoutPassword().equals(
-                        other.getParameterListWithoutPassword());
+    return other != null
+            && getDataStoreDriverClassName().equals(
+                    other.getDataStoreDriverClassName())
+            && getParameterListWithoutPassword().equals(
+                    other.getParameterListWithoutPassword());
     }
 
     public ParameterList getParameterList() {
@@ -127,17 +126,14 @@ public class ConnectionDescriptor
                                                         // parameters e.g.
                                                         // passwords [Jon Aquino
                                                         // 2005-03-15]
-                                                        return Boolean
-                                                                .valueOf(name != null);
+                                                        return name != null;
                                                     }
                                                 })).replaceAll(", ", ":");
     }
 
     private List parameterValues(ParameterList parameterList) {
         List parameterValues = new ArrayList();
-        for (Iterator i = Arrays.asList(parameterList.getSchema().getNames())
-                .iterator(); i.hasNext();) {
-            String name = (String) i.next();
+        for (String name : parameterList.getSchema().getNames()) {
             parameterValues.add(parameterList.getParameter(name));
         }
         return parameterValues;
@@ -201,9 +197,7 @@ public class ConnectionDescriptor
     }
 
     public static String passwordParameterName(ParameterListSchema schema) {
-        for (Iterator i = Arrays.asList(schema.getNames()).iterator(); i
-                .hasNext();) {
-            String name = (String) i.next();
+        for (String name : schema.getNames()) {
             if (name.equalsIgnoreCase("password")) {
                 return name;
             }
@@ -225,10 +219,7 @@ public class ConnectionDescriptor
 
         private static Map nameToValueMap(ParameterList parameterList) {
             Map nameToValueMap = new HashMap();
-            for (Iterator i = Arrays.asList(
-                    parameterList.getSchema().getNames()).iterator(); i
-                    .hasNext();) {
-                String name = (String) i.next();
+            for (String name : parameterList.getSchema().getNames()) {
                 nameToValueMap.put(name, parameterList.getParameter(name));
             }
             return nameToValueMap;
