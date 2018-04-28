@@ -338,6 +338,7 @@ Past contributors (in alphabetical order):
   Larry Reeder
   Martin Davis (refractions.net)
   Mohammed Rashad
+  Nicolas Ribot
   Ole Rahn
   Paolo Rizzi
   Paul Austin
