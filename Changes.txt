@@ -1,6 +1,40 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
   Highlights
+  * 1.12.1 is mainly a bug fix release
+  * OJ should be generally java 10 ready now
+
+  New Features
+  * Additional Result framemork from Sextante (used in ProfileGraphPlugIn
+    and several Tools>Statistics plugins)
+  * Add Save/Restore schema to/from file (Feature Schema Panel)
+  * Add AddNewLayerViewPlugIn
+
+  Improvements
+  * Add option to ProfileGraphPlugIn (Raster menu)
+  * Beautify frame icons and keep them in detached frames
+  * Add Copy/Paste/Save schema to the Feature Schema Panel
+  * Improve WritableDataStoreLayer UI
+
+  Bug fixes
+  * Handling date/time fields of JML datasets was broken
+  * Place internal frames in the top left corner of desktop pane again
+  * Add Boolean and Long attributes to Paste Schema plugin
+  * Positioning internal frames resulted in an NPE on java9
+  * #473 : shapefile driver no more limited to 4G files
+  * #471 : small bug in PostGIS (new) driver UI
+  * #470 : fix transaction manager management
+
+  PLUS
+  * update JumpChart to 1.0 (bug fixes)
+  * update VertexSymbols to 0.19 (bug fixes)
+  * update Sextante to apr_2018
+  * update CAD toolbox to 0.97
+  * update JumpFillPattern to 0.3
+
+Version 1.12 release rev.5704 (released on 04. March 2018)
+
+  Highlights
   * OJ should be generally java 9 ready now
   * enhanced SRID support
   * network timeouts are now configurable in settings
