@@ -13,13 +13,17 @@
 2018-04-18 mmichaud <m.michael.michaud@orange.fr>
   * improve WritableDataStoreLayer wizard (user interaction)
 
+2018-04-15 ede
+  * bugfix "[JPP-Devel] Open File does not show file type menu"
+    activating the open file menu a second time resulted in an 
+    empty file type selection dropdown field 
+
 2018-04-12 mmichaud <m.michael.michaud@orange.fr>
   * Fix #473 : shapefile driver no more limited to 4G files
   * Fix #471 : small bug in PostGIS (new) driver UI
   * Fix #470 : fix transaction manager management (more tests needed)
 
 2018-04-07 Giuseppe Aruta
-
   * Updated plugins
     1) JumpChart plugin ver. 1.00.
       - bugfix: closing dialog(*)

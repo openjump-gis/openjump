@@ -1,7 +1,7 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
   Highlights
-  * 1.12.1 is mainly a bug fix release
+  * some very annoying bugs fixed
   * OJ should be generally java 10 ready now
 
   New Features
@@ -24,6 +24,9 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * #473 : shapefile driver no more limited to 4G files
   * #471 : small bug in PostGIS (new) driver UI
   * #470 : fix transaction manager management
+  * bugfix "[JPP-Devel] Open File does not show file type menu"
+    activating the open file menu a second time resulted in an 
+    empty file type selection dropdown field 
 
   PLUS
   * update JumpChart to 1.0 (bug fixes)
