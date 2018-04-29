@@ -1,0 +1,9 @@
+https://github.com/xBlackCat/pack200-ant-task
+
+Rework de.matthiasmann.p200ant.P200AntTask ant task: close all possible resources and replace file extension from .jar.pack to .pack
+
+Commits on Mar 14, 2017
+Suppress warnings in Pack200 by new option 'quite'
+
+Commits on Feb 13, 2017
+Initial commit.  …

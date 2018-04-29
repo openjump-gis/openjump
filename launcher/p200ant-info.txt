@@ -1,0 +1,72 @@
+originally released on
+  http://www.matthiasmann.de:80/content/view/20/26/
+still avail here
+  https://web.archive.org/web/20070910040734/http://www.matthiasmann.de:80/content/view/20/26/
+under BSD license.
+
+Pack200 ANT task
+
+Written by Matthias Mann	  
+Ever tried to automate Pack200 creation of multiple JAR files ?
+
+This ANT task allows you to use a <fileset> to specify the JAR files which needs to be (re)packed. That means it can process all JAR files of your project with only one task execution in your build.xml
+
+Ok, Let's start with an example build.xml file that shows how to use it (taken from Worldscape):
+<taskdef name="p200ant"
+    classname="de.matthiasmann.p200ant.P200AntTask"
+    classpath="P200Ant.jar"/>
+    
+<target name="-post-jar">
+    <input message="keyPass" addproperty="keypass"/>
+    <input message="storePass" addproperty="storepass"
+        defaultvalue="${keypass}"/>
+    
+    <jar destfile="${dist.dir}/lwjgl-win32.jar"
+        basedir="" includes="lwjgl.dll"/>
+        
+    <jar destfile="${dist.dir}/lwjgl-linux.jar"
+        basedir="" includes="liblwjgl.so"/>
+        
+    <jar destfile="${dist.dir}/lwjgl-mac.jar"
+        basedir="" includes="liblwjgl.jnilib"/>
+        
+    <fileset id="jars2pack" dir="${dist.dir}">
+        <include name="**/*.jar"/>
+        <exclude name="lwjgl-*.jar"/>
+    </fileset>
+        
+    <p200ant repack="true">
+        <fileset refid="jars2pack"/>
+    </p200ant>
+            
+    <signjar keystore=".keystore" alias="MatthiasMann"
+        keypass="${keypass}" storepass="${storepass}">
+        <fileset dir="${dist.dir}">
+            <include name="*.jar"/>
+            <include name="lib/*.jar"/>
+        </fileset>
+    </signjar>
+        
+    <p200ant destdir="${dist.dir}">
+        <fileset refid="jars2pack"/>
+    </p200ant>
+</target>
+
+As you can see - nothing is hardcoded except the native libs for LWJGL. This allows to add JARs to the projects without the need to modify the ANT task.
+
+Ok lets see what attributes this ANT task supports:
+
+Attribute	Description	Required	Default
+repack	Set to "true" to apply repacking to the JAR files	No	"false"
+srcfile	Specifies a single JAR file to (re)pack	Unless <fileset> elements are used	Not set
+destfile	When repack is set to "false" this can be used to place all .pack.gz files into the specified directory instead of the individual source directory of the JAR	No	Not set
+keepOrder	Keep the order of the files in the .pack.gz archive	No	"false"
+KeepModificationTime	Keep the modification time of individual files from the JAR file	No	"false"
+singleSegment	To create only a single Pack200 segment	No	"false"
+segmentLimit	Set the Pack200 segment limit in bytes	No	1000000
+configFile	Reads Pack200 properties from a properties file	No	Not set
+It is also possible to specify one or more <fileset> elements. In this case the srcfile attribute must not be set.
+
+Now I think most of you are waiting for the sourcecode ?
+
+Ok here it is: Source and Compiled JAR (published under the BSD license)

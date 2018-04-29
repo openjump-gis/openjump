@@ -283,16 +283,16 @@
                                       <target if="${recompress.jars}">
                                         <!-- recompress jars -->
                                         <taskdef name="p200ant"
-                                                 classname="de.matthiasmann.p200ant.P200AntTask"
-                                                 classpath="launcher/p200ant.jar" />
+                                                 classname="org.xblackcat.ant.p200ant.P200AntTask"
+                                                 classpath="launcher/p200ant-1.1/pack200-ant-task-1.1.jar" />
                                         <fileset id="jars2pack" dir="${portable.filepath}/">
                                             <include name="**/*.jar" />
-                                            <!-- exclude signed jars, circumvent security errors 
+                                            <!-- exclude signed jars, circumvent security errors
                                             e.g. "SecurityException: SHA1 digest error" -->
                                             <exclude name="**/ermapper.jar" />
                                         </fileset>
                                         <echo>Recompress jars</echo>
-                                        <p200ant repack="true">
+                                        <p200ant repack="true" quite="true">
                                             <fileset refid="jars2pack" />
                                         </p200ant>
                                     </target>
