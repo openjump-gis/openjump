@@ -6,7 +6,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,12 +23,9 @@ import java.util.Enumeration;
 import java.util.Locale;
 
 import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -385,7 +381,6 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         .getUserObject();
                 final Component c = (Component) oad.getObject();
                 if (c instanceof FeatureCollectionPanel) {
-
                     final FeatureCollectionPanel panel = (FeatureCollectionPanel) c;
                     final FeatureCollection fcoll = panel
                             .getFeatureCollection();
@@ -393,28 +388,18 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                             "Comma-Separated Values (csv)", "csv");
                     final FileNameExtensionFilter filter3 = new FileNameExtensionFilter(
                             "JUMP Markup Language (JML)", "jml");
-                    // Deactivate as it still has some problems on saving.
-                    // Possibly on geometry->String (Giuseppe Aruta)
-                    // final FileNameExtensionFilter filter4 = new
-                    // FileNameExtensionFilter(
-                    // "dBase database file (DBF)", "dbf");
                     filter = new FileNameExtensionFilter(
                             "ESRI Shapefile (SHP)", "shp");
                     final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
                     if (!LayerableUtil.isMixedGeometryType(fcoll)) {
                         fc.setFileFilter(filter);
                     }
-                    // fc.setFileFilter(filter4);
                     fc.setFileFilter(filter3);
                     fc.setFileFilter(filter2);
                     fc.addChoosableFileFilter(filter2);
                     final int returnVal = fc
                             .showSaveDialog(AdditionalResultsFrame.this);
-
-                    // FILE_BROWSER_WIDTH = fc.getWidth();
-                    // FILE_BROWSER_HEIGHT = fc.getHeight();
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
-
                         if (fc.getFileFilter().equals(filter3)) {
                             file = new File(fc.getSelectedFile() + ".jml");
                             IOTools.saveJMLFile(fcoll, file.getAbsolutePath());
@@ -423,49 +408,19 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                             file = new File(fc.getSelectedFile() + ".shp");
                             IOTools.saveShapefile(fcoll, file.getAbsolutePath());
                             saved(file);
-                        }
-                        // else if (fc.getFileFilter().equals(filter4)) {
-                        // file = new File(fc.getSelectedFile() + ".dbf");
-                        // IOTools.saveDbfFile(fcoll, file.getAbsolutePath());
-                        // saved(file);
-                        // }
-
-                        else if (fc.getFileFilter().equals(filter2)) {
+                        } else if (fc.getFileFilter().equals(filter2)) {
                             final JTable table = panel.getTable();
-                            try {
-                                file = new File(fc.getSelectedFile() + ".csv");
-                                LAST_DIR = file.getParent();
-                                final FileWriter fw = new FileWriter(
-                                        file.getAbsoluteFile());
-                                final BufferedWriter bw = new BufferedWriter(fw);
-
-                                for (int j = 0; j < table.getColumnCount(); j++) {
-                                    bw.write(table.getModel().getColumnName(j)
-                                            + ",");
-                                }
-                                bw.write("\n");
-                                for (int i = 0; i < table.getRowCount(); i++) {
-                                    for (int j = 0; j < table.getColumnCount(); j++) {
-                                        bw.write(table.getModel().getValueAt(i,
-                                                j)
-                                                + ",");
-                                    }
-                                    bw.write("\n");
-                                }
-                                bw.close();
-                                fw.close();
-                                saved(file);
-                            } catch (final Exception e) {
-                                notsaved();
-                                Logger(this.getClass(), e);
-                            }
+                            file = new File(fc.getSelectedFile() + ".csv");
+                            IOTools.saveCSV(table, file.getAbsolutePath());
+                            saved(file);
                         }
-
                     }
+
                 } else if (c instanceof JScrollPane) {
                     final JScrollPane pane = (JScrollPane) c;
                     final Component view = pane.getViewport().getView();
-                    if (view instanceof JTextPane) {
+                    if (view instanceof JTextPane || view instanceof JLabel
+                            || view instanceof JTextArea) {
                         final JTextPane text = (JTextPane) pane.getViewport()
                                 .getView();
                         final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
@@ -493,60 +448,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                                 Logger(this.getClass(), e);
                             }
                         }
-                    } else if (view instanceof JLabel) {
-                        final String text = ((JLabel) view).getText();
-                        filter = new FileNameExtensionFilter("HTML", "html");
-                        final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
-                                "html");
-                        fc.setFileFilter(filter);
-                        fc.addChoosableFileFilter(filter);
-                        final int returnVal = fc
-                                .showSaveDialog(AdditionalResultsFrame.this);
-                        fc.getWidth();
-                        fc.getHeight();
-                        if (returnVal == JFileChooser.APPROVE_OPTION) {
-                            try {
-                                file = new File(fc.getSelectedFile() + ".html");
-                                LAST_DIR = file.getParent();
-                                final FileWriter fileWriter = new FileWriter(
-                                        file);
-                                final BufferedWriter bufferedWriter = new BufferedWriter(
-                                        fileWriter);
-                                bufferedWriter.write(text);
-                                bufferedWriter.close();
-                                saved(file);
-                            } catch (final Exception e) {
-                                notsaved();
-                                Logger(this.getClass(), e);
-                            }
-                        }
-                    } else if (view instanceof JTextArea) {
-                        final String text = ((JLabel) view).getText();
-                        filter = new FileNameExtensionFilter("HTML", "html");
-                        final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
-                                "html");
-                        fc.setFileFilter(filter);
-                        fc.addChoosableFileFilter(filter);
-                        final int returnVal = fc
-                                .showSaveDialog(AdditionalResultsFrame.this);
-                        fc.getWidth();
-                        fc.getHeight();
-                        if (returnVal == JFileChooser.APPROVE_OPTION) {
-                            try {
-                                file = new File(fc.getSelectedFile() + ".html");
-                                LAST_DIR = file.getParent();
-                                final FileWriter fileWriter = new FileWriter(
-                                        file);
-                                final BufferedWriter bufferedWriter = new BufferedWriter(
-                                        fileWriter);
-                                bufferedWriter.write(text);
-                                bufferedWriter.close();
-                                saved(file);
-                            } catch (final Exception e) {
-                                notsaved();
-                                Logger(this.getClass(), e);
-                            }
-                        }
+
                     } else if (view instanceof JTable) {
                         final JTable table = (JTable) pane.getViewport()
                                 .getView();
@@ -561,40 +463,15 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         fc.getWidth();
                         fc.getHeight();
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
-                            try {
-                                file = new File(fc.getSelectedFile() + ".csv");
-                                LAST_DIR = file.getParent();
-                                final FileWriter fw = new FileWriter(
-                                        file.getAbsoluteFile());
-                                final BufferedWriter bw = new BufferedWriter(fw);
-
-                                for (int j = 0; j < table.getColumnCount(); j++) {
-                                    bw.write(table.getModel().getColumnName(j)
-                                            + ",");
-                                }
-                                bw.write("\n");
-                                for (int i = 0; i < table.getRowCount(); i++) {
-                                    for (int j = 0; j < table.getColumnCount(); j++) {
-                                        bw.write(table.getModel().getValueAt(i,
-                                                j)
-                                                + ",");
-                                    }
-                                    bw.write("\n");
-                                }
-                                bw.close();
-                                fw.close();
-                                saved(file);
-                            } catch (final Exception e) {
-                                notsaved();
-                                Logger(this.getClass(), e);
-                            }
+                            file = new File(fc.getSelectedFile() + ".csv");
+                            IOTools.saveCSV(table, file.getAbsolutePath());
                         } else if (returnVal == JFileChooser.CANCEL_OPTION) {
                             return;
                         }
                     }
+
                 } else if (c instanceof PlotPanel) {
                     final PlotPanel panel = (PlotPanel) c;
-
                     filter = new FileNameExtensionFilter(
                             "Portable Network Graphics (png)", "png");
                     final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
@@ -611,29 +488,6 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                             .showSaveDialog(AdditionalResultsFrame.this);
                     fc.getWidth();
                     fc.getHeight();
-                    final Box box = new Box(BoxLayout.Y_AXIS);
-                    box.add(Box.createRigidArea(new Dimension(5, 180)));
-                    final JPanel jPanelSize = new JPanel(new FlowLayout(
-                            FlowLayout.LEFT));
-                    final JCheckBox worldFileCheckBox = new javax.swing.JCheckBox();
-                    worldFileCheckBox
-                            .setText(I18N
-                                    .get("ui.plugin.SaveImageAsPlugIn.write-world-file"));
-                    jPanelSize.add(worldFileCheckBox);
-                    box.add(jPanelSize);
-                    fc.setAccessory(box);
-                    if (fc.getFileFilter().equals(filter)) {
-                        worldFileCheckBox.setEnabled(false);
-                        ;
-                        ;
-                        fc.repaint();
-                    } else if (fc.getFileFilter().equals(filter2)) {
-                        worldFileCheckBox.setEnabled(true);
-                        ;
-                        ;
-                        fc.repaint();
-                    }
-
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         if (fc.getFileFilter().equals(filter)) {
                             file = new File(fc.getSelectedFile() + ".png");
@@ -667,33 +521,8 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     fc.getWidth();
                     fc.getHeight();
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
-                        try {
-                            file = new File(fc.getSelectedFile() + ".csv");
-                            LAST_DIR = file.getParent();
-                            final FileWriter fw = new FileWriter(
-                                    file.getAbsoluteFile());
-                            final BufferedWriter bw = new BufferedWriter(fw);
-
-                            for (int j = 0; j < table.getColumnCount(); j++) {
-                                bw.write(table.getModel().getColumnName(j)
-                                        + ",");
-                            }
-                            bw.write("\n");
-                            for (int i = 0; i < table.getRowCount(); i++) {
-                                for (int j = 0; j < table.getColumnCount(); j++) {
-                                    bw.write(table.getModel().getValueAt(i, j)
-                                            + ",");
-                                }
-                                bw.write("\n");
-                            }
-                            bw.close();
-                            fw.close();
-                            saved(file);
-                        } catch (final Exception e) {
-                            notsaved();
-                            Logger(this.getClass(), e);
-                        }
-
+                        file = new File(fc.getSelectedFile() + ".csv");
+                        IOTools.saveCSV(table, file.getAbsolutePath());
                     } else if (returnVal == JFileChooser.CANCEL_OPTION) {
                         return;
                     }
@@ -753,7 +582,6 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         }
                     }
                 }
-
             } catch (final Exception e) {
                 Logger(this.getClass(), e);
             }

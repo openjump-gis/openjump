@@ -14,6 +14,7 @@
 
 package org.openjump.core.apitools;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,6 +25,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
+import javax.swing.JTable;
 
 import org.geotools.dbffile.DbfFieldDef;
 import org.geotools.dbffile.DbfFile;
@@ -59,74 +62,79 @@ public class IOTools {
             .getContext().getLayerManager();
 
     private static String getExtension(String filename) {
-        int len = filename.length();
+        final int len = filename.length();
         return filename.substring(len - 3, len);
     }
 
     public static FeatureCollection load(String filename) throws Exception {
-        String extension = getExtension(filename);
-        if (extension.equalsIgnoreCase("SHP"))
+        final String extension = getExtension(filename);
+        if (extension.equalsIgnoreCase("SHP")) {
             return loadShapefile(filename);
-        if (extension.equalsIgnoreCase("JML"))
+        }
+        if (extension.equalsIgnoreCase("JML")) {
             return loadJMLFile(filename);
-        if (extension.equalsIgnoreCase("WKT"))
+        }
+        if (extension.equalsIgnoreCase("WKT")) {
             return loadWKT(filename);
+        }
         throw new Exception("Unknown file type: " + extension);
     }
 
     public static FeatureCollection load(String filename, String zipFileName)
             throws Exception {
-        String extension = getExtension(filename);
-        if (extension.equalsIgnoreCase("SHP"))
+        final String extension = getExtension(filename);
+        if (extension.equalsIgnoreCase("SHP")) {
             return loadShapefile(filename, zipFileName);
+        }
         throw new Exception("Unknown file type: " + extension);
     }
 
     public static FeatureCollection loadJMLFile(String filename)
             throws Exception {
-        JMLReader rdr = new JMLReader();
-        DriverProperties dp = new DriverProperties();
+        final JMLReader rdr = new JMLReader();
+        final DriverProperties dp = new DriverProperties();
         dp.set(DataSource.FILE_KEY, filename);
         return rdr.read(dp);
     }
 
     public static FeatureCollection loadShapefile(String filename)
             throws Exception {
-        ShapefileReader rdr = new ShapefileReader();
-        DriverProperties dp = new DriverProperties();
+        final ShapefileReader rdr = new ShapefileReader();
+        final DriverProperties dp = new DriverProperties();
         dp.set(DataSource.FILE_KEY, filename);
         return rdr.read(dp);
     }
 
     public static FeatureCollection loadShapefile(String filename,
             String zipFileName) throws Exception {
-        ShapefileReader rdr = new ShapefileReader();
-        DriverProperties dp = new DriverProperties();
+        final ShapefileReader rdr = new ShapefileReader();
+        final DriverProperties dp = new DriverProperties();
         dp.set(DataSource.FILE_KEY, filename);
-        if (zipFileName != null)
+        if (zipFileName != null) {
             dp.set(DataSource.COMPRESSED_KEY, zipFileName);
+        }
         return rdr.read(dp);
     }
 
     public static FeatureCollection loadFMEGML(String filename)
             throws Exception {
-        FMEGMLReader rdr = new FMEGMLReader();
-        DriverProperties dp = new DriverProperties();
+        final FMEGMLReader rdr = new FMEGMLReader();
+        final DriverProperties dp = new DriverProperties();
         dp.set(DataSource.FILE_KEY, filename);
         return rdr.read(dp);
     }
 
     public static FeatureCollection loadWKT(String filename) throws Exception {
-        WKTReader rdr = new WKTReader();
-        DriverProperties dp = new DriverProperties();
+        final WKTReader rdr = new WKTReader();
+        final DriverProperties dp = new DriverProperties();
         dp.set(DataSource.FILE_KEY, filename);
-        FeatureCollection fc = rdr.read(dp);
+        final FeatureCollection fc = rdr.read(dp);
         return fc;
     }
 
     public static void save(FeatureCollection fc, String filename)
             throws Exception {
-        String extension = getExtension(filename);
+        final String extension = getExtension(filename);
         if (extension.equalsIgnoreCase("SHP")) {
             saveShapefile(fc, filename);
             return;
@@ -139,16 +147,16 @@ public class IOTools {
 
     public static void saveShapefile(FeatureCollection fc, String filename)
             throws Exception {
-        ShapefileWriter writer = new ShapefileWriter();
-        DriverProperties dp = new DriverProperties();
+        final ShapefileWriter writer = new ShapefileWriter();
+        final DriverProperties dp = new DriverProperties();
         dp.set(DataSource.FILE_KEY, filename);
         writer.write(fc, dp);
     }
 
     public static void saveJMLFile(FeatureCollection fc, String filename)
             throws Exception {
-        JMLWriter writer = new JMLWriter();
-        DriverProperties dp = new DriverProperties();
+        final JMLWriter writer = new JMLWriter();
+        final DriverProperties dp = new DriverProperties();
         dp.set(DataSource.FILE_KEY, filename);
         writer.write(fc, dp);
     }
@@ -290,13 +298,41 @@ public class IOTools {
 
     }
 
+    public static void saveCSV(JTable table, String filename) throws Exception {
+
+        try {
+            final File file = new File(filename);
+            final BufferedWriter bw = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(
+                            file.getAbsoluteFile()), "UTF-8"));
+
+            for (int j = 0; j < table.getColumnCount(); j++) {
+                bw.write(table.getModel().getColumnName(j) + ",");
+            }
+            bw.newLine();
+            ;
+            for (int i = 0; i < table.getRowCount(); i++) {
+                for (int j = 0; j < table.getColumnCount(); j++) {
+                    bw.write(table.getModel().getValueAt(i, j) + ",");
+                }
+                bw.newLine();
+            }
+            bw.close();
+        } catch (final Exception e) {
+
+            //
+        }
+    }
+
     public static void saveShapefile(Layer layer, String filename)
             throws Exception {
-        DataSourceQuery dsq = layer.getDataSourceQuery();
-        DriverProperties dp = new DriverProperties();
-        Object charsetName = dsq.getDataSource().getProperties().get("charset");
-        if (charsetName != null)
+        final DataSourceQuery dsq = layer.getDataSourceQuery();
+        final DriverProperties dp = new DriverProperties();
+        final Object charsetName = dsq.getDataSource().getProperties()
+                .get("charset");
+        if (charsetName != null) {
             dp.set("charset", charsetName.toString());
+        }
         (new ShapefileWriter()).write(layer.getFeatureCollectionWrapper(), dp);
         dp.set("File", filename);
         (new ShapefileWriter()).write(layer.getFeatureCollectionWrapper(), dp);
@@ -304,11 +340,13 @@ public class IOTools {
 
     public static void saveJMLFile(Layer layer, String filename)
             throws Exception {
-        DataSourceQuery dsq = layer.getDataSourceQuery();
-        DriverProperties dp = new DriverProperties();
-        Object charsetName = dsq.getDataSource().getProperties().get("charset");
-        if (charsetName != null)
+        final DataSourceQuery dsq = layer.getDataSourceQuery();
+        final DriverProperties dp = new DriverProperties();
+        final Object charsetName = dsq.getDataSource().getProperties()
+                .get("charset");
+        if (charsetName != null) {
             dp.set("charset", charsetName.toString());
+        }
         (new JMLWriter()).write(layer.getFeatureCollectionWrapper(), dp);
         dp.set("File", filename);
         (new JMLWriter()).write(layer.getFeatureCollectionWrapper(), dp);
@@ -349,36 +387,38 @@ public class IOTools {
 
     public static void saveStyleToFile(Layer layer, String path)
             throws Exception {
-        double internalScale = 1d / JUMPWorkbench.getInstance().getFrame()
-                .getContext().getLayerViewPanel().getViewport().getScale();
-        double realScale = ScreenScale.getHorizontalMapScale(JUMPWorkbench
-                .getInstance().getFrame().getContext().getLayerViewPanel()
-                .getViewport());
-        double scaleFactor = internalScale / realScale;
-        String outSLD = manager.uniqueLayerName(layer.getName() + ".sld");
+        final double internalScale = 1d / JUMPWorkbench.getInstance()
+                .getFrame().getContext().getLayerViewPanel().getViewport()
+                .getScale();
+        final double realScale = ScreenScale
+                .getHorizontalMapScale(JUMPWorkbench.getInstance().getFrame()
+                        .getContext().getLayerViewPanel().getViewport());
+        final double scaleFactor = internalScale / realScale;
+        final String outSLD = manager.uniqueLayerName(layer.getName() + ".sld");
 
-        File sld_outFile = new File(path.concat(File.separator).concat(outSLD));
-        File inputXML = File.createTempFile("temptask", ".xml");
+        final File sld_outFile = new File(path.concat(File.separator).concat(
+                outSLD));
+        final File inputXML = File.createTempFile("temptask", ".xml");
         inputXML.deleteOnExit();
-        String name = layer.getName();
+        final String name = layer.getName();
         // TODO don't assume has 1 item!!!
         // Should create this condition in EnableCheckFactory
         if (layer.getFeatureCollectionWrapper().getFeatures().size() == 0) {
             throw new Exception(
                     I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
         }
-        BasicFeature bf = (BasicFeature) layer.getFeatureCollectionWrapper()
-                .getFeatures().get(0);
-        Geometry geo = bf.getGeometry();
-        String geoType = geo.getGeometryType();
-        Java2XML java2Xml = new Java2XML();
+        final BasicFeature bf = (BasicFeature) layer
+                .getFeatureCollectionWrapper().getFeatures().get(0);
+        final Geometry geo = bf.getGeometry();
+        final String geoType = geo.getGeometryType();
+        final Java2XML java2Xml = new Java2XML();
         java2Xml.write(layer, "layer", inputXML);
-        FileInputStream input = new FileInputStream(inputXML);
+        final FileInputStream input = new FileInputStream(inputXML);
         // FileWriter fw = new FileWriter( outputXML );
-        OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(
-                sld_outFile), Charset.defaultCharset());
+        final OutputStreamWriter fw = new OutputStreamWriter(
+                new FileOutputStream(sld_outFile), Charset.defaultCharset());
         // "UTF-8");
-        HashMap<String, String> map = new HashMap<String, String>(9);
+        final HashMap<String, String> map = new HashMap<String, String>(9);
         map.put("wmsLayerName", name);
         map.put("featureTypeStyle", name);
         map.put("styleName", name);
@@ -411,9 +451,9 @@ public class IOTools {
     }
 
     public static void print(FeatureCollection fc) {
-        List featList = fc.getFeatures();
-        for (Iterator i = featList.iterator(); i.hasNext();) {
-            Feature f = (Feature) i.next();
+        final List featList = fc.getFeatures();
+        for (final Iterator i = featList.iterator(); i.hasNext();) {
+            final Feature f = (Feature) i.next();
             System.out.println(f.getGeometry());
         }
     }
