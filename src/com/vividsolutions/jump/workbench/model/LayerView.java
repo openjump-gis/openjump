@@ -10,6 +10,13 @@ public class LayerView extends Layer {
 
   public LayerView(Layer layer) {
     super(layer.getName(), layer.getBasicStyle().getFillColor(), layer.getFeatureCollectionWrapper(), layer.getLayerManager());
+    boolean firingEvents = getLayerManager().isFiringEvents();
+    getLayerManager().setFiringEvents(false);
+    try {
+      setName(getName().replaceAll(layer.getName(),"").trim());
+    } finally {
+      getLayerManager().setFiringEvents(firingEvents);
+    }
     this.layer = layer;
   }
 
@@ -34,6 +41,10 @@ public class LayerView extends Layer {
     });
 
     super.setFeatureCollectionWrapper(observableFeatureCollection);
+  }
+
+  public Layer getLayer() {
+    return layer;
   }
 
   public boolean isSelectable() {

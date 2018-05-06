@@ -275,7 +275,9 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         // assign layername to list entry
         Layerable layerable = (Layerable) value;
         if (layerable instanceof LayerView) {
-          label.setText("-> " + layerable.getName());
+          LayerView view = (LayerView)layerable;
+          label.setText("-> " + view.getLayer().getName() + " - " +
+                  view.getName().replaceAll(view.getLayer().getName(), ""));
         } else {
           label.setText(layerable.getName());
         }
