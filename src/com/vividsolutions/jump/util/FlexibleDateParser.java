@@ -127,7 +127,6 @@ public class FlexibleDateParser {
         }
 
         public Object getCellEditorValue() {
-            //return format(value);
             return value;
         }
     }

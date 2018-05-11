@@ -23,6 +23,7 @@ Version 1.13-RC release rev.5784 (released on 29. April 2018)
   * Place internal frames in the top left corner of desktop pane again
   * Add Boolean and Long attributes to Paste Schema plugin
   * Positioning internal frames resulted in an NPE on java9
+  * #474 : Date editing in AttributePanel was broken
   * #473 : shapefile driver no more limited to 4G files
   * #471 : small bug in PostGIS (new) driver UI
   * #470 : fix transaction manager management
