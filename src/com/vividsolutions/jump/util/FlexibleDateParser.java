@@ -85,7 +85,12 @@ public class FlexibleDateParser {
               if (newValue == null || newValue.isEmpty())
                 this.value = null;
               else
-                this.value = FlexibleDateParser.getDefaultInstance().parse(newValue, true);
+                // First try to use the user defined formatter
+                try {
+                  this.value = formatter.parse(newValue);
+                } catch(ParseException e1) {
+                  this.value = FlexibleDateParser.getDefaultInstance().parse(newValue, true);
+                }
             } catch (Exception e) {
                 // red alert ;) please try again
                 ((JComponent) getComponent()).setBorder(new LineBorder(Color.red));
@@ -122,7 +127,8 @@ public class FlexibleDateParser {
         }
 
         public Object getCellEditorValue() {
-            return format(value);
+            //return format(value);
+            return value;
         }
     }
     

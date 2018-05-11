@@ -5,6 +5,10 @@
 
 * Changes.txt updated until here **********************************************
 
+2018-05-11 mmichaud <m.michael.michaud@orange.fr>
+  * Fix #474 and improve date editing in AttributePanel : now, customized date
+    format is used at the first place for date editing
+
 2018-04-27 mmichaud <m.michael.michaud@orange.fr>
   * Add a new PlugIn called AddNewLayerViewPlugIn in the Layer context menu
     It creates a Layer which is just a view on another layer data.
