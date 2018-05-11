@@ -879,8 +879,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 
     public void addInternalFrame(final JInternalFrame internalFrame,
             boolean alwaysOnTop, boolean autoUpdateToolBar) {
-      
-      System.out.println(internalFrame.getParent());
+
         if (internalFrame instanceof LayerManagerProxy) {
             setClosingBehaviour((LayerManagerProxy) internalFrame);
             installTitleBarModifiedIndicator((LayerManagerProxy) internalFrame);
@@ -899,15 +898,13 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                         .equals(internalFrameDefaultIcon))
             JUMPWorkbench.setIcon(internalFrame);
         // Call JInternalFrame#setVisible before JDesktopPane#add; otherwise,
-        // the
-        // TreeLayerNamePanel starts too narrow (100 pixels or so) for some
-        // reason.
-        // <<TODO>>Investigate. [Jon Aquino]
+        // the TreeLayerNamePanel starts too narrow (100 pixels or so) for some
+        // reason. <<TODO>>Investigate. [Jon Aquino]
         internalFrame.setVisible(true);
-        System.out.println(internalFrame.getParent());
+
         desktopPane.add(internalFrame, alwaysOnTop ? JLayeredPane.PALETTE_LAYER
                 : JLayeredPane.DEFAULT_LAYER);
-        System.out.println(internalFrame.getParent().getClass());
+
         if (autoUpdateToolBar) {
             internalFrame.addInternalFrameListener(new InternalFrameListener() {
                 public void internalFrameActivated(InternalFrameEvent e) {
@@ -1387,11 +1384,19 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         // run all applicationExitHandlers
         Object[] handlers = applicationExitHandlers.toArray();
         for (Object handler : handlers) {
-            ((ApplicationExitHandler)handler).exitApplication(this);
+          try {
+            ((ApplicationExitHandler) handler).exitApplication(this);
+          } catch (Throwable t) {
+            handleThrowable(t);
+          }
         }
-        
+
         // for compatibility reasons run the old applicationExitHandler as last
-        applicationExitHandler.exitApplication(this);
+        try{
+          applicationExitHandler.exitApplication(this);
+        } catch (Throwable t) {
+          handleThrowable(t);
+        }
     }
 
     private Collection getLayersWithModifiedFeatureCollections() {
@@ -1696,7 +1701,6 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         if (y + h > pane_h)
             new_h = pane_h - y;
 
-        System.out.println(internalFrame.getParent());
         GUIUtil.setBounds(internalFrame, location, new_w, new_h,
                 getDesktopPane());
     }
