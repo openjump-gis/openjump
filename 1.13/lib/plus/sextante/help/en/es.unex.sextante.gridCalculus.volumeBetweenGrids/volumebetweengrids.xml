@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates the total volume between two layers (DEMs). This calculations only make sense if the units used for the elevation itself are the same ones used for the x and y coordinates of the layer.&#10;&#10;The algorithm calculated a positive volume (volume of upper layer above lower layer), a negative one (volume of lower layer above upper layer) and a total one (positive volume + negative volume)&#10;&#10;Volume is calculated just within the analysis region.&#10;&#10;If, for a given cell, one (or both) of the input layers have a no-data value, that cell is not computed.&#10;&#10;" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="LGRID" text="A Digital Elevation Model representing the lower level. " description="Lower layer" type="3">
+		</element>
+		<element name="UGRID" text="A Digital Elevation Model representing the upper level. " description="Upper layer" type="3">
+		</element>
+		<element name="VOL" text="A text contaning the calculated volume between the input layers" description="Upper layer" type="2">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

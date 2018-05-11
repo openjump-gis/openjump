@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithms calculates the difference between two layers. Geometries in the first layer are clipped with geometries in the second one. &#10;&#10;Attributes are not modified, and each geometry is associated to the same set of attributes in the output layer as it was in the input one, even if the geometry itself has changed due to clipping. Attributes containin values of area, perimeter or any other ones related to the geometry shape should be recalculated.&#10;&#10;The following picture show the result of applying the difference algorithm to two layer, one with each polygon. The clipping layer is shown with transparent fill." description="Description" type="0">
+			<image description="" file="../es.unex.sextante.vectorTools.clip/diff.png">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="V&#237;ctor Olaya" description="Algorithm created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="V&#237;ctor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User notes" type="0">
+		</element>
+		<element name="LAYER" text="The first layer. Polygons in this layer will be clipped by polygons in the second one." description="Layer to clip" type="3">
+		</element>
+		<element name="CLIPLAYER" text="The second layer. Polygons in this layer will be used to clip polygons in the first one." description="Clipping layer" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The clipped layer." description="Difference" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

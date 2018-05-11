@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<root>
+    <attribute xml-name="type" java-name="type"/>
+    <attribute xml-name="readOnly" java-name="readOnly"/>
+    <attribute xml-name="oldIndex" java-name="oldIndex"/>
+</root>

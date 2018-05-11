@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithms creates a set of raster layers from a classified grid and an alphanumeric table. The algorithm generates n-1 raster layers, n being the number of fields in the input table&#10;&#10;The algorithm works as follow: a field in the table is used as the class field, which identifies each one of the classes. For each cell in the input layer, the algorithm looks in the table and tries to find a record with that same value. If that value is found, the values associated with that record will be assigned to that same cell in the layer representing the variable in each one of the fields." description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="Since the number of output layers is not known in advance, this algorithm cannot be used in the modeler." description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="A categorical raster layer" description="Layer" type="3">
+		</element>
+		<element name="TABLE" text="Table with information about the existing classes" description="Look-up table" type="3">
+		</element>
+		<element name="FIELD" text="The field that contains the identifier of the class, which is the value that appears in the input layer" description="Field" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="* Set of new raster layers, one for each field of the table, except the one used to identify the classes." description="Description" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

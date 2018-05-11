@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm takes an image and a vector layer with polygons representing trees, and automatically detects other trees in the images. It performs supervised classification to detect pixels that might belong to a tree, and then classifes clusters of such pixels depending on the area they cover. Both pixel spectral signature and cluster area have to be similar to signature and area of polygons used as training features." description="Description" type="0">
+			<image description="" file="detectar_arboles.png">
+			</image>
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="INPUT" text="The bands to use to classify pixels" description="Bands" type="3">
+		</element>
+		<element name="POLYGONS" text="A polygon layer with polygons representing trees." description="Sample trees" type="3">
+		</element>
+		<element name="TOLERANCE_SPECTRAL" text="The tolerance (t) to use for spectral classification. If the distance to the average value of tree pixels is lower than t times the standard deviation of tree pixel values in training areas, then the pixel is classified as a tree pixel." description="Tolerance" type="3">
+		</element>
+		<element name="TOLERANCE_SIZE" text="The tolerance to apply to size values." description="Tolerance(size)" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="TREES" text="A points layer with points placed on the center of each detected tree center. The attributes table contains a radius value, which can be used to created a circular buffer representing the tree, and a shape coefficient, indicating how similar the shape of the cluster of pixel trees is to the shape of a circle." description="Trees" type="2">
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>

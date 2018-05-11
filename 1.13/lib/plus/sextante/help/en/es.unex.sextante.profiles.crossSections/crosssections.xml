@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
+	<help>
+		<element name="DESCRIPTION" text="This algorithm calculates cross sections from a DEM an a given route" description="Description" type="0">
+		</element>
+		<element name="ADDITIONAL_INFO" text="" description="Additional information" type="0">
+		</element>
+		<element name="EXTENSION_AUTHOR" text="Victor Olaya" description="Extension created by" type="0">
+		</element>
+		<element name="HELP_AUTHOR" text="Victor Olaya" description="Help file created by" type="0">
+		</element>
+		<element name="USER_NOTES" text="" description="User_notes" type="0">
+		</element>
+		<element name="ROUTE" text="A layer containing routes. Cross sections will be perpendicular to the routes in this layer" description="Route" type="3">
+		</element>
+		<element name="DEM" text="a Digital Elevation Model." description="Elevation" type="3">
+		</element>
+		<element name="DISTANCE" text="The distance between section sections along a route, in map units" description="Distance between sections" type="3">
+		</element>
+		<element name="WIDTH" text="The width of each half of a section, that is, from the central axis (the line defining the route), to the extreme of the section" description="Section width (to each side)" type="3">
+		</element>
+		<element name="NUMPOINTS" text="Number of points to be measured in each half of the cross section. For instance, if a section width of 100 is used and you give this field a value of 10, the algorithm will place points separated by 10 meters along the cross section. " description="Number of points (on each side)" type="3">
+		</element>
+		<element name="OUTPUT_DESCRIPTION" text="" description="Description" type="2">
+		</element>
+		<element name="RESULT" text="The new layer contains the cross sections. Its attributes table contains the elevations in the points measured along the cross section. The number of fields in the table is, thus, variable, depending on the number of points specified&#10; " description="Cross sections" type="2">
+			<image description="Cross sections, red lines (in blue, the vector lines layer defined in the route parameter)." file="secciones_transversales.png">
+			</image>
+		</element>
+	</help>
+<?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
