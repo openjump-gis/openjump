@@ -145,8 +145,9 @@ public class Logger {
     }
 
     // just in case log4j init failed add a default console appender for us to see errors printed
-    if (!logger.getAllAppenders().hasMoreElements()) {
-      logger.addAppender(new ConsoleAppender(new PatternLayout("[%p] %d{HH:mm:ss.SSS} %m%n"),"System.out"));
+    org.apache.log4j.Logger rootLogger = org.apache.log4j.Logger.getRootLogger();
+    if (!rootLogger.getAllAppenders().hasMoreElements()) {
+      rootLogger.addAppender(new ConsoleAppender(new PatternLayout("[%p] %d{HH:mm:ss.SSS} %m%n"),"System.out"));
     }
 
     logger.log(logLevel, msg + msgAppend, t);
