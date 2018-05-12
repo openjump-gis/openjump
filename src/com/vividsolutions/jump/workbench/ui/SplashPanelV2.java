@@ -38,7 +38,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.util.Calendar;
@@ -50,6 +49,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openjump.core.CheckOS;
 
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -143,6 +143,18 @@ public class SplashPanelV2 extends JPanel {
   }
 
   public static boolean transparentSplash() {
-    return GUIUtil.isPerPixelTranslucencySupported() && !CheckOS.isLinux();
+    return GUIUtil.isPerPixelTranslucencySupported() && !( CheckOS.isLinux() && getJavaVersion() <= 1.7 );
+  }
+
+  static Double javaVersion = 0.0;
+
+  private static Double getJavaVersion(){
+    if (javaVersion > 0)
+      return javaVersion;
+    
+    String version = System.getProperty("java.version");
+    int pos = StringUtils.ordinalIndexOf(version, ".", 2);
+    javaVersion = Double.parseDouble(version.substring(0, pos));
+    return javaVersion;
   }
 }
