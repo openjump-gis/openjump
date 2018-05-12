@@ -143,7 +143,10 @@ public class SplashPanelV2 extends JPanel {
   }
 
   public static boolean transparentSplash() {
-    return GUIUtil.isPerPixelTranslucencySupported() && !( CheckOS.isLinux() && getJavaVersion() <= 1.7 );
+    // [2018.05] linux still does not do transparent splash properly
+    //  tested on Ubuntu 18.04 w/ java8, java10
+    return GUIUtil.isPerPixelTranslucencySupported() && 
+        !(CheckOS.isLinux() /*&& getJavaVersion() <= 1.7*/);
   }
 
   static Double javaVersion = 0.0;
