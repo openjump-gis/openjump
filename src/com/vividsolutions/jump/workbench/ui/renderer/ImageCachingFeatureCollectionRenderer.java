@@ -51,7 +51,7 @@ public class ImageCachingFeatureCollectionRenderer extends ImageCachingRenderer 
 		// frequency of ConcurrentModificationException errors. [Jon Aquino
 		// 2005-03-02]
 		for (Iterator i = features.iterator(); i.hasNext();) {
-			final Feature feature = (Feature) i.next();
+			final Feature feature = ((Feature) i.next()).clone();
 			if (cancelled) {
 				break;
 			}
