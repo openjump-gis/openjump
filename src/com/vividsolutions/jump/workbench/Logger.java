@@ -27,6 +27,20 @@ import com.vividsolutions.jump.workbench.ui.plugin.GenerateLogPlugIn;
  */
 public class Logger {
 
+  private static boolean initialized = false;
+
+  private static void init(){
+    if (initialized)
+      return;
+
+    // just in case log4j init failed add a default console appender for us to see errors printed
+    org.apache.log4j.Logger rootLogger = org.apache.log4j.Logger.getRootLogger();
+    if (!rootLogger.getAllAppenders().hasMoreElements()) {
+      rootLogger.addAppender(new ConsoleAppender(new PatternLayout("[%p] %d{HH:mm:ss.SSS} %m%n"),"System.out"));
+    }
+    initialized = true;
+  }
+
   public static void fatal(String msg) {
     log(msg, null, Level.FATAL, new Exception().getStackTrace()[0]);
   }
@@ -119,6 +133,9 @@ public class Logger {
       logger = org.apache.log4j.Logger.getLogger(element.getClassName());
     }
 
+    // run our init() after first call to log4j to give it the possibility to read log4j.xml first
+    init();
+
     // what's the current log level?
     Level loggerLevel = logger.getEffectiveLevel();
 
@@ -142,12 +159,6 @@ public class Logger {
       msg = t.getMessage();
       if (msg == null || msg.isEmpty() )
         msg = t.getClass().getName();
-    }
-
-    // just in case log4j init failed add a default console appender for us to see errors printed
-    org.apache.log4j.Logger rootLogger = org.apache.log4j.Logger.getRootLogger();
-    if (!rootLogger.getAllAppenders().hasMoreElements()) {
-      rootLogger.addAppender(new ConsoleAppender(new PatternLayout("[%p] %d{HH:mm:ss.SSS} %m%n"),"System.out"));
     }
 
     logger.log(logLevel, msg + msgAppend, t);
