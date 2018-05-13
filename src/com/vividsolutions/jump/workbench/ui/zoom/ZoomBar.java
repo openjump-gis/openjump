@@ -47,8 +47,6 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.plaf.basic.BasicSliderUI;
 
-import org.openjump.core.ui.util.ScreenScale;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -413,8 +411,8 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         queueComponentUpdate();
     }
 
-    private LineSegmentEnvelopeIntersector lineSegmentEnvelopeIntersector =
-        new LineSegmentEnvelopeIntersector();
+    //private LineSegmentEnvelopeIntersector lineSegmentEnvelopeIntersector =
+    //    new LineSegmentEnvelopeIntersector();
 
     // Modified by [mmichaud 2007-05-26] to use decimation algorithm from Java2DConverter
     private Shape getWireFrame() throws NoninvertibleTransformException {
@@ -543,7 +541,8 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
             // Select features intersecting the window
             List visibleFeatures = layer.getFeatureCollectionWrapper().query(modelEnvelope);
             if (visibleFeatures.size() < 1000) {
-                onScreenFeatures.addAll(layer.getFeatureCollectionWrapper().query(modelEnvelope));
+                //onScreenFeatures.addAll(layer.getFeatureCollectionWrapper().query(modelEnvelope));
+              onScreenFeatures.addAll(visibleFeatures);
             }
             // If there are more than 1000 visible features in this layer
             // select a maximum of 2000 features stepping through the list
@@ -556,16 +555,16 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         }
         return largeGeometries(LARGE_ONSCREEN_GEOMETRIES, onScreenFeatures);
     }
-    
+
     private Collection largeGeometries() {
         ArrayList largeGeometries = new ArrayList();
         if (totalGeometries() == 0) {
             return largeGeometries;
         }
-        Envelope modelEnvelope = layerViewPanel().getViewport().getEnvelopeInModelCoordinates();
+        //Envelope modelEnvelope = layerViewPanel().getViewport().getEnvelopeInModelCoordinates();
         for (Iterator i = layerViewPanel().getLayerManager().getVisibleLayers(true).iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();
-            List visibleFeatures = layer.getFeatureCollectionWrapper().query(modelEnvelope);
+            //List visibleFeatures = layer.getFeatureCollectionWrapper().query(modelEnvelope);
             largeGeometries.addAll(layer.getFeatureCollectionWrapper().getFeatures());
         }
         return largeGeometries(LARGE_GEOMETRIES, largeGeometries);
