@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
@@ -51,13 +52,18 @@ public class ImageCachingFeatureCollectionRenderer extends ImageCachingRenderer 
 		// frequency of ConcurrentModificationException errors. [Jon Aquino
 		// 2005-03-02]
 		for (Iterator i = features.iterator(); i.hasNext();) {
-      // Clone the feature to optimize rendering process in the case where
-      // feature attributes are not in memory (but read from disk or database)
-			final Feature feature = ((Feature) i.next()).clone();
+      // 2018-05-14 : Clone the feature to optimize rendering process in the case
+      // where feature attributes are not in memory (but read from disk or database)
+			// 2018-05-16 : revert the change : selection rendering uses a map with features
+			// as keys and using feature clone breaks selection painting (feature does not
+			// implements equals)
+			//final Feature feature = ((Feature) i.next()).clone();
+			final Feature feature = (Feature)i.next();
+			Geometry geom = feature.getGeometry();
 			if (cancelled) {
 				break;
 			}
-			if (feature.getGeometry() == null || feature.getGeometry().isEmpty()) {
+			if (geom == null || geom.isEmpty()) {
 				continue;
 			}
 			//Because image.draw is synchronized, it might be faster to do
