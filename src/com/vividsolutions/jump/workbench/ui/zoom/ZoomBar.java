@@ -54,7 +54,6 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
-import com.vividsolutions.jump.geom.LineSegmentEnvelopeIntersector;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.CoordinateArrays;
 import com.vividsolutions.jump.util.MathUtil;
@@ -80,11 +79,11 @@ import com.vividsolutions.jump.workbench.ui.plugin.scalebar.ScaleBarRenderer;
 import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
 
 public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
+
     private int totalGeometries() {
         int totalGeometries = 0;
         // Restrict count to visible layers [mmichaud 2007-05-27]
-        for (Iterator i = layerViewPanel().getLayerManager().getVisibleLayers(true).iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
+        for (Layer layer : layerViewPanel().getLayerManager().getVisibleLayers(true)) {
             totalGeometries += layer.getFeatureCollectionWrapper().size();
         }
         return totalGeometries;
@@ -122,8 +121,8 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
 	    if (showingSliderLabels) {
 	        //Add a dummy label so that ZoomBars added to Toolboxes are
 	        //packed properly. [Jon Aquino]
-	        Hashtable labelTable = new Hashtable();
-	        labelTable.put(new Integer(0), new JLabel(" "));
+	        Hashtable<Integer,JLabel> labelTable = new Hashtable<>();
+	        labelTable.put(0, new JLabel(" "));
 	        slider.setLabelTable(labelTable);
 	    }
 	    try {
@@ -171,7 +170,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
 	                if (layerViewPanel() == dummyLayerViewPanel) {
 	                    return;
 	                }
-	                try {
+	                //try {
 	                    slider.setToolTipText(
 	                        I18N.get("ui.zoom.ZoomBar.zoom-to")+" "
 	                            + chooseGoodIncrement(
@@ -179,9 +178,9 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
 	                                    ((BasicSliderUI) slider.getUI()).valueForXPosition(
 	                                        e.getX())))
 	                                .toString());
-	                } catch (NoninvertibleTransformException x) {
-	                    slider.setToolTipText(I18N.get("ui.zoom.ZoomBar.zoom"));
-	                }
+	                //} catch (NoninvertibleTransformException x) {
+	                //    slider.setToolTipText(I18N.get("ui.zoom.ZoomBar.zoom"));
+	                //}
 	            }
 	        });
 	    }
@@ -318,6 +317,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
     private void queueComponentUpdate() {
         componentUpdateTimer.restart();
     }
+
     /** Coalesces component updates */
     private Timer componentUpdateTimer =
         GUIUtil.createRestartableSingleEventTimer(200, new ActionListener() {
@@ -341,7 +341,9 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         //I'm currently hiding the label on the right, to save real estate. [Jon Aquino]
         slider.setValue(
             toSliderValue(
-                viewBlackboard().get(SCALE_KEY, layerViewPanel.getViewport().getScale())));
+                    viewBlackboard().get(SCALE_KEY, layerViewPanel.getViewport().getScale())
+            )
+        );
         updateLabel();
         updateSliderLabels();
     }
@@ -361,6 +363,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
             layerViewPanel().getRenderingManager().setPaintingEnabled(true);
         }
     }
+
     private Envelope proposedModelEnvelope() throws NoninvertibleTransformException {
         Coordinate centre =
             (Coordinate) viewBlackboard().get(
@@ -393,13 +396,16 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
     }
     
     private Stroke stroke = new BasicStroke(1);
+
     private void drawWireframe() throws NoninvertibleTransformException {
         Graphics2D g = (Graphics2D) layerViewPanel().getGraphics();
         g.setColor(Color.lightGray);
         g.setStroke(stroke);
         g.draw(getWireFrame());
     }
+
     private static final String SEGMENT_CACHE_KEY = ZoomBar.class.getName() + " - SEGMENT CACHE";
+
     private void clearModelCaches() {
         //Use LayerManager blackboard for segment cache, so that multiple
         //views can share it. [Jon Aquino]
@@ -426,12 +432,10 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         Rectangle2D view2D = new Rectangle2D.Double(
             0.0, 0.0, layerViewPanel().getWidth(), layerViewPanel().getWidth());
         GeneralPath wireFrame = new GeneralPath();
-        ArrayList segments = new ArrayList(getSegmentCache());
-        //segments.addAll(toSegments(randomOnScreenGeometries()));
+        List<Coordinate[]> segments = new ArrayList<>(getSegmentCache());
         segments.addAll(toSegments(largeOnScreenGeometries()));
-        for (Iterator i = segments.iterator(); i.hasNext();) {
-            Coordinate[] coordinates =
-                java2DConverter.toViewCoordinates((Coordinate[]) i.next());
+        for (Coordinate[] coords : segments) {
+            Coordinate[] coordinates = java2DConverter.toViewCoordinates(coords);
             boolean drawing = false;
             
             for (int j = 1; j < coordinates.length; j++) {
@@ -454,12 +458,11 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         
     }
 
-    private Collection getSegmentCache() throws NoninvertibleTransformException {
+    private Collection<Coordinate[]> getSegmentCache() {
         //Use LayerManager blackboard for segment cache, so that multiple
         //views can share it. [Jon Aquino]
         if (modelBlackboard().get(SEGMENT_CACHE_KEY) == null) {
-            //modelBlackboard().put(SEGMENT_CACHE_KEY, toSegments(randomGeometries()));
-            modelBlackboard().put(SEGMENT_CACHE_KEY, toSegments(largeGeometries()));
+            modelBlackboard().put(SEGMENT_CACHE_KEY, toSegments(largeGeometries(LARGE_GEOMETRIES)));
             //
             // We only want to do this when a frame closes. If we don't clear the
             // cache in the blackboard then we'll get a memory leak.
@@ -471,13 +474,12 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
                 }
             });
         }
-        return (Collection) modelBlackboard().get(SEGMENT_CACHE_KEY);
+        return (Collection<Coordinate[]>) modelBlackboard().get(SEGMENT_CACHE_KEY);
     }
 
-    private Collection toSegments(Collection geometries) {
-        ArrayList segments = new ArrayList();
-        for (Iterator i = geometries.iterator(); i.hasNext();) {
-            Geometry geometry = (Geometry) i.next();
+    private Collection<Coordinate[]> toSegments(Collection<Geometry> geometries) {
+        List<Coordinate[]> segments = new ArrayList<>();
+        for (Geometry geometry : geometries) {
             segments.addAll(CoordinateArrays.toCoordinateArrays(geometry, false));
         }
         return segments;
@@ -498,78 +500,129 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
     // and a small set of polygons : polygons were not visible because of the proportional
     // selection of geometries, and points are not displayed :-(
     
-    static final Comparator MAX_SIZE_COMPARATOR = new Comparator() {
-        public int compare(Object f1, Object f2) {
-            Envelope env1 = ((Feature)f1).getGeometry().getEnvelopeInternal();
-            Envelope env2 = ((Feature)f2).getGeometry().getEnvelopeInternal();
-            double size1 = Math.max(env1.getWidth(), env1.getHeight());
-            double size2 = Math.max(env2.getWidth(), env2.getHeight());
-            return size1 < size2 ? 1 : (size1 > size2 ? -1 : 0);
+    //static final Comparator MAX_SIZE_COMPARATOR = new Comparator() {
+    //    public int compare(Object f1, Object f2) {
+    //        Envelope env1 = ((Feature)f1).getGeometry().getEnvelopeInternal();
+    //        Envelope env2 = ((Feature)f2).getGeometry().getEnvelopeInternal();
+    //        double size1 = Math.max(env1.getWidth(), env1.getHeight());
+    //        double size2 = Math.max(env2.getWidth(), env2.getHeight());
+    //        return size1 < size2 ? 1 : (size1 > size2 ? -1 : 0);
+    //    }
+    //};
+
+    // Collect large geometries in a single pass (focus on efficiency rather than precision)
+    // Explore maxSize * 10 geometries (not all geometries)
+    // up to maxSize/2, select geometries with areas > mean previously selected area
+    // after maxSize/2, select geometries with areas > max previously selected areas
+    private Collection<Geometry> largeGeometries(int maxSize, List<Feature> features) {
+      //Collections.sort(features, MAX_SIZE_COMPARATOR);
+      int step = features.size()/maxSize/10;
+      double totalArea = 0;
+      double meanArea = 0;
+      double maxArea = 0;
+      int countTotal = 0;
+      int countExplored = 0;
+      List<Geometry> largeGeometries = new ArrayList<>();
+      for (Feature feature : features) {
+        if (countTotal%Math.max(step,1)==0) {
+          boolean firstHalf = largeGeometries.size() < maxSize/2;
+          Geometry geom = feature.getGeometry();
+          countExplored++;
+          double area = geom.getArea();
+          totalArea += area;
+          if ((firstHalf && area >= meanArea) || area > maxArea) {
+            largeGeometries.add(geom);
+          }
+          meanArea = totalArea / countExplored;
+          if (area > maxArea) maxArea = area;
+          countTotal++;
         }
-    };
-    
-    private Collection largeGeometries(int maxSize, List features) {
-        Collections.sort(features, MAX_SIZE_COMPARATOR);
-        List geometries = new ArrayList();
-        for (int i = 0 , max = Math.min(maxSize, features.size()) ; i < max ; i++) {
-            geometries.add(((Feature)features.get(i)).getGeometry());
-        }
-        //System.out.println("" + geometries.size() + "/" + features.size());
-        return geometries;
+        if (largeGeometries.size()>= maxSize) break;
+      }
+      return largeGeometries;
     }
     
-    private Collection largeOnScreenGeometries() {
-        List onScreenFeatures = new ArrayList();
-        if (totalGeometries() == 0) {
-            return onScreenFeatures;
+    private Collection<Geometry> largeOnScreenGeometries() {
+      List<Feature> onScreenFeatures = new ArrayList<>();
+      if (totalGeometries() == 0) {
+        return new ArrayList<>();
+      }
+      // Use proposedModelEnvelope (dynamically computed while the mouse is dragged)
+      // instead of layerViewPanel().getViewport().getEnvelopeInModelCoordinates()
+      // [mmichaud 2007-05-27]
+      Envelope modelEnvelope;
+      try {
+        modelEnvelope = proposedModelEnvelope(); } catch(NoninvertibleTransformException e) {
+        modelEnvelope = layerViewPanel().getViewport().getEnvelopeInModelCoordinates();
+      }// Restrict to visible layers [mmichaud 2007-05-27]
+      for (Layer layer : layerViewPanel().getLayerManager().getVisibleLayers(true)) {
+        // Select features intersecting the window
+        List<Feature> visibleFeatures = layer.getFeatureCollectionWrapper().query(modelEnvelope);
+        if (visibleFeatures.size() < LARGE_ONSCREEN_GEOMETRIES) {
+          //onScreenFeatures.addAll(layer.getFeatureCollectionWrapper().query(modelEnvelope));
+          onScreenFeatures.addAll(visibleFeatures);
         }
-        // Use proposedModelEnvelope (dynamically computed while the mouse is dragged)
-        // instead of layerViewPanel().getViewport().getEnvelopeInModelCoordinates()
-        // [mmichaud 2007-05-27]
-        Envelope modelEnvelope;
-        try {
-            modelEnvelope = proposedModelEnvelope();
+        // If there are more than 1000 visible features in this layer
+        // select a maximum of 2000 features stepping through the list
+        else {
+          int step = visibleFeatures.size()/LARGE_ONSCREEN_GEOMETRIES;
+          for (int i = 0 , max = visibleFeatures.size() ; i < max ; i += step) {
+            onScreenFeatures.add(visibleFeatures.get(i));
+          }
         }
-        catch(NoninvertibleTransformException e) {
-            modelEnvelope = layerViewPanel().getViewport().getEnvelopeInModelCoordinates();
-        }
-        // Restrict to visible layers [mmichaud 2007-05-27]
-        for (Iterator it = layerViewPanel().getLayerManager()
-                                           .getVisibleLayers(true)
-                                           .iterator() ;  it.hasNext() ; ) {
-            Layer layer = (Layer) it.next();
-            // Select features intersecting the window
-            List visibleFeatures = layer.getFeatureCollectionWrapper().query(modelEnvelope);
-            if (visibleFeatures.size() < 1000) {
-                //onScreenFeatures.addAll(layer.getFeatureCollectionWrapper().query(modelEnvelope));
-              onScreenFeatures.addAll(visibleFeatures);
-            }
-            // If there are more than 1000 visible features in this layer
-            // select a maximum of 2000 features stepping through the list
-            else {
-                int step = visibleFeatures.size()/1000;
-                for (int i = 0 , max = visibleFeatures.size() ; i < max ; i += step) {
-                    onScreenFeatures.add(visibleFeatures.get(i));
-                }
-            }
-        }
-        return largeGeometries(LARGE_ONSCREEN_GEOMETRIES, onScreenFeatures);
+      }
+      return largeGeometries(LARGE_ONSCREEN_GEOMETRIES, onScreenFeatures);
     }
 
-    private Collection largeGeometries() {
-        ArrayList largeGeometries = new ArrayList();
-        if (totalGeometries() == 0) {
-            return largeGeometries;
-        }
-        //Envelope modelEnvelope = layerViewPanel().getViewport().getEnvelopeInModelCoordinates();
-        for (Iterator i = layerViewPanel().getLayerManager().getVisibleLayers(true).iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
-            //List visibleFeatures = layer.getFeatureCollectionWrapper().query(modelEnvelope);
-            largeGeometries.addAll(layer.getFeatureCollectionWrapper().getFeatures());
-        }
-        return largeGeometries(LARGE_GEOMETRIES, largeGeometries);
-    }
+    //private Collection largeGeometries() {
+    //    ArrayList<Feature> largeGeometries = new ArrayList<>();
+    //    if (totalGeometries() == 0) {
+    //        return largeGeometries;
+    //    }
+    //    //Envelope modelEnvelope = layerViewPanel().getViewport().getEnvelopeInModelCoordinates();
+    //    for (Layer layer : layerViewPanel().getLayerManager().getVisibleLayers(true)) {
+    //        //List visibleFeatures = layer.getFeatureCollectionWrapper().query(modelEnvelope);
+    //        largeGeometries.addAll(layer.getFeatureCollectionWrapper().getFeatures());
+    //    }
+    //    return largeGeometries(LARGE_GEOMETRIES, largeGeometries);
+    //}
     // end [mmichaud]
+
+    // Get at most maxSize geometries
+    private Collection<Geometry> largeGeometries(int maxSize) {
+      int totalGeometries = totalGeometries();
+      List<Geometry> largeGeometries = new ArrayList<>();
+      if (totalGeometries == 0) return largeGeometries;
+      int step = totalGeometries/maxSize/10;
+      double totalArea = 0;
+      double meanArea = 0;
+      double maxArea = 0;
+      int countTotal = 0;
+      int countExplored = 0;
+      for (Layer layer : layerViewPanel().getLayerManager().getVisibleLayers(true)) {
+        for (Feature feature : layer.getFeatureCollectionWrapper().getFeatures()) {
+          // we explore maxSize * 10 features but we only keep features which are at least
+          // as large as the mean area of previous kept features
+          if (countTotal%Math.max(1,step) == 0) {
+            boolean firstHalf = largeGeometries.size() < maxSize/2;
+            Geometry geom = feature.getGeometry();
+            countExplored++;
+            double area = geom.getArea();
+            totalArea += area;
+            if (area > maxArea || (firstHalf && area >= meanArea)) {
+              largeGeometries.add(geom);
+              totalArea += area;
+            }
+            meanArea = totalArea / countExplored;
+            if (area > maxArea) maxArea = area;
+          }
+          countTotal++;
+          if (largeGeometries.size()>= maxSize) break;
+        }
+        if (largeGeometries.size()>= maxSize) break;
+      }
+      return largeGeometries;
+    }
     
     // Replaced Random geometries by large geometries
     /*
@@ -643,7 +696,8 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
                 * (MathUtil.base10Log(scale) - MathUtil.base10Log(getMinScale()))
                 / (MathUtil.base10Log(getMaxScale()) - MathUtil.base10Log(getMinScale())));
     }
-    private double getMinExtent() throws NoninvertibleTransformException {
+
+    private double getMinExtent() {
         if (modelBlackboard().get(MIN_EXTENT_KEY) == null) {
             double smallSegmentLength = chooseSmallSegmentLength(getSegmentCache());
             //-1 smallSegmentLength means there is no data or the data are all
@@ -657,11 +711,10 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         return modelBlackboard().getDouble(MIN_EXTENT_KEY);
     }
 
-    private double chooseSmallSegmentLength(Collection segmentCache) {
+    private double chooseSmallSegmentLength(Collection<Coordinate[]> segmentCache) {
         int segmentsChecked = 0;
         double smallSegmentLength = -1;
-        for (Iterator i = segmentCache.iterator(); i.hasNext();) {
-            Coordinate[] coordinates = (Coordinate[]) i.next();
+        for (Coordinate[] coordinates : segmentCache) {
             for (int j = 1; j < coordinates.length; j++) {
                 double segmentLength = coordinates[j].distance(coordinates[j - 1]);
                 segmentsChecked++;
@@ -680,7 +733,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         return smallSegmentLength;
     }
 
-    private double getMaxExtent() throws NoninvertibleTransformException {
+    private double getMaxExtent() {
         if (modelBlackboard().get(MAX_EXTENT_KEY) == null) {
             if (getSegmentCache().isEmpty()) {
                 return -1;
@@ -692,7 +745,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         return modelBlackboard().getDouble(MAX_EXTENT_KEY);
     }
 
-    private double getMaxScale() throws NoninvertibleTransformException {
+    private double getMaxScale() {
         double maxScale =
             (getMinExtent() == -1 || getMinExtent() == 0)
                 ? 1E3
@@ -703,7 +756,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         return maxScale;
     }
 
-    private double getMinScale() throws NoninvertibleTransformException {
+    private double getMinScale() {
         double minScale =
             (getMaxExtent() == -1 || getMaxExtent() == 0)
                 ? 1E-3
@@ -714,7 +767,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         return minScale;
     }
 
-    private double toScale(int sliderValue) throws NoninvertibleTransformException {
+    private double toScale(int sliderValue) {
         return Math.pow(
             10,
             ((slider.getMaximum() - sliderValue)
@@ -763,7 +816,8 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         }
         return ((LayerViewPanelProxy) frame.getActiveInternalFrame()).getLayerViewPanel();
     }
-    void jbInit() throws Exception {
+
+    void jbInit() {
         this.setLayout(new BorderLayout());
         label.setText(" ");
         slider.setPaintLabels(true);
@@ -786,7 +840,9 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
     }
 
     private Font sliderLabelFont = new Font("Dialog", Font.PLAIN, 10);
+
     private boolean showingSliderLabels;
+
     private void updateSliderLabels() throws NoninvertibleTransformException {
         //Expensive if the data cache has been cleared. [Jon Aquino]
         if (!showingSliderLabels) {
@@ -795,7 +851,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         if (!(slider.getUI() instanceof BasicSliderUI)) {
             return;
         }
-        Hashtable labelTable = new Hashtable();
+        Hashtable<Integer,JLabel> labelTable = new Hashtable<>();
         final int LABEL_WIDTH = 60;
         int lastLabelPosition = -2 * LABEL_WIDTH;
         for (int i = 0; i < slider.getWidth(); i++) {
@@ -805,7 +861,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
             int sliderValue = ((BasicSliderUI) slider.getUI()).valueForXPosition(i);
             JLabel label = new JLabel(chooseGoodIncrement(toScale(sliderValue)).toString());
             label.setFont(sliderLabelFont);
-            labelTable.put(new Integer(sliderValue), label);
+            labelTable.put(sliderValue, label);
             lastLabelPosition = i;
         }
         if (labelTable.isEmpty()) {
@@ -820,8 +876,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
     */
     // Added to implement Java2DConverter.PointConverter interface (used in getWireFrame)
     // [mmichaud 2007-05-27]
-    public Point2D toViewPoint(Coordinate modelCoordinate)
-        throws NoninvertibleTransformException {
+    public Point2D toViewPoint(Coordinate modelCoordinate) {
         Point2D.Double pt = new Point2D.Double(modelCoordinate.x, modelCoordinate.y);
         return affineTransform.transform(pt, pt);
     }
