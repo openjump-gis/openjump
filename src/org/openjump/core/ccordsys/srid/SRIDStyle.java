@@ -6,11 +6,7 @@ import java.util.Iterator;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.workbench.model.CategoryEvent;
-import com.vividsolutions.jump.workbench.model.FeatureEvent;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.LayerEvent;
-import com.vividsolutions.jump.workbench.model.LayerListener;
+import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 /**
@@ -40,8 +36,9 @@ public class SRIDStyle implements Style {
         updateSRIDs(layer);
         layer.getLayerManager().addLayerListener(new LayerListener() {
             public void featuresChanged(FeatureEvent e) {
-                for (Iterator i = e.getFeatures().iterator(); i.hasNext();) {
-                    Feature feature = (Feature) i.next();
+                for (Feature feature : e.getFeatures()) {
+                    // No need to set SRID on deleted features
+                    if (e.getType() == FeatureEventType.DELETED) continue;
                     feature.getGeometry().setSRID(srid);
                 }
             }
