@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-05-21 mmichaud <m.michael.michaud@orange.fr>
+  * bugfix: handling date/time fields of JML datasets was still broken (empty
+    strings was returned as String instead of null)
+
 2018-05-12 ede
   * bugfix #475: log messages doubled in the console
 

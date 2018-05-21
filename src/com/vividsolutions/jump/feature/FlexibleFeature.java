@@ -65,6 +65,8 @@ public class FlexibleFeature extends BasicFeature {
         // update the attribute object, so the conversion does not happen on
         // every getAttrib()
         setAttribute(i, attrib);
+      } else {
+        attrib = null;
       }
     }
     // enforce time object if not converted already
@@ -76,6 +78,8 @@ public class FlexibleFeature extends BasicFeature {
         // update the attribute object, so the conversion does not happen on
         // every getAttrib()
         setAttribute(i, attrib);
+      } else {
+        attrib = null;
       }
     }
     // enforce timestamp object if not converted already
@@ -87,6 +91,8 @@ public class FlexibleFeature extends BasicFeature {
         // update the attribute object, so the conversion does not happen on
         // every getAttrib()
         setAttribute(i, attrib);
+      } else {
+        attrib = null;
       }
     }
 
