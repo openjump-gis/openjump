@@ -60,15 +60,15 @@ public class Shapefile  {
      */
     public Shapefile(URL url) {
         baseURL=url;
-        shpInputStream= null;
-        try {
-            URLConnection uc = baseURL.openConnection();
-            // a 16 kb buffer may be up to 20% faster than the default 2 kb buffer
-            shpInputStream = new BufferedInputStream(uc.getInputStream(), 16*1024);
-        }
-        catch (Exception e){
-            Logger.error(e);
-        }
+        //shpInputStream= null;
+        //try {
+        //    URLConnection uc = baseURL.openConnection();
+        //    // a 16 kb buffer may be up to 20% faster than the default 2 kb buffer
+        //    shpInputStream = new BufferedInputStream(uc.getInputStream(), 16*1024);
+        //}
+        //catch (Exception e){
+        //    Logger.error(e);
+        //}
     }
     
     public Shapefile(InputStream is) {
@@ -77,14 +77,22 @@ public class Shapefile  {
     
     public void close() {
         try {
-            shpInputStream.close();
-    	}
-    	catch (IOException ex){
+            if (shpInputStream != null) shpInputStream.close();
+    	  }
+    	  catch (IOException ex){
             Logger.error(ex);
         }
     }
     
     private EndianDataInputStream getInputStream() throws IOException {
+        try {
+            URLConnection uc = baseURL.openConnection();
+            // a 16 kb buffer may be up to 20% faster than the default 2 kb buffer
+            shpInputStream = new BufferedInputStream(uc.getInputStream(), 16*1024);
+        }
+        catch (Exception e){
+            Logger.error(e);
+        }
         if (shpInputStream == null) {
             throw new IOException("Couldn't make a connection to the URL: " + baseURL);
         }
