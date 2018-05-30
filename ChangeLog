@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-05-31 mmichaud <m.michael.michaud@orange.fr>
+  * make EraseLayerAWithLayerBPlugIn more robust
+
 2018-05-27 mmichaud <m.michael.michaud@orange.fr>
   * small improvements in SkeletonPlugIn (PLUS version, GraphToolBox)
 

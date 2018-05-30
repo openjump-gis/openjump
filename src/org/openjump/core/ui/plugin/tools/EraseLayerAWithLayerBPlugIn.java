@@ -4,6 +4,9 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.util.LineStringExtracter;
+import com.vividsolutions.jts.geom.util.PointExtracter;
+import com.vividsolutions.jts.geom.util.PolygonExtracter;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
@@ -108,16 +111,23 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
             index.insert(g.getEnvelopeInternal(), g);
         }
 
+
+
         // Clone layerA
         FeatureCollection result1 = new FeatureDataset(layerA.getFeatureCollectionWrapper().getFeatureSchema());
         for (Object o : layerA.getFeatureCollectionWrapper().getFeatures()) {
-            result1.add(((Feature)o).clone(true, true));
+            Feature newFeature = ((Feature)o).clone(false, true);
+            newFeature.setGeometry(getHomogeneousGeometry(newFeature.getGeometry()));
+            result1.add(newFeature);
         }
         for (Object o : result1.getFeatures()) {
             Feature feature = (Feature)o;
             List<Geometry> candidates = index.query(feature.getGeometry().getEnvelopeInternal());
             for (Geometry b : candidates) {
-                feature.setGeometry(erase(feature.getGeometry(), b));
+                feature.setGeometry(getHomogeneousGeometry(erase(
+                        feature.getGeometry(),
+                        getHomogeneousGeometry(b)
+                )));
             }
         }
         FeatureCollection result2 = new FeatureDataset(result1.getFeatureSchema());
@@ -171,6 +181,26 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
 
     private Geometry erase(Geometry a, Geometry b) {
         return a.difference(b);
+    }
+
+    private Geometry getHomogeneousGeometry(Geometry geom) {
+        if (geom.isEmpty()) return geom;
+        int dim = geom.getDimension();
+        List list = new ArrayList();
+        switch(dim) {
+            case 0 :
+                PointExtracter.getPoints(geom, list);
+                break;
+            case 1 :
+                LineStringExtracter.getLines(geom, list);
+                break;
+            case 2 :
+                PolygonExtracter.getPolygons(geom, list);
+                break;
+            default :
+                return geom;
+        }
+        return geom.getFactory().buildGeometry(list);
     }
 
 }
