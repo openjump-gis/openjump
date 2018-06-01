@@ -43,7 +43,7 @@ public class MoveCategoryToTop extends AbstractPlugIn {
         Collection cats = context.getLayerNamePanel().getSelectedCategories();
         
         if (cats.size() > 1 || cats.size() <= 0){
-        	String s = I18N.get("org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneDown.Only-a-single-category-can-be-moved!");
+        	String s = I18N.get("org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneDown.Only-a-single-category-can-be-moved");
             context.getWorkbenchFrame().warnUser(s);
             return false;
         }
