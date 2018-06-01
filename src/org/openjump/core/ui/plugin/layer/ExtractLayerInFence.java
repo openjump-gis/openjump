@@ -34,11 +34,9 @@
 package org.openjump.core.ui.plugin.layer;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JPopupMenu;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
@@ -59,7 +57,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class ExtractLayerInFence extends AbstractPlugIn {
 
-	   private final static String EXTRACT_LAYER_IN_FENCE = 
+	private final static String EXTRACT_LAYER_IN_FENCE =
 	    	I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayerInFence.Extract-Layer-in-Fence");
 	 
 	public ExtractLayerInFence() {
@@ -71,15 +69,8 @@ public class ExtractLayerInFence extends AbstractPlugIn {
 		FeatureInstaller featureInstaller = new FeatureInstaller(
 				workbenchContext);
 		
-		/*
-		JPopupMenu layerNamePopupMenu = workbenchContext.getWorkbench()
-				.getFrame().getLayerNamePopupMenu();
-		featureInstaller.addPopupMenuItem(layerNamePopupMenu, this, getName(),
-				false, ICON, createEnableCheck(workbenchContext));
-		*/
-		
-	    context.getFeatureInstaller().addMainMenuItem(this,
-		        new String[]
+	    context.getFeatureInstaller().addMainMenuPlugin(this,
+		    new String[]
 				{MenuNames.EDIT, MenuNames.EXTRACT},
 				getName(), 
 				false, 
@@ -98,7 +89,7 @@ public class ExtractLayerInFence extends AbstractPlugIn {
     
 
 	public boolean execute(PlugInContext context) throws Exception {
-		Layer[] layers = context.getWorkbenchContext().getLayerNamePanel().getSelectedLayers();
+		Layer[] layers = context.getWorkbenchContext().getLayerableNamePanel().getSelectedLayers();
 		if (layers.length > 0){
 			Layer layer = layers[0];
 			splitLayer(context, layer);
@@ -111,44 +102,37 @@ public class ExtractLayerInFence extends AbstractPlugIn {
 		return EXTRACT_LAYER_IN_FENCE;
 	}
 
-    public static final ImageIcon ICON = IconLoader.icon("extract1.gif");
+  public static final ImageIcon ICON = IconLoader.icon("extract1.gif");
 
 
-    private void splitLayer(PlugInContext context, Layer layer)
-    {
-    	   Geometry fence = context.getLayerViewPanel().getFence();
+  private void splitLayer(PlugInContext context, Layer layer) {
+  	Geometry fence = context.getLayerViewPanel().getFence();
    	
-     		FeatureCollectionWrapper featureCollection = layer.getFeatureCollectionWrapper();
-            List featureList = featureCollection.getFeatures();
-            FeatureSchema featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+  	FeatureCollectionWrapper featureCollection = layer.getFeatureCollectionWrapper();
+  	List<Feature> featureList = featureCollection.getFeatures();
+  	FeatureSchema featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
             
-			boolean wasFiringEvents = context.getLayerManager().isFiringEvents();
-            Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
-			context.getLayerManager().setFiringEvents(true);
+  	boolean wasFiringEvents = context.getLayerManager().isFiringEvents();
+  	Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
+  	context.getLayerManager().setFiringEvents(true);
 			
-	        Layer fencedLayer = context.addLayer(selectedCategories.isEmpty()
+  	Layer fencedLayer = context.addLayer(selectedCategories.isEmpty()
 			? StandardCategoryNames.WORKING
 			: selectedCategories.iterator().next().toString(), layer.getName(),
 			 new FeatureDataset(featureSchema));
-	        
-	        
-	        FeatureCollectionWrapper fencedFeatureCollection = fencedLayer.getFeatureCollectionWrapper();
 
-			context.getLayerManager().setFiringEvents(false);
-           for (Iterator i = featureList.iterator(); i.hasNext();)
-            {
-                Feature feature = (Feature) i.next();
-                Geometry geometry = feature.getGeometry();
+  	FeatureCollectionWrapper fencedFeatureCollection = fencedLayer.getFeatureCollectionWrapper();
+
+  	context.getLayerManager().setFiringEvents(false);
+  	for (Feature feature : featureList) {
+  		Geometry geometry = feature.getGeometry();
                 
-                if ((!geometry.isEmpty()) && (fence != null) &&  (geometry.intersects(fence)) )
-                	fencedFeatureCollection.add((Feature)feature.clone());
-                	//featureCollection.remove(feature);
-            }   
+  		if ((!geometry.isEmpty()) && (fence != null) &&  (geometry.intersects(fence)) )
+  			fencedFeatureCollection.add(feature.clone());
+  		}
             
-    		context.getLayerManager().setFiringEvents(wasFiringEvents);
-    		context.getLayerViewPanel().repaint();
-
-    }
-
+  		context.getLayerManager().setFiringEvents(wasFiringEvents);
+  	context.getLayerViewPanel().repaint();
+  }
 
 }

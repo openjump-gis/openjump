@@ -86,10 +86,10 @@ public class CreateGridPlugIn extends AbstractUiPlugIn implements ThreadedPlugIn
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
-        context.getFeatureInstaller().addMainMenuItem(
-            new String[] { MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
+        context.getFeatureInstaller().addMainMenuPlugin(
             this,
-            new JMenuItem(getName()+"...", IconLoader.icon("create_grid.gif")),
+            new String[] { MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
+            getName()+"...", false, IconLoader.icon("create_grid.gif"),
             createEnableCheck(context.getWorkbenchContext()), -1);
     }
 

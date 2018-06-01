@@ -93,7 +93,7 @@ public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
     public void initialize(PlugInContext context) throws Exception {
     	    
 	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-	    	featureInstaller.addMainMenuItem(
+	    	featureInstaller.addMainMenuPlugin(
 	    	        this,
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
 	                getName() + "...",
@@ -162,13 +162,13 @@ public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
     }
 	
     private List<Layer> getConstraintCandidateLayers(PlugInContext context) {
-        Layer[] layers = (Layer[])context.getLayerManager().getLayers().toArray(new Layer[0]);
-        List linearLayers = new ArrayList();
+        Layer[] layers = context.getLayerManager().getLayers().toArray(new Layer[0]);
+        List<Layer> linearLayers = new ArrayList<>();
         linearLayers.add(NO_CONSTRAINT);
         for (Layer layer : layers) {
             FeatureCollection fc = layer.getFeatureCollectionWrapper();
             if (!fc.isEmpty()) {
-                if (((Feature)fc.iterator().next()).getGeometry().getDimension() > 0) {
+                if ((fc.iterator().next()).getGeometry().getDimension() > 0) {
                     linearLayers.add(layer);
                 }
             } 
@@ -189,7 +189,7 @@ public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
                 .getLayerManager().getLayer(constraintsLayer).getFeatureCollectionWrapper()));
         }
         Geometry g = triangulationBuilder.getTriangles(new GeometryFactory());
-        List<Geometry> geometries = new ArrayList<Geometry>();
+        List<Geometry> geometries = new ArrayList<>();
         for (int i = 0 ; i < g.getNumGeometries() ; i++) {
             geometries.add(g.getGeometryN(i));
         }
@@ -203,7 +203,7 @@ public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
     
     private List<Geometry> removeTrianglesOutOfPolygons(List<Geometry> geometries, List<Polygon> polygons) {
         STRtree index = new STRtree();
-        List<Geometry> result = new ArrayList<Geometry>();
+        List<Geometry> result = new ArrayList<>();
         for (Polygon p : polygons) {
             index.insert(p.getEnvelopeInternal(), p);
         }
@@ -221,11 +221,11 @@ public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
     }
     
     private Geometry getSites(FeatureCollection fcSites) {
-        List<Point> sites = new ArrayList<Point>();
-        GeometryFactory gf = null;
+        List<Point> sites = new ArrayList<>();
+        GeometryFactory gf;
         if (fcSites.isEmpty()) gf = new GeometryFactory();
         else {
-            gf = ((Feature)fcSites.iterator().next()).getGeometry().getFactory();
+            gf = (fcSites.iterator().next()).getGeometry().getFactory();
             for (Object o : fcSites.getFeatures()) {
                 addSite(((Feature)o).getGeometry(), sites, gf);
             }
@@ -243,11 +243,11 @@ public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
     }
     
     private Geometry getConstraints(FeatureCollection fcConstraints) {
-        List<LineString> constraints = new ArrayList<LineString>();
-        GeometryFactory gf = null;
+        List<LineString> constraints = new ArrayList<>();
+        GeometryFactory gf;
         if (fcConstraints.isEmpty()) gf = new GeometryFactory();
         else {
-            gf = ((Feature)fcConstraints.iterator().next()).getGeometry().getFactory();
+            gf = (fcConstraints.iterator().next()).getGeometry().getFactory();
             for (Object o : fcConstraints.getFeatures()) {
                 addConstraints(((Feature)o).getGeometry(), constraints, gf);
             }
@@ -273,11 +273,11 @@ public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
     }
     
     private List<Polygon> getPolygons(FeatureCollection fcConstraints) {
-        List<Polygon> polygons = new ArrayList<Polygon>();
-        GeometryFactory gf = null;
+        List<Polygon> polygons = new ArrayList<>();
+        GeometryFactory gf;
         if (fcConstraints.isEmpty()) gf = new GeometryFactory();
         else {
-            gf = ((Feature)fcConstraints.iterator().next()).getGeometry().getFactory();
+            gf = (fcConstraints.iterator().next()).getGeometry().getFactory();
             for (Object o : fcConstraints.getFeatures()) {
                 addPolygons(((Feature)o).getGeometry(), polygons, gf);
             }

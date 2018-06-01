@@ -48,8 +48,8 @@ import com.vividsolutions.jump.workbench.model.Layerable;
 
 public class DummyLayerNamePanel extends JPanel implements LayerableNamePanel {
 
-    private ArrayList selectedCategories = new ArrayList();
-    private ArrayList selectedNodes = new ArrayList();
+    private List selectedCategories = new ArrayList();
+    private List selectedNodes = new ArrayList();
     private Layer[] selectedLayers = new Layer[] {};
     private List<Layerable> selectedLayerables = Collections.emptyList();
 

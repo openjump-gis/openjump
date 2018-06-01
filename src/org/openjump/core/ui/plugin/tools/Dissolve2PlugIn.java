@@ -52,7 +52,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
 
 
     private Layer layer;
-    FeatureCollectionAggregator fca;
+    private FeatureCollectionAggregator fca;
 
     public Dissolve2PlugIn() {
     }
@@ -78,7 +78,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                 .add(new EnableCheck() {
                     public String check(JComponent component) {
                         return workbenchContext
-                                .getLayerNamePanel()
+                                .getLayerableNamePanel()
                                 .getSelectedLayers()[0]
                                 .getFeatureCollectionWrapper()
                                 .getFeatureSchema()
@@ -164,7 +164,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                                  AggregateOptionPanel aggregateOptionPanel) {
         layer = dialog.getLayer(SOURCE_LAYER);
         FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-        List<String> keyAttributes = new ArrayList<String>(keyOptionPanel.getKeyAttributes());
+        List<String> keyAttributes = new ArrayList<>(keyOptionPanel.getKeyAttributes());
         List<AttributeAggregator> aggregators = new ArrayList<AttributeAggregator>();
         aggregators.add(new AttributeAggregator(
                 schema.getAttributeName(schema.getGeometryIndex()),
@@ -266,7 +266,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
         }
 
         public Set<String> getKeyAttributes() {
-            Set<String> keyAttributeSet = new LinkedHashSet<String>();
+            Set<String> keyAttributeSet = new LinkedHashSet<>();
             if (keyAttributesPanel != null) {
                 Component[] components = keyAttributesPanel.getComponents();
                 for (Component component : components) {
@@ -400,7 +400,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
         }
 
         public List<AttributeAggregator> getAttributeAggregators() {
-            List<AttributeAggregator> aggregators = new ArrayList<AttributeAggregator>();
+            List<AttributeAggregator> aggregators = new ArrayList<>();
             if (aggregatorsPanel != null) {
                 Component[] components = aggregatorsPanel.getComponents();
                 for (Component component : components) {

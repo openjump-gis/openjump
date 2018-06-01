@@ -49,8 +49,8 @@ import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
  * [sstein] - 22.Feb.2009 - modified to work in OpenJUMP
  */
 public class LayerTools extends ToolToMakeYourLifeEasier {
-    protected PlugInContext context = null;
 
+    protected PlugInContext context;
     
     public LayerTools(PlugInContext context) {
         super();
@@ -154,28 +154,21 @@ public class LayerTools extends ToolToMakeYourLifeEasier {
         return LayerTools.addStandardResultLayer("triangles", fc, context, new RoleTriangularIrregularNet());
     }
     
-    public static Map getLayer2FeatureMap(List features, PlugInContext context){
-        Layer layer = null;
+    public static Map<Layer,List<Feature>> getLayer2FeatureMap(List<Feature> features, PlugInContext context){
         List<Layer> layers = context.getLayerManager().getVisibleLayers(false);
         
-        Iterator iter = layers.iterator();
-        Iterator featIter;
-        Map layer2FeatList = new HashMap();
-        List layerFeats;
-        Feature feat;
+        Map<Layer,List<Feature>> layer2FeatList = new HashMap<>();
+        List<Feature> layerFeats;
 
-        while ( iter.hasNext() ){
-            layer = (Layer) iter.next();
+        for (Layer layer : layers){
             layerFeats = layer.getFeatureCollectionWrapper().getUltimateWrappee().getFeatures();
-            featIter = features.iterator();
-            while ( featIter.hasNext() ){
-                feat = (Feature)featIter.next();
-                
+            for (Feature feat : features){
+
                 if (layerFeats.contains(feat)){
                     if (!layer2FeatList.containsKey(layer)){
-                        layer2FeatList.put(layer, new ArrayList());
+                        layer2FeatList.put(layer, new ArrayList<Feature>());
                     }
-                    ((ArrayList)layer2FeatList.get(layer)).add(feat);
+                    layer2FeatList.get(layer).add(feat);
                 }
             }
         }
@@ -258,7 +251,7 @@ public class LayerTools extends ToolToMakeYourLifeEasier {
      */
     public static Layerable getSelectedLayerable(WorkbenchContext context, Class layerableClass){
         
-        Collection selLayers = context.getLayerNamePanel().selectedNodes(layerableClass);
+        Collection selLayers = context.getLayerableNamePanel().selectedNodes(layerableClass);
         
         if (selLayers==null || selLayers.size() == 0){
             return null;

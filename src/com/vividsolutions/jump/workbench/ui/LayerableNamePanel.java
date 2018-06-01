@@ -41,5 +41,5 @@ import com.vividsolutions.jump.workbench.model.Layerable;
  * LayerNamePanel.
  */
 public interface LayerableNamePanel extends LayerNamePanel {
-    public Collection<Layerable> getSelectedLayerables();
+    Collection<Layerable> getSelectedLayerables();
 }

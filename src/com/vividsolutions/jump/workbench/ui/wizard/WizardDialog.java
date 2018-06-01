@@ -32,21 +32,10 @@
 
 package com.vividsolutions.jump.workbench.ui.wizard;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -66,7 +55,8 @@ import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 
 public class WizardDialog extends JDialog implements WizardContext,
   InputChangedListener {
-  private List<WizardPanel> completedWizardPanels = new ArrayList<WizardPanel>();
+
+  private List<WizardPanel> completedWizardPanels = new ArrayList<>();
 
   private JButton cancelButton = new JButton();
 
@@ -82,7 +72,7 @@ public class WizardDialog extends JDialog implements WizardContext,
 
   private WizardPanel currentWizardPanel;
 
-  private List<WizardPanel> allWizardPanels = new ArrayList<WizardPanel>();
+  private List<WizardPanel> allWizardPanels = new ArrayList<>();
 
   private ErrorHandler errorHandler;
 
@@ -90,7 +80,7 @@ public class WizardDialog extends JDialog implements WizardContext,
 
   private boolean finishPressed = false;
 
-  private HashMap dataMap = new HashMap();
+  private Map<String,Object> dataMap = new HashMap<>();
   
   public final static String DATAKEY_CURRENTPANELID = WizardDialog.class
       .getName() + ".currentPanelId";
@@ -108,17 +98,14 @@ public class WizardDialog extends JDialog implements WizardContext,
     });
   }
 
-  private void checkIDs(Collection wizardPanels) {
-    ArrayList ids = new ArrayList();
+  private void checkIDs(Collection<WizardPanel> wizardPanels) {
+    List<String> ids = new ArrayList<>();
 
-    for (Iterator i = wizardPanels.iterator(); i.hasNext();) {
-      WizardPanel panel = (WizardPanel)i.next();
+    for (WizardPanel panel : wizardPanels) {
       ids.add(panel.getID());
     }
 
-    for (Iterator i = wizardPanels.iterator(); i.hasNext();) {
-      WizardPanel panel = (WizardPanel)i.next();
-
+    for (WizardPanel panel : wizardPanels) {
       if (panel.getNextID() == null) {
         continue;
       }
@@ -204,7 +191,7 @@ public class WizardDialog extends JDialog implements WizardContext,
     titlePanel.setForeground(Color.black);
     contentPane.add(titlePanel, BorderLayout.NORTH);
 
-    titleLabel.setFont(titleLabel.getFont().deriveFont(1, 12));
+    titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 12));
     titleLabel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
     titleLabel.setOpaque(false);
     titleLabel.setText("Title");
@@ -286,9 +273,7 @@ public class WizardDialog extends JDialog implements WizardContext,
   }
 
   private WizardPanel find(String id) {
-    for (Iterator i = allWizardPanels.iterator(); i.hasNext();) {
-      WizardPanel wizardPanel = (WizardPanel)i.next();
-
+    for (WizardPanel wizardPanel : allWizardPanels) {
       if (wizardPanel.getID().equals(id)) {
         return wizardPanel;
       }
@@ -305,7 +290,7 @@ public class WizardDialog extends JDialog implements WizardContext,
 
   public void previous() {
     try {
-      WizardPanel prevPanel = (WizardPanel)completedWizardPanels.remove(completedWizardPanels.size() - 1);
+      WizardPanel prevPanel = completedWizardPanels.remove(completedWizardPanels.size() - 1);
       setCurrentWizardPanel(prevPanel);
 
       // only WizardPanelV2 supports enteredFromRight() method
