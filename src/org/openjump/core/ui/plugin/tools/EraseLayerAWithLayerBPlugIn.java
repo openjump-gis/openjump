@@ -17,6 +17,7 @@ import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
@@ -24,9 +25,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
 
 /**
  * PlugIn to erase geometries of a layer with the geometries from another layer
@@ -41,8 +42,14 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
     public static String MINUS               = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.minus");
     public static String VERTEX_LAYER_SUFFIX = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.vertex-layer-suffix");
 
+    private static String UPDATE_SRC         = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Update-Source-features-with-result");
+    private static String CREATE_LYR         = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-new-layer-for-result");
+
+    private static String sFeatures = I18N.get("ui.GenericNames.features");
+
     private Layer layerA;
     private Layer layerB;
+    private boolean updateMode = false;
     private boolean showNewVertices;
     private boolean decomposeMulti;
 
@@ -88,8 +95,46 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
         Layer candidateB = layerB == null ? context.getCandidateLayer(1) : layerB;
         final JComboBox layerComboBoxA    = dialog.addLayerComboBox(LAYER_A, candidateA, context.getLayerManager());
         final JComboBox layerComboBoxB    = dialog.addLayerComboBox(LAYER_B, candidateB, context.getLayerManager());
+
+        final String OUTPUT_GROUP = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Match-Type");
+        final JRadioButton createNewLayerRB = dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, !updateMode,
+                I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-a-new-layer-for-the-results"));
+        final JRadioButton updateSourceRB = dialog.addRadioButton(UPDATE_SRC, OUTPUT_GROUP, updateMode,
+                I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Replace-the-geometry-of-Source-features-with-the-result-geometry") + "  ");
+
         final JCheckBox showNewVerticesCB = dialog.addCheckBox(SHOW_NEW_VERTICES, showNewVertices, SHOW_NEW_VERTICES);
         final JCheckBox decomposeMultiCB  = dialog.addCheckBox(DECOMPOSE_MULTI, decomposeMulti, DECOMPOSE_MULTI);
+
+        boolean layerAEditable = dialog.getLayer(LAYER_A).isEditable();
+        updateMode = layerAEditable;
+        createNewLayerRB.setSelected(!layerAEditable);
+        createNewLayerRB.setEnabled(true);
+        updateSourceRB.setSelected(layerAEditable);
+        updateSourceRB.setEnabled(layerAEditable);
+        showNewVerticesCB.setEnabled(createNewLayerRB.isSelected());
+        decomposeMultiCB.setEnabled(createNewLayerRB.isSelected());
+
+        layerComboBoxA.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean layerAEditable = dialog.getLayer(LAYER_A).isEditable();
+                updateMode = layerAEditable;
+                createNewLayerRB.setSelected(!layerAEditable);
+                createNewLayerRB.setEnabled(true);
+                updateSourceRB.setSelected(layerAEditable);
+                updateSourceRB.setEnabled(layerAEditable);
+                showNewVerticesCB.setEnabled(createNewLayerRB.isSelected());
+                decomposeMultiCB.setEnabled(createNewLayerRB.isSelected());
+            }
+        });
+
+        createNewLayerRB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showNewVerticesCB.setEnabled(createNewLayerRB.isSelected());
+                decomposeMultiCB.setEnabled(createNewLayerRB.isSelected());
+            }
+        });
 
         GUIUtil.centreOnWindow(dialog);
     }
@@ -97,6 +142,7 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
     private void getDialogValues(MultiInputDialog dialog) {
         layerA = dialog.getLayer(LAYER_A);
         layerB = dialog.getLayer(LAYER_B);
+        updateMode = dialog.getBoolean(UPDATE_SRC);
         showNewVertices = dialog.getBoolean(SHOW_NEW_VERTICES);
         decomposeMulti = dialog.getBoolean(DECOMPOSE_MULTI);
     }
@@ -111,8 +157,85 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
             index.insert(g.getEnvelopeInternal(), g);
         }
 
+        EditTransaction transaction = new EditTransaction(new LinkedHashSet<Feature>(),
+                "Erase A With B", layerA, true, true, context.getLayerViewPanel().getContext());
 
+        Collection<Feature> result = processCollection(
+                monitor,
+                layerA.getFeatureCollectionWrapper().getFeatures(),
+                index,
+                transaction);
 
+        if (updateMode) {
+            transaction.commit();
+        } else {
+            // Clone layerA
+            FeatureCollection result1 = new FeatureDataset(layerA.getFeatureCollectionWrapper().getFeatureSchema());
+            for (Object o : layerA.getFeatureCollectionWrapper().getFeatures()) {
+                Feature newFeature = ((Feature)o).clone(false, true);
+                newFeature.setGeometry(getHomogeneousGeometry(newFeature.getGeometry()));
+                result1.add(newFeature);
+            }
+            for (Object o : result1.getFeatures()) {
+                Feature feature = (Feature)o;
+                List<Geometry> candidates = index.query(feature.getGeometry().getEnvelopeInternal());
+                for (Geometry b : candidates) {
+                    feature.setGeometry(getHomogeneousGeometry(erase(
+                            feature.getGeometry(),
+                            getHomogeneousGeometry(b)
+                    )));
+                }
+            }
+            FeatureCollection result2 = new FeatureDataset(result1.getFeatureSchema());
+            for (Object o : result1.getFeatures()) {
+                Geometry geometry = ((Feature)o).getGeometry();
+                if (!geometry.isEmpty()) {
+                    if (geometry instanceof GeometryCollection && decomposeMulti) {
+                        for (int i = 0 ; i < geometry.getNumGeometries() ; i++) {
+                            Feature f = ((Feature)o).clone(false, false);
+                            f.setGeometry(geometry.getGeometryN(i));
+                            result2.add(f);
+                        }
+                    } else {
+                        result2.add((Feature)o);
+                    }
+                }
+            }
+            workbenchContext.getLayerManager().addLayer(StandardCategoryNames.RESULT,
+                    layerA.getName() + " " + MINUS + " " + layerB.getName(), result2);
+
+            if (showNewVertices) {
+                FeatureSchema schemaVertices = new FeatureSchema();
+                schemaVertices.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+                schemaVertices.addAttribute("fid", AttributeType.INTEGER);
+                FeatureCollection fcVertices = new FeatureDataset(schemaVertices);
+                List cList = new ArrayList();
+                for (Object o : layerA.getFeatureCollectionWrapper().getFeatures()) {
+                    Geometry g = ((Feature)o).getGeometry();
+                    for (Coordinate c : g.getCoordinates()) {
+                        cList.add(c);
+                    }
+                }
+                Collections.sort(cList);
+                GeometryFactory gf = new GeometryFactory();
+                for (Object o : result2.getFeatures()) {
+                    Geometry g = ((Feature)o).getGeometry();
+                    for (Coordinate c : g.getCoordinates()) {
+                        if (Collections.binarySearch(cList, c) < 0) {
+                            Feature f = new BasicFeature(schemaVertices);
+                            f.setGeometry(gf.createPoint(c));
+                            f.setAttribute("fid", ((Feature)o).getID());
+                            fcVertices.add(f);
+                        }
+                    }
+                }
+                workbenchContext.getLayerManager().addLayer(StandardCategoryNames.RESULT,
+                        layerA.getName() + " - " + VERTEX_LAYER_SUFFIX, fcVertices);
+            }
+            layerA.setVisible(false);
+        }
+
+        /*
         // Clone layerA
         FeatureCollection result1 = new FeatureDataset(layerA.getFeatureCollectionWrapper().getFeatureSchema());
         for (Object o : layerA.getFeatureCollectionWrapper().getFeatures()) {
@@ -177,7 +300,44 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
                     layerA.getName() + " - " + VERTEX_LAYER_SUFFIX, fcVertices);
         }
         layerA.setVisible(false);
+        */
     }
+
+    private Collection<Feature> processCollection(
+            TaskMonitor monitor,
+            Collection<Feature> fcA,
+            STRtree index,
+            EditTransaction transaction) {
+        Collection<Feature> resultColl = new ArrayList<>();
+        int total = fcA.size();
+        int count = 0;
+        for (Feature fSrc : fcA) {
+            monitor.report(count++, total, sFeatures);
+            if (monitor.isCancelRequested()) return null;
+
+            Geometry gSrc = fSrc.getGeometry();
+            if (gSrc == null) continue;
+
+            List<Geometry> candidates = index.query(fSrc.getGeometry().getEnvelopeInternal());
+            Geometry resultGeom = getHomogeneousGeometry(fSrc.getGeometry());
+            for (Geometry b : candidates) {
+                resultGeom = getHomogeneousGeometry(erase(resultGeom,getHomogeneousGeometry(b)));
+            }
+            if (resultGeom.isEmpty() && updateMode) {
+                transaction.deleteFeature(fSrc);
+            }
+            else {
+                if (updateMode && !fSrc.getGeometry().equals(resultGeom)) {
+                    transaction.modifyFeatureGeometry(fSrc, resultGeom);
+                } else {
+                    resultColl.add(fSrc);
+                }
+            }
+        }
+
+        return resultColl;
+    }
+
 
     private Geometry erase(Geometry a, Geometry b) {
         return a.difference(b);
@@ -185,6 +345,7 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
 
     private Geometry getHomogeneousGeometry(Geometry geom) {
         if (geom.isEmpty()) return geom;
+        else if (!geom.getGeometryType().equals("GeometryCollection")) return geom;
         int dim = geom.getDimension();
         List list = new ArrayList();
         switch(dim) {
