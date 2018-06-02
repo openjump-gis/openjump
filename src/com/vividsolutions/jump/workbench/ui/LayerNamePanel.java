@@ -45,9 +45,8 @@ public interface LayerNamePanel extends LayerManagerProxy {
     Collection selectedNodes(Class c);
 
     /**
-     * @deprecated implement LayerableNamePanel.getSelectedLayerables() instead
+     * Return layerables which are instance of Layer
      */
-    @Deprecated
     Layer[] getSelectedLayers();
 
     /**
