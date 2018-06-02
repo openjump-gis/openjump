@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-06-02 mmichaud <m.michael.michaud@orange.fr>
+  * upgrade dxf-driver to 0.9.0 (could not export MultiPolygon)
+
 2018-06-01 mmichaud <m.michael.michaud@orange.fr>
   * make target layer of EraseLayerAWithLayerBPlugIn updatable. Improve 18N.
 
