@@ -37,11 +37,8 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.*;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.plugin.*;
-import java.util.Properties;
 import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
@@ -60,14 +57,14 @@ public class SplitFeaturesPlugIn extends AbstractThreadedUiPlugIn {
     
     public static final ImageIcon ICON = IconLoader.icon("split_features.png");
     
-    NoderPlugIn noder = new NoderPlugIn();
+    private NoderPlugIn noder = new NoderPlugIn();
     
     public SplitFeaturesPlugIn() { }
   
     public void initialize(PlugInContext context) throws Exception {
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
         JPopupMenu popupMenu = context.getLayerViewPanel().popupMenu();
-        featureInstaller.addPopupMenuItem(popupMenu,
+        featureInstaller.addPopupMenuPlugin(popupMenu,
             this, 
             new String[]{noder.getName()},
             getName(),
@@ -90,9 +87,7 @@ public class SplitFeaturesPlugIn extends AbstractThreadedUiPlugIn {
         
         monitor.allowCancellationRequests();
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding-input"));
-        
-        final Layer layer = context.getLayerNamePanel().chooseEditableLayer();
-        
+
         noder.setUseSelected(true); 
         noder.setFindIntersections(false);
         noder.setLineProcessor(NoderPlugIn.Processor.SPLIT);
@@ -101,8 +96,6 @@ public class SplitFeaturesPlugIn extends AbstractThreadedUiPlugIn {
         noder.setInterpolatedZDp(3);
         
         noder.run(monitor, context);
-        
-        if (monitor.isCancelRequested()) return;
     }
   
 }

@@ -37,11 +37,10 @@ public class ExtensionManagerPlugIn extends ThreadedBasePlugIn {
     }
     
     public void initialize(PlugInContext context) throws Exception {
-        context.getFeatureInstaller().addMainMenuItem(
+        context.getFeatureInstaller().addMainMenuPlugin(
             // [Michael Michaud 2007-03-23] Change MenuNames.TOOLS to MenuNames.CUSTOMIZE
-            this, MenuNames.CUSTOMIZE,
-    		this.getName(), null,
-    		null);
+            this, new String[]{MenuNames.CUSTOMIZE},
+    		this.getName(), false, null, null);
     }
 
 }

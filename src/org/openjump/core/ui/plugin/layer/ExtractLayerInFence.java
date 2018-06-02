@@ -53,7 +53,6 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class ExtractLayerInFence extends AbstractPlugIn {
 
@@ -65,10 +64,6 @@ public class ExtractLayerInFence extends AbstractPlugIn {
 	}
 	
 	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext workbenchContext = context.getWorkbenchContext();
-		FeatureInstaller featureInstaller = new FeatureInstaller(
-				workbenchContext);
-		
 	    context.getFeatureInstaller().addMainMenuPlugin(this,
 		    new String[]
 				{MenuNames.EDIT, MenuNames.EXTRACT},

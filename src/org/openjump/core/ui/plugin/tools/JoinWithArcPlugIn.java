@@ -63,6 +63,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 public class JoinWithArcPlugIn extends AbstractPlugIn {
+
     private WorkbenchContext workbenchContext;
     
     private final static String sJoinWithArc = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Join-With-Arc");
@@ -73,13 +74,16 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
     private final static String sFeaturesMustBeSelected= I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.features-must-be-selected");
 	
     private final static String RADIUS = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Radius");
-    private MultiInputDialog dialog;
     private double arcRadius = 50.0;
 
     public void initialize(PlugInContext context) throws Exception
     {     
         workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuItem(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY }, getName(), false, null, this.createEnableCheck(workbenchContext));
+        context.getFeatureInstaller().addMainMenuPlugin(
+                this,
+                new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY },
+                getName(),
+                false, null, this.createEnableCheck(workbenchContext));
     }
     
     public String getName() {
@@ -134,10 +138,9 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
             }
         }
             
-        if (fillet != null)
-        {
+        if (fillet != null) {
             Feature currFeature = (Feature) selectedFeatures.iterator().next();
-            Feature newFeature = (Feature) currFeature.clone();
+            Feature newFeature = currFeature.clone(true);
             newFeature.setGeometry(fillet);
             Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
             LayerManager layerManager = context.getLayerManager();
@@ -193,39 +196,36 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
         double n = W.y * (P3.x - P1.x) - W.x * (P3.y - P1.y);
         double d = W.y * V.x - W.x * V.y;
         
-        if (d != 0.0)
-        {
+        if (d != 0.0) {
             double t1 = n / d;
-            Coordinate E = new Coordinate((P1.x + V.x * t1),(P1.y + V.y * t1));
-            return E;
+            return new Coordinate((P1.x + V.x * t1),(P1.y + V.y * t1));
         }
-        else
-        {
+        else {
             return null;
         }
     }
     
-     private LineString MakeRoundCorner(Coordinate A, Coordinate B, Coordinate C, Coordinate D, double r, boolean arcOnly)
-    {
-        MathVector Gv = new MathVector();
+    private LineString MakeRoundCorner(Coordinate A, Coordinate B, Coordinate C, Coordinate D,
+                                       double r, boolean arcOnly) {
+        MathVector Gv;
         MathVector Hv;
         MathVector Fv;
         Coordinate E = Intersect(A, B, C, D);	//vector solution
         
-        if (E != null) //non-parallel lines
-        {
+        if (E != null) { //non-parallel lines
+
             MathVector Ev = new MathVector(E);
             
-            if (E.distance(B) > E.distance(A)) //find longest distance from intersection
-            {   //these equations assume B and D are closest to the intersection
+            if (E.distance(B) > E.distance(A)) { //find longest distance from intersection
+                //these equations assume B and D are closest to the intersection
                 //reverse points
                 Coordinate temp = A;
                 A = B;
                 B = temp;
             }
             
-            if (E.distance(D) > E.distance(C)) //find longest distance from intersection
-            {   //these equations assume B and D are closest to the intersection
+            if (E.distance(D) > E.distance(C)) {//find longest distance from intersection
+                //these equations assume B and D are closest to the intersection
                 //reverse points
                 Coordinate temp = C;
                 C = D;
@@ -237,8 +237,7 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
             double alpha = Av.vectorBetween(Ev).angleRad(Cv.vectorBetween(Ev)) / 2.0; //we only need the half angle
             double h1 = Math.abs(r / Math.sin(alpha));  //from definition of sine solved for h
             
-            if ((h1 * h1 - r * r) >= 0)
-            {
+            if ((h1 * h1 - r * r) >= 0) {
                 double d1 = Math.sqrt(h1 * h1 - r * r);	//pythagorean theorem}
                 double theta = Math.PI / 2.0 - alpha; //sum of triangle interior angles = 180 degrees
                 theta = theta * 2.0;		      //we only need the double angle}
@@ -248,8 +247,7 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
                 Hv = Ev.add(Cv.vectorBetween(Ev).unit().scale(d1));
                 Fv = Ev.add(Gv.vectorBetween(Ev).rotateRad(alpha).unit().scale(h1));
                 
-                if (Math.abs(Fv.distance(Hv) - Fv.distance(Gv)) > 1.0) //rotated the wrong dirction
-                {
+                if (Math.abs(Fv.distance(Hv) - Fv.distance(Gv)) > 1.0) {//rotated the wrong dirction
                     Fv = Ev.add(Gv.vectorBetween(Ev).rotateRad(-alpha).unit().scale(h1));
                     theta = -theta;
                 }
@@ -263,19 +261,17 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
                 return new GeometryFactory().createLineString(coordinates.toCoordinateArray());
             }
         }
-       return null;
+        return null;
     }
         
    
-     private LineString filletTwoLineStrings(LineString ls1, LineString ls2)
-     {
+     private LineString filletTwoLineStrings(LineString ls1, LineString ls2) {
          Coordinate A = ls1.getCoordinateN(0);
          Coordinate B = ls1.getCoordinateN(1);
          Coordinate C = ls2.getCoordinateN(0);
          Coordinate D = ls2.getCoordinateN(1);
          LineString lineString = MakeRoundCorner(A, B, C, D, arcRadius, false);
-         if (lineString != null)
-         {             
+         if (lineString != null) {
              CoordinateList coordinates = new CoordinateList();
              coordinates.add(lineString.getCoordinates(), false);
              return new GeometryFactory().createLineString(coordinates.toCoordinateArray());
@@ -290,15 +286,13 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
              CoordinateList filletCoordinates = new CoordinateList();
              filletCoordinates.add(ls.getCoordinateN(0));
              
-             for (int i = 0; i <= ls.getNumPoints() - 3; i++)
-             {
+             for (int i = 0; i <= ls.getNumPoints() - 3; i++) {
                  Coordinate A = ls.getCoordinateN(i);
                  Coordinate B = ls.getCoordinateN(i+1);
                  Coordinate C = ls.getCoordinateN(i+1); //copy B
                  Coordinate D = ls.getCoordinateN(i+2);
                  LineString lineString = MakeRoundCorner(A, B, C, D, arcRadius, true);
-                 if (!lineString.isEmpty()) 
-                 {
+                 if (lineString != null && !lineString.isEmpty()) {
                      filletCoordinates.add(lineString.getCoordinates(), false, false);
                  }
              }
@@ -315,14 +309,15 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
          
          CoordinateList filletCoordinates = new CoordinateList();
          
-         for (int i = 0; i <= ls.getNumPoints() - 3; i++)
-         {
+         for (int i = 0; i <= ls.getNumPoints() - 3; i++) {
              Coordinate A = ls.getCoordinateN(i);
              Coordinate B = ls.getCoordinateN(i+1);
              Coordinate C = ls.getCoordinateN(i+1); //copy B
              Coordinate D = ls.getCoordinateN(i+2);
              LineString lineString = MakeRoundCorner(A, B, C, D, arcRadius, true);
-             filletCoordinates.add(lineString.getCoordinates(), false, false);
+             if (lineString != null) {
+                 filletCoordinates.add(lineString.getCoordinates(), false, false);
+             }
          }
 
          Coordinate A = ls.getCoordinateN(ls.getNumPoints() - 2); //second to last
@@ -330,8 +325,10 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
          Coordinate C = ls.getCoordinateN(0);
          Coordinate D = ls.getCoordinateN(1);
          LineString lineString = MakeRoundCorner(A, B, C, D, arcRadius, true);
-         filletCoordinates.add(lineString.getCoordinates(), false, false);
-         filletCoordinates.add(filletCoordinates.getCoordinate(0));
+         if (lineString != null) {
+             filletCoordinates.add(lineString.getCoordinates(), false, false);
+             filletCoordinates.add(filletCoordinates.getCoordinate(0));
+         }
          return new GeometryFactory().createPolygon( new GeometryFactory().createLinearRing(filletCoordinates.toCoordinateArray()),null);
      }
      
@@ -346,7 +343,9 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
              Coordinate C = ring.getCoordinateN(i+1); //copy B
              Coordinate D = ring.getCoordinateN(i+2);
              LineString lineString = MakeRoundCorner(A, B, C, D, arcRadius, true);
-             filletCoordinates.add(lineString.getCoordinates(), false, false);
+             if (lineString != null) {
+                 filletCoordinates.add(lineString.getCoordinates(), false, false);
+             }
          }
 
          Coordinate A = ring.getCoordinateN(ring.getNumPoints() - 2); //second to last
@@ -354,8 +353,10 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
          Coordinate C = ring.getCoordinateN(0);
          Coordinate D = ring.getCoordinateN(1);
          LineString lineString = MakeRoundCorner(A, B, C, D, arcRadius, true);
-         filletCoordinates.add(lineString.getCoordinates(), false, false);
-         filletCoordinates.add(filletCoordinates.getCoordinate(0));
+         if (lineString != null) {
+             filletCoordinates.add(lineString.getCoordinates(), false, false);
+             filletCoordinates.add(filletCoordinates.getCoordinate(0));
+         }
          return new GeometryFactory().createLinearRing(filletCoordinates.toCoordinateArray());
      }     
 }

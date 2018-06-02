@@ -25,8 +25,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 
-    //private EnableCheck enableCheck;
-
     @Override
     public void initialize(PlugInContext context) throws Exception {
 	    WorkbenchContext workbenchContext = context.getWorkbenchContext();
@@ -34,19 +32,19 @@ public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 	    
 	    // Install in main menu
 	    FeatureInstaller installer = new FeatureInstaller(workbenchContext);
-	    installer.addMainMenuItem(this,
+	    installer.addMainMenuPlugin(this,
 	        new String[] { MenuNames.LAYER }, getName() + "...", false, null, enableCheck);
 		
 		// Install in layerName popup menu
 	    JPopupMenu popupMenu = workbenchContext.getWorkbench().getFrame()
 	        .getLayerNamePopupMenu();
-	    installer.addPopupMenuItem(popupMenu, this, getName() + "{pos:5}",
+	    installer.addPopupMenuPlugin(popupMenu, this, getName() + "{pos:5}",
 		    false, null, enableCheck);
 		
 		// INstall in WMSLayerName popup menu
 	    popupMenu = workbenchContext.getWorkbench().getFrame()
 		    .getWMSLayerNamePopupMenu();
-	    installer.addPopupMenuItem(popupMenu, this, getName() + "{pos:6}",
+	    installer.addPopupMenuPlugin(popupMenu, this, getName() + "{pos:6}",
 		    false, null, enableCheck);
     }
 
@@ -80,11 +78,7 @@ public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 	    }
 	    return true;
     }
-
-    /**
-     * @param workbenchContext
-     * @return an enable check
-     */
+    
     public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
 	    //if (enableCheck != null) return enableCheck;
 	    EnableCheckFactory enableCheckFactory = new EnableCheckFactory(workbenchContext);

@@ -107,7 +107,6 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                             final KeyOptionPanel keyOptionPanel,
                             final AggregateOptionPanel aggregateOptionPanel) throws Exception {
 
-        //dialog.setSideBarImage(IconLoader.icon("dissolve_layer_icon.gif"));
         dialog.setSideBarDescription(DESCRIPTION);
 
         dialog.addSeparator();
@@ -144,13 +143,15 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
             public void itemStateChanged(ItemEvent itemEvent) {
                 if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
                     layer = (Layer)layerComboBox.getSelectedItem();
-                    FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-                    try {
-                        keyOptionPanel.setSchema(schema);
-                        aggregateOptionPanel.setSchema(schema);
-                        updateControls(dialog, keyOptionPanel, aggregateOptionPanel);
-                    } catch(Exception ex) {
-                        throw new RuntimeException(ex);
+                    if (layer != null) {
+                        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+                        try {
+                            keyOptionPanel.setSchema(schema);
+                            aggregateOptionPanel.setSchema(schema);
+                            updateControls(dialog, keyOptionPanel, aggregateOptionPanel);
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 }
             }
@@ -165,7 +166,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
         layer = dialog.getLayer(SOURCE_LAYER);
         FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
         List<String> keyAttributes = new ArrayList<>(keyOptionPanel.getKeyAttributes());
-        List<AttributeAggregator> aggregators = new ArrayList<AttributeAggregator>();
+        List<AttributeAggregator> aggregators = new ArrayList<>();
         aggregators.add(new AttributeAggregator(
                 schema.getAttributeName(schema.getGeometryIndex()),
                 (Aggregator)dialog.getComboBox(GEOMETRY_AGGREGATOR).getSelectedItem(),
@@ -283,7 +284,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
     class KeyAttributePanel extends JPanel {
         final KeyOptionPanel keyOptionPanel;
         final FeatureSchema schema;
-        final JComboBox jcbInputAttributeName;
+        final JComboBox<String> jcbInputAttributeName;
         final JButton jbRemove;
 
         KeyAttributePanel(final KeyOptionPanel keyOptionPanel,
@@ -292,7 +293,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
             setLayout(new FlowLayout());
             this.keyOptionPanel = keyOptionPanel;
             this.schema = schema;
-            jcbInputAttributeName = new JComboBox();
+            jcbInputAttributeName = new JComboBox<>();
             for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
                 jcbInputAttributeName.addItem(schema.getAttributeName(i));
             }
@@ -309,9 +310,10 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                         if (keyOptionPanel.getKeyAttributes().size() > 1) {
                             keyOptionPanel.getKeyAttributesPanel().remove(KeyAttributePanel.this);
                             SwingUtilities.getWindowAncestor(keyOptionPanel).pack();
-                        } else {
-                            //TODO throw message
                         }
+                        //else {
+                            //TODO throw message ?
+                        //}
                     }
             });
 
@@ -320,7 +322,12 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
         }
 
         public String getAttribute() {
-            return jcbInputAttributeName.getSelectedItem().toString();
+            Object selection = jcbInputAttributeName.getSelectedItem();
+            if (selection != null) {
+                return selection.toString();
+            } else {
+                return null;
+            }
         }
 
         private String pickKeyAttribute(FeatureSchema schema, Set<String> set) throws Exception {
@@ -406,15 +413,19 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                 for (Component component : components) {
                     if (component instanceof AttributeAggregatePanel) {
                         AttributeAggregatePanel aap = (AttributeAggregatePanel) component;
-                        String inputName = aap.jcbInputAttributeName.getSelectedItem().toString();
-                        String outputName = aap.jtfOutputAttributeName.getText();
-                        Aggregator agg = ((Aggregator) aap.jcbAggregators.getSelectedItem()).clone();
-                        agg.setIgnoreNull(aap.jcbIgnoreNull.isSelected());
-                        if (aap.jtfParameter.isEnabled() && agg.getParameters().size() > 0) {
-                            agg.setParameter(agg.getParameters().iterator().next().toString(), aap.jtfParameter.getText());
+                        Object selectedAttributeName = aap.jcbInputAttributeName.getSelectedItem();
+                        Object selectedAggregator = aap.jcbAggregators.getSelectedItem();
+                        if (selectedAttributeName != null && selectedAggregator != null) {
+                            String inputName = selectedAttributeName.toString();
+                            String outputName = aap.jtfOutputAttributeName.getText();
+                            Aggregator agg = ((Aggregator)selectedAggregator).clone();
+                            agg.setIgnoreNull(aap.jcbIgnoreNull.isSelected());
+                            if (aap.jtfParameter.isEnabled() && agg.getParameters().size() > 0) {
+                                agg.setParameter(agg.getParameters().iterator().next().toString(), aap.jtfParameter.getText());
+                            }
+                            AttributeAggregator aggregator = new AttributeAggregator(inputName, agg, outputName);
+                            aggregators.add(aggregator);
                         }
-                        AttributeAggregator aggregator = new AttributeAggregator(inputName, agg, outputName);
-                        aggregators.add(aggregator);
                     }
                 }
             }
@@ -428,8 +439,8 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
         final FeatureSchema schema;
 
         JTextField jtfOutputAttributeName;
-        JComboBox jcbInputAttributeName;
-        JComboBox jcbAggregators;
+        JComboBox<String> jcbInputAttributeName;
+        JComboBox<Aggregator> jcbAggregators;
         JCheckBox jcbIgnoreNull;
         JTextField jtfParameter;
         JButton jbRemove;
@@ -443,24 +454,29 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
             jtfOutputAttributeName = new JTextField();
             jtfOutputAttributeName.setPreferredSize(LARGE);
 
-            jcbInputAttributeName = new JComboBox();
+            jcbInputAttributeName = new JComboBox<>();
             for (int i = 0 ; i < schema.getAttributeCount() ; i++) {
                 if (i == schema.getGeometryIndex()) continue;
                 jcbInputAttributeName.addItem(schema.getAttributeName(i));
             }
-            String defaultAttribute = jcbInputAttributeName.getSelectedItem().toString();
+            String defaultAttribute = null;
+            if (jcbInputAttributeName.getSelectedItem() != null) {
+                defaultAttribute = jcbInputAttributeName.getSelectedItem().toString();
+            }
             jtfOutputAttributeName.setText(defaultAttribute);
             jcbInputAttributeName.setPreferredSize(LARGE);
 
-            jcbAggregators = new JComboBox(Aggregators.getAggregators(schema.getAttributeType(defaultAttribute)).values().toArray());
+            jcbAggregators = new JComboBox<>(
+                    Aggregators.getAggregators(schema.getAttributeType(defaultAttribute))
+                            .values().toArray(new Aggregator[0]));
             jcbAggregators.setPreferredSize(LARGE);
 
             Aggregator aggregator = (Aggregator)jcbAggregators.getSelectedItem();
             jcbIgnoreNull = new JCheckBox();
             jcbIgnoreNull.setPreferredSize(MEDIUM);
-            jcbIgnoreNull.setSelected(aggregator.ignoreNull());
+            jcbIgnoreNull.setSelected(aggregator == null || aggregator.ignoreNull());
             jtfParameter = new JTextField(",");
-            jtfParameter.setEditable(aggregator.getParameters().size() > 0);
+            jtfParameter.setEditable(aggregator != null && aggregator.getParameters().size() > 0);
             jtfParameter.setPreferredSize(NARROW);
             jbRemove = new JButton();
             jbRemove.setIcon(IconLoader.icon("remove.gif"));
@@ -471,10 +487,13 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     AttributeType type = schema.getAttributeType(jcbInputAttributeName.getSelectedItem().toString());
-                    jcbAggregators.setModel(new DefaultComboBoxModel(Aggregators.getAggregators(type).values().toArray()));
+                    jcbAggregators.setModel(new DefaultComboBoxModel<>(
+                            Aggregators.getAggregators(type).values().toArray(new Aggregator[0])));
                     Aggregator agg = (Aggregator)jcbAggregators.getSelectedItem();
-                    jcbIgnoreNull.setSelected(agg.ignoreNull());
-                    jtfParameter.setEditable(agg.getParameters().size() > 0);
+                    if (agg != null) {
+                        jcbIgnoreNull.setSelected(agg.ignoreNull());
+                        jtfParameter.setEditable(agg.getParameters().size() > 0);
+                    }
                     jtfOutputAttributeName.setText(jcbInputAttributeName.getSelectedItem().toString());
                 }
             });
@@ -483,8 +502,10 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     Aggregator agg = (Aggregator)jcbAggregators.getSelectedItem();
-                    jcbIgnoreNull.setSelected(agg.ignoreNull());
-                    jtfParameter.setEditable(agg.getParameters().size() > 0);
+                    if (agg != null) {
+                        jcbIgnoreNull.setSelected(agg.ignoreNull());
+                        jtfParameter.setEditable(agg.getParameters().size() > 0);
+                    }
                 }
             });
 
@@ -502,8 +523,8 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
             add(jcbIgnoreNull);
             add(jtfParameter);
             add(jbRemove);
-        }
 
+        }
     }
 
 }

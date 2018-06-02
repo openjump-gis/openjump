@@ -59,14 +59,14 @@ public class NodeFeaturesPlugIn extends AbstractThreadedUiPlugIn {
     
     public static final ImageIcon ICON = IconLoader.icon("node_features.png");
     
-    NoderPlugIn noder = new NoderPlugIn();
+    private NoderPlugIn noder = new NoderPlugIn();
     
     public NodeFeaturesPlugIn() { }
   
     public void initialize(PlugInContext context) throws Exception {
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
         JPopupMenu popupMenu = context.getLayerViewPanel().popupMenu();
-        featureInstaller.addPopupMenuItem(popupMenu,
+        featureInstaller.addPopupMenuPlugin(popupMenu,
             this, 
             new String[]{noder.getName()},
             getName(),
@@ -89,9 +89,7 @@ public class NodeFeaturesPlugIn extends AbstractThreadedUiPlugIn {
         
         monitor.allowCancellationRequests();
         monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding-input"));
-        
-        final Layer layer = context.getLayerNamePanel().chooseEditableLayer();
-        
+
         noder.setUseSelected(true); 
         noder.setFindIntersections(false);
         noder.setLineProcessor(NoderPlugIn.Processor.NODE);
@@ -100,8 +98,6 @@ public class NodeFeaturesPlugIn extends AbstractThreadedUiPlugIn {
         noder.setInterpolatedZDp(3);
         
         noder.run(monitor, context);
-        
-        if (monitor.isCancelRequested()) return;
     }
   
 }
