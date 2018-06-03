@@ -74,50 +74,56 @@ import javax.swing.JComboBox;
  */
 public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
 
-    //public static String TRIANGULATION     = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulation");
-    public static String TRIANGULATE       = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulate");
-    public static String TRIANGULATED      = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulated");
-    public static String SITES_LAYER       = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.sites-layer");
-    public static String CONSTRAINTS_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.constraints-layer");
-    public static String INTERIOR_ONLY     = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.polygon-interior-only");
-    public static String TOLERANCE         = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.tolerance");
-    public static String DESCRIPTION       = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.description");
-    public static Layer NO_CONSTRAINT      = new Layer(I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.no-constraint"),  
-                                                Color.BLACK, new FeatureDataset(new FeatureSchema()), new LayerManager());
+  //public static String TRIANGULATION     = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulation");
+  public static String TRIANGULATE       = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulate");
+  public static String TRIANGULATED      = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulated");
+  public static String SITES_LAYER       = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.sites-layer");
+  public static String CONSTRAINTS_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.constraints-layer");
+  public static String INTERIOR_ONLY     = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.polygon-interior-only");
+  public static String TOLERANCE         = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.tolerance");
+  public static String DESCRIPTION       = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.description");
+  public static Layer NO_CONSTRAINT;
 
 	String sitesLayer;
 	String constraintsLayer = null;
 	boolean polygonInteriorOnly = false;
 	double tolerance = 0.0;
     
-    public void initialize(PlugInContext context) throws Exception {
+	public void initialize(PlugInContext context) throws Exception {
     	    
-	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-	    	featureInstaller.addMainMenuPlugin(
-	    	        this,
-	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
-	                getName() + "...",
-	                false,			//checkbox
-	                IconLoader.icon("triangulation.png"),
-	                createEnableCheck(context.getWorkbenchContext()));
-    }
+	  FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+	  featureInstaller.addMainMenuPlugin(
+	          this,
+            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
+            getName() + "...",
+            false,			//checkbox
+            IconLoader.icon("triangulation.png"),
+            createEnableCheck(context.getWorkbenchContext()));
+	}
     
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-        return new MultiEnableCheck().add(checkFactory.createAtLeastNLayersMustExistCheck(1));
-    }
+	public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+	  EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+	  return new MultiEnableCheck().add(checkFactory.createAtLeastNLayersMustExistCheck(1));
+	}
     
     
 	public boolean execute(PlugInContext context) throws Exception{
 	    this.reportNothingToUndoYet(context);
+    // lazy evaluation
+    // TODO : there is probably a better (lighter) way to set no constraint
+    if (NO_CONSTRAINT == null) {
+      NO_CONSTRAINT = new Layer(
+              I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.no-constraint"),
+              Color.BLACK, new FeatureDataset(new FeatureSchema()), new LayerManager());
+    }
  		MultiInputDialog dialog = new MultiInputDialog(
-	            context.getWorkbenchFrame(), getName(), true);
-	        setDialogValues(dialog, context);
-	        GUIUtil.centreOnWindow(dialog);
-	        dialog.setVisible(true);
-	        if (! dialog.wasOKPressed()) { return false; }
-	        getDialogValues(dialog);	    
-	    return true;
+ 		        context.getWorkbenchFrame(), getName(), true);
+ 		setDialogValues(dialog, context);
+ 		GUIUtil.centreOnWindow(dialog);
+ 		dialog.setVisible(true);
+ 		if (! dialog.wasOKPressed()) { return false; }
+ 		getDialogValues(dialog);
+ 		return true;
 	}
 	
 	public void setSitesLayer(String sitesLayer) {
@@ -136,164 +142,167 @@ public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
 	    this.tolerance = tolerance;
 	}
 	
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
-	    dialog.setSideBarDescription(DESCRIPTION);
-	    if (sitesLayer == null || context.getLayerManager().getLayer(sitesLayer) == null) {
-	        sitesLayer = context.getCandidateLayer(0).getName();
+	private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
+	  dialog.setSideBarDescription(DESCRIPTION);
+	  if (sitesLayer == null || context.getLayerManager().getLayer(sitesLayer) == null) {
+	    sitesLayer = context.getCandidateLayer(0).getName();
+	  }
+	  dialog.addLayerComboBox(SITES_LAYER, context.getLayerManager().getLayer(sitesLayer), null, context.getLayerManager());
+	  final JComboBox jcbConstraint = dialog.addLayerComboBox(CONSTRAINTS_LAYER, NO_CONSTRAINT, null, getConstraintCandidateLayers(context));
+	  final JCheckBox jcbInteriordialog = dialog.addCheckBox(INTERIOR_ONLY, polygonInteriorOnly);
+	  jcbInteriordialog.setEnabled(jcbConstraint.getSelectedItem() != NO_CONSTRAINT);
+	  jcbConstraint.addActionListener(new ActionListener() {
+	    public void actionPerformed(ActionEvent e) {
+	      jcbInteriordialog.setEnabled(jcbConstraint.getSelectedItem() != NO_CONSTRAINT) ;
 	    }
-    	dialog.addLayerComboBox(SITES_LAYER, context.getLayerManager().getLayer(sitesLayer), null, context.getLayerManager());
-    	final JComboBox jcbConstraint = dialog.addLayerComboBox(CONSTRAINTS_LAYER, NO_CONSTRAINT, null, getConstraintCandidateLayers(context));
-    	final JCheckBox jcbInteriordialog = dialog.addCheckBox(INTERIOR_ONLY, polygonInteriorOnly);
-    	jcbInteriordialog.setEnabled(jcbConstraint.getSelectedItem() != NO_CONSTRAINT);
-    	jcbConstraint.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                jcbInteriordialog.setEnabled(jcbConstraint.getSelectedItem() != NO_CONSTRAINT) ;
-            }
-        });
-    	dialog.addDoubleField(TOLERANCE, tolerance, 12);
-    }
+	  });
+	  dialog.addDoubleField(TOLERANCE, tolerance, 12);
+	}
 
 	private void getDialogValues(MultiInputDialog dialog) {
-	    sitesLayer = dialog.getLayer(SITES_LAYER).getName();
-	    constraintsLayer = dialog.getLayer(CONSTRAINTS_LAYER) != NO_CONSTRAINT ?
-	                       dialog.getLayer(CONSTRAINTS_LAYER).getName() : null;
-	    polygonInteriorOnly = dialog.getBoolean(INTERIOR_ONLY);
-	    tolerance = dialog.getDouble(TOLERANCE);
-    }
+	  sitesLayer = dialog.getLayer(SITES_LAYER).getName();
+	  constraintsLayer = dialog.getLayer(CONSTRAINTS_LAYER) != NO_CONSTRAINT ?
+            dialog.getLayer(CONSTRAINTS_LAYER).getName() : null;
+	  polygonInteriorOnly = dialog.getBoolean(INTERIOR_ONLY);
+	  tolerance = dialog.getDouble(TOLERANCE);
+	}
 	
-    private List<Layer> getConstraintCandidateLayers(PlugInContext context) {
-        Layer[] layers = context.getLayerManager().getLayers().toArray(new Layer[0]);
-        List<Layer> linearLayers = new ArrayList<>();
-        linearLayers.add(NO_CONSTRAINT);
-        for (Layer layer : layers) {
-            FeatureCollection fc = layer.getFeatureCollectionWrapper();
-            if (!fc.isEmpty()) {
-                if ((fc.iterator().next()).getGeometry().getDimension() > 0) {
-                    linearLayers.add(layer);
-                }
-            } 
-        }
-        return linearLayers;
-    }
+	private List<Layer> getConstraintCandidateLayers(PlugInContext context) {
+	  Layer[] layers = context.getLayerManager().getLayers().toArray(new Layer[0]);
+	  List<Layer> linearLayers = new ArrayList<>();
+	  linearLayers.add(NO_CONSTRAINT);
+	  for (Layer layer : layers) {
+	    FeatureCollection fc = layer.getFeatureCollectionWrapper();
+	    if (!fc.isEmpty()) {
+	      if ((fc.iterator().next()).getGeometry().getDimension() > 0) {
+	        linearLayers.add(layer);
+	      }
+	    }
+	  }
+	  return linearLayers;
+	}
+
+	public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+	  monitor.report(TRIANGULATE);
+	  Geometry sites = getSites(context
+            .getLayerManager().getLayer(sitesLayer).getFeatureCollectionWrapper());
+	  ConformingDelaunayTriangulationBuilder triangulationBuilder = new ConformingDelaunayTriangulationBuilder();
+	  triangulationBuilder.setSites(sites);
+	  triangulationBuilder.setTolerance(tolerance);
+	  if (constraintsLayer != null) {
+	    triangulationBuilder.setConstraints(getConstraints(context
+              .getLayerManager().getLayer(constraintsLayer).getFeatureCollectionWrapper()));
+	  }
+	  Geometry g = triangulationBuilder.getTriangles(new GeometryFactory());
+	  List<Geometry> geometries = new ArrayList<>();
+	  for (int i = 0 ; i < g.getNumGeometries() ; i++) {
+	    geometries.add(g.getGeometryN(i));
+	  }
+	  if (polygonInteriorOnly && constraintsLayer != null) {
+	    geometries = removeTrianglesOutOfPolygons(geometries,
+              getPolygons(context.getLayerManager().getLayer(constraintsLayer).getFeatureCollectionWrapper()));
+	  }
+	  FeatureCollection result = FeatureDatasetFactory.createFromGeometry(geometries);
+	  context.getLayerManager().addLayer(StandardCategoryNames.RESULT, sitesLayer+"-"+TRIANGULATED, result);
+	}
     
-	
-    public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
-        monitor.report(TRIANGULATE);
-        Geometry sites = getSites(context
-                .getLayerManager().getLayer(sitesLayer).getFeatureCollectionWrapper());
-        ConformingDelaunayTriangulationBuilder triangulationBuilder = new ConformingDelaunayTriangulationBuilder();
-        triangulationBuilder.setSites(sites);
-        triangulationBuilder.setTolerance(tolerance);
-        if (constraintsLayer != null) {
-            triangulationBuilder.setConstraints(getConstraints(context
-                .getLayerManager().getLayer(constraintsLayer).getFeatureCollectionWrapper()));
-        }
-        Geometry g = triangulationBuilder.getTriangles(new GeometryFactory());
-        List<Geometry> geometries = new ArrayList<>();
-        for (int i = 0 ; i < g.getNumGeometries() ; i++) {
-            geometries.add(g.getGeometryN(i));
-        }
-        if (polygonInteriorOnly && constraintsLayer != null) {
-            geometries = removeTrianglesOutOfPolygons(geometries, 
-                getPolygons(context.getLayerManager().getLayer(constraintsLayer).getFeatureCollectionWrapper()));
-        }
-        FeatureCollection result = FeatureDatasetFactory.createFromGeometry(geometries);
-        context.getLayerManager().addLayer(StandardCategoryNames.RESULT, sitesLayer+"-"+TRIANGULATED, result); 
-    }
+	private List<Geometry> removeTrianglesOutOfPolygons(List<Geometry> geometries, List<Polygon> polygons) {
+	  STRtree index = new STRtree();
+	  List<Geometry> result = new ArrayList<>();
+	  for (Polygon p : polygons) {
+	    index.insert(p.getEnvelopeInternal(), p);
+	  }
+	  for (Geometry g : geometries) {
+	    Point p = g.getInteriorPoint();
+	    List candidates = index.query(p.getEnvelopeInternal());
+	    for (Object o : candidates) {
+	      if (((Geometry)o).contains(p)) {
+	        result.add(g);
+	        break;
+	      }
+	    }
+	  }
+	  return result;
+	}
     
-    private List<Geometry> removeTrianglesOutOfPolygons(List<Geometry> geometries, List<Polygon> polygons) {
-        STRtree index = new STRtree();
-        List<Geometry> result = new ArrayList<>();
-        for (Polygon p : polygons) {
-            index.insert(p.getEnvelopeInternal(), p);
-        }
-        for (Geometry g : geometries) {
-            Point p = g.getInteriorPoint();
-            List candidates = index.query(p.getEnvelopeInternal());
-            for (Object o : candidates) {
-                if (((Geometry)o).contains(p)) {
-                    result.add(g);
-                    break;
-                }
-            }
-        }
-        return result;
+	private Geometry getSites(FeatureCollection fcSites) {
+	  List<Point> sites = new ArrayList<>();
+	  GeometryFactory gf;
+	  if (fcSites.isEmpty()) {
+	    gf = new GeometryFactory();
     }
+	  else {
+	    gf = (fcSites.iterator().next()).getGeometry().getFactory();
+	    for (Object o : fcSites.getFeatures()) {
+	      addSite(((Feature)o).getGeometry(), sites, gf);
+	    }
+	  }
+	  return gf.createMultiPoint(sites.toArray(new Point[sites.size()]));
+	}
     
-    private Geometry getSites(FeatureCollection fcSites) {
-        List<Point> sites = new ArrayList<>();
-        GeometryFactory gf;
-        if (fcSites.isEmpty()) gf = new GeometryFactory();
-        else {
-            gf = (fcSites.iterator().next()).getGeometry().getFactory();
-            for (Object o : fcSites.getFeatures()) {
-                addSite(((Feature)o).getGeometry(), sites, gf);
-            }
-        }
-        return gf.createMultiPoint(sites.toArray(new Point[sites.size()]));
+	private void addSite(Geometry g, List<Point> sites, GeometryFactory gf) {
+	  if (g instanceof Point) {
+	    sites.add((Point)g);
     }
+	  else {
+	    for (Coordinate c : g.getCoordinates()) {
+	      sites.add(gf.createPoint(c));
+	    }
+	  }
+	}
     
-    private void addSite(Geometry g, List<Point> sites, GeometryFactory gf) {
-        if (g instanceof Point) sites.add((Point)g);
-        else {
-            for (Coordinate c : g.getCoordinates()) {
-                sites.add(gf.createPoint(c));
-            }
-        }
+	private Geometry getConstraints(FeatureCollection fcConstraints) {
+	  List<LineString> constraints = new ArrayList<>();
+	  GeometryFactory gf;
+	  if (fcConstraints.isEmpty()) {
+	    gf = new GeometryFactory();
     }
+	  else {
+	    gf = (fcConstraints.iterator().next()).getGeometry().getFactory();
+	    for (Object o : fcConstraints.getFeatures()) {
+	      addConstraints(((Feature)o).getGeometry(), constraints, gf);
+	    }
+	  }
+	  return gf.createMultiLineString(constraints.toArray(new LineString[constraints.size()]));
+	}
     
-    private Geometry getConstraints(FeatureCollection fcConstraints) {
-        List<LineString> constraints = new ArrayList<>();
-        GeometryFactory gf;
-        if (fcConstraints.isEmpty()) gf = new GeometryFactory();
-        else {
-            gf = (fcConstraints.iterator().next()).getGeometry().getFactory();
-            for (Object o : fcConstraints.getFeatures()) {
-                addConstraints(((Feature)o).getGeometry(), constraints, gf);
-            }
-        }
-        return gf.createMultiLineString(constraints.toArray(new LineString[constraints.size()]));
-    }
+	private void addConstraints(Geometry g, List<LineString> constraints, GeometryFactory gf) {
+	  if (g instanceof GeometryCollection) {
+	    for (int i = 0 ; i < g.getNumGeometries() ; i++) {
+	      addConstraints(g.getGeometryN(i), constraints, gf);
+	    }
+	  }
+	  else if (g instanceof Polygon) {
+	    constraints.add(((Polygon)g).getExteriorRing());
+	    for (int i = 0 ; i < ((Polygon)g).getNumInteriorRing() ; i++) {
+	      constraints.add(((Polygon)g).getInteriorRingN(i)); }
+	  }
+	  else if (g instanceof LineString) {
+	    constraints.add((LineString)g);
+	  }
+	}
     
-    private void addConstraints(Geometry g, List<LineString> constraints, GeometryFactory gf) {
-        if (g instanceof GeometryCollection) {
-            for (int i = 0 ; i < g.getNumGeometries() ; i++) {
-                addConstraints(g.getGeometryN(i), constraints, gf);
-            }
-        }
-        else if (g instanceof Polygon) {
-            constraints.add(((Polygon)g).getExteriorRing());
-            for (int i = 0 ; i < ((Polygon)g).getNumInteriorRing() ; i++) {
-                constraints.add(((Polygon)g).getInteriorRingN(i));
-            }
-        }
-        else if (g instanceof LineString) {
-            constraints.add((LineString)g);
-        }
-    }
+	private List<Polygon> getPolygons(FeatureCollection fcConstraints) {
+	  List<Polygon> polygons = new ArrayList<>();
+	  GeometryFactory gf;
+	  if (!fcConstraints.isEmpty()) {
+	    gf = (fcConstraints.iterator().next()).getGeometry().getFactory();
+	    for (Object o : fcConstraints.getFeatures()) {
+	      addPolygons(((Feature)o).getGeometry(), polygons, gf);
+	    }
+	  }
+	  return polygons;
+	}
     
-    private List<Polygon> getPolygons(FeatureCollection fcConstraints) {
-        List<Polygon> polygons = new ArrayList<>();
-        GeometryFactory gf;
-        if (fcConstraints.isEmpty()) gf = new GeometryFactory();
-        else {
-            gf = (fcConstraints.iterator().next()).getGeometry().getFactory();
-            for (Object o : fcConstraints.getFeatures()) {
-                addPolygons(((Feature)o).getGeometry(), polygons, gf);
-            }
-        }
-        return polygons;
-    }
-    
-    private void addPolygons(Geometry g, List<Polygon> polygons, GeometryFactory gf) {
-        if (g instanceof GeometryCollection) {
-            for (int i = 0 ; i < g.getNumGeometries() ; i++) {
-                addPolygons(g.getGeometryN(i), polygons, gf);
-            }
-        }
-        else if (g instanceof Polygon) {
-            polygons.add((Polygon)g);
-        }
-    }
+	private void addPolygons(Geometry g, List<Polygon> polygons, GeometryFactory gf) {
+	  if (g instanceof GeometryCollection) {
+	    for (int i = 0 ; i < g.getNumGeometries() ; i++) {
+	      addPolygons(g.getGeometryN(i), polygons, gf);
+	    }
+	  }
+	  else if (g instanceof Polygon) {
+	    polygons.add((Polygon)g);
+	  }
+	}
 	
 }
