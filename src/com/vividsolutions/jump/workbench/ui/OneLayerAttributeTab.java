@@ -13,27 +13,30 @@ import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
  */
 public class OneLayerAttributeTab extends AttributeTab {
     public OneLayerAttributeTab(WorkbenchContext context, TaskFrame taskFrame,
-        LayerManagerProxy layerManagerProxy) {
+        final LayerManagerProxy layerManagerProxy) {
         super(new InfoModel(), context, taskFrame, layerManagerProxy, true);
-        context.getLayerManager().addLayerListener(new LayerListener() {
-                public void featuresChanged(FeatureEvent e) {
-                    if (getLayerTableModel() == null) {
-                        //Get here after attribute viewer window is closed [Jon Aquino]
-                        return;
-                    }
-                    if ((e.getLayer() == getLayerTableModel().getLayer()) &&
-                            (e.getType() == FeatureEventType.ADDED)) {
-                        //DELETED events are already handled in LayerTableModel
-                        getLayerTableModel().addAll(e.getFeatures());
-                    }
-                }
+        LayerListener layerListener = new LayerListener() {
+          public void featuresChanged(FeatureEvent e) {
+            if (getLayerTableModel() == null) {
+              //Get here after attribute viewer window is closed [Jon Aquino]
+              return;
+            }
+            if ((e.getLayer() == getLayerTableModel().getLayer()) &&
+                    (e.getType() == FeatureEventType.ADDED)) {
+              //DELETED events are already handled in LayerTableModel
+              getLayerTableModel().addAll(e.getFeatures());
+            }
+          }
+          public void layerChanged(LayerEvent e) {
+            if (e.getType() == LayerEventType.REMOVED) {
+              layerManagerProxy.getLayerManager().removeLayerListener(this);
+            }
+          }
 
-                public void layerChanged(LayerEvent e) {
-                }
-
-                public void categoryChanged(CategoryEvent e) {
-                }
-            });
+          public void categoryChanged(CategoryEvent e) {
+          }
+        };
+        context.getLayerManager().addLayerListener(layerListener);
     }
 
     public OneLayerAttributeTab setLayer(Layer layer) {

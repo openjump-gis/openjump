@@ -1010,21 +1010,26 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
             }
 
             public Object yield() {
-                internalFrame.getLayerManager().addLayerListener(
-                        new LayerListener() {
-                            public void layerChanged(LayerEvent e) {
-                                if ((e.getType() == LayerEventType.METADATA_CHANGED)
-                                        || (e.getType() == LayerEventType.REMOVED)) {
-                                    updateTitle();
-                                }
+                LayerListener layerListener = new LayerListener() {
+                    public void layerChanged(LayerEvent e) {
+                        if ((e.getType() == LayerEventType.METADATA_CHANGED)
+                                || (e.getType() == LayerEventType.REMOVED)) {
+                            updateTitle();
+                        }
+                        if (e.getType() == LayerEventType.REMOVED) {
+                            if (!(internalFrame instanceof TaskFrame)) {
+                                internalFrame.getLayerManager().removeLayerListener(this);
                             }
+                        }
+                    }
 
-                            public void categoryChanged(CategoryEvent e) {
-                            }
+                    public void categoryChanged(CategoryEvent e) {
+                    }
 
-                            public void featuresChanged(FeatureEvent e) {
-                            }
-                        });
+                    public void featuresChanged(FeatureEvent e) {
+                    }
+                };
+                internalFrame.getLayerManager().addLayerListener(layerListener);
                 i.addPropertyChangeListener(JInternalFrame.TITLE_PROPERTY,
                         new PropertyChangeListener() {
                             public void propertyChange(PropertyChangeEvent e) {

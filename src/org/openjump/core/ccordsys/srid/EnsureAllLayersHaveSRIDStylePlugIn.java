@@ -12,13 +12,7 @@ import javax.swing.JInternalFrame;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Block;
-import com.vividsolutions.jump.workbench.model.CategoryEvent;
-import com.vividsolutions.jump.workbench.model.FeatureEvent;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.LayerEvent;
-import com.vividsolutions.jump.workbench.model.LayerListener;
-import com.vividsolutions.jump.workbench.model.LayerManager;
-import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
+import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
@@ -45,22 +39,26 @@ public class EnsureAllLayersHaveSRIDStylePlugIn extends AbstractPlugIn {
         }
         initialize(((LayerManagerProxy) internalFrame).getLayerManager());
     }
-    private void initialize(LayerManager layerManager) {
+    private void initialize(final LayerManager layerManager) {
         for (Iterator i = layerManager.iterator(); i.hasNext();) {
             Layer layer = (Layer) i.next();
             ensureHasSRIDStyle(layer);
         }
-        layerManager.addLayerListener(new LayerListener() {
+        LayerListener layerListener = new LayerListener() {
             public void featuresChanged(FeatureEvent e) {
             }
             public void layerChanged(LayerEvent e) {
                 if (e.getLayerable() instanceof Layer) {
                     ensureHasSRIDStyle((Layer) e.getLayerable());
                 }
+                if (e.getType() == LayerEventType.REMOVED) {
+                    layerManager.removeLayerListener(this);
+                }
             }
             public void categoryChanged(CategoryEvent e) {
             }
-        });
+        };
+        layerManager.addLayerListener(layerListener);
     }
     private void ensureHasSRIDStyle(Layer layer) {
         if (layer.getStyle(SRIDStyle.class) != null) {

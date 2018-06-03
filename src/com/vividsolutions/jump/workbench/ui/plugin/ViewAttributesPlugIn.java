@@ -182,7 +182,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
       });
       getContentPane().add(attributeTab, BorderLayout.CENTER);
       updateTitle(attributeTab.getLayer());
-      context.getLayerManager().addLayerListener(new LayerListener() {
+      LayerListener layerListener = new LayerListener() {
         public void layerChanged(LayerEvent e) {
           if (attributeTab.getLayer() != null) {
             updateTitle(attributeTab.getLayer());
@@ -191,11 +191,11 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
           if (e.getType() == LayerEventType.REMOVED) {
             if (e.getLayerable() == attributeTab.getLayer()) {
               attributeTab.getModel().dispose();
-              context.getLayerManager().removeLayerListener(this);
               context.getWorkbenchFrame().removeInternalFrame(
-                  ViewAttributesFrame.this);
+                      ViewAttributesFrame.this);
               dispose();
             }
+            context.getLayerManager().removeLayerListener(this);
           }
         }
 
@@ -204,7 +204,8 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 
         public void featuresChanged(FeatureEvent e) {
         }
-      });
+      };
+      context.getLayerManager().addLayerListener(layerListener);
       Assert
           .isTrue(
               !(this instanceof CloneableInternalFrame),

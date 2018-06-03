@@ -108,7 +108,7 @@ public class InfoFrame extends DetachableInternalFrame implements
         WorkbenchContext workbenchContext,
         LayerManagerProxy layerManagerProxy,
         final TaskFrame taskFrame) {
-		blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
+		    blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
         geometryInfoTab = new GeometryInfoTab(model, workbenchContext);
         rasterInfoTab = new RasterInfoTab(null, null);
         wmsInfoTab = new WMSInfoTab();
@@ -161,29 +161,29 @@ public class InfoFrame extends DetachableInternalFrame implements
             }
         });
         addInternalFrameListener(new InternalFrameAdapter() {
-			@Override
+			      @Override
             public void internalFrameClosed(InternalFrameEvent e) {
                 //Assume that there are no other views on the model
                 model.dispose();
-				savePositionAndSize();
+				        savePositionAndSize();
             }
 
         });
 		
-		addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentMoved(ComponentEvent e) {
-				super.componentMoved(e);
-				savePositionAndSize();
-			}
-			@Override
-			public void componentResized(ComponentEvent e) {
-				super.componentResized(e);
-				savePositionAndSize();
-			}
-		});
-		
-        layerManagerProxy.getLayerManager().addLayerListener(new LayerListener() {
+		    addComponentListener(new ComponentAdapter() {
+			      @Override
+			      public void componentMoved(ComponentEvent e) {
+				        super.componentMoved(e);
+				        savePositionAndSize();
+			      }
+			      @Override
+			      public void componentResized(ComponentEvent e) {
+				        super.componentResized(e);
+				        savePositionAndSize();
+			      }
+		    });
+
+		    LayerListener layerListener = new LayerListener() {
             public void featuresChanged(FeatureEvent e) {}
 
             public void layerChanged(LayerEvent e) {
@@ -192,11 +192,13 @@ public class InfoFrame extends DetachableInternalFrame implements
                     if (getModel().getLayers().contains(e.getLayerable())) {
                         getModel().remove((Layer)e.getLayerable());
                     }
+                    layerManager.removeLayerListener(this);
                 }
             }
 
             public void categoryChanged(CategoryEvent e) {}
-        });
+        };
+		    layerManagerProxy.getLayerManager().addLayerListener(layerListener);
     }
     public JPanel getAttributeTab() {
         return attributeTab;

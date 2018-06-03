@@ -101,10 +101,10 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
     }
 
     public AttributeTab(
-        final InfoModel model,
-        final WorkbenchContext workbenchContext,
-        final TaskFrame taskFrame,
-        LayerManagerProxy layerManagerProxy, boolean addScrollPanesToChildren) {
+            final InfoModel model,
+            final WorkbenchContext workbenchContext,
+            final TaskFrame taskFrame,
+            final LayerManagerProxy layerManagerProxy, boolean addScrollPanesToChildren) {
         this.layerManagerProxy = layerManagerProxy;
         this.model = model;
         this.taskFrame = taskFrame;
@@ -166,7 +166,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
                 tablePanel.getLayerNameRenderer().addMouseListener(mouseListener);
             }
         };
-        layerManagerProxy.getLayerManager().addLayerListener(new LayerListener() {
+        LayerListener layerListener = new LayerListener() {
             public void featuresChanged(FeatureEvent e) {}
 
             public void layerChanged(LayerEvent e) {
@@ -174,10 +174,14 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
                     //Editability may have changed. [Jon Aquino]
                     toolBar.updateEnabledState();
                 }
+                if (e.getType() == LayerEventType.REMOVED) {
+                    layerManagerProxy.getLayerManager().removeLayerListener(this);
+                }
             }
 
             public void categoryChanged(CategoryEvent e) {}
-        });
+        };
+        layerManagerProxy.getLayerManager().addLayerListener(layerListener);
         model.addListener(new InfoModelListener() {
             public void layerAdded(LayerTableModel layerTableModel) {
                 panel

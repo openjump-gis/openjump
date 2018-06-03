@@ -10,6 +10,9 @@
     - sridStyle set geometry srid only once, not once per Layer
     - layerListener added by AbstractPlugIn UndoableEdit is removed from
       LayerManager when the layer is removed
+  * also remove layerListeners added with associated to AttributeTablePanel,
+    AttributeTab, OneLayerAttributeTab, ViewAttributesFrame, InfoFrame,
+    WorkbenchFrame, EnsureAllLayersHaveSrid when the Layer is removed
 
 2018-06-02 mmichaud <m.michael.michaud@orange.fr>
   * upgrade dxf-driver to 0.9.0 (could not export MultiPolygon)

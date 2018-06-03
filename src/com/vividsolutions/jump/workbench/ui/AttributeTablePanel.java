@@ -484,27 +484,28 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                   0, 0), 0, 0));
         }
         updateGrid(model.getLayer());
-        model.getLayer().getLayerManager().addLayerListener(
-                new LayerListener() {
+        LayerListener layerListener = new LayerListener() {
 
-                    public void categoryChanged(CategoryEvent e) {
-                    }
+          public void categoryChanged(CategoryEvent e) {}
 
-                    public void featuresChanged(FeatureEvent e) {
-                    }
+          public void featuresChanged(FeatureEvent e) {}
 
-                    public void layerChanged(LayerEvent e) {
-                        if (e.getLayerable() != model.getLayer()) { return; }
-                        if (e.getType() == LayerEventType.METADATA_CHANGED) {
-                            //If layer becomes editable, apply row striping
-                            // and remove gridlines,
-                            //as recommended in Java Look and Feel Design
-                            // Guidelines: Advanced Topics [Jon Aquino]
-                            updateGrid(model.getLayer());
-                            repaint();
-                        }
-                    }
-                });
+          public void layerChanged(LayerEvent e) {
+            if (e.getLayerable() != model.getLayer()) { return; }
+            if (e.getType() == LayerEventType.METADATA_CHANGED) {
+              //If layer becomes editable, apply row striping
+              // and remove gridlines,
+              //as recommended in Java Look and Feel Design
+              // Guidelines: Advanced Topics [Jon Aquino]
+              updateGrid(model.getLayer());
+              repaint();
+            }
+            if (e.getType() == LayerEventType.REMOVED) {
+              e.getLayerable().getLayerManager().removeLayerListener(this);
+            }
+          }
+        };
+        model.getLayer().getLayerManager().addLayerListener(layerListener);
         try {
             JList list = new JList();
             list.setBackground(new JLabel().getBackground());
