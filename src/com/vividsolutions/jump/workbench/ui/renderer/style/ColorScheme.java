@@ -70,17 +70,14 @@ public class ColorScheme {
 
     private static void load() {
         try {
-            rangeColorSchemeNames = new ArrayList<String>();
-            discreteColorSchemeNames = new ArrayList<String>();
-            nameToColorsMap = new CollectionMap();
-            InputStream inputStream =
-                ColorScheme.class.getResourceAsStream("ColorScheme.txt");
-            try {
+            rangeColorSchemeNames = new ArrayList<>();
+            discreteColorSchemeNames = new ArrayList<>();
+            nameToColorsMap = new CollectionMap<>();
+            try (InputStream inputStream =
+                         ColorScheme.class.getResourceAsStream("ColorScheme.txt")) {
                 for (Object line : FileUtil.getContents(inputStream)) {
                     add((String)line);
                 }
-            } finally {
-                inputStream.close();
             }
         } catch (IOException e) {
             Assert.shouldNeverReachHere(e.toString());
@@ -99,23 +96,23 @@ public class ColorScheme {
         }
     }
 
-    private static CollectionMap nameToColorsMap() {
+    private static CollectionMap<String,Color> nameToColorsMap() {
         if (nameToColorsMap == null) {
             load();
         }
         return nameToColorsMap;
     }
 
-    private static CollectionMap nameToColorsMap;
+    private static CollectionMap<String,Color> nameToColorsMap;
 
-    public static Collection rangeColorSchemeNames() {
+    public static Collection<String> rangeColorSchemeNames() {
         if (rangeColorSchemeNames == null) {
             load();
         }
         return Collections.unmodifiableList(rangeColorSchemeNames);
     }
 
-    public static Collection discreteColorSchemeNames() {
+    public static Collection<String> discreteColorSchemeNames() {
         if (discreteColorSchemeNames == null) {
             load();
         }
@@ -124,9 +121,9 @@ public class ColorScheme {
 
     final private String name;
 
-    public ColorScheme(String name, Collection colors) {
+    public ColorScheme(String name, Collection<Color> colors) {
         this.name = name;
-        this.colors = new ArrayList<Color>(colors);
+        this.colors = new ArrayList<>(colors);
     }
 
     private int lastColorReturned = -1;

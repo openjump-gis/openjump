@@ -63,7 +63,6 @@ public class ECWImageFactory implements ReferencedImageFactory {
   }
 
   public ReferencedImage createImage(String location) throws Exception {
-    // if(true)throw new Exception("foobar");
 
     URI uri = new URI(location);
     if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri))
@@ -77,7 +76,7 @@ public class ECWImageFactory implements ReferencedImageFactory {
       throw new ECWLoadException(
           I18N.getMessage(
               "com.vividsolutions.jump.workbench.imagery.ecw.path-contains-nonansi-chars",
-              new Object[] { hint }));
+              hint));
     }
 
     return new ECWImage(filepath);
@@ -100,10 +99,10 @@ public class ECWImageFactory implements ReferencedImageFactory {
     if (available != null)
       return available;
     
-    available = new Boolean( _isAvailable(context) );
+    available = _isAvailable(context);
     if (!available)
-      context.getWorkbench().getFrame().log("ECW/JP2 SDK loader will be unavailable.");
-    
+      Logger.info("ECW/JP2 SDK loader will be unavailable.");
+
     return available;
   }
 

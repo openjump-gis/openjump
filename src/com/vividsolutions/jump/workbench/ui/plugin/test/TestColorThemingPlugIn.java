@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,12 +16,11 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorScheme;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
-import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 
 public class TestColorThemingPlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
-		context.getFeatureInstaller().addMainMenuItem(
+		context.getFeatureInstaller().addMainMenuPlugin(
 			this,
 			new String[] { "Tools", "Test" },
 			getName(),
@@ -32,9 +30,8 @@ public class TestColorThemingPlugIn extends AbstractPlugIn {
 		randomTrianglesPlugIn.setCities(cities);
 	}
 
-	private List cities =
+	private List<String> cities =
 		Arrays.asList(
-			new String[] {
 				"Alabama",
 				"Alaska",
 				"Arizona",
@@ -45,18 +42,17 @@ public class TestColorThemingPlugIn extends AbstractPlugIn {
 				"Delaware",
 				"Florida",
 				"Georgia",
-				"Hawaii" });
+				"Hawaii");
 
 	private RandomTrianglesPlugIn randomTrianglesPlugIn =
 		new RandomTrianglesPlugIn();
 
 	public boolean execute(PlugInContext context) throws Exception {
-		ArrayList names = new ArrayList();
+		ArrayList<String> names = new ArrayList<>();
         names.addAll(ColorScheme.discreteColorSchemeNames());
         names.addAll(ColorScheme.rangeColorSchemeNames());
 		Collections.reverse(names);
-		for (Iterator i = names.iterator(); i.hasNext();) {
-			String colorScheme = (String) i.next();
+		for (String colorScheme : names) {
 			execute(context, colorScheme);
 		}
 		return true;
@@ -68,9 +64,8 @@ public class TestColorThemingPlugIn extends AbstractPlugIn {
 		Layer layer = context.getLayerManager().getLayer("Random Triangles");
 		ColorScheme colorScheme = ColorScheme.create(colorSchemeName);
 		layer.setName("(" + colorScheme.getColors().size() + ") " + colorSchemeName);
-		Map<Object,BasicStyle> attributeToStyleMap = new HashMap<Object,BasicStyle>();
-		for (Iterator i = cities.iterator(); i.hasNext(); ) {
-			String city = (String) i.next();
+		Map<Object,BasicStyle> attributeToStyleMap = new HashMap<>();
+		for (String city : cities) {
 			attributeToStyleMap.put(city, new BasicStyle(colorScheme.next()));
 		}
 

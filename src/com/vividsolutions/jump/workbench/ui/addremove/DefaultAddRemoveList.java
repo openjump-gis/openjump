@@ -33,19 +33,15 @@
 package com.vividsolutions.jump.workbench.ui.addremove;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -55,11 +51,11 @@ import com.vividsolutions.jump.workbench.ui.JListTypeAheadKeyListener;
 
 
 public class DefaultAddRemoveList extends JPanel implements AddRemoveList {
+
     private BorderLayout borderLayout1 = new BorderLayout();
     private JList list = new JList();
     private DefaultAddRemoveListModel model;
     private InputChangedFirer inputChangedFirer = new InputChangedFirer();
-    private Border border1;
 
     public DefaultAddRemoveList() {
         this(new DefaultListModel());
@@ -87,24 +83,23 @@ public class DefaultAddRemoveList extends JPanel implements AddRemoveList {
     }
 
     public void setSelectedItems(Collection items) {
-        ArrayList indicesToSelect = new ArrayList();
+        List<Integer> indicesToSelect = new ArrayList<>();
 
-        for (Iterator i = items.iterator(); i.hasNext();) {
-            Object item = (Object) i.next();
+        for (Object item : items) {
             int index = getModel().getItems().indexOf(item);
 
             if (index == -1) {
                 continue;
             }
 
-            indicesToSelect.add(new Integer(index));
+            indicesToSelect.add(index);
         }
 
         int[] indexArray = new int[indicesToSelect.size()];
 
         for (int i = 0; i < indicesToSelect.size(); i++) {
-            Integer index = (Integer) indicesToSelect.get(i);
-            indexArray[i] = index.intValue();
+            Integer index = indicesToSelect.get(i);
+            indexArray[i] = index;
         }
 
         list.setSelectedIndices(indexArray);
@@ -123,12 +118,10 @@ public class DefaultAddRemoveList extends JPanel implements AddRemoveList {
     }
 
     public List getSelectedItems() {
-        return Arrays.asList(list.getSelectedValues());
+      return list.getSelectedValuesList();
     }
 
     void jbInit() throws Exception {
-        border1 = new EtchedBorder(EtchedBorder.RAISED, new Color(0, 0, 51),
-                new Color(0, 0, 25));
         this.setLayout(borderLayout1);
         this.add(list, BorderLayout.CENTER);
     }

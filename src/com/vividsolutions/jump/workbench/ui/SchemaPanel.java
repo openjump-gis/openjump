@@ -519,7 +519,7 @@ public class SchemaPanel extends JPanel {
     private void addPopupMenuItem(PlugIn plugIn, boolean checkBox, Icon icon,
             EnableCheck enableCheck, WorkbenchContext context) {
         final FeatureInstaller installer = new FeatureInstaller(context);
-        installer.addPopupMenuItem(popupMenu, addCleanUp(plugIn),
+        installer.addPopupMenuPlugin(popupMenu, addCleanUp(plugIn),
                 plugIn.getName(), checkBox, icon, enableCheck);
     }
 

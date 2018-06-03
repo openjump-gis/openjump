@@ -57,12 +57,11 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 
 public class RandomTrianglesPlugIn extends AbstractPlugIn {
-	private static int dummyLayerCount = 0;
+
 	private GeometryFactory geometryFactory = new GeometryFactory();
 	private WKTReader wktReader = new WKTReader(geometryFactory);
 	private List cities =
 		Arrays.asList(
-			new String[] {
 				"Alabama",
 				"Alaska",
 				"Arizona",
@@ -112,7 +111,7 @@ public class RandomTrianglesPlugIn extends AbstractPlugIn {
 				"Washington",
 				"West Virginia",
 				"Wisconsin",
-				"Wyoming" });
+				"Wyoming");
 
 	public RandomTrianglesPlugIn() {
 	}
@@ -153,7 +152,6 @@ public class RandomTrianglesPlugIn extends AbstractPlugIn {
 
 	private void generateLayer(PlugInContext context, int size)
 		throws ParseException, IOException {
-		dummyLayerCount++;
 
 		FeatureSchema featureSchema = new FeatureSchema();
 		featureSchema.addAttribute("Geometry", AttributeType.GEOMETRY);

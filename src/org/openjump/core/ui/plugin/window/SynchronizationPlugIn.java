@@ -288,13 +288,13 @@ public class SynchronizationPlugIn extends AbstractUiPlugIn {
                                         h / modelEnvelope.getHeight());
                             }
 
-                            double xCenteringOffset = ((w / scale) - modelEnvelope
-                                    .getWidth()) / 2.0;
-                            double yCenteringOffset = ((h / scale) - modelEnvelope
-                                    .getHeight()) / 2.0;
-                            Point2D.Double viewOriginAsPerceivedByModel = new Point2D.Double(
-                                    modelEnvelope.getMinX() - xCenteringOffset,
-                                    modelEnvelope.getMinY() - yCenteringOffset);
+                            //double xCenteringOffset = ((w / scale) - modelEnvelope
+                            //        .getWidth()) / 2.0;
+                            //double yCenteringOffset = ((h / scale) - modelEnvelope
+                            //        .getHeight()) / 2.0;
+                            //Point2D.Double viewOriginAsPerceivedByModel = new Point2D.Double(
+                            //        modelEnvelope.getMinX() - xCenteringOffset,
+                            //        modelEnvelope.getMinY() - yCenteringOffset);
                             viewport.initialize(scale,
                                     viewport.getOriginInModelCoordinates());
                             viewport.update();
