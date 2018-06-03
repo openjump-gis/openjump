@@ -40,7 +40,7 @@ public class FeatureCollectionAggregator {
     }
 
     /**
-     * Returns a FeatureCollection where attributes defines by aggregators are
+     * Returns a FeatureCollection where attributes defined by aggregators are
      * aggregated on features having the same key.
      * Feature's key are defined by one or more attributes from the source
      * featureCollection.
@@ -48,7 +48,7 @@ public class FeatureCollectionAggregator {
      */
     public FeatureCollection getAggregatedFeatureCollection() {
         Map<Key,List<AttributeAggregator>> map = new HashMap<>();
-        // Add attributes values to features with teh same key
+        // Add attribute values to features with the same key
         for (Object object : fc.getFeatures()) {
             Feature feature = (Feature)object;
             Key key = new Key(feature, keyAttributes);

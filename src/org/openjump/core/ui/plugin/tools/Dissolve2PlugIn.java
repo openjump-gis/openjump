@@ -167,12 +167,22 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
         FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
         List<String> keyAttributes = new ArrayList<>(keyOptionPanel.getKeyAttributes());
         List<AttributeAggregator> aggregators = new ArrayList<>();
-        aggregators.add(new AttributeAggregator(
-                schema.getAttributeName(schema.getGeometryIndex()),
-                (Aggregator)dialog.getComboBox(GEOMETRY_AGGREGATOR).getSelectedItem(),
-                schema.getAttributeName(schema.getGeometryIndex())));
+        // We use the special geometry aggregator if geometry is not a key attribute
+        System.out.println(keyAttributes);
+        if (!keyAttributes.contains(schema.getAttributeName(schema.getGeometryIndex()))) {
+            System.out.println("add");
+          aggregators.add(new AttributeAggregator(
+                  schema.getAttributeName(schema.getGeometryIndex()),
+                  (Aggregator) dialog.getComboBox(GEOMETRY_AGGREGATOR).getSelectedItem(),
+                  schema.getAttributeName(schema.getGeometryIndex())));
+        }
         aggregators.addAll(aggregateOptionPanel.getAttributeAggregators());
         int geometryTypeCount = 0;
+        for (String key : keyAttributes) {
+            if (schema.getAttributeType(key) == AttributeType.GEOMETRY) {
+                geometryTypeCount++;
+            }
+        }
         for (AttributeAggregator agg : aggregators) {
             if (agg.getAggregator().getOutputAttributeType() == AttributeType.GEOMETRY) {
                 geometryTypeCount++;
@@ -311,9 +321,6 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                             keyOptionPanel.getKeyAttributesPanel().remove(KeyAttributePanel.this);
                             SwingUtilities.getWindowAncestor(keyOptionPanel).pack();
                         }
-                        //else {
-                            //TODO throw message ?
-                        //}
                     }
             });
 
@@ -397,16 +404,16 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
             add(aggregatorsPanel, BorderLayout.CENTER);
         }
 
-        public void setSchema(final FeatureSchema schema) {
+        void setSchema(final FeatureSchema schema) {
             this.schema = schema;
             aggregatorsPanel.removeAll();
         }
 
-        public JPanel getAggregatorsPanel() {
+        JPanel getAggregatorsPanel() {
             return aggregatorsPanel;
         }
 
-        public List<AttributeAggregator> getAttributeAggregators() {
+        List<AttributeAggregator> getAttributeAggregators() {
             List<AttributeAggregator> aggregators = new ArrayList<>();
             if (aggregatorsPanel != null) {
                 Component[] components = aggregatorsPanel.getComponents();
