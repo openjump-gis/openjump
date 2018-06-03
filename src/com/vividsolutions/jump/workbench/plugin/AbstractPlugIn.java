@@ -392,18 +392,20 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
     // resources if the layer has been removed. 
     final UndoableEdit undoableEdit = command.toUndoableEdit();
     if (command.getLayer() != null) {
-        LayerManager layerManager = command.getLayer().getLayerManager();
+        final LayerManager layerManager = command.getLayer().getLayerManager();
         if (layerManager != null) {
-            layerManager.addLayerListener(new LayerListener(){
-                  public void categoryChanged(CategoryEvent e) {}
-                  public void featuresChanged(FeatureEvent e) {}
-                  public void layerChanged(LayerEvent e) {
-                      if (e.getType() == LayerEventType.REMOVED &&
-                          e.getLayerable() == command.getLayer()) {
-                          undoableEdit.die();
-                      }
-                  }
-            });
+            LayerListener listener = new LayerListener(){
+              public void categoryChanged(CategoryEvent e) {}
+              public void featuresChanged(FeatureEvent e) {}
+              public void layerChanged(LayerEvent e) {
+                if (e.getType() == LayerEventType.REMOVED &&
+                        e.getLayerable() == command.getLayer()) {
+                  undoableEdit.die();
+                  layerManager.removeLayerListener(this);
+                }
+              }
+            };
+            layerManager.addLayerListener(listener);
         }
     }
     layerManagerProxy.getLayerManager().getUndoableEditReceiver()

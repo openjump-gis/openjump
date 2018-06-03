@@ -343,6 +343,9 @@ public class LayerManager {
                     fireLayerChanged(layerable, LayerEventType.REMOVED, category,
                             index);
                 }
+                if (layerable instanceof Layer) {
+                    layerListeners.remove(((Layer)layerable).getLayerListener());
+                }
             }
         }
         System.gc();

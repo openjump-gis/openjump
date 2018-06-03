@@ -55,6 +55,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.SquareVertexStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
+import org.openjump.core.ccordsys.srid.SRIDStyle;
 
 /**
  * Adds colour, line-width, and other stylistic information to a Feature
@@ -102,7 +103,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
       FeatureCollection featureCollection, LayerManager layerManager) {
     super(name, layerManager);
     Assert.isTrue(featureCollection != null);
-
+    setLayerManager(layerManager);
     // Can't fire events because this Layerable hasn't been added to the
     // LayerManager yet. [Jon Aquino]
     boolean firingEvents = layerManager.isFiringEvents();
@@ -345,8 +346,9 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
     // dispose features if disposable nature
     Collection<Feature> features = getFeatureCollectionWrapper().getFeatures();
     for (Feature feature : features) {
-      if (feature instanceof Disposable)
+      if (feature instanceof Disposable) {
         ((Disposable) feature).dispose();
+      }
     }
     // Don't just call FeatureCollection#removeAll, because it may be a
     // database table, and we don't want to delete its contents! [Jon Aquino]
@@ -397,9 +399,11 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
     }
   }
 
-  private LayerListener getLayerListener() {
+  LayerListener getLayerListener() {
     // Need to create layerListener lazily because it will be called by the
     // superclass constructor. [Jon Aquino]
+    // Do not call getLayerListener in superclass constructor or layerListener
+    // will be erased during the instance initialization [mmichaud]
     if (layerListener == null) {
       layerListener = new LayerListener() {
         public void featuresChanged(FeatureEvent e) {
@@ -425,6 +429,13 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
               // on the blackboard [Jon Aquino 10/21/2003]
               fireAppearanceChanged();
             }
+            // Taken from SRIDStyle class to set SRID on new features
+            SRIDStyle ss = (SRIDStyle) getStyle(SRIDStyle.class);
+            if (e.getType() != FeatureEventType.DELETED && ss != null) {
+              for (Feature feature : e.getFeatures()) {
+                feature.getGeometry().setSRID(ss.getSRID());
+              }
+            }
           }
         }
 
@@ -435,7 +446,6 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
         }
       };
     }
-
     return layerListener;
   }
 

@@ -66,7 +66,12 @@ public abstract class AbstractLayerable implements Layerable {
   public AbstractLayerable(String name, LayerManager layerManager) {
     Assert.isTrue(name != null);
     Assert.isTrue(layerManager != null);
-    setLayerManager(layerManager);
+    // We got side effects with Layer#setLayerManager(layerManager) :
+    // a layerListener is added to the layerManager, then replaced it is
+    // replaced by a new layerListener during Layer initialization, and
+    // can never be removed.
+    //setLayerManager(layerManager);
+    this.layerManager = layerManager;
 
     // Can't fire events because this Layerable hasn't been added to the
     // LayerManager yet. [Jon Aquino]

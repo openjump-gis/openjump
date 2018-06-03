@@ -34,6 +34,10 @@ public class SRIDStyle implements Style {
         }
 
         updateSRIDs(layer);
+        // mmichaud 2018-06-03 : This is wrong. Every time a feature is added or change,
+        // it is updated as many times as the layerManager contains layers.
+        // Responsability of updating the  the srid is moved to the LayerListener
+        /*
         layer.getLayerManager().addLayerListener(new LayerListener() {
             public void featuresChanged(FeatureEvent e) {
                 for (Feature feature : e.getFeatures()) {
@@ -47,6 +51,7 @@ public class SRIDStyle implements Style {
             public void categoryChanged(CategoryEvent e) {
             }
         });
+        */
         initialized = true;
     }
 
