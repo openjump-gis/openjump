@@ -91,8 +91,7 @@ public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
     
 	public void initialize(PlugInContext context) throws Exception {
     	    
-	  FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-	  featureInstaller.addMainMenuPlugin(
+	  FeatureInstaller.getInstance().addMainMenuPlugin(
 	          this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERATE},
             getName() + "...",

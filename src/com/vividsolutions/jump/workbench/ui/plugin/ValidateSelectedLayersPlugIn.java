@@ -115,10 +115,9 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
 
     public void initialize(PlugInContext context) throws Exception
     {
-        	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    		featureInstaller.addMainMenuItem(
-    	        this,								//exe
-  				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA}, 	//menu path
+        FeatureInstaller.getInstance().addMainMenuPlugin(
+                this,								//exe
+  				      new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA}, 	//menu path
                 this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
                 false,			//checkbox
                 null,			//icon
@@ -290,8 +289,7 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
     private Feature toFeature(ValidationError error, Layer sourceLayer,
         Geometry geometry) {
         Feature ringFeature = new BasicFeature(schema);
-        ringFeature.setAttribute(SOURCE_FID,
-            new Integer(error.getFeature().getID()));
+        ringFeature.setAttribute(SOURCE_FID, error.getFeature().getID());
         ringFeature.setAttribute(ERROR, error.getMessage());
         ringFeature.setGeometry(geometry);
 

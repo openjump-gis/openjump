@@ -116,13 +116,13 @@ public class MoveLayerablePlugIn extends AbstractPlugIn {
           final WorkbenchContext workbenchContext) {
         return super.createEnableCheck(workbenchContext).add(new EnableCheck() {
           public String check(JComponent component) {
-            return (index(selectedLayerable(workbenchContext.getLayerNamePanel())) == 0) ? I18N
+            return (index(selectedLayerable(workbenchContext.getLayerableNamePanel())) == 0) ? I18N
                 .get("ui.plugin.MoveLayerablePlugIn.layer-is-already-at-the-top")
                 : null;
           }
         });
       }
-    };
+    }
   
     public static class MoveLayerableDownPlugIn extends MoveLayerablePlugIn {
       public static final Icon ICON = MoveLayerablePlugIn.DOWNICON;
@@ -139,11 +139,11 @@ public class MoveLayerablePlugIn extends AbstractPlugIn {
           final WorkbenchContext workbenchContext) {
         return super.createEnableCheck(workbenchContext).add(new EnableCheck() {
           public String check(JComponent component) {
-            return (index(selectedLayerable(workbenchContext.getLayerNamePanel())) == (workbenchContext
+            return (index(selectedLayerable(workbenchContext.getLayerableNamePanel())) == (workbenchContext
                 .getLayerViewPanel()
                 .getLayerManager()
                 .getCategory(
-                    selectedLayerable(workbenchContext.getLayerNamePanel()))
+                    selectedLayerable(workbenchContext.getLayerableNamePanel()))
                 .getLayerables().size() - 1)) ? I18N
                 .get("ui.plugin.MoveLayerablePlugIn.layer-is-already-at-the-bottom")
                 : null;
