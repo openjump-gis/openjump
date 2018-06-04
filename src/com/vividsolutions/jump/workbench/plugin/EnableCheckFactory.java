@@ -812,14 +812,20 @@ public class EnableCheckFactory {
     }
 
     /**
-     * Check that at least n RasterImageLayer.class layers have been loaded
+     * Check that at least n Layerables of a type (Layer.class,
+     * RasterImageLayer.class, WMSLayer.class, etc) have been loaded
      * 
      * @param number
-     *            of RasterImageLayer.class layers
+     *            of layerables
+     * @param type
+     *            of layerable class (RasterImageLayer.class, Layer.class,
+     *            WMSLayer.class, etc)
      * @return error message or null
      */
-    public EnableCheck createAtLeastNRasterImageLayersMustExistCheck(final int n) {
+    public EnableCheck createAtLeastNLayerablesMustExistCheck(final int n,
+            @SuppressWarnings("rawtypes") Class layerableClass) {
         return new EnableCheck() {
+            @SuppressWarnings("unchecked")
             @Override
             public String check(JComponent component) {
                 final LayerManager layerManager = workbenchContext
@@ -827,20 +833,16 @@ public class EnableCheckFactory {
                 String msg;
                 if (n == 1) {
                     msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layerables-must-exist")
-                            + " ("
-                            + get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image")
-                            + ")";
+                            + ": " + layerableClass.getSimpleName();
                 } else {
                     msg = getMessage(
                             "com.vividsolutions.jump.workbench.plugin.At-least-n-layerables-must-exist",
                             new Object[] { n })
-                            + " ("
-                            + get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image")
-                            + ")";
+                            + ": " + layerableClass.getSimpleName();
                     ;
                 }
-                return (layerManager == null || n > layerManager
-                        .getRasterImageLayers().size()) ? msg : null;
+                return (layerManager == null || n > layerManager.getLayerables(
+                        layerableClass).size()) ? msg : null;
             }
         };
     }
