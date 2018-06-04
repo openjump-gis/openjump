@@ -80,7 +80,6 @@ public class LayerManager {
     // itself immediately [Jon Aquino]
     private ArrayList<WeakReference<Layerable>> layerReferencesToDispose = new ArrayList<>();
     private boolean firingEvents = true;
-    // TODO Can a LayerListener still be there if the layer has been removed ? (see #419)
     private ArrayList<LayerListener> layerListeners = new ArrayList<>();
     private Iterator<Color> firstColors;
     private Blackboard blackboard = new Blackboard();
