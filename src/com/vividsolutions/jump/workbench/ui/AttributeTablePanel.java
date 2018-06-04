@@ -500,7 +500,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
               updateGrid(model.getLayer());
               repaint();
             }
-            if (e.getType() == LayerEventType.REMOVED) {
+            else if (e.getType() == LayerEventType.REMOVED) {
               e.getLayerable().getLayerManager().removeLayerListener(this);
             }
           }
