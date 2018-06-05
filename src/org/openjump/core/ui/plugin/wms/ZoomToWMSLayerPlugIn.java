@@ -584,7 +584,7 @@ public class ZoomToWMSLayerPlugIn extends AbstractPlugIn {
             if ( title == null )
                 title = unknown;
 
-            ArrayList<BoundingBox> boundingBoxList = mapLayer.getAllBoundingBoxList();
+            List<BoundingBox> boundingBoxList = mapLayer.getAllBoundingBoxList();
 
             for (BoundingBox bb : boundingBoxList) {
 

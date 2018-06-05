@@ -21,119 +21,69 @@
  */
 package org.openjump.core.ui.plugin.wms;
 
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
 
-//import org.openjump.io.SIDLayer;
-
 import java.util.*;
-import java.awt.*;
 import java.awt.event.*;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.wms.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.plugin.*;
-import com.vividsolutions.jump.geom.EnvelopeUtil;
-import com.vividsolutions.jump.util.*;
 
 public class ZoomToWMSPlugIn extends AbstractPlugIn {
     
-    PlugInContext context;
+    private PlugInContext context;
 
-    Object[][] values = null;
+    private String[] columnNames = null;
 
-    String[] columnNames = null;
+    private Object[][] values = null;
 
-    JTable infoTable = null;
+    private JTable infoTable = null;
 
-    TableColumnModel tcm = null;
+    private TableColumnModel tcm = null;
 
-    JPanel jp = null;
-
-    JScrollPane infoTableSc = null;
-
-    final WorkbenchContext wbcontext = null;
-    
     public void initialize( PlugInContext context ) throws Exception {
         this.context = context;
-        final WorkbenchContext wbcontext = context.getWorkbenchContext();
         EnableCheckFactory enableCheckFactory = new EnableCheckFactory( context
             .getWorkbenchContext() );
 
+        EnableCheck enableCheck = new MultiEnableCheck()
+                .add(enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck())
+                .add(enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck());
 
-        EnableCheck enableCheck = new MultiEnableCheck().add(
-            enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck() ).add(
-            		/* [sstein 14May2008] not needed anymore?
-                    enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck()).add(
-                            createWMSLayerCannotBeSelectedCheck()).add(new EnableCheck()
-                            {
-                                public String check(JComponent component) 
-                                {
-                                    ((JMenuItem) component).setText(getName() +
-                                        StringUtil.s(wbcontext.getLayerNamePanel()
-                                                     .selectedNodes(WMSLayer.class).size()));
-                                                     return null;
-                                }
-                             });
-                     */
-        			enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck());
-
-        context.getFeatureInstaller()
-        //			.addMainMenuItemWithJava14Fix ( this, new String [ ] { "View" },
-			.addMainMenuItem( this, new String[] { MenuNames.VIEW },
-                I18N.get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer" )
-                    + "{pos:8}", false, null, enableCheck ); //enableCheck );
+        context.getFeatureInstaller().addMainMenuPlugin(
+                this, new String[] { MenuNames.VIEW },
+                I18N.get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer" ) + "{pos:8}",
+                false, null, enableCheck );
         // Add PlugIn to WMSPopupMenu
-        context.getFeatureInstaller().addPopupMenuItem(
+        context.getFeatureInstaller().addPopupMenuPlugin(
             context.getWorkbenchFrame().getWMSLayerNamePopupMenu(), this,
             I18N.get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer" ), false,
             null, enableCheck );
         
-    } // End initialize ( )
+    }
 
     
     public boolean execute( PlugInContext context ) throws Exception {
         this.context = context;
-        //boolean isSIDLayer = false;
-        final WorkbenchContext wbcontext = context.getWorkbenchContext();
-        //-- [sstein 3.Mai.2008] added check for MrSID compatibility
-        for (Iterator i = wbcontext.getLayerNamePanel().selectedNodes(WMSLayer.class).iterator(); i.hasNext();)
-        {
-            WMSLayer layer = (WMSLayer) i.next();
-            //if (layer.getClass() == SIDLayer.class)
-            //{
-            //	isSIDLayer = true;
-            //}
+
+        List<MapLayer> mapLayerOfChoosenLayers = getMapLayerOfChoosenLayers( context );
+        if (mapLayerOfChoosenLayers == null) {
+            return false;
         }
-        //if (isSIDLayer){
-        //    reportNothingToUndoYet(context);
-        //    Envelope env = envelopeOfSelectedLayers(context);
-        //    
-        //    if ((env.getHeight() > 0.0) && (env.getWidth() > 0.0))
-        //    {
-        //    	context.getLayerViewPanel().getViewport().zoom(EnvelopeUtil.bufferByFraction(env, 0.03));
-        //    }
-        //}
-        //else{
-            ArrayList mapLayerOfChoosenLayers = getMapLayerOfChoosenLayers( context );
-            if (mapLayerOfChoosenLayers == null) {
-                return false;
-            }
-	        String selectedSRS = getSelectedSRS( context );
+        String selectedSRS = getSelectedSRS( context );
 	
-	        Hashtable boundingBoxesForSRS = getBoundingBoxesForSRS( mapLayerOfChoosenLayers,
-	            selectedSRS );
-	        zoomToBoundingBox( context, boundingBoxesForSRS, selectedSRS );
-        //}
+        Map<String,BoundingBox> boundingBoxesForSRS =
+                getBoundingBoxesForSRS( mapLayerOfChoosenLayers, selectedSRS );
+	      zoomToBoundingBox( context, boundingBoxesForSRS, selectedSRS );
+
         return true;
-    } // End execute ( )
+    }
     
     public String getName() {
         return I18N.get("org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer");
@@ -162,23 +112,28 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
         
         WMSLayer[] wmsLayers = getSelectedWMSLayer( context );
 
-        if ( wmsLayers == null )
-            return null;
+        if ( wmsLayers == null ) {
 
-        int selectionSize = wmsLayers.length;
+            return new String[0];
+        } else {
 
-        String[] selectedWMSLayerNames = new String[selectionSize];
+            int size = wmsLayers.length;
 
-        for (int i = 0; i < selectionSize; i++) {
-            selectedWMSLayerNames[i] = wmsLayers[i].getName();
+            String[] selectedWMSLayerNames = new String[size];
+
+            for (int i = 0; i < size; i++) {
+                selectedWMSLayerNames[i] = wmsLayers[i].getName();
+            }
+
+            return selectedWMSLayerNames;
         }
-        return selectedWMSLayerNames;
     }
     
     
-    private ArrayList getMapLayerOfChoosenLayers( PlugInContext context ) throws Exception {
-        ArrayList<MapLayer> mapLayerOfChoosenLayers = new ArrayList<MapLayer>();
-        ArrayList<String> wmsLayerNames = new ArrayList<String>();
+    private List<MapLayer> getMapLayerOfChoosenLayers( PlugInContext context ) throws Exception {
+
+        List<MapLayer> mapLayerOfChoosenLayers = new ArrayList<>();
+        List<String> wmsLayerNames = new ArrayList<>();
 
         // Choosen Layers
         WMSLayer[] wmsLayers = getSelectedWMSLayer( context );
@@ -189,71 +144,58 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
             return null;
         }
 
-        for (int i = 0; i < wmsLayers.length; i++) {
-            List<String> wmsList = wmsLayers[i].getLayerNames();
-            for (int k = 0; k < wmsList.size(); k++) {
-                wmsLayerNames.add( wmsList.get( k ) );
-            }
+        for (WMSLayer wmsLayer : wmsLayers) {
+            wmsLayerNames.addAll(wmsLayer.getLayerNames());
         }
 
-        // Get all available MapLayer
-        WMService wmService = wmsLayers[0].getService();
-        Capabilities capabilities = wmService.getCapabilities();
-        MapLayer topLayer = capabilities.getTopLayer();
-
-        ArrayList<MapLayer> allLayer = this.getAllMapLayer( context );
-
-        for (int i = 0; i < allLayer.size(); i++) {
-            MapLayer mL = (MapLayer) allLayer.get( i );
-        }
+        List<MapLayer> allLayers = this.getAllMapLayer( context );
 
         // Filter choosen Layer
-        for (int i = 0; i < wmsLayerNames.size(); i++) {
-            String name = wmsLayerNames.get( i );
+        for (String wmsLayerName : wmsLayerNames) {
 
-            for (int k = 0; k < allLayer.size(); k++) {
-                MapLayer mapLayer = allLayer.get( k );
+            for (MapLayer mapLayer : allLayers) {
                 String mapLayerTitle = mapLayer.getTitle();
                 String mapLayerName = mapLayer.getName();
 
                 if ( mapLayerTitle != null && mapLayerName != null ) {
-                    if ( mapLayerTitle.indexOf( name ) >= 0
-                        || mapLayerName.indexOf( name ) >= 0 )
+                    if ( mapLayerTitle.contains( wmsLayerName )
+                        || mapLayerName.contains( wmsLayerName ) )
                         mapLayerOfChoosenLayers.add( mapLayer );
                 } else if ( mapLayerTitle != null ) {
-                    if ( mapLayerTitle.indexOf( name ) >= 0 )
+                    if ( mapLayerTitle.contains( wmsLayerName ) )
                         mapLayerOfChoosenLayers.add( mapLayer );
                 } else if ( mapLayerName != null ) {
-                    if ( mapLayerName.indexOf( name ) >= 0 )
+                    if ( mapLayerName.contains( wmsLayerName ) )
                         mapLayerOfChoosenLayers.add( mapLayer );
                 }
-            } // End for k ...
-        } // End for i ...
+            }
+        }
         return mapLayerOfChoosenLayers;
-    } // End getMapLayerOfChoosenLayers ( )
+    }
 
     
     private String getSelectedSRS( PlugInContext context ) {
         String selectedSRS = "0";
         // Choosen Layers
         WMSLayer[] wmsLayers = getSelectedWMSLayer( context );
-
-        for (int i = 0; i < wmsLayers.length; i++) {
-            selectedSRS = wmsLayers[i].getSRS().toLowerCase();
+        if (wmsLayers != null) {
+            for (WMSLayer wmsLayer : wmsLayers) {
+                selectedSRS = wmsLayer.getSRS().toLowerCase();
+            }
         }
         //[MM] just return the SRS of the last WMSLayer ?
         return selectedSRS;
     }
 
     
-    private Hashtable getBoundingBoxesForSRS( ArrayList<MapLayer> mapLayerList, String srs ) {
-        Hashtable boundingBoxesForSRS = new Hashtable();
+    private Map<String,BoundingBox> getBoundingBoxesForSRS( List<MapLayer> mapLayerList, String srs ) {
 
-        for (int i = 0; i < mapLayerList.size(); i++) {
-            MapLayer mapLayer = (MapLayer) mapLayerList.get( i );
+        Map<String,BoundingBox> boundingBoxesForSRS = new HashMap<>();
+
+        for (MapLayer mapLayer : mapLayerList) {
 
             // All BoundingBoxes
-            ArrayList boundingBoxList = mapLayer.getAllBoundingBoxList();
+            List<BoundingBox> boundingBoxList = mapLayer.getAllBoundingBoxList();
             // LatLon BoundingBox (epsg:4326)
             BoundingBox latLonBoundingBox = mapLayer.getLatLonBoundingBox();
 
@@ -266,18 +208,16 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
                 System.out.println( I18N
                     .get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.no-bounding-box" )
                     + mapLayer.getTitle() );
-                continue;
             } else {
                 // If double key - count up.
-                HashSet doppelt = new HashSet();
+                Set<String> doppelt = new HashSet<>();
                 int zaehler = 0;
 
-                for (int k = 0; k < anzBB; k++) {
-                    BoundingBox tmpBB = (BoundingBox) boundingBoxList.get( k );
-                    String tmpSRS = tmpBB.getSRS().toLowerCase();
-                    if ( tmpSRS.indexOf( "latlon" ) >= 0 )
+                for (BoundingBox bbox : boundingBoxList) {
+                    String tmpSRS = bbox.getSRS().toLowerCase();
+                    if ( tmpSRS.contains( "latlon" ) ) {
                         tmpSRS = "epsg:4326";
-
+                    }
                     if ( tmpSRS.equals( srs.toLowerCase() ) ) { // SRS found
                         String key = mapLayer.getTitle();
                         if ( !doppelt.add( key ) ) {
@@ -286,7 +226,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
                                 + " (" + zaehler + ")";
                         }
 
-                        boundingBoxesForSRS.put( key, tmpBB );
+                        boundingBoxesForSRS.put( key, bbox );
                     }
                 }
             }
@@ -296,12 +236,12 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
     }
     
     
-    private JComboBox makeComboBox( Hashtable boundingBoxesForSRS ) {
-        JComboBox comboBox = new JComboBox();
+    private JComboBox<String> makeComboBox( Map<String,BoundingBox> boundingBoxesForSRS ) {
+        JComboBox<String> comboBox = new JComboBox<>();
         if ( boundingBoxesForSRS.size() > 0 ) {
-            Object[] keys = boundingBoxesForSRS.keySet().toArray();
+            String[] keys = boundingBoxesForSRS.keySet().toArray(new String[0]);
             Arrays.sort( keys );
-            comboBox = new JComboBox( keys );
+            comboBox = new JComboBox<>( keys );
         } 
         else {
             comboBox.addItem( I18N
@@ -310,17 +250,19 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
         return comboBox;
     }
 
-    void zoomToBoundingBox( PlugInContext context, Hashtable boundingBoxesForSRS, String selectedSRS )
-        throws Exception {
-        JComboBox comboBox = makeComboBox( boundingBoxesForSRS );
+    private void zoomToBoundingBox( PlugInContext context,
+                            Map<String,BoundingBox> boundingBoxesForSRS,
+                            String selectedSRS ) throws Exception {
+        JComboBox<String> comboBox = makeComboBox( boundingBoxesForSRS );
         JPanel jp = new JPanel();
         JButton jb = new JButton( "?" );
         jb.setActionCommand( "showInfoTable" );
         jb.addActionListener( new AL() );
 
         String tmpLatLon = "";
-        if ( selectedSRS.indexOf( "4326" ) >= 0 )
+        if ( selectedSRS.contains( "4326" ) ) {
             tmpLatLon = " (LatLon)";
+        }
 
         jp.add( comboBox );
         jp.add( jb );
@@ -335,26 +277,18 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
             return;
 
         // Get the BoundingBox from name
-        BoundingBox selectedBB = (BoundingBox) boundingBoxesForSRS.get( comboBox.getSelectedItem() );
+        BoundingBox selectedBB = boundingBoxesForSRS.get( comboBox.getSelectedItem() );
         if ( selectedBB == null )
             return;
 
-        //String tmpSRS = selectedBB.getSRS();
-        //if ( tmpSRS.toLowerCase().indexOf( "latlon" ) >= 0 )
-        //    tmpSRS = "EPSG:4326";
         String message = selectedBB.toString();
-        //tmpSRS
-        //    + " (" + Math.round( selectedBB.getMinX() ) + ", " + Math.round( selectedBB.getMinY() )
-        //    + ") (" + Math.round( selectedBB.getMaxX() ) + ", " + Math.round( selectedBB.getMaxY() )
-        //    + ")";
 
         context.getWorkbenchFrame().setStatusMessage( message );
 
         // ------------------------------------- ZoomToWMSPLugIn zoomToBoundingBox ( )
         Coordinate min = new Coordinate( selectedBB.getWestBound(), selectedBB.getSouthBound() );
         Coordinate max = new Coordinate( selectedBB.getEastBound(), selectedBB.getNorthBound() );
-        //Coordinate min = new Coordinate( selectedBB.getMinX(), selectedBB.getMinY() );
-        //Coordinate max = new Coordinate( selectedBB.getMaxX(), selectedBB.getMaxY() );
+
         Envelope env = new Envelope( min, max );
 
         context.getLayerViewPanel().getViewport().zoom( env );
@@ -363,24 +297,25 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
         JInternalFrame intFrame = context.getActiveInternalFrame();
         intFrame.updateUI();
 
-    } // End zoomToBoundingBox ( )
+    }
 
-    ArrayList<MapLayer> getAllMapLayer( PlugInContext context ) throws Exception {
+    private List<MapLayer> getAllMapLayer( PlugInContext context ) throws Exception {
+
         WMSLayer[] wmsLayers = getSelectedWMSLayer( context );
 
-        if ( wmsLayers == null || wmsLayers.length == 0 )
-            return null;
+        if ( wmsLayers == null || wmsLayers.length == 0 ) {
+            return new ArrayList<>();
+        }
 
         // Get all available MapLayer
         WMService wmService = wmsLayers[0].getService();
         Capabilities cap = wmService.getCapabilities();
         MapLayer topLayer = cap.getTopLayer();
-        ArrayList<MapLayer> allMapLayer = topLayer.getLayerList();
-        // ---------------------------------------- ZoomToWMSPLugIn getAllMapLayer ( )
-        return allMapLayer;
-    } // End getAllMapLayer ( )
 
-    void showInformationTable( PlugInContext context ) throws Exception {
+        return topLayer.getLayerList();
+    }
+
+    private void showInformationTable( PlugInContext context ) throws Exception {
 
         this.values = getMapLayerInformationForTable( context );
         this.columnNames = MapLayerAttributes.getColumnNames();
@@ -416,7 +351,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
         th.setResizingAllowed( true );
         infoTable.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 
-        this.infoTableSc = new JScrollPane( infoTable );
+        JScrollPane infoTableSc = new JScrollPane( infoTable );
         infoTableSc.setPreferredSize ( new java.awt.Dimension( 735, 300 ) );
 
         JOptionPane.showMessageDialog( context.getWorkbenchFrame(), infoTableSc, "InfoTable",
@@ -424,7 +359,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
     }
 
     
-    public void sortTable( int sortAfter ) {
+    private void sortTable( int sortAfter ) {
         MapLayerAttributes[] mapLayerAttributes = toMapLayerAttributesArray( values );
 
         MapLayerAttributes.setSortAfter( sortAfter );
@@ -435,13 +370,13 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
         infoTable.updateUI();
     }
 
-    Object[][] getMapLayerInformationForTable( PlugInContext context ) throws Exception {
-        Object[][] mapLayerInformationForTable = null;
+    private Object[][] getMapLayerInformationForTable( PlugInContext context ) throws Exception {
+        Object[][] mapLayerInformationForTable;
 
         MapLayerAttributes mapLayerAttr = new MapLayerAttributes();
 
-        ArrayList mapLayerRows = new ArrayList();
-        ArrayList mapLayerList = getAllMapLayer( context );
+        List<MapLayerAttributes> mapLayerRows = new ArrayList<>();
+        List<MapLayer> mapLayerList = getAllMapLayer( context );
 
         if ( mapLayerList == null )
             return null;
@@ -451,8 +386,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
         if ( anzLayer == 0 )
             return null;
 
-        for (int i = 0; i < anzLayer; i++) {
-            MapLayer mapLayer = (MapLayer) mapLayerList.get( i );
+        for (MapLayer mapLayer : mapLayerList) {
             mapLayerRows.addAll( mapLayerAttr.getMapLayerRows( mapLayer ) );
         }
 
@@ -462,43 +396,29 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
         mapLayerInformationForTable = new Object[anzRows][anzColumns];
 
         for (int k = 0; k < anzRows; k++) {
-            MapLayerAttributes mLA = (MapLayerAttributes) mapLayerRows.get( k );
+            MapLayerAttributes mLA = mapLayerRows.get( k );
             Object[] attrib = mLA.toObjectArray();
-
-            for (int m = 0; m < attrib.length; m++) {
-                mapLayerInformationForTable[k][m] = attrib[m];
-            }
+            mapLayerInformationForTable[k] = attrib;
         }
-        // ------------------------ ZoomToWMSPLugIn getMapLayerInformationForTable ( )
         return mapLayerInformationForTable;
-    } // End getMapLayerInformationForTable ( a )
+    }
 
-    String[][] getMapLayerInformationForTable( MapLayerAttributes[] mapLayerAttributesArray ) {
+    private void getMapLayerInformationForTable( MapLayerAttributes[] mapLayerAttributesArray ) {
 
         int numRows = mapLayerAttributesArray.length;
-        int numCols = MapLayerAttributes.getColumnNames().length;
-
-        String[][] mapLayerInformationForTable = new String[numRows][numCols];
 
         for (int k = 0; k < numRows; k++) {
             MapLayerAttributes mLA = mapLayerAttributesArray[k];
             Object[] attrib = mLA.toObjectArray();
-
-            for (int m = 0; m < attrib.length; m++) {
-                //				mapLayerInformationForTable [ k ] [ m ] = attrib [ m ];
-                values[k][m] = attrib[m];
-            }
+            values[k] = attrib;
         }
+    }
 
-        return mapLayerInformationForTable;
-    } // End getMapLayerInformationForTable ( b )
-
-    MapLayerAttributes[] toMapLayerAttributesArray( Object[][] m ) {
+    private MapLayerAttributes[] toMapLayerAttributesArray( Object[][] m ) {
         if ( m == null )
             return null;
 
         int numRows = m.length;
-        int numCol = m[0].length;
 
         MapLayerAttributes[] mapLayerAttributesArray = new MapLayerAttributes[numRows];
 
@@ -506,17 +426,17 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
             String title = (String) m[i][0];
             String name = (String) m[i][1];
             String srs = (String) m[i][2];
-            double minx = ( (Double) m[i][3] ).doubleValue();
-            double miny = ( (Double) m[i][4] ).doubleValue();
-            double maxx = ( (Double) m[i][5] ).doubleValue();
-            double maxy = ( (Double) m[i][6] ).doubleValue();
+            double minx = (Double) m[i][3];
+            double miny = (Double) m[i][4];
+            double maxx = (Double) m[i][5];
+            double maxy = (Double) m[i][6];
 
             mapLayerAttributesArray[i] = new MapLayerAttributes( title, name, srs, minx, miny,
                 maxx, maxy );
         }
-        // ----------------------------- ZoomToWMSPLugIn toMapLayerAttributesArray ( )
+
         return mapLayerAttributesArray;
-    } // End toMapLayerAttributesArray ( )
+    }
 
     
     // s, what does this action listener do? Can't it hava proper name?
@@ -530,8 +450,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
                 }
             }
         }
-
-    } // End AL
+    }
 
     public static class MapLayerAttributes implements Comparable {
 
@@ -560,10 +479,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
 
         String srs, name, title;
 
-        //		String minx, miny, maxx, maxy;
-
         double minx, miny, maxx, maxy;
-
 
         MapLayerAttributes() {
             this.srs = " ";
@@ -574,9 +490,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
             this.miny = 0.;
             this.maxx = 0.;
             this.maxy = 0.;
-
         }
-
 
         MapLayerAttributes( String title, String name, String srs, double minx, double miny,
                            double maxx, double maxy ) {
@@ -588,9 +502,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
             this.miny = miny;
             this.maxx = maxx;
             this.maxy = maxy;
-
         }
-
 
         public int compareTo( Object object ) { // Sorting must be overwritten
             int ret = 1;
@@ -615,8 +527,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
                 if ( minx > mla.minx ) {
                     ret = 1 * sortUpDown[3];
                 } else {
-                    ret = -1
-                        * sortUpDown[3];
+                    ret = -1 * sortUpDown[3];
                 }
             }
 
@@ -624,8 +535,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
                 if ( miny > mla.miny ) {
                     ret = 1 * sortUpDown[4];
                 } else {
-                    ret = -1
-                        * sortUpDown[4];
+                    ret = -1 * sortUpDown[4];
                 }
             }
 
@@ -633,8 +543,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
                 if ( maxx > mla.maxx ) {
                     ret = 1 * sortUpDown[5];
                 } else {
-                    ret = -1
-                        * sortUpDown[5];
+                    ret = -1 * sortUpDown[5];
                 }
             }
 
@@ -642,36 +551,31 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
                 if ( maxy > mla.maxy ) {
                     ret = 1 * sortUpDown[6];
                 } else {
-                    ret = -1
-                        * sortUpDown[6];
+                    ret = -1 * sortUpDown[6];
                 }
             }
 
             return ret;
-
-        } // End compareTo ( )
+        }
 
         double cutDouble( double value, int afterComma ) {
             double mulQuot = Math.pow( 10.d, afterComma );
             long tmp = (long) ( value * mulQuot );
-            return tmp
-                / mulQuot;
+            return tmp / mulQuot;
         }
 
 
         public static String[] getColumnNames() {
-            String[] columNames = { "Title", "Name", "SRS", "MinX", "MinY", "MaxX", "MaxY" };
-            return columNames;
+            return new String[]{ "Title", "Name", "SRS", "MinX", "MinY", "MaxX", "MaxY" };
         }
 
-
-        ArrayList getMapLayerRows( MapLayer mapLayer ) {
+        List<MapLayerAttributes> getMapLayerRows( MapLayer mapLayer ) {
             double minX, minY, maxX, maxY;
 
             String srs, name, title;
             String unknown = "Unknown";
 
-            ArrayList mapLayerRows = new ArrayList();
+            List<MapLayerAttributes> mapLayerRows = new ArrayList<>();
 
             name = mapLayer.getName();
             if ( name == null )
@@ -700,19 +604,18 @@ System.out.println ( "ZoomToWMS srs: " + srs + "  latLonBBMinX: " + latLonBB.get
             mapLayerRows.add( new MapLayerAttributes( title, name, srs, minX, minY, maxX, maxY ) );
 */
             
-            ArrayList boundingBoxList = mapLayer.getAllBoundingBoxList();
+            List<BoundingBox> boundingBoxList = mapLayer.getAllBoundingBoxList();
 
-            for (int i = 0; i < boundingBoxList.size(); i++) {
-                BoundingBox bb = (BoundingBox) boundingBoxList.get( i );
+            for (BoundingBox bbox : boundingBoxList) {
 
-                if ( bb == null ) {
+                if ( bbox == null ) {
                     srs = unknown;
                     minX = 0.;
                     minY = 0.;
                     maxX = 400.;
                     maxY = 400.;
                 } else {
-                    srs = bb.getSRS().toLowerCase();
+                    srs = bbox.getSRS().toLowerCase();
                     /* not so good? [u.d., 05.11.29]
                     minX = cutDouble( bb.getMinX(), 2 );
                     minY = cutDouble( bb.getMinY(), 2 );
@@ -724,18 +627,18 @@ System.out.println ( "ZoomToWMS srs: " + srs + "  latLonBBMinX: " + latLonBB.get
                     //minY = bb.getMinY();
                     //maxX = bb.getMaxX();
                     //maxY = bb.getMaxY();
-                    minX = bb.getWestBound();
-                    minY = bb.getSouthBound();
-                    maxX = bb.getEastBound();
-                    maxY = bb.getNorthBound();
+                    minX = bbox.getWestBound();
+                    minY = bbox.getSouthBound();
+                    maxX = bbox.getEastBound();
+                    maxY = bbox.getNorthBound();
                 }
 
                 mapLayerRows
                     .add( new MapLayerAttributes( title, name, srs, minX, minY, maxX, maxY ) );
-            } // End for bb
+            }
 
             return mapLayerRows;
-        } // End getMapLayerRows ( )
+        }
 
         String getName() {
             return this.name;
@@ -765,9 +668,8 @@ System.out.println ( "ZoomToWMS srs: " + srs + "  latLonBBMinX: " + latLonBB.get
             return this.maxy;
         }
 
-
         Object[] toObjectArray() {
-            int anzColumns = this.getColumnNames().length;
+            int anzColumns = getColumnNames().length;
             Object[] objectArray = new Object[anzColumns];
 
             objectArray[0] = this.getTitle();
@@ -812,9 +714,9 @@ System.out.println ( "ZoomToWMS srs: " + srs + "  latLonBBMinX: " + latLonBB.get
             }
 
             MapLayerAttributes.sortAfter = sortAfter;
-        } // End setSortAfter ( )
+        }
 
-    } // End MapLayerAttributes
+    }
 
     class InfoTableModel extends AbstractTableModel {
 
@@ -842,7 +744,7 @@ System.out.println ( "ZoomToWMS srs: " + srs + "  latLonBBMinX: " + latLonBB.get
             return false;
         }
 
-    } // End InfoTableModel
+    }
 
     class MASort extends MouseAdapter { // Mouse Adapter for column sorting
 
@@ -878,58 +780,30 @@ System.out.println ( "ZoomToWMS srs: " + srs + "  latLonBBMinX: " + latLonBB.get
                 }
 
             }
-
         }
-
-    } // Ende MASpasKu
+    }
 
     //-- [sstein 3.Mai.2008] method added from ISA ZoomToWMSPlugIn for MrSID compatibility
     private Envelope envelopeOfSelectedLayers(PlugInContext context) {
         Envelope envelope = new Envelope();
         
-        for (Iterator i = context.getLayerNamePanel().selectedNodes(WMSLayer.class).iterator(); i.hasNext();) 
-        {
-            WMSLayer layer = (WMSLayer) i.next();
+        for (Object object : context.getLayerNamePanel().selectedNodes(WMSLayer.class)) {
+            WMSLayer layer = (WMSLayer) object;
             Envelope env = layer.getEnvelope();
             boolean goodEnv = true;
             
             if (env == null) goodEnv = false;
             if (goodEnv) goodEnv = ((env.getHeight() > 0.0) && (env.getWidth() > 0.0));
 
-            if (goodEnv)
-            {
+            if (goodEnv) {
             	envelope.expandToInclude(layer.getEnvelope());
             }
-            else
-            {
+            else {
             	context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             	context.getWorkbenchFrame().getOutputFrame().addText("Could not determine zoom envelope for layer: " + layer.getName());               
             }
-            	
         }
 
         return envelope;
     }
-    
-    //-- [sstein 3.Mai.2008] method added from ISA ZoomToWMSPlugIn for MrSID compatibility
-//    private EnableCheck createWMSLayerCannotBeSelectedCheck() 
-//    {
-//        return new EnableCheck() 
-//        {
-//            public String check(JComponent component) 
-//            {
-//                final WorkbenchContext wbcontext = context.getWorkbenchContext();
-//                for (Iterator i = wbcontext.getLayerNamePanel().selectedNodes(WMSLayer.class).iterator(); i.hasNext();) 
-//                {
-//                    WMSLayer layer = (WMSLayer) i.next();
-//                    if (layer.getClass().getSuperclass() != WMSLayer.class)
-//                    {
-//                    	return "Exclude WMS layers from selection";
-//                    }
-//                }
-//                return null;
-//            }
-//        };
-//    }
-    
-} // End ZoomToWMSPLugIn
+}
