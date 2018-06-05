@@ -57,9 +57,6 @@ public class EnsureAllLayersHaveSRIDStylePlugIn extends AbstractPlugIn {
       public void layerChanged(LayerEvent e) {
         if (e.getLayerable() instanceof Layer) {
           ensureHasSRIDStyle((Layer) e.getLayerable());
-          if (e.getType() == LayerEventType.REMOVED) {
-            layerManager.removeLayerListener(this);
-          }
         }
       }
 
