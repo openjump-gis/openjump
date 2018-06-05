@@ -12,6 +12,7 @@ public class AddNewLayerViewPlugIn extends AbstractPlugIn {
 
   public boolean execute(PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
+    @SuppressWarnings( "deprecation" )
     Layer[] layers = context.getLayerNamePanel().getSelectedLayers();
     if (layers.length != 1) return false;
     Layer layer = layers[0];

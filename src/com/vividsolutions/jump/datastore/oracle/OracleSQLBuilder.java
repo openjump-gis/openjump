@@ -6,7 +6,8 @@ import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMetadata;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
+
 import java.sql.SQLException;
 
 /**
@@ -123,16 +124,10 @@ public class OracleSQLBuilder extends SpatialDatabasesSQLBuilder {
         // force min/max values to avoid a ORA-01426: numeric overflow with some extents OJ can generate
         buf.append(env.getMinX()).append(", ").append(env.getMinY()).append(", ").append(env.getMaxX()).append(", ").append(env.getMaxY());
         buf.append(srid).append(")))='TRUE'");
-
-        JUMPWorkbench.getInstance().getFrame().log(
-            "SQL query fragment to get spatial table BBOX filter:\n\t"
-            + buf.toString(), this.getClass());
+        Logger.info("SQL query fragment to get spatial table BBOX filter:\n\t" + buf.toString());
       }
     } catch (SQLException ex) {
-      JUMPWorkbench.getInstance().getFrame().log(
-          "cannot guess if geo column is indexed, error: " + ex.getMessage(), this.getClass());
-      //TODO: remove ?
-      ex.printStackTrace();
+      Logger.warn("cannot guess if geo column is indexed, error: " + ex.getMessage(), ex);
     }
 
     return buf.toString();

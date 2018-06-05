@@ -32,7 +32,8 @@ public class RefreshDataStoreLayerPlugin extends AbstractPlugIn {
         mec.add(
             new EnableCheck() {
                 public String check(JComponent component) {
-                    DataSourceQuery dsq =  context.getLayerNamePanel().getSelectedLayers()[0].getDataSourceQuery();
+                    @SuppressWarnings( "deprecation" )
+                    DataSourceQuery dsq =  context.getLayerableNamePanel().getSelectedLayers()[0].getDataSourceQuery();
                     if(dsq != null){
                     	return dsq.getDataSource() == null ?
                     	    I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Layer-must-have-a-Data-Source"):
@@ -47,6 +48,7 @@ public class RefreshDataStoreLayerPlugin extends AbstractPlugIn {
     }
     
     public boolean execute(PlugInContext context) throws Exception {
+      @SuppressWarnings( "deprecation" )
     	Layer layer = context.getLayerNamePanel().getSelectedLayers()[0];
     	FeatureCollectionWrapper fcw =  layer.getFeatureCollectionWrapper();
     	

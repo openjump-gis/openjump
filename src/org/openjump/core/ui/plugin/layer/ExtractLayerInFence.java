@@ -84,6 +84,7 @@ public class ExtractLayerInFence extends AbstractPlugIn {
     
 
 	public boolean execute(PlugInContext context) throws Exception {
+		@SuppressWarnings( "deprecation" )
 		Layer[] layers = context.getWorkbenchContext().getLayerableNamePanel().getSelectedLayers();
 		if (layers.length > 0){
 			Layer layer = layers[0];

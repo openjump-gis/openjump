@@ -214,6 +214,7 @@ public class CreateGridPlugIn extends AbstractUiPlugIn implements ThreadedPlugIn
             env = context.getLayerManager().getEnvelopeOfAllLayers(true);
         }
         else if (extent.equals(SELECTED_LAYERS)) {
+            @SuppressWarnings( "deprecation" )
             Layer[] layers = context.getLayerNamePanel().getSelectedLayers();
             for (Layer layer : layers) env.expandToInclude(layer.getFeatureCollectionWrapper().getEnvelope());
             return env;

@@ -76,6 +76,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                 .add(checkFactory.createTaskWindowMustBeActiveCheck())
                 .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1))
                 .add(new EnableCheck() {
+                    @SuppressWarnings( "deprecation" )
                     public String check(JComponent component) {
                         return workbenchContext
                                 .getLayerableNamePanel()

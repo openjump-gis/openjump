@@ -100,8 +100,8 @@ public class MapLayer {
      * will be taken.
      * [uwe dalluege]
      */  
-    public ArrayList getAllBoundingBoxList ( ) {
-    	ArrayList<BoundingBox> allBoundingBoxList = new ArrayList<BoundingBox> ( );
+    public List<BoundingBox> getAllBoundingBoxList ( ) {
+    	List<BoundingBox> allBoundingBoxList;
     	MapLayer mapLayer = this;
     	allBoundingBoxList = this.getBoundingBoxList ( );
     	if ( allBoundingBoxList.size ( ) > 0 ) return allBoundingBoxList; 
@@ -146,12 +146,11 @@ public class MapLayer {
      * @return a list of all the layers in order of a root-left-right traversal of
      * the layer tree.
      */
-    public ArrayList getLayerList() {
-        ArrayList list = new ArrayList();
+    public List<MapLayer> getLayerList() {
+        List<MapLayer> list = new ArrayList<>();
         list.add( this );
-        Iterator it = subLayers.iterator();
-        while( it.hasNext() ) {
-            list.addAll( ((MapLayer)it.next()).getLayerList() );
+        for (MapLayer mapLayer : subLayers) {
+            list.addAll(mapLayer.getLayerList());
         }
         return list;
     }
