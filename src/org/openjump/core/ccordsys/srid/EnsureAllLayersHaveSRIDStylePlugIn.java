@@ -13,6 +13,8 @@ import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import org.openjump.core.model.TaskEvent;
+import org.openjump.core.model.TaskListener;
 
 /**
  * Adds the SRIDStyle to every layer that JUMP encounters.
@@ -91,16 +93,27 @@ public class EnsureAllLayersHaveSRIDStylePlugIn extends AbstractPlugIn {
   private void initializeCurrentAndFutureInternalFrames(
           WorkbenchFrame workbenchFrame, final Block block) {
 
-    workbenchFrame.getDesktopPane().addContainerListener(
-            new ContainerAdapter() {
-              public void componentAdded(ContainerEvent e) {
-                if (!(e.getChild() instanceof JInternalFrame)) {
-                  return;
-                }
-                block.yield(e.getChild());
-              }
-            });
+    workbenchFrame.addTaskListener(new TaskListener() {
+      @Override
+      public void taskAdded(TaskEvent taskEvent) {
+        initialize(taskEvent.getTask().getLayerManager());
+      }
 
+      @Override
+      public void taskLoaded(TaskEvent taskEvent) {
+
+      }
+    });
+    //workbenchFrame.getDesktopPane().addContainerListener(
+    //        new ContainerAdapter() {
+    //          public void componentAdded(ContainerEvent e) {
+    //            if (!(e.getChild() instanceof JInternalFrame)) {
+    //              return;
+    //            }
+    //            block.yield(e.getChild());
+    //          }
+    //        });
+//
     for (JInternalFrame internalFrame : workbenchFrame.getInternalFrames()) {
       block.yield(internalFrame);
     }
