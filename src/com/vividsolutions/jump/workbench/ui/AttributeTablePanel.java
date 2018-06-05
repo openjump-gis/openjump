@@ -458,6 +458,8 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 
     private AttributeTableLayerViewPanelListener layerViewPanelListener = null;
 
+    public LayerListener layerListener;
+
     public AttributeTablePanel(final LayerTableModel model, boolean addScrollPane,
             final WorkbenchContext workbenchContext) {
         this(workbenchContext);
@@ -484,7 +486,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
                   0, 0), 0, 0));
         }
         updateGrid(model.getLayer());
-        LayerListener layerListener = new LayerListener() {
+        layerListener = new LayerListener() {
 
           public void categoryChanged(CategoryEvent e) {}
 
@@ -500,12 +502,10 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
               updateGrid(model.getLayer());
               repaint();
             }
-            else if (e.getType() == LayerEventType.REMOVED) {
-              e.getLayerable().getLayerManager().removeLayerListener(this);
-            }
           }
         };
         model.getLayer().getLayerManager().addLayerListener(layerListener);
+
         try {
             JList list = new JList();
             list.setBackground(new JLabel().getBackground());

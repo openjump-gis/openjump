@@ -1010,7 +1010,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
             }
 
             public Object yield() {
-                LayerListener layerListener = new LayerListener() {
+                final LayerListener layerListener = new LayerListener() {
                     public void layerChanged(LayerEvent e) {
                         if ((e.getType() == LayerEventType.METADATA_CHANGED)
                                 || (e.getType() == LayerEventType.REMOVED)) {
@@ -1030,6 +1030,12 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     }
                 };
                 internalFrame.getLayerManager().addLayerListener(layerListener);
+                i.addInternalFrameListener(new InternalFrameAdapter() {
+                  @Override
+                  public void internalFrameClosed(InternalFrameEvent e) {
+                    internalFrame.getLayerManager().removeLayerListener(layerListener);
+                  }
+                });
                 i.addPropertyChangeListener(JInternalFrame.TITLE_PROPERTY,
                         new PropertyChangeListener() {
                             public void propertyChange(PropertyChangeEvent e) {

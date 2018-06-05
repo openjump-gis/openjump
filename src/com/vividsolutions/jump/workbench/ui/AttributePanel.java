@@ -148,6 +148,8 @@ public class AttributePanel extends JPanel implements InfoModelListener {
     }
     private void removeTablePanel(LayerTableModel layerTableModel) {
         Assert.isTrue(layerToTablePanelMap.containsKey(layerTableModel.getLayer()));
+        AttributeTablePanel attributeTablePanel = getTablePanel(layerTableModel.getLayer());
+        layerManagerProxy.getLayerManager().removeLayerListener(attributeTablePanel.layerListener);
         remove(getTablePanel(layerTableModel.getLayer()));
         layerToTablePanelMap.remove(layerTableModel.getLayer());
         revalidate();

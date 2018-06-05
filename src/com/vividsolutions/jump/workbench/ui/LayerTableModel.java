@@ -109,7 +109,7 @@ public class LayerTableModel extends ColumnBasedTableModel {
         collator.setStrength(Collator.PRIMARY);
     }
 
-    private LayerListener layerListener = new LayerListener() {
+    final LayerListener layerListener = new LayerListener() {
         public void categoryChanged(CategoryEvent e) {}
         public void featuresChanged(FeatureEvent e) {
             if (e.getLayer() != getLayer()) {

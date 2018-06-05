@@ -46,6 +46,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
 import javax.swing.*;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -64,6 +66,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
     private ErrorHandler errorHandler;
     private TaskFrame taskFrame;
     private LayerManagerProxy layerManagerProxy;
+    public LayerListener attributeTabLayerListener;
     private static final String sNoModifiedWritableLayerSelected = I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-modified-writable-layer-selected");
     //The String values returned by these EnableChecks are not used.
     //The only thing checked is whether they are null or not. [Jon Aquino]
@@ -116,8 +119,9 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
                 toolBar.updateEnabledState();
             }
         }));
-        panel =
-            new AttributePanel(model, workbenchContext, taskFrame, layerManagerProxy, addScrollPanesToChildren) {
+        panel = new AttributePanel(model, workbenchContext,
+                taskFrame, layerManagerProxy, addScrollPanesToChildren) {
+
             public void layerAdded(LayerTableModel layerTableModel) {
                 super.layerAdded(layerTableModel);
 
@@ -166,7 +170,8 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
                 tablePanel.getLayerNameRenderer().addMouseListener(mouseListener);
             }
         };
-        LayerListener layerListener = new LayerListener() {
+
+        attributeTabLayerListener = new LayerListener() {
             public void featuresChanged(FeatureEvent e) {}
 
             public void layerChanged(LayerEvent e) {
@@ -174,14 +179,13 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
                     //Editability may have changed. [Jon Aquino]
                     toolBar.updateEnabledState();
                 }
-                if (e.getType() == LayerEventType.REMOVED) {
-                    layerManagerProxy.getLayerManager().removeLayerListener(this);
-                }
             }
 
             public void categoryChanged(CategoryEvent e) {}
         };
-        layerManagerProxy.getLayerManager().addLayerListener(layerListener);
+
+        layerManagerProxy.getLayerManager().addLayerListener(attributeTabLayerListener);
+
         model.addListener(new InfoModelListener() {
             public void layerAdded(LayerTableModel layerTableModel) {
                 panel

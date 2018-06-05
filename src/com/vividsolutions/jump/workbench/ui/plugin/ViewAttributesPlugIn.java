@@ -27,6 +27,7 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 
 import java.awt.BorderLayout;
+import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
@@ -174,15 +175,10 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
       attributeTab = new OneLayerAttributeTab(context.getWorkbenchContext(),
           ((TaskFrameProxy) context.getActiveInternalFrame()).getTaskFrame(),
           this).setLayer(layer);
-      addInternalFrameListener(new InternalFrameAdapter() {
-        @Override
-        public void internalFrameOpened(InternalFrameEvent e) {
-          attributeTab.getToolBar().updateEnabledState();
-        }
-      });
+
       getContentPane().add(attributeTab, BorderLayout.CENTER);
       updateTitle(attributeTab.getLayer());
-      LayerListener layerListener = new LayerListener() {
+      final LayerListener layerListener = new LayerListener() {
         public void layerChanged(LayerEvent e) {
           if (attributeTab.getLayer() != null) {
             updateTitle(attributeTab.getLayer());
@@ -195,7 +191,6 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
                       ViewAttributesFrame.this);
               dispose();
             }
-            context.getLayerManager().removeLayerListener(this);
           }
         }
 
@@ -206,6 +201,20 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
         }
       };
       context.getLayerManager().addLayerListener(layerListener);
+
+      addInternalFrameListener(new InternalFrameAdapter() {
+        @Override
+        public void internalFrameOpened(InternalFrameEvent e) {
+          attributeTab.getToolBar().updateEnabledState();
+        }
+        @Override
+        public void internalFrameClosed(InternalFrameEvent e) {
+          context.getLayerManager().removeLayerListener(layerListener);
+          context.getLayerManager().removeLayerListener(attributeTab.attributeTabLayerListener);
+          context.getLayerManager().removeLayerListener(attributeTab.oneAttributeTableLayerListener);
+        }
+      });
+
       Assert
           .isTrue(
               !(this instanceof CloneableInternalFrame),

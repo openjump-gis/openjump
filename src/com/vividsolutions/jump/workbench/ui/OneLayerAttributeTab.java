@@ -7,16 +7,25 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerListener;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 
+import javax.swing.*;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+
 
 /**
  * Displays and stays in sync with a single Layer.
  */
 public class OneLayerAttributeTab extends AttributeTab {
+
+    public LayerListener oneAttributeTableLayerListener;
+
     public OneLayerAttributeTab(WorkbenchContext context, TaskFrame taskFrame,
         final LayerManagerProxy layerManagerProxy) {
+
         super(new InfoModel(), context, taskFrame, layerManagerProxy, true);
-        LayerListener layerListener = new LayerListener() {
-          public void featuresChanged(FeatureEvent e) {
+
+        oneAttributeTableLayerListener = new LayerListener() {
+        public void featuresChanged(FeatureEvent e) {
             if (getLayerTableModel() == null) {
               //Get here after attribute viewer window is closed [Jon Aquino]
               return;
@@ -27,16 +36,12 @@ public class OneLayerAttributeTab extends AttributeTab {
               getLayerTableModel().addAll(e.getFeatures());
             }
           }
-          public void layerChanged(LayerEvent e) {
-            if (e.getType() == LayerEventType.REMOVED) {
-              layerManagerProxy.getLayerManager().removeLayerListener(this);
-            }
-          }
+          public void layerChanged(LayerEvent e) { }
 
-          public void categoryChanged(CategoryEvent e) {
-          }
+          public void categoryChanged(CategoryEvent e) { }
         };
-        context.getLayerManager().addLayerListener(layerListener);
+
+        context.getLayerManager().addLayerListener(oneAttributeTableLayerListener);
     }
 
     public OneLayerAttributeTab setLayer(Layer layer) {

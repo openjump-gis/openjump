@@ -126,12 +126,7 @@ public class InfoFrame extends DetachableInternalFrame implements
             }
         });*/
         attributeTab = new AttributeTab(model, workbenchContext, taskFrame, this, false);
-        addInternalFrameListener(new InternalFrameAdapter() {
-			@Override
-            public void internalFrameOpened(InternalFrameEvent e) {
-                attributeTab.getToolBar().updateEnabledState();
-            }
-        });
+
         workbenchFrame = workbenchContext.getWorkbench().getFrame();
         this.setResizable(true);
         this.setClosable(true);
@@ -159,15 +154,6 @@ public class InfoFrame extends DetachableInternalFrame implements
             public void taskNameChanged(String name) {
                 updateTitle(taskFrame.getTask().getName());
             }
-        });
-        addInternalFrameListener(new InternalFrameAdapter() {
-			      @Override
-            public void internalFrameClosed(InternalFrameEvent e) {
-                //Assume that there are no other views on the model
-                model.dispose();
-				        savePositionAndSize();
-            }
-
         });
 		
 		    addComponentListener(new ComponentAdapter() {
@@ -199,6 +185,20 @@ public class InfoFrame extends DetachableInternalFrame implements
             public void categoryChanged(CategoryEvent e) {}
         };
 		    layerManagerProxy.getLayerManager().addLayerListener(layerListener);
+
+      addInternalFrameListener(new InternalFrameAdapter() {
+        @Override
+        public void internalFrameOpened(InternalFrameEvent e) {
+          attributeTab.getToolBar().updateEnabledState();
+        }
+        @Override
+        public void internalFrameClosed(InternalFrameEvent e) {
+          //Assume that there are no other views on the model
+          model.dispose();
+          savePositionAndSize();
+          getLayerManager().removeLayerListener(attributeTab.attributeTabLayerListener);
+        }
+      });
     }
     public JPanel getAttributeTab() {
         return attributeTab;

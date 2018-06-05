@@ -36,6 +36,7 @@ package com.vividsolutions.jump.workbench.ui;
 import java.util.*;
 
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
 
 
@@ -90,7 +91,10 @@ public class InfoModel {
     public void remove(Layer layer) {
         if (!layerToTableModelMap.containsKey(layer)) return;
         LayerTableModel layerTableModel = getTableModel(layer);
-
+        LayerManager layerManager = layer.getLayerManager();
+        if (layerManager == null) {
+            layerManager.removeLayerListener(layerTableModel.layerListener);
+        }
         for (Iterator i = listeners.iterator(); i.hasNext();) {
             InfoModelListener listener = (InfoModelListener) i.next();
             listener.layerRemoved(layerTableModel);
