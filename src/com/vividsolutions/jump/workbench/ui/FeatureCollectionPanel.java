@@ -3,12 +3,15 @@ package com.vividsolutions.jump.workbench.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -22,11 +25,16 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.openjump.core.apitools.IOTools;
+import org.openjump.core.ui.io.file.FileNameExtensionFilter;
+import org.openjump.core.ui.util.LayerableUtil;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
@@ -104,6 +112,68 @@ public class FeatureCollectionPanel extends JPanel {
         add(jLabel, BorderLayout.NORTH);
         add(pane, BorderLayout.CENTER);
         add(southPanel(), BorderLayout.SOUTH);
+        add(savePanel(), BorderLayout.AFTER_LAST_LINE);// To change with better
+                                                       // Layout
+    }
+
+    /**
+     * Save panel
+     * 
+     * @return
+     */
+
+    private JPanel savePanel() {
+        final JPanel save = new JPanel();
+        save.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        final JButton saveButton = new JButton(
+                I18N.get("deejump.plugin.SaveLegendPlugIn.Save"));
+        saveButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    File file;
+                    final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
+                            "Comma-Separated Values (csv)", "csv");
+                    final FileNameExtensionFilter filter3 = new FileNameExtensionFilter(
+                            "JUMP Markup Language (JML)", "jml");
+                    final FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                            "ESRI Shapefile (SHP)", "shp");
+                    final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
+                    if (!LayerableUtil.isMixedGeometryType(featureCollection)) {
+                        fc.setFileFilter(filter);
+                    }
+                    fc.setFileFilter(filter3);
+                    fc.setFileFilter(filter2);
+                    fc.addChoosableFileFilter(filter2);
+                    final int returnVal = fc.showSaveDialog(JUMPWorkbench
+                            .getInstance().getFrame());
+                    if (returnVal == JFileChooser.APPROVE_OPTION) {
+                        if (fc.getFileFilter().equals(filter3)) {
+                            file = new File(fc.getSelectedFile() + ".jml");
+                            IOTools.saveJMLFile(featureCollection,
+                                    file.getAbsolutePath());
+
+                        } else if (fc.getFileFilter().equals(filter)) {
+                            file = new File(fc.getSelectedFile() + ".shp");
+                            IOTools.saveShapefile(featureCollection,
+                                    file.getAbsolutePath());
+
+                        } else if (fc.getFileFilter().equals(filter2)) {
+
+                            file = new File(fc.getSelectedFile() + ".csv");
+                            IOTools.saveCSV(jTable, file.getAbsolutePath());
+                            ;
+                        }
+                    }
+
+                } catch (final Exception ex) {
+                    //
+                }
+
+            }
+        });
+        save.add(saveButton);
+        return save;
     }
 
     // Experimental panel: here it can go some filters for further analysis (see
@@ -203,12 +273,21 @@ public class FeatureCollectionPanel extends JPanel {
     }
 
     /**
-     * Gets the lower panel where loacting tools
+     * Gets the lower panel where locating table tools
      * 
      * @return
      */
     public JPanel getCommandPanel() {
         return southPanel();
+    }
+
+    /**
+     * Gets the lower panel where locating save button
+     * 
+     * @return
+     */
+    public JPanel getSavePanel() {
+        return savePanel();
     }
 
 }
