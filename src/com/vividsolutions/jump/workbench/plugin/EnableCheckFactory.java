@@ -812,39 +812,35 @@ public class EnableCheckFactory {
     }
 
     /**
-     * Check that at least n Layerables of a type (Layer.class,
+     * Check that at least n layerables of a type (Layer.class,
      * RasterImageLayer.class, WMSLayer.class, etc) have been loaded
      * 
      * @param number
-     *            of layerables
+     *          of needed layerables
      * @param type
-     *            of layerable class (RasterImageLayer.class, Layer.class,
-     *            WMSLayer.class, etc)
+     *          implementation of {@link Layerable} (RasterImageLayer.class, Layer.class,
+     *          WMSLayer.class, etc)
      * @return error message or null
      */
-    public EnableCheck createAtLeastNLayerablesMustExistCheck(final int n,
-            @SuppressWarnings("rawtypes") Class layerableClass) {
-        return new EnableCheck() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public String check(JComponent component) {
-                final LayerManager layerManager = workbenchContext
-                        .getLayerManager();
-                String msg;
-                if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layerables-must-exist")
-                            + ": " + layerableClass.getSimpleName();
-                } else {
-                    msg = getMessage(
-                            "com.vividsolutions.jump.workbench.plugin.At-least-n-layerables-must-exist",
-                            new Object[] { n })
-                            + ": " + layerableClass.getSimpleName();
-                    ;
-                }
-                return (layerManager == null || n > layerManager.getLayerables(
-                        layerableClass).size()) ? msg : null;
-            }
-        };
+    public EnableCheck createAtLeastNLayerablesOfTypeMustExistCheck(final int n, final Class<? extends Layerable> type) {
+      return new EnableCheck() {
+        public String check(JComponent component) {
+          // all is well
+          if ( workbenchContext.getLayerManager().getLayerables(type).size() >= n )
+            return null;
+  
+          // or not. tell the user
+          String msg;
+          if (n == 1) {
+            msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layerables-must-exist") + ": "
+                + type.getSimpleName();
+          } else {
+            msg = getMessage("com.vividsolutions.jump.workbench.plugin.At-least-n-layerables-must-exist",
+                new Object[] { n }) + ": " + type.getSimpleName();
+          }
+          return msg;
+        }
+      };
     }
 
 }
