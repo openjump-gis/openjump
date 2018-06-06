@@ -27,33 +27,43 @@
  */
 package org.openjump.core.ui.plugin.raster;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.math.BigDecimal;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Locale;
 
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import org.math.plot.plotObjects.BaseLabel;
 import org.math.plot.plots.Plot;
 import org.math.plot.render.AbstractDrawer;
+import org.openjump.core.apitools.IOTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridRasterWrapper;
-import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
+import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 import org.openjump.core.ui.plot.Plot2DPanelOJ;
 import org.openjump.sextante.gui.additionalResults.AdditionalResults;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.util.StatisticIndices;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -61,6 +71,8 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
+import com.vividsolutions.jump.workbench.ui.HTMLFrame;
+import com.vividsolutions.jump.workbench.ui.HTMLPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -68,86 +80,124 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  *
- * created on 19.10.2018
+ * created on 06.06.2018
  * 
  * @author Giuseppe Aruta
  */
 public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
+    private final String sSaved = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    private final String SCouldNotSave = I18N
+            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
+    private static final String NAME = I18N
+            .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn");
+    private static final String CLAYER = GenericNames.SELECT_LAYER;
+    private static final String HISTOGRAM_PLOT = I18N
+            .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Histogram-Plot");
+    private static final String HISTOGRAM_OPTIONS = I18N
+            .get("com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn");
+    private final String T2 = I18N
+            .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes");
+    private static final String LAYER_STATISTICS = I18N
+            .get("com.vividsolutions.jump.workbench.ui.plugin.LayerStatisticsPlugIn");
+    private final static String NODATA = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
+    private final static String NODATACELLS = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.nodatacell");
+    private final static String VALIDCELLS = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.validcells");
+
+    private final static String STAT_MAX = I18N
+            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum");
+    private final static String STAT_MIN = I18N
+            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum");
+    private static final String STAT_MEAN = I18N
+            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.mean");
+    private static final String STAT_STD = I18N
+            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev");
+    private static final String STAT_VAR = I18N
+            .get("com.vividsolutions.jump.util.StatisticIndices.variance");
+    private static final String STAT_MED = I18N
+            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.median");
+
+    private static final String VALUES = I18N
+            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values");
+
+    private static final String STAT_CRF = I18N
+            .get("com.vividsolutions.jump.util.StatisticIndices.Coefficient-of-variation");
+    private static final String STAT_RMS = I18N
+            .get("com.vividsolutions.jump.util.StatisticIndices.Root-mean-squared");
+    private static final String STAT_1QNT = I18N
+            .get("com.vividsolutions.jump.util.StatisticIndices.25-percentile");
+    private static final String STAT_3QNT = I18N
+            .get("com.vividsolutions.jump.util.StatisticIndices.75-percentile");
+    private static final String STAT_SKW = I18N
+            .get("com.vividsolutions.jump.util.StatisticIndices.Skewness");
+    private static final String STAT_KRT = I18N
+            .get("com.vividsolutions.jump.util.StatisticIndices.Kurtosis");
+    private static final String STAT_TOTSUM = I18N
+            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum");
+
+    private static final String DESCRIPTION = I18N
+            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.description");
+    private static final String MAXMINPINS = I18N
+            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.max-min-pins");
+    private static final String MEDIANPIN = I18N
+            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.median-25-75-pins");
+    private static final String SHOW_FREQUENCY = I18N
+            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.show-frequency");
+    private static final String SHOW_STATISTICS = I18N
+            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.show-descriptive-stat");
+    private static final String SELECT_BAND = I18N
+            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.select-one-band");
+
+    private static final String FREQUENCY = I18N
+            .get("com.vividsolutions.jump.util.Frequency.frequency");
+
     private final Font darkLabelFont = AbstractDrawer.DEFAULT_FONT;
-    private final Color LIGHT_GRAY = new Color(230, 230, 230);
-    public final static Font default_font = new Font("BitStream Vera Sans",
-            Font.BOLD, 10);
-    private String sHistogram = "Histogram";
-    private String T2 = "number of ranges";
+    private final Font bold_font = new Font("BitStream Vera Sans", Font.BOLD,
+            10);
+    private final Font big_font = new Font("BitStream Vera Sans", Font.PLAIN,
+            14);
     private RasterImageLayer selLayer = null;
     private int ranges = 100;
-    private String sName = "Create Histogram Plot";
-    private String CLAYER = "select layer";
-    public static final Icon ICON = IconLoader.icon("histogramme.png");
 
-    /**
-     * this method is called on the startup by JUMP/OpenJUMP. We set here the
-     * menu entry for calling the function.
-     */
+    private final Icon ICON = IconLoader.icon("histogramme.png");
+
     @Override
     public void initialize(PlugInContext context) throws Exception {
-        CLAYER = GenericNames.SELECT_LAYER;
-        T2 = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Number-of-ranges");
-        sHistogram = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Histogram-Plot");
-        I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.count");
-        sName = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn");
-        I18N.get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
-
-        final FeatureInstaller featureInstaller = new FeatureInstaller(
-                context.getWorkbenchContext());
-        featureInstaller.addMainMenuPlugin(this,
-                new String[] { MenuNames.RASTER }, sName + "...", false, // checkbox
+        FeatureInstaller.getInstance().addMainMenuPlugin(this,
+                new String[] { MenuNames.RASTER }, NAME + "...", false, // checkbox
                 null, // icon
-                createEnableCheck(context.getWorkbenchContext()));
+                check());
     }
 
     public Icon getIcon() {
         return ICON;
     }
 
-    /**
-     * This method is used to define when the menu entry is activated or
-     * disabled. In this example we allow the menu entry to be usable only if
-     * one layer exists.
-     */
-    public static MultiEnableCheck createEnableCheck(
-            WorkbenchContext workbenchContext) {
-        final EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
-
-        return new MultiEnableCheck().add(
-                checkFactory.createExactlyNLayerablesMustBeSelectedCheck(1,
-                        RasterImageLayer.class)).add(
-                checkFactory
-                        .createRasterImageLayerExactlyNBandsMustExistCheck(1));
+    public static MultiEnableCheck check() {
+        final EnableCheckFactory checkFactory = EnableCheckFactory
+                .getInstance();
+        return new MultiEnableCheck()
+                .add(checkFactory
+                        .createWindowWithAssociatedTaskFrameMustBeActiveCheck())
+                .add(checkFactory.createAtLeastNLayerablesOfTypeMustExistCheck(
+                        1, RasterImageLayer.class));
     }
 
-    /**
-     * this function is called by JUMP/OpenJUMP if one clicks on the menu entry.
-     * It is called before the "run" method and useful to do all the GUI
-     * /user-input things In this example we call two additional methods
-     * {@link #setDialogValues(MultiInputDialog, PlugInContext)} and
-     * {@link #getDialogValues(MultiInputDialog)} to obtain the Layer and the
-     * buffer radius by the user.
-     */
-
-    JCheckBox box;
+    JCheckBox tableBox;
+    JCheckBox rasterMaxMinLimitsBox;
+    JCheckBox rasterCentralTendencyBox;
+    JCheckBox rasterStatisticsBox;
+    JCheckBox statisticsBox;
+    JButton chooseElemetsBtn;
 
     @Override
     public boolean execute(PlugInContext context) throws Exception {
-
         reportNothingToUndoYet(context);
-
         final MultiInputDialog dialog = new MultiInputDialog(
-                context.getWorkbenchFrame(), sName, true);
+                context.getWorkbenchFrame(), NAME, true);
         setDialogValues(dialog, context);
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
@@ -155,7 +205,6 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
             return false;
         }
         getDialogValues(dialog);
-
         return true;
     }
 
@@ -171,19 +220,25 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
         final Collection<RasterImageLayer> rlayers = context.getTask()
                 .getLayerManager().getLayerables(RasterImageLayer.class);
-        // dialog.setSideBarImage(IconLoader.icon("histdisplay.png"));
-        dialog.setSideBarDescription("Create a frequency histogram of raster data from selected raster image layer, choosing the number of intervals. Optionally the table of frequency can be created");
-        dialog.addComboBox(CLAYER, context.getLayerManager()
-                .getRasterImageLayers().get(0), rlayers, "");
 
-        // dialog.addSeparator();
-        // dialog.addRow();
+        dialog.setSideBarImage(new javax.swing.ImageIcon(IconLoader.image(
+                "histdisplay.png").getScaledInstance((int) (216.0 * 0.8),
+                (int) (159.0 * 0.8), java.awt.Image.SCALE_SMOOTH)));
+
+        dialog.setSideBarDescription(DESCRIPTION);
+        dialog.addSubTitle(HISTOGRAM_PLOT);
+        dialog.addLayerableComboBox(CLAYER, context.getLayerManager()
+                .getRasterImageLayers().get(0), "", rlayers);
+
         dialog.addIntegerField(T2, ranges, 6, T2);
-        box = dialog
-                .addCheckBox(
-                        "Calculate table",
-                        true,
-                        "Calculate a table with intervals, min. value of class, max. value of class, absolute frequency of class");
+        dialog.addSubTitle(HISTOGRAM_OPTIONS);
+        rasterStatisticsBox = dialog.addCheckBox(LAYER_STATISTICS, true,
+                SHOW_STATISTICS);
+
+        rasterMaxMinLimitsBox = dialog.addCheckBox(MAXMINPINS, false,
+                MAXMINPINS);
+        rasterCentralTendencyBox = dialog.addCheckBox(MEDIANPIN, false,
+                MEDIANPIN);
 
         dialog.pack();
     }
@@ -194,233 +249,110 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
     }
 
-    private static int CLASS_COUNT;;
-
-    private boolean createHistogram2(final PlugInContext context,
-            RasterImageLayer selLayer) throws Exception {
-
-        CLASS_COUNT = ranges;
-        final double z = 0;
-        int i;
-        int A;
-
-        double dMin = 0, dMax = 0;
-        double Count[];
-
-        Count = new double[CLASS_COUNT + 1];
-
-        final OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
-        rstLayer.create(selLayer, false);
-        final int iNX = rstLayer.getLayerGridExtent().getNX();
-        final int iNY = rstLayer.getLayerGridExtent().getNY();
-        final GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
-                rstLayer, rstLayer.getLayerGridExtent());
-
-        A = 0;
-
-        for (int x = 0; x < iNX; x++) {// cols
-            for (int y = 0; y < iNY; y++) {// rows
-                final double value = gwrapper.getCellValueAsDouble(x, y, 0);
-                if (value != selLayer.getNoDataValue()) {
-                    if (A <= 0) {
-                        dMin = dMax = z;
-                    } else {
-                        if (dMin > z) {
-                            dMin = z;
-                        } else if (dMax < z) {
-                            dMax = z;
-                        }
-                    }
-                    A++;
-                }
-            }
-        }
-        final double dInterval = (dMax - dMin) / CLASS_COUNT;
-        for (int x = 0; x < iNX; x++) {// cols
-            for (int y = 0; y < iNY; y++) {// rows
-                final double value = gwrapper.getCellValueAsDouble(x, y, 0);
-                if (value != selLayer.getNoDataValue()) {
-                    i = (int) ((z - dMin) / dInterval);
-                    Count[Math.min(i, CLASS_COUNT)]++;
-                }
-            }
-        }
-
-        final ArrayList list = new ArrayList();
-        for (i = 0; i < Count.length; i++) {
-            final int iCount = (int) (10000 * Count[i] / A);
-            for (int j = 0; j < iCount; j++) {
-                list.add(new Double(dMin + dInterval * i));
-            }
-        }
-
-        final double countForHistogram[] = new double[list.size()];
-        for (int j = 0; j < list.size(); j++) {
-            countForHistogram[j] = ((Double) list.get(j)).doubleValue();
-        }
-        final int values = ranges;
-
-        double[][] limits2show = new double[2][countForHistogram.length];
-        if (countForHistogram.length == 2) {
-            limits2show = new double[2][countForHistogram.length * 2];
-        }
-        for (int j = 0; j < countForHistogram.length; j++) {
-            limits2show[0][j] = countForHistogram[j]; // x-axis
-            limits2show[1][j] = Math.floor(i / (4.0 * values)); // y-axis,
-                                                                // estimate
-                                                                // height of
-                                                                // "bar"
-                                                                // from
-                                                                // number of
-                                                                // items
-            // limits2show[1][j]= 1;
-            // -- due to bug in jmathplot add limits twice if only three
-            // classes
-            // are sought
-            if (countForHistogram.length == 2) {
-                limits2show[0][countForHistogram.length + j] = countForHistogram[j];
-                limits2show[1][countForHistogram.length + j] = Math.floor(i
-                        / (4.0 * values));
-            }
-        }
-
-        final Plot2DPanelOJ plot = new Plot2DPanelOJ();
-        plot.addHistogramPlot("", countForHistogram, values);
-        plot.addBarPlot("", limits2show);
-        // plot.addScatterPlotOJ(sDatapoints, plotdata, fID, context,
-        // selLayer);
-        // plot.addBarPlot(sClassbreaks, limits2show);
-        plot.plotToolBar.setVisible(true);
-        plot.setAxisLabel(0, "1");
-        plot.setAxisLabel(1, "2");
-        plot.addLegend("SOUTH");
-        plot.setBorder(javax.swing.BorderFactory.createLineBorder(
-                java.awt.Color.gray, 1));
-
-        plot.setFixedBounds(0, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        AdditionalResults.addAdditionalResult("Histogram", plot);
-        return true;
-
-    }
-
-    private double round(double value, int numberOfDigitsAfterDecimalPoint) {
-        BigDecimal bigDecimal = new BigDecimal(value);
-        bigDecimal = bigDecimal.setScale(numberOfDigitsAfterDecimalPoint,
-                BigDecimal.ROUND_HALF_UP);
-        return bigDecimal.doubleValue();
-    }
-
-    private Double[] getColumnAsInteger(Object[][] array, int index) {
-        final Double[] column = new Double[array.length];
-
-        for (int i = 0; i < column.length; i++) {
-            column[i] = round(((Double) array[i][index]).doubleValue(), 0);
-        }
-        return column;
-    }
-
-    public static Double[] getColumnAsInteger1(Object[][] array, int index) {
-        final Double[] column = new Double[array.length];
-        double sum = 0;
-        int io = 0; // Create a separate integer to serve as your array indexer.
-        while (io < column.length) {
-            sum += ((Double) array[io][index]).doubleValue();
-            io++;
-        }
-
-        for (int i = 0; i < column.length; i++) {
-            column[i] = (((Double) array[i][index]).doubleValue() / sum) * 100;
-        }
-        return column;
-    }
-
-    private Double[] getMinMaxValues(RasterImageLayer selLayer,
-            Object[][] array, int index, boolean maxvalue) {
-        final Double[] column = new Double[array.length];
-        final double interval = round(((Double) array[0][0]).doubleValue(), 2)
-                - selLayer.getMetadata().getStats().getMin(0);
-        if (!maxvalue) {
-            for (int i = 0; i < column.length; i++) {
-                column[i] = round(((Double) array[i][index]).doubleValue(), 2)
-                        - interval;
-            }
-        } else {
-            for (int i = 0; i < column.length; i++) {
-                column[i] = round(((Double) array[i][index]).doubleValue(), 2)
-                        + interval;
-            }
-        }
-        return column;
-    }
-
-    public static String[] getAbsoluteFrqAsIntArray(Object[][] array, int index) {
-        final String[] column = new String[array.length];
-
-        final Locale specialLocale = new Locale("en", "EN");
-        final String formatPattern = "###";
-        final DecimalFormat nf = (DecimalFormat) NumberFormat
-                .getNumberInstance(specialLocale);
-        nf.applyPattern(formatPattern);
-        final DecimalFormat df = nf;
-        for (int i = 0; i < column.length; i++) {
-            final double value = ((Double) array[i][index]).doubleValue();
-            final String stringValue = df.format(value);
-            column[i] = stringValue;
-        }
-        return column;
-    }
-
-    public static String[] getMinMaxValuesArray(RasterImageLayer selLayer,
-            Object[][] array, int index, boolean maxvalue) {
-        final String[] column = new String[array.length];
-        final Locale specialLocale = new Locale("en", "EN");
-        final String formatPattern = "###.##";
-        final DecimalFormat nf = (DecimalFormat) NumberFormat
-                .getNumberInstance(specialLocale);
-        nf.applyPattern(formatPattern);
-
-        final double interval = Math
-                .round(((Double) array[0][0]).doubleValue() * 100.0)
-                / 100.0
-                - selLayer.getMetadata().getStats().getMin(0);
-
-        if (!maxvalue) {
-            for (int i = 0; i < column.length; i++) {
-                final double value = Math.round(((Double) array[i][index])
-                        .doubleValue() * 100.0) / 100.0 - interval;
-                final String stringValue = nf.format(value);
-                column[i] = stringValue;
-
-            }
-        } else {
-            for (int i = 0; i < column.length; i++) {
-                final double value = Math.round(((Double) array[i][index])
-                        .doubleValue() * 100.0) / 100.0 + interval;
-                final String stringValue = nf.format(value);
-                column[i] = stringValue;
-
-            }
-        }
-        return column;
-    }
-
     private boolean createHistogram(final PlugInContext context,
             RasterImageLayer selLayer) throws Exception {
-
         final OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
-        // [mmichaud 2013-05-25] false : this is a temporary image not a file
-        // based image
-        rstLayer.create(selLayer, false);
-        final double[] data2 = GridRasterWrapper.rasterToArray(rstLayer);
+        rstLayer.create(selLayer, true);
+        Integer band = 0;
+        if (selLayer.getNumBands() > 1) {
+            final String[] bands = { "0", "1", "2" };
+            final String stringInput = (String) JOptionPane.showInputDialog(
+                    JUMPWorkbench.getInstance().getFrame(), SELECT_BAND, NAME,
+                    JOptionPane.PLAIN_MESSAGE, null, bands, "0");
+
+            try {
+                band = Integer.parseInt(stringInput);
+            } catch (final NumberFormatException e) {
+                return false; // The typed text was not an integer
+                // band = 0;
+            }
+        }
+        final double[] data = GridRasterWrapper.rasterToArray(rstLayer, band);
+        final StatisticIndices statUtils = new StatisticIndices();
+
+        statUtils.calculateDescriptiveStatistics(data);
+
+        final int nx = rstLayer.getLayerGridExtent().getNX();
+        final int ny = rstLayer.getLayerGridExtent().getNY();
         final Plot2DPanelOJ plot = new Plot2DPanelOJ();
+
+        if (rasterStatisticsBox.isSelected()) {
+            final DecimalFormat numberFormat = new DecimalFormat("#.0000");
+            final BaseLabel title0 = new BaseLabel(LAYER_STATISTICS,
+                    Color.BLACK, 1.1, 1.15);
+            title0.setFont(big_font);
+            final BaseLabel title1 = new BaseLabel(
+                    "max: " + statUtils.getMax(), Color.BLACK, 1.1, 1);
+            final BaseLabel title2 = new BaseLabel(
+                    "min: " + statUtils.getMin(), Color.BLACK, 1.1, 1.05);
+            final BaseLabel title3 = new BaseLabel("mean: "
+                    + numberFormat.format(statUtils.getMean()), Color.BLACK,
+                    1.1, 0.95);
+            final BaseLabel title4 = new BaseLabel("std. dev: "
+                    + numberFormat.format(statUtils.getStdDev()), Color.BLACK,
+                    1.1, 0.9);
+            final BaseLabel title6 = new BaseLabel("25%: "
+                    + statUtils.get25Percentile(), Color.BLACK, 1.1, 0.85);
+            final BaseLabel title5 = new BaseLabel("median: "
+                    + statUtils.getMedian(), Color.BLACK, 1.1, 0.8);
+            final BaseLabel title7 = new BaseLabel("75%: "
+                    + statUtils.get75Percentile(), Color.BLACK, 1.1, 0.75);
+            title1.setFont(darkLabelFont);
+            plot.addPlotable(title0);
+            plot.addPlotable(title1);
+            plot.addPlotable(title2);
+            plot.addPlotable(title3);
+            plot.addPlotable(title4);
+            plot.addPlotable(title5);
+            plot.addPlotable(title6);
+            plot.addPlotable(title7);
+        }
+
+        if (rasterMaxMinLimitsBox.isSelected()) {
+            final double[][] limits2show = new double[3][2];
+            limits2show[0][0] = statUtils.getMin(); // x-axis
+            limits2show[0][1] = 2 * Math.floor(selLayer.getOrigImageHeight()
+                    * selLayer.getOrigImageWidth() / (ranges));
+            limits2show[1][0] = statUtils.getMax(); // x-axis
+            limits2show[1][1] = limits2show[0][1];
+            plot.addBarPlot("limiti1", Color.red, limits2show);
+            plot.addLabel("max", Color.RED, new double[] { statUtils.getMax(),
+                    limits2show[0][1] * 110 / 100 });
+            plot.addLabel("min", Color.RED, new double[] { statUtils.getMin(),
+                    limits2show[0][1] * 110 / 100 });
+
+        }
+        if (rasterCentralTendencyBox.isSelected()) {
+            final double[][] limits2show = new double[3][2];
+            limits2show[0][0] = statUtils.getMedian(); // x-axis
+            limits2show[0][1] = 2 * Math.floor(selLayer.getOrigImageHeight()
+                    * selLayer.getOrigImageWidth() / (ranges));
+            limits2show[1][0] = statUtils.get25Percentile(); // x-axis
+            limits2show[1][1] = limits2show[0][1];
+            limits2show[2][0] = statUtils.get75Percentile(); // x-axis
+            limits2show[2][1] = limits2show[0][1];
+            plot.addBarPlot("limiti", Color.GREEN.darker(), limits2show);
+
+            plot.addLabel("median", Color.GREEN.darker(), new double[] {
+                    statUtils.getMedian(), limits2show[0][1] * 110 / 100 });
+            plot.addLabel("25%", Color.GREEN.darker(),
+                    new double[] { statUtils.get25Percentile(),
+                            limits2show[0][1] * 110 / 100 });
+            plot.addLabel("75%", Color.GREEN.darker(),
+                    new double[] { statUtils.get75Percentile(),
+                            limits2show[0][1] * 110 / 100 });
+
+        }
+
         plot.plotToolBar.remove(5);
         plot.plotToolBar.remove(4);
         plot.plotToolBar.remove(3);
-        plot.addHistogramPlot(sHistogram, Color.blue.brighter(), data2,
-                selLayer.getMetadata().getStats().getMin(0), selLayer
-                        .getMetadata().getStats().getMax(0), ranges);
 
-        // .addHistogramPlot(sHistogram, data2, ranges);
+        plot.addHistogramPlot(HISTOGRAM_PLOT, Color.blue.brighter(), data,
+                rstLayer.getMinValue(), rstLayer.getMaxValue(), ranges);
+
+        plot.setFixedBounds(0, rstLayer.getMinValue(), rstLayer.getMaxValue());
+        plot.setFixedBounds(0, rstLayer.getMinValue(), rstLayer.getMaxValue());
         plot.setEditable(false);
         plot.setNotable(true);
         plot.setName(selLayer.getFilePath());
@@ -428,13 +360,12 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         plot.setFixedBounds(0, selLayer.getMetadata().getStats().getMin(0),
                 selLayer.getMetadata().getStats().getMax(0));
         plot.plotToolBar.setVisible(true);
-        plot.setAxisLabel(0, "Values");
-        plot.setAxisLabel(1, "Fequency");
-        plot.getAxis(0).setLightLabelFont(default_font);
+        plot.setAxisLabel(0, VALUES);
+        plot.setAxisLabel(1, FREQUENCY);
+        plot.getAxis(0).setLightLabelFont(bold_font);
         plot.getAxis(0).setLabelFont(darkLabelFont);
-        plot.getAxis(1).setLightLabelFont(default_font);
+        plot.getAxis(1).setLightLabelFont(bold_font);
         plot.getAxis(1).setLabelFont(darkLabelFont);
-
         // change axis title position relatively to the base of the plot
         plot.getAxis(0).setLabelPosition(0.5, -0.15);
         // change axis title position relatively to the base of the plot
@@ -442,78 +373,245 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         // change axis title angle relatively to the base of the plot
         plot.getAxis(1).setLabelAngle(-Math.PI / 2);
 
-        if (box.isSelected()) {
-            final JTable table = new JTable();
-            table.setName(selLayer.getFilePath());
-            table.setFont(table.getFont().deriveFont(Font.PLAIN));
-            double[][] dataTableDouble = null;
-            Object[][] dataTableObject = null;
-            for (final Plot plot2 : plot.getPlots()) {
-                dataTableDouble = plot2.getData();
-            }
-            dataTableObject = plot.plotCanvas.reverseMapedData(dataTableDouble);
-
-            final JTable jTable = new JTable() {
-
-                /**
-             * 
-             */
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public boolean isCellEditable(int row, int column) // Override
-                                                                   // the
-                                                                   // isCellEditable
-                                                                   // method
-
-                {
-
-                    return false;// Table not allowed to edit
-
-                }
-            };
-
-            final Object[] minObject = getMinMaxValuesArray(selLayer,
-                    dataTableObject, 0, false);
-
-            final Object[] maxObject = getMinMaxValuesArray(selLayer,
-                    dataTableObject, 0, true);
-
-            final Object[] absoluteFrequencyObject = getAbsoluteFrqAsIntArray(
-                    dataTableObject, 1);
-
-            // Adding class sequence number to the table
-            final Integer[] evenNumbers = new Integer[dataTableObject.length];
-            Integer count = 1;
-            for (int a = 0; a < evenNumbers.length; a++) {
-                evenNumbers[a] = count;
-                count++;
-            }
-            final Object[] objs = evenNumbers;
-            final DefaultTableModel dtm = (DefaultTableModel) jTable.getModel();
-
-            dtm.addColumn("classes", objs);
-            dtm.addColumn("min. value", minObject);
-            dtm.addColumn("max. value", maxObject);
-            dtm.addColumn("absolute frequency", absoluteFrequencyObject);
-
-            final int lastRow = jTable.getRowCount() - 1;
-            final int column = jTable.getColumnCount() - 2;
-            dtm.setValueAt(rstLayer.getMaxValue(), lastRow, column);
-
-            // jTable.moveColumn(2, 0);
-
-            // table = new JTable(dataTableObject, columnNames);
-            final JScrollPane jScrollPane = new JScrollPane(jTable);
-
-            AdditionalResults.addAdditionalResult(
-                    sHistogram + " (" + selLayer.getName() + ") - table",
-                    jScrollPane);
+        // Get frequancy classes
+        double[][] dataTableDouble = null;
+        Object[][] dataTableObject = null;
+        for (final Plot plot2 : plot.getPlots()) {
+            dataTableDouble = plot2.getData();
         }
-        AdditionalResults.addAdditionalResultAndShow(sHistogram + " ("
+        // Frequency section//
+        dataTableObject = plot.plotCanvas.reverseMapedData(dataTableDouble);
+        final int length = dataTableObject.length;
+        final Object[] minObject = plot.getXData_limits(false);
+
+        final Object[] meanObject = plot.getXData();
+
+        final Object[] maxObject = plot.getXData_limits(true);
+
+        final Object[] absoluteFrequencyObject = plot.getYData();
+
+        final Object[] cumulativeFrequencyObject = plot
+                .getYData_CumulativeFrequency();
+
+        final Object[] relativeFrequencyObject = plot
+                .getYData_RelativeFrequency();
+
+        // Buttons///////
+        final JButton freqBtn = new JButton(IconLoader.icon("Row_16.gif"));
+        freqBtn.setToolTipText(SHOW_FREQUENCY);
+        freqBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                final HTMLFrame freqFrame = new HTMLFrame();
+                final JPanel southPanel = new JPanel();
+                southPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+                freqFrame.setLayout(new BorderLayout());
+                freqFrame.setResizable(true);
+                freqFrame.setClosable(true);
+                freqFrame.setIconifiable(true);
+                freqFrame.setMaximizable(true);
+                freqFrame.setPreferredSize(new Dimension(900, 450));
+                freqFrame.setSize(900, 450);
+                freqFrame.setLayer(JLayeredPane.MODAL_LAYER);
+                freqFrame.setTitle(HISTOGRAM_PLOT + " (" + selLayer.getName()
+                        + ") - " + FREQUENCY);
+                final JTable jTable = new JTable() {
+                    /**
+                     * 
+                     */
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        return false;
+                    }
+                };
+                jTable.setFont(jTable.getFont().deriveFont(Font.PLAIN));
+                // Adding class sequence number to the table
+                final Integer[] numberIntervals = new Integer[length];
+                Integer count = 1;
+                for (int a = 0; a < numberIntervals.length; a++) {
+                    numberIntervals[a] = count;
+                    count++;
+                }
+                final Object[] objs = numberIntervals;
+                final DefaultTableModel dtm = (DefaultTableModel) jTable
+                        .getModel();
+                dtm.addColumn(I18N
+                        .get("com.vividsolutions.jump.util.Frequency.classes"),
+                        objs);
+                dtm.addColumn(
+                        I18N.get("com.vividsolutions.jump.util.Frequency.lower-value"),
+                        minObject);
+                dtm.addColumn(
+                        I18N.get("com.vividsolutions.jump.util.Frequency.mean-value"),
+                        meanObject);
+                dtm.addColumn(
+                        I18N.get("com.vividsolutions.jump.util.Frequency.upper-value"),
+                        maxObject);
+                dtm.addColumn(
+                        I18N.get("com.vividsolutions.jump.util.Frequency.absolute-frequency"),
+                        absoluteFrequencyObject);
+                dtm.addColumn(
+                        I18N.get("com.vividsolutions.jump.util.Frequency.cumulative-frequency"),
+                        cumulativeFrequencyObject);
+                dtm.addColumn(
+                        I18N.get("com.vividsolutions.jump.util.Frequency.relative-frequency"),
+                        relativeFrequencyObject);
+                final JScrollPane jScrollPane = new JScrollPane(jTable);
+
+                final JButton saveButton = new JButton(I18N
+                        .get("deejump.plugin.SaveLegendPlugIn.Save")); //$NON-NLS-1$
+                saveButton
+                        .addActionListener(new java.awt.event.ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                final FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                                        "Comma-Separated Values (csv)", "csv");
+                                final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
+                                        "csv");
+                                fc.setFileFilter(filter);
+                                fc.addChoosableFileFilter(filter);
+                                final int returnVal = fc
+                                        .showSaveDialog(JUMPWorkbench
+                                                .getInstance().getFrame());
+                                fc.getWidth();
+                                fc.getHeight();
+                                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                                    final File file = new File(fc
+                                            .getSelectedFile() + ".csv");
+                                    try {
+                                        IOTools.saveCSV(jTable,
+                                                file.getAbsolutePath());
+                                        saved(file);
+                                    } catch (final Exception e1) {
+                                        notsaved(file);
+
+                                    }
+                                } else if (returnVal == JFileChooser.CANCEL_OPTION) {
+                                    return;
+                                }
+                            }
+                        });
+                southPanel.add(saveButton);
+                freqFrame.add(jScrollPane, BorderLayout.CENTER);
+                freqFrame.add(southPanel, BorderLayout.SOUTH);
+                freqFrame.setVisible(true);
+
+                context.getWorkbenchFrame().addInternalFrame(freqFrame, true,
+                        true);
+
+            }
+        });
+
+        final JButton statBtn = new JButton(IconLoader.icon("statistics16.png"));
+        statBtn.setToolTipText(SHOW_STATISTICS);
+        statBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final DecimalFormat df = new DecimalFormat("##.###");
+                final HTMLPanel out = new HTMLPanel();
+                out.getRecordPanel().removeAll();
+                out.createNewDocument();
+                out.setBackground(Color.lightGray);
+                out.append("<h");
+                out.append("2");
+                out.append(" align=\"left\">");
+                out.append(HISTOGRAM_PLOT + " (" + selLayer.getName() + ") - "
+                        + LAYER_STATISTICS);
+                out.append("</h");
+                out.append("2");
+                out.append("<ul>\n");
+                addListElement(out,
+                        STAT_MIN + ": " + df.format(statUtils.getMin()));
+                addListElement(out,
+                        STAT_MAX + ": " + df.format(statUtils.getMax()));
+                addListElement(out,
+                        STAT_MEAN + ": " + df.format(statUtils.getMean()));
+                addListElement(out,
+                        STAT_STD + ": " + df.format(statUtils.getStdDev()));
+                addListElement(
+                        out,
+                        STAT_1QNT + ": "
+                                + df.format(statUtils.get25Percentile()));
+                addListElement(out,
+                        STAT_MED + ": " + df.format(statUtils.getMedian()));
+                addListElement(
+                        out,
+                        STAT_3QNT + ": "
+                                + df.format(statUtils.get75Percentile()));
+                addListElement(out,
+                        STAT_RMS + ": " + df.format(statUtils.getRMS()));
+                addListElement(out,
+                        STAT_VAR + ": " + df.format(statUtils.getVariance()));
+
+                addListElement(out,
+                        NODATA + ": " + df.format(selLayer.getNoDataValue()));
+                addListElement(out,
+                        STAT_TOTSUM + ": " + df.format(statUtils.getSum()));
+                addListElement(out,
+                        STAT_CRF + ": " + df.format(statUtils.getCoeffOfVar()));
+
+                addListElement(out,
+                        STAT_SKW + ": " + df.format(statUtils.getSkewness()));
+                addListElement(out,
+                        STAT_KRT + ": " + df.format(statUtils.getKurtosis()));
+                addListElement(
+                        out,
+                        NODATACELLS
+                                + ": "
+                                + Integer.toString((nx * ny)
+                                        - statUtils.getCount()));
+
+                addListElement(
+                        out,
+                        VALIDCELLS + ": "
+                                + Integer.toString(statUtils.getCount()));
+                out.append("</ul>\n");
+
+                final HTMLFrame frame = new HTMLFrame();
+                frame.setTitle(HISTOGRAM_PLOT + " (" + selLayer.getName()
+                        + ") - " + LAYER_STATISTICS);
+                frame.add(out);
+                frame.setClosable(true);
+                frame.setResizable(true);
+                frame.setMaximizable(true);
+                frame.setSize(280, 520);
+                frame.setVisible(true);
+
+                context.getWorkbenchFrame().addInternalFrame(frame, true, true);
+
+                return;
+            }
+        });
+        plot.plotToolBar.addSeparator();
+        plot.plotToolBar.add(statBtn);
+        plot.plotToolBar.add(freqBtn);
+
+        AdditionalResults.addAdditionalResultAndShow(HISTOGRAM_PLOT + " ("
                 + selLayer.getName() + ")", plot);
 
         return true;
+    }
+
+    public void addListElement(HTMLPanel out, final String sText) {
+
+        out.append("<li>");
+        out.append("<font face=\"" + darkLabelFont + "\">" + sText);
+        out.append("</li>\n");
+
+    }
+
+    protected void saved(File file) {
+        JUMPWorkbench.getInstance().getFrame()
+                .setStatusMessage(sSaved + " :" + file.getAbsolutePath());
+    }
+
+    protected void notsaved(File file) {
+        JOptionPane.showMessageDialog(null,
+                SCouldNotSave + ": " + file.getName(), I18N.get(NAME),
+                JOptionPane.WARNING_MESSAGE);
     }
 
 }
