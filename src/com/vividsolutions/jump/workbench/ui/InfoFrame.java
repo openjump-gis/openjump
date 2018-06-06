@@ -169,7 +169,7 @@ public class InfoFrame extends DetachableInternalFrame implements
 			      }
 		    });
 
-		    LayerListener layerListener = new LayerListener() {
+		    final LayerListener layerListener = new LayerListener() {
             public void featuresChanged(FeatureEvent e) {}
 
             public void layerChanged(LayerEvent e) {
@@ -178,7 +178,6 @@ public class InfoFrame extends DetachableInternalFrame implements
                     if (getModel().getLayers().contains(e.getLayerable())) {
                         getModel().remove((Layer)e.getLayerable());
                     }
-                    layerManager.removeLayerListener(this);
                 }
             }
 
@@ -196,6 +195,7 @@ public class InfoFrame extends DetachableInternalFrame implements
           //Assume that there are no other views on the model
           model.dispose();
           savePositionAndSize();
+          getLayerManager().removeLayerListener(layerListener);
           getLayerManager().removeLayerListener(attributeTab.attributeTabLayerListener);
         }
       });
