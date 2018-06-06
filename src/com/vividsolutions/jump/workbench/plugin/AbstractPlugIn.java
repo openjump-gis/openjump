@@ -202,6 +202,11 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
         getShortcutModifiers()) : null;
   }
 
+  /**
+   * Use reflection to find an EnableCheck object defined by old method
+   * createEnableCheck in this plugin.
+   * @return the EnableCheck defined the old way
+   */
   public EnableCheck getEnableCheck() {
     //System.out.println("ap look for "+this.getName());
     // find old method
@@ -232,6 +237,12 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
     return getIcon(new Dimension(height, height));
   }
 
+  /**
+   * Use reflection to find the icon defined the old way by method
+   * getIcon or by attribute ICON.
+   * @param dim dimension of the icon
+   * @return the Icon of this PlugIn
+   */
   public Icon getIcon(Dimension dim) {
     Icon icon = null;
     Class c = this.getClass();
@@ -314,13 +325,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
         try {
           if (workbenchContext.getWorkbench() != null) {
             workbenchContext.getWorkbench().getFrame().setStatusMessage("");
-            workbenchContext
-                .getWorkbench()
-                .getFrame()
-                .log(
-                    I18N.get("plugin.AbstractPlugIn.executing") + " "
-                        + plugIn.getName());
-
+            Logger.info(I18N.get("plugin.AbstractPlugIn.executing") + " " + plugIn.getName());
           }
 
           PlugInContext plugInContext = workbenchContext.createPlugInContext();
@@ -354,13 +359,9 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
           }
 
           if (workbenchContext.getWorkbench() != null) {
-            workbenchContext
-                .getWorkbench()
-                .getFrame()
-                .log(
-                    I18N.get("plugin.AbstractPlugIn.done-current-committed-memory")
-                        + workbenchContext.getWorkbench().getFrame()
-                            .getMBCommittedMemory() + " MB");
+            Logger.info(I18N.get("plugin.AbstractPlugIn.done-current-committed-memory")
+                    + workbenchContext.getWorkbench().getFrame()
+                    .getMBCommittedMemory() + " MB");
           }
         } catch (Throwable t) {
           workbenchContext.getErrorHandler().handleThrowable(t);
