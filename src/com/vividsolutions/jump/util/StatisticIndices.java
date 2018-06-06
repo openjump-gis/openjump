@@ -196,9 +196,9 @@ public class StatisticIndices {
     public static List<String> getIndices() {
 
         StatisticIndices.MAX = I18N
-                .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.max");
+                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum");
         StatisticIndices.MIN = I18N
-                .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.min");
+                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum");
         StatisticIndices.MEAN = I18N
                 .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.mean");
         StatisticIndices.STANDARD_DEV = I18N
@@ -210,14 +210,20 @@ public class StatisticIndices {
         StatisticIndices.SUM = I18N
                 .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum");
 
-        StatisticIndices.COEF_VARIATION = "com.vividsolutions.jump.util.StatisticIndices.Coefficient-of-variation";
-        StatisticIndices.RMS = "com.vividsolutions.jump.util.StatisticIndices.Root-mean-squared";
-        StatisticIndices.PERCENTILE_25 = "com.vividsolutions.jump.util.StatisticIndices.25-percentile";
-        StatisticIndices.PERCENTILE_75 = "com.vividsolutions.jump.util.StatisticIndices.75-percentile";
-        StatisticIndices.SKEWNESS = "com.vividsolutions.jump.util.StatisticIndices.Skewness";
-        StatisticIndices.KURTOSIS = "com.vividsolutions.jump.util.StatisticIndices.Kurtosis";
+        StatisticIndices.COEF_VARIATION = I18N
+                .get("com.vividsolutions.jump.util.StatisticIndices.Coefficient-of-variation");
+        StatisticIndices.RMS = I18N
+                .get("com.vividsolutions.jump.util.StatisticIndices.Root-mean-squared");
+        StatisticIndices.PERCENTILE_25 = I18N
+                .get("com.vividsolutions.jump.util.StatisticIndices.25-percentile");
+        StatisticIndices.PERCENTILE_75 = I18N
+                .get("com.vividsolutions.jump.util.StatisticIndices.75-percentile");
+        StatisticIndices.SKEWNESS = I18N
+                .get("com.vividsolutions.jump.util.StatisticIndices.Skewness");
+        StatisticIndices.KURTOSIS = I18N
+                .get("com.vividsolutions.jump.util.StatisticIndices.Kurtosis");
         StatisticIndices.VARIANCE = I18N
-                .get("com.vividsolutions.jump.util.variance");
+                .get("com.vividsolutions.jump.util.StatisticIndices.variance");
 
         final List<String> classifierList = new ArrayList<String>();
         classifierList.add(StatisticIndices.COUNT);
