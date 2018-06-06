@@ -1143,4 +1143,33 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         }
         return null;
     }
+
+    /**
+     * generic method to load collection of layerable into JComboBox with
+     * renderer of layerable (layer icon)
+     * 
+     * @param fieldName
+     *            field name of the control
+     * @param initialValue
+     *            default layer visible in the combo box
+     * @param toolTipText
+     *            tool tip text associated with this combo box
+     * @param layerable
+     *            layers to be proposed in the combo box
+     * @return the JComboBox
+     */
+
+    public <T> JComboBox<T> addLayerableComboBox(String fieldName,
+            Object initialValue, String toolTipText, Collection<T> layerable) {
+
+        final JComboBox<T> comboBox = addComboBox(fieldName, initialValue,
+                layerable, toolTipText);
+        final LayerNameRenderer layerListCellRenderer = new LayerNameRenderer();
+        layerListCellRenderer.setCheckBoxVisible(false);
+        layerListCellRenderer.setProgressIconLabelVisible(false);
+        comboBox.setRenderer(layerListCellRenderer);
+        comboBox.invalidate();
+
+        return comboBox;
+    }
 }
