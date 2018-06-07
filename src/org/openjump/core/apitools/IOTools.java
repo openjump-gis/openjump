@@ -307,13 +307,13 @@ public class IOTools {
                             file.getAbsoluteFile()), "UTF-8"));
 
             for (int j = 0; j < table.getColumnCount(); j++) {
-                bw.write(table.getModel().getColumnName(j) + ",");
+                bw.write(table.getModel().getColumnName(j) + "\t");
             }
             bw.newLine();
             ;
             for (int i = 0; i < table.getRowCount(); i++) {
                 for (int j = 0; j < table.getColumnCount(); j++) {
-                    bw.write(table.getModel().getValueAt(i, j) + ",");
+                    bw.write(table.getModel().getValueAt(i, j) + "\t");
                 }
                 bw.newLine();
             }
