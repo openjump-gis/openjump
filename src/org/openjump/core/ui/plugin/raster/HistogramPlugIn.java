@@ -30,7 +30,6 @@ package org.openjump.core.ui.plugin.raster;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,22 +40,17 @@ import java.util.Collection;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import org.math.plot.plotObjects.BaseLabel;
 import org.math.plot.plots.Plot;
 import org.math.plot.render.AbstractDrawer;
-import org.openjump.core.apitools.IOTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridRasterWrapper;
-import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 import org.openjump.core.ui.plot.Plot2DPanelOJ;
 import org.openjump.sextante.gui.additionalResults.AdditionalResults;
 
@@ -73,8 +67,10 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.HTMLPanel;
+import com.vividsolutions.jump.workbench.ui.JTablePanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.TableFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
@@ -402,10 +398,7 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         freqBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                final HTMLFrame freqFrame = new HTMLFrame();
-                final JPanel southPanel = new JPanel();
-                southPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+                final TableFrame freqFrame = new TableFrame();
                 freqFrame.setLayout(new BorderLayout());
                 freqFrame.setResizable(true);
                 freqFrame.setClosable(true);
@@ -416,18 +409,8 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
                 freqFrame.setLayer(JLayeredPane.MODAL_LAYER);
                 freqFrame.setTitle(HISTOGRAM_PLOT + " (" + selLayer.getName()
                         + ") - " + FREQUENCY);
-                final JTable jTable = new JTable() {
-                    /**
-                     * 
-                     */
-                    private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public boolean isCellEditable(int row, int column) {
-                        return false;
-                    }
-                };
-                jTable.setFont(jTable.getFont().deriveFont(Font.PLAIN));
+                final JTable jTable = new JTable();
                 // Adding class sequence number to the table
                 final Integer[] numberIntervals = new Integer[length];
                 Integer count = 1;
@@ -459,44 +442,10 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
                 dtm.addColumn(
                         I18N.get("com.vividsolutions.jump.util.Frequency.relative-frequency"),
                         relativeFrequencyObject);
-                final JScrollPane jScrollPane = new JScrollPane(jTable);
+                final JTablePanel jTablePanel = new JTablePanel(dtm);
 
-                final JButton saveButton = new JButton(I18N
-                        .get("deejump.plugin.SaveLegendPlugIn.Save")); //$NON-NLS-1$
-                saveButton
-                        .addActionListener(new java.awt.event.ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                final FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                                        "Comma-Separated Values (csv)", "csv");
-                                final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
-                                        "csv");
-                                fc.setFileFilter(filter);
-                                fc.addChoosableFileFilter(filter);
-                                final int returnVal = fc
-                                        .showSaveDialog(JUMPWorkbench
-                                                .getInstance().getFrame());
-                                fc.getWidth();
-                                fc.getHeight();
-                                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                                    final File file = new File(fc
-                                            .getSelectedFile() + ".csv");
-                                    try {
-                                        IOTools.saveCSV(jTable,
-                                                file.getAbsolutePath());
-                                        saved(file);
-                                    } catch (final Exception e1) {
-                                        notsaved(file);
+                freqFrame.add(jTablePanel);
 
-                                    }
-                                } else if (returnVal == JFileChooser.CANCEL_OPTION) {
-                                    return;
-                                }
-                            }
-                        });
-                southPanel.add(saveButton);
-                freqFrame.add(jScrollPane, BorderLayout.CENTER);
-                freqFrame.add(southPanel, BorderLayout.SOUTH);
                 freqFrame.setVisible(true);
 
                 context.getWorkbenchFrame().addInternalFrame(freqFrame, true,
