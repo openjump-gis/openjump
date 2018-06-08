@@ -239,9 +239,9 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         dialog.pack();
     }
 
-    private void getDialogValues(MultiInputDialog dialog) {
+    private final void getDialogValues(MultiInputDialog dialog) {
         ranges = dialog.getInteger(T2);
-        selLayer = dialog.getRasterLayer(CLAYER);
+        selLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
 
     }
 
