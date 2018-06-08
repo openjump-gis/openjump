@@ -58,6 +58,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.StatisticIndices;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -155,7 +156,8 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
             10);
     private final Font big_font = new Font("BitStream Vera Sans", Font.PLAIN,
             14);
-    private RasterImageLayer selLayer = null;
+    // private RasterImageLayer selLayer = null;
+    private String layerName;
     private int ranges = 100;
 
     private final Icon ICON = IconLoader.icon("histogramme.png");
@@ -207,8 +209,23 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     @Override
     public void run(TaskMonitor monitor, PlugInContext context)
             throws Exception {
-        createHistogram(context, selLayer);
+        final RasterImageLayer layer = getRasterImageLayer(layerName);
+        createHistogram(context, layer);
 
+    }
+
+    public RasterImageLayer getRasterImageLayer(String name) {
+        final WorkbenchContext context = JUMPWorkbench.getInstance()
+                .getContext();
+        for (final Object element : context.getLayerManager()
+                .getRasterImageLayers()) {
+            final RasterImageLayer layer = (RasterImageLayer) element;
+            if (layer.getName().equals(name)) {
+                return layer;
+            }
+        }
+
+        return null;
     }
 
     private void setDialogValues(final MultiInputDialog dialog,
@@ -241,7 +258,9 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
     private void getDialogValues(MultiInputDialog dialog) {
         ranges = dialog.getInteger(T2);
-        selLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
+        final RasterImageLayer layer = (RasterImageLayer) dialog
+                .getLayerable(CLAYER);
+        layerName = layer.getName();
 
     }
 
