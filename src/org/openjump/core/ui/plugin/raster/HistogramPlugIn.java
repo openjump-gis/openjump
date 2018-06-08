@@ -265,7 +265,7 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     }
 
     private boolean createHistogram(final PlugInContext context,
-            RasterImageLayer selLayer) throws Exception {
+            final RasterImageLayer selLayer) throws Exception {
         final OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
         rstLayer.create(selLayer, true);
         Integer band = 0;
