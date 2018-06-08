@@ -541,15 +541,12 @@ public class LayerManager {
         for (Iterator<T> i = layerables.iterator(); i.hasNext();) {
             T layerable = i.next();
 
-            if (!(layerable instanceof Layer)) {
-                continue;
-            }
-
-            Layer layer = (Layer) layerable;
-
-            if (layer.isDrawingLast()) {
-                layersDrawnLast.add((T)layer);
-                i.remove();
+            if (layerable instanceof Layer) {
+                Layer layer = (Layer) layerable;
+                if (layer.isDrawingLast()) {
+                    layersDrawnLast.add((T) layer);
+                    i.remove();
+                }
             }
         }
 
@@ -690,10 +687,9 @@ public class LayerManager {
         for (Category category : categories) {
 
             for (Layerable layerable : new ArrayList<>(category.getLayerables())) {
-                if (!(layerableClass.isInstance(layerable))) {
-                    continue;
+                if (layerableClass.isInstance(layerable)) {
+                    layers.add((T) layerable);
                 }
-                layers.add((T)layerable);
             }
         }
 
