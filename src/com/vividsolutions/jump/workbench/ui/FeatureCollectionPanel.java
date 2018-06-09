@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -52,9 +51,15 @@ public class FeatureCollectionPanel extends JPanel {
     private JScrollPane pane = new JScrollPane();
     private final JPanel filterPanel = new JPanel(new BorderLayout());
     private JTable jTable = new JTable();
+    private final JTable subtable = new JTable();
     private final JLabel jLabel = new JLabel();
     private final DefaultTableModel model = new DefaultTableModel();
     private final Color LIGHT_GRAY = new Color(230, 230, 230);
+    private JPanel southPanel = new JPanel();
+    private final String sSaved = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    private final String SCouldNotSave = I18N
+            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
 
     public FeatureCollectionPanel(FeatureCollection featureCollection) {
         super();
@@ -109,11 +114,15 @@ public class FeatureCollectionPanel extends JPanel {
         jTable.setModel(setTableModelFromFeatureCollection());
         jTable.setEnabled(true);
 
+        // JPanel upperPanel = new JPanel(new BorderLayout());
+        southPanel = new JPanel(new BorderLayout());
+
+        southPanel.add(commandPanel(), BorderLayout.NORTH);
+        southPanel.add(savePanel(), BorderLayout.CENTER);
         add(jLabel, BorderLayout.NORTH);
         add(pane, BorderLayout.CENTER);
-        add(southPanel(), BorderLayout.SOUTH);
-        add(savePanel(), BorderLayout.AFTER_LAST_LINE);// To change with better
-                                                       // Layout
+        add(southPanel, BorderLayout.SOUTH);
+
     }
 
     /**
@@ -152,22 +161,24 @@ public class FeatureCollectionPanel extends JPanel {
                             file = new File(fc.getSelectedFile() + ".jml");
                             IOTools.saveJMLFile(featureCollection,
                                     file.getAbsolutePath());
+                            saved(file);
 
                         } else if (fc.getFileFilter().equals(filter)) {
                             file = new File(fc.getSelectedFile() + ".shp");
                             IOTools.saveShapefile(featureCollection,
                                     file.getAbsolutePath());
+                            saved(file);
 
                         } else if (fc.getFileFilter().equals(filter2)) {
 
                             file = new File(fc.getSelectedFile() + ".csv");
                             IOTools.saveCSV(jTable, file.getAbsolutePath());
-                            ;
+                            saved(file);
                         }
                     }
 
                 } catch (final Exception ex) {
-                    //
+                    notsaved();
                 }
 
             }
@@ -180,7 +191,7 @@ public class FeatureCollectionPanel extends JPanel {
     // AttributeQueryPlugIn for example)
     // and a save button to export filtered results as layer
     // Right now it search only to match a string to every single record
-    private JPanel southPanel() {
+    private JPanel commandPanel() {
         // Sorter
         final TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(
                 model);
@@ -197,6 +208,7 @@ public class FeatureCollectionPanel extends JPanel {
                 final String expr = txtFilter.getText();
                 sorter.setRowFilter(RowFilter.regexFilter(expr));
                 sorter.setSortKeys(null);
+                subtable.setRowSorter(sorter);
             }
         });
         // Save Button, not yet implemented
@@ -204,9 +216,30 @@ public class FeatureCollectionPanel extends JPanel {
         btSave.setToolTipText("Save search");
         btSave.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent evt) {
-                JOptionPane.showMessageDialog(null, "not yet implemented", "",
-                        JOptionPane.WARNING_MESSAGE);
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    File file;
+                    final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
+                            "Comma-Separated Values (csv)", "csv");
+
+                    final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
+                    fc.setFileFilter(filter2);
+                    fc.setFileFilter(filter2);
+                    fc.addChoosableFileFilter(filter2);
+                    final int returnVal = fc.showSaveDialog(JUMPWorkbench
+                            .getInstance().getFrame());
+                    if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+                        file = new File(fc.getSelectedFile() + ".csv");
+                        IOTools.saveCSV(subtable, file.getAbsolutePath());
+                        saved(file);
+
+                    }
+
+                } catch (final Exception ex) {
+                    notsaved();
+                }
+
             }
         });
         // btnOK.setBounds(336, 144, 59, 23);
@@ -278,7 +311,7 @@ public class FeatureCollectionPanel extends JPanel {
      * @return
      */
     public JPanel getCommandPanel() {
-        return southPanel();
+        return commandPanel();
     }
 
     /**
@@ -288,6 +321,20 @@ public class FeatureCollectionPanel extends JPanel {
      */
     public JPanel getSavePanel() {
         return savePanel();
+    }
+
+    public JPanel getSouthPanel() {
+        return southPanel;
+    }
+
+    protected void saved(File file) {
+        JUMPWorkbench.getInstance().getFrame()
+                .setStatusMessage(sSaved + " :" + file.getAbsolutePath());
+    }
+
+    protected void notsaved() {
+        JUMPWorkbench.getInstance().getFrame().warnUser(SCouldNotSave);
+
     }
 
 }
