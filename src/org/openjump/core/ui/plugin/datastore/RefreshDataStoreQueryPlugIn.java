@@ -15,13 +15,13 @@ import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataSource;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import org.openjump.core.ui.images.IconLoader;
+import org.openjump.core.ui.plugin.file.open.OpenProjectWizard;
 
 /**
  * <code>RefreshDatastoreQueryPlugIn</code> runs the query associated
@@ -55,43 +55,42 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
     }
     
     public void run(TaskMonitor monitor, final PlugInContext context) throws Exception {
-        Layer[] selectedLayers = context.getSelectedLayers();
-	    for (final Layer layer : selectedLayers) {
+    	Layer[] selectedLayers = context.getSelectedLayers();
+    	for (final Layer layer : selectedLayers) {
+    		DataSourceQuery dsq = layer.getDataSourceQuery();
+    		if (dsq == null || !(dsq.getDataSource() instanceof DataStoreQueryDataSource)) {
+    			continue;
+    		}
 	        
-	        DataSourceQuery dsq = layer.getDataSourceQuery();
-	        if (dsq == null || !(dsq.getDataSource() instanceof DataStoreQueryDataSource)) {
-	            continue;
-	        }
+    		FeatureSchema oldSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
 	        
-	        FeatureSchema oldSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-	        
-	        OpenProjectPlugIn.load(layer,
-                CoordinateSystemRegistry.instance(context.getWorkbenchContext().getBlackboard()),
+    		OpenProjectWizard.load(layer,
+								CoordinateSystemRegistry.instance(context.getWorkbenchContext().getBlackboard()),
                 monitor);
             
-            // Refreshing the layer change its schema. After a refresh,
-            // the following code get the Operation and the readOnly properties
-            // from the previous schema
-            FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+    		// Refreshing the layer change its schema. After a refresh,
+				// the following code get the Operation and the readOnly properties
+				// from the previous schema
+				FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
 		    if (oldSchema.equals(schema, false)) {
-		        for (int i = 0 ; i < oldSchema.getAttributeCount() ; i++) {
-		            String name = oldSchema.getAttributeName(i);
-		            int index = schema.getAttributeIndex(name);
-				    schema.setOperation(index, oldSchema.getOperation(i));
-				    schema.setAttributeReadOnly(index, oldSchema.isAttributeReadOnly(i));
-				}
-	        }
+		    	for (int i = 0 ; i < oldSchema.getAttributeCount() ; i++) {
+		    		String name = oldSchema.getAttributeName(i);
+		    		int index = schema.getAttributeIndex(name);
+		    		schema.setOperation(index, oldSchema.getOperation(i));
+		    		schema.setAttributeReadOnly(index, oldSchema.isAttributeReadOnly(i));
+		    	}
+		    }
             
-            // setFeatureCollectionModified(false) must be set after fireFeaturesChanged
-            // As in Layer.setFeatureCollection method, fireFeaturesChanged is
-            // called in an invokeLater thread, setFeatureCollectionModified
-            // must also be called in an invokeLater clause.
-            SwingUtilities.invokeLater(new Runnable() {
+		    // setFeatureCollectionModified(false) must be set after fireFeaturesChanged
+				// As in Layer.setFeatureCollection method, fireFeaturesChanged is
+				// called in an invokeLater thread, setFeatureCollectionModified
+				// must also be called in an invokeLater clause.
+				SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-				    layer.setFeatureCollectionModified(false);
+					layer.setFeatureCollectionModified(false);
 				}
-            });
-	    }
+				});
+    	}
     }
 
     /**
@@ -105,8 +104,9 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
 	    enableCheck.add(enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck());
 	    enableCheck.add(enableCheckFactory.createAtLeastNLayerablesMustBeSelectedCheck(1, Layerable.class));
 	    enableCheck.add(new EnableCheck(){
+				  @SuppressWarnings("deprecation")
 	        public String check(javax.swing.JComponent component) {
-	            Layer[] selectedLayers = wc.getLayerNamePanel().getSelectedLayers();
+	            Layer[] selectedLayers = wc.getLayerableNamePanel().getSelectedLayers();
 	            for (Layer layer : selectedLayers) {
 	                if (layer.getDataSourceQuery() == null ||
 	                    !(layer.getDataSourceQuery().getDataSource() instanceof DataStoreQueryDataSource)) {

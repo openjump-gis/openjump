@@ -2,14 +2,11 @@ package org.openjump.core.ui.plugin.file.open;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.Raster;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.xml.namespace.QName;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
@@ -28,7 +26,6 @@ import org.openjump.core.rasterimage.RasterImageIO;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.rasterimage.Resolution;
-import org.openjump.core.rasterimage.TiffTags;
 import org.openjump.core.ui.plugin.file.FindFile;
 import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
@@ -70,7 +67,6 @@ public class OpenProjectWizard extends AbstractWizardGroup {
     public static final String FILE_CHOOSER_DIRECTORY_KEY = KEY
             + " - FILE CHOOSER DIRECTORY";
 
-    /** The workbench context. */
     private WorkbenchContext workbenchContext;
 
     private SelectProjectFilesPanel selectProjectPanel;
@@ -120,6 +116,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
      * @param monitor
      *            The task monitor.
      * @throws Exception
+     *            if an exception occurs during file opening
      */
     @Override
     public void run(WizardDialog dialog, TaskMonitor monitor) throws Exception {
@@ -143,11 +140,9 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         blackboard.put(FILE_CHOOSER_DIRECTORY_KEY, file.getAbsoluteFile()
                 .getParent());
 
-        // FileReader reader = new FileReader(file);
-        InputStream inputStream = new FileInputStream(file);
-        JUMPWorkbench workbench = null;
+        JUMPWorkbench workbench;
         WorkbenchFrame workbenchFrame = null;
-        try {
+        try (InputStream inputStream = new FileInputStream(file)) {
             workbench = workbenchContext.getWorkbench();
             workbenchFrame = workbench.getFrame();
             PlugInManager plugInManager = workbench.getPlugInManager();
@@ -169,11 +164,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             Dimension size = newTask.getTaskWindowSize();
             if (size != null)
                 frame.setSize(size);
-            // Point location = newTask.getTaskWindowLocation();
-            // if ( (location != null)
-            // && (location.x < workbenchFrame.getSize().width)
-            // && (location.y < workbenchFrame.getSize().height))
-            // frame.setLocation(location);
+
             if (newTask.getMaximized())
                 frame.setMaximum(true);
             savedTaskEnvelope = newTask.getSavedViewEnvelope();
@@ -193,24 +184,21 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             OpenRecentPlugIn.get(workbenchContext).addRecentProject(file);
 
         } catch (ClassNotFoundException e) {
-            workbenchFrame.log(file.getPath() + " can not be loaded");
+            Logger.error(file.getPath() + " can not be loaded", e);
             workbenchFrame.warnUser("Missing class: " + e.getCause());
         } catch (Exception cause) {
             Exception e = new Exception(I18N.getMessage(KEY
                     + ".could-not-open-project-file-{0}-with-error-{1}",
-                    new Object[] { file, cause.getLocalizedMessage() }), cause);
+                    file, cause.getLocalizedMessage()), cause);
             monitor.report(e);
             throw e;
-        } finally {
-            inputStream.close();
         }
     }
 
-    private void initializeDataSources(Task task, WorkbenchContext context)
-            throws Exception {
+    private void initializeDataSources(Task task, WorkbenchContext context) {
         LayerManager layerManager = task.getLayerManager();
         List<Layer> layers = layerManager.getLayers();
-        List<Layer> layersToBeRemoved = new ArrayList<Layer>();
+        List<Layer> layersToBeRemoved = new ArrayList<>();
         for (Layer layer : layers) {
             DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
             DataSource dataSource = dataSourceQuery.getDataSource();
@@ -219,7 +207,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                         .getFrame()
                         .warnUser(
                                 I18N.getMessage(KEY + ".datasource-not-found",
-                                        new Object[] { layer.getName() }));
+                                        layer.getName()));
                 // context.getWorkbench().getFrame().warnUser("DataSource not found for "
                 // + layer.getName());
                 layerManager.remove(layer);
@@ -234,17 +222,9 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                             .showConfirmDialog(
                                     workbenchContext.getWorkbench().getFrame(),
                                     "<html>"
-                                            + I18N.getMessage(
-                                                    KEY
-                                                            + ".opening-datasource-{0}-failed-with-error",
-                                                    new Object[] {/*
-                                                                   * layer.
-                                                                   * getDataSourceQuery
-                                                                   * (
-                                                                   * ).toString(
-                                                                   * )
-                                                                   */layer
-                                                            .getName() })
+                                            + I18N.getMessage(KEY
+                                                    + ".opening-datasource-{0}-failed-with-error",
+                                                    layer.getName())
                                             + "<br>"
                                             + StringUtil
                                                     .split(e.getLocalizedMessage(),
@@ -259,8 +239,6 @@ public class OpenProjectWizard extends AbstractWizardGroup {
 
                     if (response != JOptionPane.YES_OPTION) {
                         layersToBeRemoved.add(layer);
-                    } else {
-                        continue;
                     }
                 }
             }
@@ -269,6 +247,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             layerManager.remove(layer);
     }
 
+    @SuppressWarnings("deprecation")
     private void loadLayers(LayerManager sourceLayerManager,
             LayerManager newLayerManager, CoordinateSystemRegistry registry,
             TaskMonitor monitor) throws Exception {
@@ -307,9 +286,8 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                 newLayerManager.addCategory(sourceLayerCategory.getName());
 
                 // LayerManager#addLayerable adds layerables to the top. So
-                // reverse
-                // the order.
-                ArrayList<Layerable> layerables = new ArrayList<Layerable>(
+                // reverse the order.
+                ArrayList<Layerable> layerables = new ArrayList<>(
                         sourceLayerCategory.getLayerables());
                 Collections.reverse(layerables);
 
@@ -360,7 +338,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                                     .getDataSourceQuery();
                             DataSource dataSource = dataSourceQuery
                                     .getDataSource();
-                            Map properties = dataSource.getProperties();
+                            Map<String,Object> properties = dataSource.getProperties();
                             if (properties.get(DataSource.FILE_KEY) != null) {
                                 String fname = properties.get(
                                         DataSource.FILE_KEY).toString();
@@ -391,10 +369,8 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                 }
             }
             // fire TaskListener's
-            Object[] listeners = workbenchFrame.getTaskListeners().toArray();
-            for (int i = 0; i < listeners.length; i++) {
-                TaskListener l = (TaskListener) listeners[i];
-                l.taskLoaded(new TaskEvent(this, newLayerManager.getTask()));
+            for (TaskListener taskListener : workbenchFrame.getTaskListeners()) {
+                taskListener.taskLoaded(new TaskEvent(this, newLayerManager.getTask()));
             }
         } finally {
             SwingUtilities.invokeLater(new Runnable() {
@@ -408,7 +384,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                             workbenchContext.getLayerViewPanel().getViewport()
                                     .zoom(savedTaskEnvelope);
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        Logger.error("Error finalizing OpenProjectWizard#loadLayers", ex);
                     }
                 }
             });
@@ -428,8 +404,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
 
     public static void loadRasterImageLayer(WorkbenchContext context,
             RasterImageLayer ril, RasterSymbology symbology, Category category)
-            throws NoninvertibleTransformException, IOException,
-            TiffTags.TiffReadingException, Exception {
+            throws Exception {
 
         RasterImageIO rasterImageIO = new RasterImageIO();
         Point point = RasterImageIO.getImageDimensions(ril.getImageFileName());
@@ -513,7 +488,8 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         return false;
     }
 
-    private File getLayerFileProperty(Layer layer) throws MalformedURLException {
+    @SuppressWarnings("deprecation")
+    private File getLayerFileProperty(Layer layer) {
         DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
         DataSource dataSource = dataSourceQuery.getDataSource();
         Map properties = dataSource.getProperties();
@@ -524,10 +500,11 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         return layerFile;
     }
 
+    @SuppressWarnings("deprecation")
     private void setLayerFileProperty(Layer layer, File file) {
         DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
         DataSource dataSource = dataSourceQuery.getDataSource();
-        Map properties = dataSource.getProperties();
+        Map<String,Object> properties = dataSource.getProperties();
         properties.put(DataSource.FILE_KEY, file.getAbsolutePath());
     }
 
