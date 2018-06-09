@@ -56,9 +56,11 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 //import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 
@@ -82,7 +84,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     private final String warning = I18N
             .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.select-one-linstring");;
     final static String MONITOR_STRING = "Calculating profile...";
-
+    public static String CLAYER = GenericNames.SELECT_LAYER;
     private boolean drawnType = true;
     private boolean selectedType = false;
     public static MultiInputDialog dialog;
@@ -93,24 +95,20 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     public void initialize(PlugInContext context) throws Exception {
         sName = I18N
                 .get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
-        context.getFeatureInstaller().addMainMenuPlugin(this,
+        FeatureInstaller.getInstance().addMainMenuPlugin(this,
                 new String[] { MenuNames.RASTER }, sName + "...", false,
                 getIcon(), createEnableCheck(context.getWorkbenchContext()));
     }
 
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
-        final EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
-        final MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
-
-        multiEnableCheck.add(
-                checkFactory.createExactlyNLayerablesMustBeSelectedCheck(1,
-                        RasterImageLayer.class)).add(
-                checkFactory
-                        .createRasterImageLayerExactlyNBandsMustExistCheck(1));
-
-        return multiEnableCheck;
+        final EnableCheckFactory checkFactory = EnableCheckFactory
+                .getInstance();
+        return new MultiEnableCheck()
+                .add(checkFactory
+                        .createWindowWithAssociatedTaskFrameMustBeActiveCheck())
+                .add(checkFactory.createAtLeastNLayerablesOfTypeMustExistCheck(
+                        1, RasterImageLayer.class));
     }
 
     private void getDialogValues(MultiInputDialog dialog) {
@@ -120,8 +118,12 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     }
 
     private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
+        final Collection<RasterImageLayer> rlayers = context.getTask()
+                .getLayerManager().getLayerables(RasterImageLayer.class);
         final String OUTPUT_GROUP = "Match Type";
         dialog.setTitle(sName);
+        dialog.addLayerableComboBox(CLAYER, context.getLayerManager()
+                .getRasterImageLayers().get(0), "", rlayers);
         dialog.addRadioButton(drawn, OUTPUT_GROUP, drawnType, null);
 
         final Collection<Feature> features = context.getLayerViewPanel()

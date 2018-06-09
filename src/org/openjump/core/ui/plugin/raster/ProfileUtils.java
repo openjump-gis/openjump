@@ -2,17 +2,14 @@ package org.openjump.core.ui.plugin.raster;
 
 import java.awt.Font;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import org.math.plot.render.AbstractDrawer;
-import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.attributeoperations.AttributeOp;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.ui.plot.Plot2DPanelOJ;
@@ -73,8 +70,9 @@ public class ProfileUtils {
             .getFrame().getContext();
 
     public static RasterImageLayer getLayer() {
-        return (RasterImageLayer) LayerTools.getSelectedLayerable(context,
-                RasterImageLayer.class);
+        return ProfileGraphPlugIn.dialog
+                .getRasterLayer(ProfileGraphPlugIn.CLAYER);
+
     }
 
     public static GeometryFactory gf = new GeometryFactory();
@@ -83,6 +81,7 @@ public class ProfileUtils {
     public static double dDist = 0, dHorzDist = 0;
     public static double m_dLastX, m_dLastY, m_dLastZ;
     public static int nPoints = 0;
+    public static int n = 0;
 
     public static ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
     static double max, min, sum, mean, width, height, slope, cellsize,
@@ -96,31 +95,32 @@ public class ProfileUtils {
 
         final LineString line = gf.createLineString(coords);
         if (line.within(rLayer.getWholeImageEnvelopeAsGeometry())) {
+            final Random rand = new Random();
+            n = rand.nextInt(100) + 1;
             processLine(line);
             if ((resultFC != null) && (resultFC.size() > 0)) {
+                final FeatureDataset fd = new FeatureDataset(resultFSchema);
+                fd.addAll(resultFC.getFeatures());
                 context.getLayerManager().addLayer(
-                        StandardCategoryNames.RESULT, PROFILEPTS, resultFC);
+                        StandardCategoryNames.RESULT, PROFILEPTS, fd);
             }
 
-            final DateFormat dateFormat = new SimpleDateFormat(
-                    "yyyy/MM/dd HH:mm:ss");
-            final Date date = new Date();
             final FeatureCollectionPanel fPan = new FeatureCollectionPanel(
                     resultFC);
-            fPan.getCommandPanel().setVisible(false);
-            AdditionalResults.addAdditionalResult(
-                    PLOT + "-" + dateFormat.format(date) + " " + PROFILE_INFO,
-                    getStatisticPanel(rLayer));
+            fPan.setName("" + n);
+            fPan.getSouthPanel().setVisible(false);
+            AdditionalResults.addAdditionalResult(PLOT + "-" + n + " "
+                    + PROFILE_INFO, getStatisticPanel(rLayer));
             AdditionalResults
                     .addAdditionalResult(
                             PLOT
                                     + "-"
-                                    + dateFormat.format(date)
+                                    + n
                                     + " "
                                     + I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values"),
                             fPan);
-            AdditionalResults.addAdditionalResultAndShow(PLOT + "-"
-                    + dateFormat.format(date), getPlotPanel(resultFC));
+            AdditionalResults.addAdditionalResultAndShow(PLOT + "-" + n,
+                    getPlotPanel(resultFC));
 
         } else {
             context.getLayerViewPanel()
@@ -331,4 +331,5 @@ public class ProfileUtils {
         return plot2dA;
 
     }
+
 }
