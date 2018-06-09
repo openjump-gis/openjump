@@ -50,6 +50,7 @@ public class JTablePanel extends JPanel {
     private final JLabel jLabel = new JLabel();
     private DefaultTableModel model = new DefaultTableModel();
     private final Color LIGHT_GRAY = new Color(230, 230, 230);
+    private JPanel southPanel = new JPanel();
 
     /**
      * how to use: 1) DefaultTableModel defaultTableModel; 2)
@@ -110,10 +111,14 @@ public class JTablePanel extends JPanel {
         jTable.setModel(model);
         jTable.setEnabled(true);
 
+        southPanel = new JPanel(new BorderLayout());
+
+        southPanel.add(commandPanel(), BorderLayout.NORTH);
+        southPanel.add(savePanel(), BorderLayout.CENTER);
         add(jLabel, BorderLayout.NORTH);
         add(pane, BorderLayout.CENTER);
-        add(southPanel(), BorderLayout.SOUTH);// Not yet activated
-        add(savePanel(), BorderLayout.AFTER_LAST_LINE);
+        add(southPanel, BorderLayout.SOUTH);
+
     }
 
     private JPanel savePanel() {
@@ -159,7 +164,7 @@ public class JTablePanel extends JPanel {
     // AttributeQueryPlugIn for example)
     // and a save button to export filtered results as layer
     // Right now it search only to match a string to every single record
-    private JPanel southPanel() {
+    private JPanel commandPanel() {
         // Sorter
         final TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>(
                 model);
@@ -247,7 +252,7 @@ public class JTablePanel extends JPanel {
      * @return
      */
     public JPanel getCommandPanel() {
-        return southPanel();
+        return commandPanel();
     }
 
     /**
