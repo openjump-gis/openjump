@@ -462,7 +462,7 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
                         I18N.get("com.vividsolutions.jump.util.Frequency.relative-frequency"),
                         relativeFrequencyObject);
                 final JTablePanel jTablePanel = new JTablePanel(dtm);
-
+                jTablePanel.getCommandPanel().setVisible(false);
                 freqFrame.add(jTablePanel);
 
                 freqFrame.setVisible(true);
