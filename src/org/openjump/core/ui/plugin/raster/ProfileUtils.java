@@ -263,7 +263,7 @@ public class ProfileUtils {
         final DecimalFormat df = (DecimalFormat) NumberFormat
                 .getNumberInstance(locale);
         df.applyPattern(pattern);
-        slope = (Math.atan((max - min) / width) * 100);
+        slope = Math.toDegrees(Math.atan((max - min) / width));
         cellsize = (rLayer.getWholeImageEnvelope().getMaxX() - rLayer
                 .getWholeImageEnvelope().getMinX())
                 / rLayer.getOrigImageWidth();
@@ -280,7 +280,7 @@ public class ProfileUtils {
         htmlString += "<b><font face=\"" + darkLabelFont + "\">" + HEIGHT
                 + ": </b>" + df.format(height) + "<br>";
         htmlString += "<b><font face=\"" + darkLabelFont + "\">" + MEAN_SLOPE
-                + ": </b>" + df.format(slope) + "%<br>";
+                + ": </b>" + df.format(slope) + "°<br>";
         htmlString += "<b><font face=\"" + darkLabelFont + "\">"
                 + STARTING_POINT + ": </b>" + df.format(xmin) + " - "
                 + df.format(ymin) + "<br>";
