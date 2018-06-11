@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-06-11 Giuseppe Aruta. Raster profile plugin:
+   * Simplified additional result output.
+   * Added capability to draw a slope profile
+
 2018-06-08 mmichaud <m.michael.michaud@orange.fr>
   * bugfix in SkeletonPlugIn (PLUS version, GraphToolBox)
 
