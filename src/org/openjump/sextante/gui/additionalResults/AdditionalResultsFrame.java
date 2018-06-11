@@ -59,7 +59,6 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.FeatureCollectionPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -120,7 +119,9 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
     private JMenuItem menuItemRemove;
     private JMenuItem menuItemRename;
 
-    private static String LAST_DIR = null;
+    public JSplitPane getSplitPanel() {
+        return jSplitPane;
+    }
 
     // --da rimuovere
     // final protected OKCancelApplyPanel okCancelApplyPanel = new
@@ -353,25 +354,10 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
     }
 
-    private static final String FILE_CHOOSER_DIRECTORY_KEY = SaveFileDataSourceQueryChooser.class
-            .getName() + " - FILE CHOOSER DIRECTORY";
-
     public void save() {
-        // final JFileChooser fc = new
-        // GUIUtil.FileChooserWithOverwritePrompting();
 
-        // fc.setPreferredSize(new Dimension(FILE_BROWSER_WIDTH,
-        // FILE_BROWSER_HEIGHT));
-        // final File filedir = new File((String)
-        // PersistentBlackboardPlugIn.get(
-        // JUMPWorkbench.getInstance().getContext()).get(
-        // FILE_CHOOSER_DIRECTORY_KEY));
         FileNameExtensionFilter filter;
-        // if (LAST_DIR != null) {
-        // fc.setCurrentDirectory(new File(LAST_DIR));
-        // } else {
-        // fc.setCurrentDirectory(filedir);
-        // }
+
         final File file;
         if (m_Path != null) {
             try {
@@ -435,7 +421,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
                             try {
                                 file = new File(fc.getSelectedFile() + ".html");
-                                LAST_DIR = file.getParent();
+                                file.getParent();
                                 final FileWriter fileWriter = new FileWriter(
                                         file);
                                 final BufferedWriter bufferedWriter = new BufferedWriter(
@@ -491,12 +477,12 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         if (fc.getFileFilter().equals(filter)) {
                             file = new File(fc.getSelectedFile() + ".png");
-                            LAST_DIR = file.getParent();
+                            file.getParent();
                             panel.toGraphicFile(file);
                             saved(file);
                         } else if (fc.getFileFilter().equals(filter2)) {
                             file = new File(fc.getSelectedFile() + ".dxf");
-                            LAST_DIR = file.getParent();
+                            file.getParent();
                             double[][] pointsOfProfile = null;
                             for (final Plot plot : panel.getPlots()) {
                                 pointsOfProfile = plot.getData();
@@ -541,7 +527,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         try {
                             file = new File(fc.getSelectedFile() + ".html");
-                            LAST_DIR = file.getParent();
+                            file.getParent();
                             final FileWriter fileWriter = new FileWriter(file);
                             final BufferedWriter bufferedWriter = new BufferedWriter(
                                     fileWriter);
