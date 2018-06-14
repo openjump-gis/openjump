@@ -73,4 +73,9 @@ public interface Aggregator<T> {
      */
     Object getResult();
 
+    /**
+     * Reset the aggregator (clear the list of values)
+     */
+    void reset();
+
 }

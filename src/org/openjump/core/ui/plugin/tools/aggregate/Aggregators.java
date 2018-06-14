@@ -97,10 +97,12 @@ public class Aggregators {
         public Count(boolean ignoreNull) {
             super(AttributeType.INTEGER, ignoreNull);
         }
-        public Count clone() {
+
+        @Override public Count clone() {
             return new Count(ignoreNull());
         }
-        public Integer getResult() {
+
+        @Override public Integer getResult() {
             return getValues().size();
         }
     }
@@ -110,12 +112,12 @@ public class Aggregators {
             super(AttributeType.STRING, ignoreNull);
             setParameter(Aggregator.SEPARATOR_NAME, ",");
         }
-        public Concatenate clone() {
+        @Override public Concatenate clone() {
             Concatenate concatenate = new Concatenate(ignoreNull());
             concatenate.setParameter(Aggregator.SEPARATOR_NAME, this.getParameter(Aggregator.SEPARATOR_NAME));
             return concatenate;
         }
-        public String getResult() {
+        @Override public String getResult() {
             StringBuilder sb = new StringBuilder();
             for (int i = 0 ; i < getValues().size() ; i++) {
                 String v = getValues().get(i) == null ? "<NULL>" : getValues().get(i).toString();
@@ -131,12 +133,12 @@ public class Aggregators {
             super(AttributeType.STRING, ignoreNull);
             setParameter(Aggregator.SEPARATOR_NAME, ",");
         }
-        public ConcatenateUnique clone() {
+        @Override public ConcatenateUnique clone() {
             ConcatenateUnique concatenate = new ConcatenateUnique(ignoreNull());
             concatenate.setParameter(Aggregator.SEPARATOR_NAME, this.getParameter(Aggregator.SEPARATOR_NAME));
             return concatenate;
         }
-        public String getResult() {
+        @Override public String getResult() {
             StringBuilder sb = new StringBuilder();
             List<Object> values = getValues();
             for (int i = 0 ; i < values.size() ; i++) {
@@ -155,10 +157,10 @@ public class Aggregators {
         public Collect() {
             super(AttributeType.GEOMETRY, true);
         }
-        public Collect clone() {
+        @Override public Collect clone() {
             return new Collect();
         }
-        public Geometry getResult() {
+        @Override public Geometry getResult() {
             return new GeometryFactory().buildGeometry(getValues());
         }
     }
@@ -167,10 +169,10 @@ public class Aggregators {
         public Union() {
             super(AttributeType.GEOMETRY, true);
         }
-        public Union clone() {
+        @Override public Union clone() {
             return new Union();
         }
-        public Geometry getResult() {
+        @Override public Geometry getResult() {
             GeometryFactory gf = getValues().size() == 0 ? new GeometryFactory() : getValues().get(0).getFactory();
             Geometry collected = gf.buildGeometry(getValues());
             if (getValues().size() == 0) return collected;
@@ -210,10 +212,10 @@ public class Aggregators {
         public IntSum() {
             super(AttributeType.INTEGER, true);
         }
-        public IntSum clone() {
+        @Override public IntSum clone() {
             return new IntSum();
         }
-        public Integer getResult() {
+        @Override public Integer getResult() {
             int sum = 0;
             for (Integer value : getValues()) {
                 if (value != null) {
@@ -228,10 +230,10 @@ public class Aggregators {
         public LongSum() {
             super(AttributeType.LONG, true);
         }
-        public LongSum clone() {
+        @Override public LongSum clone() {
             return new LongSum();
         }
-        public Long getResult() {
+        @Override public Long getResult() {
             long sum = 0;
             for (Number value : getValues()) {
                 if (value != null) {
@@ -246,10 +248,10 @@ public class Aggregators {
         public DoubleSum() {
             super(AttributeType.DOUBLE, true);
         }
-        public DoubleSum clone() {
+        @Override public DoubleSum clone() {
             return new DoubleSum();
         }
-        public Double getResult() {
+        @Override public Double getResult() {
             double sum = 0;
             for (Number value : getValues()) {
                 if (value != null) {
@@ -264,10 +266,10 @@ public class Aggregators {
         public IntMin() {
             super(AttributeType.INTEGER, true);
         }
-        public IntMin clone() {
+        @Override public IntMin clone() {
             return new IntMin();
         }
-        public Integer getResult() {
+        @Override public Integer getResult() {
             Integer min = null;
             for (Integer value : getValues()) {
                 if (min == null || (value != null && value < min)) {
@@ -282,10 +284,10 @@ public class Aggregators {
         public LongMin() {
             super(AttributeType.LONG, true);
         }
-        public LongMin clone() {
+        @Override public LongMin clone() {
             return new LongMin();
         }
-        public Long getResult() {
+        @Override public Long getResult() {
             Long min = null;
             for (Long value : getValues()) {
                 if (min == null || (value != null && value < min)) {
@@ -300,10 +302,10 @@ public class Aggregators {
         public DoubleMin() {
             super(AttributeType.DOUBLE, true);
         }
-        public DoubleMin clone() {
+        @Override public DoubleMin clone() {
             return new DoubleMin();
         }
-        public Double getResult() {
+        @Override public Double getResult() {
             Double min = null;
             for (Double value : getValues()) {
                 if (min == null || (value != null && value < min)) {
@@ -318,10 +320,10 @@ public class Aggregators {
         public StringMin() {
             super(AttributeType.STRING, true);
         }
-        public StringMin clone() {
+        @Override public StringMin clone() {
             return new StringMin();
         }
-        public String getResult() {
+        @Override public String getResult() {
             String min = null;
             for (String value : getValues()) {
                 if (min == null || (value != null && value.compareToIgnoreCase(min) < 0)) {
@@ -336,10 +338,10 @@ public class Aggregators {
         public DateMin() {
             super(AttributeType.DATE, true);
         }
-        public DateMin clone() {
+        @Override public DateMin clone() {
             return new DateMin();
         }
-        public Date getResult() {
+        @Override public Date getResult() {
             Date min = null;
             for (Date value : getValues()) {
                 if (min == null || (value != null && value.before(min))) {
@@ -354,10 +356,10 @@ public class Aggregators {
         public IntMax() {
             super(AttributeType.INTEGER, true);
         }
-        public IntMax clone() {
+        @Override public IntMax clone() {
             return new IntMax();
         }
-        public Integer getResult() {
+        @Override public Integer getResult() {
             Integer max = null;
             for (Integer value : getValues()) {
                 if (max == null || (value != null && value > max)) {
@@ -372,10 +374,10 @@ public class Aggregators {
         public LongMax() {
             super(AttributeType.LONG, true);
         }
-        public LongMax clone() {
+        @Override public LongMax clone() {
             return new LongMax();
         }
-        public Long getResult() {
+        @Override public Long getResult() {
             Long max = null;
             for (Long value : getValues()) {
                 if (max == null || (value != null && value > max)) {
@@ -390,10 +392,10 @@ public class Aggregators {
         public DoubleMax() {
             super(AttributeType.DOUBLE, true);
         }
-        public DoubleMax clone() {
+        @Override public DoubleMax clone() {
             return new DoubleMax();
         }
-        public Double getResult() {
+        @Override public Double getResult() {
             Double max = null;
             for (Double value : getValues()) {
                 if (max == null || (value != null && value > max)) {
@@ -408,10 +410,10 @@ public class Aggregators {
         public StringMax() {
             super(AttributeType.STRING, true);
         }
-        public StringMax clone() {
+        @Override public StringMax clone() {
             return new StringMax();
         }
-        public String getResult() {
+        @Override public String getResult() {
             String max = null;
             for (String value : getValues()) {
                 if (max == null || (value != null && value.compareToIgnoreCase(max) > 0)) {
@@ -426,10 +428,10 @@ public class Aggregators {
         public DateMax() {
             super(AttributeType.DATE, true);
         }
-        public DateMax clone() {
+        @Override public DateMax clone() {
             return new DateMax();
         }
-        public Date getResult() {
+        @Override public Date getResult() {
             Date max = null;
             for (Date value : getValues()) {
                 if (max == null || (value != null && value.after(max))) {
@@ -444,14 +446,15 @@ public class Aggregators {
         public IntMean(boolean ignoreNull) {
             super(AttributeType.INTEGER, ignoreNull);
         }
-        public IntMean clone() {
+        @Override public IntMean clone() {
             return new IntMean(ignoreNull());
         }
-        public Integer getResult() {
+        @Override public Integer getResult() {
             long sum = 0;
             for (Integer value : getValues()) {
                 if (value != null) sum += value;
             }
+            if (getValues().size()==0) return null;
             return (int)(sum/getValues().size());
         }
     }
@@ -460,14 +463,15 @@ public class Aggregators {
         public LongMean(boolean ignoreNull) {
             super(AttributeType.LONG, ignoreNull);
         }
-        public LongMean clone() {
+        @Override public LongMean clone() {
             return new LongMean(ignoreNull());
         }
-        public Long getResult() {
+        @Override public Long getResult() {
             long sum = 0;
             for (Long value : getValues()) {
                 if (value != null) sum += value;
             }
+            if (getValues().size()==0) return null;
             return sum/getValues().size();
         }
     }
@@ -476,14 +480,15 @@ public class Aggregators {
         public DoubleMean(boolean ignoreNull) {
             super(AttributeType.DOUBLE, ignoreNull);
         }
-        public DoubleMean clone() {
+        @Override public DoubleMean clone() {
             return new DoubleMean(ignoreNull());
         }
-        public Double getResult() {
+        @Override public Double getResult() {
             double sum = 0;
             for (Double value : getValues()) {
                 if (value != null) sum += value;
             }
+            if (getValues().size()==0) return null;
             return sum/getValues().size();
         }
     }
@@ -493,14 +498,15 @@ public class Aggregators {
         public DateMean(boolean ignoreNull) {
             super(AttributeType.DATE, ignoreNull);
         }
-        public DateMean clone() {
+        @Override public DateMean clone() {
             return new DateMean(ignoreNull());
         }
-        public Date getResult() {
+        @Override public Date getResult() {
             long sum = 0;
             for (Date value : getValues()) {
                 if (value != null) sum += value.getTime();
             }
+            if (getValues().size()==0) return null;
             return new Date(sum/getValues().size());
         }
     }
@@ -509,10 +515,10 @@ public class Aggregators {
         public IntMedian() {
             super(AttributeType.INTEGER, true);
         }
-        public IntMedian clone() {
+        @Override public IntMedian clone() {
             return new IntMedian();
         }
-        public Integer getResult() {
+        @Override public Integer getResult() {
             List<Integer> sortedList = new ArrayList<Integer>(getValues());
             if (sortedList.size() == 0) return null;
             Collections.sort(sortedList);
@@ -524,10 +530,10 @@ public class Aggregators {
         public LongMedian() {
             super(AttributeType.LONG, true);
         }
-        public LongMedian clone() {
+        @Override public LongMedian clone() {
             return new LongMedian();
         }
-        public Long getResult() {
+        @Override public Long getResult() {
             List<Long> sortedList = new ArrayList<Long>(getValues());
             if (sortedList.size() == 0) return null;
             Collections.sort(sortedList);
@@ -539,10 +545,10 @@ public class Aggregators {
         public DoubleMedian() {
             super(AttributeType.DOUBLE, true);
         }
-        public DoubleMedian clone() {
+        @Override public DoubleMedian clone() {
             return new DoubleMedian();
         }
-        public Double getResult() {
+        @Override public Double getResult() {
             List<Double> sortedList = new ArrayList<Double>(getValues());
             if (sortedList.size() == 0) return null;
             Collections.sort(sortedList);
@@ -555,10 +561,10 @@ public class Aggregators {
         public DateMedian() {
             super(AttributeType.DATE, true);
         }
-        public DateMedian clone() {
+        @Override public DateMedian clone() {
             return new DateMedian();
         }
-        public Date getResult() {
+        @Override public Date getResult() {
             List<Date> sortedList = new ArrayList<Date>(getValues());
             if (sortedList.size() == 0) return null;
             Collections.sort(sortedList);
@@ -570,10 +576,10 @@ public class Aggregators {
         public StringMajority(boolean ignoreNull) {
             super(AttributeType.STRING, ignoreNull);
         }
-        public StringMajority clone() {
+        @Override public StringMajority clone() {
             return new StringMajority(ignoreNull());
         }
-        public String getResult() {
+        @Override public String getResult() {
             Map<String,Integer> map = new HashMap<String, Integer>();
             for (Object value : getValues()) {
                 String v = value==null?null:value.toString();
