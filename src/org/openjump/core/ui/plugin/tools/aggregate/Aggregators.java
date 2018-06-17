@@ -90,6 +90,7 @@ public class Aggregators {
         addAggregator(AttributeType.DATE,     new DateMedian());
 
         addAggregator(AttributeType.STRING,   new StringMajority(true));
+        addAggregator(AttributeType.BOOLEAN,  new BooleanMajority(true));
     }
 
 
@@ -597,6 +598,26 @@ public class Aggregators {
                 }
             }
             return maj;
+        }
+    }
+
+    public static class BooleanMajority extends AbstractAggregator<Boolean> {
+        public BooleanMajority(boolean ignoreNull) {
+            super(AttributeType.BOOLEAN, ignoreNull);
+        }
+        @Override public BooleanMajority clone() {
+            return new BooleanMajority(ignoreNull());
+        }
+        @Override public Boolean getResult() {
+            int countTrue = 0;
+            int countFalse = 0;
+            for (Object value : getValues()) {
+                Boolean b = (Boolean)value;
+                if (b == null) countFalse++;
+                else if (b) countTrue++;
+                else countFalse++;
+            }
+            return countTrue >= countFalse;
         }
     }
 
