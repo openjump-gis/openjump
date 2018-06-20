@@ -117,12 +117,15 @@ public class FlexibleFeature extends BasicFeature {
   }
 
   /**
-   * TODO: the method shouldn't be used anyway, still maybe we will have to
-   * implement it later
+   * Returns all attributes in an array of Objects. Use getAttribute(i)
+   * to convert raw gml strings into typed attributes.
    */
   @Override
   public Object[] getAttributes() {
-    throw new UnsupportedOperationException("currently not implemented");
+    int length = getSchema().getAttributeCount();
+    Object[] copy = new Object[length];
+    for (int i = 0 ; i < length ; i++) copy[i] = getAttribute(i);
+    return copy;
   }
 
   /**

@@ -3,15 +3,18 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-06-20
+  * Fix FlexibleFeature#getAttributes() (was not implemented)
+
 2018-06-11 Giuseppe Aruta. Raster profile plugin:
-   * Simplified additional result output.
-   * Added capability to draw a slope profile
+  * Simplified additional result output.
+  * Added capability to draw a slope profile
 
 2018-06-08 mmichaud <m.michael.michaud@orange.fr>
   * bugfix in SkeletonPlugIn (PLUS version, GraphToolBox)
 
 2018-06-03 Giuseppe Aruta. Added histogram plugin for raster which calculates
-     also statistic indices, relative and cumulative frequancies
+  * also statistic indices, relative and cumulative frequancies
 
 2018-06-03 mmichaud <m.michael.michaud@orange.fr>
   * bugfix in Dissolve2 : could not use geometry attribute as key
