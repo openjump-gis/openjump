@@ -160,7 +160,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
 
     }
 
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
+    private void setDialogValues(final MultiInputDialog dialog, PlugInContext context) {
         final Collection<RasterImageLayer> rlayers = context.getTask()
                 .getLayerManager().getLayerables(RasterImageLayer.class);
         final ArrayList<String> srsArray = new ArrayList<String>();

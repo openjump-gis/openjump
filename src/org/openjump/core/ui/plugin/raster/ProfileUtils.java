@@ -337,7 +337,7 @@ public class ProfileUtils {
 
         final JButton slopeBtn = new JButton(
                 IconLoader.icon("profileSlope.png"));
-        slopeBtn.setToolTipText(ProfileGraphPlugIn.SLOPE);
+        slopeBtn.setToolTipText(SLOPE);
         slopeBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
