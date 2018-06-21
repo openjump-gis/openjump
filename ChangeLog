@@ -3,6 +3,12 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-06-11 Giuseppe Aruta. Raster profile plugin:
+  * Plugin recognizes Layer unit.
+  * Absolute or relative slope output
+  * Added capability to compute travel time on route depending to input flat,
+    uphill and downhill speeds
+  
 2018-06-20
   * Fix FlexibleFeature#getAttributes() (was not implemented)
 
