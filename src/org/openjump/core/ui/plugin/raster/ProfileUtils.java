@@ -49,7 +49,12 @@ import com.vividsolutions.jump.workbench.ui.TableFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ProfileUtils {
-
+    /**
+     * Use ProfileGraphGUI and ProfileGraphAlgorithms instead
+     * 
+     * @deprecated
+     */
+    @Deprecated
     public final static String LAYER_NAME = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.layer_name");
     public final static String MIN = I18N
