@@ -4,7 +4,7 @@
 
 2018-gen-31 Giuseppe Aruta (Peppe)
     Improve migration of Sextante Additional Results as internal OJ
-    plugin.
+    plugin - DONE
     Resume original Sexante ver. 1.0 libraries source codes (Sextante.jar, 
     Sextante-gui.jar and Sextante-algorithms.jar) in order to correct some
     internal bugs which cannot be done via OJ binding
