@@ -456,7 +456,7 @@ public class ProfileUtils {
         });
         // To do: giving a downslope/upslope/flat speed, it calculates the
         // travel time along the profile
-        final JButton timeBtn = new JButton(IconLoader.icon("fugue/clock.png"));
+        final JButton timeBtn = new JButton(TIMES);
         timeBtn.setToolTipText(TIMES);
         timeBtn.addActionListener(new ActionListener() {
             @Override
