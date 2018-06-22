@@ -51,24 +51,14 @@ public class IconLoader {
     // start
     private static HashMap<String, ImageIcon> iconCache = new HashMap<>();
 
-    // default icon if the choosen one doesn't exist //
+    // default icon if the choosen one doesn't exist
     // Adapted from Kosmo SAIG
     public final static ImageIcon DEFAULT_UNKNOW_ICON = new ImageIcon(
             IconLoader.class.getResource("default_icon.png"));
 
     public static ImageIcon icon(String filename) {
-        ImageIcon icon = null;
-        try {
-            icon = getIcon(IconLoader.class.getResource(resolveFile(filename)));
-        } catch (final Exception e) {
-            icon = DEFAULT_UNKNOW_ICON;
-        }
-        return icon;
+        return getIcon(IconLoader.class.getResource(resolveFile(filename)));
     }
-
-    // public static ImageIcon icon(String filename) {
-    // return getIcon(IconLoader.class.getResource(resolveFile(filename)));
-    // }
 
     public static BufferedImage image(String filename) {
         final ImageIcon icon = getIcon(IconLoader.class
@@ -115,6 +105,7 @@ public class IconLoader {
             Logger.error(e);
         }
         if (icon == null) {
+            icon = DEFAULT_UNKNOW_ICON;
             Logger.error("icon '" + key + "' is null!");
         }
 
