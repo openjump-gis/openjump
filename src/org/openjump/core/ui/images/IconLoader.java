@@ -38,9 +38,12 @@ import javax.swing.ImageIcon;
 
 /**
  * Gets an icon from this class' package.
+ * 
+ *  @deprecated use com.vividsolutions.jump.workbench.ui.images.IconLoader instead
  */
+@Deprecated
 public class IconLoader extends com.vividsolutions.jump.workbench.ui.images.IconLoader{
     public static ImageIcon icon(String filename) {
-        return getIcon(IconLoader.class.getResource(filename));
+        return getIcon(org.openjump.core.ui.images.IconLoader.class, filename);
     }
 }

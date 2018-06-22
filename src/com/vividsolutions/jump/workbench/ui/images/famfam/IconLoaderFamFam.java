@@ -40,7 +40,10 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
  * Gets an icon from this class' package.
+ * 
+ *  @deprecated use com.vividsolutions.jump.workbench.ui.images.IconLoader instead
  */
+@Deprecated
 public class IconLoaderFamFam extends IconLoader{
     public static ImageIcon icon(String filename) {
         return getIcon(IconLoaderFamFam.class.getResource(filename));
