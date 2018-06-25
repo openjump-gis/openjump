@@ -49,7 +49,11 @@ rem -- find java runtime --
   rem --- default to javaw ---
   if "%JAVA_BIN%"=="" set JAVA_BIN=javaw
 
-  rem --- search binary in path ---
+  rem --- if JAVA_HOME is defined and valid, use it ---
+  if NOT "%JAVA_HOME%"=="" set "JAVA=%JAVA_HOME%\bin\%JAVA_BIN%"
+  if exist "%JAVA%.exe" goto java_is_set
+
+  rem --- otherwise, search binary in path ---
   @for %%i in (%JAVA_BIN%.exe) do @if NOT "%%~$PATH:i"=="" set JAVA=%%~$PATH:i
 
   rem --- we might be on amd64 having only x86 jre installed ---
@@ -63,10 +67,17 @@ rem -- find java runtime --
 
   rem --- if unset fall back to plain bin name, just in case ---
   if "%JAVA%"=="" set JAVA=%JAVA_BIN%
-  
-  rem --- java home definition overwrites all ---
-  if NOT "%JAVA_HOME%"=="" set "JAVA=%JAVA_HOME%\bin\%JAVA_BIN%"
 
+  rem --- if %JAVA% is still not a valid java path, print an informative warning ---
+  if not exist %JAVA% (
+    echo WARNING : JAVA can not be found on your system
+  	echo check that you have a valid JRE or JDK accessible from the system PATH or from the variable environment JAVA_HOME
+  	pause
+  	call:end
+  )
+
+rem -- we now have a valid java executable
+:java_is_set
 rem -- show java version (for debugging) --
 for %%F in ("%JAVA%") do set "dirname=%%~dpF"
 echo Using '%JAVA_BIN%' found in '%dirname%'
