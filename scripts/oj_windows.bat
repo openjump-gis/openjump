@@ -9,10 +9,10 @@ rem -- uncomment to save settings and log to user profile ---
 rem -- defaults to 'JUMP_HOME', if former is not writable 'userprofile/.openjump' --
 rem set SETTINGS_HOME="%HOMEDRIVE%%HOMEPATH%"\.openjump
 
-rem -- uncomment to manually set java home --
-rem set JAVA_HOME=G:\path\to\a\specific\<jre|jdk>-1.<5|6>
+rem -- uncomment to manually set java home, wrap in double quotes to protect special chars --
+rem set JAVA_HOME="C:\Program Files (x86)\Java\jre1.8.0_xx"
 
-rem -- uncomment to use 'java' for console output, if unset defaults to 'javaw' for background jre  --
+rem -- uncomment to use 'java' and enable debug console output, if unset defaults to 'javaw' for background jre  --
 rem set JAVA_BIN=java
 
 rem -- set some default OJ options here (eg. -v debug), initialize empty --
@@ -44,14 +44,25 @@ rem -- dequote java_home, later on we assume it's unquoted --
 call :dequote %JAVA_HOME%
 set "JAVA_HOME=%unquoted%"
 
+rem -- reset vars --
+set ERROR=
+
 rem -- find java runtime --
   set JAVA=
   rem --- default to javaw ---
   if "%JAVA_BIN%"=="" set JAVA_BIN=javaw
 
   rem --- if JAVA_HOME is defined and valid, use it ---
-  if NOT "%JAVA_HOME%"=="" set "JAVA=%JAVA_HOME%\bin\%JAVA_BIN%"
-  if exist "%JAVA%.exe" goto java_is_set
+  if DEFINED JAVA_HOME set "JAVA_HOME_BIN=%JAVA_HOME%\bin\%JAVA_BIN%.exe"
+  if DEFINED JAVA_HOME_BIN if EXIST "%JAVA_HOME_BIN%" (
+      echo Using set "JAVA_HOME=%JAVA_HOME%" .
+      set "JAVA=%JAVA_HOME_BIN%"
+      goto java_is_set
+    ) else (
+      echo WARNING: Your JAVA_HOME env variable is stale and does not contain a java interpreter.
+      echo   "JAVA_HOME=%JAVA_HOME%"
+    )
+  )
 
   rem --- otherwise, search binary in path ---
   @for %%i in (%JAVA_BIN%.exe) do @if NOT "%%~$PATH:i"=="" set JAVA=%%~$PATH:i
@@ -59,21 +70,22 @@ rem -- find java runtime --
   rem --- we might be on amd64 having only x86 jre installed ---
   if "%JAVA%"=="" if DEFINED ProgramFiles(x86) if NOT "%PROCESSOR_ARCHITECTURE%"=="x86" (
     rem --- restart the batch in x86 mode---
-    echo Warning: No java interpreter found in path.
-    echo Retry using Wow64 filesystem [32bit environment] redirection.
+    echo WARNING: No java interpreter found in path.
+    echo   Retry using Wow64 filesystem [32bit environment] redirection.
     %SystemRoot%\SysWOW64\cmd.exe /c %0 %*
-    call:end
+    goto:eof
   )
 
   rem --- if unset fall back to plain bin name, just in case ---
   if "%JAVA%"=="" set JAVA=%JAVA_BIN%
 
   rem --- if %JAVA% is still not a valid java path, print an informative warning ---
-  if not exist %JAVA% (
-    echo WARNING : JAVA can not be found on your system
-  	echo check that you have a valid JRE or JDK accessible from the system PATH or from the variable environment JAVA_HOME
-  	pause
-  	call:end
+  if NOT EXIST "%JAVA%" (
+    echo ERROR: JAVA can not be found on your system!
+    echo   Check that you have a valid JRE or JDK accessible from the system PATH 
+    echo   or from the environment variable JAVA_HOME .
+    set "ERROR=1"
+    goto :end
   )
 
 rem -- we now have a valid java executable
@@ -279,8 +291,13 @@ if /i NOT "%JAVA_BIN%"=="javaw" echo ---Start OJ---
 :end
 cd /D %OLD_DIR%
 
-rem -- give user a chance to see console output if we are in console mode but the app finished already
-if /i NOT "%JAVA_BIN%"=="javaw" pause
+rem -- give user a chance to see console output if 
+rem --  we are in console mode but the app finished already
+rem --  or ERROR is defined
+set "PAUSE="
+if /i NOT "%JAVA_BIN%"=="javaw" set "PAUSE=1"
+if NOT [%ERROR%]==[] set "PAUSE=1"
+if DEFINED PAUSE pause
 
 goto:eof
 
@@ -301,7 +318,7 @@ goto:eof
 SETLOCAL enabledelayedexpansion
 set string=%*
 if DEFINED string set string=!string:"=!
-ENDLOCAL & set unquoted=%string%
+ENDLOCAL & set "unquoted=%string%"
 goto:eof
 
 :concat
