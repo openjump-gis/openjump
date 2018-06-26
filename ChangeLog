@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-06-26 Giuseppe Aruta. DEMStatisticsPlugIn. Substitute output HTMLDoc 
+     with JTable. Allow selection of multiple layers on plugin dialog. 
+     Extend to multi band raster files
+
 2018-06-25
   * Modify slightly the way the windows .bat search for java
 
