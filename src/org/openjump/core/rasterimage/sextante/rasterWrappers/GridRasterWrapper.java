@@ -1,7 +1,6 @@
 package org.openjump.core.rasterimage.sextante.rasterWrappers;
 
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
@@ -96,20 +95,36 @@ public class GridRasterWrapper {
     }
 
     /**
-     * Convert a 2DArray (Matrix) as double to java.awt.image.Raster
+     * Convert a 2DArray (Matrix) as double to java.awt.image.Raster, to band 0
      * 
      * @param 2D Array as double
      * @param SampleModel
      * @return java.awt.image.Raster
      */
     public static Raster matrixToRaster(double[][] matrix, SampleModel model) {
+
+        return matrixToRaster(matrix, model, 0);
+    }
+
+    /**
+     * Convert a 2DArray (Matrix) as double to java.awt.image.Raster, defining
+     * the band number
+     * 
+     * @param 2D Array as double
+     * @param SampleModel
+     * @param band
+     *            number
+     * @return java.awt.image.Raster
+     */
+    public static Raster matrixToRaster(double[][] matrix, SampleModel model,
+            int band) {
         final int w = matrix.length;
         final int h = matrix[0].length;
         final WritableRaster raster = Raster.createWritableRaster(model,
                 new Point(0, 0));
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < h; j++) {
-                raster.setSample(i, j, 0, matrix[i][j]);
+                raster.setSample(i, j, band, matrix[i][j]);
             }
         }
         return raster;
@@ -122,18 +137,20 @@ public class GridRasterWrapper {
      * @return 2DArray (Matrix) as double[][]
      */
 
-    public static Raster matrixToRaster(double[][] matrix) {
-        final int w = matrix.length;
-        final int h = matrix[0].length;
-        final BufferedImage image = new BufferedImage(w, h,
-                BufferedImage.TYPE_USHORT_GRAY);
-        final WritableRaster raster = (WritableRaster) image.getData();
-        for (int i = 0; i < w; i++) {
-            for (int j = 0; j < h; j++) {
-                raster.setSample(i, j, 0, matrix[i][j]);
+    public static double[][] rasterToMatrix(Raster raster) {
+        try {
+            final int w = raster.getWidth(), h = raster.getHeight();
+            final double pixels[][] = new double[w][h];
+            for (int x = 0; x < w; x++) {
+                for (int y = 0; y < h; y++) {
+                    pixels[x][y] = raster.getSampleDouble(x, y, 0);
+                }
             }
+            return pixels;
+        } catch (final Exception e) {
+            e.printStackTrace();
         }
-        return raster;
+        return null;
     }
 
 }
