@@ -1,13 +1,12 @@
 package org.openjump.core.rasterimage.sextante.rasterWrappers;
 
-import java.awt.image.ComponentSampleModel;
-import java.awt.image.DataBuffer;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
 
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
-
-import com.sun.media.jai.codecimpl.util.DataBufferDouble;
 
 /**
  * Wrapper to convert
@@ -100,20 +99,40 @@ public class GridRasterWrapper {
      * Convert a 2DArray (Matrix) as double to java.awt.image.Raster
      * 
      * @param 2D Array as double
-     * @param width
-     * @param height
-     * @return
+     * @param SampleModel
+     * @return java.awt.image.Raster
      */
-    public static Raster matrixToRaster(double[][] a, int width, int height) {
-        final double raw[] = new double[width * height];
-        for (int i = 0; i < a.length; i++) {
-            System.arraycopy(a[i], 0, raw, i * width, width);
+    public static Raster matrixToRaster(double[][] matrix, SampleModel model) {
+        final int w = matrix.length;
+        final int h = matrix[0].length;
+        final WritableRaster raster = Raster.createWritableRaster(model,
+                new Point(0, 0));
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                raster.setSample(i, j, 0, matrix[i][j]);
+            }
         }
-        final DataBuffer buffer = new DataBufferDouble(raw, raw.length);
-        final SampleModel sampleModel = new ComponentSampleModel(
-                DataBuffer.TYPE_DOUBLE, width, height, 1, width * 1,
-                new int[] { 0 });
-        final Raster raster = Raster.createRaster(sampleModel, buffer, null);
+        return raster;
+    }
+
+    /**
+     * Convert a java.awt.image.Raster to 2DArray (Matrix) as double
+     * 
+     * @param matrix
+     * @return 2DArray (Matrix) as double[][]
+     */
+
+    public static Raster matrixToRaster(double[][] matrix) {
+        final int w = matrix.length;
+        final int h = matrix[0].length;
+        final BufferedImage image = new BufferedImage(w, h,
+                BufferedImage.TYPE_USHORT_GRAY);
+        final WritableRaster raster = (WritableRaster) image.getData();
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                raster.setSample(i, j, 0, matrix[i][j]);
+            }
+        }
         return raster;
     }
 
