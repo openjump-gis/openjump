@@ -43,7 +43,6 @@ import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.plugin.util.*;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
@@ -59,7 +58,7 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
     private MultiInputDialog dialog;
     private String funcNameToRun;
     private GeometryPredicate functionToRun = null;
-    private boolean exceptionThrown = false;
+    //private boolean exceptionThrown = false;
 
     private double[] params = new double[2];
 
@@ -81,10 +80,10 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 
     public void initialize(PlugInContext context) throws Exception {
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-        featureInstaller.addMainMenuItem(
+        featureInstaller.addMainMenuPlugin(
             this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-            new JMenuItem(this.getName() + "..."),
+            this.getName() + "...", false, null,
             createEnableCheck(context.getWorkbenchContext())); 
     }
   

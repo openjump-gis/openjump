@@ -104,7 +104,7 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 
       return new MultiEnableCheck()
                       .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-                      .add(checkFactory.createAtLeastNLayersMustExistCheck(2));
+                      .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
   }
   
   public boolean execute(PlugInContext context) throws Exception {
