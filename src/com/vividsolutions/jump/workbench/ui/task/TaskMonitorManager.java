@@ -68,7 +68,7 @@ public class TaskMonitorManager {
         // Aquino]
         final TaskWrapper taskWrapper = new TaskWrapper(plugIn, context,
                 progressDialog);
-        final Thread thread = new Thread(taskWrapper);
+
         progressDialog.addWindowListener(new WindowAdapter() {
             private int attempts = 0;
 
@@ -94,7 +94,7 @@ public class TaskMonitorManager {
                     progressDialog.setVisible(false);
                     progressDialog.dispose();
                 }
-                thread.stop();                
+                taskWrapper.stop();
             }
         });
         progressDialog.addComponentListener(new ComponentAdapter() {
@@ -102,7 +102,7 @@ public class TaskMonitorManager {
                 //Wait for the dialog to appear before starting the task.
                 // Otherwise the task might possibly finish before the dialog
                 // appeared and the dialog would never close. [Jon Aquino]
-                thread.start();
+                taskWrapper.start();
             }
         });
         GUIUtil.centreOnWindow(progressDialog);
@@ -131,7 +131,7 @@ public class TaskMonitorManager {
         });
     }
 
-    private class TaskWrapper implements Runnable {
+    private class TaskWrapper extends Thread {
         private ThreadedPlugIn plugIn;
 
         private PlugInContext context;
@@ -160,7 +160,9 @@ public class TaskMonitorManager {
                 // [Jon Aquino 2004-09-07]
                 
                 dialog.setVisible( false );
-                if (throwable != null) {
+                // Avoid showing another dialogbox with a ThreadDeath exception
+                // after dialog closing
+                if (throwable != null && !(throwable instanceof ThreadDeath)) {
                     context.getErrorHandler().handleThrowable(throwable);
                 }
                 dialog.dispose();
