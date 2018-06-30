@@ -3,11 +3,15 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
-2018-06-26 Giuseppe Aruta. DEMStatisticsPlugIn. Substitute output HTMLDoc 
-     with JTable. Allow selection of multiple layers on plugin dialog. 
-     Extend to multi band raster files
+2018-06-30 mmichaud <m.michael.michaud@orange.fr>
+  * Fix #478 : AdHoc SQL query can be interrupted properly
 
-2018-06-25
+2018-06-26 Giuseppe Aruta.
+  * DEMStatisticsPlugIn. Substitute output HTMLDoc with JTable.
+    Allow selection of multiple layers on plugin dialog.
+    Extend to multi band raster files
+
+2018-06-25 mmichaud <m.michael.michaud@orange.fr>
   * Modify slightly the way the windows .bat search for java
 
 2018-06-11 Giuseppe Aruta. Raster profile plugin:

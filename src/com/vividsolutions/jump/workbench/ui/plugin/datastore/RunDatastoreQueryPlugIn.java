@@ -68,19 +68,28 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
         if (driver.contains("Postgis") && query.matches("(?s).*\\$\\{[^\\{\\}]*\\}.*")) {
             query = DataStoreQueryDataSource.expandQuery(query, context);
         }
+        final AdhocQuery adhocQuery = new AdhocQuery(query);
         // end
         // Nicolas Ribot, 08 dec 2015:
         // manages several datasources now
         ConnectionDescriptor desc = panel.getConnectionDescriptor();
-        DataStoreConnection dscon = ConnectionManager.instance(context.getWorkbenchContext()).getOpenConnection(desc);
-        
-        FeatureInputStream featureInputStream = dscon.execute(new AdhocQuery(query));
-        
-//        FeatureInputStream featureInputStream =
-//            ConnectionManager.instance(context.getWorkbenchContext())
-//                .getOpenConnection(panel.getConnectionDescriptor())
-//                .execute(new AdhocQuery(query));
+        final DataStoreConnection dscon = ConnectionManager.instance(context.getWorkbenchContext()).getOpenConnection(desc);
+        RunnableQuery rQuery = new RunnableQuery(dscon, adhocQuery);
+        FeatureInputStream featureInputStream;
+
         try {
+            // SQL query is execute in a separate thread to give the user a chance
+            // to interrupt it
+            rQuery.start();
+            while (rQuery.getState() == Thread.State.RUNNABLE) {
+                Thread.sleep(1000);
+                if (monitor.isCancelRequested()) {
+                    throw new InterruptedException("The following query has been interrupted :\n" +
+                            adhocQuery.getQuery());
+                }
+            }
+            rQuery.join();
+            featureInputStream = rQuery.getFeatureInputStream();
             FeatureDataset featureDataset = new FeatureDataset(
                 featureInputStream.getFeatureSchema());
             int i = 0;
@@ -101,15 +110,31 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
             return layer;
         }
         finally {
-            // This code had been added as an attempt to cancel a long running query
-            // but it has a side effect on the connection which is closed
-            // This peace of code is removed until a better solution is found 
-            //if (featureInputStream instanceof com.vividsolutions.jump.datastore.postgis.PostgisFeatureInputStream) {
-            //    java.sql.Statement stmt = 
-            //    ((com.vividsolutions.jump.datastore.postgis.PostgisFeatureInputStream)featureInputStream).getStatement();
-            //    if (stmt != null) stmt.cancel();
-            //}
-            featureInputStream.close();
+            dscon.close();
+        }
+    }
+
+    class RunnableQuery extends Thread {
+
+        DataStoreConnection connection;
+        AdhocQuery query;
+        FeatureInputStream featureInputStream;
+
+        RunnableQuery(DataStoreConnection connection, AdhocQuery query) {
+            this.connection = connection;
+            this.query = query;
+        }
+
+        public void run() {
+            try {
+                featureInputStream = connection.execute(query);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        FeatureInputStream getFeatureInputStream() {
+            return featureInputStream;
         }
     }
     
