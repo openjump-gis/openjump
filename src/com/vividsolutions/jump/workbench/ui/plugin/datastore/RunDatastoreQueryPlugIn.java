@@ -89,6 +89,7 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
                 }
             }
             rQuery.join();
+            if (rQuery.getThrowable() != null) throw new Exception(rQuery.getThrowable());
             featureInputStream = rQuery.getFeatureInputStream();
             FeatureDataset featureDataset = new FeatureDataset(
                 featureInputStream.getFeatureSchema());
@@ -108,6 +109,8 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
                     context.getWorkbenchContext()),
                 panel.getQuery(), name));
             return layer;
+        } catch(Error err) {
+            throw new Exception(err);
         }
         finally {
             dscon.close();
@@ -119,6 +122,7 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
         DataStoreConnection connection;
         AdhocQuery query;
         FeatureInputStream featureInputStream;
+        Throwable throwable;
 
         RunnableQuery(DataStoreConnection connection, AdhocQuery query) {
             this.connection = connection;
@@ -128,13 +132,18 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
         public void run() {
             try {
                 featureInputStream = connection.execute(query);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            } catch (Throwable e) {
+                this.throwable = e;
+                //throw new RuntimeException(e);
             }
         }
 
         FeatureInputStream getFeatureInputStream() {
             return featureInputStream;
+        }
+
+        Throwable getThrowable() {
+            return throwable;
         }
     }
     
