@@ -118,7 +118,7 @@ public class ProfileGraphTool extends MultiClickTool {
         reportNothingToUndoYet();
         savedCoordinates.clear();
         display(getCoordinates(), getPanel());
-        if (ProfileUtils.getLayer() == null) {
+        if (ProfileGraphGUI.getLayer() == null) {
             getPanel()
                     .getContext()
                     .warnUser(
@@ -134,7 +134,7 @@ public class ProfileGraphTool extends MultiClickTool {
             coordinates[i] = c;
             i++;
         }
-        ProfileUtils.calculateProfile(coordinates);
+        ProfileGraphGUI.calculateProfile(coordinates);
     }
 
     private void display(List<Coordinate> coordinates, LayerViewPanel panel)
