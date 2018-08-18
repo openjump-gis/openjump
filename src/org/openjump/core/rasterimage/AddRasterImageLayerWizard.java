@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.openjump.core.ccordsys.utils.ProjUtils;
+import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
 import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
@@ -39,7 +40,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
     public static final String KEY = AddRasterImageLayerWizard.class.getName();
 
-    private WorkbenchContext workbenchContext;
+    private final WorkbenchContext workbenchContext;
     private ChooseProjectPanel chooseProjectPanel;
     private SelectRasterImageFilesPanel selectFilesPanel;
 
@@ -101,10 +102,10 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
      */
     @Override
     public void run(WizardDialog dialog, TaskMonitor monitor) {
-        this.properties = new PropertiesHandler(
+        properties = new PropertiesHandler(
                 AddRasterImageLayerWizard.propertiesFile);
         if (files == null) {
-            File[] selectedFiles = selectFilesPanel.getSelectedFiles();
+            final File[] selectedFiles = selectFilesPanel.getSelectedFiles();
             open(selectedFiles, monitor);
         } else {
             open(files, monitor);
@@ -112,7 +113,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     }
 
     private void open(File[] files, TaskMonitor monitor) {
-        for (File file : files) {
+        for (final File file : files) {
             open(file, monitor);
         }
     }
@@ -120,29 +121,29 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     public void open(File file, TaskMonitor monitor) {
         try {
             try {
-                this.properties.setProperty(
-                        LoadSextanteRasterImagePlugIn.KEY_PATH, file.getPath());
+                properties.setProperty(LoadSextanteRasterImagePlugIn.KEY_PATH,
+                        file.getPath());
 
-                this.properties.store(" " + this.KEY_ZOOM_TO_INSERTED_IMAGE
+                properties.store(" " + KEY_ZOOM_TO_INSERTED_IMAGE
                         + I18N.get("RasterImagePlugIn.28")
-                        + this.KEY_ALLWAYSACCEPT_TWF_EXT
+                        + KEY_ALLWAYSACCEPT_TWF_EXT
                         + I18N.get("RasterImagePlugIn.29")
                         + LoadSextanteRasterImagePlugIn.KEY_PATH
                         + I18N.get("RasterImagePlugIn.30"));
 
-                String selectedFilename = file.getPath();
-                this.imageFileName = selectedFilename;
-                this.cachedLayer = selectedFilename.substring(
+                final String selectedFilename = file.getPath();
+                imageFileName = selectedFilename;
+                cachedLayer = selectedFilename.substring(
                         selectedFilename.lastIndexOf(File.separator) + 1,
                         selectedFilename.lastIndexOf("."));
 
                 // boolean imageAdded = false;
 
-                Point imageDimensions = RasterImageIO
+                final Point imageDimensions = RasterImageIO
                         .getImageDimensions(selectedFilename);
-                Envelope env = this.getGeoReferencing(selectedFilename,
-                        this.allwaysLookForTFWExtension, imageDimensions,
-                        this.workbenchContext);
+                final Envelope env = getGeoReferencing(selectedFilename,
+                        allwaysLookForTFWExtension, imageDimensions,
+                        workbenchContext);
 
                 if (env != null) {
                     addImage(workbenchContext, env, imageDimensions);
@@ -153,7 +154,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             } finally {
                 // reader.close();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             monitor.report(e);
         }
     }
@@ -165,7 +166,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             context.getWorkbench().getFrame().addTaskFrame();
         }
 
-        String newLayerName = context.getLayerManager().uniqueLayerName(
+        final String newLayerName = context.getLayerManager().uniqueLayerName(
                 cachedLayer);
 
         String catName = StandardCategoryNames.WORKING;
@@ -174,27 +175,34 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             catName = ((Category) context.createPlugInContext()
                     .getLayerNamePanel().getSelectedCategories().toArray()[0])
                     .getName();
-        } catch (RuntimeException e1) {
+        } catch (final RuntimeException e1) {
             // logger.printDebug(e1.getMessage());
         }
 
-        int layersAsideImage = context.getLayerManager()
+        final int layersAsideImage = context.getLayerManager()
                 .getLayerables(Layerable.class).size();
 
-        RasterImageLayer rLayer = new RasterImageLayer(newLayerName,
+        final RasterImageLayer rLayer = new RasterImageLayer(newLayerName,
                 context.getLayerManager(), imageFileName, null, envelope);
         // [Giuseppe Aruta 04/01/2017] Store SRS info into
         // RasterImageLayer.class metadata
         try {
-            rLayer.setSRSInfo(ProjUtils.getSRSInfoFromLayerSource(rLayer));
-        } catch (Exception e1) {
+            // [Giuseppe Aruta 18/08/2018] applyed a patch to partially solve
+            // bug 479 (OpenJUMp doen't recognize RasterImageLayer SRS on
+            // loading
+            // anymore)
+            // rLayer.setSRSInfo(ProjUtils.getSRSInfoFromLayerSource(rLayer));
+            final SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerSource(rLayer);
+            srsInfo.complete();
+            rLayer.setSRSInfo(srsInfo);
+        } catch (final Exception e1) {
             e1.printStackTrace();
         }
         // #################################
 
-        MetaInformationHandler mih = new MetaInformationHandler(rLayer);
+        final MetaInformationHandler mih = new MetaInformationHandler(rLayer);
         // [sstein 28.Feb.2009] -- not sure if these keys should be translated
-        mih.addMetaInformation("file-name", this.imageFileName);
+        mih.addMetaInformation("file-name", imageFileName);
         mih.addMetaInformation("resolution", imageDimensions.x + " (px) x "
                 + imageDimensions.y + " (px)");
         // mih.addMetaInformation("real-world-width", new
@@ -218,7 +226,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             // layersAsideImage);
             try {
                 context.getLayerViewPanel().getViewport().zoom(envelope);
-            } catch (NoninvertibleTransformException e) {
+            } catch (final NoninvertibleTransformException e) {
                 // logger.printDebug(e.getMessage());
             }
         }
@@ -249,7 +257,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         double minx, maxx, miny, maxy;
         Envelope env = null;
 
-        this.worldFileHandler = new WorldFileHandler(fileName,
+        worldFileHandler = new WorldFileHandler(fileName,
                 allwaysLookForTFWExtension);
 
         if (imageDimensions == null) {
@@ -261,9 +269,9 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             return null;
         }
 
-        if (this.worldFileHandler.isWorldFileExistentForImage() != null) {
+        if (worldFileHandler.isWorldFileExistentForImage() != null) {
             // logger.printDebug(PirolPlugInMessages.getString("worldfile-found"));
-            env = this.worldFileHandler.readWorldFile(imageDimensions.x,
+            env = worldFileHandler.readWorldFile(imageDimensions.x,
                     imageDimensions.y);
         }
 
@@ -278,16 +286,16 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 Coordinate tiePoint = null, pixelOffset = null, pixelScale = null;
                 double[] doubles = null;
 
-                FileSeekableStream fileSeekableStream = new FileSeekableStream(
+                final FileSeekableStream fileSeekableStream = new FileSeekableStream(
                         fileName);
-                TIFFDirectory tiffDirectory = new TIFFDirectory(
+                final TIFFDirectory tiffDirectory = new TIFFDirectory(
                         fileSeekableStream, 0);
 
-                TIFFField[] availTags = tiffDirectory.getFields();
+                final TIFFField[] availTags = tiffDirectory.getFields();
 
-                for (int i = 0; i < availTags.length; i++) {
-                    if (availTags[i].getTag() == GeoTiffConstants.ModelTiepointTag) {
-                        doubles = availTags[i].getAsDoubles();
+                for (final TIFFField availTag : availTags) {
+                    if (availTag.getTag() == GeoTiffConstants.ModelTiepointTag) {
+                        doubles = availTag.getAsDoubles();
 
                         if (doubles.length != 6) {
                             // logger.printError("unsupported value for ModelTiepointTag ("
@@ -303,28 +311,30 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
                         if (doubles[0] != 0 || doubles[1] != 0
                                 || doubles[2] != 0) {
-                            if (doubles[2] == 0)
+                            if (doubles[2] == 0) {
                                 pixelOffset = new Coordinate(doubles[0],
                                         doubles[1]);
-                            else
+                            } else {
                                 pixelOffset = new Coordinate(doubles[0],
                                         doubles[1], doubles[2]);
+                            }
                         }
 
-                        if (doubles[5] == 0)
+                        if (doubles[5] == 0) {
                             tiePoint = new Coordinate(doubles[3], doubles[4]);
-                        else
+                        } else {
                             tiePoint = new Coordinate(doubles[3], doubles[4],
                                     doubles[5]);
+                        }
 
                         // logger.printDebug("ModelTiepointTag (po): " +
                         // pixelOffset);
                         // logger.printDebug("ModelTiepointTag (tp): " +
                         // tiePoint);
-                    } else if (availTags[i].getTag() == GeoTiffConstants.ModelPixelScaleTag) {
+                    } else if (availTag.getTag() == GeoTiffConstants.ModelPixelScaleTag) {
                         // Karteneinheiten pro pixel x bzw. y
 
-                        doubles = availTags[i].getAsDoubles();
+                        doubles = availTag.getAsDoubles();
 
                         if (doubles.length == 2 || doubles[2] == 0) {
                             pixelScale = new Coordinate(doubles[0], doubles[1]);
@@ -368,11 +378,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
             } else if (fileName.toLowerCase().endsWith(".flt")) {
                 isGeoTiff = true;
-                GridFloat gf = new GridFloat(fileName);
+                final GridFloat gf = new GridFloat(fileName);
 
-                Coordinate upperLeft = new Coordinate(gf.getXllCorner(),
+                final Coordinate upperLeft = new Coordinate(gf.getXllCorner(),
                         gf.getYllCorner() + gf.getnRows() * gf.getCellSize());
-                Coordinate lowerRight = new Coordinate(gf.getXllCorner()
+                final Coordinate lowerRight = new Coordinate(gf.getXllCorner()
                         + gf.getnCols() * gf.getCellSize(), gf.getYllCorner());
 
                 env = new Envelope(upperLeft, lowerRight);
@@ -380,11 +390,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             } else if (fileName.toLowerCase().endsWith(".asc")
                     || fileName.toLowerCase().endsWith(".txt")) {
                 isGeoTiff = true;
-                GridAscii ga = new GridAscii(fileName);
+                final GridAscii ga = new GridAscii(fileName);
 
-                Coordinate upperLeft = new Coordinate(ga.getXllCorner(),
+                final Coordinate upperLeft = new Coordinate(ga.getXllCorner(),
                         ga.getYllCorner() + ga.getnRows() * ga.getCellSize());
-                Coordinate lowerRight = new Coordinate(ga.getXllCorner()
+                final Coordinate lowerRight = new Coordinate(ga.getXllCorner()
                         + ga.getnCols() * ga.getCellSize(), ga.getYllCorner());
 
                 env = new Envelope(upperLeft, lowerRight);
@@ -393,33 +403,35 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             if (!isGeoTiff || env == null) {
                 // logger.printDebug(PirolPlugInMessages.getString("no-worldfile-found"));
 
-                Viewport viewport = context.getLayerViewPanel().getViewport();
-                Rectangle visibleRect = viewport.getPanel().getVisibleRect();
+                final Viewport viewport = context.getLayerViewPanel()
+                        .getViewport();
+                final Rectangle visibleRect = viewport.getPanel()
+                        .getVisibleRect();
 
                 // 015-04-10 [Giuseppe Aruta] Calculate local coordinates
                 // as if the image is anchored to the view
-                File fil = new File(fileName);
-                BufferedImage bufImg = ImageIO.read(fil);
-                int width = bufImg.getWidth();
-                int height = bufImg.getHeight();
-                int visibleX1 = visibleRect.x;
-                int visibleY1 = visibleRect.y;
-                int visibleX2 = visibleX1 + width;// visibleRect.width;
-                int visibleY2 = visibleY1 + height;// visibleRect.height;
-                int visibleX3 = visibleX1 + visibleRect.width;
-                int visibleY3 = visibleY1 + visibleRect.height;
-                Coordinate upperLeftVisible = viewport
+                final File fil = new File(fileName);
+                final BufferedImage bufImg = ImageIO.read(fil);
+                final int width = bufImg.getWidth();
+                final int height = bufImg.getHeight();
+                final int visibleX1 = visibleRect.x;
+                final int visibleY1 = visibleRect.y;
+                final int visibleX2 = visibleX1 + width;// visibleRect.width;
+                final int visibleY2 = visibleY1 + height;// visibleRect.height;
+                final int visibleX3 = visibleX1 + visibleRect.width;
+                final int visibleY3 = visibleY1 + visibleRect.height;
+                final Coordinate upperLeftVisible = viewport
                         .toModelCoordinate(new Point(0, 0));
-                Coordinate lowerRightVisible1 = viewport
+                final Coordinate lowerRightVisible1 = viewport
                         .toModelCoordinate(new Point(visibleX2, visibleY2));
-                Coordinate lowerRightVisible2 = viewport
+                final Coordinate lowerRightVisible2 = viewport
                         .toModelCoordinate(new Point(visibleX3, visibleY3));
 
                 context.getWorkbench()
                         .getFrame()
                         .warnUser(
                                 I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
-                WizardDialog d = new WizardDialog(
+                final WizardDialog d = new WizardDialog(
                         context.getWorkbench().getFrame(),
                         I18N.getMessage(
                                 "org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found-message",
@@ -472,7 +484,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
                         env = new Envelope(minx, maxx, miny, maxy);
                     }
-                } catch (java.lang.NumberFormatException e) {
+                } catch (final java.lang.NumberFormatException e) {
 
                     env = new Envelope(upperLeftVisible.x,
                             lowerRightVisible1.x, upperLeftVisible.y,
@@ -483,12 +495,12 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             }
 
             // creating world file
-            this.worldFileHandler = new WorldFileHandler(fileName,
+            worldFileHandler = new WorldFileHandler(fileName,
                     this.allwaysLookForTFWExtension);
-            this.worldFileHandler.writeWorldFile(env, imageDimensions.x,
+            worldFileHandler.writeWorldFile(env, imageDimensions.x,
                     imageDimensions.y);
-            File fil = new File(fileName);
-            String MSG = I18N
+            final File fil = new File(fileName);
+            final String MSG = I18N
                     .getMessage(
                             "org.openjump.core.rasterimage.AddRasterImageLayerWizard.message",
                             new Object[] { fil.getName() });
