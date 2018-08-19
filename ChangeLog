@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-08-19 mmichaud <m.michael.michaud@orange.fr>
+  * Add two plugins :
+    - GenerateUniqueRandomIdPlugIn (menu tools/edit attributes)
+    - SelectAllOrderedFeaturesFromAttributeTablePlugIn (AttributeTable context menu)
+
 2018-07-01 mmichaud <m.michael.michaud@orange.fr>
   * Update GraphToolbox and MatchingPlugIn extensions
 

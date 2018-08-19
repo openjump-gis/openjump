@@ -25,15 +25,6 @@
  * Stefan Steiniger
  * perriger@gmx.de
  */
-/*****************************************************
- * created:  		16.05.2005
- * last modified:  	
- * 
- * description:
- *    selects all items of the actual layer
- *    and informs about the number of selected items
- * 
- *****************************************************/
 
 package org.openjump.core.ui.plugin.edit;
 
@@ -55,11 +46,12 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 
 /**
  * Selects all items of the actual layer and informs about the number of
- * selected items
+ * selected items.
  * 
  * @author sstein
  * 
  */
+// created on 16.05.2005
 public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
 
   private String name = I18N
@@ -92,8 +84,7 @@ public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
     
   }
 
-  public static MultiEnableCheck createEnableCheck(
-      WorkbenchContext workbenchContext) {
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
     EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
     return new MultiEnableCheck().add(checkFactory
         .createAtLeastNLayersMustBeSelectedCheck(1));
@@ -102,21 +93,21 @@ public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
   public boolean execute(PlugInContext context) throws Exception {
 
     int count = 0;
+
     Layer[] selectedLayers = context.getSelectedLayers();
     for (int i = 0; i < selectedLayers.length; i++) {
       Layer actualLayer = selectedLayers[i];
-      if (actualLayer.isVisible()) {
+      if (actualLayer.isVisible() && actualLayer.isSelectable()) {
         FeatureCollection fc = context.getSelectedLayer(i)
-            .getFeatureCollectionWrapper().getWrappee();
+                .getFeatureCollectionWrapper().getWrappee();
         Collection<Feature> features = new ArrayList<>();
-
-        for (Iterator iter = fc.iterator(); iter.hasNext();) {
+        for (Iterator iter = fc.iterator(); iter.hasNext(); ) {
           Feature element = (Feature) iter.next();
           features.add(element);
           count++;
         }
         context.getLayerViewPanel().getSelectionManager().getFeatureSelection()
-            .selectItems(actualLayer, features);
+                .selectItems(actualLayer, features);
       }
     }
     final Collection myf = context.getLayerViewPanel().getSelectionManager()

@@ -1715,6 +1715,12 @@
         </menus>
     </plug-in>
     <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.SelectAllOrderedFeaturesFromAttributeTablePlugIn
+        <menus>
+            <attributetab-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
         com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn
         <menus>
             <attributetab-popup install="true" />
