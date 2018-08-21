@@ -82,7 +82,8 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
                 Logger.info("Task loaded : " + task.getName());
                 java.util.List<Layer> layers = taskEvent.getTask().getLayerManager().getLayers();
                 for (Layer layer : layers) {
-                    if (layer.getDataSourceQuery().getDataSource() instanceof WritableDataStoreDataSource) {
+                    if (layer.getDataSourceQuery() != null &&
+                            layer.getDataSourceQuery().getDataSource() instanceof WritableDataStoreDataSource) {
                         getTransactionManager().registerLayer(layer, task);
                     }
                 }
