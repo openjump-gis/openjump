@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 import javax.xml.namespace.QName;
 
 import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.model.*;
 import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
@@ -45,11 +46,6 @@ import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.util.java2xml.XML2Java;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.Category;
-import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.LayerManager;
-import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
@@ -200,6 +196,9 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         List<Layer> layers = layerManager.getLayers();
         List<Layer> layersToBeRemoved = new ArrayList<>();
         for (Layer layer : layers) {
+            if (layer instanceof LayerView) {
+                continue; // no datasource for LayerView
+            }
             DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
             DataSource dataSource = dataSourceQuery.getDataSource();
             if (dataSource == null) {
@@ -299,7 +298,10 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                     }
                     layerable.setLayerManager(newLayerManager);
 
-                    if (layerable instanceof Layer) {
+                    if (layerable instanceof LayerView) {
+                        layerable.setLayerManager(newLayerManager);
+                    }
+                    else if (layerable instanceof Layer) {
                         Layer layer = (Layer) layerable;
                         File layerFile = getLayerFileProperty(layer);
                         if (!updateOnlyMissingResources || !layerFile.exists()) {
