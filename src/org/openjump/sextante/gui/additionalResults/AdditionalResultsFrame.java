@@ -454,6 +454,41 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         } else if (returnVal == JFileChooser.CANCEL_OPTION) {
                             return;
                         }
+
+                    }
+
+                    // [Giuseppe Aruta 2018-08-22] add generic save view to
+                    // image of JPanel in a JScrollPane
+                    else if (view instanceof JPanel) {
+                        final JPanel panel = (JPanel) pane.getViewport()
+                                .getView();
+                        final int w = panel.getWidth();
+                        final int h = panel.getHeight();
+                        final BufferedImage bi = new BufferedImage(w, h,
+                                BufferedImage.TYPE_INT_RGB);
+                        final Graphics2D g = bi.createGraphics();
+                        panel.paint(g);
+
+                        filter = new FileNameExtensionFilter(
+                                "Portable Network Graphics (png)", "png");
+                        final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
+                                "png");
+                        fc.setFileFilter(filter);
+                        fc.addChoosableFileFilter(filter);
+                        final int returnVal = fc
+                                .showSaveDialog(AdditionalResultsFrame.this);
+                        fc.getWidth();
+                        fc.getHeight();
+                        if (returnVal == JFileChooser.APPROVE_OPTION) {
+                            try {
+                                file = new File(fc.getSelectedFile() + ".png");
+                                ImageIO.write(bi, "png", file);
+                                saved(file);
+                            } catch (final Exception e) {
+                                notsaved();
+                                Logger(this.getClass(), e);
+                            }
+                        }
                     }
 
                 } else if (c instanceof PlotPanel) {
