@@ -7,7 +7,10 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.util.Map;
 import java.util.TreeMap;
+
 import javax.swing.JComponent;
+
+import com.vividsolutions.jump.I18N;
 
 /**
  *
@@ -23,9 +26,10 @@ public class ColorsLabelLegendComponent extends JComponent {
      * @param rasterName
      * @throws Exception
      */
-    public ColorsLabelLegendComponent(TreeMap<Double,Color> colorMapEntries, double noDataValue, String rasterName) throws Exception {
+    public ColorsLabelLegendComponent(TreeMap<Double, Color> colorMapEntries,
+            double noDataValue, String rasterName) throws Exception {
 
-        this.colorMapEntries_tm = colorMapEntries;
+        colorMapEntries_tm = colorMapEntries;
         this.noDataValue = noDataValue;
         this.rasterName = rasterName;
     }
@@ -34,12 +38,12 @@ public class ColorsLabelLegendComponent extends JComponent {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        int x = 20;
+        final int x = 20;
         int y;
-        int startY = 45;
-        int step = 30;
+        final int startY = 45;
+        final int step = 30;
         int maxWidth = 100;
-        FontMetrics m = g.getFontMetrics();
+        final FontMetrics m = g.getFontMetrics();
 
         int i = 0, w;
         Color color;
@@ -54,10 +58,12 @@ public class ColorsLabelLegendComponent extends JComponent {
 
         g.setFont(new Font("Tahoma", Font.PLAIN, 11));
 
-        //for (int n = 0; n < colorMapEntry.length; n++) {//for (Iterator iter = pairs.iterator(); iter.hasNext();) {
+        // for (int n = 0; n < colorMapEntry.length; n++) {//for (Iterator iter
+        // = pairs.iterator(); iter.hasNext();) {
 
-        for(Map.Entry<Double,Color> colorMapEntry : colorMapEntries_tm.entrySet()) {
-            
+        for (final Map.Entry<Double, Color> colorMapEntry : colorMapEntries_tm
+                .entrySet()) {
+
             if (colorMapEntry.getKey() == noDataValue) {
                 noDataColor = colorMapEntry.getValue();
                 continue;
@@ -72,8 +78,8 @@ public class ColorsLabelLegendComponent extends JComponent {
             g.setColor(Color.black);
             g.drawRect(x, y, 40, 25);
 
-            //g.setColor(Color.black);
-            String value = Double.toString(colorMapEntry.getKey());
+            // g.setColor(Color.black);
+            final String value = Double.toString(colorMapEntry.getKey());
             g.drawString(value, x + 60, y + 18);
 
             w = m.stringWidth(value);
@@ -85,19 +91,21 @@ public class ColorsLabelLegendComponent extends JComponent {
         y = startY + (step * i++);
 
         g.setFont(new Font("Tahoma", Font.ITALIC, 11));
-        g.drawString("NoDataValue", x, y + 20);
-
+        // g.drawString("NoDataValue", x, y + 20);
+        final String jLabel_NoDataTitle = I18N
+                .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
+        g.drawString(jLabel_NoDataTitle, x, y + 20);
         g.setFont(new Font("Tahoma", Font.PLAIN, 11));
         y = startY + (step * i++);
 
         g.setColor(Color.BLACK);
 
         g.drawRect(x, y, 40, 25);
-        if(noDataColor != null){
+        if (noDataColor != null) {
             g.setColor(noDataColor);
             g.fillRect(x, y, 40, 25);
             g.setColor(Color.BLACK);
-        }  
+        }
         g.drawString(Double.toString(noDataValue), x + 60, y + 18);
 
         dimension = new Dimension(maxWidth, startY + (step * i++));
@@ -105,9 +113,9 @@ public class ColorsLabelLegendComponent extends JComponent {
 
     }
 
-    private final java.util.ResourceBundle bundle
-            = java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle"); // NOI18N
-    private final TreeMap<Double,Color> colorMapEntries_tm;
+    private final java.util.ResourceBundle bundle = java.util.ResourceBundle
+            .getBundle("org/openjump/core/rasterimage/styler/resources/Bundle"); // NOI18N
+    private final TreeMap<Double, Color> colorMapEntries_tm;
     private final double noDataValue;
     private Dimension dimension;
     private final String rasterName;

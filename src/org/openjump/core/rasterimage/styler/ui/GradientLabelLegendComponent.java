@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
 
+import com.vividsolutions.jump.I18N;
+
 /**
  * Class to create the component formed by a JPanel and two JLabels. The JPanel
  * contain the gradient and the JLabels contain the values.
@@ -78,8 +80,10 @@ public class GradientLabelLegendComponent extends JComponent {
         final JLabel jLabel_MaxValue = new JLabel();
         final JLabel jLabel_MinValue = new JLabel();
         final JLabel jLabel_RasterName = new JLabel(rasterName);
+        // final JLabel jLabel_NoDataTitle = new JLabel(
+        // bundle.getString("LegendDialog.NoDataValue.text"));
         final JLabel jLabel_NoDataTitle = new JLabel(
-                bundle.getString("LegendDialog.NoDataValue.text"));
+                I18N.get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata"));
         final JLabel jLabel_NoDataColor = new JLabel();
         final JLabel jLabel_NoDataValue = new JLabel(
                 Double.toString(noDataValue));
