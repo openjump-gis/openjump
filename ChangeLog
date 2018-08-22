@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-08-22 Giuseppe Aruta
+  * WMSLegendPlugIn. Added capability to export WMS legend to PNG image file
+  
 2018-08-22 mmichaud <m.michael.michaud@orange.fr>
   * Fix LayerView to make it compatible with project persistence
 
