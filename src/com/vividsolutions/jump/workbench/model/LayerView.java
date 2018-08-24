@@ -33,6 +33,8 @@ public class LayerView extends Layer {
     this.layer = layerManager.getLayer(getLayerName());
   }
 
+  //private String properName = "v";
+
   public LayerView(final String layerName, LayerManager layerManager) {
     super(layerName,
             layerManager.generateLayerFillColor(),
@@ -43,10 +45,32 @@ public class LayerView extends Layer {
     boolean firingEvents = getLayerManager().isFiringEvents();
     getLayerManager().setFiringEvents(false);
     try {
-      setName(getName().replaceAll(this.layer.getName(),"").trim());
+      setName("v");
+      //this.properName = layerManager.uniqueLayerName(properName);
+      //setName(getName().replaceAll(this.layer.getName(),"").trim());
+      //setName(properName);
+      setName(layerManager.uniqueLayerName(getName()));
     } finally {
       getLayerManager().setFiringEvents(firingEvents);
     }
+  }
+
+  //@Override
+  //public String getName() {
+  //  return properName;
+  //}
+
+  //public void setName(String properName) {
+  //  this.properName = properName;
+  //}
+
+  public String getFullName() {
+    //if (layer == null)
+    //  return "-> " + getLayerName() + " - " + getName();
+    if (layer instanceof LayerView)
+      return ((LayerView) layer).getFullName() + " - " + getName();
+    else
+      return "-> " + getLayerName() + " - " + getName();
   }
 
 

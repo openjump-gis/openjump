@@ -38,10 +38,12 @@ import java.util.*;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
+import com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource;
+import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.model.LayerView;
 import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.io.DriverProperties;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.DummyTaskMonitor;
@@ -139,18 +141,22 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
                     DataSource dataSource = null;
                     if (dialog.getBoolean(SAVEASJML)) {
                         ext = "jml";
-                        dataSource = new com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource.JML();
+                        dataSource = new StandardReaderWriterFileDataSource.JML();
                     }
                     else if (dialog.getBoolean(SAVEASSHP)) {
                         ext = "shp";
-                        dataSource = new com.vividsolutions.jump.io.datasource.StandardReaderWriterFileDataSource.Shapefile();
+                        dataSource = new StandardReaderWriterFileDataSource.Shapefile();
                     }
-                    if (file.exists()) {
-                        if (GUIUtil.showConfirmOverwriteDialog(context.getWorkbenchFrame(), file)) {
+                    if (dataSource != null) {
+                        if (file.exists()) {
+                            if (GUIUtil.showConfirmOverwriteDialog(context.getWorkbenchFrame(), file)) {
+                                saveLayer(layer, dir, dataSource, ext);
+                            }
+                        } else {
                             saveLayer(layer, dir, dataSource, ext);
                         }
                     } else {
-                        saveLayer(layer, dir, dataSource, ext);
+                        Logger.warn("Data source (jml or shp) could not be instanciated to save dataset on disk");
                     }
                 }
                 return true;
@@ -168,9 +174,13 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
         dp.put(DataSource.URI_KEY, file.toURI().toString());
         dp.put(DataSource.FILE_KEY, path);
         dataSource.setProperties(dp);
-
         DataSourceQuery dsq = new DataSourceQuery(dataSource, path, path);
         layer.setDataSourceQuery(dsq).setFeatureCollectionModified(false);
+        // Do not write the dataset used by a LayerView on disk (it is already written
+        // for the underlying layer)
+        // LayerView writing is excluded there because we need layer.setDataSourceQuery
+        // (without it, the LayerView is not written into xml at all)
+        if (layer instanceof LayerView) return;
         dataSource.getConnection().executeUpdate("", layer.getFeatureCollectionWrapper(), new DummyTaskMonitor());
     }
 

@@ -299,7 +299,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                     layerable.setLayerManager(newLayerManager);
 
                     if (layerable instanceof LayerView) {
-                        layerable.setLayerManager(newLayerManager);
+                        //layerable.setLayerManager(newLayerManager);
                     }
                     else if (layerable instanceof Layer) {
                         Layer layer = (Layer) layerable;
