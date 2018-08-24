@@ -53,10 +53,10 @@ public class ColorsLabelLegendComponent extends JComponent {
         g.fillRect(0, 0, getWidth(), getHeight());
         g.setColor(Color.black);
 
-        g.setFont(new Font("Tahoma", Font.BOLD, 12));
+        g.setFont(new Font("Tahoma", Font.BOLD, 14));
         g.drawString(rasterName, x, 20);
 
-        g.setFont(new Font("Tahoma", Font.PLAIN, 11));
+        g.setFont(new Font("Tahoma", Font.PLAIN, 12));
 
         // for (int n = 0; n < colorMapEntry.length; n++) {//for (Iterator iter
         // = pairs.iterator(); iter.hasNext();) {
@@ -90,10 +90,10 @@ public class ColorsLabelLegendComponent extends JComponent {
 
         y = startY + (step * i++);
 
-        g.setFont(new Font("Tahoma", Font.ITALIC, 11));
+        g.setFont(new Font("Tahoma", Font.PLAIN, 12));
         // g.drawString("NoDataValue", x, y + 20);
         final String jLabel_NoDataTitle = I18N
-                .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
+                .get("org.openjump.core.ui.plugin.raster.nodata.nodata");
         g.drawString(jLabel_NoDataTitle, x, y + 20);
         g.setFont(new Font("Tahoma", Font.PLAIN, 11));
         y = startY + (step * i++);

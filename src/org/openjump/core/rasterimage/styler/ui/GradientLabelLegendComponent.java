@@ -83,7 +83,7 @@ public class GradientLabelLegendComponent extends JComponent {
         // final JLabel jLabel_NoDataTitle = new JLabel(
         // bundle.getString("LegendDialog.NoDataValue.text"));
         final JLabel jLabel_NoDataTitle = new JLabel(
-                I18N.get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata"));
+                I18N.get("org.openjump.core.ui.plugin.raster.nodata.nodata"));
         final JLabel jLabel_NoDataColor = new JLabel();
         final JLabel jLabel_NoDataValue = new JLabel(
                 Double.toString(noDataValue));
@@ -93,7 +93,7 @@ public class GradientLabelLegendComponent extends JComponent {
 
         // Set components aspect
         // Raster name
-        jLabel_RasterName.setFont(new Font("Tahoma", Font.BOLD, 12));
+        jLabel_RasterName.setFont(new Font("Tahoma", Font.BOLD, 14));
         jLabel_RasterName.setPreferredSize(new Dimension(50, 14));
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -118,6 +118,7 @@ public class GradientLabelLegendComponent extends JComponent {
         jLabel_MaxValue.setText(Double.toString(GUIUtils.round(maxValue, 3)));
         jLabel_MaxValue.setMinimumSize(new java.awt.Dimension(50, 14));
         jLabel_MaxValue.setPreferredSize(new java.awt.Dimension(50, 14));
+        jLabel_MaxValue.setFont(new Font("Tahoma", Font.PLAIN, 12));
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridheight = 1;
@@ -129,6 +130,7 @@ public class GradientLabelLegendComponent extends JComponent {
         jLabel_MinValue.setText(Double.toString(GUIUtils.round(minValue, 3)));
         jLabel_MinValue.setMinimumSize(new java.awt.Dimension(50, 14));
         jLabel_MinValue.setPreferredSize(new java.awt.Dimension(50, 14));
+        jLabel_MinValue.setFont(new Font("Tahoma", Font.PLAIN, 12));
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridheight = 1;
@@ -139,6 +141,7 @@ public class GradientLabelLegendComponent extends JComponent {
         // NoData title label
         jLabel_NoDataTitle.setMinimumSize(new java.awt.Dimension(70, 14));
         jLabel_NoDataTitle.setPreferredSize(new java.awt.Dimension(70, 14));
+        jLabel_NoDataTitle.setFont(new Font("Tahoma", Font.PLAIN, 12));
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = 2;
@@ -153,6 +156,7 @@ public class GradientLabelLegendComponent extends JComponent {
         jLabel_NoDataColor.setMaximumSize(new java.awt.Dimension(40, 25));
         jLabel_NoDataColor.setMinimumSize(new java.awt.Dimension(40, 25));
         jLabel_NoDataColor.setPreferredSize(new java.awt.Dimension(40, 25));
+        jLabel_NoDataColor.setFont(new Font("Tahoma", Font.PLAIN, 12));
         jLabel_NoDataColor.setOpaque(true);
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -163,7 +167,7 @@ public class GradientLabelLegendComponent extends JComponent {
 
         // NoData value label
         jLabel_NoDataValue.setPreferredSize(new java.awt.Dimension(50, 14));
-        jLabel_NoDataValue.setFont(new Font("Tahoma", Font.ITALIC, 11));
+        jLabel_NoDataValue.setFont(new Font("Tahoma", Font.PLAIN, 12));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
