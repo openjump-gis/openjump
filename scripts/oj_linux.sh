@@ -167,7 +167,7 @@ done
 
 # java version check
 JAVA_VERSIONSTRING="$("$JAVA" -version 2>&1)"
-JAVA_VERSION=$(echo $JAVA_VERSIONSTRING | awk -F'[ \056]' '{gsub(/["\047]+/,"")}/version [0-9]+\.[0-9]+/{print $3"."$4; exit}' )
+JAVA_VERSION=$( echo $JAVA_VERSIONSTRING | awk 'BEGIN{done=0}{gsub(/["\047]+/,"")}/[a-zA-Z]+ version [0-9]+/{split($3,a,"[^0-9]"); if(match(a[2],/^[0-9]+$/)){print a[1]"."a[2]}else{print a[1]".0"}; done=1}END{if(!done)exit 1}' ) 
 JAVA_ARCH=$(echo $JAVA_VERSIONSTRING | grep -q -i 64-bit && echo x64 || echo x86)
 JAVA_NEEDED="1.6"
 if ! is_decimal "$JAVA_VERSION"; then

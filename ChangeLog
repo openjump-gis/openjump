@@ -4,7 +4,7 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2018-08-27 ede
-  * oj_windows.bat rework version detection for 'openjdk version "12-ea"'
+  * rework version detection for 'openjdk version "12-ea"' in start scripts
   * linux/mac starter remove javax.se.ee when run w/ java 11+
 
 2018-08-24 mmichaud <m.michael.michaud@orange.fr>
