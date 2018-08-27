@@ -99,11 +99,12 @@ for /f "tokens=* delims=" %%i in ('"%dirname%java" -version 2^>^&1') do (
     call :concat "; " %%i
     for /F "tokens=1-3 delims= " %%a in ("%%i") do (
        rem -- memorize version number string --
-       if "%%a"=="java" ( 
-           if "%%b"=="version" ( 
+       if "%%a"=="java" if "%%b"=="version" ( 
                set JAVAVER=%%c
            )
-       )
+       if /I "%%a"=="openjdk" if "%%b"=="version" ( 
+               set JAVAVER=%%c
+           )
     )
 )
 set "JAVA_VERSIONSTRING=%concat%"
@@ -118,17 +119,24 @@ rem -- split java version (for processing) --
 rem @echo Output: %JAVAVER%
 
 for /f "delims=. tokens=1-3" %%v in ("%JAVAVER%") do (
+    if [%%v] neq [] call :extractLeadingNumbers "%%v" major
     rem @echo Major: %%v
-    set JAVAVER_MAJOR=%%v
+    if [%%w] neq [] call :extractLeadingNumbers "%%w" minor
     rem @echo Minor: %%w
-    set JAVAVER_MINOR=%%w
-    rem @echo Build: %%x
-    set JAVAVER_PATCH=%%x
+    if [%%x] neq [] call :extractLeadingNumbers "%%x" patch
+    rem @echo Patch: %%x
 )
+if [%major%] neq [] ( set "JAVAVER_MAJOR=%major%" ) else (
+    echo ERROR: Could not detect java version number.
+    set "ERROR=1"
+    goto :end
+)
+if [%minor%] neq [] ( set "JAVAVER_MINOR=%minor%" ) else ( set "JAVAVER_MINOR=0" )
+if [%patch%] neq [] ( set "JAVAVER_PATCH=%patch%" ) else ( set "JAVAVER_PATCH=0" )
 
-rem -- java9+ needs some packages explicitly added/exported --
-set /a JAVAVER_NUMBER=JAVAVER_MAJOR
-if %JAVAVER_NUMBER% geq 9 (
+
+rem -- java9-java11 need some packages explicitly added/exported --
+if %JAVAVER_MAJOR% geq 9 if %JAVAVER_MAJOR% lss 12 (
   set JAVA_OPTS=%JAVA_OPTS% --add-exports java.base/jdk.internal.loader=ALL-UNNAMED ^
 --add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED ^
 --add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED ^
@@ -388,5 +396,20 @@ set JAVA_MEM=-Xmx%value%M
 set "JAVA_MEM_STRING=Xmx to %value%M"
 goto:eof
 
+rem This extracts the first numerical series in the input string
+:extractLeadingNumbers inputString returnVar
+setlocal enableextensions disabledelayedexpansion
+rem Retrieve the string from arguments
+set "string=%~1"
+
+rem Use numbers as delimiters (so they are removed) to retrieve the rest of the string
+for /f "tokens=1-2 delims=0123456789 " %%a in ("%string:^"=%") do set "delimiters=%%a%%b"
+
+rem Use the retrieved characters as delimiters to retrieve the first numerical serie
+for /f "delims=%delimiters% " %%a in ("%string:^"=%") do set "numbers=%%a"
+
+rem Return the found data to caller and leave
+endlocal & set "%~2=%numbers%"
+goto :eof
 
 :eof
