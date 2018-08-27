@@ -136,11 +136,15 @@ if [%patch%] neq [] ( set "JAVAVER_PATCH=%patch%" ) else ( set "JAVAVER_PATCH=0"
 
 
 rem -- java9-java11 need some packages explicitly added/exported --
-if %JAVAVER_MAJOR% geq 9 if %JAVAVER_MAJOR% lss 12 (
+if %JAVAVER_MAJOR% geq 9 (
   set JAVA_OPTS=%JAVA_OPTS% --add-exports java.base/jdk.internal.loader=ALL-UNNAMED ^
 --add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED ^
 --add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED ^
---add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED --add-modules java.se.ee
+--add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED
+)
+rem -- java ee was removed from jdk in java 11
+if %JAVAVER_MAJOR% geq 9 if %JAVAVER_MAJOR% lss 11 (
+  set JAVA_OPTS=%JAVA_OPTS% --add-modules java.se.ee
 )
 
 rem -- detect if java is 64bit --
