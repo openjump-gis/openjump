@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-08-28 Giuseppe Aruta
+  * Reactivated Raster Legend plugin with option to save legend to image
+
 2018-08-27 ede
   * rework version detection for 'openjdk version "12-ea"' in start scripts
   * linux/mac starter remove javax.se.ee when run w/ java 11+
