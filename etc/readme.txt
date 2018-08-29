@@ -137,6 +137,9 @@ and the following plugins
    utils-*.jar
  Measure Toolbox (Giuseppe Aruta) - GPL3 - gpl-3.0.txt
   MeasureToolbox_*.jar
+ OpenKLEM (Geomatica) - GPL2 - gpl-3.0.txt
+  OpenKLEM-*.jar
+  OpenKLEMOJ-*.jar
  OSM Driver (Stefan Steiniger) - GPL2 - gpl-2.txt
   oj_osm_reader_v*.jar
  Printer (com.cadplan.jump) - GPL2 - gpl-2.txt
