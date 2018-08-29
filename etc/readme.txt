@@ -137,7 +137,8 @@ and the following plugins
    utils-*.jar
  Measure Toolbox (Giuseppe Aruta) - GPL3 - gpl-3.0.txt
   MeasureToolbox_*.jar
- OpenKLEM (Geomatica) - GPL2 - gpl-3.0.txt
+ OpenKLEM (Geomatica) - GPL2 - gpl-2.0.txt
+ topographic and hydrological analysis
   OpenKLEM-*.jar
   OpenKLEMOJ-*.jar
  OSM Driver (Stefan Steiniger) - GPL2 - gpl-2.txt
