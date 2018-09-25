@@ -54,6 +54,10 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -2320,33 +2324,110 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         getTaskListeners().remove(l);
     }
 
-    private class AppleHandler {
-        public void register() {
-            // import com.apple.eawt.AboutHandler;
-            // import com.apple.eawt.AppEvent.AboutEvent;
-            // import com.apple.eawt.AppEvent.QuitEvent;
-            // import com.apple.eawt.Application;
-            // import com.apple.eawt.QuitHandler;
-            // import com.apple.eawt.QuitResponse;
+  private class AppleHandler implements InvocationHandler {
+    public void register() {
+      // import com.apple.eawt.AboutHandler;
+      // import com.apple.eawt.AppEvent.AboutEvent;
+      // import com.apple.eawt.AppEvent.QuitEvent;
+      // import com.apple.eawt.Application;
+      // import com.apple.eawt.QuitHandler;
+      // import com.apple.eawt.QuitResponse;
 
-            com.apple.eawt.Application app = com.apple.eawt.Application
-                    .getApplication();
-            app.setQuitHandler(new com.apple.eawt.QuitHandler() {
-                public void handleQuitRequestWith(
-                        com.apple.eawt.AppEvent.QuitEvent e,
-                        com.apple.eawt.QuitResponse resp) {
-                    closeApplication();
-                    // still here?, must have been cancelled
-                    resp.cancelQuit();
-                }
-            });
-            app.setAboutHandler(new com.apple.eawt.AboutHandler() {
-                public void handleAbout(com.apple.eawt.AppEvent.AboutEvent e) {
-                    AboutDialog.instance(getContext()).setVisible(true);
-                }
-            });
-        }
+      // com.apple.eawt.Application app =
+      // com.apple.eawt.Application.getApplication();
+      // app.setQuitHandler(new com.apple.eawt.QuitHandler() {
+      // public void handleQuitRequestWith(
+      // com.apple.eawt.AppEvent.QuitEvent e,
+      // com.apple.eawt.QuitResponse resp) {
+      // closeApplication();
+      // // still here?, must have been cancelled
+      // resp.cancelQuit();
+      // }
+      // });
+      // app.setAboutHandler(new com.apple.eawt.AboutHandler() {
+      // public void handleAbout(com.apple.eawt.AppEvent.AboutEvent e) {
+      // AboutDialog.instance(getContext()).setVisible(true);
+      // }
+      // });
+      // app.removePreferencesMenuItem();
+
+      // using reflection to avoid macos specific classes being required for
+      // compiling on non macos platforms
+      Class<?> applicationClass = findClass("Application");
+      if (applicationClass == null) {
+        Logger.error("Couldn't find apple java extension application class. Skip registering handlers.");
+        return;
+      }
+
+      Class<?> quitHandlerClass = findClass("QuitHandler");
+      Class<?> aboutHandlerClass = findClass("AboutHandler");
+      Class<?> openFilesHandlerClass = findClass("OpenFilesHandler");
+      Class<?> preferencesHandlerClass = findClass("PreferencesHandler");
+
+      try {
+        // create instance of app
+        Object application = applicationClass.getConstructor((Class[]) null).newInstance((Object[]) null);
+        
+        Object proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(),
+            new Class<?>[] { quitHandlerClass, aboutHandlerClass, openFilesHandlerClass, preferencesHandlerClass },
+            this);
+
+        applicationClass.getDeclaredMethod("setQuitHandler", quitHandlerClass).invoke(application, proxy);
+        applicationClass.getDeclaredMethod("setAboutHandler", aboutHandlerClass).invoke(application, proxy);
+        applicationClass.getDeclaredMethod("setOpenFileHandler", openFilesHandlerClass).invoke(application, proxy);
+        applicationClass.getDeclaredMethod("setPreferencesHandler", preferencesHandlerClass).invoke(application, proxy);
+      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+          | NoSuchMethodException | SecurityException e) {
+        Logger.error(e);
+      }
     }
+
+    String[] packageNames = new String[]{"java.awt.desktop","com.apple.eawt"};
+
+    private Class findClass(String className) {
+      // since java9 apple java extensions moved into "java.awt.desktop"
+      for (String packageName : packageNames) {
+        Logger.debug("Looking for apple handler '"+ className +"' ..");
+        String fullClassName = packageName + "." + className;
+        try {
+          Logger.debug("Try '"+ fullClassName +"' ..");
+          return Class.forName(fullClassName);
+        } catch (ClassNotFoundException e) {
+          Logger.debug("class not avail '"+ fullClassName +"'");
+          continue;
+        }
+      }
+      return null;
+    }
+    
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+      if ("openFiles".equals(method.getName())) {
+//        if (args[0] != null) {
+//          Object files = args[0].getClass().getMethod("getFiles").invoke(args[0]);
+//          if (files instanceof List) {
+//            OpenAction openAction = new OpenAction(kseFrame);
+//            for (File file : (List<File>) files) {
+//              openAction.openKeyStore(file);
+//            }
+//          }
+//        }
+      } else if ("handleQuitRequestWith".equals(method.getName())) {
+        closeApplication();
+        // If we have returned from the above call the user has cancelled
+        if (args[1] != null) {
+          args[1].getClass().getDeclaredMethod("cancelQuit").invoke(args[1]);
+        }
+      } else if ("handleAbout".equals(method.getName())) {
+          AboutDialog.instance(getContext()).setVisible(true);
+      } else if ("handlePreferences".equals(method.getName())) {
+//        PreferencesAction preferencesAction = new PreferencesAction(kseFrame);
+//        preferencesAction.showPreferences();
+      }
+      return null;
+    }
+    
+  }
 
     // run a plugin internally, used for the statusbar
     private boolean executePlugin(PlugIn plugin) {
@@ -2358,8 +2439,8 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
           return false;
         }
         return plugin.execute(workbenchContext.createPlugInContext());
-      } catch (Exception er) {
-        handleThrowable(er);
+      } catch (Exception e) {
+        handleThrowable(e);
         return false;
       }
     }
