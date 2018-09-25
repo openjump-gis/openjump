@@ -172,7 +172,7 @@ public class GCPlugin extends ExtCorePlugIn {
 			} else {
 				// the layer popup menu
 				context.getFeatureInstaller().addPopupMenuItem(popupMenu,
-						plugin, popupchain, _(menuentry.toLowerCase()), false, null, checker);
+						plugin, popupchain, m(menuentry.toLowerCase()), false, null, checker);
 			}
 		}
 	}
@@ -191,7 +191,7 @@ public class GCPlugin extends ExtCorePlugIn {
 			} else {
 				// one plugin per menuentry
 				context.getFeatureInstaller().addMainMenuItem(
-								plugin, menuchain, _(menuentry.toLowerCase()), false, null, checker);
+								plugin, menuchain, m(menuentry.toLowerCase()), false, null, checker);
 			}
 		}		
 	}
@@ -209,7 +209,7 @@ public class GCPlugin extends ExtCorePlugIn {
 			String message = ( target.equalsIgnoreCase("close-lines") || target.equalsIgnoreCase("remove-closing-segment") ) ?
 					"treat-all-with-tools" :
 					"convert-all-to";
-			if ( !okCancel( _("are-you-sure"), _(message, buf, _(target.toLowerCase()) ) ) )
+			if ( !okCancel( m("are-you-sure"), m(message, buf, m(target.toLowerCase()) ) ) )
 						return false;
 		}
 		
@@ -288,7 +288,7 @@ public class GCPlugin extends ExtCorePlugIn {
 						else if ( changed && count == 1 )
 							geom_new = geoms_new[0];
 						else
-							warnUser(_("nothing-to-do", feat.getID()));
+							warnUser(m("nothing-to-do", feat.getID()));
 						
 					}				
 					// CONVERSIONS (moved to external method)
@@ -325,7 +325,7 @@ public class GCPlugin extends ExtCorePlugIn {
 		}
 		// don't mask other warnings here
 		else if (!youvebeenwarned ){
-			warnUser(_("nothing-changed"));
+			warnUser(m("nothing-changed"));
 		}
 
 		// operation failed
@@ -333,7 +333,7 @@ public class GCPlugin extends ExtCorePlugIn {
 	}
 
 	public String getName() {
-		return _("convert-selected-to");
+		return m("convert-selected-to");
 	}
 
 	
@@ -385,14 +385,14 @@ public class GCPlugin extends ExtCorePlugIn {
 			public String check(JComponent component) {
 				Collection layers = getLayers();
 				if (layers == null || layers.isEmpty())
-					return _("select-geometries-or-layers");
+					return m("select-geometries-or-layers");
 
 				for (Iterator iterator = layers.iterator(); iterator.hasNext();) {
 					Layer layer = (Layer) iterator.next();
 					// System.out.println(layer.getName()
 					// +"->"+(layer.isEditable()?"ja":"nein"));
 					if (!layer.isEditable()) {
-						return _("layer-not-editable", layer.getName());
+						return m("layer-not-editable", layer.getName());
 					}
 				}
 
@@ -516,7 +516,7 @@ public class GCPlugin extends ExtCorePlugIn {
 		// do we have to && can we convert?
 		if ( !(method instanceof Method) ) {
 			// ups we've got ourself no conversion
-			warnUser(_("no-conversion-method", _(type.toLowerCase()), type));
+			warnUser(m("no-conversion-method", m(type.toLowerCase()), type));
 			return null;
 		}
 		
@@ -549,7 +549,7 @@ public class GCPlugin extends ExtCorePlugIn {
 		if (!isArray && name.equals("com.vividsolutions.jts.geom.Coordinate")) {
 			// factory method needs exactly one coord or null
 			if (geom_src.getCoordinates().length > 1) {
-				warnUser(_("only-one-coordinate", type));
+				warnUser(m("only-one-coordinate", type));
 			}
 			else {
 				Object coord = geom_src.getCoordinates().length < 1 ? null : geom_src
@@ -605,7 +605,7 @@ public class GCPlugin extends ExtCorePlugIn {
 		}
 		// what ends here is based on parameters that are not implemented yet
 		else {
-			warnUser(_("conversion-not-implemented", _(type.toLowerCase()), type));
+			warnUser(m("conversion-not-implemented", m(type.toLowerCase()), type));
 		}
 		
 		return geom_new;
@@ -663,7 +663,7 @@ public class GCPlugin extends ExtCorePlugIn {
 			
 			// ups, don't convert this
 			if (shells.size() != 1) {
-				warnUser(_("missing-exactly-one-shell"));
+				warnUser(m("missing-exactly-one-shell"));
 				return null;
 			}
 			
@@ -709,7 +709,7 @@ public class GCPlugin extends ExtCorePlugIn {
 				}
 			} catch (IllegalArgumentException e) {
 				// badrings means loss, means error, means stop here
-				warnUser(_("bad-rings"));
+				warnUser(m("bad-rings"));
 				return null;
 			
 				// crashes on simple points

@@ -66,19 +66,19 @@ public abstract class ExtCorePlugIn implements PlugIn {
 	}	
 	
 	// shortcut method1
-	public String _(final String label) {
+	public String m(final String label) {
 		return getMessage( label );
 	}
 	// shortcut method2	
-	public String _(final String label, final Object[] objects) {
+	public String m(final String label, final Object[] objects) {
 		return getMessage( label, objects );		
 	}
 	// shortcut method3	
-	public String _(final String label, final Object object) {
+	public String m(final String label, final Object object) {
 		return getMessage( label, new Object[]{object} );		
 	}	
 	// shortcut method3	
-	public String _(final String label, final Object object1, final Object object2) {
+	public String m(final String label, final Object object1, final Object object2) {
 		return getMessage( label, new Object[]{object1,object2} );		
 	}	
 	
