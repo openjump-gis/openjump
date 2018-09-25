@@ -107,20 +107,21 @@ public class OptionsPlugIn extends AbstractPlugIn {
   }
 
   // static execute method for usage in apple handler
-  public static boolean execute(){
-    if (instance!=null)
-      return false;
-    
-    OptionsPlugIn p = new OptionsPlugIn();
-    try {
-      PlugInContext pc = JUMPWorkbench.getInstance().getContext().createPlugInContext();
-      p.initialize(pc);
-      return p.execute(pc);
-    } catch (Exception e) {
-      JUMPWorkbench.getInstance().getFrame().handleThrowable(e);
+  public static boolean execute() throws Exception {
+    PlugInContext pc = JUMPWorkbench.getInstance().getContext().createPlugInContext();
+
+    if (instance == null) {
+      OptionsPlugIn p = new OptionsPlugIn();
+      try {
+        p.initialize(pc);
+        instance = p;
+      } catch (Exception e) {
+        JUMPWorkbench.getInstance().getFrame().handleThrowable(e);
+        return false;
+      }
     }
-    
-    return false;
+
+    return instance.execute(pc);
   }
 
   public Icon getIcon(int height) {

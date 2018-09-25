@@ -2325,116 +2325,136 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         getTaskListeners().remove(l);
     }
 
-  private class AppleHandler implements InvocationHandler {
-    public void register() {
-      // import com.apple.eawt.AboutHandler;
-      // import com.apple.eawt.AppEvent.AboutEvent;
-      // import com.apple.eawt.AppEvent.QuitEvent;
-      // import com.apple.eawt.Application;
-      // import com.apple.eawt.QuitHandler;
-      // import com.apple.eawt.QuitResponse;
-
-      // com.apple.eawt.Application app =
-      // com.apple.eawt.Application.getApplication();
-      // app.setQuitHandler(new com.apple.eawt.QuitHandler() {
-      // public void handleQuitRequestWith(
-      // com.apple.eawt.AppEvent.QuitEvent e,
-      // com.apple.eawt.QuitResponse resp) {
-      // closeApplication();
-      // // still here?, must have been cancelled
-      // resp.cancelQuit();
-      // }
-      // });
-      // app.setAboutHandler(new com.apple.eawt.AboutHandler() {
-      // public void handleAbout(com.apple.eawt.AppEvent.AboutEvent e) {
-      // AboutDialog.instance(getContext()).setVisible(true);
-      // }
-      // });
-      // app.removePreferencesMenuItem();
-
-      // using reflection to avoid macos specific classes being required for
-      // compiling on non macos platforms
-      Class<?> applicationClass = findClass("Application");
-      if (applicationClass == null) {
-        Logger.error("Couldn't find apple java extension application class. Skip registering handlers.");
-        return;
-      }
-
-      Class<?> quitHandlerClass = findClass("QuitHandler");
-      Class<?> aboutHandlerClass = findClass("AboutHandler");
-      Class<?> openFilesHandlerClass = findClass("OpenFilesHandler");
-      Class<?> preferencesHandlerClass = findClass("PreferencesHandler");
-
-      try {
-        // fetch instance of app
-        //Object application = applicationClass.getConstructor((Class[]) null).newInstance((Object[]) null);
-        Object application = applicationClass.getDeclaredMethod("getApplication").invoke(null);
-
-        Object proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(),
-            new Class<?>[] { quitHandlerClass, aboutHandlerClass, openFilesHandlerClass, preferencesHandlerClass },
-            this);
-
-        if (quitHandlerClass != null)
-          applicationClass.getDeclaredMethod("setQuitHandler", quitHandlerClass).invoke(application, proxy);
-        if (aboutHandlerClass != null)
-          applicationClass.getDeclaredMethod("setAboutHandler", aboutHandlerClass).invoke(application, proxy);
-        if (openFilesHandlerClass != null)
-          applicationClass.getDeclaredMethod("setOpenFileHandler", openFilesHandlerClass).invoke(application, proxy);
-        if (preferencesHandlerClass != null)
-          applicationClass.getDeclaredMethod("setPreferencesHandler", preferencesHandlerClass).invoke(application,
-              proxy);
-      } catch ( /*InstantiationException |*/ IllegalAccessException | IllegalArgumentException | InvocationTargetException
-          | NoSuchMethodException | SecurityException e) {
-        Logger.error(e);
-      }
-    }
-
-    String[] packageNames = new String[]{"java.awt.desktop","com.apple.eawt"};
-
-    private Class findClass(String className) {
-      // since java9 apple java extensions moved into "java.awt.desktop"
-      for (String packageName : packageNames) {
-        Logger.debug("Looking for apple handler '"+ className +"' ..");
-        String fullClassName = packageName + "." + className;
+    private class AppleHandler implements InvocationHandler {
+      public void register() {
+        // import com.apple.eawt.AboutHandler;
+        // import com.apple.eawt.AppEvent.AboutEvent;
+        // import com.apple.eawt.AppEvent.QuitEvent;
+        // import com.apple.eawt.Application;
+        // import com.apple.eawt.QuitHandler;
+        // import com.apple.eawt.QuitResponse;
+  
+        // com.apple.eawt.Application app =
+        // com.apple.eawt.Application.getApplication();
+        // app.setQuitHandler(new com.apple.eawt.QuitHandler() {
+        // public void handleQuitRequestWith(
+        // com.apple.eawt.AppEvent.QuitEvent e,
+        // com.apple.eawt.QuitResponse resp) {
+        // closeApplication();
+        // // still here?, must have been cancelled
+        // resp.cancelQuit();
+        // }
+        // });
+        // app.setAboutHandler(new com.apple.eawt.AboutHandler() {
+        // public void handleAbout(com.apple.eawt.AppEvent.AboutEvent e) {
+        // AboutDialog.instance(getContext()).setVisible(true);
+        // }
+        // });
+        // app.removePreferencesMenuItem();
+  
+        // using reflection to avoid macos specific classes being required for
+        // compiling on non macos platforms
         try {
-          Logger.debug("Try '"+ fullClassName +"' ..");
-          return Class.forName(fullClassName);
-        } catch (ClassNotFoundException e) {
-          Logger.debug("class not avail '"+ fullClassName +"'");
-          continue;
+          Class<?> desktopClass = null;
+          Object desktopObject = null;
+
+          // try new java9+ way
+          desktopClass = findClass("Desktop", new String[] { "java.awt" });
+          if (desktopClass != null) {
+            desktopObject = desktopClass.getMethod("getDesktop").invoke(null);
+          }
+          // try old java8- apple java extensions way
+          desktopClass = findClass("Application", new String[] { "com.apple.eawt" });
+          if (desktopClass != null) {
+            desktopObject = desktopClass.getDeclaredMethod("getApplication").invoke(null);
+          }
+  
+          // give up now
+          if (desktopClass == null) {
+            Logger.error("Couldn't find apple desktop class. Skip registering desktop handlers.");
+            return;
+          }
+  
+          Class<?> quitHandlerClass = findClass("QuitHandler");
+          Class<?> aboutHandlerClass = findClass("AboutHandler");
+          Class<?> openFilesHandlerClass = findClass("OpenFilesHandler");
+          Class<?> preferencesHandlerClass = findClass("PreferencesHandler");
+  
+          // fetch instance of app
+          // Object application = applicationClass.getConstructor((Class[])
+          // null).newInstance((Object[]) null);
+          // Object application =
+          // applicationClass.getDeclaredMethod("getApplication").invoke(null);
+  
+          Object proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(),
+              new Class<?>[] { quitHandlerClass, aboutHandlerClass, openFilesHandlerClass, preferencesHandlerClass },
+              this);
+  
+          if (quitHandlerClass != null)
+            desktopClass.getDeclaredMethod("setQuitHandler", quitHandlerClass).invoke(desktopObject, proxy);
+          if (aboutHandlerClass != null)
+            desktopClass.getDeclaredMethod("setAboutHandler", aboutHandlerClass).invoke(desktopObject, proxy);
+          if (openFilesHandlerClass != null)
+            desktopClass.getDeclaredMethod("setOpenFileHandler", openFilesHandlerClass).invoke(desktopObject, proxy);
+          if (preferencesHandlerClass != null)
+            desktopClass.getDeclaredMethod("setPreferencesHandler", preferencesHandlerClass).invoke(desktopObject, proxy);
+        } catch ( /* InstantiationException | */ IllegalAccessException | IllegalArgumentException
+            | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+          Logger.error(e);
         }
       }
-      return null;
-    }
-    
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-      if ("openFiles".equals(method.getName())) {
-        // TODO: implement
-//        if (args[0] != null) {
-//          Object files = args[0].getClass().getMethod("getFiles").invoke(args[0]);
-//          if (files instanceof List) {
-//            OpenAction openAction = new OpenAction(kseFrame);
-//            for (File file : (List<File>) files) {
-//              openAction.openKeyStore(file);
-//            }
-//          }
-//        }
-      } else if ("handleQuitRequestWith".equals(method.getName())) {
-        closeApplication();
-        // If we have returned from the above call the user has cancelled
-        if (args[1] != null) {
-          args[1].getClass().getDeclaredMethod("cancelQuit").invoke(args[1]);
+  
+      String[] packageNames = new String[] { "java.awt.desktop", "com.apple.eawt" };
+  
+      private Class findClass(String className) {
+        return findClass(className, packageNames);
+      }
+  
+      private Class findClass(String className, String[] packageNameList) {
+        // since java9 apple java extensions moved into package "java.awt.desktop"
+        for (String packageName : packageNames) {
+          Logger.debug("Looking for apple handler '" + className + "' ..");
+          String fullClassName = packageName + "." + className;
+          try {
+            Logger.debug("Try '" + fullClassName + "' ..");
+            return Class.forName(fullClassName);
+          } catch (ClassNotFoundException e) {
+            Logger.debug("class not avail '" + fullClassName + "'");
+            continue;
+          }
         }
-      } else if ("handleAbout".equals(method.getName())) {
+        return null;
+      }
+  
+      @Override
+      public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        if ("openFiles".equals(method.getName())) {
+          // TODO: implement
+          // if (args[0] != null) {
+          // Object files =
+          // args[0].getClass().getMethod("getFiles").invoke(args[0]);
+          // if (files instanceof List) {
+          // OpenAction openAction = new OpenAction(kseFrame);
+          // for (File file : (List<File>) files) {
+          // openAction.openKeyStore(file);
+          // }
+          // }
+          // }
+        } else if ("handleQuitRequestWith".equals(method.getName())) {
+          closeApplication();
+          // If we have returned from the above call the user has cancelled
+          if (args[1] != null) {
+            args[1].getClass().getDeclaredMethod("cancelQuit").invoke(args[1]);
+          }
+        } else if ("handleAbout".equals(method.getName())) {
           AboutDialog.instance(getContext()).setVisible(true);
-      } else if ("handlePreferences".equals(method.getName())) {
+        } else if ("handlePreferences".equals(method.getName())) {
           OptionsPlugIn.execute();
+        }
+        return null;
       }
-      return null;
+  
     }
-    
-  }
 
     // run a plugin internally, used for the statusbar
     private boolean executePlugin(PlugIn plugin) {
