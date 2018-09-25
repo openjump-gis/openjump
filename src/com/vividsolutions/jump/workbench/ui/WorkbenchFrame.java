@@ -2363,10 +2363,12 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
           if (desktopClass != null) {
             desktopObject = desktopClass.getMethod("getDesktop").invoke(null);
           }
-          // try old java8- apple java extensions way
-          desktopClass = findClass("Application", new String[] { "com.apple.eawt" });
-          if (desktopClass != null) {
-            desktopObject = desktopClass.getDeclaredMethod("getApplication").invoke(null);
+          // still null? try old java8- apple java extensions way
+          if (desktopClass == null) {
+            desktopClass = findClass("Application", new String[] { "com.apple.eawt" });
+            if (desktopClass != null) {
+              desktopObject = desktopClass.getDeclaredMethod("getApplication").invoke(null);
+            }
           }
   
           // give up now
