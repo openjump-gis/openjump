@@ -105,7 +105,9 @@ public class MariadbValueConverterFactory extends SpatialDatabasesValueConverter
         | geometryAsBytes[2]
         | geometryAsBytes[3]
         | geometryAsBytes[4];
-    byte[] ctrl = javax.xml.bind.DatatypeConverter.parseHexBinary("6A080000");
+    //byte[] ctrl = javax.xml.bind.DatatypeConverter.parseHexBinary("6A080000");
+    //byte[] ctrl = org.apache.commons.codec.binary.Hex.decodeHex("6A080000")
+    //byte[] ctrl = new byte[] { 106, 8, 0, 0 };
     byte[] firstFour = new byte[4];
     System.arraycopy(geometryAsBytes, 0, firstFour, 0, firstFour.length);
     boolean nativeFormat = false;
