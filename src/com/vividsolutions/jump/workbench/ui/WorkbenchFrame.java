@@ -52,6 +52,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationHandler;
@@ -2327,66 +2328,36 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 
     private class AppleHandler implements InvocationHandler {
       public void register() {
-        // import com.apple.eawt.AboutHandler;
-        // import com.apple.eawt.AppEvent.AboutEvent;
-        // import com.apple.eawt.AppEvent.QuitEvent;
-        // import com.apple.eawt.Application;
-        // import com.apple.eawt.QuitHandler;
-        // import com.apple.eawt.QuitResponse;
-  
-        // com.apple.eawt.Application app =
-        // com.apple.eawt.Application.getApplication();
-        // app.setQuitHandler(new com.apple.eawt.QuitHandler() {
-        // public void handleQuitRequestWith(
-        // com.apple.eawt.AppEvent.QuitEvent e,
-        // com.apple.eawt.QuitResponse resp) {
-        // closeApplication();
-        // // still here?, must have been cancelled
-        // resp.cancelQuit();
-        // }
-        // });
-        // app.setAboutHandler(new com.apple.eawt.AboutHandler() {
-        // public void handleAbout(com.apple.eawt.AppEvent.AboutEvent e) {
-        // AboutDialog.instance(getContext()).setVisible(true);
-        // }
-        // });
-        // app.removePreferencesMenuItem();
-  
         // using reflection to avoid macos specific classes being required for
-        // compiling on non macos platforms
+        // compiling on non macos platforms or compiling on java8
         try {
           Class<?> desktopClass = null;
           Object desktopObject = null;
 
-          // try new java9+ way
-          desktopClass = findClass("Desktop", new String[] { "java.awt" });
-          if (desktopClass != null) {
-            desktopObject = desktopClass.getMethod("getDesktop").invoke(null);
-          }
-          // still null? try old java8- apple java extensions way
-          if (desktopClass == null) {
-            desktopClass = findClass("Application", new String[] { "com.apple.eawt" });
-            if (desktopClass != null) {
-              desktopObject = desktopClass.getDeclaredMethod("getApplication").invoke(null);
-            }
-          }
-  
-          // give up now
-          if (desktopClass == null) {
-            Logger.error("Couldn't find apple desktop class. Skip registering desktop handlers.");
-            return;
-          }
-  
           Class<?> quitHandlerClass = findClass("QuitHandler");
           Class<?> aboutHandlerClass = findClass("AboutHandler");
           Class<?> openFilesHandlerClass = findClass("OpenFilesHandler");
           Class<?> preferencesHandlerClass = findClass("PreferencesHandler");
+
+          // quithandler package suggests old java8- apple java extensions
+          if (quitHandlerClass != null && quitHandlerClass.getPackage().getName().equals("com.apple.eawt")) {
+            desktopClass = findClass("Application", new String[] { "com.apple.eawt" });
+            if (desktopClass != null)
+              desktopObject = desktopClass.getDeclaredMethod("getApplication").invoke(null);
+          }
+
+          // fallback, the new java9+ way
+          if (desktopClass == null) {
+            desktopClass = findClass("Desktop", new String[] { "java.awt" });
+            if (desktopClass != null)
+              desktopObject = desktopClass.getMethod("getDesktop").invoke(null);
+          }
   
-          // fetch instance of app
-          // Object application = applicationClass.getConstructor((Class[])
-          // null).newInstance((Object[]) null);
-          // Object application =
-          // applicationClass.getDeclaredMethod("getApplication").invoke(null);
+          // give up now
+          if (desktopClass == null) {
+            Logger.error("Couldn't find desktop class. Skip registering desktop handlers.");
+            return;
+          }
   
           Object proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(),
               new Class<?>[] { quitHandlerClass, aboutHandlerClass, openFilesHandlerClass, preferencesHandlerClass },
@@ -2400,7 +2371,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
             desktopClass.getDeclaredMethod("setOpenFileHandler", openFilesHandlerClass).invoke(desktopObject, proxy);
           if (preferencesHandlerClass != null)
             desktopClass.getDeclaredMethod("setPreferencesHandler", preferencesHandlerClass).invoke(desktopObject, proxy);
-        } catch ( /* InstantiationException | */ IllegalAccessException | IllegalArgumentException
+        } catch ( IllegalAccessException | IllegalArgumentException
             | InvocationTargetException | NoSuchMethodException | SecurityException e) {
           Logger.error(e);
         }
@@ -2434,16 +2405,14 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
       public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if ("openFiles".equals(method.getName())) {
           // TODO: implement
-          // if (args[0] != null) {
-          // Object files =
-          // args[0].getClass().getMethod("getFiles").invoke(args[0]);
-          // if (files instanceof List) {
-          // OpenAction openAction = new OpenAction(kseFrame);
-          // for (File file : (List<File>) files) {
-          // openAction.openKeyStore(file);
-          // }
-          // }
-          // }
+          if (args[0] != null) {
+            Object files = args[0].getClass().getMethod("getFiles").invoke(args[0]);
+            if (files instanceof List) {
+              for (File file : (List<File>) files) {
+                Logger.error("Opening file '" + file.getAbsolutePath() + "' currently not implemented");
+              }
+            }
+          }
         } else if ("handleQuitRequestWith".equals(method.getName())) {
           closeApplication();
           // If we have returned from the above call the user has cancelled
