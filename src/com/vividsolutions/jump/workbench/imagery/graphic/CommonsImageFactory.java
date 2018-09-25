@@ -32,6 +32,7 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
  * www.vividsolutions.com
  */
 import org.apache.commons.imaging.ImageFormat;
+import org.apache.commons.imaging.ImageFormats;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
@@ -53,7 +54,7 @@ public class CommonsImageFactory extends AbstractGraphicImageFactory {
       if (c == null)
         return false;
 
-      for (ImageFormat fmt : ImageFormat.getAllFormats()) {
+      for (ImageFormat fmt : ImageFormats.values()) {
         // skip mysterious unknown entry
         if (fmt.getName().equalsIgnoreCase("unknown"))
           continue;
