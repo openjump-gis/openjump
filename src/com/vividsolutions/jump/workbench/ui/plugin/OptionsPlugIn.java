@@ -36,7 +36,11 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 
+import org.openjump.core.ui.DatasetOptionsPanel;
+import org.openjump.core.ui.SelectionStyllingOptionsPanel;
+
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditOptionsPanel;
@@ -45,16 +49,14 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
 import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 import com.vividsolutions.jump.workbench.ui.OptionsPanelV2;
 import com.vividsolutions.jump.workbench.ui.SnapVerticesToolsOptionsPanel;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.network.ProxySettingsOptionsPanel;
 import com.vividsolutions.jump.workbench.ui.snap.GridRenderer;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-
-import org.openjump.core.ui.DatasetOptionsPanel;
-import org.openjump.core.ui.SelectionStyllingOptionsPanel;
 
 public class OptionsPlugIn extends AbstractPlugIn {
   
   public final static ImageIcon ICON = IconLoader.icon("fugue/wrench-screwdriver.png");
+  private static OptionsPlugIn instance = null;
 
   public boolean execute(PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
@@ -72,11 +74,15 @@ public class OptionsPlugIn extends AbstractPlugIn {
     return dialog(context).wasOKPressed();
   }
 
-  private OptionsDialog dialog(PlugInContext context) {
+  private static OptionsDialog dialog(PlugInContext context) {
     return OptionsDialog.instance(context.getWorkbenchContext().getWorkbench());
   }
 
   public void initialize(PlugInContext context) throws Exception {
+    // don't double initialize
+    if (instance != null)
+      return;
+
     dialog(context).addTab(
         I18N.get("ui.plugin.OptionsPlugIn.view-edit"),
         GUIUtil.resize(IconLoader.icon("edit.gif"), 16),
@@ -96,8 +102,26 @@ public class OptionsPlugIn extends AbstractPlugIn {
     // add proxy panel
     OptionsPanelV2 proxypanel = ProxySettingsOptionsPanel.getInstance();
     dialog(context).addTab(proxypanel);
+    
+    instance = this;
   }
 
+  // static execute method for usage in apple handler
+  public static boolean execute(){
+    if (instance!=null)
+      return false;
+    
+    OptionsPlugIn p = new OptionsPlugIn();
+    try {
+      PlugInContext pc = JUMPWorkbench.getInstance().getContext().createPlugInContext();
+      p.initialize(pc);
+      return p.execute(pc);
+    } catch (Exception e) {
+      JUMPWorkbench.getInstance().getFrame().handleThrowable(e);
+    }
+    
+    return false;
+  }
 
   public Icon getIcon(int height) {
     // just one resolution for now 

@@ -142,6 +142,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn.ViewAttributesFrame;
@@ -2365,18 +2366,24 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
       Class<?> preferencesHandlerClass = findClass("PreferencesHandler");
 
       try {
-        // create instance of app
-        Object application = applicationClass.getConstructor((Class[]) null).newInstance((Object[]) null);
-        
+        // fetch instance of app
+        //Object application = applicationClass.getConstructor((Class[]) null).newInstance((Object[]) null);
+        Object application = applicationClass.getDeclaredMethod("getApplication").invoke(null);
+
         Object proxy = Proxy.newProxyInstance(this.getClass().getClassLoader(),
             new Class<?>[] { quitHandlerClass, aboutHandlerClass, openFilesHandlerClass, preferencesHandlerClass },
             this);
 
-        applicationClass.getDeclaredMethod("setQuitHandler", quitHandlerClass).invoke(application, proxy);
-        applicationClass.getDeclaredMethod("setAboutHandler", aboutHandlerClass).invoke(application, proxy);
-        applicationClass.getDeclaredMethod("setOpenFileHandler", openFilesHandlerClass).invoke(application, proxy);
-        applicationClass.getDeclaredMethod("setPreferencesHandler", preferencesHandlerClass).invoke(application, proxy);
-      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+        if (quitHandlerClass != null)
+          applicationClass.getDeclaredMethod("setQuitHandler", quitHandlerClass).invoke(application, proxy);
+        if (aboutHandlerClass != null)
+          applicationClass.getDeclaredMethod("setAboutHandler", aboutHandlerClass).invoke(application, proxy);
+        if (openFilesHandlerClass != null)
+          applicationClass.getDeclaredMethod("setOpenFileHandler", openFilesHandlerClass).invoke(application, proxy);
+        if (preferencesHandlerClass != null)
+          applicationClass.getDeclaredMethod("setPreferencesHandler", preferencesHandlerClass).invoke(application,
+              proxy);
+      } catch ( /*InstantiationException |*/ IllegalAccessException | IllegalArgumentException | InvocationTargetException
           | NoSuchMethodException | SecurityException e) {
         Logger.error(e);
       }
@@ -2403,6 +2410,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
       if ("openFiles".equals(method.getName())) {
+        // TODO: implement
 //        if (args[0] != null) {
 //          Object files = args[0].getClass().getMethod("getFiles").invoke(args[0]);
 //          if (files instanceof List) {
@@ -2421,8 +2429,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
       } else if ("handleAbout".equals(method.getName())) {
           AboutDialog.instance(getContext()).setVisible(true);
       } else if ("handlePreferences".equals(method.getName())) {
-//        PreferencesAction preferencesAction = new PreferencesAction(kseFrame);
-//        preferencesAction.showPreferences();
+          OptionsPlugIn.execute();
       }
       return null;
     }
