@@ -2404,28 +2404,30 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         }
       }
   
-      String[] packageNames = new String[] { "java.awt.desktop", "com.apple.eawt" };
+      String[] defaultPackageNames = new String[] { "java.awt.desktop", "com.apple.eawt" };
   
       private Class findClass(String className) {
-        return findClass(className, packageNames);
+        return findClass(className, null);
       }
   
       private Class findClass(String className, String[] packageNameList) {
+        if (packageNameList == null || packageNameList.length < 1)
+          packageNameList = defaultPackageNames;
         // since java9 apple java extensions moved into package "java.awt.desktop"
-        for (String packageName : packageNames) {
-          Logger.debug("Looking for apple handler '" + className + "' ..");
+        for (String packageName : packageNameList) {
+          Logger.debug("Looking for class '" + className + "' ..");
           String fullClassName = packageName + "." + className;
           try {
             Logger.debug("Try '" + fullClassName + "' ..");
             return Class.forName(fullClassName);
           } catch (ClassNotFoundException e) {
-            Logger.debug("class not avail '" + fullClassName + "'");
+            Logger.debug("Class not avail '" + fullClassName + "'");
             continue;
           }
         }
         return null;
       }
-  
+
       @Override
       public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if ("openFiles".equals(method.getName())) {
