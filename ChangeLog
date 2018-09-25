@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-09-25 ede
+  * reenable macOS menu integration for java9+, added Preferences item
+
 2018-08-28 Giuseppe Aruta
   * Added OpenKLEM extension for topographic and Hydrological analysis
 
