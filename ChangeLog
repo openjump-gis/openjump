@@ -5,8 +5,9 @@
 
 2018-09-25 ede
   * reenable macOS menu integration for java9+, added Preferences item
-  * update apache commons codec, compress, io, lang3 to latest
+  * upgrade apache commons codec, compress, io, lang3 to latest
   * comment unused javax.xml.bind package call, added commented alternatives
+  * upgrade xz to latest
 
 2018-08-28 Giuseppe Aruta
   * Added OpenKLEM extension for topographic and Hydrological analysis
