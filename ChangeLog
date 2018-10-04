@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-10-04 Giuseppe Aruta.
+  * Updated OpenKLEM to ver. 20181004:
+    a) Homologated HillShade to ESRI standard
+    b) Histogram. Correct bug.
+
 2018-09-25 ede
   * reenable macOS menu integration for java9+, added Preferences item
   * upgrade apache commons codec, compress, io, lang3 to latest
