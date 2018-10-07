@@ -246,8 +246,106 @@ public abstract class LayerableUtil {
      */
 
     public static boolean isEmpty(Layer layer) {
-        FeatureCollectionWrapper fcw = layer.getFeatureCollectionWrapper();
+        final FeatureCollectionWrapper fcw = layer
+                .getFeatureCollectionWrapper();
         if (fcw.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * check if selected layer has only polygons and/or multipolygons
+     * 
+     * @param layer
+     * @return boolean - true if the vector layer has only polygon/multipolygon
+     *         geometries
+     */
+    public static boolean isPolygonalLayer(Layer layer) {
+        final FeatureCollectionWrapper featureCollection = layer
+                .getFeatureCollectionWrapper();
+        final List<Feature> featureList = featureCollection.getFeatures();
+        BitSet layerBit = new BitSet();
+        BitSet currFeatureBit = new BitSet();
+        if (featureList.size() > 0) {
+            final Geometry firstGeo = featureList.iterator().next()
+                    .getGeometry();
+            layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
+                                                            // type
+        }
+
+        for (final Feature feature : featureList) {
+            final Geometry geo = feature.getGeometry();
+            currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
+        }
+        if (layerBit.get(GeoUtils.polyBit)
+                && currFeatureBit.get(GeoUtils.polyBit)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if selected layer has only points and/or multipoints
+     * 
+     * @param layer
+     * @return boolean - true if the vector layer has only point/multipoint
+     *         geometries
+     */
+    public static boolean isPointLayer(Layer layer) {
+        final FeatureCollectionWrapper featureCollection = layer
+                .getFeatureCollectionWrapper();
+        final List<Feature> featureList = featureCollection.getFeatures();
+        BitSet layerBit = new BitSet();
+        BitSet currFeatureBit = new BitSet();
+        if (featureList.size() > 0) {
+            final Geometry firstGeo = featureList.iterator().next()
+                    .getGeometry();
+            layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
+                                                            // type
+        }
+
+        for (final Feature feature : featureList) {
+            final Geometry geo = feature.getGeometry();
+            currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
+        }
+        if (layerBit.get(GeoUtils.pointBit)
+                && currFeatureBit.get(GeoUtils.pointBit)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if selected layer has only linestring and/or multilinestring and/or
+     * multilinearings
+     * 
+     * @param layer
+     * @return boolean - true if the vector layer has only
+     *         LineString/MultiLineString geometries
+     */
+    public static boolean isLinealLayer(Layer layer) {
+        final FeatureCollectionWrapper featureCollection = layer
+                .getFeatureCollectionWrapper();
+        final List<Feature> featureList = featureCollection.getFeatures();
+        BitSet layerBit = new BitSet();
+        BitSet currFeatureBit = new BitSet();
+        if (featureList.size() > 0) {
+            final Geometry firstGeo = featureList.iterator().next()
+                    .getGeometry();
+            layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
+                                                            // type
+        }
+
+        for (final Feature feature : featureList) {
+            final Geometry geo = feature.getGeometry();
+            currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
+        }
+        if (layerBit.get(GeoUtils.lineBit)
+                && currFeatureBit.get(GeoUtils.lineBit)) {
             return true;
         } else {
             return false;
@@ -265,19 +363,19 @@ public abstract class LayerableUtil {
      */
 
     public static boolean isMixedGeometryType(Layer layer) {
-        FeatureCollectionWrapper featureCollection = layer
+        final FeatureCollectionWrapper featureCollection = layer
                 .getFeatureCollectionWrapper();
-        List<Feature> featureList = featureCollection.getFeatures();
+        final List<Feature> featureList = featureCollection.getFeatures();
         BitSet layerBit = new BitSet();
         BitSet currFeatureBit = new BitSet();
         if (featureList.size() > 0) {
-            Geometry firstGeo = featureList.iterator().next().getGeometry();
+            final Geometry firstGeo = featureList.iterator().next()
+                    .getGeometry();
             layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
                                                             // type
         }
-        for (Iterator<Feature> i = featureList.iterator(); i.hasNext();) {
-            Feature feature = i.next();
-            Geometry geo = feature.getGeometry();
+        for (Feature feature : featureList) {
+            final Geometry geo = feature.getGeometry();
             currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
         }
         if ((layerBit.get(GeoUtils.pointBit) && currFeatureBit
@@ -295,17 +393,17 @@ public abstract class LayerableUtil {
     public static boolean isMixedGeometryType(
             FeatureCollection featureCollection) {
 
-        List<Feature> featureList = featureCollection.getFeatures();
+        final List<Feature> featureList = featureCollection.getFeatures();
         BitSet layerBit = new BitSet();
         BitSet currFeatureBit = new BitSet();
         if (featureList.size() > 0) {
-            Geometry firstGeo = featureList.iterator().next().getGeometry();
+            final Geometry firstGeo = featureList.iterator().next()
+                    .getGeometry();
             layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
                                                             // type
         }
-        for (Iterator<Feature> i = featureList.iterator(); i.hasNext();) {
-            Feature feature = i.next();
-            Geometry geo = feature.getGeometry();
+        for (Feature feature : featureList) {
+            final Geometry geo = feature.getGeometry();
             currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
         }
         if ((layerBit.get(GeoUtils.pointBit) && currFeatureBit
@@ -322,32 +420,35 @@ public abstract class LayerableUtil {
 
     public static String getGeometryType(Layer layer) {
         String geoClass = "";
-        FeatureCollectionWrapper fcw = layer.getFeatureCollectionWrapper();
-        int numFeatures = fcw.size();
+        final FeatureCollectionWrapper fcw = layer
+                .getFeatureCollectionWrapper();
+        final int numFeatures = fcw.size();
         Geometry geo = null;
         boolean multipleGeoTypes = false;
-        for (@SuppressWarnings("unchecked")
-        Iterator<Feature> i = fcw.getFeatures().iterator(); i.hasNext();) {
-            geo = i.next().getGeometry();
+        for (final Feature feature : fcw.getFeatures()) {
+            geo = feature.getGeometry();
             if (geo != null) {
-                if (geoClass.equals(""))
+                if (geoClass.equals("")) {
                     geoClass = geo.getClass().getName();
-                else if (!geo.getClass().getName().equals(geoClass))
+                } else if (!geo.getClass().getName().equals(geoClass)) {
                     multipleGeoTypes = true;
+                }
             }
         }
-        if (geoClass.equals(""))
+        if (geoClass.equals("")) {
             geoClass = NULL_GEOMETRIES;
+        }
 
-        if (numFeatures == 0)
+        if (numFeatures == 0) {
             geoClass = NO_FEATURES;
-        else {
+        } else {
             if (multipleGeoTypes) {
                 geoClass = MULTIPLE_GEOMETRY_TYPES;
             } else {
-                int dotPos = geoClass.lastIndexOf(".");
-                if (dotPos > 0)
+                final int dotPos = geoClass.lastIndexOf(".");
+                if (dotPos > 0) {
                     geoClass = geoClass.substring(dotPos + 1);
+                }
             }
         }
 
@@ -358,7 +459,7 @@ public abstract class LayerableUtil {
      * @return the File path of a Layer.class eg. C/File/vectorname.shp
      */
     public static String getFilePath(Layer layer) {
-        DataSourceQuery dsq = layer.getDataSourceQuery();
+        final DataSourceQuery dsq = layer.getDataSourceQuery();
         String fileName = null;
         if (dsq != null
                 || !layer.getName().contains(
@@ -385,17 +486,21 @@ public abstract class LayerableUtil {
     public static String getLayerSourceClass(Layer layer) {
 
         String sourceClass = "";
-        DataSourceQuery dsq = layer.getDataSourceQuery();
+        final DataSourceQuery dsq = layer.getDataSourceQuery();
         if (dsq != null) {
-            String dsqSourceClass = dsq.getDataSource().getClass().getName();
-            if (sourceClass.equals(""))
+            final String dsqSourceClass = dsq.getDataSource().getClass()
+                    .getName();
+            if (sourceClass.equals("")) {
                 sourceClass = dsqSourceClass;
+            }
             int dotPos = sourceClass.lastIndexOf(".");
-            if (dotPos > 0)
+            if (dotPos > 0) {
                 sourceClass = sourceClass.substring(dotPos + 1);
+            }
             dotPos = sourceClass.lastIndexOf("$");
-            if (dotPos > 0)
+            if (dotPos > 0) {
                 sourceClass = sourceClass.substring(dotPos + 1);
+            }
         } else {
             sourceClass = "In memory";
         }
@@ -414,10 +519,11 @@ public abstract class LayerableUtil {
      * @return the type of the file as string
      */
     public static String getFileType(File file) {
-        TypeFile extension = TypeFile.valueOf(FileUtil.getExtension(file));
-        if (!extension.equals(TypeFile.values()))
+        final TypeFile extension = TypeFile
+                .valueOf(FileUtil.getExtension(file));
+        if (!extension.equals(TypeFile.values())) {
             filetype = FileUtil.getExtension(file).toUpperCase();
-        else {
+        } else {
             switch (extension) {
             case ASC: {
                 filetype = "ASC - ESRI ASCII grid";
@@ -513,8 +619,8 @@ public abstract class LayerableUtil {
      */
     public static String getExtension(File file) {
         String ext = null;
-        String s = file.getName();
-        int i = s.lastIndexOf('.');
+        final String s = file.getName();
+        final int i = s.lastIndexOf('.');
         if (i > 0 && i < s.length() - 1) {
             ext = s.substring(i + 1).toUpperCase();
         }
@@ -531,10 +637,10 @@ public abstract class LayerableUtil {
 
     public static String getVectorImageFileDescription(Layer layer) {
         String name = null;
-        DataSourceQuery dsq = layer.getDataSourceQuery();
-        Object fnameObj = dsq.getDataSource().getProperties().get("File");
-        String sourcePath = fnameObj.toString();
-        File file = new File(sourcePath);
+        final DataSourceQuery dsq = layer.getDataSourceQuery();
+        final Object fnameObj = dsq.getDataSource().getProperties().get("File");
+        final String sourcePath = fnameObj.toString();
+        final File file = new File(sourcePath);
         name = getFileType(file);
         return name;
 
@@ -549,7 +655,7 @@ public abstract class LayerableUtil {
      */
     public static String getRasterFileDescription(RasterImageLayer layer) {
         String name = null;
-        File file = new File(layer.getImageFileName());
+        final File file = new File(layer.getImageFileName());
         name = getFileType(file);
         return name;
     }
@@ -565,31 +671,32 @@ public abstract class LayerableUtil {
     // primitives collections (Point, Linestring and Polygon)
     public static void ExportVector(PlugInContext context, Layer layer,
             String path) {
-        FeatureCollection features = layer.getFeatureCollectionWrapper();
+        final FeatureCollection features = layer.getFeatureCollectionWrapper();
         String vector_name = context.getLayerManager().uniqueLayerName(
                 FileUtil.getFileNameFromLayerName(layer.getName()));
         // remove extension if any (ex. for layer image.png, will remove png
-        int dotPos = vector_name.indexOf(".");
-        if (dotPos > 0)
+        final int dotPos = vector_name.indexOf(".");
+        if (dotPos > 0) {
             vector_name = vector_name.substring(0, dotPos);
+        }
         File vfileName;
         if (isMixedGeometryType(layer)) {
             vfileName = FileUtil.addExtensionIfNone(new File(vector_name),
                     "jml");
-            String vpath = new File(path, vfileName.getName())
+            final String vpath = new File(path, vfileName.getName())
                     .getAbsolutePath();
             try {
                 IOTools.saveJMLFile(features, vpath);
-            } catch (Exception te) {
+            } catch (final Exception te) {
             }
         } else {
             vfileName = FileUtil.addExtensionIfNone(new File(vector_name),
                     "shp");
-            String vpath = new File(path, vfileName.getName())
+            final String vpath = new File(path, vfileName.getName())
                     .getAbsolutePath();
             try {
                 IOTools.saveShapefile(features, vpath);
-            } catch (Exception te) {
+            } catch (final Exception te) {
             }
         }
     }
@@ -604,14 +711,14 @@ public abstract class LayerableUtil {
 
     public static void ExportSextanteRaster(PlugInContext context,
             RasterImageLayer layer, String path) {
-        Envelope envelope = layer.getWholeImageEnvelope();
-        String outTIF_name = context.getLayerManager().uniqueLayerName(
+        final Envelope envelope = layer.getWholeImageEnvelope();
+        final String outTIF_name = context.getLayerManager().uniqueLayerName(
                 layer.getName() + ".tif");
-        File outTIF_File = new File(path.concat(File.separator).concat(
+        final File outTIF_File = new File(path.concat(File.separator).concat(
                 outTIF_name));
         try {
             RasterImageIOUtils.saveTIF(outTIF_File, layer, envelope);
-        } catch (Exception te) {
+        } catch (final Exception te) {
         }
 
     }
@@ -628,11 +735,11 @@ public abstract class LayerableUtil {
 
     public static void ExportImage(PlugInContext context, Layer layer,
             String path) throws IOException {
-        String filepath = filepath(layer);
-        File inputFile = new File(filepath);
-        String outImage_name = context.getLayerManager().uniqueLayerName(
+        final String filepath = filepath(layer);
+        final File inputFile = new File(filepath);
+        final String outImage_name = context.getLayerManager().uniqueLayerName(
                 layer.getName() + ".tif");
-        File outFile = new File(path.concat(File.separator).concat(
+        final File outFile = new File(path.concat(File.separator).concat(
                 outImage_name));
         FileChannel inputChannel = null;
         FileChannel outputChannel = null;
@@ -644,8 +751,8 @@ public abstract class LayerableUtil {
             inputChannel.close();
             outputChannel.close();
         }
-        WorldFileHandler worldFileHandler = new WorldFileHandler(filepath,
-                false);
+        final WorldFileHandler worldFileHandler = new WorldFileHandler(
+                filepath, false);
         if (worldFileHandler.isWorldFileExistentForImage() != null) {
             copyWorldFile(layer, filepath);
 
@@ -666,35 +773,36 @@ public abstract class LayerableUtil {
 
     public static void ExportVectorStyleToSLD(PlugInContext context,
             Layer layer, String path) throws Exception {
-        double internalScale = 1d / context.getLayerViewPanel().getViewport()
-                .getScale();
-        double realScale = ScreenScale.getHorizontalMapScale(context
+        final double internalScale = 1d / context.getLayerViewPanel()
+                .getViewport().getScale();
+        final double realScale = ScreenScale.getHorizontalMapScale(context
                 .getLayerViewPanel().getViewport());
-        double scaleFactor = internalScale / realScale;
-        String outSLD = context.getLayerManager().uniqueLayerName(
+        final double scaleFactor = internalScale / realScale;
+        final String outSLD = context.getLayerManager().uniqueLayerName(
                 layer.getName() + ".sld");
 
-        File sld_outFile = new File(path.concat(File.separator).concat(outSLD));
-        File inputXML = File.createTempFile("temptask", ".xml");
+        final File sld_outFile = new File(path.concat(File.separator).concat(
+                outSLD));
+        final File inputXML = File.createTempFile("temptask", ".xml");
         inputXML.deleteOnExit();
-        String name = layer.getName();
+        final String name = layer.getName();
         // TODO don't assume has 1 item!!!
         // Should create this condition in EnableCheckFactory
         if (layer.getFeatureCollectionWrapper().getFeatures().size() == 0) {
             throw new Exception(
                     I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
         }
-        BasicFeature bf = (BasicFeature) layer.getFeatureCollectionWrapper()
-                .getFeatures().get(0);
-        Geometry geo = bf.getGeometry();
-        String geoType = geo.getGeometryType();
-        Java2XML java2Xml = new Java2XML();
+        final BasicFeature bf = (BasicFeature) layer
+                .getFeatureCollectionWrapper().getFeatures().get(0);
+        final Geometry geo = bf.getGeometry();
+        final String geoType = geo.getGeometryType();
+        final Java2XML java2Xml = new Java2XML();
         java2Xml.write(layer, "layer", inputXML);
-        FileInputStream input = new FileInputStream(inputXML);
+        final FileInputStream input = new FileInputStream(inputXML);
         // FileWriter fw = new FileWriter( outputXML );
-        OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(
-                sld_outFile), "UTF-8");
-        HashMap<String, String> map = new HashMap<String, String>(9);
+        final OutputStreamWriter fw = new OutputStreamWriter(
+                new FileOutputStream(sld_outFile), "UTF-8");
+        final HashMap<String, String> map = new HashMap<String, String>(9);
         map.put("wmsLayerName", name);
         map.put("featureTypeStyle", name);
         map.put("styleName", name);
@@ -735,12 +843,13 @@ public abstract class LayerableUtil {
      */
     public static void ExportRasterStyleToSLD(PlugInContext context,
             RasterImageLayer rLayer, String path) {
-        String outSLD = context.getLayerManager().uniqueLayerName(
+        final String outSLD = context.getLayerManager().uniqueLayerName(
                 rLayer.getName() + ".sld");
-        File sld_outFile = new File(path.concat(File.separator).concat(outSLD));
+        final File sld_outFile = new File(path.concat(File.separator).concat(
+                outSLD));
         try {
             SLDHandler.write(rLayer.getSymbology(), null, sld_outFile);
-        } catch (Exception te) {
+        } catch (final Exception te) {
         }
 
     }
@@ -795,9 +904,9 @@ public abstract class LayerableUtil {
             throws IOException {
         // String path=
         // jTextField_Output.getText().concat(File.separator).concat("raster");
-        String wfilepath = worldFilepath(layer);
-        File inputFile = new File(wfilepath);
-        File outFile = new File(path.concat(File.separator).concat(
+        final String wfilepath = worldFilepath(layer);
+        final File inputFile = new File(wfilepath);
+        final File outFile = new File(path.concat(File.separator).concat(
                 inputFile.getName()));
         FileChannel inputChannel = null;
         FileChannel outputChannel = null;
@@ -820,15 +929,15 @@ public abstract class LayerableUtil {
      */
     public static String filepath(Layer layer) {
         String sourcePathImage = null;
-        FeatureCollection featureCollection = layer
+        final FeatureCollection featureCollection = layer
                 .getFeatureCollectionWrapper();
         String filePath1 = null;
-        for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
-            Feature feature = (Feature) i.next();
+        for (final Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
+            final Feature feature = (Feature) i.next();
             sourcePathImage = feature.getString(ImageryLayerDataset.ATTR_URI);
             sourcePathImage = sourcePathImage.substring(5);
-            File f = new File(sourcePathImage);
-            String filePath = f.getAbsolutePath();
+            final File f = new File(sourcePathImage);
+            final String filePath = f.getAbsolutePath();
             filePath1 = filePath.replace("%20", " ");
         }
         return filePath1;
@@ -843,19 +952,19 @@ public abstract class LayerableUtil {
      */
     public static String worldFilepath(Layer layer) {
         String sourcePathImage = null;
-        FeatureCollection featureCollection = layer
+        final FeatureCollection featureCollection = layer
                 .getFeatureCollectionWrapper();
         String worldPath = null;
-        for (Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
-            Feature feature = (Feature) i.next();
+        for (final Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
+            final Feature feature = (Feature) i.next();
             sourcePathImage = feature.getString(ImageryLayerDataset.ATTR_URI);
             sourcePathImage = sourcePathImage.substring(5);
-            File f = new File(sourcePathImage);
-            String filePath = f.getAbsolutePath();
-            String filePath1 = filePath.replace("%20", " ");
-            String worldFileName = filePath1.substring(0,
+            final File f = new File(sourcePathImage);
+            final String filePath = f.getAbsolutePath();
+            final String filePath1 = filePath.replace("%20", " ");
+            final String worldFileName = filePath1.substring(0,
                     filePath1.lastIndexOf("."));
-            String imageExtension = filePath1.substring(
+            final String imageExtension = filePath1.substring(
                     filePath1.lastIndexOf(".") + 1).toLowerCase();
             worldPath = worldFileName + "." + imageExtension.substring(0, 1)
                     + imageExtension.substring(imageExtension.length() - 1)
