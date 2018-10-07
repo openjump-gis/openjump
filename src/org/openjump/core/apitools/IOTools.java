@@ -28,6 +28,7 @@ import java.util.Vector;
 
 import javax.swing.JTable;
 
+import org.apache.commons.lang.StringUtils;
 import org.geotools.dbffile.DbfFieldDef;
 import org.geotools.dbffile.DbfFile;
 import org.geotools.dbffile.DbfFileWriter;
@@ -298,7 +299,45 @@ public class IOTools {
 
     }
 
+    /**
+     * Export jtable to csv file using commas as separators
+     * 
+     * @param table
+     * @param filename
+     * @throws Exception
+     */
     public static void saveCSV(JTable table, String filename) throws Exception {
+
+        saveCSV(table, filename, ",");
+        /*
+         * try { final File file = new File(filename); final BufferedWriter bw =
+         * new BufferedWriter( new OutputStreamWriter(new FileOutputStream(
+         * file.getAbsoluteFile()), "UTF-8"));
+         * 
+         * for (int j = 0; j < table.getColumnCount(); j++) {
+         * bw.write(table.getModel().getColumnName(j) + "\t"); } bw.newLine(); ;
+         * for (int i = 0; i < table.getRowCount(); i++) { for (int j = 0; j <
+         * table.getColumnCount(); j++) {
+         * bw.write(table.getModel().getValueAt(i, j) + "\t"); } bw.newLine(); }
+         * bw.close(); } catch (final Exception e) {
+         * 
+         * // }
+         */
+    }
+
+    /**
+     * Export jtable to csv file using a cell separator
+     * 
+     * @param table
+     *            JTable
+     * @param filename
+     *            output file name: C:\folder\file.csv
+     * @param cellseparator
+     *            cell break to separate values: "," ";" tab etc
+     * @throws Exception
+     */
+    public static void saveCSV(JTable table, String filename,
+            String cellseparator) throws Exception {
 
         try {
             final File file = new File(filename);
@@ -307,13 +346,23 @@ public class IOTools {
                             file.getAbsoluteFile()), "UTF-8"));
 
             for (int j = 0; j < table.getColumnCount(); j++) {
-                bw.write(table.getModel().getColumnName(j) + "\t");
+                String columnName = table.getModel().getColumnName(j);
+                final int number = StringUtils.countMatches(columnName, "\"");
+                if (columnName.contains(cellseparator) & number == 2) {
+                    columnName = "\"" + columnName + "\"";
+                }
+                bw.write(columnName + cellseparator);
             }
             bw.newLine();
             ;
             for (int i = 0; i < table.getRowCount(); i++) {
                 for (int j = 0; j < table.getColumnCount(); j++) {
-                    bw.write(table.getModel().getValueAt(i, j) + "\t");
+                    String value = table.getModel().getValueAt(i, j).toString();
+                    final int number = StringUtils.countMatches(value, "\"");
+                    if (value.contains(cellseparator) & number == 2) {
+                        value = "\"" + value + "\"";
+                    }
+                    bw.write(value + cellseparator);
                 }
                 bw.newLine();
             }
