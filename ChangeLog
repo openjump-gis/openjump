@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-10-08
+  * Small fix in Topology extension (Adjust Polygon Boundaries)
+
 2018-10-04 Giuseppe Aruta.
   * Updated OpenKLEM to ver. 20181004:
     a) Homologated HillShade to ESRI standard
