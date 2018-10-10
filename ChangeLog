@@ -7,6 +7,10 @@
   * Small fix in Topology extension (Adjust Polygon Boundaries)
 
 2018-10-04 Giuseppe Aruta.
+  * Updated OpenKLEM to ver. 20181010:
+    Moved Slope, Aspect, Hillshade plugin to Geomorphometry menu
+
+2018-10-04 Giuseppe Aruta.
   * Updated OpenKLEM to ver. 20181004:
     a) Homologated HillShade to ESRI standard
     b) Histogram. Correct bug.
