@@ -6,11 +6,13 @@
 package com.vividsolutions.jump.datastore.oracle;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
 import com.vividsolutions.jump.datastore.spatialdatabases.*;
 import com.vividsolutions.jump.datastore.GeometryColumn;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
 import java.sql.Array;
 import java.sql.ResultSet;
@@ -63,6 +65,9 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
 
         coordDimQuery = "select t.diminfo from ALL_SDO_GEOM_METADATA t "
                 + "where t.owner = '%s' and t.table_name = '%s'";
+
+        datasetInfoQuery = "select t.owner, t.table_name, t.column_name, t.diminfo, t.srid, 'SDO_GEOMETRY' as type from ALL_SDO_GEOM_METADATA t";
+
     }
 
     @Override
@@ -145,4 +150,52 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
         return Integer.parseInt(coordDim.toString());
     }
 
+    /**
+     * overloaded from SpatialDatabasesDS to cope with special oracle columns types
+     * @return
+     */
+    @Override
+    public String[] getDatasetNames() {
+        final List datasetNames = new ArrayList();
+        this.dataStoreLayers = new ArrayList<DataStoreLayer>();
+
+        // Spatial tables only.
+        try {
+            JDBCUtil.execute(
+                    conn.getJdbcConnection(),
+                    this.getDatasetInfoQuery(),
+                    new ResultSetBlock() {
+                        public void yield(ResultSet resultSet) throws SQLException {
+                            while (resultSet.next()) {
+                                String schema = resultSet.getString(1);
+                                String table = resultSet.getString(2);
+                                if (!schema.equalsIgnoreCase(OracleDSMetadata.this.getDefaultSchemaName())) {
+                                    table = schema + "." + table;
+                                }
+                                // checks if dataset already exists
+                                if (! datasetNames.contains(table)) {
+                                    datasetNames.add(table);
+                                }
+                                // datastoreLayers
+                                GeometryColumn geo = new GeometryColumn(
+                                        resultSet.getString(3),
+                                        ((Object[])resultSet.getArray(4).getArray()).length,
+                                        resultSet.getInt(5),
+                                        resultSet.getString(6));
+                                dataStoreLayers.add(new DataStoreLayer(table, geo));
+                            }
+                        }
+                    });
+        } catch (Exception e) {
+            // Nico Ribot: TODO: returns a custom Ex ?
+            if (this.missingGeoException(e)) {
+                // TODO: logger + I18N
+                JUMPWorkbench.getInstance().getFrame().log("not a " + this.getSpatialDbName()
+                        + " db or bad search_path", this.getClass());
+            } else {
+                e.printStackTrace();
+            }
+        }
+        return (String[]) datasetNames.toArray(new String[datasetNames.size()]);
+    }
 }

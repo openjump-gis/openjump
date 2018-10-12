@@ -101,6 +101,20 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    */
   protected String coordDimQuery = null;
 
+  // Nico Ribot, 2018-08-07: adds a new mechanism to load datasets info with geo columns and all OGC info
+  // with one query, instead of launching one query per dataset !
+  /**
+   * The SQL query to get all dataset OGC information
+   */
+  protected String datasetInfoQuery = null;
+
+  /**
+   * The list of dataStoreLayer for this ds metadata. Built when list of dataset names
+   * is requested: avoids to call getGeometryAttributes for each dataset, which takes too much time
+   * on big DB. Instead, all dataStoreLayer are built once and filtered out to get dataset names
+   */
+  protected ArrayList<DataStoreLayer> dataStoreLayers = null;
+
   public SpatialDatabasesDSMetadata() {
   }
 
@@ -118,6 +132,8 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
     this.geoColumnsQuery = "";
     // TODO
     this.sridQuery = "";
+
+    this.dataStoreLayers = new ArrayList<DataStoreLayer>();
   }
 
   public String getDatasetNameQuery() {
@@ -153,6 +169,14 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
   public String getCoordinateDimensionQuery(String schemaName, String tableName, String colName) {
     // TODO
     return String.format(this.coordDimQuery, schemaName, tableName, colName);
+  }
+
+  public String getDatasetInfoQuery() {
+    return this.datasetInfoQuery;
+  }
+
+  public ArrayList<DataStoreLayer> getDataStoreLayers() {
+    return this.dataStoreLayers;
   }
 
   /**
@@ -197,13 +221,52 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
     return (e instanceof SQLException && e.getMessage().contains("geometry_columns"));
   }
 
+//  public String[] getDatasetNames() {
+//    final List datasetNames = new ArrayList();
+//    // Spatial tables only.
+//    try {
+//      JDBCUtil.execute(
+//          conn.getJdbcConnection(),
+//          this.getDatasetNameQuery(),
+//          new ResultSetBlock() {
+//            public void yield(ResultSet resultSet) throws SQLException {
+//              while (resultSet.next()) {
+//                String schema = resultSet.getString(1);
+//                String table = resultSet.getString(2);
+//                if (!schema.equalsIgnoreCase(SpatialDatabasesDSMetadata.this.getDefaultSchemaName())) {
+//                  table = schema + "." + table;
+//                }
+//                datasetNames.add(table);
+//              }
+//            }
+//          });
+//    } catch (Exception e) {
+//      // Nico Ribot: TODO: returns a custom Ex ?
+//      if (this.missingGeoException(e)) {
+//        // TODO: logger + I18N
+//        JUMPWorkbench.getInstance().getFrame().log("not a " + this.getSpatialDbName()
+//                + " db or bad search_path", this.getClass());
+//      } else {
+//        e.printStackTrace();
+//      }
+//    }
+//    return (String[]) datasetNames.toArray(new String[datasetNames.size()]);
+//  }
+
+  /**
+   * Nico Ribot: 2018-08-07: new method using a query to get all information for datasets
+   * in a structure, to avoid querying too much the server
+   * @return
+   */
   public String[] getDatasetNames() {
     final List datasetNames = new ArrayList();
+    this.dataStoreLayers = new ArrayList<DataStoreLayer>();
+
     // Spatial tables only.
     try {
       JDBCUtil.execute(
           conn.getJdbcConnection(),
-          this.getDatasetNameQuery(),
+          this.getDatasetInfoQuery(),
           new ResultSetBlock() {
             public void yield(ResultSet resultSet) throws SQLException {
               while (resultSet.next()) {
@@ -212,7 +275,17 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
                 if (!schema.equalsIgnoreCase(SpatialDatabasesDSMetadata.this.getDefaultSchemaName())) {
                   table = schema + "." + table;
                 }
-                datasetNames.add(table);
+                // checks if dataset already exists
+                if (! datasetNames.contains(table)) {
+                  datasetNames.add(table);
+                }
+                // datastoreLayers
+                GeometryColumn geo = new GeometryColumn(
+                        resultSet.getString(3),
+                        resultSet.getInt(4),
+                        resultSet.getInt(5),
+                        resultSet.getString(6));
+                dataStoreLayers.add(new DataStoreLayer(table, geo));
               }
             }
           });
@@ -220,7 +293,8 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
       // Nico Ribot: TODO: returns a custom Ex ?
       if (this.missingGeoException(e)) {
         // TODO: logger + I18N
-        JUMPWorkbench.getInstance().getFrame().log("not a " + this.getSpatialDbName() + "db or bad search_path", this.getClass());
+        JUMPWorkbench.getInstance().getFrame().log("not a " + this.getSpatialDbName()
+                + " db or bad search_path", this.getClass());
       } else {
         e.printStackTrace();
       }

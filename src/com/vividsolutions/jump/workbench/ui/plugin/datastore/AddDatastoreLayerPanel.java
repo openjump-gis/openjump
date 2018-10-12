@@ -20,6 +20,7 @@ import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
 import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMetadata;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -287,14 +288,14 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
           connectionManager(), connectionDescriptor,
           AddDatastoreLayerPanel.this).getMetadata();
 
-      for (String dsName : datasetNames) {
-        for (GeometryColumn geo : md.getGeometryAttributes(dsName)) {
-          DataStoreLayer layer = new DataStoreLayer(dsName, geo);
+      // Nico Ribot, 2018-08-07: new mechanism in SpatialDatabasesDSMetadata;
+      // DataStoreLayer list is retrieved when getDatasetNames is called
+      // TODO: propagate to DataStoreMetadata interface
+      if (md instanceof SpatialDatabasesDSMetadata && ((SpatialDatabasesDSMetadata)md).getDataStoreLayers() != null) {
+        System.out.println("adding datastorelayer directly !");
+        for (DataStoreLayer layer : ((SpatialDatabasesDSMetadata)md).getDataStoreLayers()) {
           ArrayList<DataStoreLayer> newEntry = new ArrayList<>();
           newEntry.add(layer);
-          // ON Java 8:
-//                    ArrayList<DataStoreLayer> list = ret.putIfAbsent(layer.getSchema(), newEntry);
-          // On Java 6, 7
           ArrayList<DataStoreLayer> list = ret.get(layer.getSchema());
           if (list == null) {
             ret.put(layer.getSchema(), newEntry);
@@ -303,7 +304,27 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
             list.addAll(newEntry);
           }
         }
+      } else {
+        // normal mechanims
+        for (String dsName : datasetNames) {
+          for (GeometryColumn geo : md.getGeometryAttributes(dsName)) {
+            DataStoreLayer layer = new DataStoreLayer(dsName, geo);
+            ArrayList<DataStoreLayer> newEntry = new ArrayList<>();
+            newEntry.add(layer);
+            // ON Java 8:
+  //                    ArrayList<DataStoreLayer> list = ret.putIfAbsent(layer.getSchema(), newEntry);
+            // On Java 6, 7
+            ArrayList<DataStoreLayer> list = ret.get(layer.getSchema());
+            if (list == null) {
+              ret.put(layer.getSchema(), newEntry);
+            } else {
+              // this schema exists: add newEntry into existing list
+              list.addAll(newEntry);
+            }
+          }
+        }
       }
+
       return ret;
     }
   }

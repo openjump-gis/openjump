@@ -157,14 +157,31 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
       // TODO: 
       spatialIndexQuery = "";
     }
-    
-    // TODO: remove in prod.
-//    JUMPWorkbench.getInstance().getFrame().log(
-//        "Spatialite MD:\n\t"
-//            + "geo col layout: " + geometryColumnsLayout + "\n\t"
-//            + "spatialite loaded: " + spatialiteLoaded + "\n\t"
-//            + "version: " + spatialiteVersion, 
-//        this.getClass());
+
+    // geo column query needs to be built occording to geometryColumnsLayout
+    if (this.geometryColumnsLayout == GeometryColumnsLayout.FDO_LAYOUT
+            || this.geometryColumnsLayout == GeometryColumnsLayout.OGC_OGR_LAYOUT) {
+      datasetInfoQuery = "SELECT '' as f_table_schema, f_table_name, f_geometry_column, coord_dimension, srid,\n"
+              + "  case\n"
+              + "    when geometry_type = 1 then 'POINT'\n"
+              + "    when geometry_type = 2 then 'LINESTRING'\n"
+              + "    when geometry_type = 3 then 'POLYGON'\n"
+              + "    when geometry_type = 4 then 'MULTIPOINT'\n"
+              + "    when geometry_type = 5 then 'MULTILINESTRING'\n"
+              + "    when geometry_type = 6 then 'MULTIPOLYGON'\n"
+              + "    when geometry_type = 7 then 'GEOMETRY COLLECTION'\n"
+              + "    else geometry_type end as geometry_type\n"
+              + "FROM geometry_columns";
+    } else if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_SPATIALITE_LAYOUT) {
+      datasetInfoQuery = "SELECT '' as f_table_schema, f_table_name, f_geometry_column, coord_dimension, srid, type FROM geometry_columns";
+    } else if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
+      datasetInfoQuery = "SELECT '' as table_schema, table_name, column_name, " +
+              "case when z+m = 0 then 2 when z = 1 and m = 1 then 4 else 3 end as coord_dimension, " +
+              "srs_id, geometry_type_name FROM gpkg_geometry_columns where table_name = '%s'";
+    } else {
+      datasetInfoQuery = "SELECT '' ";
+    }
+
   }
   
   /**

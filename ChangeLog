@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-10-12 Nicolas Ribot
+  * New mechanism for SpatialDatabasesDSMetadata to get information about
+    spatial tables: done in one query, to reduce the number of queries
+    sent to the backend (took several minutes on big DB)
+
 2018-10-08
   * Small fix in Topology extension (Adjust Polygon Boundaries)
 
@@ -229,9 +234,6 @@
     JML/GML Writer
     - is now cancelable via TaskMonitor button
     - reports feature count written so far now
-
-2018-01-03 Nicolas Ribot <nicolas.ribot@gmail.com>
-  * Icons for layers according to geometry type in the Data Store Layer panel
 
 2017-12-26 ede
   * ChangeSRIDPlugin

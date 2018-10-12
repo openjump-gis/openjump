@@ -23,6 +23,7 @@ public class H2DSMetadata extends SpatialDatabasesDSMetadata {
         geoColumnsQuery = "SELECT f_geometry_column, coord_dimension, srid, type FROM geometry_columns where f_table_schema = '%s' and f_table_name = '%s'";
         sridQuery = "SELECT srid FROM geometry_columns where f_table_schema = '%s' and f_table_name = '%s' and f_geometry_column = '%s'";
         coordDimQuery = "SELECT coord_dimension FROM geometry_columns where f_table_schema = '%s' and f_table_name = '%s' and f_geometry_column = '%s'";
+        datasetInfoQuery = "SELECT f_table_schema, f_table_name, f_geometry_column, coord_dimension, srid, type FROM geometry_columns";
     }
 
     @Override

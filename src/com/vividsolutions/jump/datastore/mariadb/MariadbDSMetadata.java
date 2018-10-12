@@ -72,7 +72,6 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
     
     // query according to detected layout:
     geoColumnsQuery = "SELECT f_geometry_column, coord_dimension, srid, type FROM geometry_columns where f_table_name = '%s'";
-    // TODO: not the same number of param to replace...
     if (geometryColumnsLayout == GeometryColumnsLayout.NO_LAYOUT) {
       geoColumnsQuery = "select c.COLUMN_NAME, 2, 0, 'geometry' \n"
         + "from information_schema.TABLES t join information_schema.COLUMNS C \n"
@@ -82,7 +81,6 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
         + "and c.COLUMN_TYPE = 'geometry'";
     }
 
-    // TODO: test for big datasets...
     // query according to detected layout:
     sridQuery = "SELECT srid FROM geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
     if (geometryColumnsLayout == GeometryColumnsLayout.NO_LAYOUT) {
@@ -96,7 +94,18 @@ public class MariadbDSMetadata extends SpatialDatabasesDSMetadata {
       // quote identifiers
       coordDimQuery = "select 2 as coord_dimension";
     }
-    
+
+    // query according to detected layout:
+    datasetInfoQuery = "SELECT '' as f_table_schema, f_table_name, f_geometry_column, coord_dimension, srid, type FROM geometry_columns";
+    if (geometryColumnsLayout == GeometryColumnsLayout.NO_LAYOUT) {
+      datasetInfoQuery = "select t.TABLE_SCHEMA, t.TABLE_NAME, c.COLUMN_NAME, 2, 0, 'geometry' \n"
+              + "from information_schema.TABLES t join information_schema.COLUMNS C \n"
+              + "  on t.TABLE_NAME = c.TABLE_NAME and t.TABLE_SCHEMA = c.TABLE_SCHEMA\n"
+              + "where t.TABLE_TYPE not in ('SYSTEM VIEW')\n"
+              + "and c.COLUMN_TYPE = 'geometry'";
+    }
+
+
   }
 
   @Override
