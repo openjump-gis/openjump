@@ -6,18 +6,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.openjump.core.apitools.IOTools;
-import org.openjump.core.geomutils.GeoUtils;
 import org.openjump.core.rasterimage.RasterImageIOUtils;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.WorldFileHandler;
 import org.openjump.core.rasterimage.styler.SLDHandler;
+import org.openjump.sigle.utilities.geom.FeatureCollectionUtil;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -260,27 +258,33 @@ public abstract class LayerableUtil {
      * 
      * @param layer
      * @return boolean - true if the vector layer has only polygon/multipolygon
-     *         geometries
+     *         geometries (Shapefile model)
      */
     public static boolean isPolygonalLayer(Layer layer) {
         final FeatureCollectionWrapper featureCollection = layer
                 .getFeatureCollectionWrapper();
-        final List<Feature> featureList = featureCollection.getFeatures();
-        BitSet layerBit = new BitSet();
-        BitSet currFeatureBit = new BitSet();
-        if (featureList.size() > 0) {
-            final Geometry firstGeo = featureList.iterator().next()
-                    .getGeometry();
-            layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
-                                                            // type
-        }
+        if (FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 2) {
 
-        for (final Feature feature : featureList) {
-            final Geometry geo = feature.getGeometry();
-            currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
+            return true;
+        } else {
+            return false;
         }
-        if (layerBit.get(GeoUtils.polyBit)
-                && currFeatureBit.get(GeoUtils.polyBit)) {
+    }
+
+    /**
+     * check if selected featureCollection has only polygons and/or
+     * multipolygons
+     * 
+     * @param featureCollection
+     * @return boolean - true if the vector layer has only polygon/multipolygon
+     *         geometries (Shapefile model)
+     */
+    public static boolean isPolygonalLayer(FeatureCollection featureCollection) {
+
+        if (FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 2) {
+
             return true;
         } else {
             return false;
@@ -292,27 +296,32 @@ public abstract class LayerableUtil {
      * 
      * @param layer
      * @return boolean - true if the vector layer has only point/multipoint
-     *         geometries
+     *         geometries (Shapefile model)
      */
     public static boolean isPointLayer(Layer layer) {
         final FeatureCollectionWrapper featureCollection = layer
                 .getFeatureCollectionWrapper();
-        final List<Feature> featureList = featureCollection.getFeatures();
-        BitSet layerBit = new BitSet();
-        BitSet currFeatureBit = new BitSet();
-        if (featureList.size() > 0) {
-            final Geometry firstGeo = featureList.iterator().next()
-                    .getGeometry();
-            layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
-                                                            // type
-        }
+        if (FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 0) {
 
-        for (final Feature feature : featureList) {
-            final Geometry geo = feature.getGeometry();
-            currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
+            return true;
+        } else {
+            return false;
         }
-        if (layerBit.get(GeoUtils.pointBit)
-                && currFeatureBit.get(GeoUtils.pointBit)) {
+    }
+
+    /**
+     * Check if selected featureCollection has only points and/or multipoints
+     * 
+     * @param featureCollection
+     * @return boolean - true if the vector layer has only point/multipoint
+     *         geometries (Shapefile model)
+     */
+    public static boolean isPointLayer(FeatureCollection featureCollection) {
+
+        if (FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 0) {
+
             return true;
         } else {
             return false;
@@ -325,27 +334,35 @@ public abstract class LayerableUtil {
      * 
      * @param layer
      * @return boolean - true if the vector layer has only
-     *         LineString/MultiLineString geometries
+     *         LineString/MultiLineString geometries (Shapefile model)
      */
     public static boolean isLinealLayer(Layer layer) {
         final FeatureCollectionWrapper featureCollection = layer
                 .getFeatureCollectionWrapper();
-        final List<Feature> featureList = featureCollection.getFeatures();
-        BitSet layerBit = new BitSet();
-        BitSet currFeatureBit = new BitSet();
-        if (featureList.size() > 0) {
-            final Geometry firstGeo = featureList.iterator().next()
-                    .getGeometry();
-            layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
-                                                            // type
+
+        if (FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 1) {
+
+            return true;
+        } else {
+            return false;
         }
 
-        for (final Feature feature : featureList) {
-            final Geometry geo = feature.getGeometry();
-            currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
-        }
-        if (layerBit.get(GeoUtils.lineBit)
-                && currFeatureBit.get(GeoUtils.lineBit)) {
+    }
+
+    /**
+     * Check if selected FeatureCollection has only linestring and/or
+     * multilinestring and/or multilinearings (Shapefile model)
+     * 
+     * @param FeatureCollection
+     * @return boolean - true if the vector layer has only
+     *         LineString/MultiLineString geometries (Shapefile model)
+     */
+    public static boolean isLinealLayer(FeatureCollection featureCollection) {
+
+        if (FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 1) {
+
             return true;
         } else {
             return false;
@@ -353,65 +370,39 @@ public abstract class LayerableUtil {
     }
 
     /**
-     * Layer.class
+     * Check if selected layer has geoemtries of different types
      * 
-     * @return true if the selected layer has multiple geometry types ex. points
-     *         with linestrings, polygons with points, etc It exclude collection
-     *         of geometries and multigeometries ex. points with multipoints,
-     *         linestrings with linearing, linestrings with multilinestrings,
-     *         etc
+     * @return true if the selected layer has features of different geometries
+     *         types (Shapefile model) (Shapefile model)
      */
 
     public static boolean isMixedGeometryType(Layer layer) {
         final FeatureCollectionWrapper featureCollection = layer
                 .getFeatureCollectionWrapper();
-        final List<Feature> featureList = featureCollection.getFeatures();
-        BitSet layerBit = new BitSet();
-        BitSet currFeatureBit = new BitSet();
-        if (featureList.size() > 0) {
-            final Geometry firstGeo = featureList.iterator().next()
-                    .getGeometry();
-            layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
-                                                            // type
-        }
-        for (Feature feature : featureList) {
-            final Geometry geo = feature.getGeometry();
-            currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
-        }
-        if ((layerBit.get(GeoUtils.pointBit) && currFeatureBit
-                .get(GeoUtils.lineBit))
-                || (layerBit.get(GeoUtils.polyBit) && currFeatureBit
-                        .get(GeoUtils.lineBit))
-                || (layerBit.get(GeoUtils.pointBit) && currFeatureBit
-                        .get(GeoUtils.polyBit))) {
+        if ((FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == -1)
+                && featureCollection.size() > 0) {
+
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Check if selected FeatureCollection has geoemtries of different types
+     * 
+     * @return true if the selected layer has features of different geometries
+     *         types (Shapefile model)
+     */
+
     public static boolean isMixedGeometryType(
             FeatureCollection featureCollection) {
 
-        final List<Feature> featureList = featureCollection.getFeatures();
-        BitSet layerBit = new BitSet();
-        BitSet currFeatureBit = new BitSet();
-        if (featureList.size() > 0) {
-            final Geometry firstGeo = featureList.iterator().next()
-                    .getGeometry();
-            layerBit = GeoUtils.setBit(layerBit, firstGeo); // this is the layer
-                                                            // type
-        }
-        for (Feature feature : featureList) {
-            final Geometry geo = feature.getGeometry();
-            currFeatureBit = GeoUtils.setBit(currFeatureBit, geo);
-        }
-        if ((layerBit.get(GeoUtils.pointBit) && currFeatureBit
-                .get(GeoUtils.lineBit))
-                || (layerBit.get(GeoUtils.polyBit) && currFeatureBit
-                        .get(GeoUtils.lineBit))
-                || (layerBit.get(GeoUtils.pointBit) && currFeatureBit
-                        .get(GeoUtils.polyBit))) {
+        if ((FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == -1)
+                && featureCollection.size() > 0) {
+
             return true;
         } else {
             return false;
