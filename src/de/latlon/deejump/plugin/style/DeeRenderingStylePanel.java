@@ -42,13 +42,24 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -68,7 +79,11 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelContext;
 import com.vividsolutions.jump.workbench.ui.Viewport;
-import com.vividsolutions.jump.workbench.ui.renderer.style.*;
+import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.SquareVertexStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
+import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.XBasicStyle;
 import com.vividsolutions.jump.workbench.ui.style.BasicStylePanel;
 import com.vividsolutions.jump.workbench.ui.style.StylePanel;
 
@@ -81,7 +96,8 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * @version $Revision$, $Date: 2008-01-30 15:42:50 +0100 (Wed, 30 Jan
  *          2008) $
  */
-public class DeeRenderingStylePanel extends BasicStylePanel implements StylePanel {
+public class DeeRenderingStylePanel extends BasicStylePanel implements
+        StylePanel {
 
     private static final long serialVersionUID = 2657390245955765563L;
 
@@ -91,7 +107,8 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
 
     final private JCheckBox vertexCheckBox = new JCheckBox();
 
-    final private VertexStyleChooser vertexStyleChooser = new VertexStyleChooser(false);
+    final private VertexStyleChooser vertexStyleChooser = new VertexStyleChooser(
+            false);
 
     final private JSlider vertexSlider = new JSlider();
 
@@ -109,21 +126,24 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
             setPreferredSize(new Dimension(200, 40));
         }
 
-        private LayerViewPanel dummyLayerViewPanel = new LayerViewPanel(new LayerManager(),
-                new LayerViewPanelContext() {
+        private final LayerViewPanel dummyLayerViewPanel = new LayerViewPanel(
+                new LayerManager(), new LayerViewPanelContext() {
+                    @Override
                     public void setStatusMessage(String message) {
                     }
 
+                    @Override
                     public void warnUser(String warning) {
                     }
 
+                    @Override
                     public void handleThrowable(Throwable t) {
                     }
                 });
 
         // Enough of a viewport to satisfy the two styles [Jon Aquino]
-        private Viewport viewport = new Viewport(dummyLayerViewPanel) {
-            private AffineTransform transform = new AffineTransform();
+        private final Viewport viewport = new Viewport(dummyLayerViewPanel) {
+            private final AffineTransform transform = new AffineTransform();
 
             @Override
             public Envelope getEnvelopeInModelCoordinates() {
@@ -142,11 +162,11 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         };
 
         private void paint(Style style, Graphics2D g) {
-            Stroke originalStroke = g.getStroke();
+            final Stroke originalStroke = g.getStroke();
 
             try {
                 style.paint(feature, g, viewport);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // Eat it [Jon Aquino]
             } finally {
                 // Restore original stroke. Otherwise preview-panel's borders
@@ -158,11 +178,12 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
             paint(getBasicStyle(), (Graphics2D) g);
 
             if (vertexCheckBox.isSelected()) {
-                VertexStyle vertexStyle = getVertexStyle();
+                final VertexStyle vertexStyle = getVertexStyle();
                 // unknown why this was called here:
                 // vertexStyleChooser.setSelectedStyle(getCurrentVertexStyle());
 
@@ -178,18 +199,22 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
             }
         }
 
-        private Feature feature = createFeature();
+        private final Feature feature = createFeature();
 
         private Feature createFeature() {
             try {
-                return FeatureUtil.toFeature(new WKTReader()
-                        .read("POLYGON ((-200 80, 100 20, 400 -40, 400 80, -200 80))"), new FeatureSchema() {
-                    private static final long serialVersionUID = -8627306219650589202L;
-                    {
-                        addAttribute("GEOMETRY", AttributeType.GEOMETRY);
-                    }
-                });
-            } catch (ParseException e) {
+                return FeatureUtil
+                        .toFeature(
+                                new WKTReader()
+                                        .read("POLYGON ((-200 80, 100 20, 400 -40, 400 80, -200 80))"),
+                                new FeatureSchema() {
+                                    private static final long serialVersionUID = -8627306219650589202L;
+                                    {
+                                        addAttribute("GEOMETRY",
+                                                AttributeType.GEOMETRY);
+                                    }
+                                });
+            } catch (final ParseException e) {
                 Assert.shouldNeverReachHere();
 
                 return null;
@@ -201,12 +226,12 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
      * Parameterless constructor for JBuilder GUI designer.
      */
     public DeeRenderingStylePanel() {
-        this.vertexStyleChooser.sizeSlider = this.vertexSlider;
+        vertexStyleChooser.sizeSlider = vertexSlider;
     }
 
     // GH 2005.09.22 this Methode returns the current VertexStyle
     String getCurrentVertexStyle() {
-        VertexStyle currentVertexStyle = layer.getVertexStyle();
+        final VertexStyle currentVertexStyle = layer.getVertexStyle();
         if (currentVertexStyle instanceof SquareVertexStyle) {
             return VertexStylesFactory.SQUARE_STYLE;
         } else if (currentVertexStyle instanceof CircleVertexStyle) {
@@ -224,7 +249,8 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         return "";
     }
 
-    public DeeRenderingStylePanel(Blackboard blackboard, Layer layer, Blackboard persistentBlackboard) {
+    public DeeRenderingStylePanel(Blackboard blackboard, Layer layer,
+            Blackboard persistentBlackboard) {
         super(blackboard, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
         vertexStyleChooser.setBlackboard(persistentBlackboard);
@@ -236,17 +262,19 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
 
         try {
             jbInit();
-            //updateControls();
-        } catch (Exception ex) {
+            // updateControls();
+        } catch (final Exception ex) {
             ex.printStackTrace();
         }
 
-        // Set layer after #jbInit, because both methods initialize the components. [Jon Aquino]
+        // Set layer after #jbInit, because both methods initialize the
+        // components. [Jon Aquino]
         setLayer(layer);
-        //updateControls();
+        // updateControls();
 
         if (layer.getVertexStyle() instanceof BitmapVertexStyle) {
-            String fileName = ((BitmapVertexStyle) layer.getVertexStyle()).getFileName();
+            final String fileName = ((BitmapVertexStyle) layer.getVertexStyle())
+                    .getFileName();
             // side effects used for the WORST
             vertexStyleChooser.setCurrentFileName(fileName);
         }
@@ -254,15 +282,18 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         vertexStyleChooser.setSelectedStyle(getCurrentVertexStyle());
     }
 
+    @Override
     public void setBasicStyle(BasicStyle basicStyle) {
         super.setBasicStyle(basicStyle);
         if (basicStyle instanceof XBasicStyle) {
-            VertexStyle vStyle = ((XBasicStyle) basicStyle).getVertexStyle();
+            final VertexStyle vStyle = ((XBasicStyle) basicStyle)
+                    .getVertexStyle();
             vertexCheckBox.setSelected(vStyle.isEnabled());
             vertexSlider.setValue(sizeToSlider(vStyle.getSize()));
             vertexSize.setText(Integer.toString(vStyle.getSize()));
             if (vStyle instanceof BitmapVertexStyle) {
-                String fileName = ((BitmapVertexStyle) vStyle).getFileName();
+                final String fileName = ((BitmapVertexStyle) vStyle)
+                        .getFileName();
                 // side effects used for the WORST
                 vertexStyleChooser.setCurrentFileName(fileName);
             } else {
@@ -271,23 +302,23 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         }
     }
 
-
     @Override
     public void updateControls() {
         super.updateControls();
 
-        //if (vertexSlider == null) {
-        //    // Get here during superclass initialization. [Jon Aquino]
-        //    return;
-        //}
+        // if (vertexSlider == null) {
+        // // Get here during superclass initialization. [Jon Aquino]
+        // return;
+        // }
         if (initialized) {
 
             vertexSlider.setEnabled(vertexCheckBox.isSelected());
             vertexSize.setEnabled(vertexCheckBox.isSelected());
             vertexStyleChooser.setEnabled(vertexCheckBox.isSelected());
 
-            for (Enumeration<?> e = vertexSlider.getLabelTable().elements(); e.hasMoreElements(); ) {
-                JLabel label = (JLabel) e.nextElement();
+            for (final Enumeration<?> e = vertexSlider.getLabelTable()
+                    .elements(); e.hasMoreElements();) {
+                final JLabel label = (JLabel) e.nextElement();
                 label.setEnabled(vertexCheckBox.isSelected());
             }
 
@@ -295,25 +326,27 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         }
     }
 
+    @Override
     public String getTitle() {
         return I18N.get("ui.style.RenderingStylePanel.rendering");
     }
 
     private void setLayer(Layer layer) {
         this.layer = layer;
-        VertexStyle vStyle = layer.getVertexStyle();
+        final VertexStyle vStyle = layer.getVertexStyle();
         setSynchronizingLineColor(layer.isSynchronizingLineColor());
         vertexCheckBox.setSelected(vStyle.isEnabled());
         vertexSlider.setEnabled(vStyle.isEnabled());
         vertexSlider.setValue(sizeToSlider(vStyle.getSize()));
         vertexSize.setEnabled(vStyle.isEnabled());
         vertexStyleChooser.setEnabled(vStyle.isEnabled());
-        for (Enumeration<?> e = vertexSlider.getLabelTable().elements(); e.hasMoreElements(); ) {
-            ((JLabel)e.nextElement()).setEnabled(vStyle.isEnabled());
+        for (final Enumeration<?> e = vertexSlider.getLabelTable().elements(); e
+                .hasMoreElements();) {
+            ((JLabel) e.nextElement()).setEnabled(vStyle.isEnabled());
         }
-        //if (vStyle.isEnabled()) {
-        //    fillCheckBox.setSelected(layer.getVertexStyle().getFilling());
-        //}
+        // if (vStyle.isEnabled()) {
+        // fillCheckBox.setSelected(layer.getVertexStyle().getFilling());
+        // }
         previewPanel.repaint();
     }
 
@@ -326,10 +359,13 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
             return;
         }
 
-        vertexCheckBox.setText(I18N.get("ui.style.RenderingStylePanel.vertices-size"));
+        vertexCheckBox.setText(I18N
+                .get("ui.style.RenderingStylePanel.vertices-size"));
 
-        // GH 2005.09.22 this Listner is better than actionListener for this Checkbox
+        // GH 2005.09.22 this Listner is better than actionListener for this
+        // Checkbox
         vertexCheckBox.addItemListener(new ItemListener() {
+            @Override
             public void itemStateChanged(ItemEvent e) {
                 updateControls();
             }
@@ -344,7 +380,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         vertexSlider.setMaximum(100);
         vertexSlider.setSnapToTicks(true);
         vertexSlider.setPreferredSize(SLIDER_DIMENSION);
-        Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+        final Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
         labelTable.put(new Integer(0), new JLabel("" + sizeFromSlider(0)));
         labelTable.put(new Integer(25), new JLabel("" + sizeFromSlider(25)));
         labelTable.put(new Integer(50), new JLabel("" + sizeFromSlider(50)));
@@ -352,9 +388,10 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         labelTable.put(new Integer(100), new JLabel("" + sizeFromSlider(100)));
         vertexSlider.setLabelTable(labelTable);
         vertexSlider.addChangeListener(new ChangeListener() {
+            @Override
             public void stateChanged(ChangeEvent e) {
                 vertexSize.setText(Integer.toString(sizeFromSlider()));
-                //updateControls();
+                // updateControls();
                 previewPanel.repaint();
             }
         });
@@ -363,13 +400,17 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         vertexSize.setColumns(3);
         vertexSize.setText(Integer.toString(sizeFromSlider()));
         vertexSize.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    int newValue = Integer.parseInt(vertexSize.getText());
-                    if (newValue < sizeFromSlider(0) || newValue > sizeFromSlider(100)) throw new NumberFormatException();
+                    final int newValue = Integer.parseInt(vertexSize.getText());
+                    if (newValue < sizeFromSlider(0)
+                            || newValue > sizeFromSlider(100)) {
+                        throw new NumberFormatException();
+                    }
                     vertexSlider.setValue(sizeToSlider(newValue));
                     previewPanel.repaint();
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     vertexSize.setText("" + sizeFromSlider());
                 }
             }
@@ -377,36 +418,47 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
 
         // vertexSize textField and vertexSlider synchronization
         vertexSize.addKeyListener(new KeyListener() {
-            public void keyTyped(KeyEvent e) {}
-            public void keyPressed(KeyEvent e) {}
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
             public void keyReleased(KeyEvent e) {
-                String oldValue = vertexSize.getText();
+                final String oldValue = vertexSize.getText();
                 int newValue = 0;
                 try {
                     newValue = Integer.parseInt(oldValue);
-                    if (newValue < sizeFromSlider(0) || newValue > sizeFromSlider(100)) throw new Exception();
+                    if (newValue < sizeFromSlider(0)
+                            || newValue > sizeFromSlider(100)) {
+                        throw new Exception();
+                    }
                     vertexSlider.setValue(sizeToSlider(newValue));
                     previewPanel.repaint();
-                }
-                catch (NumberFormatException nfe) {
-                    // Make it possible to empty textArea to type a new number starting with 1, 2 or 3
+                } catch (final NumberFormatException nfe) {
+                    // Make it possible to empty textArea to type a new number
+                    // starting with 1, 2 or 3
                     if (vertexSize.getText().equals("")) {
-                        //vertexSize.setText("" + sizeFromSlider(0));
+                        // vertexSize.setText("" + sizeFromSlider(0));
                         vertexSlider.setValue(0);
                     }
-                    // If text area contains a non numeric text, keep the previous value
+                    // If text area contains a non numeric text, keep the
+                    // previous value
                     else {
-                        vertexSize.setText("" + sizeFromSlider(vertexSlider.getValue()));
+                        vertexSize.setText(""
+                                + sizeFromSlider(vertexSlider.getValue()));
                     }
-                }
-                catch (Exception ex) {
-                    // Make it possible to type 1, 2 or 3, even if it is out of the range
+                } catch (final Exception ex) {
+                    // Make it possible to type 1, 2 or 3, even if it is out of
+                    // the range
                     // as it maybe the first of a longer number
-                    if (newValue < sizeFromSlider(0) ) {
-                        //vertexSize.setText("" + sizeFromSlider(0));
+                    if (newValue < sizeFromSlider(0)) {
+                        // vertexSize.setText("" + sizeFromSlider(0));
                         vertexSlider.setValue(0);
-                    }
-                    else if (newValue > sizeFromSlider(100) ) {
+                    } else if (newValue > sizeFromSlider(100)) {
                         vertexSize.setText("" + sizeFromSlider(100));
                         vertexSlider.setValue(100);
                     }
@@ -414,37 +466,41 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
             }
         });
 
-        centerPanel.add(vertexSlider, new GridBagConstraints(1, 35, 1, 1, 0.0, 0.0,
-                WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(vertexSize, new GridBagConstraints(2, 35, 1, 1, 0.0, 0.0,
-                WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(vertexCheckBox, new GridBagConstraints(0, 35, 2, 1, 0.0, 0.0,
-                WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(new JLabel(I18N.get("ui.style.RenderingStylePanel.preview")),
-                new GridBagConstraints(0, 40, 3, 1, 0.0, 0.0, WEST, NONE, new Insets(2, 2, 0, 2), 0, 0));
-        centerPanel.add(previewPanel, new GridBagConstraints(0, 45, 3, 1, 0.0, 0.0,
-                WEST, NONE, new Insets(0, 10, 2, 2), 0, 0));
-        centerPanel.add(vertexStyleChooser, new GridBagConstraints(0, 50, 3, 1, 0.0, 0.0,
-                WEST, NONE, new Insets(2, 2, 0, 2), 0, 0));//
+        centerPanel.add(vertexSlider, new GridBagConstraints(1, 35, 1, 1, 0.0,
+                0.0, WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
+        centerPanel.add(vertexSize, new GridBagConstraints(2, 35, 1, 1, 0.0,
+                0.0, WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
+        centerPanel.add(vertexCheckBox, new GridBagConstraints(0, 35, 2, 1,
+                0.0, 0.0, WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
+        centerPanel.add(
+                new JLabel(I18N.get("ui.style.RenderingStylePanel.preview")),
+                new GridBagConstraints(0, 40, 3, 1, 0.0, 0.0, WEST, NONE,
+                        new Insets(2, 2, 0, 2), 0, 0));
+        centerPanel.add(previewPanel, new GridBagConstraints(0, 45, 3, 1, 0.0,
+                0.0, WEST, NONE, new Insets(0, 10, 2, 2), 0, 0));
+        centerPanel.add(vertexStyleChooser, new GridBagConstraints(0, 50, 3, 1,
+                0.0, 0.0, WEST, NONE, new Insets(2, 2, 0, 2), 0, 0));//
 
         // GH 2005.10.26 I have deleted the actionListner of the BitmapButton
         // where is the suitable place to call ChangeVertexStyle()??.
 
         vertexStyleChooser.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent arg0) {
-                //changeVertexStyle();
+                // changeVertexStyle();
                 previewPanel.repaint();
             }
         });
-//
-        //vertexStyleChooser.addChangeListener(new ChangeListener() {
-        //    public void stateChanged(ChangeEvent e) {
-        //        JSlider slider = (JSlider) e.getSource();
-        //        vertexSlider.setValue(slider.getValue());
-        //    }
-        //});
-//
-        ActionListener listener = new ActionListener() {
+        //
+        // vertexStyleChooser.addChangeListener(new ChangeListener() {
+        // public void stateChanged(ChangeEvent e) {
+        // JSlider slider = (JSlider) e.getSource();
+        // vertexSlider.setValue(slider.getValue());
+        // }
+        // });
+        //
+        final ActionListener listener = new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 changeVertexStyle();
             }
@@ -457,51 +513,51 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
 
     // Refresh vertex preview when some composant are changes
     protected void changeVertexStyle() {
-        Style st = layer.getStyle(VertexStyle.class);
+        final Style st = layer.getStyle(VertexStyle.class);
         layer.removeStyle(st);
         layer.addStyle(getVertexStyle());
         previewPanel.repaint();
     }
 
-
     public VertexStyle getVertexStyle() {
-        VertexStyle vStyle = vertexStyleChooser.getSelectedStyle();
+        final VertexStyle vStyle = vertexStyleChooser.getSelectedStyle();
         vStyle.setEnabled(vertexCheckBox.isSelected());
         vStyle.setSize(sizeFromSlider());
         return vStyle;
     }
 
     /**
-     * Replace old BasicStyle and VertexStyle of the layer by the styles specified
-     * by this panel, then refresh the view.
+     * Replace old BasicStyle and VertexStyle of the layer by the styles
+     * specified by this panel, then refresh the view.
      */
+    @Override
     public void updateStyles() {
-        boolean firingEvents = layer.getLayerManager().isFiringEvents();
+        final boolean firingEvents = layer.getLayerManager().isFiringEvents();
         layer.getLayerManager().setFiringEvents(false);
         try {
             // Call #getVertexStyle before removing layer's vertex style,
             // because one depends on the other. [Jon Aquino]
-            VertexStyle newVertexStyle = getVertexStyle();
+            final VertexStyle newVertexStyle = getVertexStyle();
 
             layer.removeStyle(layer.getBasicStyle());
             layer.addStyle(getBasicStyle());
 
             // Call #getVertexStyle before removing layer's vertex style,
             // because one depends on the other. [Jon Aquino]
-            //VertexStyle newVertexStyle = getVertexStyle();
+            // VertexStyle newVertexStyle = getVertexStyle();
             layer.removeStyle(layer.getVertexStyle());
             layer.addStyle(newVertexStyle);
 
-            //if (ColorThemingStyle.get(layer).isEnabled()) {
-            //    layer.getVertexStyle().setEnabled(false);
-            //}
+            // if (ColorThemingStyle.get(layer).isEnabled()) {
+            // layer.getVertexStyle().setEnabled(false);
+            // }
 
             if (newVertexStyle.isEnabled()) {
-                //layer.getBasicStyle().setEnabled(false);
+                // layer.getBasicStyle().setEnabled(false);
                 layer.getBasicStyle().setRenderingVertices(false);
-                //if (layer.getStyle(ColorThemingStyle.class) != null) {
-                //    layer.getVertexStyle().setEnabled(false);
-                //}
+                // if (layer.getStyle(ColorThemingStyle.class) != null) {
+                // layer.getVertexStyle().setEnabled(false);
+                // }
             }
 
             layer.setSynchronizingLineColor(synchronizeCheckBox.isSelected());
@@ -511,28 +567,29 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements StylePane
         layer.fireAppearanceChanged();
     }
 
-    //void showVerticesCheckBox_actionPerformed(ActionEvent e) {
-    //    updateControls();
-    //}
+    // void showVerticesCheckBox_actionPerformed(ActionEvent e) {
+    // updateControls();
+    // }
 
+    @Override
     public String validateInput() {
         return null;
     }
 
-    //void showVerticesCheckBox_actionPerformed(ItemEvent e) {
-    //    updateControls();
-    //}
+    // void showVerticesCheckBox_actionPerformed(ItemEvent e) {
+    // updateControls();
+    // }
 
     private int sizeFromSlider() {
         return sizeFromSlider(vertexSlider.getValue());
     }
 
     private int sizeFromSlider(int i) {
-        return (int)(Math.rint(Math.pow(1.6, ((double)i)/10.0))) + 3;
+        return (int) (Math.rint(Math.pow(1.6, (i) / 10.0))) + 0;
     }
 
     private int sizeToSlider(int i) {
-        return (int)Math.rint(10*Math.log(((double)i-3))/Math.log(1.6));
+        return (int) Math.rint(10 * Math.log(((double) i - 0)) / Math.log(1.6));
     }
 
 }
