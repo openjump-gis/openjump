@@ -65,6 +65,7 @@ import com.vividsolutions.jump.geom.Angle;
 import com.vividsolutions.jump.geom.CoordUtil;
 import com.vividsolutions.jump.geom.InteriorPointFinder;
 import com.vividsolutions.jump.util.CoordinateArrays;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
@@ -336,10 +337,21 @@ public class LabelStyle implements Style {
         if (geometry.isEmpty()) {
             return new Coordinate(0, 0);
         }
+        // [Giuseppe Aruta 2018-10-29] set right label distance according to the
+        // scale
+        // of view
+        final Viewport viewport = JUMPWorkbench.getInstance().getFrame()
+                .getContext().getLayerViewPanel().getViewport();
+        Double viewScale = 1.0;
+        final Double viewBaseScale = 1.0;
+        viewScale = viewport.getScale();
+        final double scaleFactor = viewScale * viewBaseScale;
+        value = (int) (value / scaleFactor) / 2;
+
         final Envelope envelope = new Envelope(geometry.getCoordinate().x
-                - value / 2, geometry.getCoordinate().x + value / 2,
-                geometry.getCoordinate().y - value / 2,
-                geometry.getCoordinate().y + value / 2);
+                - value, geometry.getCoordinate().x + value,
+                geometry.getCoordinate().y - value, geometry.getCoordinate().y
+                        + value);
         double x = (envelope.getMinX() + envelope.getMaxX()) / 2d;
         double y = (envelope.getMinY() + envelope.getMaxY()) / 2d;
         if (verticalAlignment.equals(DEFAULT) && geometry.getDimension() != 2) {
