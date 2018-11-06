@@ -61,7 +61,7 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
     private final String sSaved = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
     private final String sShowLegend = I18N
-            .get("org.openjump.core.ui.plugin.style");
+            .get("org.openjump.core.ui.plugin.style.LegendPlugIn");
     private final String SCouldNotSave = I18N
             .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
     private final String SAVE = I18N
