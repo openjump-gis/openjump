@@ -581,7 +581,13 @@
             <main-menu menupath="MenuNames.LAYER" install="true" />
         </menus>
     </plug-in>
-
+     <separator />
+     <plug-in>
+        com.vividsolutions.jump.workbench.ui.style.LegendPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" install="true" />
+        </menus>
+    </plug-in>
 
     <!-- ====================== CUSTOMIZE menu ================================== -->
     <plug-in>
