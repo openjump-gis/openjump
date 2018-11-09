@@ -4,7 +4,8 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2018-11-09 Giuseppe Aruta.
-  * Added text editor component, to modify  a String in a Text component 
+  * Added text editor component, to modify  a String in a Text component
+  * Added LegendPlugin to display a legend of symbols adopted into the view 
 
 2018-10-12 Nicolas Ribot
   * New mechanism for SpatialDatabasesDSMetadata to get information about
