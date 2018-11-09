@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-11-09 Giuseppe Aruta.
+  * Added text editor component, to modify  a String in a Text component 
+
 2018-10-12 Nicolas Ribot
   * New mechanism for SpatialDatabasesDSMetadata to get information about
     spatial tables: done in one query, to reduce the number of queries
