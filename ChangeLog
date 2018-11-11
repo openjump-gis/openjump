@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-11-11 Giuseppe Aruta.
+  * Moved LegendPlugIn to Layer>Style and Layer tree>Style menu. 
+    Deactivated SaveLegendPlugIn
+
 2018-11-09 Giuseppe Aruta.
   * Added text editor component, to modify  a String in a Text component
   * Added LegendPlugin to display a legend of symbols adopted into the view 
