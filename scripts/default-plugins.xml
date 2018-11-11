@@ -541,11 +541,17 @@
             <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" />
         </menus>
     </plug-in>
-    <plug-in>
+    <!--plug-in>
         de.latlon.deejump.plugin.SaveLegendPlugIn
         <menus>
             <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE"
                 install="true" />
+        </menus>
+    </plug-in-->
+     <plug-in>
+        com.vividsolutions.jump.workbench.ui.style.LegendPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" install="true" />
         </menus>
     </plug-in>
     <plug-in>
@@ -581,14 +587,6 @@
             <main-menu menupath="MenuNames.LAYER" install="true" />
         </menus>
     </plug-in>
-     <separator />
-     <plug-in>
-        com.vividsolutions.jump.workbench.ui.style.LegendPlugIn
-        <menus>
-            <main-menu menupath="MenuNames.LAYER" install="true" />
-        </menus>
-    </plug-in>
-
     <!-- ====================== CUSTOMIZE menu ================================== -->
     <plug-in>
         com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn
@@ -1223,10 +1221,16 @@
             <layername-popup menupath="MenuNames.STYLE" />
         </menus>
     </plug-in>
-    <plug-in>
+    <!--plug-in>
         de.latlon.deejump.plugin.SaveLegendPlugIn
         <menus>
             <layername-popup menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in-->
+     <plug-in>
+        com.vividsolutions.jump.workbench.ui.style.LegendPlugIn
+        <menus>
+           <layername-popup menupath="MenuNames.STYLE" install="true" />
         </menus>
     </plug-in>
     <plug-in>
