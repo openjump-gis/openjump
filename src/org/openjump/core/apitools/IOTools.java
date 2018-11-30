@@ -887,7 +887,8 @@ public class IOTools {
                 // a filechooser is open to select that dolder
                 final JFCWithEnterAction chooser = new JFCWithEnterAction();
                 chooser.setCurrentDirectory(new java.io.File("."));
-                chooser.setDialogTitle("Select folder where vertex images are located");
+                chooser.setDialogTitle(I18N
+                        .get("org.openjump.core.ui.plugin.style.StylePlugIns.IO.select-folder"));
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
                 chooser.setAcceptAllFileFilterUsed(false);
@@ -900,9 +901,12 @@ public class IOTools {
                     //warning to user that some symbols could be not loaded
                     recompiled = file;
 
-                    workbenchFrame.getContext().getLayerViewPanel()
+                    workbenchFrame
                             .getContext()
-                            .warnUser("Some styles could not be loaded");
+                            .getLayerViewPanel()
+                            .getContext()
+                            .warnUser(
+                                    I18N.get("org.openjump.core.ui.plugin.style.StylePlugIns.IO.styles-could-not-be-loaded"));
                 }
             }
         }
@@ -924,7 +928,8 @@ public class IOTools {
                 layer.setStyles(names);
             } catch (final Exception e) {
                 Logger.error(e);
-                final String errorMessage = "Error on loading symbols. Try to do it manually"; //$NON-NLS-1$ 
+                final String errorMessage = I18N
+                        .get("org.openjump.core.ui.plugin.style.StylePlugIns.IO.error");
                 JOptionPane.showMessageDialog(
                         workbenchFrame.getActiveInternalFrame(), errorMessage,
                         "Error", JOptionPane.ERROR_MESSAGE);
