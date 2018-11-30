@@ -3,6 +3,14 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-11-30 Giuseppe Aruta.
+  * Added SaveStylePlugin that allows to save OpenJUMP Style either to SLD file
+    or to JUMP XML layer style file <filename.style.xml>. 
+    Deactivated "Export style to SLD"
+  * Added LoadStylePlugin that allows to load SLD file or JUMP XML layer
+    style file as OpenJUMP style.
+    Deactivated "Import style from SLD"
+
 2018-11-11 Giuseppe Aruta.
   * Moved LegendPlugIn to Layer>Style and Layer tree>Style menu. 
     Deactivated SaveLegendPlugIn
