@@ -535,12 +535,12 @@
 
     <separator />
 
-    <plug-in>
+    <!--plug-in>
         de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn
         <menus>
             <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" />
         </menus>
-    </plug-in>
+    </plug-in-->
     <!--plug-in>
         de.latlon.deejump.plugin.SaveLegendPlugIn
         <menus>
@@ -548,6 +548,12 @@
                 install="true" />
         </menus>
     </plug-in-->
+     <plug-in>
+        org.openjump.core.ui.plugin.style.SaveStylePlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
      <plug-in>
         com.vividsolutions.jump.workbench.ui.style.LegendPlugIn
         <menus>
@@ -560,10 +566,16 @@
             <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" />
         </menus>
     </plug-in>
-    <plug-in>
+    <!--plug-in>
         org.openjump.core.ui.plugin.style.ImportSLDPlugIn
         <menus>
             <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" />
+        </menus>
+    </plug-in-->
+     <plug-in>
+        org.openjump.core.ui.plugin.style.LoadStylePlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" install="true" />
         </menus>
     </plug-in>
     <separator />
@@ -1215,18 +1227,24 @@
 
     <separator />
 
-    <plug-in>
+    <!--plug-in>
         de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn
         <menus>
             <layername-popup menupath="MenuNames.STYLE" />
         </menus>
-    </plug-in>
+    </plug-in-->
     <!--plug-in>
         de.latlon.deejump.plugin.SaveLegendPlugIn
         <menus>
             <layername-popup menupath="MenuNames.STYLE" install="true" />
         </menus>
     </plug-in-->
+    <plug-in>
+        org.openjump.core.ui.plugin.style.SaveStylePlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
      <plug-in>
         com.vividsolutions.jump.workbench.ui.style.LegendPlugIn
         <menus>
@@ -1239,13 +1257,18 @@
             <layername-popup menupath="MenuNames.STYLE" install="true" />
         </menus>
     </plug-in>
-    <plug-in>
+    <!--plug-in>
         org.openjump.core.ui.plugin.style.ImportSLDPlugIn
         <menus>
             <layername-popup menupath="MenuNames.STYLE" />
         </menus>
+    </plug-in-->
+    <plug-in>
+        org.openjump.core.ui.plugin.style.LoadStylePlugIn
+        <menus>
+             <layername-popup menupath="MenuNames.STYLE" install="true" />
+        </menus>
     </plug-in>
-
     <!--plug-in> org.openjump.core.ui.plugin.layer.ReprojectionPlugIn <menus> 
         <layername-popup install="false" /> </menus> </plug-in -->
 
