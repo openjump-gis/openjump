@@ -41,6 +41,7 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser;
 import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -65,14 +66,14 @@ public class LoadStylePlugIn extends ThreadedBasePlugIn {
 
     }
 
-    public static MultiEnableCheck createEnableCheck1(
-            WorkbenchContext workbenchContext) {
-        final EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
-        return new MultiEnableCheck()
-                .add(checkFactory.createTaskWindowMustBeActiveCheck())
-                .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-                .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
+    public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+        final EnableCheckFactory ecf = new EnableCheckFactory(workbenchContext);
+        final MultiEnableCheck mec = new MultiEnableCheck().add(
+                ecf.createWindowWithLayerNamePanelMustBeActiveCheck())
+                .add(ecf.createExactlyNLayerablesMustBeSelectedCheck(1,
+                        Layer.class));
+        return mec;
+
     }
 
     public ImageIcon getIcon() {
