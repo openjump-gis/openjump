@@ -47,6 +47,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.TextEditor;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 
@@ -78,10 +79,10 @@ public class LegendPlugIn extends AbstractPlugIn {
                 .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
     }
 
-    @SuppressWarnings("deprecation")
+    //   @SuppressWarnings("deprecation")
     public ImageIcon getIcon() {
-
-        return org.openjump.core.ui.images.IconLoader.icon("save_legend.png");
+        return IconLoader.icon("saig/addLegend.gif");
+        // return org.openjump.core.ui.images.IconLoader.icon("save_legend.png");
     }
 
     WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
