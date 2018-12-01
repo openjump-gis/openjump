@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-12-01 Giuseppe Aruta.
+   * Added a standard icon from Kosmo Saig to RasterLegendPlugIn, 
+     WMSLegendPlugIn and (Layer) LegendPlugIn 
+
 2018-11-30 Giuseppe Aruta.
   * Added SaveStylePlugin that allows to save OpenJUMP Style either to SLD file
     or to JUMP XML layer style file <filename.style.xml>. 
