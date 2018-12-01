@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLayeredPane;
@@ -46,6 +46,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
  * Plugin for displaying the raster (ASC, FLT formats) legend. The menu is
@@ -75,7 +76,8 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
         /* Add item to pop-up menu, only for rasters */
         final JPopupMenu menu = RasterImageContextMenu.getInstance(context);
         context.getFeatureInstaller().addPopupMenuPlugin(menu, this, getName(),
-                false, null, createEnableCheck(context.getWorkbenchContext()));
+                false, getIcon(),
+                createEnableCheck(context.getWorkbenchContext()));
 
     }
 
@@ -232,8 +234,8 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
         return sShowLegend;
     }
 
-    public Icon getIcon() {
-        return null;
+    public ImageIcon getIcon() {
+        return IconLoader.icon("saig/addLegend.gif");
     }
 
     public static MultiEnableCheck createEnableCheck(

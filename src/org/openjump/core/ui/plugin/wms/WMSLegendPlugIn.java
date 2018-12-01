@@ -56,7 +56,7 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
         super();
     }
 
-    private static ImageIcon ICON = IconLoader.icon("globe3_13.png");
+    private static ImageIcon ICON = IconLoader.icon("saig/addLegend.gif");
     private JScrollPane scrollPane = new JScrollPane();
 
     @Override
@@ -306,6 +306,10 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
     @Override
     public String getName() {
         return PLUGIN;
+    }
+
+    public ImageIcon getIcon() {
+        return ICON;
     }
 
     private final String PLUGIN = I18N
