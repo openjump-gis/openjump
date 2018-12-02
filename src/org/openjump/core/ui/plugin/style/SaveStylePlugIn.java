@@ -52,6 +52,14 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
+/**
+ * plugin to save a layer style as file.
+ * Currently supported JUMP XML format [file_name.style.xml] and (partially) 
+ * Spatial layer descriptor [file_name.sld]
+ * @author Giuseppe Aruta
+ * @date 2018_21_2
+ *
+ */
 public class SaveStylePlugIn extends ThreadedBasePlugIn {
 
     public final static ImageIcon ICON = IconLoader.icon("style_out.png");
@@ -75,6 +83,12 @@ public class SaveStylePlugIn extends ThreadedBasePlugIn {
     }
 
     File file;
+    Layer layer;
+    private final FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "JUMP layer symbology", "style.xml");
+    private final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
+            "Spatial layer descriptor", "sld");
+    private final JFCWithEnterAction fc = new GUIUtil.FileChooserWithOverwritePrompting();
     private static final String FILE_CHOOSER_DIRECTORY_KEY = SaveFileDataSourceQueryChooser.class
             .getName() + " - FILE CHOOSER DIRECTORY";
 
@@ -82,8 +96,8 @@ public class SaveStylePlugIn extends ThreadedBasePlugIn {
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
 
-        final Layer layer = context.getSelectedLayer(0);
-        final JFCWithEnterAction fc = new GUIUtil.FileChooserWithOverwritePrompting();
+        layer = context.getSelectedLayer(0);
+
         fc.setCurrentDirectory(
 
         new File((String) PersistentBlackboardPlugIn.get(
@@ -95,40 +109,9 @@ public class SaveStylePlugIn extends ThreadedBasePlugIn {
         fc.setDialogTitle(name);
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
 
-        final FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "JUMP layer symbology", "style.xml");
-        final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
-                "Spatial layer descriptor", "sld");
-
         fc.setFileFilter(filter2);
         fc.setFileFilter(filter);
         fc.addChoosableFileFilter(filter);
-
-        if (JFileChooser.APPROVE_OPTION != fc.showSaveDialog(context
-                .getWorkbenchFrame())) {
-            return false;
-        }
-        String filePath = "";
-        if (fc.getFileFilter().equals(filter)) {
-            file = fc.getSelectedFile();
-            file = FileUtil.addExtensionIfNone(file, "style.xml");
-
-            IOTools.saveSimbology_Jump(file, layer);
-            filePath = file.getAbsolutePath();
-
-        } else if (fc.getFileFilter().equals(filter2)) {
-            File file = fc.getSelectedFile();
-            file = FileUtil.addExtensionIfNone(file, "sld");
-            IOTools.saveSimbology_SLD2(file, layer);
-            filePath = file.getAbsolutePath();
-        }
-
-        JOptionPane
-                .showMessageDialog(
-                        JUMPWorkbench.getInstance().getFrame(),
-                        I18N.get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved")
-                                + ": " + filePath, getName(),
-                        JOptionPane.PLAIN_MESSAGE);
 
         return true;
     }
@@ -143,14 +126,44 @@ public class SaveStylePlugIn extends ThreadedBasePlugIn {
 
     }
 
+    private void monitor(TaskMonitor monitor, File file) {
+        monitor.allowCancellationRequests();
+        monitor.report(I18N.get("ui.plugin.SaveDatasetAsPlugIn.saving") + ": "
+                + file.getAbsolutePath());
+    }
+
     @Override
     public void run(TaskMonitor monitor, PlugInContext context)
             throws Exception {
 
-        monitor.allowCancellationRequests();
-        monitor.report(getName() + ": "
-                + I18N.get("ui.plugin.SaveDatasetAsPlugIn.saving") + ": "
-                + file.getAbsolutePath());
+        if (JFileChooser.APPROVE_OPTION != fc.showSaveDialog(context
+                .getWorkbenchFrame())) {
+            return;
+        }
+        String filePath = "";
+        if (fc.getFileFilter().equals(filter)) {
+            file = fc.getSelectedFile();
+            file = FileUtil.addExtensionIfNone(file, "style.xml");
+            monitor(monitor, file);
+            IOTools.saveSimbology_Jump(file, layer);
+            filePath = file.getAbsolutePath();
+
+        } else if (fc.getFileFilter().equals(filter2)) {
+            file = fc.getSelectedFile();
+            file = FileUtil.addExtensionIfNone(file, "sld");
+            monitor(monitor, file);
+            IOTools.saveSimbology_SLD2(file, layer);
+            filePath = file.getAbsolutePath();
+        }
+
+        JOptionPane
+                .showMessageDialog(
+                        JUMPWorkbench.getInstance().getFrame(),
+                        I18N.get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved")
+                                + ": " + filePath, getName(),
+                        JOptionPane.PLAIN_MESSAGE);
+
+        return;
 
     }
 

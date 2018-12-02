@@ -82,13 +82,20 @@ public class LoadStylePlugIn extends ThreadedBasePlugIn {
     }
 
     File file;
+    Layer layer;
+    private final JFCWithEnterAction fc = new JFCWithEnterAction();
+    private final FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "JUMP layer symbology", "style.xml");
+    private final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
+            "Spatial layer descriptor", "sld");
+
     private static final String FILE_CHOOSER_DIRECTORY_KEY = SaveFileDataSourceQueryChooser.class
             .getName() + " - FILE CHOOSER DIRECTORY";
 
     @Override
     public boolean execute(PlugInContext context) throws Exception {
-        final Layer layer = context.getSelectedLayer(0);
-        final JFCWithEnterAction fc = new JFCWithEnterAction();
+        layer = context.getSelectedLayer(0);
+
         fc.setCurrentDirectory(new File((String) PersistentBlackboardPlugIn
                 .get(context.getWorkbenchContext()).get(
                         FILE_CHOOSER_DIRECTORY_KEY)));
@@ -96,43 +103,44 @@ public class LoadStylePlugIn extends ThreadedBasePlugIn {
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setMultiSelectionEnabled(false);
-        final FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "JUMP layer symbology", "style.xml");
-        final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
-                "Spatial layer descriptor", "sld");
+
         fc.setFileFilter(filter2);
         fc.setFileFilter(filter);
         fc.addChoosableFileFilter(filter);
-        if (JFileChooser.APPROVE_OPTION != fc.showOpenDialog(context
-                .getWorkbenchFrame())) {
-            return false;
-        }
-        if (fc.getFileFilter().equals(filter)) {
-
-            file = fc.getSelectedFile();
-            // IOTools.loadMetadata_Jump(file, layer, true, false, true);
-
-            IOTools.loadSimbology_Jump(file, layer);
-
-        } else if (fc.getFileFilter().equals(filter2)) {
-            final File file = fc.getSelectedFile();
-
-            IOTools.loadSimbology_SLD(file, context);
-
-        }
 
         return true;
 
     }
 
+    private void monitor(TaskMonitor monitor, File file) {
+        monitor.allowCancellationRequests();
+        monitor.report(I18N
+                .get("com.vividsolutions.jump.workbench.plugin.PlugInManager.loading")
+                + ": " + file.getAbsolutePath());
+    }
+
     @Override
     public void run(TaskMonitor monitor, PlugInContext context)
             throws Exception {
-        monitor.allowCancellationRequests();
-        monitor.report(getName()
-                + ": "
-                + I18N.get("com.vividsolutions.jump.workbench.plugin.PlugInManager.loading")
-                + ": " + file.getAbsolutePath());
+
+        if (JFileChooser.APPROVE_OPTION != fc.showOpenDialog(context
+                .getWorkbenchFrame())) {
+            return;
+        }
+        if (fc.getFileFilter().equals(filter)) {
+
+            file = fc.getSelectedFile();
+            // IOTools.loadMetadata_Jump(file, layer, true, false, true);
+            monitor(monitor, file);
+
+            IOTools.loadSimbology_Jump(file, layer);
+
+        } else if (fc.getFileFilter().equals(filter2)) {
+            file = fc.getSelectedFile();
+            monitor(monitor, file);
+            IOTools.loadSimbology_SLD(file, context);
+
+        }
 
     }
 
