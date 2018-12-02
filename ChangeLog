@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-12-02
+  * Make IntersectPolygonLayersPlugIn faster
+
 2018-12-01 Giuseppe Aruta.
    * Added a standard icon from Kosmo Saig to RasterLegendPlugIn, 
      WMSLegendPlugIn and (Layer) LegendPlugIn 
