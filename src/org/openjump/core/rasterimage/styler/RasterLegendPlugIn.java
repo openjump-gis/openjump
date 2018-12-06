@@ -223,7 +223,7 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                save(scrollPane, rasterImageLayer);
+                save(scrollPane);
                 // frame.dispose();
                 return;
             }
@@ -303,7 +303,7 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
         return multiEnableCheck;
     }
 
-    public void save(JScrollPane pane, RasterImageLayer rLayer) {
+    public void save(JScrollPane pane) {
         FileNameExtensionFilter filter;
         final JPanel panel = (JPanel) pane.getViewport().getView();
         final int w = panel.getWidth();
