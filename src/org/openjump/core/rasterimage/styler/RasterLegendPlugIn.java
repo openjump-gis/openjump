@@ -142,8 +142,65 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
         frame.setSize(300, 500);
         frame.setLayer(JLayeredPane.PALETTE_LAYER);
 
-        frame.add(panel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(getOKSavePanel(frame), BorderLayout.SOUTH);
+        panel.updateUI();
+        frame.setContentPane(panel);
 
+        /*     frame.add(panel, BorderLayout.NORTH);
+
+             final JPanel okPanel = new JPanel();
+             final JButton saveButton = new JButton(SAVE) {
+
+                 private static final long serialVersionUID = 1L;
+
+                 @Override
+                 public Dimension getPreferredSize() {
+                     return new Dimension(100, 25);
+                 }
+             };
+
+             final JButton closeButton = new JButton(CLOSE) {
+                 private static final long serialVersionUID = 2L;
+
+                 @Override
+                 public Dimension getPreferredSize() {
+                     return new Dimension(100, 25);
+                 }
+             };
+
+             saveButton.addActionListener(new java.awt.event.ActionListener() {
+                 @Override
+                 public void actionPerformed(ActionEvent e) {
+                     save(scrollPane, rasterImageLayer);
+                     // frame.dispose();
+                     return;
+                 }
+             });
+
+             closeButton.addActionListener(new java.awt.event.ActionListener() {
+
+                 @Override
+                 public void actionPerformed(ActionEvent e) {
+
+                     frame.dispose();
+
+                     return;
+                 }
+             });
+
+             okPanel.add(saveButton, BorderLayout.WEST);
+             okPanel.add(closeButton, BorderLayout.EAST);
+
+             frame.add(okPanel, BorderLayout.SOUTH);*/
+        frame.pack();
+        context.getWorkbenchFrame().addInternalFrame(frame, true, true);
+
+        return true;
+
+    }
+
+    protected JPanel getOKSavePanel(final DetachableInternalFrame frame) {
         final JPanel okPanel = new JPanel();
         final JButton saveButton = new JButton(SAVE) {
 
@@ -154,7 +211,6 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
                 return new Dimension(100, 25);
             }
         };
-
         final JButton closeButton = new JButton(CLOSE) {
             private static final long serialVersionUID = 2L;
 
@@ -172,7 +228,6 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
                 return;
             }
         });
-
         closeButton.addActionListener(new java.awt.event.ActionListener() {
 
             @Override
@@ -183,15 +238,9 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
                 return;
             }
         });
-
         okPanel.add(saveButton, BorderLayout.WEST);
         okPanel.add(closeButton, BorderLayout.EAST);
-
-        frame.add(okPanel, BorderLayout.SOUTH);
-        frame.pack();
-        context.getWorkbenchFrame().addInternalFrame(frame, true, true);
-
-        return true;
+        return okPanel;
 
     }
 
