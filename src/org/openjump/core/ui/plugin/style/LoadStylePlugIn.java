@@ -96,9 +96,12 @@ public class LoadStylePlugIn extends ThreadedBasePlugIn {
     public boolean execute(PlugInContext context) throws Exception {
         layer = context.getSelectedLayer(0);
 
-        fc.setCurrentDirectory(new File((String) PersistentBlackboardPlugIn
-                .get(context.getWorkbenchContext()).get(
-                        FILE_CHOOSER_DIRECTORY_KEY)));
+        if (PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).get(
+                FILE_CHOOSER_DIRECTORY_KEY) != null) {
+            fc.setCurrentDirectory(new File((String) PersistentBlackboardPlugIn
+                    .get(context.getWorkbenchContext()).get(
+                            FILE_CHOOSER_DIRECTORY_KEY)));
+        }
         fc.setDialogTitle(name);
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);

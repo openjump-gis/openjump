@@ -98,10 +98,12 @@ public class SaveStylePlugIn extends ThreadedBasePlugIn {
 
         layer = context.getSelectedLayer(0);
 
-        fc.setCurrentDirectory(
-
-        new File((String) PersistentBlackboardPlugIn.get(
-                context.getWorkbenchContext()).get(FILE_CHOOSER_DIRECTORY_KEY)));
+        if (PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).get(
+                FILE_CHOOSER_DIRECTORY_KEY) != null) {
+            fc.setCurrentDirectory(new File((String) PersistentBlackboardPlugIn
+                    .get(context.getWorkbenchContext()).get(
+                            FILE_CHOOSER_DIRECTORY_KEY)));
+        }
 
         fc.setSelectedFile(new File(fc.getCurrentDirectory(), layer.getName()
                 .replaceAll("[/:\\\\><\\|]", "_")));
