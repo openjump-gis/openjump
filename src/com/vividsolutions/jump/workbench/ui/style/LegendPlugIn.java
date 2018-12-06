@@ -349,7 +349,7 @@ public class LegendPlugIn extends AbstractPlugIn {
         return ListVectorLayerNames;
     }
 
-    private JPanel legend(PlugInContext context) throws IOException {
+    private JScrollPane legend(PlugInContext context) throws IOException {
         final JPanel mainPanel = new JPanel(new BorderLayout());
         JPanel mPanel = new JPanel();
 
@@ -366,7 +366,7 @@ public class LegendPlugIn extends AbstractPlugIn {
         scrollPane.getViewport().setViewPosition(new Point(0, 0));
 
         mainPanel.add(scrollPane, BorderLayout.CENTER);
-        return mainPanel;
+        return scrollPane;
     }
 
     private boolean isEsriType(Layer layer) {
