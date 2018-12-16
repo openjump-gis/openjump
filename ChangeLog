@@ -3,7 +3,7 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
-2018-12-02
+2018-12-02 mmichaud <m.michael.michaud@orange.fr>
   * Make IntersectPolygonLayersPlugIn faster
 
 2018-12-01 Giuseppe Aruta.
@@ -31,7 +31,7 @@
     spatial tables: done in one query, to reduce the number of queries
     sent to the backend (took several minutes on big DB)
 
-2018-10-08
+2018-10-08 mmichaud <m.michael.michaud@orange.fr>
   * Small fix in Topology extension (Adjust Polygon Boundaries)
 
 2018-10-04 Giuseppe Aruta.
