@@ -1,6 +1,8 @@
 package org.openjump.core.rasterimage.styler.ui;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.NoninvertibleTransformException;
@@ -11,6 +13,8 @@ import javax.swing.InputVerifier;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
@@ -27,6 +31,8 @@ import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerEventType;
 import com.vividsolutions.jump.workbench.ui.ErrorDialog;
+import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStylePanel;
+import com.vividsolutions.jump.workbench.ui.style.StylePanel;
 
 import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
 
@@ -384,8 +390,17 @@ public class RasterStylesDialog extends javax.swing.JDialog {
                 minMaxValues);
         singleValuesPanel = new SingleValuesPanel(this, Utils.purgeNoData(rasterImageLayer.getActualRasterData(), rasterImageLayer), rasterImageLayer);
         
-        jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), stretchedPanel);
-        jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
+        if (stats.getMin(band) == stats.getMax(band)) {
+            final DummyPanel pan = new DummyPanel("No stretched classification available, this raster has only one value: " + stats.getMax(band));
+            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), pan);  
+            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
+           for (final Component c2 : intervalPanel.getComponents()) {
+              c2.setEnabled(false);
+           }
+        } else {
+            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), stretchedPanel);
+            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
+        }
         jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"), singleValuesPanel);
         pack();
         
@@ -593,4 +608,33 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         }
         
     }    
+    
+    private class DummyPanel extends JPanel implements StylePanel {
+
+        private static final long serialVersionUID = 2217457292163045134L;
+
+        /**
+         * 
+         */
+        private DummyPanel(String label) {
+            // GridBagLayout so it gets centered. [Jon Aquino]
+            super(new GridBagLayout());
+            add(new JLabel(label));
+        }
+
+        @Override
+        public String getTitle() {
+            return ColorThemingStylePanel.TITLE;
+        }
+
+        @Override
+        public void updateStyles() {
+            // unused but defined in the interface
+        }
+
+        @Override
+        public String validateInput() {
+            return null;
+        }
+    }
 }
