@@ -3,6 +3,11 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-12-20 Giuseppe Aruta.
+   * Updated OpenKLEM to ver 20181220: patch on displaying raster histogram
+   * Correct #483 RasterStyleDialog freezes if the selected raster has only 
+     one value
+     
 2018-12-02 mmichaud <m.michael.michaud@orange.fr>
   * Make IntersectPolygonLayersPlugIn faster
 
