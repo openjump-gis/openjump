@@ -17,6 +17,7 @@ package org.openjump.core.apitools;
 import static com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn.get;
 import static javax.xml.parsers.DocumentBuilderFactory.newInstance;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -38,6 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -58,6 +61,9 @@ import org.geotools.dbffile.DbfFieldDef;
 import org.geotools.dbffile.DbfFile;
 import org.geotools.dbffile.DbfFileWriter;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
+import org.openjump.core.rasterimage.GeoTiffConstants;
+import org.openjump.core.rasterimage.TiffTags;
+import org.openjump.core.ui.io.file.FileLayerLoader;
 import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
 import org.openjump.core.ui.plugin.style.ImportSLDPlugIn;
 import org.openjump.core.ui.util.ScreenScale;
@@ -68,6 +74,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.sun.media.jai.codec.TIFFEncodeParam;
+import com.sun.media.jai.codec.TIFFField;
+import com.sun.media.jai.codecimpl.TIFFCodec;
+import com.sun.media.jai.codecimpl.TIFFImageEncoder;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -85,13 +96,18 @@ import com.vividsolutions.jump.io.WKTReader;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.util.java2xml.Java2XML;
 import com.vividsolutions.jump.util.java2xml.XML2Java;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
+import com.vividsolutions.jump.workbench.imagery.geoimg.GeoImageFactoryFileLayerLoader;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
@@ -1182,6 +1198,99 @@ public class IOTools {
                                 d.doubleValue()));
         fw.write(LayerStyle2SLDPlugIn.transformContext(input, map));
         fw.close();
+    }
+
+    /**
+     * Load an image file as ReferenceImageLayer.class defining its extension
+     * @param  File. File to load
+     * @param wcontext. WorkbenchContext
+     * @param extension. extension of the file, eg. "tif"
+     * @throws Exception
+     */
+    public static void loadImageAsLayer(File file, WorkbenchContext wcontext,
+            String extension) throws Exception {
+
+        final Registry registry = wcontext.getRegistry();
+        @SuppressWarnings("unchecked")
+        final List<FileLayerLoader> loaders = registry
+                .getEntries(FileLayerLoader.KEY);
+        FileLayerLoader loader = null;
+        for (final FileLayerLoader fileLayerLoader : loaders) {
+            if (fileLayerLoader instanceof GeoImageFactoryFileLayerLoader) {
+                loader = fileLayerLoader;
+            }
+        }
+        final URI uri = file.toURI();
+        final Map<String, Object> dp = new HashMap<String, Object>();
+        dp.put(DataSource.URI_KEY, uri.toString());
+        //  dp.put(DataSource.FILE_KEY, outFile);
+        dp.put(ImageryLayerDataset.ATTR_TYPE, extension);
+        // dp.put(wcontext.getLayerManager()., StandardCategoryNames.WORKING);
+        loader.open(null, uri, dp);
+    }
+
+    /**
+     * Save a BufferedImage and envelope to GeoTIFF file.
+     * cellsize is calculate from parameters (raster and envelope)
+     * nodata is set to SAGA standard value (-99999.00)
+     * compression is set to packbits
+     * @param java.awt.image.BufferedImage
+     * @param com.vividsolutions.jts.geom.Envelope
+     * @param outFile
+     * @throws IOException
+     */
+    public static void saveGeoTIFF(BufferedImage image, Envelope envelope,
+            File file) throws IOException {
+
+        final double nodata = -99999.00;
+        final double cellSizeX = envelope.getWidth() / image.getWidth();
+        final double cellSizeY = envelope.getHeight() / image.getHeight();
+        saveGeoTIFF(image, envelope, cellSizeX, cellSizeY,
+                TIFFEncodeParam.COMPRESSION_PACKBITS, nodata, file);
+
+    }
+
+    /**
+     * Save a given BufferedImage and envelope to GeoTIFF file, giving nodata value, x and y values of 
+     * cell size and compsession
+     * @param java.awt.image.BufferedImage
+     * @param com.vividsolutions.jts.geom.Envelope
+     * @param cellsizex. Double cell size in x direction
+     * @param cellsizey. Double cell size in y direction
+     * @param nodata. Double nodata value
+     * @param compsession. Integer, see  com.sun.media.jai.codec.TIFFEncodeParam
+     * @param file. Output file
+     * @throws IOException
+     */
+    public static void saveGeoTIFF(BufferedImage image, Envelope envelope,
+            double cellsizex, double cellsizey, int compression, double nodata,
+            File file) {
+        try {
+            final FileOutputStream tifOut = new FileOutputStream(file);
+            final TIFFEncodeParam param = new TIFFEncodeParam();
+            param.setCompression(compression);
+            final TIFFField[] tiffFields = new TIFFField[3];
+            tiffFields[0] = new TIFFField(GeoTiffConstants.ModelPixelScaleTag,
+                    TIFFField.TIFF_DOUBLE, 2, new double[] { cellsizex,
+                            cellsizey });
+            final String noDataS = Double.toString(nodata);
+            final byte[] bytes = noDataS.getBytes();
+            tiffFields[1] = new TIFFField(TiffTags.TIFFTAG_GDAL_NODATA,
+                    TIFFField.TIFF_BYTE, noDataS.length(), bytes);
+            tiffFields[2] = new TIFFField(GeoTiffConstants.ModelTiepointTag,
+                    TIFFField.TIFF_DOUBLE, 6, new double[] { 0, 0, 0,
+                            envelope.getMinX(), envelope.getMaxY(), 0 });
+            param.setExtraFields(tiffFields);
+            final TIFFImageEncoder encoder = (TIFFImageEncoder) TIFFCodec
+                    .createImageEncoder("tiff", tifOut, param);
+
+            encoder.encode(image);
+            tifOut.flush();
+            FileUtil.close(tifOut);
+
+        } catch (final Exception e) {
+            ;
+        }
     }
 
 }
