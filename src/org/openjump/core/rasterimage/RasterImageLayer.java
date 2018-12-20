@@ -583,7 +583,13 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                 if(symbology == null) {
                     if(stats.getBandCount() < 3) {
                         
-                        RasterSymbology rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
+                        final RasterSymbology rasterSymbology;
+                        if (metadata.getStats().getMin(0) == metadata
+                                .getStats().getMax(0)) {
+                            rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_SINGLE);
+                        } else {
+                            rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
+                        }
                         rasterSymbology.addColorMapEntry(metadata.getNoDataValue(), transparentColor);
                         rasterSymbology.addColorMapEntry(metadata.getStats().getMin(0), Color.WHITE);
                         rasterSymbology.addColorMapEntry(metadata.getStats().getMax(0), Color.BLACK);
