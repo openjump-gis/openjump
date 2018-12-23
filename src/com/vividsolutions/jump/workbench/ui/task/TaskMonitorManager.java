@@ -38,16 +38,14 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
-/**
- * 
- * TODO : I18N
- */
+
 public class TaskMonitorManager {
     
 	public TaskMonitorManager() {
@@ -72,17 +70,18 @@ public class TaskMonitorManager {
         progressDialog.addWindowListener(new WindowAdapter() {
             private int attempts = 0;
 
+            @Override
             public void windowClosing(WindowEvent e) {
-                if (JOptionPane.NO_OPTION == JOptionPane
-                        .showConfirmDialog(
-                                progressDialog,
-                                StringUtil
-                                        .split(
-                                                "Warning: Killing the process may result in data corruption or data loss. "
-                                                        + "Are you sure you want to kill the process?",
-                                                80), "Kill Process",
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.WARNING_MESSAGE)) {
+                if (JOptionPane.NO_OPTION == JOptionPane.showConfirmDialog(
+                        progressDialog,
+                        I18N.get("com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager.kill-process-warning"),
+                        //    StringUtil
+                        //            .split(  "Warning: Killing the process may result in data corruption or data loss. "
+                        //          + "Are you sure you want to kill the process?", 80), 
+
+                        I18N.get("com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager.kill-process"),
+                        //"Kill Process",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)) {
                     return;
                 }
                 attempts++;
