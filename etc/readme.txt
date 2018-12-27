@@ -162,6 +162,9 @@ and the following plugins
  Vertex Symbols (com.cadplan.jump) - GPL2 - gpl-2.txt
   VertexSymbols.jar
   itext-*.jar - LGPL2.1 - lgpl-2.1.txt
+ View Manager Extension (Michaël Michaud) - GPL2 - gpl-2.txt
+  ViewManager-*.jar
+  jaxb/jaxb-*.jar
  WFS Plugin
   commons-httpclient-3.1.jar
   deegree2-core-2.6-pre2-20140511.220246-596.jar
