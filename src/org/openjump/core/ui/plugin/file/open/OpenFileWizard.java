@@ -31,6 +31,9 @@ public class OpenFileWizard extends AbstractWizardGroup {
   /** The workbench context. */
   private WorkbenchContext workbenchContext;
 
+  // prevent double init
+  private boolean initialized = false;
+
   private File[] files;
 
   private Class loaderFilter = null;
@@ -62,7 +65,6 @@ public class OpenFileWizard extends AbstractWizardGroup {
   public OpenFileWizard(final WorkbenchContext workbenchContext) {
     super(I18N.get(KEY), IconLoader.icon("folder_page.png"),
         SelectFilesPanel.KEY);
-    initPanels(workbenchContext);
   }
 
   public OpenFileWizard(final WorkbenchContext workbenchContext,
@@ -73,11 +75,13 @@ public class OpenFileWizard extends AbstractWizardGroup {
   public OpenFileWizard(final WorkbenchContext workbenchContext,
       final Class loaderFilter) {
     this.loaderFilter = loaderFilter;
-    initPanels(workbenchContext);
   }
 
   public void initialize(final WorkbenchContext workbenchContext,
       WizardDialog dialog) {
+    // init only once
+    if (initialized) return;
+
     this.workbenchContext = workbenchContext;
     initPanels(workbenchContext);
     state = new OpenFileWizardState(workbenchContext.getErrorHandler());
@@ -97,6 +101,8 @@ public class OpenFileWizard extends AbstractWizardGroup {
     if (files != null) {
       state.setupFileLoaders(files, null);
     }
+
+    initialized = true;
   }
 
   protected void initPanels(final WorkbenchContext workbenchContext) {
