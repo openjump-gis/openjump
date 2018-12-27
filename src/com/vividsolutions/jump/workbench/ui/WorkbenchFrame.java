@@ -284,23 +284,18 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     };
 
     private JDesktopPane desktopPane = new JDesktopPane() {
-        {
-            // Simple workaround for the following JUMP bug: if you maximize one
-            // JInternalFrame, then all
-            // JInternalFrames get maximized (including attribute windows,
-            // undesirably). The workaround is
-            // to use the DefaultDesktopManager instead of the one installed by
-            // the
-            // Windows L&F
-            // (the WindowsDesktopManager). (Uwe Dalluege noticed that the
-            // problem
-            // occurred with the
-            // Windows L&F but not the Metal L&F -- this observation led me to
-            // the
-            // solution).
-            // [Jon Aquino 2005-07-04]
-            setDesktopManager(new DefaultDesktopManager());
-        }
+      {
+        // Simple workaround for the following JUMP bug: if you maximize one
+        // JInternalFrame, then all JInternalFrames get maximized (including attribute
+        // windows, undesirably). The workaround is to use the DefaultDesktopManager
+        // instead of the one installed by the Windows L&F (the WindowsDesktopManager).
+        // (Uwe Dalluege noticed that the problem occurred with the Windows L&F but not
+        // the Metal L&F -- this observation led me to the solution). 
+        // [Jon Aquino 2005-07-04]
+        setDesktopManager(new DefaultDesktopManager());
+        // make sure bg is blue in all implementations
+        setBackground(new Color(58, 110, 165));
+      }
     };
 
     // <<TODO:REMOVE>> Actually we're not using the three optimization
