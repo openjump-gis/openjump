@@ -75,6 +75,8 @@ public class OpenProjectWizard extends AbstractWizardGroup {
 
     private Envelope savedTaskEnvelope = null;
 
+    private boolean initialized = false;
+
     /**
      * Construct a new OpenFileWizard.
      * 
@@ -85,25 +87,25 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         super(I18N.get(KEY), OpenProjectPlugIn.ICON,
                 SelectProjectFilesPanel.KEY);
         this.workbenchContext = workbenchContext;
-        initPanels(workbenchContext);
     }
 
     public OpenProjectWizard(final WorkbenchContext workbenchContext,
             final File[] files) {
         this.workbenchContext = workbenchContext;
         this.files = files;
-        initPanels(workbenchContext);
-    }
-
-    private void initPanels(final WorkbenchContext workbenchContext) {
-        selectProjectPanel = new SelectProjectFilesPanel(workbenchContext);
-        addPanel(selectProjectPanel);
     }
 
     @Override
     public void initialize(WorkbenchContext workbenchContext,
             WizardDialog dialog) {
-        selectProjectPanel.setDialog(dialog);
+      // init only once
+      if (initialized) return;
+
+      selectProjectPanel = new SelectProjectFilesPanel(workbenchContext);
+      selectProjectPanel.setDialog(dialog);
+      addPanel(selectProjectPanel);
+
+      initialized = true;
     }
 
     /**

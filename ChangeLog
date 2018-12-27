@@ -10,15 +10,11 @@
   * PLUS: add jaxb xml libs, which were removed from jdk9+, currently only
     needed by ViewManager extension, document extension and needed deps in
     readme.txt
-  * speedup SaveToPostGISPlugIn by delaying gui init
-      from
-      [INFO] 13:59:36.400 Loading Plugin [...].SaveToPostGISPlugIn took 0.43s 
-      to
-      [INFO] 14:00:26.666 Loading Plugin [...].SaveToPostGISPlugIn took 0.01s
-  * speedup OpenFilePlugIn by delaying gui init and prevent double init
-      [INFO] 14:28:56.280 [...].OpenFilePlugIn took 0.62s
-      to
-      [INFO] 14:42:54.347 [...].OpenFilePlugIn took 0.03s
+  * speedup some plugin's init by delaying gui and preventing double init
+      org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISPlugIn
+        took 0.43s now 0.01s
+      org.openjump.core.ui.plugin.file.OpenFilePlugIn took 0.62s now 0.03s
+      org.openjump.core.ui.plugin.file.OpenProjectPlugIn took 0.46s now 0.01s
 
 2018-12-22 Giuseppe Aruta.
    * Updated OpenKLEM to ver 20181222, correct some bugs
