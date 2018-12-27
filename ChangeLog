@@ -15,6 +15,11 @@
         took 0.43s now 0.01s
       org.openjump.core.ui.plugin.file.OpenFilePlugIn took 0.62s now 0.03s
       org.openjump.core.ui.plugin.file.OpenProjectPlugIn took 0.46s now 0.01s
+      com.vividsolutions.jump.workbench.ui.zoom.InstallZoomBarPlugIn
+        took 1.22s now 0.02s
+    as a side note, testing shows that OJ startup gets faster with newer java
+    versions _out of the box_, repeated tests on a 2 core laptop showed:
+      jdk8 21.30s, jdk9 14,24s, jdk11 12,02s
 
 2018-12-22 Giuseppe Aruta.
    * Updated OpenKLEM to ver 20181222, correct some bugs

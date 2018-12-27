@@ -57,6 +57,7 @@ import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.CoordinateArrays;
 import com.vividsolutions.jump.util.MathUtil;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEventType;
@@ -69,6 +70,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelProxy;
+import com.vividsolutions.jump.workbench.ui.LazyJPanel;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.ViewportListener;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
@@ -78,22 +80,30 @@ import com.vividsolutions.jump.workbench.ui.plugin.scalebar.RoundQuantity;
 import com.vividsolutions.jump.workbench.ui.plugin.scalebar.ScaleBarRenderer;
 import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
 
-public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
+public class ZoomBar extends LazyJPanel implements Java2DConverter.PointConverter {
 
-  private int totalGeometries() {
-    int totalGeometries = 0;
-    // Restrict count to visible layers [mmichaud 2007-05-27]
-    for (Layer layer : layerViewPanel().getLayerManager().getVisibleLayers(true)) {
-      totalGeometries += layer.getFeatureCollectionWrapper().size();
-    }
-    return totalGeometries;
-  }
+  private static final String SCALE_KEY = ZoomBar.class.getName() + " - SCALE";
+  private static final String CENTRE_KEY = ZoomBar.class.getName() + " - CENTRE";
+  // Store centre-locked flag on blackboard rather than field because there could
+  // be several zoom bars [Jon Aquino]
+  private static final String CENTRE_LOCKED_KEY = ZoomBar.class.getName() + " - CENTRE LOCKED";
+  private static final String MIN_EXTENT_KEY = ZoomBar.class.getName() + " - MIN EXTENT";
+  private static final String USER_DEFINED_MIN_SCALE = ZoomBar.class.getName() + " - USER DEFINED MIN SCALE";
+  private static final String USER_DEFINED_MAX_SCALE = ZoomBar.class.getName() + " - USER DEFINED MAX SCALE";
+  private static final String MAX_EXTENT_KEY = ZoomBar.class.getName() + " - MAX EXTENT";
+
+  private static final String SEGMENT_CACHE_KEY = ZoomBar.class.getName() + " - SEGMENT CACHE";
+
+  private static final int LARGE_GEOMETRIES = 100;
+  private static final int LARGE_ONSCREEN_GEOMETRIES = 200;
 
   private Envelope lastGoodEnvelope = null;
   private WorkbenchFrame frame;
 
   private JSlider slider = new JSlider();
   private JLabel label = new JLabel();
+  private Font sliderLabelFont = new Font("Dialog", Font.PLAIN, 10);
+  private boolean showingSliderLabels, showingRightSideLabel;
   private IncrementChooser incrementChooser = new IncrementChooser();
   private Collection metricUnits = new MetricSystem(1).createUnits();
 
@@ -105,122 +115,7 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
       throws NoninvertibleTransformException {
     this.frame = frame;
     this.showingSliderLabels = showingSliderLabels;
-    slider.addComponentListener(new ComponentAdapter() {
-      public void componentResized(ComponentEvent e) {
-        try {
-          updateComponents();
-        } catch (NoninvertibleTransformException x) {
-          // Eat it. [Jon Aquino]
-        }
-      }
-    });
-    if (showingSliderLabels) {
-      // Add a dummy label so that ZoomBars added to Toolboxes are
-      // packed properly. [Jon Aquino]
-      Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-      labelTable.put(0, new JLabel(" "));
-      slider.setLabelTable(labelTable);
-    }
-    try {
-      jbInit();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    if (!showingRightSideLabel) {
-      remove(label);
-    }
-    label.addMouseListener(new MouseAdapter() {
-      public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 3 && SwingUtilities.isRightMouseButton(e)) {
-          viewBlackboard().put(USER_DEFINED_MIN_SCALE, null);
-          viewBlackboard().put(USER_DEFINED_MAX_SCALE, null);
-          clearModelCaches();
-        }
-      }
-    });
-    slider.addMouseMotionListener(new MouseMotionAdapter() {
-      // Use #mouseDragged rather than JSlider#stateChanged because we
-      // are interested in user-initiated slider changes, not programmatic
-      // slider changes. [Jon Aquino]
-      public void mouseDragged(MouseEvent e) {
-        try {
-          layerViewPanel().erase((Graphics2D) layerViewPanel().getGraphics());
-          drawWireframe();
-          ScaleBarRenderer scaleBarRenderer = (ScaleBarRenderer) layerViewPanel().getRenderingManager()
-              .getRenderer(ScaleBarRenderer.CONTENT_ID);
-          if (scaleBarRenderer != null) {
-            scaleBarRenderer.paint((Graphics2D) layerViewPanel().getGraphics(), getScale());
-          }
-          updateLabel();
-        } catch (NoninvertibleTransformException x) {
-          // Eat it. [Jon Aquino]
-        }
-      }
-    });
-    if (slider.getUI() instanceof BasicSliderUI) {
-      slider.addMouseMotionListener(new MouseMotionAdapter() {
-        public void mouseMoved(MouseEvent e) {
-          if (layerViewPanel() == dummyLayerViewPanel) {
-            return;
-          }
-          // try {
-          slider.setToolTipText(I18N.get("ui.zoom.ZoomBar.zoom-to") + " "
-              + chooseGoodIncrement(toScale(((BasicSliderUI) slider.getUI()).valueForXPosition(e.getX()))).toString());
-          // } catch (NoninvertibleTransformException x) {
-          // slider.setToolTipText(I18N.get("ui.zoom.ZoomBar.zoom"));
-          // }
-        }
-      });
-    }
-    // label.setPreferredSize(new Dimension(50, label.getHeight()));
-    slider.addKeyListener(new KeyAdapter() {
-      public void keyReleased(KeyEvent e) {
-        try {
-          if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            gestureFinished();
-          }
-        } catch (NoninvertibleTransformException t) {
-          layerViewPanel().getContext().handleThrowable(t);
-        }
-      }
-    });
-    slider.addMouseListener(new MouseAdapter() {
-      public void mousePressed(MouseEvent e) {
-        if (!slider.isEnabled()) {
-          return;
-        }
-        layerViewPanel().getRenderingManager().setPaintingEnabled(false);
-      }
-
-      public void mouseReleased(MouseEvent e) {
-        try {
-          gestureFinished();
-        } catch (NoninvertibleTransformException t) {
-          layerViewPanel().getContext().handleThrowable(t);
-        }
-      }
-    });
-
-    //
-    // Whenever anything happens on an internal frame we want to do this.
-    //
-    GUIUtil.addInternalFrameListener(frame.getDesktopPane(), GUIUtil.toInternalFrameListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        installListenersOnCurrentPanel();
-        try {
-          updateComponents();
-        } catch (NoninvertibleTransformException x) {
-          // Eat it. [Jon Aquino]
-        }
-      }
-    }));
-
-    // added to use the decimator implemented in Java2DConverter [mmichaud
-    // 2007-05-27]
-    java2DConverter = new Java2DConverter(this, 2);
-
-    installListenersOnCurrentPanel();
-    updateComponents();
+    this.showingRightSideLabel = showingRightSideLabel;
   }
 
   private void installListenersOnCurrentPanel() {
@@ -375,8 +270,6 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
     g.draw(getWireFrame());
   }
 
-  private static final String SEGMENT_CACHE_KEY = ZoomBar.class.getName() + " - SEGMENT CACHE";
-
   private void clearModelCaches() {
     // Use LayerManager blackboard for segment cache, so that multiple
     // views can share it. [Jon Aquino]
@@ -450,12 +343,6 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
     return segments;
   }
 
-  // Replace RANDOM_ONSCREEN_GEOMETRIES by LARGE_ONSCREEN_GEOMETRIES
-  // private static final int RANDOM_ONSCREEN_GEOMETRIES = 100;
-  // private static final int RANDOM_GEOMETRIES = 100;
-  private static final int LARGE_GEOMETRIES = 100;
-  private static final int LARGE_ONSCREEN_GEOMETRIES = 200;
-
   // start [mmichaud]
   // additional code to replace randomGeometries by a largestGeometries approach
   // one bad side effect of random geometries approach was visible for a big set
@@ -507,6 +394,15 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
         break;
     }
     return largeGeometries;
+  }
+
+  private int totalGeometries() {
+    int totalGeometries = 0;
+    // Restrict count to visible layers [mmichaud 2007-05-27]
+    for (Layer layer : layerViewPanel().getLayerManager().getVisibleLayers(true)) {
+      totalGeometries += layer.getFeatureCollectionWrapper().size();
+    }
+    return totalGeometries;
   }
 
   private Collection<Geometry> largeOnScreenGeometries() {
@@ -720,16 +616,6 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
     label.setEnabled(componentsEnabled);
   }
 
-  private static final String SCALE_KEY = ZoomBar.class.getName() + " - SCALE";
-  private static final String CENTRE_KEY = ZoomBar.class.getName() + " - CENTRE";
-  // Store centre-locked flag on blackboard rather than field because there could
-  // be several zoom bars [Jon Aquino]
-  private static final String CENTRE_LOCKED_KEY = ZoomBar.class.getName() + " - CENTRE LOCKED";
-  private static final String MIN_EXTENT_KEY = ZoomBar.class.getName() + " - MIN EXTENT";
-  private static final String USER_DEFINED_MIN_SCALE = ZoomBar.class.getName() + " - USER DEFINED MIN SCALE";
-  private static final String USER_DEFINED_MAX_SCALE = ZoomBar.class.getName() + " - USER DEFINED MAX SCALE";
-  private static final String MAX_EXTENT_KEY = ZoomBar.class.getName() + " - MAX EXTENT";
-
   private Blackboard viewBlackboard() {
     return layerViewPanel() != null ? layerViewPanel().getBlackboard() : new Blackboard();
   }
@@ -738,28 +624,43 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
     return layerViewPanel().getLayerManager().getBlackboard();
   }
 
-  private final LayerViewPanel dummyLayerViewPanel = new LayerViewPanel(new LayerManager(),
-      new LayerViewPanelContext() {
-
-        public void setStatusMessage(String message) {
-        }
-
-        public void warnUser(String warning) {
-        }
-
-        public void handleThrowable(Throwable t) {
-        }
-
-      });
+  private LayerViewPanel dummyLayerViewPanel = null;
 
   private LayerViewPanel layerViewPanel() {
     if (!(frame.getActiveInternalFrame() instanceof LayerViewPanelProxy)) {
+      if (dummyLayerViewPanel == null) {
+        dummyLayerViewPanel = new LayerViewPanel(new LayerManager(), new LayerViewPanelContext() {
+          public void setStatusMessage(String message) {
+          }
+          public void warnUser(String warning) {
+          }
+          public void handleThrowable(Throwable t) {
+          }
+        });
+      }
       return dummyLayerViewPanel;
     }
     return ((LayerViewPanelProxy) frame.getActiveInternalFrame()).getLayerViewPanel();
   }
 
-  void jbInit() {
+  protected void lazyInit() {
+    slider.addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        try {
+          updateComponents();
+        } catch (NoninvertibleTransformException x) {
+          // Eat it. [Jon Aquino]
+        }
+      }
+    });
+    if (showingSliderLabels) {
+      // Add a dummy label so that ZoomBars added to Toolboxes are
+      // packed properly. [Jon Aquino]
+      Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+      labelTable.put(0, new JLabel(" "));
+      slider.setLabelTable(labelTable);
+    }
+
     this.setLayout(new BorderLayout());
     label.setText(" ");
     slider.setPaintLabels(true);
@@ -768,6 +669,106 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
 
     this.add(slider, BorderLayout.CENTER);
     this.add(label, BorderLayout.EAST);
+
+    if (!showingRightSideLabel) {
+      remove(label);
+    }
+    label.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 3 && SwingUtilities.isRightMouseButton(e)) {
+          viewBlackboard().put(USER_DEFINED_MIN_SCALE, null);
+          viewBlackboard().put(USER_DEFINED_MAX_SCALE, null);
+          clearModelCaches();
+        }
+      }
+    });
+    slider.addMouseMotionListener(new MouseMotionAdapter() {
+      // Use #mouseDragged rather than JSlider#stateChanged because we
+      // are interested in user-initiated slider changes, not programmatic
+      // slider changes. [Jon Aquino]
+      public void mouseDragged(MouseEvent e) {
+        try {
+          layerViewPanel().erase((Graphics2D) layerViewPanel().getGraphics());
+          drawWireframe();
+          ScaleBarRenderer scaleBarRenderer = (ScaleBarRenderer) layerViewPanel().getRenderingManager()
+              .getRenderer(ScaleBarRenderer.CONTENT_ID);
+          if (scaleBarRenderer != null) {
+            scaleBarRenderer.paint((Graphics2D) layerViewPanel().getGraphics(), getScale());
+          }
+          updateLabel();
+        } catch (NoninvertibleTransformException x) {
+          // Eat it. [Jon Aquino]
+        }
+      }
+    });
+    if (slider.getUI() instanceof BasicSliderUI) {
+      slider.addMouseMotionListener(new MouseMotionAdapter() {
+        public void mouseMoved(MouseEvent e) {
+          if (layerViewPanel() == dummyLayerViewPanel) {
+            return;
+          }
+          // try {
+          slider.setToolTipText(I18N.get("ui.zoom.ZoomBar.zoom-to") + " "
+              + chooseGoodIncrement(toScale(((BasicSliderUI) slider.getUI()).valueForXPosition(e.getX()))).toString());
+          // } catch (NoninvertibleTransformException x) {
+          // slider.setToolTipText(I18N.get("ui.zoom.ZoomBar.zoom"));
+          // }
+        }
+      });
+    }
+    // label.setPreferredSize(new Dimension(50, label.getHeight()));
+    slider.addKeyListener(new KeyAdapter() {
+      public void keyReleased(KeyEvent e) {
+        try {
+          if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            gestureFinished();
+          }
+        } catch (NoninvertibleTransformException t) {
+          layerViewPanel().getContext().handleThrowable(t);
+        }
+      }
+    });
+    slider.addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        if (!slider.isEnabled()) {
+          return;
+        }
+        layerViewPanel().getRenderingManager().setPaintingEnabled(false);
+      }
+
+      public void mouseReleased(MouseEvent e) {
+        try {
+          gestureFinished();
+        } catch (NoninvertibleTransformException t) {
+          layerViewPanel().getContext().handleThrowable(t);
+        }
+      }
+    });
+
+    //
+    // Whenever anything happens on an internal frame we want to do this.
+    //
+    GUIUtil.addInternalFrameListener(frame.getDesktopPane(), GUIUtil.toInternalFrameListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        installListenersOnCurrentPanel();
+        try {
+          updateComponents();
+        } catch (NoninvertibleTransformException x) {
+          // Eat it. [Jon Aquino]
+        }
+      }
+    }));
+
+    // added to use the decimator implemented in Java2DConverter [mmichaud
+    // 2007-05-27]
+    java2DConverter = new Java2DConverter(this, 2);
+
+    installListenersOnCurrentPanel();
+    try {
+      updateComponents();
+    } catch (NoninvertibleTransformException e1) {
+      JUMPWorkbench.getInstance().getFrame().handleThrowable(e1);
+    }
   }
 
   private void updateLabel() throws NoninvertibleTransformException {
@@ -778,10 +779,6 @@ public class ZoomBar extends JPanel implements Java2DConverter.PointConverter {
   private RoundQuantity chooseGoodIncrement(double scale) {
     return incrementChooser.chooseGoodIncrement(metricUnits, layerViewPanel().getWidth() / scale);
   }
-
-  private Font sliderLabelFont = new Font("Dialog", Font.PLAIN, 10);
-
-  private boolean showingSliderLabels;
 
   private void updateSliderLabels() throws NoninvertibleTransformException {
     // Expensive if the data cache has been cleared. [Jon Aquino]
