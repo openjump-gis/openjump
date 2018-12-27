@@ -40,11 +40,11 @@ public class SaveToPostGISPlugIn implements PlugIn {
         SaveToPostGISDataSource dataSource = new SaveToPostGISDataSource(context.getWorkbenchContext());
         //dataSource.setWorkbenchContext(context.getWorkbenchContext());
         saveChooser = new PostGISSaveDataSourceQueryChooser(dataSource, context);
-        
+
         DataSourceQueryChooserManager.get(
           context.getWorkbenchContext().getWorkbench().getBlackboard()
         ).addSaveDataSourceQueryChooser(saveChooser);
-        
+
         //PostGISOpenWizard postGISOpenWizard = new PostGISOpenWizard(context.getWorkbenchContext());
         //OpenWizardPlugIn.addWizard(context.getWorkbenchContext(), postGISOpenWizard);
     }

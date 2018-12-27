@@ -36,16 +36,16 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
     
     public static final String KEY = PostGISSaveDataSourceQueryChooser.class.getName();
     
-	static final String ERROR = I18N.get(KEY + ".error");
-	static final String NO_CONNECTION_CHOOSEN     = I18N.get(KEY + ".no-connection-choosen");
-	static final String NO_TABLE_CHOOSEN          = I18N.get(KEY + ".no-table-choosen");
-	static final String CONNECTION_IS_NOT_POSTGIS = I18N.get(KEY + ".selected-connection-is-not-postgis");
-	static final String UNIQUE_IDENTIFIER_NEEDED  = I18N.get(KEY + ".unique-identifier-is-needed");
-    
-	private PlugInContext context;
-    private PostGISSaveDriverPanel panel;
+    static final String ERROR = I18N.get(KEY + ".error");
+    static final String NO_CONNECTION_CHOOSEN = I18N.get(KEY + ".no-connection-choosen");
+    static final String NO_TABLE_CHOOSEN = I18N.get(KEY + ".no-table-choosen");
+    static final String CONNECTION_IS_NOT_POSTGIS = I18N.get(KEY + ".selected-connection-is-not-postgis");
+    static final String UNIQUE_IDENTIFIER_NEEDED = I18N.get(KEY + ".unique-identifier-is-needed");
+
+    private PlugInContext context;
+    private PostGISSaveDriverPanel pgpanel = null;
     private SaveToPostGISDataSource dataSource;
-    private Map<String,Object> properties;
+    private Map<String,Object> properties = new HashMap<String,Object>();
   
     /**
      * Creates a new query chooser.
@@ -54,17 +54,17 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
     public PostGISSaveDataSourceQueryChooser(SaveToPostGISDataSource dataSource, PlugInContext context) {
         this.dataSource = dataSource;
         this.context = context;
-        panel = new PostGISSaveDriverPanel(context);
-        properties = new HashMap<String,Object>();
     }
-  
+
     /**
      * @see com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser#getComponent()
      */
     public Component getComponent() {
-        return panel; 
+      if (pgpanel == null)
+        pgpanel = new PostGISSaveDriverPanel(context);
+      return pgpanel; 
     }
-  
+
     /**
      * Since the ui does not allow for loading of multiple tables, 
      * the returned collection only contains a single element.
@@ -91,6 +91,7 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
      * @see com.vividsolutions.jump.workbench.datasource.DataSourceQueryChooser#isInputValid()
      */
     public boolean isInputValid() {
+        PostGISSaveDriverPanel panel = (PostGISSaveDriverPanel) getComponent();
         if (panel.getConnectionDescriptor() == null) { 
                 JOptionPane.showMessageDialog(panel, 
                     NO_CONNECTION_CHOOSEN,
@@ -130,6 +131,8 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
      * Reads all the connection + query properties from the ui.
      */
     protected Map getProperties() {
+        PostGISSaveDriverPanel panel = (PostGISSaveDriverPanel) getComponent();
+      
         if (properties == null) properties = new HashMap<String,Object>();
         properties.put(SaveToPostGISDataSource.CONNECTION_DESCRIPTOR_KEY, panel.getConnectionDescriptor());
         properties.put(SaveToPostGISDataSource.TABLE_KEY, panel.getTableName());
