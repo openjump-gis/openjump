@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2018-12-28 Giuseppe Aruta.
+   * Updated ColorChooser to version 1.2.1
+     Correct some bugs on loading plugin
+
 2018-12-27 ede
   * make sure workbench pane background is blue over on all implementations,
     before the bg color was determined by the UI used (blue on windows, 
