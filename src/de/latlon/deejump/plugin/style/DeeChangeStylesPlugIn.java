@@ -131,9 +131,12 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
             ColorThemingStylePanel colorThemingStylePanel = new ColorThemingStylePanel(layer, wbcontext);
             colorThemingStylePanel.setPreferredSize(new Dimension(400, 300));
             stylePanels.add(colorThemingStylePanel);
+            //Synchronize Transparency level
             GUIUtil.sync(renderingStylePanel.getTransparencySlider(), colorThemingStylePanel.getTransparencySlider());
+           //Synchronize display vertex 
             GUIUtil.sync(renderingStylePanel.getSynchronizeCheckBox(), colorThemingStylePanel.getSynchronizeCheckBox());
-
+           //Synchronize line width
+            GUIUtil.sync(renderingStylePanel.getLineWidthSlider(), colorThemingStylePanel.getLineWidthSlider());
         } else {
             stylePanels.add(new DummyColorThemingStylePanel());
         }
