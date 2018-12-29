@@ -150,6 +150,8 @@ and the following plugins
   (de.fhOsnabrueck.jump.pirol.datasources.pirolCSV) - GPL2 - gpl-2.txt
   PirolCsv.jar, pbaseClasses.jar
  SetAttributes (Michaël Michaud) - GPL2 - gpl-2.txt
+  SetAttributes-.jar
+  jaxb/jaxb-*.jar
  Sextante Tools (es.unex.sextante.openjump.extensions) - GPL3 - gpl-3.0.txt
   sextante-binding-*.jar, sextante/*.*
  Sextante algorithms  (www.scolab.es) - GPL3 - gpl-3.0.txt
@@ -314,12 +316,12 @@ Original development team of JUMP was:
     David Blasby 
     Paul Ramsey 
 
-OpenJUMP continuous contributors (non exhaustive list in alphabetical order):
+OpenJUMP continuous or recent contributors (in alphabetical order):
   Edgar Soldin (edso, http://soldin.de)
   Giuseppe Aruta
   Jukka Rahkonen
-  Matthias Scholz
   Michaël Michaud
+  Nicolas Ribot
   Stefan Steiniger
 
 Past contributors (in alphabetical order):
@@ -344,8 +346,8 @@ Past contributors (in alphabetical order):
   Larry Becker (ISA.com)
   Larry Reeder
   Martin Davis (refractions.net)
+  Matthias Scholz
   Mohammed Rashad
-  Nicolas Ribot
   Ole Rahn
   Paolo Rizzi
   Paul Austin
