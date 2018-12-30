@@ -3,6 +3,8 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+<-- Changes.txt updated until here -->
+
 2018-12-28 Giuseppe Aruta.
    * Updated ColorChooser to version 1.2.1
      Correct some bugs on loading plugin
