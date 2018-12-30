@@ -211,16 +211,11 @@ public class WorkbenchToolBar extends EnableableToolBar {
     //<<TODO:REFACTOR>> This method duplicates code in FeatureInstaller, with the
     //result that when the latter was updated (to handle ThreadedPlugIns), the
     //changes were left out from the former. [Jon Aquino]
-    public JButton addPlugIn(Icon icon, final PlugIn plugIn,
-        EnableCheck enableCheck, WorkbenchContext workbenchContext) {
-        JButton button = new JButton();
-        add(button, plugIn.getName(), icon,
-            AbstractPlugIn.toActionListener(plugIn, workbenchContext,
-                taskMonitorManager), enableCheck);
-
-        return button;
+    public JButton addPlugIn(Icon icon, final PlugIn plugIn, EnableCheck enableCheck, WorkbenchContext workbenchContext) {
+      JButton button = addPlugIn(-1, plugIn, icon, enableCheck, workbenchContext);
+      return button;
     }
-    
+
     public JButton addPlugIn(final int index, final PlugIn plugIn,
       final Icon icon, final EnableCheck enableCheck,
       final WorkbenchContext workbenchContext) {
