@@ -88,7 +88,7 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   * bugfix #475: log messages doubled in the console
 
   PLUS
-  * Updated ColorChooser to version 1.2.1
+  * Updated ColorChooser to version 1.3
   * Updated OpenKLEM to ver 20181222, correct some bugs
   * PLUS: add jaxb xml libs, which were removed from jdk9+, currently only
     needed by ViewManager extension, document extension and needed deps in
@@ -118,7 +118,7 @@ Version 1.13 release rev.5792 (released on 11. May 2018)
   * OJ should be generally java 10 ready now
 
   New Features
-  * Additional Result framemork from Sextante (used in ProfileGraphPlugIn
+  * Additional Result framework from Sextante (used in ProfileGraphPlugIn
     and several Tools>Statistics plugins)
   * Add Save/Restore schema to/from file (Feature Schema Panel)
   * Add AddNewLayerViewPlugIn
