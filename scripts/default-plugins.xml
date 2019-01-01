@@ -1,0 +1,1860 @@
+<workbench>
+    <!-- ====================== plugins without menu entry ================ -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.datasource.InstallStandardDataSourceQueryChoosersPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.file.OpenFilePlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.FirstTaskFramePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.file.FileDragDropPlugin
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.view.MapToolTipPlugIn
+    </plug-in>
+    <plug-in>
+        <!-- shows selection summary in status bar time field -->
+        org.openjump.core.ui.plugin.view.ShowFullPathPlugIn
+    </plug-in>
+    <!--add Spatial databases datastore extensions -->
+    <extension>
+        com.vividsolutions.jump.datastore.oracle.OracleDataStoreExtension
+    </extension>
+    <extension>
+        com.vividsolutions.jump.datastore.mariadb.MariadbDataStoreExtension
+    </extension>
+    <extension>
+        com.vividsolutions.jump.datastore.mariadb.MysqlDataStoreExtension
+    </extension>
+    <extension>
+        com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreExtension
+    </extension>
+    <extension>
+        com.vividsolutions.jump.datastore.h2.H2DataStoreExtension
+    </extension>
+    <extension>
+        com.vividsolutions.jump.datastore.postgis.PostgisDSExtension
+    </extension>
+    <plug-in>
+        org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ccordsys.srid.EnsureAllLayersHaveSRIDStylePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.view.helpclassescale.InstallShowScalePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.view.NorthArrowInstallRenderer
+    </plug-in>
+   <plug-in>
+        org.openjump.core.ui.plugin.view.showcenter.ShowViewCenterInstallRenderer
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.InstallStandardFeatureTextWritersPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.datastore.InstallDatastoreLayerRendererHintsPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.scalebar.InstallScaleBarPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.snap.InstallGridPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.InstallZoomBarPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGIS2PlugIn
+    </plug-in>
+    <extension>
+        de.latlon.deejump.wfs.WFSExtension
+    </extension>
+
+    <!-- load wizards -->
+    <!-- <plug-in> -->
+    <!-- com.vividsolutions.jump.workbench.ui.plugin.wms.AddWMSQueryPlugIn -->
+    <!-- </plug-in> -->
+
+
+    <!-- ====================== FILE menu =================================== -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.NewTaskPlugIn
+        <menus>
+            <main-menu name="I18N.ui.WorkbenchFrame.task" menupath="MenuNames.FILE/MenuNames.FILE_NEW{0}"
+                install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn
+        <menus>
+            <main-menu
+                name="I18N.com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn.name"
+                icon="famfam/page_white_add.png" menupath="MenuNames.FILE/MenuNames.FILE_NEW"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.AddNewCategoryPlugIn
+        <menus>
+            <main-menu
+                name="I18N.com.vividsolutions.jump.workbench.ui.plugin.AddNewCategoryPlugIn.name"
+                menupath="MenuNames.FILE/MenuNames.FILE_NEW" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        org.openjump.core.ui.plugin.file.OpenWizardPlugIn
+    </plug-in>
+    <!-- disabled as it is essentially the file dialog from above -->
+    <!-- plug-in> org.openjump.core.ui.plugin.file.OpenFilePlugIn </plug-in -->
+    <plug-in>
+        org.openjump.core.ui.plugin.file.OpenProjectPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.file.OpenRecentPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn
+    </plug-in>
+    <!-- override DB Query plugin placement/icon in PLUS, don't initialize,
+        as it might be missing in CORE. initialization with installation is
+        done via DB Query extension anyway -->
+    <plug-in initialize="false">
+        org.freevoice.jumpdbqueryextension.JumpDbQueryPlugin
+        <menus>
+            <main-menu icon="famfam/database_table.png" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn
+        <menus>
+            <main-menu menupath="MenuNames.FILE" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.FILE" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.FILE" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.file.SaveWizardPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.FILE" install="true" />
+        </menus>
+    </plug-in>
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.SaveProjectAsPlugIn
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.SaveImageAsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopyImagePlugIn
+    </plug-in>
+
+    <plug-in initialize="false">
+        com.cadplan.jump.PrinterPlugIn
+        <menus>
+            <main-menu name="I18N.ui.MenuNames.PRINT.Cadplan" menupath="MenuNames.FILE/MenuNames.PRINT" />
+        </menus>
+    </plug-in>
+    <plug-in initialize="false">
+        com.isa.jump.plugin.PrintPlugIn
+        <menus>
+            <main-menu name="I18N.ui.MenuNames.PRINT.SkyPrinter"
+                menupath="MenuNames.FILE/MenuNames.PRINT" />
+        </menus>
+    </plug-in>
+
+    <!-- ====================== EDIT menu =================================== -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedItemsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.SelectFeaturesInFencePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.SelectItemsByCircleFromSelectedLayersPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.SelectByTypePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.SelectGeometryCollectionsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.SelectLayersWithSelectedItemsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.ClearSelectionPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.EditSelectedFeaturePlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.MeasureSelectedPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.EDIT" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.ExtractLayerInFence
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.ClipToFencePlugIn
+    </plug-in>
+    <separator />
+    <plug-in>
+        org.openjump.core.ui.plugin.task.TaskPropertiesPlugIn
+    </plug-in>
+
+    <!-- ======================= VIEW menu ================================= -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.ZoomPreviousPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.ZoomNextPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" checkbox="true"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.MapToolTipsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" checkbox="true"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.ZoomBarPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" checkbox="true"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.view.ShowScalePlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW/MenuNames.MAP_DECORATIONS"
+                checkbox="true" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.scalebar.ScaleBarPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW/MenuNames.MAP_DECORATIONS"
+                checkbox="true" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.view.NorthArrowPlugIn
+    </plug-in>
+     <plug-in>
+        org.openjump.core.ui.plugin.view.showcenter.ShowViewCenterPlugIn
+    </plug-in>
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.ZoomToFullExtentPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.ZoomToFencePlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.ZoomToCoordinatePlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.wms.ZoomToWMSLayerPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.view.ZoomToScalePlugIn
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.CopyBBoxPlugin
+        <menus>
+            <main-menu menupath="MenuNames.VIEW" install="true" />
+        </menus>
+    </plug-in>
+
+
+
+    <!-- ======================= LAYER menu ================================ -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedLayersPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedLayersPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteLayersPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.DisposeSelectedLayersPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.SortCategoryByNamePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.SortCategoryRestorePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.SortCategorySavePlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedCategoriesPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.imagery.AddImageLayerPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.imagery.ImageLayerManagerPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.style.CopyStylesPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.style.PasteStylesPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE"
+                install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <!--plug-in>
+        de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" />
+        </menus>
+    </plug-in-->
+    <!--plug-in>
+        de.latlon.deejump.plugin.SaveLegendPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE"
+                install="true" />
+        </menus>
+    </plug-in-->
+     <plug-in>
+        org.openjump.core.ui.plugin.style.SaveStylePlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
+     <plug-in>
+        com.vividsolutions.jump.workbench.ui.style.LegendPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" />
+        </menus>
+    </plug-in>
+    <!--plug-in>
+        org.openjump.core.ui.plugin.style.ImportSLDPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" />
+        </menus>
+    </plug-in-->
+     <plug-in>
+        org.openjump.core.ui.plugin.style.LoadStylePlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
+    <separator />
+    <plug-in>
+        org.openjump.core.ui.plugin.cts.CTSPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" />
+        </menus>
+    </plug-in>
+    <separator />
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.ExportLayerableEnvelopeAsGeometryPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.LAYER" install="true" />
+        </menus>
+    </plug-in>
+    <!-- ====================== CUSTOMIZE menu ================================== -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.CUSTOMIZE" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <!--plug-in>de.latlon.deejump.plugin.manager.ExtensionManagerPlugIn</plug-in -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.customize.BeanToolsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.customize.PythonToolsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.view.EasyButtonsPlugin
+    </plug-in>
+    <!--plug-in> com.vividsolutions.jump.workbench.plugin.StartMacroPlugIn </plug-in> 
+        <plug-in> com.vividsolutions.jump.workbench.plugin.StopMacroPlugIn </plug-in> 
+        <plug-in> com.vividsolutions.jump.workbench.plugin.RunMacroPlugIn </plug-in -->
+
+
+    <!-- ======================= TOOLS menu =============================== -->
+
+    <!-- ========= Query ==================== -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialQueryPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.analysis.AttributeQueryPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.queries.SimpleQueryPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.queries.SearchAllAttributes
+    </plug-in>
+
+    <!-- ========= Analysis ==================== -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.PlumePlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.analysis.OffsetCurvePlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.analysis.ConvexHullPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.ConvexHullPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.UnionByAttributePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.DissolvePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.Dissolve2PlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.analysis.OverlayPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.IntersectPolygonLayersPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.analysis.SpatialJoinPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.analysis.twolayers.CalculateDistancesPlugIn
+    </plug-in>
+
+    <!--plug-in>com.vividsolutions.jump.workbench.ui.plugin.analysis.UnionPlugIn</plug-in -->
+
+    <!-- ========= Statistics ==================== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.LayerStatisticsPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.FeatureStatisticsPlugIn
+    </plug-in>
+
+    <!-- ========= Generate ==================== -->
+    <!--plug-in>org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn</plug-in -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.test.RandomTrianglesPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.test.RandomArrowsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.TriangulationPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.generate.LinearReferencingOnLayerPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.generate.LinearReferencingOnSelectionPlugIn
+    </plug-in>
+
+    <!-- ========= WARP ==================== -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.warp.WarpingPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.plugin.edit.AffineTransformationPlugIn
+    </plug-in>
+
+    <!-- ========= QA ==================== -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.ValidateSelectedLayersPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.plugin.qa.DiffGeometryPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.DeleteDuplicateGeometriesPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.MakeValidPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn
+    </plug-in>
+
+    <!-- ========= Edit Geometry ======================================= -->
+
+    <!-- ========= Edit Geometry - Convert ==================== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.geometrychange.ExtractPointsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.plugin.edit.ExtractSegmentsPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.plugin.edit.PolygonizerPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.PlanarGraphPlugIn
+    </plug-in>
+
+    <!-- ========= Edit Geometry - Convert Selected... ================= -->
+    <plug-in>
+        de.soldin.jumpcore.geomconv.GCPlugin
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.plugin.edit.LineNoderPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.plugin.edit.NoderPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.plugin.edit.PrecisionReducerPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.MergeTwoSelectedPolygonsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.analysis.onelayer.MergeSelectedPolygonsWithNeighbourPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn
+    </plug-in>
+
+    <!-- ========= Edit Attributes ==================== -->
+    <!--plug-in>
+        org.openjump.core.ui.plugin.tools.ReplaceValuePlugIn
+    </plug-in-->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.analysis.CalculateAreasAndLengthsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.GenerateUniqueRandomIdPlugIn
+    </plug-in>
+    <plug-in>
+        de.fho.jump.pirol.plugins.EditAttributeByFormula.EditAttributeByFormulaPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.JoinTablePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.BeanshellAttributeCalculatorPlugIn
+    </plug-in>
+
+
+    <!-- ========= Generalization ==================== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn
+    </plug-in>
+
+    <!-- ========= Tools Root ==================== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn
+    </plug-in>
+
+
+    <!-- ====================== Raster ================================= -->
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn
+        <menus>
+            <main-menu
+                menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
+                install="true" />
+        </menus>
+    </plug-in>
+
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn
+        <menus>
+            <main-menu
+                menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
+                install="true" />
+        </menus>
+    </plug-in>
+
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn
+        <menus>
+            <main-menu
+                menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
+                install="true" />
+        </menus>
+    </plug-in>
+    <separator />
+
+
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn
+    </plug-in>
+     <plug-in>
+        org.openjump.core.ui.plugin.raster.statistics.DEMStatisticsPlugIn
+        <menus>
+            <main-menu menupath=" MenuNames.RASTER"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.HistogramPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.RasterQueryPlugIn
+    </plug-in>
+
+    <!-- ======================= PLUGINS menu ============================== -->
+
+    <!-- ======================= WINDOW menu =============================== -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.OutputWindowPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.WINDOW" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+    org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.WINDOW" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.GenerateLogPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.WINDOW" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.window.MosaicInternalFramesPlugIn
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.CloneWindowPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.WINDOW" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.window.SynchronizationPlugIn
+    </plug-in>
+
+
+    <!-- ======================= HELP menu =============================== -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.ShortcutKeysPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.HELP" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.help.SearchCommandPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.HELP" install="false" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.AboutPlugIn
+        <menus>
+            <main-menu menupath="MenuNames.HELP" install="true" />
+        </menus>
+    </plug-in>
+
+
+
+
+    <!-- ================ Category Popup Menu =============================== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.category.SetCategoryVisibilityPlugIn
+        <menus>
+            <category-popup install="false">
+            </category-popup>
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn
+        <menus>
+            <category-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.AddNewCategoryPlugIn
+        <menus>
+            <category-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        org.openjump.core.ui.plugin.file.OpenWizardPlugIn
+        <menus>
+            <category-popup />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.datasource.LoadDatasetPlugIn
+        <menus>
+            <!-- disabled because all of the formats are also avail in OpenFileWizard -->
+            <category-popup install="false" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn
+        <menus>
+            <!-- according to source comment deprecated in favor of AddDataStoreLayerWizard -->
+            <category-popup install="false" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteLayersPlugIn
+        <menus>
+            <category-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.RemoveSelectedCategoriesPlugIn
+        <menus>
+            <category-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToTop
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneUp
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryOneDown
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.category.MoveCategoryToBottom
+    </plug-in>
+
+
+    <!-- ================ LayerName Popup Menu =============================== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.EditablePlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.SelectablePlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedLayersPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedLayersPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.CombineSelectedLayersPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.DisposeSelectedLayersPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.DeleteAllFeaturesPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+    <!-- <plug-in> -->
+    <!-- org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn -->
+    <!-- <menus> -->
+    <!-- <layername-popup install="true" /> -->
+    <!-- </menus> -->
+    <!-- </plug-in> -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.ZoomToLayerPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.NewLayerPropertiesPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.cts.CTSPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <!-- view/edit, copy, paste schema -->
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.ViewSchemaPlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.SCHEMA" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.CopySchemaPlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.SCHEMA" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.PasteSchemaPlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.SCHEMA" />
+        </menus>
+    </plug-in>
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerViewPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <plug-in>
+        de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.style.CopyStylesPlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.style.PasteStylesPlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <!--plug-in>
+        de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.STYLE" />
+        </menus>
+    </plug-in-->
+    <!--plug-in>
+        de.latlon.deejump.plugin.SaveLegendPlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in-->
+    <plug-in>
+        org.openjump.core.ui.plugin.style.SaveStylePlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
+     <plug-in>
+        com.vividsolutions.jump.workbench.ui.style.LegendPlugIn
+        <menus>
+           <layername-popup menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
+    <!--plug-in>
+        org.openjump.core.ui.plugin.style.ImportSLDPlugIn
+        <menus>
+            <layername-popup menupath="MenuNames.STYLE" />
+        </menus>
+    </plug-in-->
+    <plug-in>
+        org.openjump.core.ui.plugin.style.LoadStylePlugIn
+        <menus>
+             <layername-popup menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
+    <!--plug-in> org.openjump.core.ui.plugin.layer.ReprojectionPlugIn <menus> 
+        <layername-popup install="false" /> </menus> </plug-in -->
+
+    <plug-in>
+        org.openjump.core.ui.plugin.datastore.EditDataStoreQueryPlugIn
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.datastore.RefreshDataStoreLayerPlugin
+        <menus>
+            <layername-popup menupath="MenuNames.DATASTORE"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.imagery.ImageLayerManagerPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.file.SaveWizardPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn
+        <menus>
+            <layername-popup
+                name="I18N.org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Save-Selected-Datasets"
+                install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.AddNewFeaturesPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn
+    </plug-in>
+
+    <plug-in>
+        org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn
+        <menus>
+            <layername-popup />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableUpPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.MoveSelectedLayersPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableDownPlugIn
+        <menus>
+            <layername-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <!-- ================ WMS LayerName Popup Menu =============================== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn
+        <menus>
+            <layername-popup-wms />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.wms.EditWMSQueryPlugIn
+        <menus>
+            <layername-popup-wms install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.wms.WMSStylePlugIn
+        <menus>
+            <layername-popup-wms install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.wms.WMSLegendPlugIn
+        <menus>
+            <layername-popup-wms install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.wms.ZoomToWMSLayerPlugIn
+        <menus>
+            <layername-popup-wms />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedLayersPlugIn
+        <menus>
+            <layername-popup-wms install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedLayersPlugIn
+        <menus>
+            <layername-popup-wms install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.DisposeSelectedLayersPlugIn
+        <menus>
+            <layername-popup-wms install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableUpPlugIn
+        <menus>
+            <layername-popup-wms install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.MoveSelectedLayersPlugIn
+        <menus>
+            <layername-popup-wms install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableDownPlugIn
+        <menus>
+            <layername-popup-wms install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+
+    <!-- ================ Sextante Raster LayerName Popup Menu =============== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn
+        <menus>
+            <layername-popup-raster install="true"
+                checkbox="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+
+
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.pirolraster.ChangeRasterImagePropertiesPlugIn
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.pirolraster.ZoomToRasterImagePlugIn
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.pirolraster.WarpImageToFencePlugIn
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.ExportLayerableEnvelopeAsGeometryPlugIn
+        <!-- org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn -->
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <!-- the following commented out plugins can probably be removed from repository, 
+        they only seem to do what the generic ones do already -->
+    <!-- org.openjump.core.ui.plugin.layer.pirolraster.CutSelectedRasterImageLayersPlugIn -->
+    <!-- org.openjump.core.ui.plugin.layer.pirolraster.CopySelectedRasterImageLayersPlugIn -->
+    <!-- org.openjump.core.ui.plugin.layer.pirolraster.PasteRasterImageLayersPlugIn -->
+    <!-- org.openjump.core.ui.plugin.layer.pirolraster.RemoveSelectedRasterImageLayersPlugIn -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedLayersPlugIn
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedLayersPlugIn
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.DisposeSelectedLayersPlugIn
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableUpPlugIn
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.layer.MoveSelectedLayersPlugIn
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.MoveLayerablePlugIn$MoveLayerableDownPlugIn
+        <menus>
+            <layername-popup-raster install="true" />
+        </menus>
+    </plug-in>
+    <extension>
+        org.openjump.core.rasterimage.styler.RasterStylesExtension
+    </extension>
+
+
+
+    <!-- ================ LayerView Popup Menu =============================== -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn
+        <menus>
+            <layerview-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.EditSelectedFeaturePlugIn
+        <menus>
+            <layerview-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn
+        <menus>
+            <layerview-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedItemsPlugIn
+        <menus>
+            <layerview-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn
+        <menus>
+            <layerview-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn
+        <menus>
+            <layerview-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.ZoomToFencePlugIn
+        <menus>
+            <layerview-popup menupath="MenuNames.ZOOM" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.ZoomToSelectedItemsPlugIn
+        <menus>
+            <layerview-popup menupath="MenuNames.ZOOM" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.ZoomInPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.ZoomOutPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.CenterZoomPlugIn
+    </plug-in>
+
+    <separator />
+
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn
+        <menus>
+            <layerview-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.CombineSelectedFeaturesPlugIn
+        <menus>
+            <layerview-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.MergeSelectedFeaturesPlugIn
+        <menus>
+            <layerview-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.ExplodeSelectedFeaturesPlugIn
+        <menus>
+            <layerview-popup install="true" />
+        </menus>
+    </plug-in>
+
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.ReverseOrientationPlugIn
+    </plug-in>
+
+    <plug-in>
+        de.soldin.jumpcore.geomconv.GCPlugin
+        <menus>
+            <layerview-popup />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.NodeFeaturesPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.NodeLinesPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.NodePolygonsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.SplitFeaturesPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.SplitLinesNodePolygonsPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.SplitPolygonsNodeLinesPlugIn
+    </plug-in>
+
+
+    <plug-in>
+        org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn
+        <menus>
+            <layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.RotatePlugIn
+        <menus>
+            <layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.MeasureSelectedPlugIn
+        <menus>
+            <layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn
+        <menus>
+            <layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn
+        <menus>
+            <layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopyThisCoordinatePlugIn
+        <menus>
+            <layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+                install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn
+        <menus>
+            <layerview-popup menupath="MenuNames.TOOLS_OTHERS"
+                install="true" />
+        </menus>
+    </plug-in>
+
+
+    <!-- ================ AttributeTab Popup Menu ============================== -->
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.EditablePlugIn
+        <menus>
+            <attributetab-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.ViewSchemaPlugIn
+        <menus>
+            <attributetab-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn
+        <menus>
+            <attributetab-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.SelectAllOrderedFeaturesFromAttributeTablePlugIn
+        <menus>
+            <attributetab-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CutSelectedItemsPlugIn
+        <menus>
+            <attributetab-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.clipboard.CopySelectedItemsPlugIn
+        <menus>
+            <attributetab-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn
+        <menus>
+            <attributetab-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        de.soldin.jumpcore.geomconv.GCPlugin
+        <menus>
+            <attributetab-popup />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.CombineSelectedFeaturesPlugIn
+        <menus>
+            <attributetab-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.mousemenu.MergeSelectedFeaturesPlugIn
+        <menus>
+            <attributetab-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.ExplodeSelectedFeaturesPlugIn
+        <menus>
+            <attributetab-popup install="true" />
+        </menus>
+    </plug-in>
+
+
+
+
+    <!-- ================ Editing Toolbox ================================== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedPolygonPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedLineStringPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedCirclePlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedArcPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.SelectOneItemPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.DrawCircleWithGivenRadiusPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.NoteToolPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.CutPolygonSIGLEPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.CutFeaturesPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.AutoCompletePolygonPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.FillPolygonPlugIn
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.edittoolbox.RemodelerPlugIn
+    </plug-in>
+
+    <plug-in>
+        org.openjump.core.ui.plugin.view.ViewOptionsPlugIn
+    </plug-in>
+
+    <!-- ================ Toolbar ================================== -->
+    <plug-in>
+        org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManagerPlugIn
+    </plug-in>
+
+    <!-- ====================== Toolbar =================================== -->
+    <!-- plug-in>
+        com.vividsolutions.jump.workbench.ui.zoom.ZoomTool
+        <menus>
+            <main-toolbar install="true" />
+        </menus>
+    </plug-in -->
+
+</workbench>

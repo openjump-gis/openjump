@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<root>
-  <element xml-name="properties" java-name="properties" />
-  <element xml-name="layers">
-    <!-- Just "categor" for string matching [Jon Aquino] -->
-    <element xml-name="category" java-name="categor"/>
-  </element>
-</root>

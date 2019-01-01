@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<root>
-  <attribute xml-name="including-min" java-name="includingMin"/>  
-  <attribute xml-name="including-max" java-name="includingMax"/>
-  <element xml-name="min" java-name="min"/>  
-  <element xml-name="max" java-name="max"/>
-</root>

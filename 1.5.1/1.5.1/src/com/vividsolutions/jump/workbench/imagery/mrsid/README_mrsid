@@ -1,1 +1,0 @@
-The MrSID plugin requires two proprietary components which, for legal reasons, cannot be distributed with JUMP. To make use of the MrSID viewing capabilities of JUMP, download mrsiddecode.exe and mrsidinfo.exe from LizardTech (http://www.lizardtech.com/download/dl_options.php?page=tools ). These two files need to be placed within the openjump/lib/ext/etc folder.

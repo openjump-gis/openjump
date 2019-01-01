@@ -1,1 +1,0 @@
-put your db jdbc jar files in this folder.
