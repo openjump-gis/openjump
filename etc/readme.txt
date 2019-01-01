@@ -322,7 +322,6 @@ OpenJUMP continuous or recent contributors (in alphabetical order):
   Jukka Rahkonen
   Michaël Michaud
   Nicolas Ribot
-  Stefan Steiniger
 
 Past contributors (in alphabetical order):
   Alberto de Luca (geomaticaeambiente.it)
@@ -353,6 +352,7 @@ Past contributors (in alphabetical order):
   Paul Austin
   Pedro Doria Meunier
   Sascha Teichmann (intevation.de)
+  Stefan Steiniger
   Stephan Holl
   Steve Tanner
   Ugo Taddei
