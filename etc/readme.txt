@@ -316,11 +316,14 @@ Original development team of JUMP was:
     David Blasby 
     Paul Ramsey 
 
-OpenJUMP continuous or recent contributors (in alphabetical order):
+OpenJUMP project team (in alphabetical order):
   Edgar Soldin (edso, http://soldin.de)
   Giuseppe Aruta
   Jukka Rahkonen
   Michaël Michaud
+  Stefan Steiniger (on hiatus)
+
+Continuous or recent contributors (in alphabetical order):
   Nicolas Ribot
 
 Past contributors (in alphabetical order):
@@ -352,7 +355,6 @@ Past contributors (in alphabetical order):
   Paul Austin
   Pedro Doria Meunier
   Sascha Teichmann (intevation.de)
-  Stefan Steiniger
   Stephan Holl
   Steve Tanner
   Ugo Taddei
