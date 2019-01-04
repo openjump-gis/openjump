@@ -204,7 +204,7 @@ public class ColorThemingTableModel extends ColumnBasedTableModel {
                         rowIndex));
             }
         });
-        columns.add(new Column("ui.renderer.style.ColorThemingTableModel.label", String.class) {
+        columns.add(new Column(I18N.get("ui.renderer.style.ColorThemingTableModel.label"), String.class) {
             public Object getValueAt(int rowIndex) {
                 return attributeMapping(rowIndex).getLabel();
             }
