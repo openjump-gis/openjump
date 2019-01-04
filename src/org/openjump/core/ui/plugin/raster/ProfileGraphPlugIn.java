@@ -160,16 +160,22 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
 
     }
 
-    private void setDialogValues(final MultiInputDialog dialog, PlugInContext context) {
+    private void setDialogValues(final MultiInputDialog dialog,
+            PlugInContext context) {
         final Collection<RasterImageLayer> rlayers = context.getTask()
                 .getLayerManager().getLayerables(RasterImageLayer.class);
         final ArrayList<String> srsArray = new ArrayList<String>();
         srsArray.add("metre");
         srsArray.add("foot");
+        String srs = "";
         for (final RasterImageLayer currentLayer : rlayers) {
-            final String srs = currentLayer.getSRSInfo().getUnit().toString();
+            try {
+                srs = currentLayer.getSRSInfo().getUnit().toString();
+            } catch (final Exception e) {
+                srs = "metre";
+            }
 
-            if (!srsArray.contains(srs)) {
+            if (!srs.isEmpty() & !srsArray.contains(srs)) {
                 srsArray.add(Unit.find(srs).toString());
             }
 
@@ -177,7 +183,12 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
 
         final RasterImageLayer firstElement = (RasterImageLayer) rlayers
                 .toArray()[0];
-        final String srsCode = firstElement.getSRSInfo().getUnit().toString();
+        String srsCode;
+        try {
+            srsCode = firstElement.getSRSInfo().getUnit().toString();
+        } catch (final Exception e) {
+            srsCode = "Unknown";
+        }
 
         final String OUTPUT_GROUP = "Match Type";
         dialog.setSideBarDescription(DESCRIPTION);
