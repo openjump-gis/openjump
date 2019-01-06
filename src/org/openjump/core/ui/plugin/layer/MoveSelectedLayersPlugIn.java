@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.JComboBox;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -16,6 +17,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
+import com.vividsolutions.jump.workbench.ui.TreeLayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -112,9 +114,10 @@ public class MoveSelectedLayersPlugIn extends AbstractPlugIn {
 		            }
 	            }
 	            //Deactivate as setCelectedLayers dosn't work with Sextante Raster Layer
-	            // TreeLayerNamePanel lnp = (TreeLayerNamePanel)context.getWorkbenchContext().getLayerNamePanel();
-	            // lnp.setSelectedLayers( selectedLayers);
-	            return true;
+	            //[Giuseppe Aruta 2019-01-07] reactivated as TreeLayerNamePanel selection has been expanded to any Layerable.class
+	            final TreeLayerNamePanel lnp = (TreeLayerNamePanel) context.getWorkbenchContext().getLayerableNamePanel();
+                         lnp.setSelectedLayerables(selectedLayers);
+                return true;
     		}
         }
         catch (Exception e)
