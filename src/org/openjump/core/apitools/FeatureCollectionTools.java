@@ -33,6 +33,8 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.util.StatisticIndices;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
@@ -1122,4 +1124,30 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
 		}//-- end for
 		return sortedFeatureList;
 	}
+    
+    public static StatisticIndices getStatistics(Feature[] featArray,
+            FeatureSchema fs, String attr) {
+        final double[] values = new double[featArray.length];
+
+        if (fs.getAttributeType(attr) == AttributeType.INTEGER
+                || fs.getAttributeType(attr) == AttributeType.DOUBLE) {
+
+            Feature feat;
+            for (int i = featArray.length - 1; i >= 0; i--) {
+                feat = featArray[i];
+
+                if (feat.getAttribute(attr) != null) {
+                    values[i] = ObjectComparator.getDoubleValue(feat
+                            .getAttribute(attr));
+
+                } else {
+                    Logger.error("skipped value (NULL), when checking min./max. values for Attribute "
+                                    + attr);
+                }
+            }
+        }
+        final StatisticIndices index = new StatisticIndices();
+        index.calculateDescriptiveStatistics(values);
+        return index;
+    }
 }
