@@ -56,7 +56,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.lang3.StringUtils;
 import org.geotools.dbffile.DbfFieldDef;
 import org.geotools.dbffile.DbfFile;
 import org.geotools.dbffile.DbfFileWriter;
@@ -85,6 +84,7 @@ import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.io.DriverProperties;
 import com.vividsolutions.jump.io.FMEGMLReader;
@@ -365,22 +365,7 @@ public class IOTools {
      * @throws Exception
      */
     public static void saveCSV(JTable table, String filename) throws Exception {
-
         saveCSV(table, filename, ",");
-        /*
-         * try { final File file = new File(filename); final BufferedWriter bw =
-         * new BufferedWriter( new OutputStreamWriter(new FileOutputStream(
-         * file.getAbsoluteFile()), "UTF-8"));
-         * 
-         * for (int j = 0; j < table.getColumnCount(); j++) {
-         * bw.write(table.getModel().getColumnName(j) + "\t"); } bw.newLine(); ;
-         * for (int i = 0; i < table.getRowCount(); i++) { for (int j = 0; j <
-         * table.getColumnCount(); j++) {
-         * bw.write(table.getModel().getValueAt(i, j) + "\t"); } bw.newLine(); }
-         * bw.close(); } catch (final Exception e) {
-         * 
-         * // }
-         */
     }
 
     /**
@@ -396,7 +381,6 @@ public class IOTools {
      */
     public static void saveCSV(JTable table, String filename,
             String cellseparator) throws Exception {
-
         try {
             final File file = new File(filename);
             final BufferedWriter bw = new BufferedWriter(
@@ -404,30 +388,18 @@ public class IOTools {
                             file.getAbsoluteFile()), "UTF-8"));
 
             for (int j = 0; j < table.getColumnCount(); j++) {
-                String columnName = table.getModel().getColumnName(j);
-                final int number = StringUtils.countMatches(columnName, "\"");
-                if (columnName.contains(cellseparator) & number == 2) {
-                    columnName = "\"" + columnName + "\"";
-                }
-                bw.write(columnName + cellseparator);
+                bw.write(table.getModel().getColumnName(j) + cellseparator);
             }
             bw.newLine();
             ;
             for (int i = 0; i < table.getRowCount(); i++) {
                 for (int j = 0; j < table.getColumnCount(); j++) {
-                    String value = table.getModel().getValueAt(i, j).toString();
-                    final int number = StringUtils.countMatches(value, "\"");
-                    if (value.contains(cellseparator) & number == 2) {
-                        value = "\"" + value + "\"";
-                    }
-                    bw.write(value + cellseparator);
+                    bw.write(table.getModel().getValueAt(i, j) + cellseparator);
                 }
                 bw.newLine();
             }
             bw.close();
         } catch (final Exception e) {
-
-            //
         }
     }
 
@@ -1291,6 +1263,181 @@ public class IOTools {
         } catch (final Exception e) {
             ;
         }
+    }
+
+    public static FeatureCollection loaddBaseFile(final String sFilename) {
+
+        try {
+            final DbfFile mydbf = new DbfFile(sFilename);
+
+            final FeatureSchema fs = new FeatureSchema();
+
+            // fill in schema
+            fs.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+
+            FeatureCollection featureCollection = null;
+
+            final int numfields = mydbf.getNumFields();
+
+            for (int j = 0; j < numfields; j++) {
+                final AttributeType type = AttributeType.toAttributeType(mydbf
+                        .getFieldType(j));
+                fs.addAttribute(mydbf.getFieldName(j), type);
+            }
+
+            featureCollection = new FeatureDataset(fs);
+
+            for (int x = 0; x < mydbf.getLastRec(); x++) {
+                final Feature feature = new BasicFeature(fs);
+                final byte[] s = mydbf.GetDbfRec(x);
+
+                for (int y = 0; y < numfields; y++) {
+                    feature.setAttribute(y + 1, mydbf.ParseRecordColumn(s, y));
+                }
+
+                featureCollection.add(feature);
+            }
+
+            mydbf.close();
+
+            return featureCollection;
+        } catch (final Exception e) {
+            return null;
+        }
+
+    }
+
+    public static void savedBaseFile(FeatureCollection featureCollection,
+            String fname, Charset charset) throws Exception {
+        DbfFileWriter dbf;
+        FeatureSchema fs;
+        int t;
+        int f;
+        int u;
+        int num;
+        HashMap<String, DbfFieldDef> fieldMap = null;
+        if (new File(fname).exists()) {
+            final DbfFile dbfFile = new DbfFile(fname);
+            final int numFields = dbfFile.getNumFields();
+            fieldMap = new HashMap<String, DbfFieldDef>(numFields);
+            for (int i = 0; i < numFields; i++) {
+                final String fieldName = dbfFile.getFieldName(i);
+                fieldMap.put(fieldName, dbfFile.fielddef[i]);
+            }
+            dbfFile.close();
+        }
+        fs = featureCollection.getFeatureSchema();
+        // -1 because one of the columns is geometry
+        final DbfFieldDef[] fields = new DbfFieldDef[fs.getAttributeCount() - 1];
+        // dbf column type and size
+        f = 0;
+        for (t = 0; t < fs.getAttributeCount(); t++) {
+            final AttributeType columnType = fs.getAttributeType(t);
+            final String columnName = fs.getAttributeName(t);
+            if (columnType == AttributeType.INTEGER) {
+                //LDB: previously 16
+                fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);
+                //  fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+                f++;
+            } else if (columnType == AttributeType.DOUBLE) {
+                fields[f] = new DbfFieldDef(columnName, 'N', 33, 16);
+                //   fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+                f++;
+            } else if (columnType == AttributeType.STRING) {
+                final int maxlength = findMaxStringLength(featureCollection, t);
+                if (maxlength > 255) {
+                    throw new Exception(
+                            "ShapefileWriter does not support strings longer than 255 characters");
+                }
+                fields[f] = new DbfFieldDef(columnName, 'C', maxlength, 0);
+                //fields[f] = overrideWithExistingCompatibleDbfFieldDef(fields[f], fieldMap);
+                f++;
+            } else if (columnType == AttributeType.DATE) {
+                fields[f] = new DbfFieldDef(columnName, 'D', 8, 0);
+                f++;
+            } else if (columnType == AttributeType.LONG) {
+
+                fields[f] = new DbfFieldDef(columnName, 'N', 11, 0);
+                f++;
+            } else if (columnType == AttributeType.BOOLEAN) {
+                fields[f] = new DbfFieldDef(columnName, 'L', 1, 0);
+                f++;
+            }
+
+            else if (columnType == AttributeType.GEOMETRY) {
+                //do nothing - the .shp file handles this
+            } else {
+                throw new Exception(
+                        "Shapewriter: unsupported AttributeType found in featurecollection.");
+            }
+        }
+        // write header
+        dbf = new DbfFileWriter(fname);
+        dbf.setCharset(charset);
+        dbf.writeHeader(fields, featureCollection.size());
+        //write rows
+        num = featureCollection.size();
+        final List<Feature> features = featureCollection.getFeatures();
+        for (t = 0; t < num; t++) {
+            //System.out.println("dbf: record "+t);
+            final Feature feature = features.get(t);
+            final Vector<Object> DBFrow = new Vector<Object>();
+            //make data for each column in this feature (row)
+            for (u = 0; u < fs.getAttributeCount(); u++) {
+                final AttributeType columnType = fs.getAttributeType(u);
+                if (columnType == AttributeType.INTEGER) {
+                    final Object a = feature.getAttribute(u);
+                    if (a == null) {
+                        DBFrow.add(new Integer(0));
+                    } else {
+                        DBFrow.add(a);
+                    }
+                } else if (columnType == AttributeType.DOUBLE) {
+                    final Object a = feature.getAttribute(u);
+                    if (a == null) {
+                        DBFrow.add(new Double(0.0));
+                    } else {
+                        DBFrow.add(a);
+                    }
+                } else if (columnType == AttributeType.DATE) {
+                    final Object a = feature.getAttribute(u);
+                    if (a == null) {
+                        DBFrow.add("");
+                    } else {
+                        DBFrow.add(DbfFile.DATE_PARSER.format((Date) a));
+                    }
+                } else if (columnType == AttributeType.STRING) {
+                    final Object a = feature.getAttribute(u);
+                    if (a == null) {
+                        DBFrow.add(new String(""));
+                    } else {
+                        // MD 16 jan 03 - added some defensive programming
+                        if (a instanceof String) {
+                            DBFrow.add(a);
+                        } else {
+                            DBFrow.add(a.toString());
+                        }
+                    }
+                } else if (columnType == AttributeType.LONG) {
+                    final Object a = feature.getAttribute(u);
+
+                    if (a == null) {
+                        DBFrow.add(new Long(0));
+                    } else {
+                        DBFrow.add(a);
+                    }
+                } else if (columnType == AttributeType.BOOLEAN) {
+                    final Object a = feature.getAttribute(u);
+                    if (a == null) {
+                        DBFrow.add(new Boolean(false));
+                    } else {
+                        DBFrow.add(a);
+                    }
+                }
+            }
+            dbf.writeRecord(DBFrow);
+        }
+        dbf.close();
     }
 
 }
