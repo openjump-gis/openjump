@@ -85,6 +85,7 @@ import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+
 import org.openjump.core.rasterimage.RasterSymbology;
 
 public class TreeLayerNamePanel extends JPanel implements LayerListener,
@@ -344,7 +345,9 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
         //  return;
         //}
 
-        if (!(tree.getPathForRow(rowNew).getLastPathComponent() instanceof Layer)) {
+        //[Giuseppe Aruta 2019-01-06] as suggested by Roberto Rossi (University of Padua) also RasterImageLayer don't need to be expanded when
+        // dragged on layerable tree
+        if (!(tree.getPathForRow(rowNew).getLastPathComponent() instanceof Layer) && !(tree.getPathForRow(rowNew).getLastPathComponent() instanceof RasterImageLayer)) {
           tree.expandRow(rowNew);
         }
 
@@ -717,6 +720,12 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
         new Layer[] {});
   }
 
+  
+  public static Layerable[] selectedLayerabless(LayerNamePanel layerNamePanel) {
+      return (Layerable[]) layerNamePanel.selectedNodes(Layer.class).toArray(
+          new Layerable[] {});
+    }
+  
   public Collection getSelectedLayerables() {
     return selectedNodes(Layerable.class);
   }
@@ -760,6 +769,20 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     tree.addSelectionPath(TreeUtil.findTreePath(layer, tree.getModel()));
   }
 
+  
+  public void setSelectedLayerables(Layerable[] layers) {
+      tree.getSelectionModel().clearSelection();
+
+      for (final Layerable layer : layers) {
+          addSelectedLayerable(layer);
+      }
+  }
+
+  protected void addSelectedLayerable(Layerable layer) {
+      tree.addSelectionPath(TreeUtil.findTreePath(layer, tree.getModel()));
+  }
+  
+  
   public void layerChanged(final LayerEvent e) {
     final TreeModelEvent treeModelEvent = new TreeModelEvent(this,
         new Object[] { tree.getModel().getRoot(), e.getCategory() },
