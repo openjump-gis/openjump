@@ -536,6 +536,11 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
                         out,
                         VALIDCELLS + ": "
                                 + Integer.toString(statUtils.getCount()));
+                addListElement(
+                        out,
+                        I18N.get("corg.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes")
+                                + ": "
+                                + Integer.toString(statUtils.getClasses()));
                 out.append("</ul>\n");
 
                 final HTMLFrame frame = new HTMLFrame();
