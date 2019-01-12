@@ -132,6 +132,7 @@ package com.vividsolutions.jump.util;
  */
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import com.vividsolutions.jump.I18N;
@@ -153,6 +154,8 @@ public class StatisticIndices {
     private double m_dKurt;
     private int m_iCount;
     private double m_dM2;
+    private int m_iClasses;
+    private HashMap<Double, Integer> counts;
 
     public static String MAX = "Maximum";
     public static String MIN = "Minimum";
@@ -169,6 +172,7 @@ public class StatisticIndices {
     public static String SKEWNESS = "Skewness";
     public static String KURTOSIS = "Kurtosis";
     public static String VARIANCE = "Variance";
+    public static String NUM_CLASSES = "Number of classes";
 
     public StatisticIndices() {
 
@@ -186,6 +190,7 @@ public class StatisticIndices {
         m_dKurt = 0;// Kurtosis
         m_iCount = 0; // number of samples
         m_dMedian = 0;// median
+        m_iClasses = 0;//number of classes
     }
 
     /**
@@ -224,6 +229,8 @@ public class StatisticIndices {
                 .get("com.vividsolutions.jump.util.StatisticIndices.Kurtosis");
         StatisticIndices.VARIANCE = I18N
                 .get("com.vividsolutions.jump.util.StatisticIndices.variance");
+        StatisticIndices.NUM_CLASSES = I18N
+                .get("corg.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes");
 
         final List<String> classifierList = new ArrayList<String>();
         classifierList.add(StatisticIndices.COUNT);
@@ -240,6 +247,7 @@ public class StatisticIndices {
         classifierList.add(StatisticIndices.RMS);
         classifierList.add(StatisticIndices.SKEWNESS);
         classifierList.add(StatisticIndices.KURTOSIS);
+        classifierList.add(StatisticIndices.NUM_CLASSES);
 
         return classifierList;
     }
@@ -263,6 +271,12 @@ public class StatisticIndices {
             m_dMin = Math.min(m_dMin, dValue);
             m_dStdDev = Math.sqrt(m_dVariance);
             m_dRMS = Math.sqrt(m_dRMS / m_iCount);
+            if (counts.containsKey(dValue)) {
+                counts.put(dValue, counts.get(dValue) + 1);
+            } else {
+                counts.put(dValue, 1);
+                m_iClasses++;
+            }
         }
         // Calculate Skewness and Kurtosis
         // algorithms derived from
@@ -444,6 +458,17 @@ public class StatisticIndices {
      */
     public double getKurtosis() {
         return m_dKurt;
+    }
+
+    /**
+     * Return the number of added values *
+     * less one to avoid to count class value = 0
+     * @return the number of classes
+     */
+    public int getClasses() {
+
+        return m_iClasses - 1;
+
     }
 
 }
