@@ -134,6 +134,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.vividsolutions.jump.I18N;
 
@@ -155,7 +156,7 @@ public class StatisticIndices {
     private int m_iCount;
     private double m_dM2;
     private int m_iClasses;
-    private HashMap<Double, Integer> counts;
+    private final Map<Double, Integer> counts = new HashMap<Double, Integer>();
 
     public static String MAX = "Maximum";
     public static String MIN = "Minimum";
