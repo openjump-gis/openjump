@@ -78,23 +78,24 @@ public class Shapefile  {
     public void close() {
         try {
             if (shpInputStream != null) shpInputStream.close();
-    	  }
-    	  catch (IOException ex){
+        }
+        catch (IOException ex){
             Logger.error(ex);
         }
     }
     
     private EndianDataInputStream getInputStream() throws IOException {
-        try {
+        if (shpInputStream == null && baseURL != null) {
+          try {
             URLConnection uc = baseURL.openConnection();
             // a 16 kb buffer may be up to 20% faster than the default 2 kb buffer
-            shpInputStream = new BufferedInputStream(uc.getInputStream(), 16*1024);
-        }
-        catch (Exception e){
+            shpInputStream = new BufferedInputStream(uc.getInputStream(), 16 * 1024);
+          } catch (Exception e) {
             Logger.error(e);
-        }
-        if (shpInputStream == null) {
+          }
+          if (shpInputStream == null) {
             throw new IOException("Couldn't make a connection to the URL: " + baseURL);
+          }
         }
         return new EndianDataInputStream(shpInputStream);
     }
