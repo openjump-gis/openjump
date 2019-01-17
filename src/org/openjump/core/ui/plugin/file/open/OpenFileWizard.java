@@ -174,7 +174,6 @@ public class OpenFileWizard extends AbstractWizardGroup {
         }
       }
     } finally {
-      state = null;
       workbenchContext.getLayerViewPanel().setDeferLayerEvents(false);
       workbenchContext.getLayerViewPanel().repaint();
       OpenRecentPlugIn recentPlugin = OpenRecentPlugIn.get(workbenchContext);
