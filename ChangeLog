@@ -3,6 +3,15 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2019-01-22 Giuseppe Aruta. 
+    OpenKLEM Plugin: Corrected a list of bug and made some implementations:
+    1) Reduced hydro table to 2500 cells for OpenKLEM output tab (speedup time)
+    2) added monitoring to mostly all processes
+    3) workaround to avoid 'gost' list of raster layers (partially solved)
+    4) workaround to solve border false values on the borders for aspect and 
+       slope rasters
+    5) added file type to exported raster plugin
+
 <-- Changes.txt updated until here -->
 
 2018-12-31 ede, Giuseppe Aruta.
