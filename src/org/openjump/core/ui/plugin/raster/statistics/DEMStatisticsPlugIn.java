@@ -55,11 +55,14 @@ import javax.swing.table.DefaultTableModel;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
 import org.openjump.core.rasterimage.Stats;
+import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
+import org.openjump.core.rasterimage.sextante.rasterWrappers.GridRasterWrapper;
 import org.openjump.sextante.gui.additionalResults.AdditionalResults;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.util.StatisticIndices;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -247,11 +250,13 @@ public class DEMStatisticsPlugIn extends ThreadedBasePlugIn {
             String mean;
             String stddev;
             String bands;
+            String classes;
             final DefaultTableModel dtm = (DefaultTableModel) jTable.getModel();
 
             final Object[] header = new Object[] { XMIN, YMIN, COLUMNS, ROWS,
                     CELL_SIZE, AREA, RASTER_BANDS, R_MIN, R_MAX, R_MEAN, R_STD,
-                    NODATA, VALIDCELLS, NODATACELLS };
+                    NODATA, VALIDCELLS, NODATACELLS,
+                    StatisticIndices.NUM_CLASSES };
             dtm.addColumn(I18N.get("jump.plugin.qa.DiffGeometryPlugIn.Layer")
                     .toUpperCase(), header);
             // .getSelectedObjects();
@@ -275,11 +280,19 @@ public class DEMStatisticsPlugIn extends ThreadedBasePlugIn {
                     stddev = df.format(stats.getStdDev(0)) + "-"
                             + df.format(stats.getStdDev(1)) + "-"
                             + df.format(stats.getStdDev(2));
+                    classes = "--.";
                 } else {
                     min = df.format(stats.getMin(0));
                     max = df.format(stats.getMax(0));
                     mean = df.format(stats.getMean(0));
                     stddev = df.format(stats.getStdDev(0));
+                    final OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
+                    rstLayer.create(slayer, true);
+                    final double[] data = GridRasterWrapper.rasterToArray(
+                            rstLayer, 0);
+                    final StatisticIndices statUtils = new StatisticIndices();
+                    statUtils.calculateDescriptiveStatistics(data);
+                    classes = Integer.toString(statUtils.getClasses());
                 }
                 final Envelope extent = slayer.getWholeImageEnvelope(); // Envelope
                                                                         // of
@@ -337,7 +350,7 @@ public class DEMStatisticsPlugIn extends ThreadedBasePlugIn {
                 final String TOT_AREA = df.format(area);
                 final Object[] layers = new Object[] { minx, miny, X, Y,
                         cellSize, TOT_AREA, bands, min, max, mean, stddev,
-                        nodataText, validcells, nodatacells };
+                        nodataText, validcells, nodatacells, classes };
 
                 dtm.addColumn(slayer.getName().toUpperCase(), layers);
 
