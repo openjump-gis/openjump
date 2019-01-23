@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2019-01-23 Giuseppe Aruta.
+    Added calculus of number of classes on DEM statistics plugin
+
 2019-01-22 Giuseppe Aruta. 
     OpenKLEM Plugin: Corrected a list of bug and made some implementations:
     1) Reduced hydro table to 2500 cells for OpenKLEM output tab (speedup time)
