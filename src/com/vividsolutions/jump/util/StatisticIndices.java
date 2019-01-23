@@ -468,7 +468,7 @@ public class StatisticIndices {
      */
     public int getClasses() {
 
-        return m_iClasses - 1;
+        return m_iClasses;
 
     }
 
