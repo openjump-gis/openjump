@@ -95,6 +95,54 @@ public class GridRasterWrapper {
     }
 
     /**
+     * Convert a band of OpenJUMPSextanteRasterLayer to a 1D Array as
+     * double. Limit the array to min/max values
+     * 
+     * @param OpenJUMPSextanteRasterLayer
+     * @param int band
+     * @param double min
+     * @param double max
+     * @return
+     */
+    public static double[] rasterToArray(OpenJUMPSextanteRasterLayer rstLayer,
+            int band, double min, double max) {
+        final int nx = rstLayer.getLayerGridExtent().getNX();
+        final int ny = rstLayer.getLayerGridExtent().getNY();
+        final GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
+                rstLayer, rstLayer.getLayerGridExtent());
+        final double[] data = new double[nx * ny];
+        int i = 0;
+        for (int x = 0; x < nx; x++) {// cols
+            for (int y = 0; y < ny; y++) {// rows
+                final double value = gwrapper.getCellValueAsDouble(x, y, band);
+                if (value != rstLayer.getNoDataValue() & value > min
+                        & value < max) {
+                    data[i] = value;
+                    i++;
+                }
+            }
+        }
+        final double[] data2 = new double[i];
+        System.arraycopy(data, 0, data2, 0, i);
+        return data2;
+    }
+
+    /**
+     * Convert the first band of of OpenJUMPSextanteRasterLayer to a 1D Array as
+     * double. Limit the array to min/max values
+     * 
+     * @param OpenJUMPSextanteRasterLayer
+     * @param double min
+     * @param double max
+     * @return
+     */
+
+    public static double[] rasterToArray(OpenJUMPSextanteRasterLayer rstLayer,
+            double min, double max) {
+        return rasterToArray(rstLayer, 0, min, max);
+    }
+
+    /**
      * Convert a 2DArray (Matrix) as double to java.awt.image.Raster, to band 0
      * 
      * @param 2D Array as double
