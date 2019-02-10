@@ -49,8 +49,8 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.feature.FlexibleFeatureSchema;
-import com.vividsolutions.jump.util.FlexibleDateParser;
 
 
 /**
@@ -129,13 +129,13 @@ public class GMLInputTemplate extends DefaultHandler {
     /**
      * Converts this GMLInputTemplate to a feature schema.
      */
-    public FlexibleFeatureSchema toFeatureSchema() throws ParseException {
+    public FeatureSchema toFeatureSchema() throws ParseException {
         if (!(loaded)) {
             throw new ParseException(
                 "requested toFeatureSchema w/o loading the template");
         }
 
-        FlexibleFeatureSchema fcmd = new FlexibleFeatureSchema();
+        FeatureSchema fcmd = new FlexibleFeatureSchema();
 
         fcmd.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
 
