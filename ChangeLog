@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2019-02-17 ede
+  * PLUS upgrade KML extension
+    - 0.2.5 (2019-02-17) also read <placemark> if no <Folder> exists
+
 2019-02-10 ede
   * bugfix #485 "Cannot import kml", removed currently obsolete conversion to 
     FlexibleFeatureSchema
