@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2019-02-19 Nicolas Ribot
+  * Corrected typo in SpatialiteDSMetadata datasetInfoQuery string preventing spatial tables to be listed
+
 2019-02-17 ede
   * PLUS upgrade KML extension
     - 0.2.5 (2019-02-17) also read <placemark> if no <Folder> exists

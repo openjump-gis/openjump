@@ -177,7 +177,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     } else if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
       datasetInfoQuery = "SELECT '' as table_schema, table_name, column_name, " +
               "case when z+m = 0 then 2 when z = 1 and m = 1 then 4 else 3 end as coord_dimension, " +
-              "srs_id, geometry_type_name FROM gpkg_geometry_columns where table_name = '%s'";
+              "srs_id, geometry_type_name FROM gpkg_geometry_columns";
     } else {
       datasetInfoQuery = "SELECT '' ";
     }
