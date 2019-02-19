@@ -342,11 +342,6 @@ public class FlexibleDateParser {
         return formatters;
     }
 
-    public static void main(String[] args) throws Exception {
-        //System.out.println(new FlexibleDateParser().parse("03-Mars-1998", false));
-        System.out.println(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").parse("2008-11-11T00:00:00.000+0200"));
-    }
-
     public void setVerbose(boolean b) {
         verbose = b;
     }
@@ -356,5 +351,14 @@ public class FlexibleDateParser {
         instance = new FlexibleDateParser();
       return instance;
     }
-    
+
+    public static void main(String[] args) throws Exception {
+      FlexibleDateParser fdp = new FlexibleDateParser();
+      fdp.setVerbose(true);
+
+      //System.out.println(new FlexibleDateParser().parse("03-Mars-1998", false));
+      //System.out.println(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").parse("2008-11-11T00:00:00.000+0200"));
+      System.out.println(fdp.parse("2019/02/17 22:44:35.325+02", true));
+      //System.out.println(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSSX").parse("2019/02/17 22:44:35.325+02"));
+    }
 }
