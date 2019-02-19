@@ -117,23 +117,24 @@ public class ValueConverterFactory {
     public static class  DateConverter implements ValueConverter {
         public AttributeType getType() { return AttributeType.DATE; }
         public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
-            //return rs.getDate(columnIndex);
-            Object ret = null;
-            try {
-                ret = rs.getTimestamp(columnIndex);
-                if (rs.wasNull()) return null;
-            } catch (Exception e) {
-                // try to read date from string, as some SpatialDatabases like SQLite
-                // can store DATE type in string
-                FlexibleDateParser parser = new FlexibleDateParser();
-                try {
-                    ret = parser.parse(rs.getString(columnIndex), false);
-                } catch (Exception ee) {
-                    System.err.println("cannot parse date value: \"" + rs.getString(columnIndex)
-                    + "\" Defaulting to null.\n" + ee.getMessage());
-                }
-            }
-            return ret;
+              // always return string for dates and let FlexibleFeature convert later during runtime
+              return rs.getString(columnIndex);
+//            Object ret = null;
+//            try {
+//                ret = rs.getTimestamp(columnIndex);
+//                if (rs.wasNull()) return null;
+//            } catch (Exception e) {
+//                // try to read date from string, as some SpatialDatabases like SQLite
+//                // can store DATE type in string
+//                FlexibleDateParser parser = new FlexibleDateParser();
+//                try {
+//                    ret = parser.parse(rs.getString(columnIndex), false);
+//                } catch (Exception ee) {
+//                    System.err.println("cannot parse date value: \"" + rs.getString(columnIndex)
+//                    + "\" Defaulting to null.\n" + ee.getMessage());
+//                }
+//            }
+//            return ret;
         }
     }
 

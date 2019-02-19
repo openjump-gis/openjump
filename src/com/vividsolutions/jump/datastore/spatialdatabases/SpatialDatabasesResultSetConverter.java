@@ -2,9 +2,9 @@ package com.vividsolutions.jump.datastore.spatialdatabases;
 
 import com.vividsolutions.jump.datastore.jdbc.ValueConverter;
 import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.feature.FlexibleFeature;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -47,7 +47,8 @@ public class SpatialDatabasesResultSetConverter {
   public Feature getFeature()
       throws Exception {
     init();
-    Feature f = new BasicFeature(featureSchema);
+    // use flex feature for lazy data type conversion
+    Feature f = new FlexibleFeature(featureSchema);
     for (int i = 0; i < mapper.length; i++) {
       f.setAttribute(i, mapper[i].getValue(rs, i + 1));
     }
