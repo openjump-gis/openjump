@@ -4,7 +4,14 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2019-02-19 Nicolas Ribot
-  * Corrected typo in SpatialiteDSMetadata datasetInfoQuery string preventing spatial tables to be listed
+  * Corrected typo in SpatialiteDSMetadata datasetInfoQuery string preventing 
+    spatial tables to be listed
+
+2019-02-19 ede
+  * speedup loading GeoPackage datasets w/ date/time columns utilizing 
+    flex feature's lazy conversion
+  * added format to FlexibleDateParser for dates containing 
+    ISO 8601 time zone "-08; -0800; -08:00" eg. "2019/02/17 22:44:35.325+02"
 
 2019-02-17 ede
   * PLUS upgrade KML extension
