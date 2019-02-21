@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -23,7 +25,7 @@ public class FeatureInfoRequest extends AbstractWMSRequest {
   private BoundingBox bbox;
   private int height, width;
 
-  public FeatureInfoRequest(WMSLayer layer) throws IOException {
+  public FeatureInfoRequest(WMSLayer layer) throws IOException, KeyManagementException, NoSuchAlgorithmException {
     super(layer.getService());
     this.wmsLayer = layer;
   }
@@ -45,7 +47,7 @@ public class FeatureInfoRequest extends AbstractWMSRequest {
   }
 
   @Override
-  public URL getURL() throws MalformedURLException {
+  public URL getURL() throws MalformedURLException, KeyManagementException, NoSuchAlgorithmException {
     String featInfoUrl = service.getCapabilities().getFeatureInfoURL();
 
     if (featInfoUrl.contains("?")) {

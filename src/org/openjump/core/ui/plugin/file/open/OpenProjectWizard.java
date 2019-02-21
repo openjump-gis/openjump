@@ -366,6 +366,13 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                                 rasterImageLayer.getSymbology(),
                                 sourceLayerCategory);
                         continue;
+                    } else if (layerable instanceof WMSLayer) {
+                        try {
+                            ((WMSLayer) layerable).getService().initialize();
+                        } catch(Exception e) {
+                            Logger.trace(e);
+                            continue;
+                        }
                     }
 
                     newLayerManager.addLayerable(sourceLayerCategory.getName(),

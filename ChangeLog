@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2019-02-21 mmichaud <m.michael.michaud@orange.fr>
+  * Add an option to connect to a WMS with unchecked certificate authority
+
 2019-02-19 Nicolas Ribot
   * Corrected typo in SpatialiteDSMetadata datasetInfoQuery string preventing 
     spatial tables to be listed

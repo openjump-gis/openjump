@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -247,7 +249,7 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
     private final String CLOSE = I18N
             .get("ui.plugin.imagery.ImageLayerManagerDialog.Close");
 
-    public JPanel getLegendPanel(PlugInContext context) throws IOException {
+    public JPanel getLegendPanel(PlugInContext context) throws IOException, KeyManagementException, NoSuchAlgorithmException {
 
         final JPanel mainPanel = new JPanel(new GridBagLayout());
         final WMSLayer layer = (WMSLayer) LayerTools.getSelectedLayerable(

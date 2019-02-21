@@ -39,6 +39,8 @@ package com.vividsolutions.wms.ui;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -211,7 +213,7 @@ public class WMSViewer extends JFrame implements ActionListener, MouseListener {
         disconnectButton.setEnabled( true );
         getImageButton.setEnabled( true );
         connected = true;
-      } catch( IOException ioe ) {
+      } catch( IOException| KeyManagementException| NoSuchAlgorithmException ioe ) {
         // failed to connect and retrieve capabilities
 
       }

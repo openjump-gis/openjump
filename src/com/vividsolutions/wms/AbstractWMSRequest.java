@@ -9,6 +9,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -62,7 +64,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
    * @return URL
    * @throws MalformedURLException
    */
-  abstract public URL getURL() throws MalformedURLException;
+  abstract public URL getURL() throws MalformedURLException, KeyManagementException, NoSuchAlgorithmException;
 
   /**
    * unified way to create a url connection, may be overwritten and modified
@@ -70,7 +72,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
    * @return
    * @throws IOException
    */
-  protected HttpURLConnection prepareConnection() throws IOException {
+  protected HttpURLConnection prepareConnection() throws IOException, KeyManagementException, NoSuchAlgorithmException {
     URL requestUrl = getURL();
     con = (HttpURLConnection) requestUrl.openConnection();
 
@@ -100,7 +102,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
    * 
    * @Override
    */
-  public HttpURLConnection getConnection() throws IOException {
+  public HttpURLConnection getConnection() throws IOException, KeyManagementException, NoSuchAlgorithmException {
     if (con == null)
       con = prepareConnection();
     return con;
@@ -111,7 +113,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
    * 
    * @return the retrieved map Image
    */
-  public Image getImage() throws IOException {
+  public Image getImage() throws IOException, KeyManagementException, NoSuchAlgorithmException {
     HttpURLConnection con = getConnection();
 
     boolean httpOk = con.getResponseCode() == HttpURLConnection.HTTP_OK;
@@ -147,7 +149,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
    * @return
    * @throws IOException
    */
-  public String getText() throws IOException {
+  public String getText() throws IOException, KeyManagementException, NoSuchAlgorithmException {
     HttpURLConnection con = getConnection();
     return readConnection(con, 0, false);
   }

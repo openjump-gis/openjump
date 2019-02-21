@@ -41,7 +41,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.net.ssl.*;
 import javax.swing.JOptionPane;
 
 import org.openjump.util.UriUtil;
@@ -67,6 +73,7 @@ public class WMService {
   private URL serverUrl;
   private String wmsVersion = WMS_1_1_1;
   private Capabilities cap;
+  // true if the user just confirm that he accepts or not untrusted connexion
 
   /**
    * Constructs a WMService object from a server URL.
@@ -100,7 +107,7 @@ public class WMService {
   /**
    * @throws IOException
    */
-  public void initialize() throws IOException {
+  public void initialize() throws IOException, KeyManagementException, NoSuchAlgorithmException {
     initialize(false);
   }
 
@@ -116,7 +123,7 @@ public class WMService {
    *          alert the user if a different GetMap URL is available
    * @throws IOException
    */
-  public void initialize(boolean alertDifferingURL) throws IOException {
+  public void initialize(boolean alertDifferingURL) throws IOException, NoSuchAlgorithmException, KeyManagementException {
     // [UT]
     String req = "request=capabilities&WMTVER=1.0";
     IParser parser = new ParserWMS1_1();
@@ -134,15 +141,15 @@ public class WMService {
       parser = new ParserWMS1_3();
     }
 
-//    try {
+    try {
       String requestUrlString = this.serverUrl + req;
       URL requestUrl = new URL(requestUrlString);
 
       URLConnection con = new BasicRequest(this, requestUrl).getConnection();
-      
+
       // Parser p = new Parser();
       cap = parser.parseCapabilities(this, con.getInputStream());
-      String url1 = cap.getService().getServerUrl().toString();
+      String url1 = cap.getService().getServerUrl();
       String url2 = cap.getGetMapURL();
 
       String compare_url1 = UriUtil.urlStripAuth(legalize(url1));
@@ -151,8 +158,8 @@ public class WMService {
       // user
       if (!compare_url1.equals(compare_url2) && alertDifferingURL) {
         int resp = showConfirmDialog(null, I18N.getMessage(
-            "com.vididsolutions.wms.WMService.Other-GetMap-URL-Found",
-            new Object[] { url2 }), null, YES_NO_OPTION);
+                "com.vididsolutions.wms.WMService.Other-GetMap-URL-Found",
+                new Object[]{url2}), null, YES_NO_OPTION);
         // nope. user wants to keep the initial url
         if (resp == NO_OPTION) {
           cap.setGetMapURL(url1);
@@ -160,7 +167,7 @@ public class WMService {
         // make sure url2 has auth info if needed
         else if (!UriUtil.urlGetUser(url1).isEmpty()) {
           String url2_withAuth = UriUtil.urlAddCredentials(url2,
-              UriUtil.urlGetUser(url1), UriUtil.urlGetPassword(url1));
+                  UriUtil.urlGetUser(url1), UriUtil.urlGetPassword(url1));
           cap.setGetMapURL(url2_withAuth);
         }
       } else {
@@ -170,6 +177,26 @@ public class WMService {
         // JPP mailing list
         cap.setGetMapURL(url1);
       }
+    } catch(SSLHandshakeException ex) {
+      int r = JOptionPane.showConfirmDialog(null,
+              I18N.getMessage("com.vididsolutions.wms.WMService.UnverifiedCertificate", new Object[]{
+                      // create a new URL to hide user/password
+                      new URL(serverUrl.getProtocol(), serverUrl.getHost(), serverUrl.getPort(), serverUrl.getFile())
+              }),
+              "Confirmation dialog",
+              YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+
+      if (r==JOptionPane.YES_OPTION) {
+        setTrustOption(true, serverUrl);
+        initialize(alertDifferingURL);
+      } else throw ex;
+      //null, I18N.getMessage(
+//          "com.vividsolutions.wms.WMService.WMS-Not-Found",
+//          new Object[] { e.getLocalizedMessage() }), I18N
+//          .get("com.vividsolutions.wms.WMService.Error"),
+//          JOptionPane.ERROR_MESSAGE);
+//      throw e;
+    }
 
     // [2016.01 ede] deactivated the error handling here as it leads to an
     // infinite stack loop when trying to open a project containing a wms layer
@@ -193,6 +220,25 @@ public class WMService {
 //          JOptionPane.ERROR_MESSAGE);
 //      throw e;
 //    }
+  }
+
+  TrustManager trm = new X509TrustManager() {
+    public X509Certificate[] getAcceptedIssuers() { return null; }
+    public void checkClientTrusted(X509Certificate[] certs, String authType) { }
+    public void checkServerTrusted(X509Certificate[] certs, String authType) { }
+  };
+  Set<URL> trustedURLs = new HashSet<>();
+
+  private void setTrustOption(boolean trust, URL url)
+          throws KeyManagementException, NoSuchAlgorithmException {
+    SSLContext sc = SSLContext.getInstance("SSL");
+    if (trust || trustedURLs.contains(url)) {
+      sc.init(null, new TrustManager[]{trm}, null);
+      trustedURLs.add(url);
+    } else {
+      sc.init(null, null, null);
+    }
+    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
   }
 
   /**
