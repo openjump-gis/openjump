@@ -38,8 +38,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -111,7 +109,7 @@ public class EditWMSQueryPanel extends JPanel {
 
     try {
       service = layer.getService();
-    } catch (IOException| KeyManagementException| NoSuchAlgorithmException e) {
+    } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
