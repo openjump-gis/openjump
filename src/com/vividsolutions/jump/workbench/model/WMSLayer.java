@@ -38,8 +38,6 @@ import java.io.IOException;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -86,13 +84,13 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
   }
 
   public WMSLayer(LayerManager layerManager, String serverURL, String srs,
-      List<String> layerNames, String format, String version) throws IOException, KeyManagementException, NoSuchAlgorithmException {
+      List<String> layerNames, String format, String version) throws IOException {
     this(layerManager, initializedService(serverURL, version), srs, layerNames,
         format);
   }
 
   private static WMService initializedService(String serverURL, String version)
-      throws IOException, KeyManagementException, NoSuchAlgorithmException {
+      throws IOException {
     WMService initializedService = new WMService(serverURL, version);
     initializedService.initialize();
     return initializedService;
@@ -152,7 +150,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
     this.alpha = alpha;
   }
 
-  public Image createImage(LayerViewPanel panel) throws IOException, KeyManagementException, NoSuchAlgorithmException {
+  public Image createImage(LayerViewPanel panel) throws IOException {
 
     MapRequest request = createRequest(panel);
     URL newURL = request.getURL();
@@ -183,7 +181,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
     return new BoundingBox(srs, e);
   }
 
-  public MapRequest createRequest(LayerViewPanel panel) throws IOException, KeyManagementException, NoSuchAlgorithmException {
+  public MapRequest createRequest(LayerViewPanel panel) throws IOException {
     MapRequest request = getService().createMapRequest();
     request.setBoundingBox(toBoundingBox(srs, panel.getViewport()
         .getEnvelopeInModelCoordinates()));
@@ -243,7 +241,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
     return blackboard;
   }
 
-  public WMService getService() throws IOException, KeyManagementException, NoSuchAlgorithmException {
+  public WMService getService() throws IOException {
     if (service == null) {
       Assert.isTrue(serverURL != null);
       setService(initializedService(serverURL, wmsVersion));
@@ -283,7 +281,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
           envelope.expandToInclude(bb.getEnvelope());
         }
       }
-    } catch (IOException|KeyManagementException|NoSuchAlgorithmException e) {
+    } catch (IOException e) {
       Logger
           .error(
               "WMSLayer envelope calculation failed."

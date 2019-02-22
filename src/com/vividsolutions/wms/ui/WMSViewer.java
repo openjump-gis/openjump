@@ -1,7 +1,3 @@
-
-
-
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -39,10 +35,7 @@ package com.vividsolutions.wms.ui;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.swing.*;
@@ -213,7 +206,7 @@ public class WMSViewer extends JFrame implements ActionListener, MouseListener {
         disconnectButton.setEnabled( true );
         getImageButton.setEnabled( true );
         connected = true;
-      } catch( IOException| KeyManagementException| NoSuchAlgorithmException ioe ) {
+      } catch( IOException ioe ) {
         // failed to connect and retrieve capabilities
 
       }

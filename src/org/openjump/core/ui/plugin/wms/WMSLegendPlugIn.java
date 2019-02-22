@@ -13,8 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -107,19 +105,13 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
             @Override
             public void actionPerformed(ActionEvent e) {
                 save(scrollPane);
-                // frame.dispose();
-                return;
             }
         });
 
         closeButton.addActionListener(new java.awt.event.ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 frame.dispose();
-
-                return;
             }
         });
 
@@ -249,7 +241,7 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
     private final String CLOSE = I18N
             .get("ui.plugin.imagery.ImageLayerManagerDialog.Close");
 
-    public JPanel getLegendPanel(PlugInContext context) throws IOException, KeyManagementException, NoSuchAlgorithmException {
+    public JPanel getLegendPanel(PlugInContext context) throws IOException {
 
         final JPanel mainPanel = new JPanel(new GridBagLayout());
         final WMSLayer layer = (WMSLayer) LayerTools.getSelectedLayerable(
@@ -267,7 +259,7 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
             final JLabel nameLabel = new JLabel(
                     I18N.getMessage(
                             "org.openjump.core.ui.plugin.queries.SimpleQuery.layer" + ": {0}", //$NON-NLS-1$
-                            new Object[] { layerTitle }));
+                            layerTitle));
             nameLabel.setHorizontalAlignment(JLabel.CENTER);
 
             nameLabel.setFont(new Font("Verdana", Font.BOLD, 16));
@@ -283,7 +275,7 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
             final Image image = req.getImage();
             final ImageIcon legendIcon = new ImageIcon(image);
 
-            if (/* getStyles(context, layerName) != null && */legendIcon != null) {
+            if (legendIcon != null) {
                 final JLabel labelIcon = new JLabel(legendIcon, JLabel.CENTER);
                 mainPanel.add(labelIcon, BorderLayout.SOUTH);
             } else {

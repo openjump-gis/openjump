@@ -40,8 +40,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -54,7 +52,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-import org.deegree.security.drm.ManagementException;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 import org.openjump.util.UriUtil;
 
@@ -66,7 +63,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.wizard.CancelNextException;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanelV2;
 import com.vividsolutions.wms.MapImageFormatChooser;
-import com.vividsolutions.wms.WMSException;
 import com.vividsolutions.wms.WMService;
 
 public class URLWizardPanel extends JPanel implements WizardPanelV2 {
@@ -160,7 +156,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
     return I18N.get(I18N_PREFIX + "please-enter-the-url-of-the-wms-server");
   }
 
-  public void exitingToRight() throws WorkbenchException, NoSuchAlgorithmException, KeyManagementException {
+  public void exitingToRight() throws WorkbenchException {
     try {
       String url = urlPanel.getUrl();
       url = UriUtil.urlAddCredentials(url, urlPanel.getUser(), urlPanel.getPass());
@@ -203,8 +199,6 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       dataMap.put(FORMAT_KEY, format);
       dataMap.put(MapLayerWizardPanel.INITIAL_LAYER_NAMES_KEY, null);
       dataMap.put(VERSION_KEY, wmsVersion);
-    } catch (WMSException e) {
-      throw new CancelNextException(e);
     } catch (IOException e) {
       throw new CancelNextException(e);
     }

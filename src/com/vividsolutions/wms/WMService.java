@@ -81,6 +81,7 @@ public class WMService {
    * @param serverUrl
    *          the URL of the WMS server
    * @param wmsVersion
+   *          the WMS version
    */
   public WMService(String serverUrl, String wmsVersion) {
     try {
@@ -105,9 +106,9 @@ public class WMService {
   }
 
   /**
-   * @throws IOException
+   * @throws IOException if an error occurs during connection initialization
    */
-  public void initialize() throws IOException, KeyManagementException, NoSuchAlgorithmException {
+  public void initialize() throws IOException {
     initialize(false);
   }
 
@@ -121,9 +122,9 @@ public class WMService {
    * 
    * @param alertDifferingURL
    *          alert the user if a different GetMap URL is available
-   * @throws IOException
+   * @throws IOException if an error occurs during connection initialization
    */
-  public void initialize(boolean alertDifferingURL) throws IOException, NoSuchAlgorithmException, KeyManagementException {
+  public void initialize(boolean alertDifferingURL) throws IOException {
     // [UT]
     String req = "request=capabilities&WMTVER=1.0";
     IParser parser = new ParserWMS1_1();
@@ -157,9 +158,11 @@ public class WMService {
       // if the difference is only in credentials then use url1 else ask from
       // user
       if (!compare_url1.equals(compare_url2) && alertDifferingURL) {
-        int resp = showConfirmDialog(null, I18N.getMessage(
-                "com.vididsolutions.wms.WMService.Other-GetMap-URL-Found",
-                new Object[]{url2}), null, YES_NO_OPTION);
+        int resp = showConfirmDialog(
+                null,
+                I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found", url2),
+                null,
+                YES_NO_OPTION);
         // nope. user wants to keep the initial url
         if (resp == NO_OPTION) {
           cap.setGetMapURL(url1);
@@ -178,24 +181,24 @@ public class WMService {
         cap.setGetMapURL(url1);
       }
     } catch(SSLHandshakeException ex) {
-      int r = JOptionPane.showConfirmDialog(null,
-              I18N.getMessage("com.vididsolutions.wms.WMService.UnverifiedCertificate", new Object[]{
+      int r = JOptionPane.showConfirmDialog(
+              null,
+              I18N.getMessage("com.vididsolutions.wms.WMService.UnverifiedCertificate",
                       // create a new URL to hide user/password
                       new URL(serverUrl.getProtocol(), serverUrl.getHost(), serverUrl.getPort(), serverUrl.getFile())
-              }),
+              ),
               "Confirmation dialog",
-              YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+              YES_NO_OPTION,
+              JOptionPane.WARNING_MESSAGE);
 
       if (r==JOptionPane.YES_OPTION) {
-        setTrustOption(true, serverUrl);
+        try {
+          setTrustOption(true, serverUrl);
+        } catch(KeyManagementException|NoSuchAlgorithmException ex2) {
+          throw new IOException(ex2);
+        }
         initialize(alertDifferingURL);
-      } else throw ex;
-      //null, I18N.getMessage(
-//          "com.vividsolutions.wms.WMService.WMS-Not-Found",
-//          new Object[] { e.getLocalizedMessage() }), I18N
-//          .get("com.vividsolutions.wms.WMService.Error"),
-//          JOptionPane.ERROR_MESSAGE);
-//      throw e;
+      } else throw new IOException(ex);
     }
 
     // [2016.01 ede] deactivated the error handling here as it leads to an
@@ -222,12 +225,12 @@ public class WMService {
 //    }
   }
 
-  TrustManager trm = new X509TrustManager() {
+  private TrustManager trm = new X509TrustManager() {
     public X509Certificate[] getAcceptedIssuers() { return null; }
     public void checkClientTrusted(X509Certificate[] certs, String authType) { }
     public void checkServerTrusted(X509Certificate[] certs, String authType) { }
   };
-  Set<URL> trustedURLs = new HashSet<>();
+  private Set<URL> trustedURLs = new HashSet<>();
 
   private void setTrustOption(boolean trust, URL url)
           throws KeyManagementException, NoSuchAlgorithmException {
