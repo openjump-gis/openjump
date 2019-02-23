@@ -181,6 +181,7 @@ public class WMService {
         cap.setGetMapURL(url1);
       }
     } catch(SSLHandshakeException ex) {
+      /*
       int r = JOptionPane.showConfirmDialog(
               null,
               I18N.getMessage("com.vididsolutions.wms.WMService.UnverifiedCertificate",
@@ -199,6 +200,8 @@ public class WMService {
         }
         initialize(alertDifferingURL);
       } else throw new IOException(ex);
+      */
+      throw new IOException(ex);
     }
 
     // [2016.01 ede] deactivated the error handling here as it leads to an
@@ -225,24 +228,24 @@ public class WMService {
 //    }
   }
 
-  private TrustManager trm = new X509TrustManager() {
-    public X509Certificate[] getAcceptedIssuers() { return null; }
-    public void checkClientTrusted(X509Certificate[] certs, String authType) { }
-    public void checkServerTrusted(X509Certificate[] certs, String authType) { }
-  };
-  private Set<URL> trustedURLs = new HashSet<>();
+  //private TrustManager trm = new X509TrustManager() {
+  //  public X509Certificate[] getAcceptedIssuers() { return null; }
+  //  public void checkClientTrusted(X509Certificate[] certs, String authType) { }
+  //  public void checkServerTrusted(X509Certificate[] certs, String authType) { }
+  //};
+  //private Set<URL> trustedURLs = new HashSet<>();
 
-  private void setTrustOption(boolean trust, URL url)
-          throws KeyManagementException, NoSuchAlgorithmException {
-    SSLContext sc = SSLContext.getInstance("SSL");
-    if (trust || trustedURLs.contains(url)) {
-      sc.init(null, new TrustManager[]{trm}, null);
-      trustedURLs.add(url);
-    } else {
-      sc.init(null, null, null);
-    }
-    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-  }
+  //private void setTrustOption(boolean trust, URL url)
+  //        throws KeyManagementException, NoSuchAlgorithmException {
+  //  SSLContext sc = SSLContext.getInstance("SSL");
+  //  if (trust || trustedURLs.contains(url)) {
+  //    sc.init(null, new TrustManager[]{trm}, null);
+  //    trustedURLs.add(url);
+  //  } else {
+  //    sc.init(null, null, null);
+  //  }
+  //  HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+  //}
 
   /**
    * Gets the url stringof the map service.

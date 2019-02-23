@@ -16,6 +16,7 @@ import net.iharder.Base64;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
+import org.openjump.util.URLConnectionProvider;
 import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.util.FileUtil;
@@ -69,6 +70,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
    */
   protected HttpURLConnection prepareConnection() throws IOException {
     URL requestUrl = getURL();
+    con = (HttpURLConnection) URLConnectionProvider.getJUMP_URLConnectionProvider().getConnection(requestUrl);
     con = (HttpURLConnection) requestUrl.openConnection();
 
     con.setConnectTimeout(Integer.parseInt(
