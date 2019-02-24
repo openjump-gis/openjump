@@ -61,7 +61,8 @@ public class LegendPlugIn extends AbstractPlugIn {
 
     String taskString = I18N.get("ui.WorkbenchFrame.task");
     String layerString = I18N.get("ui.plugin.analysis.BufferPlugIn.layer");
-    String labelString = I18N.get("ui.renderer.style.LabelStyle.Label");
+    String labelString = I18N
+            .get("ui.renderer.style.ColorThemingTableModel.label");
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
