@@ -54,17 +54,18 @@ public class URLConnectionProvider {
     if (!protocol.equals("https")) return url.openConnection();
     URLConnection connection;
     try {
+      setTrustOption(false, null);
       connection = url.openConnection();
       connection.connect(); // try to connect
       return connection;    // can connect
-    } catch(IOException e) {
+    } catch(IOException|KeyManagementException|NoSuchAlgorithmException e) {
       String baseURL = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath()).toString();
       if (authorizedURL.contains(baseURL) || acceptConnection(url)) {
         try {
           setTrustOption(true, url);
           connection = url.openConnection();
           authorizedURL.add(baseURL);
-          setTrustOption(false, url);
+          //setTrustOption(false, null);
           return connection;
         } catch(KeyManagementException|NoSuchAlgorithmException ex2) {
           throw new IOException(ex2);
@@ -98,10 +99,12 @@ public class URLConnectionProvider {
   private void setTrustOption(boolean trust, URL url)
           throws KeyManagementException, NoSuchAlgorithmException {
     SSLContext sc = SSLContext.getInstance("SSL");
-    if (trust || trustedURLs.contains(url)) {
+    if (trust || (url != null && trustedURLs.contains(url))) {
+      System.out.println("Set the trust manager to not check certificates");
       sc.init(null, new TrustManager[]{trm}, null);
       trustedURLs.add(url);
     } else {
+      System.out.println("Set the trust manager to check certificates");
       sc.init(null, null, null);
     }
     HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
