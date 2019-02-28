@@ -1,6 +1,7 @@
 package com.vividsolutions.jump.datastore.spatialite;
 
 import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.spatialdatabases.*;
@@ -289,24 +290,24 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     // tries to load spatialite, assuming it is available on the system's path
     Statement stmt = null;
     try {
-      stmt = conn.getJdbcConnection().createStatement();
-      stmt.executeUpdate("SELECT load_extension('mod_spatialite')");
-      // ex is thrown if extension cannot be loaded
-      this.spatialiteLoaded = true;
-      ResultSet rs = stmt.executeQuery("select spatialite_version()");
-      rs.next();
-      this.setSpatialiteVersion(rs.getString(1));
-
-      JUMPWorkbench.getInstance().getFrame().log(
-          "SpatialDatabasesPlugin: Spatialite extension loaded for this connexion, version: "
-          + this.getSpatialiteVersion(), this.getClass());
+//      stmt = conn.getJdbcConnection().createStatement();
+//      stmt.executeUpdate("SELECT load_extension('mod_spatialite')");
+//      // ex is thrown if extension cannot be loaded
+//      this.spatialiteLoaded = true;
+//      ResultSet rs = stmt.executeQuery("select spatialite_version()");
+//      rs.next();
+//      this.setSpatialiteVersion(rs.getString(1));
+//
+//      JUMPWorkbench.getInstance().getFrame().log(
+//          "SpatialDatabasesPlugin: Spatialite extension loaded for this connexion, version: "
+//          + this.getSpatialiteVersion(), this.getClass());
     } catch (Exception e) {
       JUMPWorkbench.getInstance().getFrame().log(
           "SpatialDatabasesPlugin: CANNOT load Spatialite Extention (mod_spatialite), reason:"
           + e.getMessage(), this.getClass());
     } finally {
       try {
-        stmt.close();
+//        stmt.close();
       } catch (Throwable th) {
         // TODO: log
         th.printStackTrace();
@@ -418,7 +419,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
   /**
    * builds the map of geometric columns database type: WKB, WKT, SPATIALITE to
    * be able to build custom queries for extent and geo type retrieval. The
-   * geometry_format column of the metadata will be queries to find geometry
+   * geometry_format column of the metadata will be queried to find geometry
    * type (column only detected in the FDO_LAYOUT format). For other layout,
    * will default to SPATIALITE type
    */
@@ -498,6 +499,15 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
   public GeometryColumn getGeometryColumn(String datasetName, String geoCol) {
     List<GeometryColumn> l = this.geometryColumnListMap.get(datasetName);
     if (l == null) {
+      // 2018-02-28: also look into dataStoreLayers to find geo column, now this container is used to
+      // speedup DB tables discovery
+      if (this.dataStoreLayers != null) {
+        for (DataStoreLayer dsl : this.dataStoreLayers) {
+          if (datasetName.equals(dsl.getFullName()) && geoCol.equals(dsl.getGeoCol().getName())) {
+            return dsl.getGeoCol();
+          }
+        }
+      }
       return null;
     }
     

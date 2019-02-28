@@ -292,7 +292,6 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
       // DataStoreLayer list is retrieved when getDatasetNames is called
       // TODO: propagate to DataStoreMetadata interface
       if (md instanceof SpatialDatabasesDSMetadata && ((SpatialDatabasesDSMetadata)md).getDataStoreLayers() != null) {
-        System.out.println("adding datastorelayer directly !");
         for (DataStoreLayer layer : ((SpatialDatabasesDSMetadata)md).getDataStoreLayers()) {
           ArrayList<DataStoreLayer> newEntry = new ArrayList<>();
           newEntry.add(layer);
