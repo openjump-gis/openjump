@@ -3,6 +3,8 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+<-- Changes.txt updated until here -->
+
 2019-02-28 Nicolas Ribot
   * Corrected another bug preventing some Spatialite tables to be loaded.
 
