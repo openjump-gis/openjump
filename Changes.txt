@@ -1,5 +1,35 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
+  Improvements
+  * Add an option to connect to a WMS with invalid certificate
+  * speedup loading GeoPackage datasets w/ date/time columns utilizing 
+    flex feature's lazy conversion
+  * added format to FlexibleDateParser for dates containing 
+    ISO 8601 time zone "-08; -0800; -08:00" eg. "2019/02/17 22:44:35.325+02"
+  * Added calculus of number of classes on DEM statistics plugin
+
+  Bug Fixes
+  * Corrected typo in SpatialiteDSMetadata datasetInfoQuery string preventing 
+    spatial tables to be listed
+  * Corrected another bug preventing some Spatialite tables to be loaded.
+  * bugfix "NPE with adding data into the second project with OJ"
+
+  PLUS
+  * PLUS upgrade KML extension
+    - 0.2.5 (2019-02-17) also read <placemark> if no <Folder> exists
+  * bugfix #485 "Cannot import kml", removed currently obsolete conversion to 
+    FlexibleFeatureSchema
+  * OpenKLEM Plugin: Corrected a list of bug and made some implementations:
+    1) Reduced hydro table to 2500 cells for OpenKLEM output tab (speedup time)
+    2) added monitoring to mostly all processes
+    3) workaround to avoid 'gost' list of raster layers (partially solved)
+    4) workaround to solve border false values on the borders for aspect and 
+       slope rasters
+    5) added file type to exported raster plugin
+
+
+Version 1.14 release rev.6065 (released on 01. January 2019)
+
   Highlights
   * CORE source is now java 8
   * general java 11 runtime compatibility
