@@ -28,7 +28,7 @@
 
 /*****************************************************
  * created:  		27.Oct.2009
- * last modified:   					
+ * last modified:   13.March 2019 (Giuseppe Aruta)					
  * 					
  * 
  * @author sstein
@@ -40,23 +40,39 @@
 
 package org.openjump.core.ui.plugin.raster;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jump.task.TaskMonitor;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JComboBox;
+
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 
-import java.awt.geom.Point2D;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.BasicFeature;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  * Creates a lattice for the current selected raster image
@@ -67,117 +83,175 @@ import java.awt.geom.Point2D;
  *	
  * @author sstein
  *
+ *Added Layerable drop down list for raster layers
+ *@author Giuseppe Aruta[2019-03-16]
  **/
-public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
-  
-    private PlugInContext context = null;
-    
+public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn
+        implements ThreadedPlugIn {
+
     GeometryFactory gfactory = new GeometryFactory();
-    private String sName = "Create Lattice from Raster";
-    private String sBand = "band";
-    private String sLattice = "lattice";
-    private String sCreatePoints = "creating points";
-        
+    private final String sName = I18N
+            .get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.Create-Lattice-from-Raster");
+    private final String sBand = I18N
+            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
+    private final String sLattice = I18N
+            .get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.lattice");
+    private final String sCreatePoints = I18N
+            .get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.creating-points");
+    private static String Source_Layer = I18N
+            .get("ui.GenericNames.Source-Layer");
+
+    private final String sSidebar = sLattice;
+
+    @Override
     public void initialize(PlugInContext context) throws Exception {
 
-    	this.sName = I18N.get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.Create-Lattice-from-Raster");
-    	this.sBand = I18N.get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
-        this.sLattice = I18N.get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.lattice");
-        this.sCreatePoints = I18N.get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.creating-points");
-        
-    	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    	featureInstaller.addMainMenuItem(
-    			this,								//exe
-    			new String[] {MenuNames.RASTER,  MenuNames.RASTER_VECTORIALIZE },	//menu path
-    			sName, 
-    			false,			//checkbox
-    			null,			//icon
-    			createEnableCheck(context.getWorkbenchContext())); //enable check
+        FeatureInstaller.getInstance()
+                .addMainMenuPlugin(
+                        this, //exe
+                        new String[] { MenuNames.RASTER,
+                                MenuNames.RASTER_VECTORIALIZE }, //menu path
+                        sName + "...", false, //checkbox
+                        null, //icon
+                        createEnableCheck(context.getWorkbenchContext()));
     }
 
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-
+    public static MultiEnableCheck createEnableCheck(
+            WorkbenchContext workbenchContext) {
+        final EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
         return new MultiEnableCheck()
-                        .add(checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1, RasterImageLayer.class));
+                .add(checkFactory
+                        .createWindowWithAssociatedTaskFrameMustBeActiveCheck())
+                .add(checkFactory.createAtLeastNLayerablesOfTypeMustExistCheck(
+                        1, RasterImageLayer.class));
     }
-    
+
     /**
      *@inheritDoc
      */
     public String getIconString() {
         return null;
     }
-   
-    
-	public boolean execute(PlugInContext context) throws Exception{
-		//-- not used here
-        return true;	    
-	}
 
-	public void run(TaskMonitor monitor, PlugInContext context)
-			throws Exception {
-		monitor.allowCancellationRequests();
-		GeometryFactory gf = new GeometryFactory();
-		//-- get the rasterimage layer
-        RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
+    @Override
+    public boolean execute(PlugInContext context) throws Exception {
+        //Unlike ValidatePlugIn, here we always call #initDialog because we want
+        //to update the layer comboboxes.
+        setDialogValues(context);
+        dialog.setVisible(true);
+        if (!dialog.wasOKPressed()) {
+            return false;
+        } else {
+            getDialogValues(dialog);
+        }
+        return true;
+    }
+
+    private void getDialogValues(MultiInputDialog dialog) {
+        rLayer = (RasterImageLayer) dialog.getLayerable(Source_Layer);
+
+    }
+
+    @Override
+    public void run(TaskMonitor monitor, PlugInContext context)
+            throws Exception {
+        monitor.allowCancellationRequests();
+        final GeometryFactory gf = new GeometryFactory();
+        //-- get the rasterimage layer
+
         //System.out.println(rLayer);
-        
-        if (rLayer==null){
-            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
+
+        if (rLayer == null) {
+            context.getWorkbenchFrame()
+                    .warnUser(
+                            I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return;
         }
-		
-		//-- create a sextante raster layer since it is easier to handle
-		OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
-		// [mmichaud 2013-05-25] false : this is a temporary image not a file based image
+
+        //-- create a sextante raster layer since it is easier to handle
+        final OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
+        // [mmichaud 2013-05-25] false : this is a temporary image not a file based image
         rstLayer.create(rLayer, false);
-		// create a gridwrapper to later access the cells
-		GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(rstLayer, rstLayer.getLayerGridExtent());
-		//-- create the FeatureSchema
-		FeatureSchema fs = new FeatureSchema();
-		fs.addAttribute("geometry", AttributeType.GEOMETRY);
-		fs.addAttribute("cellid_x", AttributeType.INTEGER);
-		fs.addAttribute("cellid_y", AttributeType.INTEGER);
-		int numBands = rstLayer.getBandsCount();
-		for (int i = 0; i < numBands; i++) {
-			fs.addAttribute( sBand + "_" + i, AttributeType.DOUBLE);
-		}
-		//-- create a new empty dataset
-		FeatureCollection fd = new FeatureDataset(fs);
-		//-- create points
-		monitor.report(sCreatePoints);
-		int nx = rstLayer.getLayerGridExtent().getNX();
-		int ny = rstLayer.getLayerGridExtent().getNY();
-		//int numPoints = nx * ny;
-		for (int x = 0; x < nx; x++) {//cols
-			for (int y = 0; y < ny; y++) {//rows
-				Feature ftemp = new BasicFeature(fs); 
-				Point2D pt = rstLayer.getLayerGridExtent().getWorldCoordsFromGridCoords(x, y);				
-				Geometry centerPoint = gf.createPoint(new Coordinate(pt.getX(), pt.getY())); 
-				ftemp.setGeometry(centerPoint);
-				for (int i = 0; i < numBands; i++) {
-					double value = gwrapper.getCellValueAsDouble(x, y, i);
-					ftemp.setAttribute(sBand + "_" + i, value);
-				}
-				ftemp.setAttribute("cellid_x", x);
-				ftemp.setAttribute("cellid_y", y);
-				//-- add the feature
-				fd.add(ftemp);
-				//-- check if user wants to stop
-				if(monitor.isCancelRequested()){
-					if(fd.size() > 0){
-						context.addLayer(StandardCategoryNames.RESULT, rstLayer.getName() + "_cancel_" + sLattice, fd);
-					}
-					return;
-				}
-			}
-		}
-		//-- output
-		if(fd.size() > 0){
-			context.addLayer(StandardCategoryNames.RESULT, rstLayer.getName() + "_" + sLattice, fd);
-		}
-	}
-    
-  
+        // create a gridwrapper to later access the cells
+        final GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
+                rstLayer, rstLayer.getLayerGridExtent());
+        //-- create the FeatureSchema
+        final FeatureSchema fs = new FeatureSchema();
+        fs.addAttribute("geometry", AttributeType.GEOMETRY);
+        fs.addAttribute("cellid_x", AttributeType.INTEGER);
+        fs.addAttribute("cellid_y", AttributeType.INTEGER);
+        final int numBands = rstLayer.getBandsCount();
+        for (int i = 0; i < numBands; i++) {
+            fs.addAttribute(sBand + "_" + i, AttributeType.DOUBLE);
+        }
+        //-- create a new empty dataset
+        final FeatureCollection fd = new FeatureDataset(fs);
+        //-- create points
+        monitor.report(sCreatePoints);
+        final int nx = rstLayer.getLayerGridExtent().getNX();
+        final int ny = rstLayer.getLayerGridExtent().getNY();
+        //int numPoints = nx * ny;
+        for (int x = 0; x < nx; x++) {//cols
+            for (int y = 0; y < ny; y++) {//rows
+                final Feature ftemp = new BasicFeature(fs);
+                final Point2D pt = rstLayer.getLayerGridExtent()
+                        .getWorldCoordsFromGridCoords(x, y);
+                final Geometry centerPoint = gf.createPoint(new Coordinate(pt
+                        .getX(), pt.getY()));
+                ftemp.setGeometry(centerPoint);
+                for (int i = 0; i < numBands; i++) {
+                    final double value = gwrapper.getCellValueAsDouble(x, y, i);
+                    ftemp.setAttribute(sBand + "_" + i, value);
+                }
+                ftemp.setAttribute("cellid_x", x);
+                ftemp.setAttribute("cellid_y", y);
+                //-- add the feature
+
+                fd.add(ftemp);
+                //-- check if user wants to stop
+                if (monitor.isCancelRequested()) {
+                    if (fd.size() > 0) {
+                        context.addLayer(StandardCategoryNames.RESULT,
+                                rstLayer.getName() + "_cancel_" + sLattice, fd);
+                    }
+                    return;
+                }
+            }
+        }
+        //-- output
+        if (fd.size() > 0) {
+            context.addLayer(StandardCategoryNames.RESULT, rstLayer.getName()
+                    + "_" + sLattice, fd);
+        }
+    }
+
+    private MultiInputDialog dialog;
+    private JComboBox<RasterImageLayer> layerableComboBox = new JComboBox<RasterImageLayer>();
+    private RasterImageLayer rLayer;
+    List<RasterImageLayer> fLayers = new ArrayList<RasterImageLayer>();
+
+    private void setDialogValues(PlugInContext context) {
+
+        dialog = new MultiInputDialog(context.getWorkbenchFrame(), sName, true);
+        dialog.setSideBarDescription(sSidebar);
+        if (!context.getLayerNamePanel().selectedNodes(RasterImageLayer.class)
+                .isEmpty()) {
+            rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(
+                    context, RasterImageLayer.class);
+        } else {
+            rLayer = context.getTask().getLayerManager()
+                    .getLayerables(RasterImageLayer.class).get(0);
+        }
+        fLayers = context.getTask().getLayerManager()
+                .getLayerables(RasterImageLayer.class);
+        layerableComboBox = dialog.addLayerableComboBox(Source_Layer, rLayer,
+                "", fLayers);
+        layerableComboBox.setSize(200,
+                layerableComboBox.getPreferredSize().height);
+
+        //dialog.addDoubleField(T1, 20.0, 4);
+        GUIUtil.centreOnWindow(dialog);
+    }
+
 }
