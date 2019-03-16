@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2019-03-16 Giuseppe Aruta.
+    Added drop down list of rask raster layers to CreatePolygons/CreateLattice 
+    from raster plugins
+
 <-- Changes.txt updated until here -->
 
 2019-02-28 Nicolas Ribot
