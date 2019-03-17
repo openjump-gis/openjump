@@ -51,6 +51,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.ccordsys.Unit;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
@@ -65,8 +66,8 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
+import com.vividsolutions.jump.workbench.ui.ColorChooserPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -77,16 +78,13 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
 
     /**
-     * 2015_01_31. Giuseppe Aruta Add new panel which display profile info:
-     * length, mean slope, coordinates of starting and ending points, cell
-     * dimension, cell statistics.
+     * Plugin to draw a profile on a raster layer
      */
-
+    public static String CLAYER = I18N.get("ui.GenericNames.Source-Layer");
     private final String DRAWN = I18N
             .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.draw-linstring-as-trace");
     private final String SELECTED = I18N
             .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.use-selected-linstring-as-trace");;
-
     private final String sName = I18N
             .get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
     private final String WARNING = I18N
@@ -112,19 +110,21 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     private static String HORIZONTAL_AXES_LABEL = I18N
             .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.horizontal-axes-label");
 
-    private final List<Coordinate> savedCoordinates = new ArrayList<Coordinate>();
-    public static String CLAYER = GenericNames.SELECT_LAYER;
+    private static String COLOR = I18N
+            .get("ui.renderer.style.ColorThemingTableModel.colour");
+    private static String CHOOSE_COLOR = I18N
+            .get("ui.ColorChooserPanel.choose-color");
+
+    public static String UNIT;
+    public static int numband;
     private boolean drawnType = true;
     private boolean selectedType = false;
-    public static String UNIT;
-
-    public static RasterImageLayer rLayer;
-
-    public static int numband;
+    public static Color color = Color.blue.brighter();
+    final ColorChooserPanel cpan = new ColorChooserPanel();
+    private static RasterImageLayer rLayer;
     public static JTextField unitfiled = new JTextField("");
-
     public static MultiInputDialog dialog;
-
+    private final List<Coordinate> savedCoordinates = new ArrayList<Coordinate>();
     JRadioButton radioButton1 = new JRadioButton(DRAWN, drawnType);
     JRadioButton radioButton2 = new JRadioButton(SELECTED, selectedType);
     JComboBox<RasterImageLayer> box;
@@ -134,7 +134,6 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
-
         FeatureInstaller.getInstance().addMainMenuPlugin(this,
                 new String[] { MenuNames.RASTER }, sName + "...", false,
                 getIcon(), check());
@@ -165,6 +164,18 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
         final Collection<RasterImageLayer> rlayers = context.getTask()
                 .getLayerManager().getLayerables(RasterImageLayer.class);
         final ArrayList<String> srsArray = new ArrayList<String>();
+        dialog.setSideBarDescription(DESCRIPTION);
+        dialog.addSubTitle(PLOT);
+        if (!context.getLayerNamePanel().selectedNodes(RasterImageLayer.class)
+                .isEmpty()) {
+            rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(
+                    context, RasterImageLayer.class);
+        } else {
+            rLayer = context.getTask().getLayerManager()
+                    .getLayerables(RasterImageLayer.class).get(0);
+        }
+        box = dialog.addLayerableComboBox(CLAYER, rLayer, "", rlayers);
+
         srsArray.add("metre");
         srsArray.add("foot");
         String srs = "";
@@ -178,9 +189,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
             if (!srs.isEmpty() & !srsArray.contains(srs)) {
                 srsArray.add(Unit.find(srs).toString());
             }
-
         }
-
         final RasterImageLayer firstElement = (RasterImageLayer) rlayers
                 .toArray()[0];
         String srsCode;
@@ -189,19 +198,9 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
         } catch (final Exception e) {
             srsCode = "Unknown";
         }
-
         final String OUTPUT_GROUP = "Match Type";
-        dialog.setSideBarDescription(DESCRIPTION);
-        dialog.addSubTitle(PLOT);
-        box = dialog.addLayerableComboBox(CLAYER, context.getLayerManager()
-                .getRasterImageLayers().get(0), "", rlayers);
-        // box.setSelectedItem(srsCode);
 
-        // unitfiled = dialog.addTextField(LAYER_UNIT, srsCode, 20, null, null);
-        // unitfiled.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-        // unitfiled.setEditable(false);
         comboBox = dialog.addComboBox(LAYER_UNIT, "", srsArray, null);
-        // Arrays.asList("metre", "foot", "Unknown"), null);
         comboBox.setRenderer(new DefaultListCellRenderer() {
             /**
              * 
@@ -215,11 +214,8 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
             }
         });
         comboBox.setEnabled(srsCode.equals("Unknown"));
-
         comboBox.setSelectedItem(srsCode);
-
         dialog.addRadioButton(DRAWN, OUTPUT_GROUP, drawnType, null);
-
         final Collection<Feature> features = context.getLayerViewPanel()
                 .getSelectionManager().getFeaturesWithSelectedItems();
         if (features.size() == 0 || features.size() > 1) {
@@ -229,9 +225,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
             dialog.addRadioButton(SELECTED, OUTPUT_GROUP, selectedType, null)
                     .setEnabled(true);
         }
-
         dialog.addSubTitle(OPTIONS);
-
         dialog.addTextField(HORIZONTAL_AXES_LABEL, WIDTH, 20, null, null);
         dialog.addTextField(VERICAL_AXES_LABEL, HEIGHT, 20, null, null);
         box.addActionListener(new ActionListener() {
@@ -243,14 +237,21 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
                 unitfiled.setText(layerUnit);
                 updateComponents();
                 dialog.repaint();
-
             }
         });
-
+        cpan.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                color = cpan.getColor();
+            }
+        });
+        cpan.setColor(color);
+        cpan.setAlpha(255);
+        dialog.addRow("CheckColor", new JLabel(COLOR + " (" + PLOT + ")"),
+                cpan, null, CHOOSE_COLOR);
     }
 
     public void updateComponents() {
-
         final String layerUnit = getLayer().getSRSInfo().getUnit().toString();
         comboBox.setEnabled(layerUnit.equals("Unknown"));
         comboBox.setSelectedItem(layerUnit);
@@ -259,7 +260,10 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
 
     public static RasterImageLayer getLayer() {
         return dialog.getRasterLayer(ProfileGraphPlugIn.CLAYER);
+    }
 
+    public static String getUnit() {
+        return dialog.getText(LAYER_UNIT);
     }
 
     public Icon getIcon() {
@@ -268,7 +272,6 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
 
     @Override
     public boolean execute(PlugInContext context) throws Exception {
-
         dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(),
                 true);
         setDialogValues(dialog, context);
@@ -280,7 +283,6 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     @Override
     public void run(TaskMonitor monitor, PlugInContext context)
             throws Exception {
-
         monitor.allowCancellationRequests();
         monitor.report(getName()
                 + ": "
@@ -291,23 +293,11 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
         }
         savedCoordinates.clear();
         getDialogValues(dialog);
-        // rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context,
-        // RasterImageLayer.class);
-        // if (layerName == null) {
-        // context.getLayerViewPanel()
-        // .getContext()
-        // .warnUser(
-        // I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
-        // return;
-        // }
-
         if (!dialog.wasOKPressed()) {
             return;
         }
-
         final RasterImageLayer selLayer = dialog
                 .getRasterLayer(ProfileGraphPlugIn.CLAYER);
-
         numband = 0;
         if (selLayer.getNumBands() > 1) {
             final String[] bands = { "0", "1", "2" };
@@ -322,15 +312,11 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
                 // band = 0;
             }
         }
-
         if (drawnType) {
             final ProfileGraphTool profileTool = new ProfileGraphTool();
 
             context.getLayerViewPanel().setCurrentCursorTool(profileTool);
-
-        }
-
-        else if (selectedType) {
+        } else if (selectedType) {
 
             final Collection<Feature> features = context.getLayerViewPanel()
                     .getSelectionManager().getFeaturesWithSelectedItems();
@@ -352,17 +338,8 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
                     context.getWorkbenchFrame().warnUser(WARNING);
 
                 }
-
             }
         }
-
-    }
-
-    /*
-     * Return type of the Sextante Raster Layer as String
-     */
-    public String filetype(String ext) {
-        return Unit.find(ext).toString();
     }
 
 }
