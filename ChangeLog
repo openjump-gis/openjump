@@ -5,11 +5,13 @@
 
 2019-03-17 Giuseppe Aruta.
    * ProfileGraphPlugIn: added option to change color profile
-   * Removed ProfileUtils class, substituded by classes ProfileGraphAlgorithms
-     and ProfileGraphGUI
+   * Removed two deprecated classes:
+     a) ProfileUtils - substituded by ProfileGraphAlgorithms
+        and ProfileGraphGUI
+     b) RasterLayerStatisticsPlugin - by DEMStatisticsPlugIn
 
 2019-03-16 Giuseppe Aruta.
-    Added drop down list of rask raster layers to CreatePolygons/CreateLattice 
+    Added drop down list of  raster layers to CreatePolygons/CreateLattice 
     from raster plugins
 
 * release 1.14.1 ***************************************************************
