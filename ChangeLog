@@ -12,7 +12,7 @@
     Added drop down list of rask raster layers to CreatePolygons/CreateLattice 
     from raster plugins
 
-<-- Changes.txt updated until here -->
+* release 1.14.1 ***************************************************************
 
 2019-02-28 Nicolas Ribot
   * Corrected another bug preventing some Spatialite tables to be loaded.
