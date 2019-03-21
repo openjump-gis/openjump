@@ -3,8 +3,19 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2019-03-21 Giuseppe Aruta.
+   * Enhenced RasterHistogramPlugin:
+     a) better input layer
+     b) added continuous hist. option (unique values)
+     c) added option to show hist. as line (QGIS style)
+     d) added option to change hist. color
+   * StatisticIndices class: added capability to return a map (TreeMap) of each 
+     value per number of items
+
 2019-03-17 Giuseppe Aruta.
-   * ProfileGraphPlugIn: added option to change color profile
+   * ProfileGraphPlugIn: 
+     a) better input layer
+     b) added option to change color profile
    * Removed two deprecated classes:
      a) ProfileUtils - substituded by ProfileGraphAlgorithms
         and ProfileGraphGUI
@@ -12,7 +23,7 @@
 
 2019-03-16 Giuseppe Aruta.
     Added drop down list of  raster layers to CreatePolygons/CreateLattice 
-    from raster plugins
+    plugins
 
 * release 1.14.1 ***************************************************************
 
