@@ -132,9 +132,9 @@ package com.vividsolutions.jump.util;
  */
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.vividsolutions.jump.I18N;
 
@@ -156,7 +156,7 @@ public class StatisticIndices {
     private int m_iCount;
     private double m_dM2;
     private int m_iClasses;
-    private final Map<Double, Integer> counts = new HashMap<Double, Integer>();
+    private final Map<Double, Integer> counts = new TreeMap<Double, Integer>();
 
     public static String MAX = "Maximum";
     public static String MIN = "Minimum";
@@ -470,6 +470,14 @@ public class StatisticIndices {
 
         return m_iClasses;
 
+    }
+
+    /**
+     * Returns the map of each class/number of elements
+     * @return
+     */
+    public Map<Double, Integer> getCounts() {
+        return counts;
     }
 
 }
