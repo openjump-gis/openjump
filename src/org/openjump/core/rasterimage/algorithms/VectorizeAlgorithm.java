@@ -509,14 +509,12 @@ public class VectorizeAlgorithm {
         featSchema.addAttribute(attributeName, AttributeType.DOUBLE);
         final FeatureCollection featColl = new FeatureDataset(featSchema);
 
-        m_Visited
-                .create("a", "a", gwrapper.getGridExtent(),
-                        DataBuffer.TYPE_DOUBLE, 1, frame.getContext()
-                                .getLayerManager());
-        m_Visited2
-                .create("b", "b", gwrapper.getGridExtent(),
-                        DataBuffer.TYPE_DOUBLE, 1, frame.getContext()
-                                .getLayerManager());
+        m_Visited.create("a", "a", gwrapper.getGridExtent(),
+                DataBuffer.TYPE_DOUBLE, 1, null, frame.getContext()
+                        .getLayerManager());
+        m_Visited2.create("b", "b", gwrapper.getGridExtent(),
+                DataBuffer.TYPE_DOUBLE, 1, null, frame.getContext()
+                        .getLayerManager());
         //     m_Visited.setWindowExtent(gwrapper.getGridExtent());
         //     m_Visited2.setWindowExtent(gwrapper.getGridExtent());
         int x, y;
