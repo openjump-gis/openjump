@@ -34,9 +34,34 @@ public class GridRasterWrapper {
         for (int x = 0; x < nx; x++) {// cols
             for (int y = 0; y < ny; y++) {// rows
                 final double value = gwrapper.getCellValueAsDouble(x, y, band);
-                if (value != rstLayer.getNoDataValue()) {
-                    data[x][y] = value;
-                }
+
+                data[x][y] = value;
+
+            }
+        }
+        return data;
+    }
+
+    /**
+     * create an empty 2D Array from a OpenJUMPSextanteRasterLayer
+     * 
+     * @param OpenJUMPSextanteRasterLayer
+     * @param band
+     *            (integer)
+     * @return
+     */
+
+    public static double[][] rasterToEmptyMatrix(
+            OpenJUMPSextanteRasterLayer rstLayer, int band) {
+        final int nx = rstLayer.getLayerGridExtent().getNX();
+        final int ny = rstLayer.getLayerGridExtent().getNY();
+
+        final double[][] data = new double[nx][ny];
+        for (int x = 0; x < nx; x++) {// cols
+            for (int y = 0; y < ny; y++) {// rows
+
+                data[x][y] = rstLayer.getNoDataValue();
+
             }
         }
         return data;
