@@ -1,9 +1,12 @@
 package org.openjump.core.rasterimage.algorithms;
 
+import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.awt.image.DataBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -16,13 +19,14 @@ import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
 import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
 import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
 /**
  * This class provides a complete set to transform a grid (GridWrapperNotInterpolated.class) derived 
@@ -32,12 +36,14 @@ import com.vividsolutions.jump.feature.FeatureSchema;
  * OpenJUMPSextanteRasterLayer rstLayer = new OpenJUMPSextanteRasterLayer();
  * rstLayer.create(rLayer, false);
  * GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(rstLayer, rstLayer.getLayerGridExtent());
- * @author Giuseppe Aruta
+ * @author Beppe
  *
  */
 public class VectorizeAlgorithm {
 
-    private static int arrPos(int valIn, int[] arrayIn) {
+    public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
+
+    private static int arrPos(int valIn, double[] arrayIn) {
 
         int valOut = -9999;
         for (int i = 0; i < arrayIn.length; i++) {
@@ -51,25 +57,23 @@ public class VectorizeAlgorithm {
 
     /**
      * Create a FeatureCollection of polygons defining GridWrapperNotInterpolated and number of band
-     * 
+     * AdbToolbox algorithm
      * @param gwrapper. GridWrapperNotInterpolated
      * @param explodeMultipolygons. Explode MultiPolygons in Polygons
      * @param band. Number of band (0,1,2,etc)
      * @return
      */
-    public static FeatureCollection toPolygons(
+    public static FeatureCollection toPolygonsAdbToolBox(
             GridWrapperNotInterpolated gwrapper, boolean explodeMultipolygons,
             String attributeName, int band) {
-
+        int ID = 1;
         final double cellSize = gwrapper.getGridExtent().getCellSize().x;
         final double xllCorner = gwrapper.getGridExtent().getXMin() + cellSize;
         final double yllCorner = gwrapper.getGridExtent().getYMin() - cellSize;
         final double noData = gwrapper.getNoDataValue();
-
         // Find unique values
-        final int[] uniqueVals = findUniqueVals(gwrapper, noData, band);
+        final double[] uniqueVals = findUniqueVals(gwrapper, noData, band);
         final int uniqueValsCount = uniqueVals.length;
-
         // Scan lines
         @SuppressWarnings("unchecked")
         final ArrayList<Polygon>[] arrAll = new ArrayList[uniqueValsCount];
@@ -94,7 +98,6 @@ public class VectorizeAlgorithm {
                     cEnd = c - 1;
                     // Get polygon vertices
                     if (oldVal != noData) {
-
                         coords[0] = new Coordinate(xllCorner
                                 + (cStart * cellSize) - cellSize, yurCorner
                                 - (r * cellSize));
@@ -114,64 +117,58 @@ public class VectorizeAlgorithm {
                 }
             }
         }
-
         // Collapse polygons
         final FeatureSchema featSchema = new FeatureSchema();
         featSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
-        featSchema.addAttribute(attributeName, AttributeType.INTEGER);
+        featSchema.addAttribute("ID", AttributeType.INTEGER);
+        featSchema.addAttribute(attributeName, AttributeType.DOUBLE);
         Feature feature;
-
         // Create feature collection
         final FeatureCollection featColl = new FeatureDataset(featSchema);
-
         for (int i = 0; i < uniqueValsCount; i++) {
-
             Geometry geom = CascadedPolygonUnion.union(arrAll[i]);
             geom = DouglasPeuckerSimplifier.simplify(geom, 0);
             geom = TopologyPreservingSimplifier.simplify(geom, 00);
-
             if (explodeMultipolygons) {
-
                 // From multipolygons to single polygons
                 for (int g = 0; g < geom.getNumGeometries(); g++) {
                     feature = new BasicFeature(featSchema);
                     feature.setGeometry(geom.getGeometryN(g));
-                    feature.setAttribute(1, uniqueVals[i]);
+                    feature.setAttribute(1, new Integer(ID));
+                    feature.setAttribute(2, uniqueVals[i]);
                     featColl.add(feature);
+                    ID++;
                 }
             } else {
                 feature = new BasicFeature(featSchema);
+                feature.setAttribute(1, new Integer(ID));
                 feature.setGeometry(geom);
-                feature.setAttribute(1, uniqueVals[i]);
+                feature.setAttribute(2, uniqueVals[i]);
                 featColl.add(feature);
+                ID++;
             }
         }
         System.gc();
         return featColl;
-
     }
 
-    private static int[] findUniqueVals(GridWrapperNotInterpolated gwrapper,
+    private static double[] findUniqueVals(GridWrapperNotInterpolated gwrapper,
             double nodata, int band) {
-
         // Pass values to 1D array
-        final ArrayList<Integer> vals = new ArrayList<Integer>();
-
+        final ArrayList<Double> vals = new ArrayList<Double>();
         final int nx = gwrapper.getNX();//rstLayer.getLayerGridExtent().getNX();
         final int ny = gwrapper.getNY();// rstLayer.getLayerGridExtent().getNY();
         for (int x = 0; x < nx; x++) {//cols
             for (int y = 0; y < ny; y++) {//rows
                 final double value = gwrapper.getCellValueAsDouble(x, y, band);
                 if (value != nodata) {
-                    vals.add((int) gwrapper.getCellValueAsDouble(x, y, band));
+                    vals.add(gwrapper.getCellValueAsDouble(x, y, band));
                 }
             }
         }
-
         // Find unique values
         Collections.sort(vals);
-
-        final ArrayList<Integer> uniqueValsArr = new ArrayList<Integer>();
+        final ArrayList<Double> uniqueValsArr = new ArrayList<Double>();
         uniqueValsArr.add(vals.get(0));
 
         for (int i = 1; i < vals.size(); i++) {
@@ -179,46 +176,278 @@ public class VectorizeAlgorithm {
                 uniqueValsArr.add(vals.get(i));
             }
         }
-
-        final int[] uniqueVals = new int[uniqueValsArr.size()];
+        final double[] uniqueVals = new double[uniqueValsArr.size()];
         for (int i = 0; i < uniqueValsArr.size(); i++) {
             uniqueVals[i] = uniqueValsArr.get(i);
         }
-
         return uniqueVals;
+    }
+
+    private static int[][] m_Lock;
+    private static char[][] m_Area;
+    private static int m_iNX;
+    private static int m_iNY;
+
+    /** Create a FeatureCollection of polygons defining GridWrapperNotInterpolated and number of band
+      * Sextante algorithm
+      * @param gwrapper
+      * @param explodeMultipolygons
+      * @param attributeName
+      * @param band
+      * @return
+      */
+    public static FeatureCollection toPolygonsSextante(
+            GridWrapperNotInterpolated gwrapper, String attributeName, int band) {
+        final FeatureSchema featSchema = new FeatureSchema();
+        featSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+        featSchema.addAttribute("ID", AttributeType.INTEGER);
+        featSchema.addAttribute(attributeName, AttributeType.DOUBLE);
+        // Create feature collection
+        final FeatureCollection featColl = new FeatureDataset(featSchema);
+        int x, y, ID;
+        double dValue;
+        m_iNX = gwrapper.getNX();
+        m_iNY = gwrapper.getNY();
+        m_Lock = new int[m_iNY][m_iNX];
+        m_Area = new char[m_iNY + 1][m_iNX + 1];
+        for (y = 0, ID = 1; y < m_iNY; y++) {
+            for (x = 0; x < m_iNX; x++) {
+                dValue = gwrapper.getCellValueAsDouble(x, y, band);
+                if (!gwrapper.isNoDataValue(dValue) && (m_Lock[y][x] == 0)) {
+                    Discrete_Lock(gwrapper, x, y, ID, band);
+                    featColl.add(Discrete_Area(gwrapper, featSchema,
+                            attributeName, x, y, ID, band));
+                    ID++;
+                }
+            }
+        }
+        System.gc();
+        return featColl;
+    }
+
+    private static void Discrete_Lock(GridWrapperNotInterpolated gwrapper,
+            int x, int y, final int ID, int band) {
+        final int xTo[] = { 0, 1, 0, -1 }, yTo[] = { 1, 0, -1, 0 };
+        final char goDir[] = { 1, 2, 4, 8 };
+        boolean isBorder, doRecurse;
+        char goTemp = 0;
+        char[] goStack = new char[50];
+        int[] xStack = new int[50];
+        int[] yStack = new int[50];
+        int i, ix, iy, iStack = 0;
+        double dValue, dValue2;
+        dValue = gwrapper.getCellValueAsDouble(x, y, band);
+        for (iy = 0; iy <= m_iNY; iy++) {
+            for (ix = 0; ix <= m_iNX; ix++) {
+                m_Area[iy][ix] = 0;
+            }
+        }
+        do {
+            if (m_Lock[y][x] == 0) {
+                if (goStack.length <= iStack) {
+                    final char[] cAux = new char[goStack.length + 50];
+                    System.arraycopy(goStack, 0, cAux, 0, goStack.length);
+                    goStack = cAux;
+                    int[] iAux = new int[xStack.length + 50];
+                    System.arraycopy(xStack, 0, iAux, 0, xStack.length);
+                    xStack = iAux;
+                    iAux = new int[yStack.length + 50];
+                    System.arraycopy(yStack, 0, iAux, 0, yStack.length);
+                    yStack = iAux;
+                }
+                goStack[iStack] = 0;
+                m_Lock[y][x] = ID;
+                for (i = 0; i < 4; i++) {
+                    ix = x + xTo[i];
+                    iy = y + yTo[i];
+                    isBorder = true;
+                    dValue2 = gwrapper.getCellValueAsDouble(ix, iy, band);
+                    if ((ix >= 0) && (ix < m_iNX) && (iy >= 0) && (iy < m_iNY)
+                            && (dValue == dValue2)) {
+                        isBorder = false;
+                        if (m_Lock[iy][ix] == 0) {
+                            goStack[iStack] |= goDir[i];
+                        }
+                    }
+                    if (isBorder) {
+                        switch (i) {
+                        case 0:
+                            m_Area[y + 1][x]++;
+                            m_Area[y + 1][x + 1]++;
+                            break;
+                        case 1:
+                            m_Area[y][x + 1]++;
+                            m_Area[y + 1][x + 1]++;
+                            break;
+                        case 2:
+                            m_Area[y][x]++;
+                            m_Area[y][x + 1]++;
+                            break;
+                        case 3:
+                            m_Area[y][x]++;
+                            m_Area[y + 1][x]++;
+                            break;
+                        }
+                    }
+                }
+            }
+            doRecurse = false;
+            for (i = 0; i < 4; i++) {
+                if ((goStack[iStack] & goDir[i]) != 0) {
+                    if (doRecurse) {
+                        goTemp |= goDir[i];
+                    } else {
+                        goTemp = 0;
+                        doRecurse = true;
+                        xStack[iStack] = x;
+                        yStack[iStack] = y;
+                        x = x + xTo[i];
+                        y = y + yTo[i];
+                    }
+                }
+            }
+            if (doRecurse) {
+                goStack[iStack++] = goTemp;
+            } else if (iStack > 0) {
+                iStack--;
+                x = xStack[iStack];
+                y = yStack[iStack];
+            }
+        } while (iStack > 0);
 
     }
 
-    private static final String ATTRIBUTE_NAME = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
+    private static Feature Discrete_Area(GridWrapperNotInterpolated gwrapper,
+            FeatureSchema featSchema, String attributeName, int x, int y,
+            final int ID, int band) {
+        final int xTo[] = { 0, 1, 0, -1 }, yTo[] = { 1, 0, -1, 0 };
+        final int xLock[] = { 0, 0, -1, -1 }, yLock[] = { 0, -1, -1, 0 };
+        boolean bContinue, bStart;
+        int i, ix, iy, ix1, iy1, dir, iStart;
+        final double xMin = gwrapper.getGridExtent().getXMin();
+        final double yMax = gwrapper.getGridExtent().getYMax();
+        final double dCellSizeX = gwrapper.getCellSize().x;
+        final double dCellSizeY = gwrapper.getCellSize().y;
+        double xFirst = 0, yFirst = 0;
+        final ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+        Feature feature;
+        feature = new BasicFeature(featSchema);
+        feature.setAttribute(1, new Integer(ID));
+        feature.setAttribute(2, gwrapper.getCellValueAsDouble(x, y, band));
+        xFirst = xMin + (x) * dCellSizeX;
+        yFirst = yMax - (y) * dCellSizeY;
+        coordinates.add(new Coordinate(xFirst, yFirst));
+        iStart = 0;
+        bStart = true;
+        do {
+            coordinates.add(new Coordinate(xMin + (x) * dCellSizeX, yMax - (y)
+                    * dCellSizeY));
+            m_Area[y][x] = 0;
+            bContinue = false;
+            while (true) {
+                // assure clockwise direction at starting point
+                if (bStart) {
+                    for (i = 0; i < 4; i++) {
+                        ix = x + xTo[i];
+                        iy = y + yTo[i];
+                        if ((ix >= 0) && (ix <= m_iNX) && (iy >= 0)
+                                && (iy <= m_iNY) && (m_Area[iy][ix] > 0)) {
+                            // check, if inside situated cell (according to
+                            // current direction) is locked
+                            ix1 = x + xLock[i];
+                            iy1 = y + yLock[i];
+                            if ((ix1 >= 0) && (ix1 <= m_iNX) && (iy1 >= 0)
+                                    && (iy1 <= m_iNY)
+                                    && (m_Lock[iy1][ix1] == ID)) {
+                                x = ix;
+                                y = iy;
+                                iStart = (i + 3) % 4;
+                                bContinue = true;
+                                bStart = false;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    for (i = iStart; i < iStart + 4; i++) {
+                        dir = i % 4;
+                        ix = x + xTo[dir];
+                        iy = y + yTo[dir];
+
+                        if ((ix >= 0) && (ix <= m_iNX) && (iy >= 0)
+                                && (iy <= m_iNY) && (m_Area[iy][ix] > 0)) {
+                            if (i < iStart + 3) {
+                                // check, if inside situated cell (according to
+                                // current direction) is locked
+                                ix1 = x + xLock[dir];
+                                iy1 = y + yLock[dir];
+
+                                if ((ix1 >= 0) && (ix1 <= m_iNX) && (iy1 >= 0)
+                                        && (iy1 <= m_iNY)
+                                        && (m_Lock[iy1][ix1] == ID)) {
+                                    x = ix;
+                                    y = iy;
+                                    iStart = (i + 3) % 4;
+                                    bContinue = true;
+                                    break;
+                                }
+                            } else {
+                                x = ix;
+                                y = iy;
+                                bContinue = true;
+                                iStart = (i + 3) % 4;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+            ;
+        } while (bContinue);
+        coordinates.add(new Coordinate(xFirst, yFirst));
+        final Coordinate[] coords = new Coordinate[coordinates.size()];
+        for (i = 0; i < coords.length; i++) {
+            coords[i] = coordinates.get(i);
+        }
+        final GeometryFactory gf = new GeometryFactory();
+        if (coords.length > 1) {
+            final LinearRing ring = gf.createLinearRing(coords);
+            final Polygon polyg = gf.createPolygon(ring, null);
+            feature.setGeometry(polyg);
+        }
+        return feature;
+
+    }
+
     private static char[][] m_Row;
     private static char[][] m_Col;
+
+    private static OpenJUMPSextanteRasterLayer m_Visited = new OpenJUMPSextanteRasterLayer();
+    private static OpenJUMPSextanteRasterLayer m_Visited2 = new OpenJUMPSextanteRasterLayer();
     private final static GeometryFactory m_GF = new GeometryFactory();
     private static boolean removeZeroCells = false;
 
     public static FeatureCollection toContours(
-            GridWrapperNotInterpolated gwrapper, final double dMin,
-            final double dMax, double dDistance, String attributeName, int band) {
+            GridWrapperNotInterpolated gwrapper, final double zMin,
+            final double zMax, double dDistance, String attributeName, int band) {
         final FeatureCollection featColl = new FeatureDataset(
                 schema(attributeName));
+
         int x, y;
         int i;
         int ID;
         int iNX, iNY;
         double dZ;
         double dValue = 0;
-
         iNX = gwrapper.getGridExtent().getNX();
         iNY = gwrapper.getGridExtent().getNY();
-
         m_Row = new char[iNY][iNX];
         m_Col = new char[iNY][iNX];
-
         if (dDistance <= 0) {
             dDistance = 1;
         }
-
-        for (dZ = dMin, ID = 0; (dZ <= dMax); dZ += dDistance) {
+        for (dZ = zMin, ID = 0; (dZ <= zMax); dZ += dDistance) {
             for (y = 0; y < iNY - 1; y++) {
                 for (x = 0; x < iNX - 1; x++) {
                     dValue = gwrapper.getCellValueAsDouble(x, y, band);
@@ -235,7 +464,6 @@ public class VectorizeAlgorithm {
                     }
                 }
             }
-
             for (y = 0; y < iNY - 1; y++) {
                 for (x = 0; x < iNX - 1; x++) {
                     if (m_Row[y][x] != 0) {
@@ -269,9 +497,179 @@ public class VectorizeAlgorithm {
             }
 
         }
-
         System.gc();
         return featColl;
+    }
+
+    public static FeatureCollection toLines(
+            GridWrapperNotInterpolated gwrapper, String attributeName) {
+        final FeatureSchema featSchema = new FeatureSchema();
+        featSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+
+        featSchema.addAttribute(attributeName, AttributeType.DOUBLE);
+        final FeatureCollection featColl = new FeatureDataset(featSchema);
+
+        m_Visited
+                .create("a", "a", gwrapper.getGridExtent(),
+                        DataBuffer.TYPE_DOUBLE, 1, frame.getContext()
+                                .getLayerManager());
+        m_Visited2
+                .create("b", "b", gwrapper.getGridExtent(),
+                        DataBuffer.TYPE_DOUBLE, 1, frame.getContext()
+                                .getLayerManager());
+        //     m_Visited.setWindowExtent(gwrapper.getGridExtent());
+        //     m_Visited2.setWindowExtent(gwrapper.getGridExtent());
+        int x, y;
+        double byValue;
+        int iNX, iNY;
+        iNX = gwrapper.getGridExtent().getNX();
+        iNY = gwrapper.getGridExtent().getNY();
+
+        for (y = 0; y < m_iNY; y++) {
+            for (x = 0; x < m_iNX; x++) {
+
+                final double dValue = gwrapper.getCellValueAsDouble(x, y);
+                if (gwrapper.isNoDataValue(dValue) || (dValue == 0)) {
+                    m_Visited.setCellValue(x, y, 0.0);
+                } else {
+                    m_Visited.setCellValue(x, y, 1.0);
+                }
+            }
+        }
+
+        for (y = 0; (y < iNY); y++) {
+            for (x = 0; x < iNX; x++) {
+                byValue = m_Visited.getCellValueAsDouble(x, y);
+                if (byValue == 1) {
+                    final Feature feat = createLine(x, y, m_Visited
+                            .getWindowGridExtent()
+                            .getWorldCoordsFromGridCoords(x, y), gwrapper,
+                            featSchema);
+                    featColl.add(feat);
+                }
+            }
+        }
+        return featColl;
+
+    }
+
+    static int iNX;
+    static int iNY;
+    private static int m_iLine = 1;
+
+    private static Feature createLine(int x, int y, Point2D pt2d2,
+            GridWrapperNotInterpolated gwrapper, FeatureSchema featSchema) {
+        final GeometryFactory m_GeometryFactory = new GeometryFactory();
+        boolean bContinue = false;
+        boolean bIsNotNull = false;
+        Point pt;
+        final Object values[] = new Object[1];
+
+        final Feature feature = new BasicFeature(featSchema);
+        final ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+        coordinates.add(new Coordinate(pt2d2.getX(), pt2d2.getY()));
+
+        pt2d2 = m_Visited.getWindowGridExtent().getWorldCoordsFromGridCoords(x,
+                y);
+        coordinates.add(new Coordinate(pt2d2.getX(), pt2d2.getY()));
+
+        do {
+            m_Visited.setCellValue(x, y, 0, 0);
+
+            //  m_Visited.setCellValue(x, y, 0);
+            final ArrayList<Point> cells = getSurroundingLineCells(x, y,
+                    gwrapper);
+            m_Visited2.setCellValue(x, y, 0, cells.size());
+
+            //  m_Visited2.setCellValue(x, y, cells.size());
+            if (cells.size() == 0) {
+                final Coordinate[] coords = new Coordinate[coordinates.size()];
+                for (int i = 0; i < coords.length; i++) {
+                    coords[i] = coordinates.get(i);
+                }
+                final Geometry line = m_GeometryFactory
+                        .createLineString(coords);
+                values[0] = new Integer(m_iLine++);
+                feature.setGeometry(line);
+                feature.setAttribute(1, values[0]);
+                // m_Lines.addFeature(line, values);
+                bContinue = false;
+            } else if (cells.size() == 1) {
+                pt = cells.get(0);
+                pt2d2 = m_Visited.getWindowGridExtent()
+                        .getWorldCoordsFromGridCoords(pt.x, pt.y);
+                coordinates.add(new Coordinate(pt2d2.getX(), pt2d2.getY()));
+                x = pt.x;
+                y = pt.y;
+                bContinue = true;
+                bIsNotNull = true;
+            } else {
+                if (bIsNotNull) {
+                    final Coordinate[] coords = new Coordinate[coordinates
+                            .size()];
+                    for (int i = 0; i < coords.length; i++) {
+                        coords[i] = coordinates.get(i);
+                    }
+
+                    final Geometry line = m_GeometryFactory
+                            .createLineString(coords);
+                    values[0] = new Integer(m_iLine++);
+                    feature.setGeometry(line);
+                    feature.setAttribute(1, values[0]);
+                }
+                for (int i = 0; i < cells.size(); i++) {
+                    pt = cells.get(i);
+                    m_Visited.setCellValue(pt.x, pt.y, 0, 0);
+
+                }
+                for (int i = 0; i < cells.size(); i++) {
+                    pt = cells.get(i);
+                    pt2d2 = m_Visited.getWindowGridExtent()
+                            .getWorldCoordsFromGridCoords(x, y);
+                    createLine(pt.x, pt.y, pt2d2, gwrapper, featSchema);
+                }
+
+            }
+        } while (bContinue);
+        return feature;
+
+    }
+
+    private final static int m_iOffsetX[] = { 0, 1, 0, -1 };
+    private final static int m_iOffsetY[] = { -1, 0, 1, 0 };
+    private final static int m_iOffsetXDiag[] = { -1, 1, 1, -1 };
+    private final static int m_iOffsetYDiag[] = { -1, -1, 1, 1 };
+
+    private static ArrayList<Point> getSurroundingLineCells(final int x,
+            final int y, GridWrapperNotInterpolated gwrapper) {
+
+        int i;
+        //   final int j;
+        final ArrayList<Point> cells = new ArrayList<Point>();
+        final boolean bBlocked[] = new boolean[4];
+
+        for (i = 0; i < 4; i++) {
+
+            if (m_Visited.getCellValueAsByte(x + m_iOffsetX[i], y
+                    + m_iOffsetY[i]) == 1
+
+            ) {
+                cells.add(new Point(x + m_iOffsetX[i], y + m_iOffsetY[i]));
+                bBlocked[i] = true;
+                bBlocked[(i + 1) % 4] = true;
+            }
+        }
+
+        for (i = 0; i < 4; i++) {
+            if ((m_Visited.getCellValueAsByte(x + m_iOffsetXDiag[i], y
+                    + m_iOffsetYDiag[i]) == 1)
+                    && !bBlocked[i]) {
+                cells.add(new Point(x + m_iOffsetXDiag[i], y
+                        + m_iOffsetYDiag[i]));
+            }
+        }
+
+        return cells;
 
     }
 
