@@ -3,6 +3,19 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2019-04-04 Giuseppe Aruta
+   * Added two 2 classes to perform raster processes:
+     a) GenericRasterAlgorithm class: a generic class to perform several 
+        raster processes currently used by some OpenJUMP plugins: filter by 
+        nodata, change nodata value, change data type, etc.
+     b) KernelAlgorithm class: a set of filter/kernel operations on raster 
+        data
+   * VectorizeAlgorithm class: added two methods to perform raster->polygons
+     conversion and a method to perform raster->linestrings conversion
+   * Correct a bug on GridRasterWrapper raterToMatrix() method: nodata values
+     were not recordered on matrix. Added method to create an empty matrix
+     from a raster
+     
 2019-03-21 Giuseppe Aruta.
    * Enhenced RasterHistogramPlugin:
      a) better input layer
