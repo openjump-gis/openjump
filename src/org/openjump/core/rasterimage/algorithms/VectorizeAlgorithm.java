@@ -56,7 +56,7 @@ public class VectorizeAlgorithm {
     }
 
     /**
-     * Create a FeatureCollection of polygons defining GridWrapperNotInterpolated and number of band
+     * Create a FeatureCollection of polygons defining a GridWrapperNotInterpolated and number of band
      * AdbToolbox algorithm
      * @param gwrapper. GridWrapperNotInterpolated
      * @param explodeMultipolygons. Explode MultiPolygons in Polygons
@@ -188,10 +188,9 @@ public class VectorizeAlgorithm {
     private static int m_iNX;
     private static int m_iNY;
 
-    /** Create a FeatureCollection of polygons defining GridWrapperNotInterpolated and number of band
+    /** Create a FeatureCollection of polygons defining a GridWrapperNotInterpolated and number of band
       * Sextante algorithm
       * @param gwrapper
-      * @param explodeMultipolygons
       * @param attributeName
       * @param band
       * @return
@@ -428,6 +427,18 @@ public class VectorizeAlgorithm {
     private final static GeometryFactory m_GF = new GeometryFactory();
     private static boolean removeZeroCells = false;
 
+    /**
+     * Convert a DTM raster to a feature collection of contours (linestrings) defining
+     * a GridWrapperNotInterpolated, a minimum and maximun elevations, a vertical distance
+     * between each contour, an attribute name and the band of the raster
+     * @param gwrapper
+     * @param zMin
+     * @param zMax
+     * @param dDistance
+     * @param attributeName
+     * @param band
+     * @return
+     */
     public static FeatureCollection toContours(
             GridWrapperNotInterpolated gwrapper, final double zMin,
             final double zMax, double dDistance, String attributeName, int band) {
@@ -501,6 +512,15 @@ public class VectorizeAlgorithm {
         return featColl;
     }
 
+    /**
+     * Convert a line raster a feature collection of linestrings defining
+     * a GridWrapperNotInterpolated and an attribute.
+     * [Currently not working possibly due to a bug of OpenJUMPSextanteRasterLayer.create method]
+     * 
+     * param gwrapper
+     * @param attributeName
+     * @return
+     */
     public static FeatureCollection toLines(
             GridWrapperNotInterpolated gwrapper, String attributeName) {
         final FeatureSchema featSchema = new FeatureSchema();
