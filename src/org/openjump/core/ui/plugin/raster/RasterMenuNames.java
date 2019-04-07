@@ -16,11 +16,10 @@ public class RasterMenuNames {
             .get("ui.GenericNames.Source-Layer");
     public static String Output_file = I18N
             .get("driver.DriverManager.file-to-save");
-
     public static String Choose_an_action = I18N
             .get("org.openjump.core.rasterimage.plugin.Choose-an-action");
     public static String Check_field = I18N
-            .get("org.openjump.core.rasterimage.plugin.Check_value_into_the_field");
+            .get("org.openjump.core.rasterimage.plugin.Check-value-into-the-field");
     public static String PROCESSING = I18N
             .get("jump.plugin.edit.NoderPlugIn.processing");
 

@@ -141,20 +141,31 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
             .get("driver.DriverManager.file-to-save");
     private final String PROCESSING = I18N
             .get("jump.plugin.edit.NoderPlugIn.processing");
+    private final String NAME = I18N
+            .get("ui.plugin.raster.ManageDataPlugIn.Name");
+    private final String CHECK = I18N.get("ui.GenericNames.chech-field");
+    private final String ACTION = I18N.get("ui.GenericNames.choose-an-action");
 
-    private final String CHECK = RasterMenuNames.Check_field;
-    private final String ACTION = RasterMenuNames.Choose_an_action;
-    private final String CHANGE_NODATA_TIP = RasterMenuNames.CHANGE_NODATA_TIP;
-    private final String CHANGE_INTERVAL_TO_NODATA_TIP = RasterMenuNames.CHANGE_INTERVAL_TO_NODATA_TIP;
-    private final String EXTRACT_INTERVAL_TIP = RasterMenuNames.EXTRACT_INTERVAL_TIP;
-    private final String EXTRACT_INTERVAL = RasterMenuNames.EXTRACT_INTERVAL;
-    private final String RESET_NODATA_TAG_TIP = RasterMenuNames.RESET_NODATA_TAG_TIP;
-    private final String RESET_NODATA_TAG = RasterMenuNames.RESET_NODATA_TAG;
-    private final String SET_DECIMAL = RasterMenuNames.SET_DECIMAL;
-    private final String SET_DECIMAL_TIP = RasterMenuNames.SET_DECIMAL_TIP;
-    private final String RESET_TO_MIN = RasterMenuNames.RESET_TO_MIN;
-    private final String RESET_TO_MAX = RasterMenuNames.RESET_TO_MAX;
-    private final String NAME = RasterMenuNames.DATA_NAME;
+    private final String CHANGE_NODATA_TIP = I18N
+            .get("ui.plugin.raster.ManageDataPlugIn.change-nodata-and-tag");
+    private final String CHANGE_INTERVAL_TO_NODATA_TIP = I18N
+            .get("ui.plugin.raster.ManageDataPlugIn.Mask-with-no-data-tip");
+    private final String EXTRACT_INTERVAL_TIP = I18N
+            .get("ui.plugin.raster.ManageDataPlugIn.Extract-range-data-tip");
+    private final String EXTRACT_INTERVAL = I18N
+            .get("ui.plugin.raster.ManageDataPlugIn.Extract-range-data");
+    private final String RESET_NODATA_TAG_TIP = I18N
+            .get("ui.plugin.raster.ManageDataPlugIn.Stretch-raster-tip");
+    private final String RESET_NODATA_TAG = I18N
+            .get("ui.plugin.raster.ManageDataPlugIn.Stretch-raster");
+    private final String SET_DECIMAL = I18N
+            .get("ui.plugin.raster.ManageDataPlugIn.Set-decimals");
+    private final String SET_DECIMAL_TIP = I18N
+            .get("ui.plugin.raster.ManageDataPlugIn.Set-decimals-tip");
+    private final String RESET_TO_MIN = I18N
+            .get("ui.plugin.raster.ManageDataPlugIn.Stretch-to-min");
+    private final String RESET_TO_MAX = I18N
+            .get("ui.plugin.raster.ManageDataPlugIn.Stretch-to-max");
 
     List<RasterImageLayer> fLayers = new ArrayList<RasterImageLayer>();
 
