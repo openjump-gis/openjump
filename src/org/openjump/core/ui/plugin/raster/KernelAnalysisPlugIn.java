@@ -52,12 +52,16 @@ public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
     public static String dimension = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension");
 
-    private final String CLAYER = RasterMenuNames.Source_Layer;
-    private final String OUTPUT_FILE = RasterMenuNames.Output_file;
-    private final String CHECK = RasterMenuNames.Check_field;
-    private final String KernelAnalysis = RasterMenuNames.KERNEL_NAME;
-    private final String defaultKernels = RasterMenuNames.KERNEL_DEFAULT;
-    private final String PROCESSING = RasterMenuNames.PROCESSING;
+    private final String CLAYER = I18N.get("ui.GenericNames.Source-Layer");
+    private final String OUTPUT_FILE = I18N
+            .get("driver.DriverManager.file-to-save");
+    private final String CHECK = I18N.get("ui.GenericNames.chech-field");
+    private final String KernelAnalysis = I18N
+            .get("ui.plugin.raster.KernelAnalysisPlugIn.Name");
+    private final String defaultKernels = I18N
+            .get("ui.plugin.raster.KernelAnalysisPlugIn.default-kernels");
+    private final String PROCESSING = I18N
+            .get("jump.plugin.edit.NoderPlugIn.processing");
 
     private JComboBox<RasterImageLayer> layerableComboBox = new JComboBox<RasterImageLayer>();
     private RasterImageLayer rLayer;
