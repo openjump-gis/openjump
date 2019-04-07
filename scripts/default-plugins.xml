@@ -896,32 +896,39 @@
     <plug-in>
         org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn
     </plug-in>
-    <plug-in>
+     <plug-in>
+        org.openjump.core.ui.plugin.raster.ManageDataPlugIn
+        <menus>
+            <main-menu
+                menupath=" MenuNames.RASTER"
+                install="true" />
+        </menus>
+    <!--plug-in>
         org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn
         <menus>
             <main-menu
                 menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
                 install="true" />
         </menus>
-    </plug-in>
+    </plug-in-->
 
-    <plug-in>
+    <!--plug-in>
         org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn
         <menus>
             <main-menu
                 menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
                 install="true" />
         </menus>
-    </plug-in>
+    </plug-in-->
 
-    <plug-in>
+    <!--plug-in>
         org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn
         <menus>
             <main-menu
                 menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
                 install="true" />
         </menus>
-    </plug-in>
+    </plug-in-->
     <separator />
 
 
