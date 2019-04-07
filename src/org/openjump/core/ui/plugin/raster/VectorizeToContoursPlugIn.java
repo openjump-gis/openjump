@@ -56,7 +56,7 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
     private final String PROCESSING = I18N
             .get("jump.plugin.edit.NoderPlugIn.processing");
 
-    String sLayer = RasterMenuNames.Source_Layer;
+    String sLayer = I18N.get("ui.GenericNames.Source-Layer");
     String sExplode = RasterMenuNames.ExplodeMultipolygons;
     String NAME = RasterMenuNames.VectorizeToContours;
     String sStyle = RasterMenuNames.ApplyStyle;
@@ -371,7 +371,8 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
                 });
     }
 
-    private final static String CHECK_FILE = RasterMenuNames.SINGLE_BAND_EXIST;
+    private final static String CHECK_FILE = I18N
+            .get("plugin.EnableCheckFactory.at-least-one-single-banded-layer-should-exist");
 
     @Override
     public void initialize(PlugInContext context) throws Exception {

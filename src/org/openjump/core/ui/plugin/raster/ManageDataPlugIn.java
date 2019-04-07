@@ -105,6 +105,8 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
     private final String ERROR = I18N.get("ui.GenericNames.Error");
     private final String SELECT_BAND = I18N
             .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.select-one-band");
+    private final static String CHECK_FILE = I18N
+            .get("plugin.EnableCheckFactory.at-least-one-single-banded-layer-should-exist");
 
     private final ImageIcon icon16 = IconLoader
             .icon("fugue/folder-horizontal-open_16.png");
@@ -134,8 +136,12 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
     Envelope envWanted = new Envelope();
     Envelope fix = new Envelope();
 
-    private final String CLAYER = RasterMenuNames.Source_Layer;
-    private final String OUTPUT_FILE = RasterMenuNames.Output_file;
+    private final String CLAYER = I18N.get("ui.GenericNames.Source-Layer");
+    private final String OUTPUT_FILE = I18N
+            .get("driver.DriverManager.file-to-save");
+    private final String PROCESSING = I18N
+            .get("jump.plugin.edit.NoderPlugIn.processing");
+
     private final String CHECK = RasterMenuNames.Check_field;
     private final String ACTION = RasterMenuNames.Choose_an_action;
     private final String CHANGE_NODATA_TIP = RasterMenuNames.CHANGE_NODATA_TIP;
@@ -149,8 +155,6 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
     private final String RESET_TO_MIN = RasterMenuNames.RESET_TO_MIN;
     private final String RESET_TO_MAX = RasterMenuNames.RESET_TO_MAX;
     private final String NAME = RasterMenuNames.DATA_NAME;
-    private final String PROCESSING = RasterMenuNames.PROCESSING;
-    private final static String CHECK_FILE = RasterMenuNames.SINGLE_BAND_EXIST;
 
     List<RasterImageLayer> fLayers = new ArrayList<RasterImageLayer>();
 
@@ -254,13 +258,13 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
             new EnableCheck() {
                 @Override
                 public String check(JComponent component) {
-                    return uv_field.getText().isEmpty() ? CHECK
+                    return uv_field.getText().isEmpty() ? CHECK.concat(": ")
                             .concat(UPPER_VALUE) : null;
                 }
             }, new EnableCheck() {
                 @Override
                 public String check(JComponent component) {
-                    return lv_field.getText().isEmpty() ? CHECK
+                    return lv_field.getText().isEmpty() ? CHECK.concat(": ")
                             .concat(LOWER_VALUE) : null;
                 }
             }, new EnableCheck() {
@@ -277,7 +281,8 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
     private final EnableCheck[] chengeNoDataCheck = new EnableCheck[] { new EnableCheck() {
         @Override
         public String check(JComponent component) {
-            return target_nodata.getText().isEmpty() ? CHECK.concat(TO) : null;
+            return target_nodata.getText().isEmpty() ? CHECK.concat(": ")
+                    .concat(TO) : null;
         }
     } };
 
@@ -285,7 +290,7 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
         @Override
         public String check(JComponent component) {
             return jTextField_RasterOut.getText().isEmpty() ? CHECK
-                    .concat(OUTPUT_FILE) : null;
+                    .concat(": ").concat(OUTPUT_FILE) : null;
         }
     } };
 
@@ -359,11 +364,11 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
             IO.save_ExtractValidData(outFile, rLayer, band, mindata, maxdata);
         } else if (UNIT.equals(RESET_NODATA_TAG)) {
             if (minval) {
-                IO.save_ResetNoDataTag(outFile, rLayer, band, rLayer.getMetadata()
-                        .getStats().getMin(0));
+                IO.save_ResetNoDataTag(outFile, rLayer, band, rLayer
+                        .getMetadata().getStats().getMin(0));
             } else if (maxval) {
-                IO.save_ResetNoDataTag(outFile, rLayer, band, rLayer.getMetadata()
-                        .getStats().getMax(0));
+                IO.save_ResetNoDataTag(outFile, rLayer, band, rLayer
+                        .getMetadata().getStats().getMax(0));
             }
         } else if (UNIT.equals(SET_DECIMAL)) {
             IO.save_ChangeDecimalValues(outFile, rLayer, band, dimension);
