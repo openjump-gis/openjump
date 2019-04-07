@@ -380,7 +380,7 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         final double[][] plotdata = new double[datas.size()][2];
 
         for (final Map.Entry<?, ?> entry : entries) {
-            plotdata[count][0] = (double) entry.getKey();
+            plotdata[count][0] = (Double) entry.getKey();
             plotdata[count][1] = ((Number) entry.getValue()).doubleValue();
             X[count] = 1;
             count++;
