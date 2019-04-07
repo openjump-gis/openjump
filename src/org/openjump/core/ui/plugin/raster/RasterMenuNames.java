@@ -82,16 +82,17 @@ public class RasterMenuNames {
     public static String VectorizeToPolygon = "Create polygons";
     public static String VectorizeToLinestrings = "Create linestrings";
     public static String VectorizeToContours = "Create contours";
+    public static String Algorithms = "Algorithms";
     public static String ExplodeMultipolygons = "Explode multipolygons";
     public static String ApplyStyle = "Apply a random color style to output";
     public static String contour_baseContour = "Base contour";
     public static String contour_distanceContours = "Distance contours";
-    public static String contour_zeroElevation = "Zero elevation";
+    //  public static String contour_zeroElevation = "Zero elevation";
     public static String contour_minContour = "min contour";
     public static String contour_maxcontour = "max contour";
     public static String contour_contourNumber = "contour number";
-    public static String contour_properties = "contours properties";
-    public static String contour_range = "Renge elevation";
+    //    public static String contour_properties = "contours properties";
+    //    public static String contour_range = "Renge elevation";
     public static String Value = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
 }

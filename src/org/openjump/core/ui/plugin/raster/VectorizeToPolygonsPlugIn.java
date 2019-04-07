@@ -51,7 +51,7 @@ public class VectorizeToPolygonsPlugIn extends ThreadedBasePlugIn {
     String sValue = RasterMenuNames.Value;
     String alg1 = "AdbToolbox";
     String alg2 = "Sextante";
-    String algorithms = "Algorithms";
+    String algorithms = RasterMenuNames.Algorithms;
     String choose;
     boolean explodeb = true;
     boolean applystyleb = false;

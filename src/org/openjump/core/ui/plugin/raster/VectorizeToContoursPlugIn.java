@@ -63,7 +63,7 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
     String sValue = RasterMenuNames.Value;
     public static String contour_baseContour = RasterMenuNames.contour_baseContour;
     public static String contour_distanceContours = RasterMenuNames.contour_distanceContours;
-    public static String contour_zeroElevation = RasterMenuNames.contour_zeroElevation;
+    //  public static String contour_zeroElevation = RasterMenuNames.contour_zeroElevation;
     public static String contour_minContour = RasterMenuNames.contour_minContour;
     public static String contour_maxcontour = RasterMenuNames.contour_maxcontour;
     public static String contour_contourNumber = RasterMenuNames.contour_contourNumber;
