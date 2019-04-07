@@ -4,6 +4,9 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2019-04-07 Giuseppe Aruta
+   * Activated KernelAnalysisPlugIn 
+   
+2019-04-07 Giuseppe Aruta
    * Activated ManageDataPlugIn which substitutes ChangeNoData, 
      ChangeRangeValueToNoData and ChangeValueToNoData plugins
 

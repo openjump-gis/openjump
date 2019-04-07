@@ -141,7 +141,7 @@ public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
     }
 
     private void fixComponents(MultiInputDialog dialog) {
-        final String test = fil.S_gradientEast;//dialog.getText(defaultKernels);
+        final String test = fil.S_gradientEast;
         array1d = Map.get(test);
         final String description = Map2.get(test);
         final Double dim = Math.sqrt(array1d.length);
@@ -162,14 +162,8 @@ public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
             @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
             public Class getColumnClass(int column) {
-                return Float.class; // number will be displayed right aligned
+                return Float.class;
             }
-
-            //      @Override
-            //     public boolean isCellEditable(int row, int column) {
-            //all cells false
-            //      return false;
-            //      }
         };
 
         for (final float[] rowData : array2d) {
