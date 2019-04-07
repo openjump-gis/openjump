@@ -95,15 +95,23 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
     private JPanel coordsPanel;
 
-    private final String NAME = RasterMenuNames.C_NAME;
-    private final String Target_OBJECT = RasterMenuNames.C_TARGET_OBJECT;
-    private final String CROP_RASTER = RasterMenuNames.C_CROP_RASTER;
-    private final String CROP_RASTER_TIP = RasterMenuNames.C_CROP_RASTER_TIP;
-    private final String WARP_RASTER = RasterMenuNames.C_WARP_RASTER;
-    private final String WARP_RASTER_TIP = RasterMenuNames.C_WARP_RASTER_TIP;
-    private final String CUT_LAYER = RasterMenuNames.C_CUT_LAYER;
-    private final String WARP_LAYER = RasterMenuNames.C_WARP_LAYER;
-    private final String NO_INTERSECTION = RasterMenuNames.C_NO_INTERSECTION;
+    private final String NAME = I18N
+            .get("ui.plugin.raster.CropWarpPlugIn.Name");
+    private final String Target_OBJECT = I18N
+            .get("ui.plugin.raster.CropWarpPlugIn.target-object");
+    private final String CROP_RASTER = I18N
+            .get("ui.plugin.raster.CropWarpPlugIn.crop-raster");
+    private final String CROP_RASTER_TIP = I18N
+            .get("ui.plugin.raster.CropWarpPlugIn.crop-raster-tip");
+    private final String WARP_RASTER = I18N
+            .get("ui.plugin.raster.CropWarpPlugIn.warp-raster");
+    private final String WARP_RASTER_TIP = I18N
+            .get("ui.plugin.raster.CropWarpPlugIn.warp-raster-tip");
+    private final String TARGET_LAYER = I18N
+            .get("ui.plugin.raster.CropWarpPlugIn.target-layer");
+
+    private final String NO_INTERSECTION = I18N
+            .get("ui.plugin.raster.CropWarpPlugIn.no-intersection");
 
     private final String CHECK = RasterMenuNames.Check_field;
     private final String ACTION_LABEL = RasterMenuNames.Choose_an_action;
@@ -149,7 +157,7 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
         layerComboBox = new JComboBox<>(new Vector<>(layerables));
         layerComboBox.setSelectedItem(layerables.get(0));
         layerComboBox.setSize(200, layerComboBox.getPreferredSize().height);
-        cutLayerLabel = new JLabel(CUT_LAYER);
+        cutLayerLabel = new JLabel(TARGET_LAYER);
         FormUtils.addRowInGBL(cropPanel, 2, 0, cutLayerLabel, layerComboBox);
         return cropPanel;
     }
@@ -308,12 +316,10 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
         switch (comboBox.getSelectedIndex()) {
         case 0:
             dialog.setSideBarDescription(CROP_RASTER_TIP);
-            cutLayerLabel.setText(CUT_LAYER);
             cutObjectLabel.setText(Target_OBJECT);
             break;
         case 1:
             dialog.setSideBarDescription(WARP_RASTER_TIP);
-            cutLayerLabel.setText(WARP_LAYER);
             cutObjectLabel.setText(Target_OBJECT);
             break;
         }

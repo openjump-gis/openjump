@@ -4,7 +4,7 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2019-04-07 Giuseppe Aruta
-   * Activated KernelAnalysisPlugIn 
+   * Activated KernelAnalysisPlugIn and CropWarpPlugin
    
 2019-04-07 Giuseppe Aruta
    * Activated ManageDataPlugIn which substitutes ChangeNoData, 

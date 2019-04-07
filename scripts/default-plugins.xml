@@ -912,6 +912,14 @@
                 install="true" />
         </menus>
     </plug-in>
+     <plug-in>
+        org.openjump.core.ui.plugin.raster.CropWarpPlugIn
+        <menus>
+            <main-menu
+                menupath=" MenuNames.RASTER"
+                install="true" />
+        </menus>
+    </plug-in>
     <!--plug-in>
         org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn
         <menus>
