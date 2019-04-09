@@ -29,6 +29,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.util.MathUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.ui.Viewport;
@@ -208,7 +209,7 @@ public class GenericRasterAlgorithm {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 final double value = ras.getSampleDouble(x, y, band);
-                raster.setSample(x, y, band, round(value, n));
+                raster.setSample(x, y, band, MathUtil.round(value, n));
             }
         }
         final RasterImageIO rasterImageIO = new RasterImageIO();
@@ -363,17 +364,6 @@ public class GenericRasterAlgorithm {
                         .getOriginalCellSize()), rLayer.getMetadata()
                         .getNoDataValue());
 
-    }
-
-    public double round(double value, int places) {
-        if (places < 0) {
-            throw new IllegalArgumentException();
-        }
-
-        final long factor = (long) Math.pow(10, places);
-        value = value * factor;
-        final long tmp = Math.round(value);
-        return (double) tmp / factor;
     }
 
     /**

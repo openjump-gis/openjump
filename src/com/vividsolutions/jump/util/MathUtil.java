@@ -1,4 +1,3 @@
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -33,14 +32,13 @@
 
 package com.vividsolutions.jump.util;
 
-
 /**
  * Additional math utilities.
  * @see Math
  */
 public class MathUtil {
     public MathUtil() {
-    }   
+    }
 
     public static double orderOfMagnitude(double x) {
         return base10Log(x);
@@ -51,7 +49,8 @@ public class MathUtil {
     }
 
     public static int mostSignificantDigit(double x) {
-        return (int) (x / Math.pow(10, Math.floor(MathUtil.orderOfMagnitude(x))));
+        return (int) (x / Math
+                .pow(10, Math.floor(MathUtil.orderOfMagnitude(x))));
     }
 
     /**
@@ -62,5 +61,24 @@ public class MathUtil {
      */
     public static double avg(double a, double b) {
         return (a + b) / 2d;
+    }
+
+    /**
+     * round a double to <places> number
+     * for instance round(123.4567 , 2) -> 123.45
+     * @param value
+     * @param places
+     * @return
+     */
+
+    public static double round(double value, int places) {
+        if (places < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        final long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        final long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
 }
