@@ -147,7 +147,7 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
     private final String ACTION = I18N.get("ui.GenericNames.choose-an-action");
 
     private final String CHANGE_NODATA_TIP = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.change-nodata-and-tag");
+            .get("ui.plugin.raster.ManageDataPlugIn.change-nodata-and-tag-tip");
     private final String CHANGE_INTERVAL_TO_NODATA_TIP = I18N
             .get("ui.plugin.raster.ManageDataPlugIn.Mask-with-no-data-tip");
     private final String EXTRACT_INTERVAL_TIP = I18N
