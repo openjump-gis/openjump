@@ -44,14 +44,21 @@ public class VectorizeToPolygonsPlugIn extends ThreadedBasePlugIn {
     private final String PROCESSING = I18N
             .get("jump.plugin.edit.NoderPlugIn.processing");
 
-    String sLayer = I18N.get("ui.GenericNames.Source-Layer");
-    String sExplode = RasterMenuNames.ExplodeMultipolygons;
-    String NAME = RasterMenuNames.VectorizeToPolygon;
-    String sStyle = RasterMenuNames.ApplyStyle;
-    String sValue = RasterMenuNames.Value;
+    private final String sLayer = I18N.get("ui.GenericNames.Source-Layer");
+
+    private final String sExplode = I18N
+            .get("ui.plugin.raster.VectorizeToPolygonsPlugIn.explode-multipolygons");
+    private final String NAME = I18N
+            .get("ui.plugin.raster.VectorizeToPolygonsPlugIn.Name");
+    private final String sStyle = I18N
+            .get("ui.plugin.raster.VectorizeToContoursPlugIn.apply-random-style");
+    private final String sValue = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
+    private final String algorithms = I18N
+            .get("ui.plugin.raster.VectorizeToPolygonsPlugIn.algorithms");
     String alg1 = "AdbToolbox";
     String alg2 = "Sextante";
-    String algorithms = RasterMenuNames.Algorithms;
+
     String choose;
     boolean explodeb = true;
     boolean applystyleb = false;

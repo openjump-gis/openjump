@@ -55,18 +55,26 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
 
     private final String PROCESSING = I18N
             .get("jump.plugin.edit.NoderPlugIn.processing");
+    private static String sLayer = I18N.get("ui.GenericNames.Source-Layer");
+    private static String NAME = I18N
+            .get("ui.plugin.raster.VectorizeToContoursPlugIn.Name");
+    private static String sValue = I18N
+            .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
 
-    String sLayer = I18N.get("ui.GenericNames.Source-Layer");
-    String sExplode = RasterMenuNames.ExplodeMultipolygons;
-    String NAME = RasterMenuNames.VectorizeToContours;
-    String sStyle = RasterMenuNames.ApplyStyle;
-    String sValue = RasterMenuNames.Value;
-    public static String contour_baseContour = RasterMenuNames.contour_baseContour;
-    public static String contour_distanceContours = RasterMenuNames.contour_distanceContours;
+    private static String sStyle = I18N
+            .get("ui.plugin.raster.VectorizeToContoursPlugIn.apply-random-style");
+
+    public static String contour_baseContour = I18N
+            .get("ui.plugin.raster.VectorizeToContoursPlugIn.base-contour");
+    public static String contour_distanceContours = I18N
+            .get("ui.plugin.raster.VectorizeToContoursPlugIn.interval");
     //  public static String contour_zeroElevation = RasterMenuNames.contour_zeroElevation;
-    public static String contour_minContour = RasterMenuNames.contour_minContour;
-    public static String contour_maxcontour = RasterMenuNames.contour_maxcontour;
-    public static String contour_contourNumber = RasterMenuNames.contour_contourNumber;
+    public static String contour_minContour = I18N
+            .get("ui.plugin.raster.VectorizeToContoursPlugIn.min-contour");
+    public static String contour_maxcontour = I18N
+            .get("ui.plugin.raster.VectorizeToContoursPlugIn.min-contour");
+    public static String contour_contourNumber = I18N
+            .get("ui.plugin.raster.VectorizeToContoursPlugIn.contour-number");
 
     private final String MIN = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.min");
