@@ -896,6 +896,13 @@
     <plug-in>
         org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn
     </plug-in>
+     <separator />
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.VectorizeToPolygonsPlugIn
+        </plug-in>
+     <plug-in>
+        org.openjump.core.ui.plugin.raster.VectorizeToContoursPlugIn
+     </plug-in>
      <plug-in>
         org.openjump.core.ui.plugin.raster.ManageDataPlugIn
         <menus>

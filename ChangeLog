@@ -3,6 +3,13 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2019-04-09 Giuseppe Aruta
+   * Activated:
+     a) VectorizeToPolygonsPlugIn: vectorize a raster to a vector layer of 
+     polygons
+     b) VectorizeToContoursPlugIn: vectorize a raster to a vector layer of
+     contours (linestrings)
+
 2019-04-07 Giuseppe Aruta
    * Activated KernelAnalysisPlugIn and CropWarpPlugin
    
