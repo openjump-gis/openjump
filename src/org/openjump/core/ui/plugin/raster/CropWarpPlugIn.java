@@ -40,6 +40,7 @@ import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -408,16 +409,6 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
         return NAME;
     }
 
-    public static MultiEnableCheck check() {
-        final EnableCheckFactory checkFactory = EnableCheckFactory
-                .getInstance();
-        return new MultiEnableCheck()
-                .add(checkFactory
-                        .createWindowWithAssociatedTaskFrameMustBeActiveCheck())
-                .add(checkFactory.createAtLeastNLayerablesOfTypeMustExistCheck(
-                        1, RasterImageLayer.class));
-    }
-
     public static final String MINX_KEY = I18N
             .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.minx");
     public static final String MAXX_KEY = I18N
@@ -514,6 +505,17 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
         FormUtils.addRowInGBL(coordsPanel, 0, 5, ulbutton);
         return coordsPanel;
 
+    }
+
+    public static MultiEnableCheck createEnableCheck(
+            WorkbenchContext workbenchContext) {
+        final EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
+        return new MultiEnableCheck()
+                .add(checkFactory
+                        .createWindowWithAssociatedTaskFrameMustBeActiveCheck())
+                .add(checkFactory.createAtLeastNLayerablesOfTypeMustExistCheck(
+                        1, RasterImageLayer.class));
     }
 
 }

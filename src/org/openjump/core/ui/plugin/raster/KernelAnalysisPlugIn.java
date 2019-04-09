@@ -37,6 +37,7 @@ import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -381,9 +382,10 @@ public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
         return jTextField_RasterOut.getText();
     }
 
-    public static MultiEnableCheck check() {
-        final EnableCheckFactory checkFactory = EnableCheckFactory
-                .getInstance();
+    public static MultiEnableCheck createEnableCheck(
+            WorkbenchContext workbenchContext) {
+        final EnableCheckFactory checkFactory = new EnableCheckFactory(
+                workbenchContext);
         return new MultiEnableCheck()
                 .add(checkFactory
                         .createWindowWithAssociatedTaskFrameMustBeActiveCheck())
