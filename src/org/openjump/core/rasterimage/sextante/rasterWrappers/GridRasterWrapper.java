@@ -1,9 +1,12 @@
 package org.openjump.core.rasterimage.sextante.rasterWrappers;
 
 import java.awt.Point;
+import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
+
+import javax.media.jai.RasterFactory;
 
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 
@@ -224,6 +227,27 @@ public class GridRasterWrapper {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Convert a 2DArray (Matrix) as double to java.awt.image.Raster
+     * 
+     * @param 2D Array as double
+     * @param SampleModel
+     * @return java.awt.image.Raster
+     */
+
+    public static Raster matrixToRaster(double[][] matrix) {
+        final int w = matrix.length;
+        final int h = matrix[0].length;
+        final WritableRaster raster = RasterFactory.createBandedRaster(
+                DataBuffer.TYPE_FLOAT, w + 1, h + 1, 1, null);
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                raster.setSample(i, j, 0, matrix[i][j]);
+            }
+        }
+        return raster;
     }
 
 }
