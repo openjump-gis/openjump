@@ -1,5 +1,6 @@
 package org.openjump.core.ui.util;
 
+import java.awt.image.Raster;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -53,6 +54,42 @@ public abstract class LayerableUtil {
     /*
      * methods for RasterImageLayer.class
      */
+
+    /**
+     * Boolean to verify if a <RasterImageLayer> rLayer1 is spatially equivalent to another <RasterImageLayer> rLayer2
+     * @param RasterImageLayer layer
+     * @return True if they are equivalent. False if they are not equivalent
+     * @throws IOException
+     */
+
+    public static boolean isSpatiallyEqualTo(RasterImageLayer rLayer1,
+            RasterImageLayer rLayer2) throws IOException {
+
+        boolean isEqual = true;
+        final Raster raster1 = rLayer1.getRasterData(null);
+        final Raster raster2 = rLayer2.getRasterData(null);
+        if (raster1.getHeight() != raster2.getHeight()) {
+            isEqual = false;
+        }
+        if (raster1.getWidth() != raster2.getWidth()) {
+            isEqual = false;
+        }
+        if (rLayer1.getMetadata().getActualLowerLeftCoord() != rLayer2
+                .getMetadata().getActualLowerLeftCoord()) {
+            isEqual = false;
+
+        }
+        if (rLayer1.getMetadata().getActualCellSize() != rLayer2.getMetadata()
+                .getActualCellSize()) {
+            isEqual = false;
+        }
+        if (rLayer1.getNoDataValue() != rLayer2.getNoDataValue()) {
+            isEqual = false;
+        }
+
+        return isEqual;
+
+    }
 
     /**
      * RasterImageLayer.class
@@ -863,7 +900,8 @@ public abstract class LayerableUtil {
         outPRJ = context.getLayerManager().uniqueLayerName(
                 layer.getName() + ".prj");
         outFile = new File(path.concat(File.separator).concat(outPRJ));
-        FileUtils.writeStringToFile(outFile, proj);
+        // FileUtils .writeStringToFile(outFile, proj);//Deprecated
+        FileUtils.writeStringToFile(outFile, proj, charSet);
     }
 
     /**
@@ -885,8 +923,11 @@ public abstract class LayerableUtil {
         outPRJ = context.getLayerManager().uniqueLayerName(
                 layer.getName() + ".prj");
         outFile = new File(path.concat(File.separator).concat(outPRJ));
-        FileUtils.writeStringToFile(outFile, proj);
+        // FileUtils .writeStringToFile(outFile, proj);//Deprecated
+        FileUtils.writeStringToFile(outFile, proj, charSet);
     }
+
+    final static String charSet = "UTF-8";
 
     /**
      * Simple method to copy a file (as worldfile)
