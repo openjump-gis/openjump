@@ -230,14 +230,12 @@ public class GridRasterWrapper {
     }
 
     /**
-     * Convert a 2DArray (Matrix) as double to java.awt.image.Raster
-     * 
-     * @param 2D Array as double
-     * @param SampleModel
-     * @return java.awt.image.Raster
+     * Convert a double 2DArray (matrix)  to java.awt.image.WritableRaster (single band)
+     * @param matrix[][]. 2DArray
+     * @return WritableRaster
      */
 
-    public static Raster matrixToRaster(double[][] matrix) {
+    public static WritableRaster matrixToRaster(double[][] matrix) {
         final int w = matrix.length;
         final int h = matrix[0].length;
         final WritableRaster raster = RasterFactory.createBandedRaster(
