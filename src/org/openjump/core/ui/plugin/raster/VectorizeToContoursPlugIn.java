@@ -263,7 +263,7 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
             max.setText(max_value + "");
             jTextField_ContMin.setText(contMin + "");
             jTextField_ContMax.setText(contMax + "");
-            jTextField_ContIntv.setText(contCount + "");
+            jTextField_ContCount.setText(contCount + "");
 
         } catch (final Exception ex) {
 
