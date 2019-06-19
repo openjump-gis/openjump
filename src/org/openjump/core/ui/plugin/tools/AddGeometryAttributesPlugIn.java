@@ -25,6 +25,7 @@
  
 package org.openjump.core.ui.plugin.tools;
 
+import com.vividsolutions.jts.algorithm.MinimumDiameter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jump.I18N;
@@ -323,7 +324,12 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
                 return (((length / 2.0) - Math.sqrt(val)) / 2.0);
             } else {
                 //diamètre du disque de même surface, sur une surface ramassée
-                return 2.0 * Math.sqrt(area / Math.PI);
+                //return 2.0 * Math.sqrt(area / Math.PI);
+                //improve width calculation for compact geometries
+                MinimumDiameter diameter = new MinimumDiameter(g);
+                Geometry minRectangle = diameter.getMinimumRectangle();
+                double ratio = Math.sqrt(minRectangle.getArea()/g.getArea());
+                return diameter.getLength()/ratio;
             }
         } else return null;
     }
@@ -338,7 +344,12 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
                 return area / (((length / 2.0) - Math.sqrt(val)) / 2.0);
             } else {
                 //diamètre du disque de même surface, sur une surface ramassée
-                return 2.0 * Math.sqrt(area / Math.PI);
+                //return 2.0 * Math.sqrt(area / Math.PI);
+                //improve width calculation for compact geometries
+                MinimumDiameter diameter = new MinimumDiameter(g);
+                Geometry minRectangle = diameter.getMinimumRectangle();
+                double ratio = Math.sqrt(minRectangle.getArea()/g.getArea());
+                return g.getArea()/(diameter.getLength()/ratio);
             }
         } else return null;
     }
