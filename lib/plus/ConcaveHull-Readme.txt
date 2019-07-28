@@ -30,6 +30,8 @@ licences.
 
 
 Changes
+0.3 (28.07.2019)
+- set default threshold to last used one after first call
 
 0.2 (25.11.2014)
 - added translations
