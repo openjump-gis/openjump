@@ -21,7 +21,7 @@ public class GradientCanvas extends JComponent{
      * Construct a JComponent whose background is stretched between colorStart and
      * colorEnd.
      * 
-     * @param colorMapEntries
+     * @param colorMapEntries map values to colors
      * @param width Width of the stretched effect.
      * @param height Height of the stretched effect.
      * @param type Gradient direction. HORIZONTAL colorStart is on left and colorEnd is on right, VERTICAL
@@ -51,15 +51,12 @@ public class GradientCanvas extends JComponent{
             colors[c] = colorMapEntries[c].getColor();
             fractions[c] = (float) (colorMapEntries[c].getUpperValue()/ colorMapEntries[colorMapEntries.length-1].getUpperValue());
         }
-                
-                
         
         if(type == GradientType.HORIZONTAL){
             paint = new LinearGradientPaint(0, 0, width, height, fractions, colors);
         } else if (type == GradientType.VERTICAL){
             paint = new LinearGradientPaint((width / 2), 0, (width/2), height, fractions, colors); 
         }
-              
                 
         Graphics2D g2d = (Graphics2D) g;
         Paint oldPaint = g2d.getPaint();
@@ -75,6 +72,10 @@ public class GradientCanvas extends JComponent{
 
     public ColorMapEntry[] getColorMapEntries() {
         return colorMapEntries;
+    }
+
+    public GradientCanvas copy() {
+        return new GradientCanvas(colorMapEntries, (int)width, (int)height, type);
     }
     
     private final ColorMapEntry[] colorMapEntries;

@@ -8,6 +8,8 @@ import org.openjump.core.ui.color.ColorGenerator;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import java.io.IOException;
+import java.util.Collection;
+
 import org.openjump.core.rasterimage.RasterSymbology;
 
 /**
@@ -71,8 +73,12 @@ public class RasterColorEditor {
             double value = layer.getMetadata().getStats().getMin(0) + c * interval;
             symbology.addColorMapEntry(value, color);
         }
-        
-        layer.setSymbology(symbology);
+
+        Collection selectedNodes = context.getLayerableNamePanel().selectedNodes(RasterImageLayer.class);
+        for (Object node : selectedNodes) {
+            RasterImageLayer rasterImageLayer = (RasterImageLayer) node;
+            rasterImageLayer.setSymbology(symbology);
+        }
         
         
 //        Raster raster = layer.getImage().getRaster();

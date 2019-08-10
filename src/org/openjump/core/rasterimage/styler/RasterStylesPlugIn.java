@@ -5,14 +5,11 @@ import org.openjump.core.rasterimage.styler.ui.RasterStylesDialog;
 
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-
-import java.util.List;
 
 import javax.swing.JPopupMenu;
 
@@ -21,11 +18,13 @@ import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.styler.ui.GUIUtils;
 import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageContextMenu;
 
+import java.util.ResourceBundle;
+
 public class RasterStylesPlugIn implements ThreadedPlugIn {
 
     @Override
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates. //NOI18N
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -46,7 +45,8 @@ public class RasterStylesPlugIn implements ThreadedPlugIn {
     @Override
     public boolean execute(PlugInContext context) throws Exception {
         
-        RasterImageLayer rasterImageLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
+        RasterImageLayer rasterImageLayer = (RasterImageLayer) LayerTools
+                .getSelectedLayerable(context, RasterImageLayer.class);
         RasterStylesDialog symbologyDialog;
         
         String bboardKey = GUIUtils.getBBKey(String.valueOf(rasterImageLayer.getUUID()));        
@@ -92,19 +92,20 @@ public class RasterStylesPlugIn implements ThreadedPlugIn {
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
         
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
         MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
 
-        multiEnableCheck.add(checkFactory.createExactlyNLayerablesMustBeSelectedCheck(1, RasterImageLayer.class));
-        multiEnableCheck.add(checkFactory.createRasterImageLayerExactlyNBandsMustExistCheck(1));
+        multiEnableCheck
+                .add(checkFactory.createAtLeastNLayerablesOfTypeMustExistCheck(1, RasterImageLayer.class))
+                .add(checkFactory.createRasterImageLayerExactlyNBandsMustExistCheck(1));
 
         return multiEnableCheck;
     }
     
     @Override
     public String getName() {
-        return java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.RasterStylesExtension.Name");
+        return ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle")
+                .getString("org.openjump.core.rasterimage.styler.RasterStylesExtension.Name");
     }
     
 }

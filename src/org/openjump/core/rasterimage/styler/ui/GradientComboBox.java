@@ -12,14 +12,13 @@ import org.openjump.core.rasterimage.styler.ColorMapEntry;
  */
 public class GradientComboBox extends JComboBox implements ActionListener {
 
-    DefaultComboBoxModel model = new DefaultComboBoxModel();;
+    private DefaultComboBoxModel model = new DefaultComboBoxModel();;
     
     /**
      * Constructor to create a combobox for gradient.  
      */
     public GradientComboBox() {
         super();
-        setModel(model);
         setModel(model);
     }
 
@@ -30,12 +29,12 @@ public class GradientComboBox extends JComboBox implements ActionListener {
             
             GradientCanvas gradientCanvas = (GradientCanvas) anObject;
             
-            int width = gradientCanvas.getWidth();
-            int height = gradientCanvas.getHeight();
-            GradientCanvas.GradientType type = gradientCanvas.getType();
-            ColorMapEntry[] colorMapEntries = gradientCanvas.getColorMapEntries();
-            GradientCanvas gradient = new GradientCanvas(colorMapEntries, width, height, type);
-            model.addElement(gradient);
+            //int width = gradientCanvas.getWidth();
+            //int height = gradientCanvas.getHeight();
+            //GradientCanvas.GradientType type = gradientCanvas.getType();
+            //ColorMapEntry[] colorMapEntries = gradientCanvas.getColorMapEntries();
+            //GradientCanvas gradient = new GradientCanvas(colorMapEntries, width, height, type);
+            model.addElement(gradientCanvas.copy());
             
         } else {
             super.addItem(anObject);
@@ -44,7 +43,7 @@ public class GradientComboBox extends JComboBox implements ActionListener {
     }
 
             
-    Object object  = model.getSelectedItem();
-    GradientCanvas canvas = (GradientCanvas) object;
+    //Object object  = model.getSelectedItem();
+    //GradientCanvas canvas = (GradientCanvas) object;
     
 }

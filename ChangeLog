@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2019-08-10 mmichaud <m.michael.michaud@orange.fr>
+  * RasterLayerEditor can now apply a style to several layers (FR #263)
+
 2019-07-28 mmichaud <m.michael.michaud@orange.fr>
   * Upgrade concave-hull to 0.3 (remember last used parameter)
 

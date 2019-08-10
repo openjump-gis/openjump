@@ -78,7 +78,7 @@ public class GUIUtils {
     }
 
     /**
-     * Method for displayin in a panel a gradient
+     * Method for displaying in a panel a gradient
      *
      * @param panel Panel on which display the gradient
      * @param colorMapEntries Colors that make up the gradient. The quantity
