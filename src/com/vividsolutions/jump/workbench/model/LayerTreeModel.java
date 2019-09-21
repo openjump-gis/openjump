@@ -32,10 +32,7 @@
 package com.vividsolutions.jump.workbench.model;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.tree.TreePath;
 
@@ -44,6 +41,7 @@ import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.util.SimpleTreeModel;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
+import org.apache.commons.collections.map.HashedMap;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 
@@ -255,18 +253,22 @@ public class LayerTreeModel extends SimpleTreeModel {
         if (parent instanceof Category) {
             return ((Category) parent).getLayerables();
         }
-        if (parent instanceof Layer
-                && ColorThemingStyle.get((Layer) parent).isEnabled()) {
-            Map<Object,BasicStyle> attributeValueToBasicStyleMap = ColorThemingStyle.get(
-                    (Layer) parent).getAttributeValueToBasicStyleMap();
-            Map<Object,String> attributeValueToLabelMap = ColorThemingStyle
-                    .get((Layer) parent).getAttributeValueToLabelMap();
-            List<ColorThemingValue> colorThemingValues = new ArrayList<>();
-            for (Map.Entry<Object,BasicStyle> entry : attributeValueToBasicStyleMap.entrySet()) {
-                colorThemingValues.add(new ColorThemingValue(entry.getKey(),
-                        entry.getValue(), attributeValueToLabelMap.get(entry.getKey())));
+        if (parent instanceof Layer) {
+            ColorThemingStyle colorThemingStyle = ColorThemingStyle.get((Layer) parent);
+            if (colorThemingStyle.isEnabled()) {
+                Map<Object, BasicStyle> attributeValueToBasicStyleMap =
+                        colorThemingStyle.getAttributeValueToBasicStyleMap();
+                // convert attributeValueToLabelMap to HashMap because it usually is
+                // a TreeMap, which has slower get access than HashMap
+                Map<Object, String> attributeValueToLabelMap = new HashMap<>(
+                        colorThemingStyle.getAttributeValueToLabelMap());
+                List<ColorThemingValue> colorThemingValues = new ArrayList<>();
+                for (Map.Entry<Object, BasicStyle> entry : attributeValueToBasicStyleMap.entrySet()) {
+                    colorThemingValues.add(new ColorThemingValue(entry.getKey(),
+                            entry.getValue(), attributeValueToLabelMap.get(entry.getKey())));
+                }
+                return colorThemingValues;
             }
-            return colorThemingValues;
         }
         if (parent instanceof ColorThemingValue) {
             return Collections.EMPTY_LIST;

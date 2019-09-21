@@ -60,7 +60,7 @@ public abstract class SimpleTreeModel implements TreeModel {
         public int hashCode() {
             //JTree puts nodes in a Hashtable. To keep things simple, just return 0,
             //which will cause linear searches (fine for small trees). [Jon Aquino]
-            return 0;
+            return name.hashCode();
         }
         public boolean equals(Object other) {
             //Folders are value objects. [Jon Aquino]

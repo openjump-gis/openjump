@@ -5,6 +5,8 @@
 
 2019-09-21 mmichaud <m.michael.michaud@orange.fr>
   * PLUS : add new capabilities to SetAttributes extension 0.8
+  * #487 Improve performance of LayerNamePanel when it contains
+    ColorThemingStyle with many items
 
 2019-08-10 mmichaud <m.michael.michaud@orange.fr>
   * RasterLayerEditor can now apply a style to several layers (FR #263)

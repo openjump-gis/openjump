@@ -35,6 +35,8 @@ import com.vividsolutions.jts.util.Assert;
 
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.model.Category;
+import com.vividsolutions.jump.workbench.model.Layer;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -114,6 +116,29 @@ public class TreeUtil {
         }
     }
 
+    public static void visitCategoriesAndLayerables(TreeModel model, Visitor visitor) {
+        Stack path = new Stack();
+        path.push(model.getRoot());
+        visitCategoriesAndLayerables(model, path, visitor);
+    }
+
+    public static void visitCategoriesAndLayerables(TreeModel model, TreePath path, Visitor visitor) {
+        Stack stack = new Stack();
+        stack.addAll(Arrays.asList(path.getPath()));
+        visitCategoriesAndLayerables(model, stack, visitor);
+    }
+
+    private static void visitCategoriesAndLayerables(TreeModel model, Stack path, Visitor visitor) {
+        visitor.visit(path);
+        if (path.peek() instanceof Category) {
+            for (int i = 0; i < model.getChildCount(path.peek()); i++) {
+                path.push(model.getChild(path.peek(), i));
+                visit(model, path, visitor);
+                path.pop();
+            }
+        }
+    }
+
     public static TreeModelEvent createTreeModelEvent(final Object source,
         final Object node, final TreeModel model) {
         TreePath path = findTreePath(node, model);
@@ -156,6 +181,22 @@ public class TreeUtil {
                     treePath[0] = new TreePath(path.toArray());
                 }
             });
+
+        return treePath[0];
+    }
+
+    public static TreePath findLayerTreePath(final Layer node, final TreeModel model) {
+        final TreePath[] treePath = new TreePath[] { null };
+        visitCategoriesAndLayerables(model,
+                new Visitor() {
+                    public void visit(Stack path) {
+                        if (path.peek() != node) {
+                            return;
+                        }
+
+                        treePath[0] = new TreePath(path.toArray());
+                    }
+                });
 
         return treePath[0];
     }
