@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2019-09-21 mmichaud <m.michael.michaud@orange.fr>
+  * PLUS : add new capabilities to SetAttributes extension 0.8
+
 2019-08-10 mmichaud <m.michael.michaud@orange.fr>
   * RasterLayerEditor can now apply a style to several layers (FR #263)
 
