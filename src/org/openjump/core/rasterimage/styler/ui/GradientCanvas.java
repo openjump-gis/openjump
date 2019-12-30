@@ -33,17 +33,42 @@ public class GradientCanvas extends JComponent{
         this.width = width;
         this.height = height;
         this.type = type;
-    
+        this.orientation = GradientOrientation.DIRECT;
         super.setSize(new Dimension(width, height));
         
+    }
+
+    /**
+     * Construct a JComponent whose background is stretched between colorStart and
+     * colorEnd.
+     *
+     * @param colorMapEntries map values to colors
+     * @param width Width of the stretched effect.
+     * @param height Height of the stretched effect.
+     * @param type Gradient direction. HORIZONTAL colorStart is on left and colorEnd is on right, VERTICAL
+     *  colorStart is at top and colorEnd is bottom.
+     * @param orientation Gradient orientation. DIRECT is oriented from top to bottom
+     *  or from left to right, INVERSE is the opposite.
+     */
+    public GradientCanvas(ColorMapEntry[] colorMapEntries, int width, int height,
+                          GradientType type, GradientOrientation orientation) {
+
+        this.colorMapEntries = colorMapEntries;
+        this.width = width;
+        this.height = height;
+        this.type = type;
+        this.orientation = orientation;
+        super.setSize(new Dimension(width, height));
+
     }
     
     /*
     * Stretched for vertical effect from top to bottom and for horizontal effect from left to right.
     */    
     @Override
-    public void paint(Graphics g){        
-        
+    public void paint(Graphics g){
+
+        Graphics2D g2d = (Graphics2D) g;
         LinearGradientPaint paint = null;
         float[] fractions = new float[colorMapEntries.length];
         Color[] colors = new Color[colorMapEntries.length];
@@ -52,13 +77,22 @@ public class GradientCanvas extends JComponent{
             fractions[c] = (float) (colorMapEntries[c].getUpperValue()/ colorMapEntries[colorMapEntries.length-1].getUpperValue());
         }
         
-        if(type == GradientType.HORIZONTAL){
-            paint = new LinearGradientPaint(0, 0, width, height, fractions, colors);
-        } else if (type == GradientType.VERTICAL){
-            paint = new LinearGradientPaint((width / 2), 0, (width/2), height, fractions, colors); 
+        if(type == GradientType.HORIZONTAL) {
+            if (orientation == GradientOrientation.DIRECT) {
+                paint = new LinearGradientPaint(0, 0, width, height, fractions, colors);
+            }
+            else if (orientation == GradientOrientation.INVERSE) {
+                paint = new LinearGradientPaint(width, height, 0, 0, fractions, colors);
+            }
+        } else if (type == GradientType.VERTICAL) {
+            if (orientation == GradientOrientation.DIRECT) {
+                paint = new LinearGradientPaint((width / 2), 0, (width / 2), height, fractions, colors);
+            }
+            if (orientation == GradientOrientation.INVERSE) {
+                paint = new LinearGradientPaint((width / 2), height, (width / 2), 0, fractions, colors);
+            }
         }
-                
-        Graphics2D g2d = (Graphics2D) g;
+
         Paint oldPaint = g2d.getPaint();
         g2d.setPaint(paint);
         g2d.fillRect(0, 0, (int)width, (int) height);
@@ -82,7 +116,10 @@ public class GradientCanvas extends JComponent{
     private final float width;
     private final float height;
     
-    public enum GradientType {HORIZONTAL, VERTICAL};
+    public enum GradientType {HORIZONTAL, VERTICAL}
     private final GradientType type;
+
+    public enum GradientOrientation {DIRECT, INVERSE}
+    private final GradientOrientation orientation;
 
 }

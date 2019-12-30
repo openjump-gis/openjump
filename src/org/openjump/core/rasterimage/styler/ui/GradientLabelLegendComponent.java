@@ -1,10 +1,6 @@
 package org.openjump.core.rasterimage.styler.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -177,8 +173,15 @@ public class GradientLabelLegendComponent extends JComponent {
         add(jLabel_NoDataValue, gridBagConstraints);
 
         // Set gradient color panel
-        final GUIUtils updatePanel = new GUIUtils();
-        updatePanel.setGradientPanel(jPanel_Gradient, paletteColorMapEntry);
+        //final GUIUtils updatePanel = new GUIUtils();
+        //updatePanel.setGradientPanel(jPanel_Gradient, paletteColorMapEntry);
+        GradientCanvas gradientCanvas = new GradientCanvas(
+                paletteColorMapEntry, 40, 100,
+                GradientCanvas.GradientType.VERTICAL,
+                GradientCanvas.GradientOrientation.INVERSE
+        );
+        jPanel_Gradient.setLayout(new BorderLayout());
+        jPanel_Gradient.add(gradientCanvas, BorderLayout.CENTER);
 
         setPreferredSize(new Dimension(200, 250));
     }
