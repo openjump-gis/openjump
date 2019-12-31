@@ -108,10 +108,14 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     // Workaround for Java Bug 4199956 "JTree shows container can be
     // expanded - even when empty", posted by bertrand.allo in the Java Bug
     // Database. [Jon Aquino]
+    // 2019-12-31 : cannot see the effect of the bug, even if it is tagged
+    // won't fix in the bug database. Removing the second part of the or
+    // condition saves a lot of time in some situation (ex. copy/paste a
+    // layer with theming style having a lot of values) [mmichaud]
     @Override
     public boolean hasBeenExpanded(TreePath path) {
-      return super.hasBeenExpanded(path)
-          || !this.getModel().isLeaf(path.getLastPathComponent());
+      return super.hasBeenExpanded(path);
+          //|| !this.getModel().isLeaf(path.getLastPathComponent());
     }
 
     // [ede 12.2012] only allow plain cursor keys. during adding shortcuts it
