@@ -41,7 +41,6 @@ import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.util.SimpleTreeModel;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
-import org.apache.commons.collections.map.HashedMap;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 
