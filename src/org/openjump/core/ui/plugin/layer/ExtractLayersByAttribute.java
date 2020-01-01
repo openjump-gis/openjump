@@ -33,23 +33,13 @@
 
 package org.openjump.core.ui.plugin.layer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -57,11 +47,11 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.AttributeTypeFilter;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 
 public class ExtractLayersByAttribute extends AbstractPlugIn {
 
@@ -73,8 +63,8 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
     	I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Extracts-layers-using-a-common-attribute");
 	private static final String LAYER = 
 		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.LAYER");	
-	private static final String TEXT = 
-		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.TEXT");
+	//private static final String TEXT =
+	//	I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.TEXT");
 	private static final String EXTRACT = 
 		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Extract");
 	// NULL has not to be translated
@@ -84,11 +74,9 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute._EMPTY_");
 	
 	private Layer sourceLayer = null;
-	private boolean textAttributeFound = false;
-	private String textAttribute = null;
 	 	 
 	public void initialize(PlugInContext context) throws Exception {
-	    context.getFeatureInstaller().addMainMenuItem(this,
+	    context.getFeatureInstaller().addMainMenuPlugin(this,
 		        new String[]
 				{MenuNames.EDIT, MenuNames.EXTRACT},
 				getName(), 
@@ -107,7 +95,7 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
                 // At one point, this EnableCheck should be added to
                 // EnableCheckFactory with it's own I18N key string
                 public String check(JComponent component) {
-                    Layer[] lyrs = workbenchContext.getLayerNamePanel().getSelectedLayers();
+                    Layer[] lyrs = workbenchContext.getLayerableNamePanel().getSelectedLayers();
                     if (lyrs.length == 0) {
                         return I18N.get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected");
                     }
@@ -138,35 +126,16 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 	
     private void setDialogFields( final MultiInputDialog dialog) {
 		dialog.setSideBarDescription(DIALOGMSG);
-		JComboBox<String> layerAttributeComboBox =
-				dialog.addComboBox(LAYER_ATTRIBUTE, null, new ArrayList<String>(), null);
-		List<String> names = attributeNames();
-		layerAttributeComboBox.setModel(new DefaultComboBoxModel<>(new Vector<>(names)));
-		String layerName = null;
-		textAttributeFound = false;
-        for (String attribute : names) {
-            if (attribute.equalsIgnoreCase(LAYER)) {
-            	layerName = attribute;
-            } else if (attribute.equalsIgnoreCase(TEXT)) {
-            	textAttributeFound = true;
-            	textAttribute = attribute;
-            }
-        }
-		layerAttributeComboBox.setSelectedItem(layerName);
-		if (layerName == null && names.size() > 0) {
-		    layerAttributeComboBox.setSelectedIndex(0);
+		List<String> attributes = AttributeTypeFilter.NO_GEOMETRY_FILTER.filter(sourceLayer);
+		// If an attribute is named LAYER, it is set as the default (useful for DXF)
+		String layerName = attributes.get(0);
+		for (String attribute : attributes) {
+			if (attribute.equalsIgnoreCase(LAYER)) {
+				layerName = attribute;
+				break;
+			}
 		}
-    }
-
-    private List<String> attributeNames() {
-        ArrayList<String> candidateAttributeNames = new ArrayList<>();
-        FeatureSchema schema = sourceLayer.getFeatureCollectionWrapper().getFeatureSchema();
-        for (int i = 0; i < schema.getAttributeCount(); i++) {
-        	String name = schema.getAttributeName(i);
-        	if (!name.equalsIgnoreCase("GEOMETRY"))
-                candidateAttributeNames.add(name);
-        }
-        return candidateAttributeNames;
+		dialog.addComboBox(LAYER_ATTRIBUTE, layerName, attributes, null);
     }
 
     public String getName() {
@@ -177,85 +146,26 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
 
     private void extractLayers(PlugInContext context, Layer layer, String attributeName) {
  		FeatureCollectionWrapper featureCollection = layer.getFeatureCollectionWrapper();
-        List featureList = featureCollection.getFeatures();
+        List<Feature> featureList = featureCollection.getFeatures();
         FeatureSchema featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
         int attributeIndex = featureSchema.getAttributeIndex(attributeName);        
-       			          
-		boolean wasFiringEvents = context.getLayerManager().isFiringEvents();
-        
-       	Set newLayerNameList = new HashSet();
-        for (Iterator i = featureList.iterator(); i.hasNext();) {
-        	Feature feature = (Feature) i.next();
-			// modified by michaelm on 2009-02-20 to handle null and empty strings
-        	Object attributeValue = feature.getAttribute(attributeIndex);
-			if (attributeValue == null) {
-				    newLayerNameList.add(NULL);
+
+       	Map<String, FeatureCollection> newLayersMap = new HashMap<>();
+		for (Feature feature : featureList) {
+			Object attribute = feature.getAttribute(attributeIndex);
+			String attributeString = attribute == null ? NULL : attribute.toString().trim();
+			if (attributeString.length() == 0) attributeString = EMPTY;
+			FeatureCollection fc = newLayersMap.get(attributeString);
+			if (fc == null) {
+				fc = new FeatureDataset(featureSchema);
+				newLayersMap.put(attributeString, fc);
 			}
-			else {
-				String attributeString = attributeValue.toString().trim();
-				if (attributeString.length() == 0) {
-				    newLayerNameList.add(EMPTY);
-				}
-        	    else {
-        		    newLayerNameList.add(attributeString);
-				}
-        	}
-        }
- 
-        for (Iterator i = newLayerNameList.iterator(); i.hasNext();) {
-        	String layerName = (String) i.next();
-        	
-    		context.getLayerManager().setFiringEvents(true);
-	        Layer newLayer = context.addLayer(EXTRACT, layerName,
-	        	new FeatureDataset(featureSchema));
-	        if (textAttributeFound) {
-	            boolean textAttributePopulated = false;
-		        for (Iterator j = featureList.iterator(); j.hasNext();) {
-		        	Feature feature = (Feature) j.next();
-		        	String attributeValue = feature.getString(textAttribute);
-		        	if ( feature.getString(attributeIndex) != null &&
-							feature.getString(attributeIndex).equals(layerName) &&
-							attributeValue != null && !attributeValue.isEmpty()) {
-		        		textAttributePopulated = true;
-			        	break;
-		        	}
-	            }
-	            if (textAttributePopulated) {
-	        	    LabelStyle labelStyle = new LabelStyle();
-	        	    labelStyle.setAttribute(textAttribute);
-	        	    labelStyle.setScaling(true);
-	        	    labelStyle.setEnabled(true);	        	
-		            newLayer.addStyle(labelStyle);
-		        }
-	        }
-			context.getLayerManager().setFiringEvents(false);
-	        
-	        FeatureCollectionWrapper newFeatureCollection = newLayer.getFeatureCollectionWrapper();
-           
-	        for (Iterator j = featureList.iterator(); j.hasNext();) {
-	        	Feature feature = (Feature) j.next();
-				// modified by michaelm on 2009-02-20 to handle null and empty strings
-	        	Object attributeValue = feature.getAttribute(attributeIndex);
-				if (attributeValue == null) {
-					if (layerName.equals(NULL)) {
-						newFeatureCollection.add((Feature) feature.clone());
-					}
-				}
-				else {
-					String attributeString = attributeValue.toString();
-				    if (attributeString.trim().length() == 0) {
-						if (layerName.equals(EMPTY)) {
-							newFeatureCollection.add((Feature) feature.clone());
-						}
-					}
-					else if (attributeString.trim().equals(layerName)) {
-		        	    newFeatureCollection.add((Feature) feature.clone());
-					}
-	        	}
-            }
-        }
+			fc.add(feature);
+		}
         
-		context.getLayerManager().setFiringEvents(wasFiringEvents);
+		for (Map.Entry<String,FeatureCollection> entry : (new TreeMap<>(newLayersMap)).entrySet()) {
+			context.addLayer(EXTRACT, entry.getKey(), entry.getValue());
+		}
 		context.getLayerViewPanel().repaint();
     }
 	    
