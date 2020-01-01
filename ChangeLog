@@ -5,6 +5,7 @@
 
 2020-01-01 mmichaud <m.michael.michaud@orange.fr>
   * Clean and improve ExtractLayersByAttribute
+  * Implements FR #262 : copy info to clipboard (patch from Rashad)
 
 2019-12-31 mmichaud <m.michael.michaud@orange.fr>
   * Speed-up layers with theming style (see also #487)

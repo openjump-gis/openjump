@@ -33,14 +33,9 @@
 
 package com.vividsolutions.jump.workbench.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Rectangle;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -100,6 +95,7 @@ public class AboutDialog extends JDialog {
     private JLabel lblUserDir = new JLabel();
     private JPanel pnlButtons = new JPanel();
     private JButton btnGC = new JButton();
+    private JButton btnCopyCB  = new JButton();
     
     private WorkbenchContext wbc;
 
@@ -209,7 +205,6 @@ public class AboutDialog extends JDialog {
         aboutScroll.setMinimumSize(new Dimension (splash.getIconWidth() + 25, min_h));
         jTabbedPane1.addTab(I18N.get("ui.AboutDialog.about"), aboutScroll);
 
-
         /* Info Panel ********************************************************/
         infoPanel.setLayout( new GridBagLayout() );
 
@@ -281,6 +276,13 @@ public class AboutDialog extends JDialog {
                 btnGC_actionPerformed(e);
             }
         });
+
+        btnCopyCB.setText(I18N.get("ui.AboutDialog.copy-clipboard"));
+        btnCopyCB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                btnCopyCB_actionPerformed(e);
+            }
+        });
         
         infoPanel.add(
                 pnlButtons,
@@ -296,7 +298,8 @@ public class AboutDialog extends JDialog {
                     new Insets(0, 0, 0, 0),
                     0,
                     0));
-            pnlButtons.add(btnGC, null);
+        pnlButtons.add(btnGC, null);
+        pnlButtons.add(btnCopyCB, null);
 
         jTabbedPane1.addTab(I18N.get("ui.AboutDialog.info"), infoPanel);
 
@@ -417,6 +420,25 @@ public class AboutDialog extends JDialog {
         setVisible(true);
     }
 
+    void btnCopyCB_actionPerformed(ActionEvent e) {
+        String info = new StringBuilder()
+                .append(I18N.get("ui.AboutDialog.java-version"))
+                .append(":\t" + lblJavaVersion.getText() + "\n")
+                .append((I18N.get("ui.AboutDialog.os")))
+                .append(":\t"  + lblOSVersion.getText() + "\n")
+                .append(I18N.get("ui.AboutDialog.maximum-memory"))
+                .append(":\t" + lblMaxMemory.getText() + "\n")
+                .append(I18N.get("ui.AboutDialog.total-memory"))
+                .append(":\t" + lblTotalMemory.getText() + "\n")
+                .append(I18N.get("ui.AboutDialog.comitted-memory"))
+                .append(":\t" + lblCommittedMemory.getText() + "\n")
+                .append(I18N.get("ui.AboutDialog.user-dir"))
+                .append(":\t" + System.getProperty("user.dir") + "\n\n")
+                .toString();
+        StringSelection selection = new StringSelection(info);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, selection);
+    }
 
     class ResizeMe extends ComponentAdapter {
         Dimension minSize = getMinimumSize();
