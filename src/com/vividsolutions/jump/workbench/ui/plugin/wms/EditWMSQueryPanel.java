@@ -57,12 +57,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
@@ -303,7 +305,6 @@ public class EditWMSQueryPanel extends JPanel {
       private void reset(DocumentEvent e) {
         System.out.println(e);
         resetConnection();
-        ;
       }
     };
 
@@ -329,13 +330,19 @@ public class EditWMSQueryPanel extends JPanel {
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         for (final Component c : cs) {
-          // System.out.println(c);
+          //System.out.println(c);
           if (c instanceof AbstractButton)
             ((AbstractButton) c).addActionListener(ali);
           else if (c instanceof JTextField)
             ((JTextField) c).getDocument().addDocumentListener(doli);
-          else if (c instanceof JComboBox)
+          else if (c instanceof JComboBox) {
             ((JComboBox) c).addActionListener(ali);
+            // also reset if url is edited manually
+            Component editor = ((JComboBox) c).getEditor().getEditorComponent();
+            if ( editor instanceof JTextComponent) {
+              ((JTextComponent)editor).getDocument().addDocumentListener(doli);
+            }
+          }
         }
       }
     });
@@ -357,9 +364,10 @@ public class EditWMSQueryPanel extends JPanel {
   protected void reinitializeService() {
     String url = urlPanel.getUrl();
     url = UriUtil
-        .urlAddCredentials(url, urlPanel.getUser(), urlPanel.getPass());
+        .urlAddCredentials(url, urlPanel.getUser(), urlPanel.getPass()).trim();
 
-    url = WMService.legalize(url);
+// [ed] url is now legalized b4 every request
+// url = WMService.legalize(url);
     // [UT] 20.04.2005
     WMService service = new WMService(url, URLWizardPanel.wmsVersion);
 
@@ -369,8 +377,8 @@ public class EditWMSQueryPanel extends JPanel {
       mapLayerPanel.init(service, layer.getLayerNames());
       connectButton.setEnabled(false);
     } catch (Exception e) {
-      e.printStackTrace();
       mapLayerPanel.reset();
+      JUMPWorkbench.getInstance().getFrame().handleThrowable(e);
     } finally {
       refreshParamCombos();
     }

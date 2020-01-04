@@ -3,7 +3,9 @@ package org.openjump.util;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.network.ProxySettingsOptionsPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -12,8 +14,10 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.swing.*;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
@@ -49,13 +53,63 @@ public class URLConnectionProvider {
     this.authorizedURL = (Set<String>)this.blackboard.get(KEY, new HashSet<String>());
   }
 
+  public HttpURLConnection getHttpConnection(URL url, boolean followRedirects) throws IOException {
+    HttpURLConnection connection = (HttpURLConnection) getHttpConnection(url);
+
+    // we handle redirects ourselfs
+    connection.setInstanceFollowRedirects(false);
+    
+    URL prev = null, next = connection.getURL();
+    while (followRedirects && !next.equals(prev) ) {
+      connection = getHttpConnection(next);
+      // we handle redirects ourselfs
+      connection.setInstanceFollowRedirects(false);
+      
+      switch (connection.getResponseCode())
+      {
+         case HttpURLConnection.HTTP_MOVED_PERM:
+         case HttpURLConnection.HTTP_MOVED_TEMP:
+            String location = connection.getHeaderField("Location");
+            location = URLDecoder.decode(location, "UTF-8");
+            prev = connection.getURL();
+            next = new URL(prev, location);  // compute relative URLs
+            Logger.warn("Follow http redirect to: "+next);
+            continue;
+      }
+      break;
+    }
+
+    return connection;
+  }
+
+  /**
+   * @deprecated use getHttpConnection(url,followRedirects) instead
+   * @param url
+   * @return
+   * @throws IOException
+   */
+  @Deprecated
   public URLConnection getConnection(URL url) throws IOException {
+    return getHttpConnection(url, true);
+  }
+
+  public HttpURLConnection getHttpConnection(URL url) throws IOException {
     String protocol = url.getProtocol();
-    if (!protocol.equals("https")) return url.openConnection();
-    URLConnection connection;
+//    if (!protocol.equals("https")) return url.openConnection();
+    
+    if (!protocol.matches("^(?i:https?)$"))
+      throw new IOException("Please provide an http(s):// url.");
+
+    HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+    // apply timeouts from settings
+    connection.setConnectTimeout(Integer.parseInt(
+        ProxySettingsOptionsPanel.getInstance().getSetting(ProxySettingsOptionsPanel.OPEN_TIMEOUT_KEY).toString()));
+    connection.setReadTimeout(Integer.parseInt(
+        ProxySettingsOptionsPanel.getInstance().getSetting(ProxySettingsOptionsPanel.READ_TIMEOUT_KEY).toString()));
+
     try {
-      setTrustOption(false, null);
-      connection = url.openConnection();
+      setTrustOption(false, url);
       connection.connect(); // try to connect
       return connection;    // can connect
     } catch(IOException|KeyManagementException|NoSuchAlgorithmException e) {
@@ -63,7 +117,7 @@ public class URLConnectionProvider {
       if (authorizedURL.contains(baseURL) || acceptConnection(url)) {
         try {
           setTrustOption(true, url);
-          connection = url.openConnection();
+          connection = (HttpURLConnection) url.openConnection();
           authorizedURL.add(baseURL);
           //setTrustOption(false, null);
           return connection;
@@ -96,15 +150,22 @@ public class URLConnectionProvider {
   };
   private Set<URL> trustedURLs = new HashSet<>();
 
-  private void setTrustOption(boolean trust, URL url)
-          throws KeyManagementException, NoSuchAlgorithmException {
+  /**
+   * 
+   * @param trust
+   * @param url
+   * @throws KeyManagementException
+   * @throws NoSuchAlgorithmException
+   */
+  private void setTrustOption(boolean trust, URL url) throws KeyManagementException, NoSuchAlgorithmException {
     SSLContext sc = SSLContext.getInstance("SSL");
+    String host = url != null ? url.getHost() : "";
     if (trust || (url != null && trustedURLs.contains(url))) {
-      System.out.println("Set the trust manager to not check certificates");
-      sc.init(null, new TrustManager[]{trm}, null);
+      Logger.info("Certificate verification for trusted host '" + host + "' is disabled'");
+      sc.init(null, new TrustManager[] { trm }, null);
       trustedURLs.add(url);
     } else {
-      System.out.println("Set the trust manager to check certificates");
+      Logger.info("Using the system trust manager to verify certificate for host '"+host+"'.");
       sc.init(null, null, null);
     }
     HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());

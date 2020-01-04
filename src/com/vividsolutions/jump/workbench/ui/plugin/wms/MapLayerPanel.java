@@ -339,7 +339,7 @@ public class MapLayerPanel extends JPanel {
     }
 
     public void reset() {
-      this.service = null;
+      //this.service = null;
       ((TreeAddRemoveList) addRemovePanel.getLeftList()).setModel(new TreeAddRemoveListModel(new DefaultTreeModel(null)));
       addRemovePanel.getRightList().getModel().setItems(new ArrayList());
       addRemovePanel.updateEnabled();

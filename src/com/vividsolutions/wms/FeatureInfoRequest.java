@@ -46,14 +46,14 @@ public class FeatureInfoRequest extends AbstractWMSRequest {
 
   @Override
   public URL getURL() throws MalformedURLException {
-    String featInfoUrl = service.getCapabilities().getFeatureInfoURL();
+    String featInfoUrl = WMService.legalize(service.getCapabilities().getFeatureInfoURL());
 
-    if (featInfoUrl.contains("?")) {
-      if (!featInfoUrl.endsWith("?"))
-        featInfoUrl += "&";
-    } else {
-      featInfoUrl += "?";
-    }
+//    if (featInfoUrl.contains("?")) {
+//      if (!featInfoUrl.endsWith("?"))
+//        featInfoUrl += "&";
+//    } else {
+//      featInfoUrl += "?";
+//    }
 
     if (WMService.WMS_1_0_0.equals(version)) {
       featInfoUrl += "REQUEST=feature_info&WMTVER=1.0.0";

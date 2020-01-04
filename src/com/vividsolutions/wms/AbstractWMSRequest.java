@@ -70,13 +70,8 @@ abstract public class AbstractWMSRequest implements WMSRequest {
    */
   protected HttpURLConnection prepareConnection() throws IOException {
     URL requestUrl = getURL();
-    con = (HttpURLConnection) URLConnectionProvider.getJUMP_URLConnectionProvider().getConnection(requestUrl);
-    con = (HttpURLConnection) requestUrl.openConnection();
-
-    con.setConnectTimeout(Integer.parseInt(
-        ProxySettingsOptionsPanel.getInstance().getSetting(ProxySettingsOptionsPanel.OPEN_TIMEOUT_KEY).toString()));
-    con.setReadTimeout(Integer.parseInt(
-        ProxySettingsOptionsPanel.getInstance().getSetting(ProxySettingsOptionsPanel.OPEN_TIMEOUT_KEY).toString()));
+    // by default we follow redirections
+    con = (HttpURLConnection) URLConnectionProvider.getJUMP_URLConnectionProvider().getHttpConnection(requestUrl, true);
 
     // add this service's auth info
     String userInfo = requestUrl.getUserInfo();
@@ -102,6 +97,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
   public HttpURLConnection getConnection() throws IOException {
     if (con == null)
       con = prepareConnection();
+    
     return con;
   }
 
@@ -148,27 +144,32 @@ abstract public class AbstractWMSRequest implements WMSRequest {
    */
   public String getText() throws IOException {
     HttpURLConnection con = getConnection();
-    return readConnection(con, 0, false);
+    boolean httpOk = con.getResponseCode() == HttpURLConnection.HTTP_OK;
+    if (!httpOk)
+      readToError(con);
+    
+    return readConnection(con, 0);
   }
 
   protected String readToError(HttpURLConnection con) throws IOException {
-    return readConnection(con, 1024, true);
+    String url = con.getURL().toExternalForm();
+    String headers = con.getHeaderFields().toString();
+    String result = readConnection(con, 1024);
+    throw new WMSException( "Request url: " + url +
+        "\nResponse code: " + con.getResponseCode() + "\nHeaders:\n" + headers + "\nResponse body:\n" + result);
   }
 
-  protected String readConnection(HttpURLConnection con, long limit,
-      boolean throwError) throws IOException {
+  protected String readConnection(HttpURLConnection con, long limit) throws IOException {
     boolean httpOk = con.getResponseCode() == HttpURLConnection.HTTP_OK;
     // get correct stream
     InputStream in = httpOk ? con.getInputStream() : con.getErrorStream();
-    // limit max chars
-    BoundedInputStream bin = new BoundedInputStream(in, limit > 0 ? limit : -1);
 
-    String result = IOUtils.toString(bin);
-    FileUtil.close(bin);
-
-    if (throwError) {
-      throw new WMSException("Response code: " + con.getResponseCode()
-          + "\nResponse body:\n" + result);
+    String result = "";
+    if (in!=null) {
+      // limit max chars
+      BoundedInputStream bin = new BoundedInputStream(in, limit > 0 ? limit : -1);
+      result = IOUtils.toString(bin);
+      FileUtil.close(bin);
     }
 
     return result;

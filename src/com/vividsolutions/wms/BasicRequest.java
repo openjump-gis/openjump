@@ -22,4 +22,5 @@ public class BasicRequest extends AbstractWMSRequest {
   public URL getURL() throws MalformedURLException {
     return url;
   }
+
 }

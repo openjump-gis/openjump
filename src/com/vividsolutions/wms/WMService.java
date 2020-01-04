@@ -50,10 +50,10 @@ import java.util.Set;
 import javax.net.ssl.*;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.IOUtils;
 import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.ui.ErrorDialog;
 
 /**
  * Represents a remote WMS Service.
@@ -143,13 +143,13 @@ public class WMService {
     }
 
     try {
-      String requestUrlString = this.serverUrl + req;
+      String requestUrlString = WMService.legalize(this.serverUrl.toString()) + req;
       URL requestUrl = new URL(requestUrlString);
 
       URLConnection con = new BasicRequest(this, requestUrl).getConnection();
 
-      // Parser p = new Parser();
-      cap = parser.parseCapabilities(this, con.getInputStream());
+      String out = new BasicRequest(this, requestUrl).getText();
+      cap = parser.parseCapabilities(this, IOUtils.toInputStream(out) );
       String url1 = cap.getService().getServerUrl();
       String url2 = cap.getGetMapURL();
 

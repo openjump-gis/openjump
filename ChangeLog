@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-01-04 ede
+  * bugfix #489 "Veneto Region (Italy) WMS service does not work on OpenJump"
+    wms now follows http redirections by default
+
 2020-01-01 mmichaud <m.michael.michaud@orange.fr>
   * Clean and improve ExtractLayersByAttribute
   * Implements FR #262 : copy info to clipboard (patch from Rashad)

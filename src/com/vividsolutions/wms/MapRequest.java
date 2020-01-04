@@ -244,7 +244,8 @@ public class MapRequest extends AbstractWMSRequest{
         } else if ( WMService.WMS_1_3_0.equals( version ) ){
             ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.3.0";
         }
-        urlBuf.append( service.getCapabilities().getGetMapURL() + ver + "&WIDTH=" + imgWidth + "&HEIGHT=" + imgHeight );
+        urlBuf.append(WMService.legalize(service.getCapabilities().getGetMapURL()) + ver + "&WIDTH=" + imgWidth + "&HEIGHT="
+            + imgHeight);
         try {
             urlBuf.append( "&LAYERS=" + encode(listToString( layerNames ), "UTF-8") );
         } catch (UnsupportedEncodingException e1) {
