@@ -291,19 +291,15 @@ public class EditWMSQueryPanel extends JPanel {
       public void removeUpdate(DocumentEvent e) {
         reset(e);
       }
-
       @Override
       public void insertUpdate(DocumentEvent e) {
         reset(e);
       }
-
       @Override
       public void changedUpdate(DocumentEvent e) {
         reset(e);
       }
-
       private void reset(DocumentEvent e) {
-        System.out.println(e);
         resetConnection();
       }
     };
