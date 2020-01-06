@@ -7,6 +7,7 @@ import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.network.ProxySettingsOptionsPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
+import com.vividsolutions.wms.WMSException;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -59,8 +60,14 @@ public class URLConnectionProvider {
     // we handle redirects ourselfs
     connection.setInstanceFollowRedirects(false);
     
+    int numRedirects = 0;
     URL prev = null, next = connection.getURL();
     while (followRedirects && !next.equals(prev) ) {
+      // redirect max 20 times, see 
+      // https://stackoverflow.com/questions/9384474/in-chrome-how-many-redirects-are-too-many
+      if (++numRedirects >= 20)
+        throw new WMSException("To many redirects ("+numRedirects+") for Url: "+url);
+
       connection = getHttpConnection(next);
       // we handle redirects ourselfs
       connection.setInstanceFollowRedirects(false);
