@@ -3,6 +3,10 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-01-08 mmichaud <m.michael.michaud@orange.fr>
+  * fix a bug related to WMS GetCapability reading (used
+    platform encoding instead of encoding declared in xml)
+
 2020-01-04 ede
   * bugfix #489 "Veneto Region (Italy) WMS service does not work on OpenJump"
     wms now follows http redirections by default

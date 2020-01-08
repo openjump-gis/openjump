@@ -36,21 +36,13 @@ import static javax.swing.JOptionPane.NO_OPTION;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.net.ssl.*;
-import javax.swing.JOptionPane;
 
-import org.apache.commons.io.IOUtils;
 import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.I18N;
@@ -146,10 +138,8 @@ public class WMService {
       String requestUrlString = WMService.legalize(this.serverUrl.toString()) + req;
       URL requestUrl = new URL(requestUrlString);
 
-      URLConnection con = new BasicRequest(this, requestUrl).getConnection();
-
-      String out = new BasicRequest(this, requestUrl).getText();
-      cap = parser.parseCapabilities(this, IOUtils.toInputStream(out) );
+      InputStream inputStream = new BasicRequest(this, requestUrl).getInputStream();
+      cap = parser.parseCapabilities(this, inputStream);
       String url1 = cap.getService().getServerUrl();
       String url2 = cap.getGetMapURL();
 

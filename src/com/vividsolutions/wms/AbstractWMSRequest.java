@@ -21,7 +21,6 @@ import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.Logger;
-import com.vividsolutions.jump.workbench.ui.network.ProxySettingsOptionsPanel;
 
 abstract public class AbstractWMSRequest implements WMSRequest {
 
@@ -134,6 +133,21 @@ abstract public class AbstractWMSRequest implements WMSRequest {
     readToError(con);
     
     return null;
+  }
+
+  /**
+   * connect and retrieve response as inputStream
+   *
+   * @return
+   * @throws IOException
+   */
+  public InputStream getInputStream() throws IOException {
+    HttpURLConnection con = getConnection();
+    boolean httpOk = con.getResponseCode() == HttpURLConnection.HTTP_OK;
+    if (!httpOk)
+      readToError(con);
+
+    return con.getInputStream();
   }
 
   /**
