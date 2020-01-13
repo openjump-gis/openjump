@@ -366,7 +366,7 @@ public class Parser {
       // get the title
       try {
         title = ((CharacterData)XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Service/Title" ).getFirstChild()).getData();
-      } catch (NullPointerException e) {
+      } catch (Exception e) {
         title = "not available";
       }
       
