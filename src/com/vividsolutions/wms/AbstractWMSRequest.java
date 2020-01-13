@@ -6,21 +6,16 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 
-import net.iharder.Base64;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.openjump.util.URLConnectionProvider;
-import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jump.util.FileUtil;
-import com.vividsolutions.jump.workbench.Logger;
 
 abstract public class AbstractWMSRequest implements WMSRequest {
 
@@ -72,18 +67,6 @@ abstract public class AbstractWMSRequest implements WMSRequest {
     // by default we follow redirections
     con = (HttpURLConnection) URLConnectionProvider.getJUMP_URLConnectionProvider().getHttpConnection(requestUrl, true);
 
-    // add this service's auth info
-    String userInfo = requestUrl.getUserInfo();
-    if (userInfo != null) {
-      Logger.trace(Base64.encodeBytes(UriUtil.urlDecode(userInfo)
-              .getBytes(Charset.forName("UTF-8"))));
-      con.setRequestProperty(
-          "Authorization",
-          "Basic "
-              + Base64.encodeBytes(UriUtil.urlDecode(userInfo).getBytes(
-                  Charset.forName("UTF-8"))));
-    }
-
     return con;
   }
 
@@ -96,7 +79,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
   public HttpURLConnection getConnection() throws IOException {
     if (con == null)
       con = prepareConnection();
-    
+
     return con;
   }
 

@@ -9,6 +9,8 @@ import com.vividsolutions.jump.workbench.ui.network.ProxySettingsOptionsPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.wms.WMSException;
 
+import net.iharder.Base64;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -19,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
@@ -108,6 +111,14 @@ public class URLConnectionProvider {
       throw new IOException("Please provide an http(s):// url.");
 
     HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+    // add auth info if any
+    String userInfo = url.getUserInfo();
+    if (userInfo != null) {
+      String auth = Base64.encodeBytes(UriUtil.urlDecode(userInfo).getBytes(Charset.forName("UTF-8")));
+      connection.setRequestProperty("Authorization", "Basic " + auth);
+      Logger.trace("Added auth header 'Authorization: Basic "+auth+"'");
+    }
 
     // apply timeouts from settings
     connection.setConnectTimeout(Integer.parseInt(
