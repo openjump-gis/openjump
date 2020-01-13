@@ -152,8 +152,8 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     private void getDialogValues(MultiInputDialog dialog) {
         drawnType = dialog.getBoolean(DRAWN);
         selectedType = dialog.getBoolean(SELECTED);
-        HEIGHT = dialog.getText(HORIZONTAL_AXES_LABEL);
-        WIDTH = dialog.getText(VERICAL_AXES_LABEL);
+        WIDTH = dialog.getText(HORIZONTAL_AXES_LABEL);
+        HEIGHT = dialog.getText(VERICAL_AXES_LABEL);
         UNIT = dialog.getText(LAYER_UNIT);
         rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
 
