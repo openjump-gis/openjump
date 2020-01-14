@@ -59,6 +59,10 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.wms.util.XMLTools;
 
+import javax.swing.*;
+
+import static javax.swing.JOptionPane.showMessageDialog;
+
 
 /**
  * Pulls WMS objects out of the XML
@@ -125,14 +129,17 @@ public abstract class AbstractParser implements IParser {
     }
     
     protected String getTitle(Document doc) throws IOException {
-        String title;
+        String title = "Untitled";
         try {
             title = ((CharacterData)XMLTools.simpleXPath(doc, getTitlePath()).getFirstChild()).getData();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             // possible NullPointerException if there is no firstChild()
             // also possible miscast causing an Exception
             // [uwe dalluege]
-            throw new IOException( "Element <" + getTitlePath() + "> not found, maybe a WMS version problem! " );
+            showMessageDialog(null,
+                    I18N.getMessage("com.vividsolutions.wms.AbstractParser.wms-parser-not-found", getTitlePath()),
+                    null, JOptionPane.INFORMATION_MESSAGE);
+            //throw new IOException( "Element <" + getTitlePath() + "> not found, maybe a WMS version problem! " );
         }
         return title;
     }
