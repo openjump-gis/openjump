@@ -783,6 +783,9 @@
         org.openjump.core.ui.plugin.tools.geometrychange.ExtractPointsPlugIn
     </plug-in>
     <plug-in>
+        org.openjump.core.ui.plugin.tools.geometrychange.PointsToPathsPlugIn
+    </plug-in>
+    <plug-in>
         org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn
     </plug-in>
     <plug-in>

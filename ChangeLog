@@ -3,6 +3,9 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-01-26 mmichaud <m.michael.michaud@orange.fr>
+  * FR#265 : add a plugin to make line from ordered points
+
 2020-01-14 mmichaud <m.michael.michaud@orange.fr>
   * Display a message instead of throwing an exception if a WMS
     GetCapabilies has an empty tag WMT_MS_Capabilies/Service/Title
