@@ -5,6 +5,7 @@
 
 2020-01-26 mmichaud <m.michael.michaud@orange.fr>
   * FR#265 : add a plugin to make line from ordered points
+  * fix bug in MakeValidOp
 
 2020-01-14 mmichaud <m.michael.michaud@orange.fr>
   * Display a message instead of throwing an exception if a WMS
