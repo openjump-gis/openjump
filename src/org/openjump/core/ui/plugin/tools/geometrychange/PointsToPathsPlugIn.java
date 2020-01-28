@@ -1,6 +1,7 @@
 package org.openjump.core.ui.plugin.tools.geometrychange;
 
 import com.vividsolutions.jts.geom.CoordinateList;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;
@@ -85,15 +86,20 @@ public class PointsToPathsPlugIn extends AbstractPlugIn implements ThreadedPlugI
                     ): layer.getFeatureCollectionWrapper().getFeatures();
             Map<Object,List<Feature>> map = new HashMap<>();
             String keyName = getStringParam(P_GROUP_BY_ATTRIBUTE);
+            int countNonPoint = 0;
             for (Feature feature : input) {
-                Object key = (keyName == null) ? "" : feature.getAttribute(keyName);
-                System.out.println("Get key for " + feature.getID() + " :" + key);
-                List<Feature> list = map.get(key);
-                if (list == null) {
-                    list = new ArrayList<>();
-                    map.put(key, list);
-                }
-                list.add(feature);
+                if (feature.getGeometry() instanceof Point) {
+                    Object key = (keyName == null) ? "" : feature.getAttribute(keyName);
+                    List<Feature> list = map.get(key);
+                    if (list == null) {
+                        list = new ArrayList<>();
+                        map.put(key, list);
+                    }
+                    list.add(feature);
+                } else { countNonPoint++; }
+            }
+            if (countNonPoint > 0) {
+                context.getWorkbenchFrame().warnUser(I18N.get(KEY + ".non-point-warning"));
             }
             Comparator<Feature> comparator = Comparator.comparing(new Function<Feature,Comparable>() {
                 public Comparable apply(Feature f) {
