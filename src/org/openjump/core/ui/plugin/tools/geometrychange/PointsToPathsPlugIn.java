@@ -96,7 +96,13 @@ public class PointsToPathsPlugIn extends AbstractPlugIn implements ThreadedPlugI
                 list.add(feature);
             }
             Comparator<Feature> comparator = Comparator.comparing(new Function<Feature,Comparable>() {
-                public Comparable apply(Feature f) { return (Comparable)f.getAttribute(orderByAttribute); }
+                public Comparable apply(Feature f) {
+                    if (f.getSchema().hasAttribute(orderByAttribute)) {
+                        return (Comparable) f.getAttribute(orderByAttribute);
+                    } else {
+                        return f.getID();
+                    }
+                }
             });
             for (Map.Entry<Object,List<Feature>> entry : map.entrySet()) {
                 List<Feature> list = entry.getValue();
