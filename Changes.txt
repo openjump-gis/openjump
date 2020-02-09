@@ -1,11 +1,14 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
-  Highlights
-  
   New Features
   * RasterLayerEditor can now apply a style to several layers (FR #263)
   * Implements FR #262 : copy info to clipboard (patch from Rashad)
   * FR#265 : add a plugin to make line from ordered points
+  * Added 2 plugins for raster analysis:
+     a) Kernel Analysis PlugIn: a tool to apply smoothing or edge detection 
+        filters to a raster layer
+     b) Crop-Warp Plugin: a set of tools to crop, move, scale, transform a 
+        raster layer using another layer, geometry or the view as target
 
   Improvements
   * Improve calculation of polygon width/length attributes

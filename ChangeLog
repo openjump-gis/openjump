@@ -3,7 +3,7 @@
 # 2. make sure that lines break at 80 chars for constricted display situations
 #<-------------------------------- 80 chars ---------------------------------->#
 
-* Changes.txt updated until here, except for Peppe's changes *******************
+* Changes.txt updated until here **********************************************
 
 2020-01-26 mmichaud <m.michael.michaud@orange.fr>
   * FR#265 : add a plugin to make line from ordered points
