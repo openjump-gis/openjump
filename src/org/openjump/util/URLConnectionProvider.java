@@ -1,5 +1,24 @@
 package org.openjump.util;
 
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
+import java.security.cert.X509Certificate;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.swing.JOptionPane;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
@@ -10,25 +29,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.wms.WMSException;
 
 import net.iharder.Base64;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.swing.*;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.HashSet;
-import java.util.Set;
-
-import static javax.swing.JOptionPane.YES_NO_OPTION;
 
 public class URLConnectionProvider {
 
@@ -130,7 +130,7 @@ public class URLConnectionProvider {
       setTrustOption(false, url);
       connection.connect(); // try to connect
       return connection;    // can connect
-    } catch(IOException|KeyManagementException|NoSuchAlgorithmException e) {
+    } catch(GeneralSecurityException e) {
       String baseURL = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath()).toString();
       if (authorizedURL.contains(baseURL) || acceptConnection(url)) {
         try {
@@ -139,7 +139,7 @@ public class URLConnectionProvider {
           authorizedURL.add(baseURL);
           //setTrustOption(false, null);
           return connection;
-        } catch(KeyManagementException|NoSuchAlgorithmException ex2) {
+        } catch(GeneralSecurityException ex2) {
           throw new IOException(ex2);
         }
       } else {
@@ -169,13 +169,14 @@ public class URLConnectionProvider {
   private Set<URL> trustedURLs = new HashSet<>();
 
   /**
+   * setDefaultSSLSocketFactory of HttpsURLConnection to a dummy trust managed
+   * in case user requested to do so, remember this choice during runtime
    * 
    * @param trust
    * @param url
-   * @throws KeyManagementException
-   * @throws NoSuchAlgorithmException
+   * @throws GeneralSecurityException
    */
-  private void setTrustOption(boolean trust, URL url) throws KeyManagementException, NoSuchAlgorithmException {
+  private void setTrustOption(boolean trust, URL url) throws GeneralSecurityException {
     SSLContext sc = SSLContext.getInstance("SSL");
     String host = url != null ? url.getHost() : "";
     if (trust || (url != null && trustedURLs.contains(url))) {
@@ -186,6 +187,7 @@ public class URLConnectionProvider {
       Logger.info("Using the system trust manager to verify certificate for host '"+host+"'.");
       sc.init(null, null, null);
     }
+    // TODO: we should maybe not set a factory for _all_ connections here
     HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
   }
 }
