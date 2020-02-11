@@ -36,25 +36,23 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
 
   public static final String[] DEFAULT_URLS = new String[] {
     "http://deegree3-demo.deegree.org/utah-workspace/services",
-    "http://demo.opengeo.org/geoserver/wms",
+    //"http://demo.opengeo.org/geoserver/wms", // dead 2020.02
     //"http://wiki.openstreetmap.org/wiki/WMS", // does not work (missing WMT_MS_Capabilities)
     //"http://openaerialmap.org/wms/",          // does not work (2013-06-09)
-    "http://wms.jpl.nasa.gov/wms.cgi",
+    // "http://wms.jpl.nasa.gov/wms.cgi", // dead 2020.02
     //"http://wms.latlon.org/?",                // does not work (missing WMT_MS_Capabilities)
     "http://ows.terrestris.de/osm/service",
     "http://maps.omniscale.net/wms/demo/default/service",
     // addresses added on 2013-06-19
     "http://www2.demis.nl/WMS/wms.ashx?wms=WorldMap",
-    "http://gridca.grid.unep.ch/cgi-bin/mapserv?map=/www/geodataportal/htdocs/mod_map/geo_wms.map&",
+    // "http://gridca.grid.unep.ch/cgi-bin/mapserv?map=/www/geodataportal/htdocs/mod_map/geo_wms.map&", // dead 2020.02
     "http://demo.mapserver.org/cgi-bin/wms",
-    "http://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/raster/ortofoto_colore_06.map&",
-
     // "http://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/raster/ortofoto_colore_06.map&"
     // //does not work
     "http://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/raster/ortofoto_colore_12.map&service=wms&request=getCapabilities&version=1.3.0&",
-    "https://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv? ",
-    "https://www.gebco.net/data_and_products/gebco_web_services/north_polar_view_wms/mapserv?",
-    "https://www.gebco.net/data_and_products/gebco_web_services/south_polar_view_wms/mapserv?"
+    "http://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv? ",
+    "http://www.gebco.net/data_and_products/gebco_web_services/north_polar_view_wms/mapserv?",
+    "http://www.gebco.net/data_and_products/gebco_web_services/south_polar_view_wms/mapserv?"
   };
 
   private String lastWMSVersion = WMService.WMS_1_1_1;
