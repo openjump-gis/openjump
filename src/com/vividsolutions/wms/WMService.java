@@ -134,65 +134,42 @@ public class WMService {
       parser = new ParserWMS1_3();
     }
 
-    try {
-      String requestUrlString = WMService.legalize(this.serverUrl.toString()) + req;
-      URL requestUrl = new URL(requestUrlString);
+    String requestUrlString = WMService.legalize(this.serverUrl.toString()) + req;
+    URL requestUrl = new URL(requestUrlString);
 
-      InputStream inputStream = new BasicRequest(this, requestUrl).getInputStream();
-      cap = parser.parseCapabilities(this, inputStream);
-      String url1 = cap.getService().getServerUrl();
-      String url2 = cap.getGetMapURL();
+    InputStream inputStream = new BasicRequest(this, requestUrl).getInputStream();
+    cap = parser.parseCapabilities(this, inputStream);
+    String url1 = cap.getService().getServerUrl();
+    String url2 = cap.getGetMapURL();
 
-      String compare_url1 = UriUtil.urlStripAuth(legalize(url1));
-      String compare_url2 = UriUtil.urlStripAuth(legalize(url2));
-      // if the difference is only in credentials then use url1 else ask from
-      // user
-      if (!compare_url1.equals(compare_url2) && alertDifferingURL) {
-        int resp = showConfirmDialog(
-                null,
-                I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found", url2),
-                null,
-                YES_NO_OPTION);
-        // nope. user wants to keep the initial url
-        if (resp == NO_OPTION) {
-          cap.setGetMapURL(url1);
-        }
-        // make sure url2 has auth info if needed
-        else if (!UriUtil.urlGetUser(url1).isEmpty()) {
-          String url2_withAuth = UriUtil.urlAddCredentials(url2,
-                  UriUtil.urlGetUser(url1), UriUtil.urlGetPassword(url1));
-          cap.setGetMapURL(url2_withAuth);
-        }
-      } else {
-        // changed 24.06.2011 (Wilfried Hornburg, LGLN) url1 --> url2; original:
-        // cap.setGetMapURL(url1);
-        // revert to url1, following Jukka's advice a discussion is on-going on
-        // JPP mailing list
+    String compare_url1 = UriUtil.urlStripAuth(legalize(url1));
+    String compare_url2 = UriUtil.urlStripAuth(legalize(url2));
+    // if the difference is only in credentials then use url1 else ask from
+    // user
+    if (!compare_url1.equals(compare_url2) && alertDifferingURL) {
+      int resp = showConfirmDialog(
+              null,
+              I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found", url2),
+              null,
+              YES_NO_OPTION);
+      // nope. user wants to keep the initial url
+      if (resp == NO_OPTION) {
         cap.setGetMapURL(url1);
       }
-    } catch(SSLHandshakeException ex) {
-      /*
-      int r = JOptionPane.showConfirmDialog(
-              null,
-              I18N.getMessage("com.vididsolutions.wms.WMService.UnverifiedCertificate",
-                      // create a new URL to hide user/password
-                      new URL(serverUrl.getProtocol(), serverUrl.getHost(), serverUrl.getPort(), serverUrl.getFile())
-              ),
-              "Confirmation dialog",
-              YES_NO_OPTION,
-              JOptionPane.WARNING_MESSAGE);
-
-      if (r==JOptionPane.YES_OPTION) {
-        try {
-          setTrustOption(true, serverUrl);
-        } catch(KeyManagementException|NoSuchAlgorithmException ex2) {
-          throw new IOException(ex2);
-        }
-        initialize(alertDifferingURL);
-      } else throw new IOException(ex);
-      */
-      throw new IOException(ex);
+      // make sure url2 has auth info if needed
+      else if (!UriUtil.urlGetUser(url1).isEmpty()) {
+        String url2_withAuth = UriUtil.urlAddCredentials(url2,
+                UriUtil.urlGetUser(url1), UriUtil.urlGetPassword(url1));
+        cap.setGetMapURL(url2_withAuth);
+      }
+    } else {
+      // changed 24.06.2011 (Wilfried Hornburg, LGLN) url1 --> url2; original:
+      // cap.setGetMapURL(url1);
+      // revert to url1, following Jukka's advice a discussion is on-going on
+      // JPP mailing list
+      cap.setGetMapURL(url1);
     }
+
 
     // [2016.01 ede] deactivated the error handling here as it leads to an
     // infinite stack loop when trying to open a project containing a wms layer
