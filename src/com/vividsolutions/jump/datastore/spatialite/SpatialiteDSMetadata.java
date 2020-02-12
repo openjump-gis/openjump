@@ -448,7 +448,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
 
   public boolean isSpatialiteLoaded() {
     // TODO: clean up type detection: geopackage vs spatialite
-    return spatialiteLoaded || this.geometryColumnsLayout == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT;
+    return spatialiteLoaded;
   }
 
   public String getSpatialiteVersion() {

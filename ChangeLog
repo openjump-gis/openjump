@@ -6,6 +6,9 @@
 * Changes.txt updated until here **********************************************
 
 2020-02-12 Nicolas Ribot
+  * remove debug info left at previous commit
+
+2020-02-12 Nicolas Ribot
   * fix bug in Spatialite datasources management, where spatial index query was not built
     even if a spatial index was defined on the geometric column
 
