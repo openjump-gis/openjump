@@ -154,6 +154,10 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
     SpatialiteDSMetadata dsm = (SpatialiteDSMetadata) getDbMetadata();
     // test if geometry column is indexed, if so, builds special query according to type:
     GeometryColumn gc = dsm.getGeometryColumn(query.getDatasetName(), query.getGeometryAttributeName());
+    // 2020-02-12: if info is not set, retrieve column index status here
+    if (gc.isIndexed() == null) {
+      dsm.setIndexInfo(datasetName, gc);
+    }
     if (gc.isIndexed()) {
       if (dsm.getGeometryColumnsLayout() == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT) {
         String idxName = SQLUtil.quote(String.format("rtree_%s_%s", 
@@ -174,4 +178,6 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
     
     return ret;
   }
+
+
 }

@@ -8,7 +8,7 @@ public class GeometryColumn {
     private String name;
     private int srid = 0;
     private String type = "Geometry";
-    private boolean indexed = false;
+    private Boolean indexed = null;
     private int coordDimension = 2;
     
     public GeometryColumn(String name) {
@@ -90,11 +90,11 @@ public class GeometryColumn {
                 ", srid=" + srid + ")";
     }
 
-    public boolean isIndexed() {
+    public Boolean isIndexed() {
         return indexed;
     }
 
-    public void setIndexed(boolean indexed) {
+    public void setIndexed(Boolean indexed) {
         this.indexed = indexed;
     }
 }

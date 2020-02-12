@@ -279,7 +279,9 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
                 if (! datasetNames.contains(table)) {
                   datasetNames.add(table);
                 }
-                // datastoreLayers
+                // datastoreLayers:
+                // 2020-02-12: caution here; geometryColumn is built without index info
+                // this info is retrieved as necessary by specialized classes
                 GeometryColumn geo = new GeometryColumn(
                         resultSet.getString(3),
                         resultSet.getInt(4),

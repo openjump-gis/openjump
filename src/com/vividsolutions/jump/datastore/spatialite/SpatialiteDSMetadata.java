@@ -189,6 +189,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
    * Overriden to deal with indexed geo columns, as queries to get features are different
    * if spatial index is detected on the column.
    * Buids a GeometryColumn object with 5 params ctor.
+   * TODO: no more used now all layers info are retrieved at once ? refactor
    * @param sql
    * @param datasetName
    * @return 
@@ -290,17 +291,17 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     // tries to load spatialite, assuming it is available on the system's path
     Statement stmt = null;
     try {
-//      stmt = conn.getJdbcConnection().createStatement();
-//      stmt.executeUpdate("SELECT load_extension('mod_spatialite')");
-//      // ex is thrown if extension cannot be loaded
-//      this.spatialiteLoaded = true;
-//      ResultSet rs = stmt.executeQuery("select spatialite_version()");
-//      rs.next();
-//      this.setSpatialiteVersion(rs.getString(1));
-//
-//      JUMPWorkbench.getInstance().getFrame().log(
-//          "SpatialDatabasesPlugin: Spatialite extension loaded for this connexion, version: "
-//          + this.getSpatialiteVersion(), this.getClass());
+      stmt = conn.getJdbcConnection().createStatement();
+      stmt.executeUpdate("SELECT load_extension('mod_spatialite')");
+      // ex is thrown if extension cannot be loaded
+      this.spatialiteLoaded = true;
+      ResultSet rs = stmt.executeQuery("select spatialite_version()");
+      rs.next();
+      this.setSpatialiteVersion(rs.getString(1));
+
+      JUMPWorkbench.getInstance().getFrame().log(
+          "SpatialDatabasesPlugin: Spatialite extension loaded for this connexion, version: "
+          + this.getSpatialiteVersion(), this.getClass());
     } catch (Exception e) {
       JUMPWorkbench.getInstance().getFrame().log(
           "SpatialDatabasesPlugin: CANNOT load Spatialite Extention (mod_spatialite), reason:"
@@ -446,7 +447,8 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
   }
 
   public boolean isSpatialiteLoaded() {
-    return spatialiteLoaded;
+    // TODO: clean up type detection: geopackage vs spatialite
+    return spatialiteLoaded || this.geometryColumnsLayout == GeometryColumnsLayout.OGC_GEOPACKAGE_LAYOUT;
   }
 
   public String getSpatialiteVersion() {
@@ -471,7 +473,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
    * @param datasetName the name of the dataset this column belongs to
    * @param gc the geometry column to set
    */
-  private void setIndexInfo(String datasetName, final GeometryColumn gc) {
+  protected void setIndexInfo(String datasetName, final GeometryColumn gc) {
     String q = String.format(Locale.US, spatialIndexQuery, datasetName, gc.getName());
     try {
       JDBCUtil.execute(
@@ -521,3 +523,4 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
   }
 
 }
+

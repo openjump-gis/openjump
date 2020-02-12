@@ -5,6 +5,10 @@
 
 * Changes.txt updated until here **********************************************
 
+2020-02-12 Nicolas Ribot
+  * fix bug in Spatialite datasources management, where spatial index query was not built
+    even if a spatial index was defined on the geometric column
+
 2020-01-26 mmichaud <m.michael.michaud@orange.fr>
   * FR#265 : add a plugin to make line from ordered points
   * fix bug in MakeValidOp
