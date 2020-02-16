@@ -1,6 +1,7 @@
-# NOTE:
-# 1. for display continuity sake please use 2 spaces instead of tabs
+# NOTES:
+# 1. for display continuity sake please indent by 2 spaces instead of tabs
 # 2. make sure that lines break at 80 chars for constricted display situations
+# 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
 * release 1.15 *****************************************************************
