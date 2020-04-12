@@ -160,13 +160,15 @@ abstract public class AbstractWMSRequest implements WMSRequest {
   protected String readConnection(HttpURLConnection con, long limit) throws IOException {
     boolean httpOk = con.getResponseCode() == HttpURLConnection.HTTP_OK;
     // get correct stream
-    InputStream in = httpOk ? con..getInputStream() : con.getErrorStream();
+    InputStream in = httpOk ? con.getInputStream() : con.getErrorStream();
 
     String result = "";
     if (in!=null) {
       // limit max chars
       BoundedInputStream bin = new BoundedInputStream(in, limit > 0 ? limit : -1);
-      result = new String(bin.readAllBytes(), Charsets.UTF_8);
+      byte[] bytes = new byte[bin.available()];
+      bin.read(bytes);
+      result = new String(bytes, Charsets.UTF_8);
       //result = IOUtils.toString(bin);
       FileUtil.close(bin);
     }
