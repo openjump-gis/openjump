@@ -317,13 +317,15 @@ public class ShapefileReader extends AbstractJUMPReader {
                 try (BufferedReader cpgCharsetReader =
                              new BufferedReader(new InputStreamReader(cpgCharsetInputStream))) {
                     String cpgCharset = cpgCharsetReader.readLine();
-                    cpgCharset = esri_cp_2_java(cpgCharset);
                     try {
+                        cpgCharset = esri_cp_2_java(cpgCharset);
                         if (Charset.isSupported(cpgCharset)) {
                             charsetName = cpgCharset;
                         }
-                    } catch (IllegalCharsetNameException ice) {
-                        Logger.info("Could not interpret charset name " + cpgCharset + " : revert to default " + charsetName);
+                    }
+                    // Emit NPE if the file is empty
+                    catch (IllegalCharsetNameException|NullPointerException ice) {
+                        Logger.warn("Could not interpret charset name " + cpgCharset + " : revert to default " + charsetName);
                     }
                 }
             }

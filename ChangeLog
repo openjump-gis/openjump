@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-04-12 mmichaud <m.michael.michaud@orange.fr>
+  * Now tolerate an empty cpg file along with shapefile
+
 * release 1.15 *****************************************************************
 
 2020-02-12 Nicolas Ribot
