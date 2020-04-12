@@ -13,10 +13,7 @@ import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 import javax.swing.JOptionPane;
 
 import com.vividsolutions.jump.I18N;
@@ -130,7 +127,7 @@ public class URLConnectionProvider {
       setTrustOption(false, url);
       connection.connect(); // try to connect
       return connection;    // can connect
-    } catch(GeneralSecurityException e) {
+    } catch(GeneralSecurityException|SSLHandshakeException e) {
       String baseURL = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath()).toString();
       if (authorizedURL.contains(baseURL) || acceptConnection(url)) {
         try {

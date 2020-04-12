@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.codec.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.openjump.util.URLConnectionProvider;
@@ -159,13 +160,14 @@ abstract public class AbstractWMSRequest implements WMSRequest {
   protected String readConnection(HttpURLConnection con, long limit) throws IOException {
     boolean httpOk = con.getResponseCode() == HttpURLConnection.HTTP_OK;
     // get correct stream
-    InputStream in = httpOk ? con.getInputStream() : con.getErrorStream();
+    InputStream in = httpOk ? con..getInputStream() : con.getErrorStream();
 
     String result = "";
     if (in!=null) {
       // limit max chars
       BoundedInputStream bin = new BoundedInputStream(in, limit > 0 ? limit : -1);
-      result = IOUtils.toString(bin);
+      result = new String(bin.readAllBytes(), Charsets.UTF_8);
+      //result = IOUtils.toString(bin);
       FileUtil.close(bin);
     }
 
