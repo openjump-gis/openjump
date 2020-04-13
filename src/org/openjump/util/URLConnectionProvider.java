@@ -127,7 +127,7 @@ public class URLConnectionProvider {
       setTrustOption(false, url);
       connection.connect(); // try to connect
       return connection;    // can connect
-    } catch(GeneralSecurityException|SSLHandshakeException e) {
+    } catch(GeneralSecurityException|SSLException e) {
       String baseURL = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath()).toString();
       if (authorizedURL.contains(baseURL) || acceptConnection(url)) {
         try {
