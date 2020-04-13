@@ -2,6 +2,9 @@ package org.openjump.util;
 
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -14,15 +17,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.net.ssl.*;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.network.ProxySettingsOptionsPanel;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.wms.WMSException;
 
 import net.iharder.Base64;
@@ -30,28 +29,21 @@ import net.iharder.Base64;
 public class URLConnectionProvider {
 
   public static String KEY = URLConnectionProvider.class.getName() + " - UNCERTIFIED_AUTHORIZED_URL";
-  private Blackboard blackboard;
-  private Set<String> authorizedURL;
+  // keep list of trusted url per session
+  private static Set<URL> trustedURLs = new HashSet<URL>();
 
-  public static URLConnectionProvider OJ_URL_CONNECTION_PROVIDER;
+  public static URLConnectionProvider instance;
 
-  public URLConnectionProvider(Blackboard blackboard) {
-    this.blackboard = blackboard;
-    this.authorizedURL = (Set<String>)this.blackboard.get(KEY, new HashSet<String>());
+  // use getInstance() instead
+  private URLConnectionProvider() {
+    super();
   }
 
-  public static URLConnectionProvider getJUMP_URLConnectionProvider() {
-    if (OJ_URL_CONNECTION_PROVIDER == null) {
-      OJ_URL_CONNECTION_PROVIDER = new URLConnectionProvider(
-              PersistentBlackboardPlugIn.get(JUMPWorkbench.getInstance().getContext())
-      );
+  public static URLConnectionProvider getInstance() {
+    if (instance == null) {
+      instance = new URLConnectionProvider();
     }
-    return OJ_URL_CONNECTION_PROVIDER;
-  }
-
-  public URLConnectionProvider(PlugInContext plugInContext) {
-    this.blackboard = PersistentBlackboardPlugIn.get(plugInContext.getWorkbenchContext());
-    this.authorizedURL = (Set<String>)this.blackboard.get(KEY, new HashSet<String>());
+    return instance;
   }
 
   public HttpURLConnection getHttpConnection(URL url, boolean followRedirects) throws IOException {
@@ -108,9 +100,38 @@ public class URLConnectionProvider {
       throw new IOException("Please provide an http(s):// url.");
 
     HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+    // apply auth and timeouts
+    connection = applyParametersAndSettings(connection);
 
+    // use base url, no need to bother user with the full http query
+    URL baseURL = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath());
+    try {
+      setTrustOption(false, baseURL);
+      connection.connect(); // try to connect
+      return connection;    // can connect
+    } catch(GeneralSecurityException|SSLException e) {
+      if (isTrusted(baseURL) || askIfUserAllowsInvalidCertificate(baseURL)) {
+        try {
+          // we are in the list or just allowed by user
+          setTrustOption(true, baseURL);
+          connection = (HttpURLConnection) url.openConnection();
+          // apply auth and timeouts
+          connection = applyParametersAndSettings(connection);
+
+          return connection;
+        } catch(GeneralSecurityException ex2) {
+          throw new IOException(ex2);
+        }
+      } else {
+        throw new IOException(e);
+      }
+    }
+  }
+
+  // run this *every time* after url.openConnection() to make sure auth and default timeouts are set
+  private HttpURLConnection applyParametersAndSettings( HttpURLConnection connection ) {
     // add auth info if any
-    String userInfo = url.getUserInfo();
+    String userInfo = connection.getURL().getUserInfo();
     if (userInfo != null) {
       String auth = Base64.encodeBytes(UriUtil.urlDecode(userInfo).getBytes(Charset.forName("UTF-8")));
       connection.setRequestProperty("Authorization", "Basic " + auth);
@@ -123,47 +144,66 @@ public class URLConnectionProvider {
     connection.setReadTimeout(Integer.parseInt(
         ProxySettingsOptionsPanel.getInstance().getSetting(ProxySettingsOptionsPanel.READ_TIMEOUT_KEY).toString()));
 
-    try {
-      setTrustOption(false, url);
-      connection.connect(); // try to connect
-      return connection;    // can connect
-    } catch(GeneralSecurityException|SSLException e) {
-      String baseURL = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath()).toString();
-      if (authorizedURL.contains(baseURL) || acceptConnection(url)) {
-        try {
-          setTrustOption(true, url);
-          connection = (HttpURLConnection) url.openConnection();
-          authorizedURL.add(baseURL);
-          //setTrustOption(false, null);
-          return connection;
-        } catch(GeneralSecurityException ex2) {
-          throw new IOException(ex2);
-        }
-      } else {
-        throw new IOException(e);
-      }
-    }
+    return connection;
   }
 
-  private boolean acceptConnection(URL url) {
+  private boolean askIfUserAllowsInvalidCertificate(URL url) {
+    String text = I18N.getMessage(
+        "com.vididsolutions.wms.WMService.UnverifiedCertificate",
+        UriUtil.urlStripPassword(url.toString()));
+
+    // JEditor wraps nicely, allow Scrollbar resizing
+    JEditorPane textPane = new JEditorPane("text/plain", text) {
+      @Override
+      public boolean getScrollableTracksViewportWidth() {
+        return true;
+      }
+    };
+
+    // set a proper initial width
+    textPane.setSize(new Dimension(400, 10));
+    textPane.setPreferredSize(new Dimension(400, textPane.getPreferredSize().height));
+
+    // fixup look
+    textPane.setBackground(new JOptionPane().getBackground());
+    textPane.setBorder(null);
+
+    // make it scrollable
+    JScrollPane scrollPane = new JScrollPane(textPane);
+    scrollPane.setBorder(null);
+
+    // make the JOptionPane resizable
+    textPane.addHierarchyListener(new HierarchyListener() {
+      public void hierarchyChanged(HierarchyEvent e) {
+        Window window = SwingUtilities.getWindowAncestor(textPane);
+        if (window instanceof Dialog) {
+          Dialog dialog = (Dialog) window;
+          if (!dialog.isResizable()) {
+            dialog.setResizable(true);
+          }
+          // remove icon
+          Image img = new BufferedImage(1, 1,BufferedImage.TYPE_INT_ARGB_PRE);
+          dialog.setIconImage(img);
+          // pack to fit screen
+          dialog.pack();
+        }
+      }
+    });
+
     int r = JOptionPane.showConfirmDialog(
-            null,
-            I18N.getMessage(
-                    "com.vididsolutions.wms.WMService.UnverifiedCertificate",
-                    UriUtil.urlStripPassword(url.toString())
-            ),
+            null,scrollPane,
             "Confirmation dialog",
             YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
     return r == JOptionPane.YES_OPTION;
   }
 
+  // a dummy trust manager that actually accepts everything
   private TrustManager trm = new X509TrustManager() {
     public X509Certificate[] getAcceptedIssuers() { return null; }
     public void checkClientTrusted(X509Certificate[] certs, String authType) { }
     public void checkServerTrusted(X509Certificate[] certs, String authType) { }
   };
-  private Set<URL> trustedURLs = new HashSet<>();
 
   /**
    * setDefaultSSLSocketFactory of HttpsURLConnection to a dummy trust managed
@@ -184,7 +224,13 @@ public class URLConnectionProvider {
       Logger.info("Using the system trust manager to verify certificate for host '"+host+"'.");
       sc.init(null, null, null);
     }
-    // TODO: we should maybe not set a factory for _all_ connections here
+    // TODO: we should maybe not set a factory for _all_ connections here, 
+    //       or at least reset when we are done, maybe rewriting WMS using 
+    //       a more sophisticated http client is the way to go?
     HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+  }
+
+  private boolean isTrusted(URL url) {
+    return trustedURLs.contains(url);
   }
 }

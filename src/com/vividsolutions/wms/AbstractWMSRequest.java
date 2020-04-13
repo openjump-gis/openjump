@@ -6,17 +6,20 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.codec.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.openjump.util.URLConnectionProvider;
 
 import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.Logger;
 
 abstract public class AbstractWMSRequest implements WMSRequest {
 
@@ -66,7 +69,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
   protected HttpURLConnection prepareConnection() throws IOException {
     URL requestUrl = getURL();
     // by default we follow redirections
-    con = (HttpURLConnection) URLConnectionProvider.getJUMP_URLConnectionProvider().getHttpConnection(requestUrl, true);
+    con = (HttpURLConnection) URLConnectionProvider.getInstance().getHttpConnection(requestUrl, true);
 
     return con;
   }
@@ -157,19 +160,36 @@ abstract public class AbstractWMSRequest implements WMSRequest {
         "\nResponse code: " + con.getResponseCode() + "\nHeaders:\n" + headers + "\nResponse body:\n" + result);
   }
 
+  private static Pattern charsetPattern = null;
+
   protected String readConnection(HttpURLConnection con, long limit) throws IOException {
     boolean httpOk = con.getResponseCode() == HttpURLConnection.HTTP_OK;
     // get correct stream
     InputStream in = httpOk ? con.getInputStream() : con.getErrorStream();
 
+    String contentType = con.getContentType();
+    Charset charset = Charset.forName("UTF-8");
+    try {
+      if (contentType != null) {
+        // avoid recompiling regex pattern
+        if ( charsetPattern == null )
+          charsetPattern = Pattern.compile("(?i:charset)=[\"']?([\\w-]+)[\\\"']?");
+        Matcher matcher = charsetPattern.matcher(contentType);
+        if (matcher.find()) {
+          String charsetName = matcher.group(1);
+          charset = Charset.forName(charsetName);
+        }
+      }
+    } catch (Exception e) {
+      Logger.error("Content-type charset raised error. "+contentType,e);
+    }
+
     String result = "";
     if (in!=null) {
       // limit max chars
       BoundedInputStream bin = new BoundedInputStream(in, limit > 0 ? limit : -1);
-      byte[] bytes = new byte[bin.available()];
-      bin.read(bytes);
-      result = new String(bytes, Charsets.UTF_8);
-      //result = IOUtils.toString(bin);
+      // we use parsed HttpURLConnection.getContentType() charset here
+      result = IOUtils.toString(bin, charset);
       FileUtil.close(bin);
     }
 

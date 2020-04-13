@@ -6,6 +6,11 @@
 
 2020-04-13 ede
   * upgrade apache-commons jars codec, compress, imaging, lang3 to latest stable
+  WMS client
+  * text request fetches encoding from header content-type now
+  * save trusted url that needs no cert verification only per session
+  * fix http auth on cert unverified requests
+  * rework allow cert unverified dialog, properly wraps and resizes now
 
 2020-04-13 mmichaud <m.michael.michaud@orange.fr>
   * Fix #492 GetFeatureInfo without certificate + encoding
