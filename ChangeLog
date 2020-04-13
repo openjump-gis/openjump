@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-04-13 ede
+  * upgrade apache-commons jars codec, compress, imaging, lang3 to latest stable
+
 2020-04-13 mmichaud <m.michael.michaud@orange.fr>
   * Fix #492 GetFeatureInfo without certificate + encoding
 
