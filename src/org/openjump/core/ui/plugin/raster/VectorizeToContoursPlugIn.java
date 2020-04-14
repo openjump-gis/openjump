@@ -72,7 +72,7 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
     public static String contour_minContour = I18N
             .get("ui.plugin.raster.VectorizeToContoursPlugIn.min-contour");
     public static String contour_maxcontour = I18N
-            .get("ui.plugin.raster.VectorizeToContoursPlugIn.min-contour");
+            .get("ui.plugin.raster.VectorizeToContoursPlugIn.max-contour");
     public static String contour_contourNumber = I18N
             .get("ui.plugin.raster.VectorizeToContoursPlugIn.contour-number");
 
