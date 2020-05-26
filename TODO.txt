@@ -2,6 +2,9 @@
 ## OpenJUMP TODO
 ##
 
+2020-may- 26 Giuseppe Aruta (Peppe)
+	simplify GUI for new Up-to-come vertexstyle plugin
+
 2018-gen-31 Giuseppe Aruta (Peppe)
     Improve migration of Sextante Additional Results as internal OJ
     plugin - DONE
@@ -9,7 +12,7 @@
     Sextante-gui.jar and Sextante-algorithms.jar) in order to correct some
     internal bugs which cannot be done via OJ binding
     Explore possibility to port AdbToolbox Raster plugins to OJ as alternative
-    to Sextante 
+    to Sextante - (Partially done by OpenKLEM plugin)
 
 2011-jul-04 mmichaud <michael.michaud@free.fr>
     Improve documentation
