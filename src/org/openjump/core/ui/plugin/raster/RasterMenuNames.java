@@ -17,9 +17,9 @@ public class RasterMenuNames {
     public static String Output_file = I18N
             .get("driver.DriverManager.file-to-save");
     public static String Choose_an_action = I18N
-            .get("org.openjump.core.rasterimage.plugin.Choose-an-action");
+            .get("ui.GenericNames.choose-an-action");
     public static String Check_field = I18N
-            .get("org.openjump.core.rasterimage.plugin.Check-value-into-the-field");
+            .get("ui.GenericNames.chech-field");
     public static String PROCESSING = I18N
             .get("jump.plugin.edit.NoderPlugIn.processing");
 
