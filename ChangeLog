@@ -5,6 +5,18 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2020-05-31 Giuseppe Aruta
+  * Updated VertexSymbols plugin to version 0.20:
+    a) Extended capability of the plugin to feature classification by attribute
+       value
+    b) Added capability to style linestrings with symbols at user-defined
+       distance between each other, offset to the line, and rotation according
+       to segments orientation
+    c) better visual and command organization
+    d) activated capability to read/use pure WKT files as symbols (already
+       embedded by Geoff)
+    e) integration with some basic style parameters (line/fill colors, global
+       transparency,..)
+    f) improved panels, commands and GUI
   * Correct text preview panel of TextEditor in order that text is wrapped 
   into multiple lines
 
