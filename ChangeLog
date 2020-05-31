@@ -4,6 +4,10 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-05-31 Giuseppe Aruta
+  * Correct text preview panel of TextEditor in order that text is wrapped 
+  into multiple lines
+
 2020-05-28 ede
   * PLUS upgrade ojmapcoloring, added polish translation
 
