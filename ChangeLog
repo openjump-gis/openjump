@@ -5,6 +5,10 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2020-06-02 Giuseppe Aruta
+	Upgraded patch of VertexSymbols plugin (ver. 0.20a)
+	Correct bug: styles didn't upgrade into the workbech view
+
+2020-06-02 Giuseppe Aruta
   * Updated CadPlan Jump Printer plugin to version 1.89
     a) new release that works with new VertexSymbol plugin upgrades
     b) correction of some Italian language codes
