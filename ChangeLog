@@ -4,6 +4,11 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-06-04 Giuseppe Aruta
+    CAD tools. Small enhancement: a new saved block will be automatically 
+    available as a symbol (Cadplan VertexSymbols plugin) in the session without 
+    restarting OpenJUMP
+
 2020-06-02 Giuseppe Aruta
 	Upgraded patch of VertexSymbols plugin (ver. 0.20a)
 	Correct bug: styles didn't upgrade into the workbech view
