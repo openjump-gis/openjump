@@ -4,6 +4,13 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-06-08 Giuseppe Aruta
+   Apdated JumpPrintee plugin to version 1.90:
+   Added a valid plugin to export the view to several file formats (Raster, 
+   SVG, PDF). Export view to scale: style elements will be resized according
+   to the selected scale. This plugin substitutes SaveViewAsRaster and 
+   SaveViewAsSVG plugins in OpenJUMP PLUS version 
+
 2020-06-04 Giuseppe Aruta
     CAD tools. Small enhancement: a new saved block will be automatically 
     available as a symbol (Cadplan VertexSymbols plugin) in the session without 
