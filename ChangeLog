@@ -4,8 +4,12 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-06-10 Giuseppe Aruta
+  * PLUS upgrade ojmapcoloring, added Hungarian translation
+    (thanks to János Kis)
+
 2020-06-08 Giuseppe Aruta
-   Apdated JumpPrintee plugin to version 1.90:
+   Apdated JumpPrinter plugin to version 1.90:
    Added a valid plugin to export the view to several file formats (Raster, 
    SVG, PDF). Export view to scale: style elements will be resized according
    to the selected scale. This plugin substitutes SaveViewAsRaster and 
