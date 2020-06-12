@@ -89,6 +89,7 @@ Additionally PLUS distribution contains
   Windows x86/x64, Linux, Mac OSX with 32bit java runtime - 
   ERDAS ECW JPEG2000 SDK license - ecw license.txt
   lib/native/[os/]{jecw-*.jar,NCS*.dll,ermapper.jar}
+ JEdit (1999) - GPL2 - gpl-2.txt
  JGraphT - LGPL2 - lgpl-2.1.txt
   lib/jgrapht-*.jar
  Postgis driver (postgis-*.jar) - LGPL2 - lgpl-2.1.txt

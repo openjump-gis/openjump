@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-06-12 mmichaud <m.michael.michaud@orange.fr>
+  * Update and fixes BeanShell Editor PlugIn and dependencies
+
 2020-06-10 Giuseppe Aruta
   * PLUS upgrade ojmapcoloring, added Hungarian translation
     (thanks to János Kis)
