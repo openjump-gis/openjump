@@ -20,6 +20,7 @@ package org.openjump.core.ui.plugin.edittoolbox.cursortools;
  */
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.util.Collection;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -81,42 +82,60 @@ public class AutoCompletePolygonCursorTool extends PolygonTool {
        true);
    }
    
-   protected void gestureFinished() throws Exception {
-      reportNothingToUndoYet();
-      context = getWorkbench().getContext();
-      if (!checkPolygon()) {
-         return;
-      }
+	@Override
+	protected void gestureFinished() throws Exception {
+		reportNothingToUndoYet();
+		context = getWorkbench().getContext();
+		if (!checkPolygon()) {
+			return;
+		}
+		Collection<Layer> layers = getPanel().getLayerManager().getEditableLayers();
+		if(layers.size()==0 || layers.size()>1) {
+			getPanel()
+			.getContext()
+			.warnUser(
 
-      Layer lay = org.openjump.core.apitools.LayerTools.getSelectedLayer(context.createPlugInContext());
+					I18N.get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected"));
 
-      Feature[] featuresInFence = de.fho.jump.pirol.utilities.plugIns.StandardPirolPlugIn.getFeaturesInFenceOrInLayer(context.createPlugInContext(), lay);
-		
-      Polygon poly = this.getPolygon();
+			return;
+		}
+		Layer lay = org.openjump.core.apitools.LayerTools.getSelectedLayer(context.createPlugInContext());
+		if (!lay.isEditable()) {
+			getPanel()
+			.getContext()
+			.warnUser(
 
-      Geometry newGeo = poly.getGeometryN(0);
+					I18N.get("com.vividsolutions.jump.workbench.plugin.Selected-items-layers-must-be-editable"));
 
-      Geometry diffGeo = newGeo;
+			return;
 
-      try {
-         for (int i = 0; i < featuresInFence.length; i++) {
-            diffGeo = diffGeo.difference(featuresInFence[i].getGeometry());
-         }
-         if (diffGeo instanceof Polygon){
-	         featureDrawingUtil.drawRing(
-	         (Polygon)diffGeo,
-	         isRollingBackInvalidEdits(),
-	         this,
-	         getPanel()); 
-         }
-         //System.out.println("Polygon added");
-      
-      } catch (Exception e) {
-         //System.out.println("Unknown Exception" + e);
-         getPanel().getContext().warnUser(sCanNotAdd + " " + e);
-      }
-   }
+		}
+		Feature[] featuresInFence = de.fho.jump.pirol.utilities.plugIns.StandardPirolPlugIn.getFeaturesInFenceOrInLayer(context.createPlugInContext(), lay);
 
+		Polygon poly = this.getPolygon();
+
+		Geometry newGeo = poly.getGeometryN(0);
+
+		Geometry diffGeo = newGeo;
+
+		try {
+			for (int i = 0; i < featuresInFence.length; i++) {
+				diffGeo = diffGeo.difference(featuresInFence[i].getGeometry());
+			}
+			if (diffGeo instanceof Polygon){
+				featureDrawingUtil.drawRing(
+						(Polygon)diffGeo,
+						isRollingBackInvalidEdits(),
+						this,
+						getPanel()); 
+			}
+			//System.out.println("Polygon added");
+
+		} catch (Exception e) {
+			//System.out.println("Unknown Exception" + e);
+			getPanel().getContext().warnUser(sCanNotAdd + " " + e);
+		}
+	}
    public Icon getIcon() {
 	   return new ImageIcon(getClass().getResource("AutoCompletePoly.gif"));
    }
