@@ -7,7 +7,9 @@
 2020-07-16 Giuseppe Aruta
   * EditOptionPanel : Added option to automatically open a feature attributes 
     Info Frame after a new feature is created. Workaround to Feature request 
-    #245 "Create form to edit attribute values"  
+    #245 "Create form to edit attribute values" 
+  * CadTools Plugin version 0.9: added capability to load Python console and 
+    tools: added Align and Distribute selected features tools
 
 2020-07-09 Giuseppe Aruta
   * Sextante: 
