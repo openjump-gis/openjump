@@ -4,6 +4,11 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-07-16 Giuseppe Aruta
+  * EditOptionPanel : Added option to open a feature InfoFrame when a feature
+    is created. Workaround to Feature request #245 "Create form to edit 
+    attribute values" 
+
 2020-07-09 Giuseppe Aruta
   * Sextante: 
     1) converted Sextante Toolbox as OpenJUMP Detached InternaFrame
