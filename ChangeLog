@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-07-31 mmichaud <m.michael.michaud@orange.fr>
+  * #494 : csv driver 1.0.3 : fix serialization problem
+
 2020-07-16 Giuseppe Aruta
   * EditOptionPanel : Added option to automatically open a feature attributes 
     Info Frame after a new feature is created. Workaround to Feature request 
