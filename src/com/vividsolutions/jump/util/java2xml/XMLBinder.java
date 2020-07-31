@@ -240,6 +240,16 @@ public class XMLBinder {
                         return object.toString();
                     }
                 });
+        classToCustomConverterMap.put(char.class,
+                new CustomConverter() {
+                    public Object toJava(String value) {
+                        return value.length()>0?value.charAt(0):'\u0000';
+                    }
+
+                    public String toXML(Object object) {
+                        return object.toString();
+                    }
+                });
         classToCustomConverterMap.put(Character.class,
                 new CustomConverter() {
                     public Object toJava(String value) {
