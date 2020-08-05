@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-08-05 ede
+  * upgrade apache batik (used for svg rendering) to latest 1.13
+
 2020-07-31 mmichaud <m.michael.michaud@orange.fr>
   * #494 : csv driver 1.0.3 : fix serialization problem
 
