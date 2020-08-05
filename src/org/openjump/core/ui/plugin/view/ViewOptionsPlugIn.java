@@ -1,5 +1,15 @@
 package org.openjump.core.ui.plugin.view;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.text.SimpleDateFormat;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -9,11 +19,6 @@ import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 import com.vividsolutions.jump.workbench.ui.OptionsPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
-import org.apache.batik.ext.swing.GridBagConstants;
-
-import javax.swing.*;
-import java.awt.*;
-import java.text.SimpleDateFormat;
 
 /**
  * Plugin responsible for initializing/editing view options
@@ -72,17 +77,17 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
         c.gridy++;
 
         c.gridwidth = 2;
-        c.anchor = GridBagConstants.WEST;
+        c.anchor = GridBagConstraints.WEST;
         viewOptionsPanel.add(new JLabel(ATTRIBUTES_FORMAT), c);
         c.gridy++;
 
         c.gridx = 0;
         c.gridwidth = 1;
-        c.anchor = GridBagConstants.EAST;
+        c.anchor = GridBagConstraints.EAST;
         viewOptionsPanel.add(new JLabel(DATE_FORMAT), c);
 
         c.gridx = 1;
-        c.anchor = GridBagConstants.WEST;
+        c.anchor = GridBagConstraints.WEST;
         viewOptionsPanel.add(dateFormatChooser, c);
         c.gridy++;
 
@@ -93,22 +98,22 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
 
         c.gridx = 0;
         c.gridwidth = 2;
-        c.anchor = GridBagConstants.WEST;
+        c.anchor = GridBagConstraints.WEST;
         viewOptionsPanel.add(new JLabel(SELECTION_SYNCHRONIZATION), c);
         c.gridy++;
 
         c.gridx = 0;
         c.gridwidth = 1;
-        c.anchor = GridBagConstants.EAST;
+        c.anchor = GridBagConstraints.EAST;
         viewOptionsPanel.add(new JLabel(SYNC), c);
         c.gridx = 1;
-        c.anchor = GridBagConstants.WEST;
+        c.anchor = GridBagConstraints.WEST;
         viewOptionsPanel.add(synchronizationCheckBox, c);
         c.gridy++;
 
         c.gridx = 0;
         c.weighty = 1;
-        c.fill = GridBagConstants.VERTICAL;
+        c.fill = GridBagConstraints.VERTICAL;
         viewOptionsPanel.add(new JPanel(), c);
 
         OptionsDialog.instance(context.getWorkbenchContext().getWorkbench())
