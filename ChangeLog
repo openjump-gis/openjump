@@ -4,6 +4,21 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+
+2020-08-17 Giuseppe Aruta
+  * Added new tools in SextanteGIS :
+  - Under "DEM Processing" menu (Raster analisys)
+  a) Map pits. Tool to map pits and sinks to verify the quality of a raster 
+     for hydrological analisys
+  b) Remove single-cell pits. To remove single pits in order to speed sink 
+     filling of a DEM
+  c) Remove sinks. Modified from "Sink Filling" Sextante tool, to solve
+     a bug (Schröder et al,, 2010, 6 International gvSIG Conference) and 
+     to speed the process
+  - Under "Rasterization and interpolation" menu
+  d) Rasterize vector layer (2). Modified version of "Rasterize vector layer" 
+     to solve a bug on rasterize polygons
+
 2020-08-16 ede
   * reverted apache batik (used for svg rendering) to 1.6 due to 
     incompatibilities with printing extensions (Sky/Cadplan)
