@@ -32,6 +32,7 @@
 package com.vividsolutions.jump.util;
 
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jump.workbench.Logger;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -61,8 +62,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class FlexibleDateParser {
     private static FlexibleDateParser instance = null;
 
-    private static Collection<SimpleDateFormat> lenientFormatters = null;
-    private static Collection<SimpleDateFormat> unlenientFormatters = null;
+    private static List<SimpleDateFormat> lenientFormatters = null;
+    private static List<SimpleDateFormat> unlenientFormatters = null;
 
     //CellEditor used to be a static field CELL_EDITOR, but I was getting
     //problems calling it from ESETextField (it simply didn't appear).
@@ -180,14 +181,14 @@ public class FlexibleDateParser {
         return sortedPatterns;
     }
 
-    private Collection<SimpleDateFormat> lenientFormatters() {
+    private List<SimpleDateFormat> lenientFormatters() {
         if (lenientFormatters == null) {
             load();
         }
         return lenientFormatters;
     }
 
-    private Collection<SimpleDateFormat> unlenientFormatters() {
+    private List<SimpleDateFormat> unlenientFormatters() {
         if (unlenientFormatters == null) {
             load();
         }
@@ -224,22 +225,36 @@ public class FlexibleDateParser {
         }
     }
 
-    private Date parse(String s, Collection<SimpleDateFormat> formatters) throws ParseException {
+    private Date parse(String s, List<SimpleDateFormat> formatters) throws ParseException {
         ParseException firstParseException = null;
 
+        int i = 0;
         for (SimpleDateFormat formatter : formatters) {
-
-            if (verbose) {
-                System.out.println(
-                    s
-                        + " -- "
+            i++;
+            if (verbose || Logger.isTraceEnabled()) {
+                String msg = s
+                        + " -- #" + i + ". "
                         + formatter.toPattern()
-                        + (formatter.isLenient() ? "lenient" : ""));
+                        + (formatter.isLenient() ? "lenient" : "");
+                if (verbose)
+                  System.out.println(msg);
+                Logger.trace(msg);
             }
 
             try {
               Date d = parse(s, formatter);
-                return d;
+              
+              // [ede] 2020-08
+              // moving successful parser to the list's beginning assuming 
+              // that whatever datestring is parsed next will probably be 
+              // in the same format speeding up parsing by magnitudes
+              if (i > 1) {
+                int index = formatters.indexOf(formatter);
+                formatters.remove(index);
+                formatters.add(0, formatter);
+              }
+
+              return d;
             } catch (ParseException e) {
                 if (firstParseException == null) {
                     firstParseException = e;
@@ -330,7 +345,7 @@ public class FlexibleDateParser {
         }
     }
 
-    private Collection<SimpleDateFormat> toFormatters(boolean lenient, Collection<DatePattern> patterns) {
+    private List<SimpleDateFormat> toFormatters(boolean lenient, Collection<DatePattern> patterns) {
         List<SimpleDateFormat> formatters = new ArrayList<>();
         //Sort from least complex to most complex; otherwise, ddMMMyyyy 
         //instead of MMMd will match "May 15". [Jon Aquino]
