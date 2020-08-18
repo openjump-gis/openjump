@@ -403,7 +403,7 @@ public class Shapefile  {
                     raf.getChannel().read(bb, offset*2 + 8);
                     shp = new EndianDataInputStream(new ByteArrayInputStream(bytes));
                     body = handler.read(shp, geometryFactory, length);
-                    Logger.debug("" + recordNumber + " : from " + offset + " for " + length + " (" + body.getNumPoints() + " pts)");
+                    Logger.trace("" + recordNumber + " : from " + offset + " for " + length + " (" + body.getNumPoints() + " pts)");
                     list.add(body);
                     if (body.getUserData() != null) errors++;
                 } catch(Exception e) {
