@@ -137,8 +137,9 @@ public class ReaderWriterFileDataSource extends FileDataSource {
                       "com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource.write",
                       createDescriptiveName(uri)));
         }
-
+        long start = Timer.milliSecondsSince(0);
         writer.write(featureCollection, dp);
+        Logger.info("Writing '"+UriUtil.getFileName(uri)+"' took "+Timer.secondsSinceString(start)+"s.");
       }
 
       @Override
