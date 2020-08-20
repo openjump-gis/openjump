@@ -118,10 +118,10 @@ public class ValueConverterFactory {
         public AttributeType getType() { return AttributeType.DATE; }
         public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
               // always return string for dates and let FlexibleFeature convert later during runtime
-              return rs.getString(columnIndex);
+              //return rs.getString(columnIndex);
 //            Object ret = null;
 //            try {
-//                ret = rs.getTimestamp(columnIndex);
+              return rs.getTimestamp(columnIndex);
 //                if (rs.wasNull()) return null;
 //            } catch (Exception e) {
 //                // try to read date from string, as some SpatialDatabases like SQLite

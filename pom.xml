@@ -918,7 +918,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.4.1208.jre6</version>
+            <version>42.2.14</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
