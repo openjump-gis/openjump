@@ -5,7 +5,7 @@
 #<-------------------------------- 80 chars ---------------------------------->#
 
 2020-08-20 mmichaud <m.michael.michaud@orange.fr>
-  * Fix regression : read dates from database as java.util.Date, not String
+  * #497 : read dates from database as java.util.Date, not String
   * update postgresql and sqlite jdbc drivers
 
 2020-08-17 Giuseppe Aruta
