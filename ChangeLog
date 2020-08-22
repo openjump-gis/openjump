@@ -4,6 +4,10 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-08-22 mmichaud <m.michael.michaud@orange.fr>
+  * Fix a bug in spatialite loader preventing loading anything exported
+    from QGis using spatialite format (OGC_OGR_LAYOUT)
+
 2020-08-20 mmichaud <m.michael.michaud@orange.fr>
   * #497 : read dates from database as java.util.Date, not String
   * update postgresql and sqlite jdbc drivers

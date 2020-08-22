@@ -154,6 +154,8 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
       spatialIndexQuery = "SELECT CASE WHEN CheckSpatialIndex('%s', '%s') = 1 then 1 else 0 end as isindexed";
     } else if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_SPATIALITE_LAYOUT) {
       spatialIndexQuery = "select spatial_index_enabled from geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
+    } else if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_OGR_LAYOUT) {
+      spatialIndexQuery = "select spatial_index_enabled from geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
     } else {
       // TODO: 
       spatialIndexQuery = "";
@@ -489,6 +491,8 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     } catch (Exception e) {
       //TODO...
       e.printStackTrace();
+    } finally {
+      if (gc.isIndexed() == null) gc.setIndexed(false);
     }
   }
   
