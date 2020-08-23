@@ -47,40 +47,58 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public class ConnectionDescriptorPanel extends JPanel
 {
-  private WorkbenchContext context;
-  private ParameterListSchema schema = new ParameterListSchema(
-      new String[] {}, new Class[] {});
 
   private static int createdConnectionCount = 0;
 
-  private JTextField nameText = new JTextField();
-  private JComboBox driverComboBox = null;
+  final private WorkbenchContext context;
+  final private JTextField nameText;
+  final private List<Component> editComponentList = new ArrayList<>();
 
-  private List editComponentList = new ArrayList();
+  private ParameterListSchema schema = new ParameterListSchema(
+      new String[] {}, new Class[] {});
+
+  private JComboBox driverComboBox;
+
 
   private void updateMainPanel(ParameterList parameterList,Blackboard bb) {
     mainPanel.removeAll();
     editComponentList.clear();
-    addEditComponent(0, I18N.get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Name"), nameText);
-    addEditComponent(1, I18N.get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Driver"), driverComboBox);
+    addEditComponent(0,
+            I18N.get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Name"),
+            nameText, 0.5);
+    addEditComponent(1,
+            I18N.get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Driver"),
+            driverComboBox, 0);
     for (int i = 0; i < schema.getNames().length; i++) {
       String name = schema.getNames()[i];
+      Class clazz = schema.getClasses()[i];
       editComponentList.add(createEditComponent(name,
-          schema.getClasses()[i], parameterList.getParameter(name),bb));
-      addEditComponent(i + 2, name, (Component) editComponentList
-                       .get(editComponentList.size() - 1));
+          clazz, parameterList.getParameter(name),bb));
+      addEditComponent(i + 2, name, editComponentList.get(editComponentList.size() - 1),
+              getWeight(clazz));
     }
     revalidate();
     repaint();
   }
 
-  private void addEditComponent(int i, String name, Component editComponent) {
-    mainPanel.add(new JLabel(name), new GridBagConstraints(0, i, 1, 1, 0,
-        0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-        new Insets(2, 2, 2, 2), 0, 0));
-    mainPanel.add(editComponent, new GridBagConstraints(1, i, 1, 1, 0, 0,
-        GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(2,
-        2, 2, 2), 0, 0));
+    private void addEditComponent(int i, String name, Component editComponent, double weight) {
+        mainPanel.add(new JLabel(name), new GridBagConstraints(
+            0, i, 1, 1, 0, 0,
+            GridBagConstraints.WEST, GridBagConstraints.NONE,
+            new Insets(2, 2, 2, 2), 0, 0));
+        int fill = weight == 0.0 ? GridBagConstraints.NONE : GridBagConstraints.HORIZONTAL;
+        mainPanel.add(editComponent, new GridBagConstraints(
+            1, i, 1, 1, weight, 0,
+            GridBagConstraints.WEST, fill,
+            new Insets(2, 2, 2, 2), 0, 0));
+    }
+
+    private double getWeight(Class clazz) {
+        if (clazz == Integer.class) return 0.0;
+        else if (clazz == Double.class) return 0.0;
+        else if (clazz == String.class) return 0.5;
+        else if (clazz == File.class) return 1.0;
+        else return 0.5;
     }
 
     private Component createEditComponent(String name, Class parameterClass,
@@ -191,15 +209,16 @@ public class ConnectionDescriptorPanel extends JPanel
         setLayout(gl);
         setAlignmentX(0);
   
-        GridBagConstraints c = new GridBagConstraints(0, 0, 1, 1, 0, 0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0,
-                0), 0, 0);
+        GridBagConstraints c = new GridBagConstraints(0, 0, 1, 1, 1, 0,
+                GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+                new Insets(0, 0, 0, 0), 0, 0);
   
         add(strFile, c);
         gl.setConstraints(strFile, c);
   
-        c = new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.WEST,
-            GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0);
+        c = new GridBagConstraints(1, 0, 1, 1, 0, 0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets(2, 2, 2, 2), 0, 0);
         add(open, c);
         gl.setConstraints(open, c);
   
@@ -266,7 +285,7 @@ public class ConnectionDescriptorPanel extends JPanel
             }
             if (parameter != null && component instanceof JMPFileChooser)
               ((JMPFileChooser) component).getFileTextField().setText(
-                  parameter == null ? "" : ((File) parameter).toString());
+                  parameter == null ? "" : parameter.toString());
           }
   
           public Object getParameter(Component component) {
@@ -325,12 +344,14 @@ public class ConnectionDescriptorPanel extends JPanel
             }
         };
 
-        add(mainPanel, new GridBagConstraints(0, 0, 1, 1, 0, 0,
-                GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
+        add(mainPanel, new GridBagConstraints(
+                0, 0, 1, 1, 1, 0,
+                GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
                 new Insets(2, 2, 2, 2), 0, 0));
-        add(new JPanel(new GridBagLayout()), new GridBagConstraints(1, 1, 1, 1,
-                1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
-                new Insets(0, 0, 0, 0), 0, 0));
+        // Empty panel seems of no use
+        //add(new JPanel(new GridBagLayout()), new GridBagConstraints(1, 1, 1, 1,
+        //        1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
+        //        new Insets(0, 0, 0, 0), 0, 0));
         driverComboBox.setModel(new DefaultComboBoxModel(sort(new Vector(
                 registry.getEntries(DataStoreDriver.REGISTRY_CLASSIFICATION)),
                 new Comparator() {
@@ -343,21 +364,23 @@ public class ConnectionDescriptorPanel extends JPanel
                         return a.getName().compareTo(b.getName());
                     }
                 })));
-        initializePreferredSize();
+        //initializePreferredSize();
         driverComboBox.setSelectedIndex(0);
     }
 
-    private void initializePreferredSize() {
-        int maxWidth = 0;
-        int maxHeight = 0;
-        for (int i = 0; i < driverComboBox.getItemCount(); i++) {
-            driverComboBox.setSelectedIndex(i);
-            maxWidth = Math.max(maxWidth, (int) getPreferredSize().getWidth());
-            maxHeight = Math.max(maxHeight, (int) getPreferredSize()
-                    .getHeight());
-        }
-        setPreferredSize(new Dimension(maxWidth, maxHeight));
-    }
+    // mmichaud [2020-08-23] : makes the interface crappy in some environments
+    // (textfield have a 0 width)
+    //private void initializePreferredSize() {
+    //    int maxWidth = 0;
+    //    int maxHeight = 0;
+    //    for (int i = 0; i < driverComboBox.getItemCount(); i++) {
+    //        driverComboBox.setSelectedIndex(i);
+    //        maxWidth = Math.max(maxWidth, (int) getPreferredSize().getWidth());
+    //        maxHeight = Math.max(maxHeight, (int) getPreferredSize()
+    //                .getHeight());
+    //    }
+    //    setPreferredSize(new Dimension(maxWidth, maxHeight));
+    //}
 
     private Vector sort(Vector collection, Comparator comparator) {
         Collections.sort(collection, comparator);
@@ -391,8 +414,7 @@ public class ConnectionDescriptorPanel extends JPanel
         return parameterList;
     }
 
-    public void setParameters(ConnectionDescriptor connDesc)
-    {
+    public void setParameters(ConnectionDescriptor connDesc) {
       nameText.setText(connDesc.getName());
       int driverComboIndex = getDriverComboBoxIndex(connDesc.getDataStoreDriverClassName());
       if (driverComboIndex >= 0) {
@@ -402,8 +424,7 @@ public class ConnectionDescriptorPanel extends JPanel
       updateMainPanel(connDesc.getParameterList(), PersistentBlackboardPlugIn.get(context));
     }
 
-    private int getDriverComboBoxIndex(String driverClassName)
-    {
+    private int getDriverComboBoxIndex(String driverClassName) {
       for (int i = 0; i < driverComboBox.getItemCount(); i++) {
         DataStoreDriver driver = (DataStoreDriver) driverComboBox.getItemAt(i);
         if (driver.getClass().getName().equals(driverClassName)) {

@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-08-23 mmichaud <m.michael.michaud@orange.fr>
+  * improved component layout of ConnectionDescriptorPanel
+
 2020-08-22 mmichaud <m.michael.michaud@orange.fr>
   * Fix a bug in spatialite loader preventing loading anything exported
     from QGis using spatialite format (OGC_OGR_LAYOUT)
