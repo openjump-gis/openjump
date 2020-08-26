@@ -16,13 +16,14 @@ import com.vividsolutions.jump.util.FlexibleDateParser;
 
 /**
  * a FlexibleFeature based on {@link BasicFeature} originally used by the
- * GeoJSON reader. currently adding 
+ * GeoJSON reader. currently adding this functionality
  * - "autoextends" by returning null for undefined attribs
  * - lazy conversion of attributes (see {@link #getAttribute(int)})
  *   currently String, Date, Time, Timestamp
  */
 public class FlexibleFeature extends BasicFeature {
   //private static HashMap<FeatureSchema,FlexibleFeatureSchema> oldToFlexMap = new HashMap();
+  private static HashMap<FeatureSchema,FlexibleDateParser> schemaToFlexDateParser = new HashMap();
 
   public FlexibleFeature(FeatureSchema featureSchema) {
     super(featureSchema);
@@ -62,8 +63,7 @@ public class FlexibleFeature extends BasicFeature {
       Date d = parse(attrib);
       if (d!=null){
         attrib = new java.sql.Date(d.getTime());
-        // update the attribute object, so the conversion does not happen on
-        // every getAttrib()
+        // memorize conversion for future getAttrib() calls
         setAttribute(i, attrib);
       } else {
         attrib = null;
@@ -106,8 +106,13 @@ public class FlexibleFeature extends BasicFeature {
       d = (java.util.Date) dateObject;
     else {
       try {
-        //FlexibleDateParser.getDefaultInstance().setVerbose(true);
-        d = FlexibleDateParser.getDefaultInstance().parse(dateObject.toString(), true);
+        // use the same FlexibleDateParser for all Features of this collection
+        if ( !schemaToFlexDateParser.containsKey(getSchema()) ) {
+          FlexibleDateParser fdp = new FlexibleDateParser();
+          fdp.cachingEnabled(true);
+          schemaToFlexDateParser.put(getSchema(), fdp);
+        }
+        d = schemaToFlexDateParser.get(getSchema()).parse(dateObject.toString(), false);
       } catch (ParseException e) {
         // TODO: we should find a way to tell the user
         e.printStackTrace();

@@ -60,10 +60,44 @@ import javax.swing.table.DefaultTableCellRenderer;
  * in FlexibleDateParser.txt).
  */
 public class FlexibleDateParser {
-    private static FlexibleDateParser instance = null;
-
     private static List<SimpleDateFormat> lenientFormatters = null;
     private static List<SimpleDateFormat> unlenientFormatters = null;
+
+    // instance variable set via enableCache()
+    private LinkedList<SimpleDateFormat> formattersCache = null;
+
+    public void setVerbose(boolean b) {
+      verbose = b;
+    }
+
+    public void cachingEnabled( boolean onOff ) {
+      if ( onOff != true && formattersCache != null )
+        formattersCache = null;
+      else if ( onOff == true && formattersCache == null )
+        formattersCache = new LinkedList<>();
+    }
+
+    /**
+     * @return null if s is empty
+     */
+    public Date parse(String s, boolean lenient) throws ParseException {
+        if (s.trim().length() == 0) {
+            return null;
+        }
+
+        // try unlenient
+        try {
+            return parse(s, unlenientFormatters());
+        }
+        // try lenient formatters (if enabled)
+        catch (ParseException e) {
+            if (lenient) {
+                return parse(s, lenientFormatters());
+            }
+
+            throw e;
+        }
+    }
 
     //CellEditor used to be a static field CELL_EDITOR, but I was getting
     //problems calling it from ESETextField (it simply didn't appear).
@@ -72,6 +106,7 @@ public class FlexibleDateParser {
     public static final class CellEditor extends DefaultCellEditor {
         private Object value;
         DateFormat formatter;
+        private FlexibleDateParser flexParser = new FlexibleDateParser();
 
         public CellEditor(DateFormat formatter) {
             super(new JTextField());
@@ -90,7 +125,7 @@ public class FlexibleDateParser {
                 try {
                   this.value = formatter.parse(newValue);
                 } catch(ParseException e1) {
-                  this.value = FlexibleDateParser.getDefaultInstance().parse(newValue, true);
+                  this.value = flexParser.parse(newValue, true);
                 }
             } catch (Exception e) {
                 // red alert ;) please try again
@@ -148,7 +183,7 @@ public class FlexibleDateParser {
 
     private boolean verbose = false;
 
-    private Collection<DatePattern> sortByComplexity(Collection<DatePattern> patterns) {
+    private static Collection<DatePattern> sortByComplexity(Collection<DatePattern> patterns) {
         //Least complex to most complex. [Jon Aquino]
         TreeSet<DatePattern> sortedPatterns = new TreeSet<>(new Comparator<DatePattern>() {
             public int compare(DatePattern o1, DatePattern o2) {
@@ -195,41 +230,36 @@ public class FlexibleDateParser {
         return unlenientFormatters;
     }
 
-    /**
-     * @return null if s is empty
-     */
-    public Date parse(String s, boolean lenient) throws ParseException {
-        if (s.trim().length() == 0) {
-            return null;
-        }
-        //The deprecated Date#parse method is actually pretty flexible. [Jon Aquino]
-        // [mmichaud 2012-03-17] Date parse without taking Locale into account
-        // -> prefer parse method using localized formatters
-        //try {
-        //    if (verbose) {
-        //        System.out.println(s + " -- Date constructor");
-        //    }
-        //    return new Date(s);
-        //} catch (Exception e) {
-        //    //Eat it. [Jon Aquino]
-        //}
+    private class CompositeList<E> extends AbstractList<E> {
 
-        try {
-            return parse(s, unlenientFormatters());
-        } catch (ParseException e) {
-            if (lenient) {
-                return parse(s, lenientFormatters());
-            }
+      private final List<E> list1;
+      private final List<E> list2;
 
-            throw e;
-        }
+      public CompositeList(List<E> list1, List<E> list2) {
+          List<E> empty = Collections.emptyList();
+          this.list1 = list1 == null ? empty : list1;
+          this.list2 = list2 == null ? empty : list2;
+      }
+
+      @Override
+      public E get(int index) {
+          if (index < list1.size()) {
+              return list1.get(index);
+          }
+          return list2.get(index-list1.size());
+      }
+
+      @Override
+      public int size() {
+          return list1.size() + list2.size();
+      }
     }
 
     private Date parse(String s, List<SimpleDateFormat> formatters) throws ParseException {
         ParseException firstParseException = null;
 
         int i = 0;
-        for (SimpleDateFormat formatter : formatters) {
+        for (SimpleDateFormat formatter : new CompositeList<>(formattersCache, formatters)) {
             i++;
             if (verbose || Logger.isTraceEnabled()) {
                 String msg = s
@@ -243,15 +273,19 @@ public class FlexibleDateParser {
 
             try {
               Date d = parse(s, formatter);
-              
-              // [ede] 2020-08
-              // moving successful parser to the list's beginning assuming 
-              // that whatever datestring is parsed next will probably be 
-              // in the same format speeding up parsing by magnitudes
-              if (i > 1) {
-                int index = formatters.indexOf(formatter);
-                formatters.remove(index);
-                formatters.add(0, formatter);
+
+              if (formattersCache != null ) {
+                // [ede] 2020-08
+                // adding successful parser to the cache's beginning assuming 
+                // that whatever datestring is parsed next will probably be 
+                // in the same format speeding up parsing by magnitudes
+                int pos = formattersCache.indexOf(formatter);
+                if (pos != 0) {
+                  // remove old entries
+                  formattersCache.removeAll(Collections.singleton(formatter));
+                  // add to beginning
+                  formattersCache.addFirst(formatter);
+                }
               }
 
               return d;
@@ -307,24 +341,23 @@ public class FlexibleDateParser {
         }
     }
 
-    public FlexibleDateParser setLocale(Locale locale) {
+    public static void setLocale(Locale locale) {
         Locale defaultLocale = Locale.getDefault();
         Locale.setDefault(locale);
         lenientFormatters = null;
         unlenientFormatters = null;
         load();
         Locale.setDefault(defaultLocale);
-        return this;
     }
 
-    private void load() {
+    private static void load() {
         if (lenientFormatters == null) {
             // Does not use 18N to be able to reload another language file dynamically
             // (with 18N, things seems to be started only once at the start of the application)
             ResourceBundle resourceBundle = ResourceBundle.getBundle("language/jump");
 
             try (InputStream inputStream =
-                         getClass().getResourceAsStream(resourceBundle.getString(
+                         FlexibleDateParser.class.getResourceAsStream(resourceBundle.getString(
                                  "com.vividsolutions.jump.util.FlexibleDateParser")
                          )) {
                 Collection<DatePattern> patterns = new ArrayList<>();
@@ -337,15 +370,15 @@ public class FlexibleDateParser {
                     }
 
                 }
-                unlenientFormatters = toFormatters(false, patterns);
-                lenientFormatters = toFormatters(true, patterns);
+                unlenientFormatters = Collections.unmodifiableList(toFormatters(false, patterns));
+                lenientFormatters = Collections.unmodifiableList(toFormatters(true, patterns));
             } catch (IOException e) {
                 Assert.shouldNeverReachHere(e.toString());
             }
         }
     }
 
-    private List<SimpleDateFormat> toFormatters(boolean lenient, Collection<DatePattern> patterns) {
+    private static List<SimpleDateFormat> toFormatters(boolean lenient, Collection<DatePattern> patterns) {
         List<SimpleDateFormat> formatters = new ArrayList<>();
         //Sort from least complex to most complex; otherwise, ddMMMyyyy 
         //instead of MMMd will match "May 15". [Jon Aquino]
@@ -355,16 +388,6 @@ public class FlexibleDateParser {
             formatters.add(formatter);
         }
         return formatters;
-    }
-
-    public void setVerbose(boolean b) {
-        verbose = b;
-    }
-
-    public static FlexibleDateParser getDefaultInstance() {
-      if (instance == null)
-        instance = new FlexibleDateParser();
-      return instance;
     }
 
     public static void main(String[] args) throws Exception {

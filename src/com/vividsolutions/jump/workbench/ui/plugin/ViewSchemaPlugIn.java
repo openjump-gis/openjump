@@ -80,8 +80,9 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
     private EditingPlugIn editingPlugIn;
     private GeometryFactory factory = new GeometryFactory();
     private WKTReader wktReader = new WKTReader(factory);
-    private FlexibleDateParser dateParser = new FlexibleDateParser();
+
     private DateFormat dateFormatter = DateFormat.getDateInstance();
+    private FlexibleDateParser fdp;
 
     private static final String P_LAYER_NAME = "LayerName";
     private static final String P_SCHEMA_MAPPING = "SchemaMapping";
@@ -161,6 +162,8 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
         //Two-phase commit. 
         //Phase 1: check that no conversion errors occur. [Jon Aquino]
+        fdp = new FlexibleDateParser();
+        fdp.cachingEnabled(true);
         for (Iterator i = layer.getFeatureCollectionWrapper().iterator();
                 i.hasNext();) {
             Feature feature = (Feature) i.next();
@@ -250,6 +253,8 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
         //Two-phase commit.
         //Phase 1: check that no conversion errors occur. [Jon Aquino]
+        fdp = new FlexibleDateParser();
+        fdp.cachingEnabled(true);
         for (Iterator i = layer.getFeatureCollectionWrapper().iterator();
              i.hasNext();) {
             Feature feature = (Feature) i.next();
@@ -403,7 +408,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
             }
         } else if (toType == AttributeType.DATE) {
             try {
-                return dateParser.parse(from, false);
+                return fdp.parse(from, false);
             } catch (java.text.ParseException e) {
                 if (forcingInvalidConversionsToNull) return null;
                 throw conversionException("date", from, attributeName);
