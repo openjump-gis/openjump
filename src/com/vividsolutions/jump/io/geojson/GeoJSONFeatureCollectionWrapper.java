@@ -81,6 +81,10 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
             setGeometry((Geometry) attrib);
           }
         }
+        // something went wrong! attrib i does not exist in Schema (yet)
+        else if (featureSchema.getAttributeCount()<=i) {
+          attrib = "ERROR";
+        }
         // enforce String if schema says so
         else if (featureSchema.getAttributeType(i).equals(AttributeType.STRING)
             && attrib != null && !(attrib instanceof String)) {
