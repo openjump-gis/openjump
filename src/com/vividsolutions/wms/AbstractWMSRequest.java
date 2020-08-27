@@ -167,6 +167,8 @@ abstract public class AbstractWMSRequest implements WMSRequest {
     // get correct stream
     InputStream in = httpOk ? con.getInputStream() : con.getErrorStream();
 
+    //Logger.trace(con.getURL().toString());
+
     String contentType = con.getContentType();
     Charset charset = Charset.forName("UTF-8");
     try {

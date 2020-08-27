@@ -129,17 +129,19 @@ public abstract class AbstractParser implements IParser {
     }
     
     protected String getTitle(Document doc) throws IOException {
-        String title = "Untitled";
+        String title = "";
         try {
             title = ((CharacterData)XMLTools.simpleXPath(doc, getTitlePath()).getFirstChild()).getData();
-        } catch (NullPointerException e) {
-            // possible NullPointerException if there is no firstChild()
-            // also possible miscast causing an Exception
-            // [uwe dalluege]
-            showMessageDialog(null,
-                    I18N.getMessage("com.vividsolutions.wms.AbstractParser.wms-parser-not-found", getTitlePath()),
-                    null, JOptionPane.INFORMATION_MESSAGE);
-            //throw new IOException( "Element <" + getTitlePath() + "> not found, maybe a WMS version problem! " );
+        } catch (Exception e) {
+          // [ede 2020/08] disabled to allow empty service  title tags as requested in bug #491
+          Logger.warn("service <Title/> unset or empty.", e);
+          // possible NullPointerException if there is no firstChild()
+          // also possible miscast causing an Exception
+          // [uwe dalluege]
+          //  showMessageDialog(null,
+          //          I18N.getMessage("com.vividsolutions.wms.AbstractParser.wms-parser-not-found", getTitlePath()),
+          //          null, JOptionPane.INFORMATION_MESSAGE);
+          //throw new IOException( "Element <" + getTitlePath() + "> not found, maybe a WMS version problem! " );
         }
         return title;
     }

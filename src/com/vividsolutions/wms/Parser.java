@@ -1,7 +1,3 @@
-
-
-
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -68,6 +64,8 @@ import com.vividsolutions.wms.util.XMLTools;
 /**
  * Pulls WMS objects out of the XML
  * @author Chris Hodgson chodgson@refractions.net
+ * 
+ * @deprecated unused and can probably be deleted, kept for reference only
  */
 public class Parser {
 
@@ -274,7 +272,7 @@ public class Parser {
   }
   private Capabilities parseCapabilities_1_0_0( WMService service, InputStream inStream ) throws IOException {
       MapLayer topLayer = null;
-      String title = null;
+      String title = "";
       LinkedList<String> formatList = new LinkedList<String>();
       Document doc;
       
@@ -294,9 +292,11 @@ public class Parser {
       } catch (Exception e) {
         // possible NullPointerException if there is no firstChild()
         // also possible miscast causing an Exception
-      	
-          // 	[uwe dalluege]
-          throw new IOException( "Maybe wrong Capabilities Version! " );
+      
+        // [ede 2020/08] disabled to allow empty title tags as requested in bug #491
+        //throw new IOException( "Maybe wrong Capabilities Version! " );
+        
+        Logger.warn("<Title/> unset or empty.", e);
       }
       
       // get the supported file formats
@@ -321,7 +321,7 @@ public class Parser {
   
   private Capabilities parseCapabilities_1_1_1( WMService service, InputStream inStream ) throws IOException {
       MapLayer topLayer = null;
-      String title = null;
+      String title = "";
       String getMapURL, getFeatureInfoURL;
       LinkedList<String> formatList = new LinkedList<String>();
       Document doc;
@@ -362,14 +362,15 @@ public class Parser {
         }
         throw new WMSException("Unexpected answer from server. Missing node <WMT_MS_Capabilities>.", str);
       }
-      
+
       // get the title
       try {
         title = ((CharacterData)XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Service/Title" ).getFirstChild()).getData();
       } catch (Exception e) {
-        title = "not available";
+        // eat it, not set or empty
+        Logger.warn("<Title/> unset or empty.", e);
       }
-      
+
       // get the supported file formats			// UT was "WMT_MS_Capabilities/Capability/Request/Map/Format"
       final Node formatNode = XMLTools.simpleXPath( doc, "WMT_MS_Capabilities/Capability/Request/GetMap" );
 

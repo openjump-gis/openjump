@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-08-27 ede
+  * bugfix #491 WMS getCapability without title
+
 2020-08-26 ede
   * reworked FlexDateParser speedup to enable caching selectively
 
