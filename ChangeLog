@@ -4,6 +4,10 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-08-28 Nicolas Ribot
+  * Protection against null GeometryColumn when building spatial filter for Spatialite
+  * Cleaned-up log message (OJ Logger), removed obsolete TODOs
+
 2020-08-27 ede
   * bugfix #491 WMS getCapability without title
 

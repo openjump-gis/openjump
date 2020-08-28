@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.util.Properties;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
@@ -61,9 +62,9 @@ public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDSDriver 
     // File must exists
     File sqliteFile = new File(database);
     if (!sqliteFile.exists() || !sqliteFile.canRead()) {
-      // TODO: I18N
-      throw new Exception("Spatialite file: " + database
-          + " does not exist. cannot create connection");
+      throw new Exception(I18N.getMessage(
+              "com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreDriver.file-does-not-exist",
+              database));
     }
 
     ClassLoader cl = JUMPWorkbench.getInstance().getPlugInManager()

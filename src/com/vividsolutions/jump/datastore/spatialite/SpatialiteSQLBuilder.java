@@ -154,6 +154,10 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
     SpatialiteDSMetadata dsm = (SpatialiteDSMetadata) getDbMetadata();
     // test if geometry column is indexed, if so, builds special query according to type:
     GeometryColumn gc = dsm.getGeometryColumn(query.getDatasetName(), query.getGeometryAttributeName());
+    if (gc == null) {
+      // cannot build a geometryColumn object from provided information: no spatialIndex filter:
+      return ret;
+    }
     // 2020-02-12: if info is not set, retrieve column index status here
     if (gc.isIndexed() == null) {
       dsm.setIndexInfo(datasetName, gc);
@@ -170,9 +174,6 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
         ret = String.format(Locale.US,
           " AND ROWID IN (SELECT ROWID FROM SpatialIndex WHERE f_table_name = '%s' AND search_frame = BuildMbr(%f,%f,%f,%f))",
           query.getDatasetName(), env.getMinX(), env.getMinY(), env.getMaxX(), env.getMaxY());
-      } else {
-        // TODO other cases: no idx
-        ret = "";
       }
     }
     

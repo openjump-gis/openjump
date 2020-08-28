@@ -14,7 +14,6 @@ import java.sql.SQLException;
 /**
  *
  * @author nicolas ribot
- * TODO: Manage converter to handle all geometry type in the same database.
  */
 public class SpatialiteDSConnection extends SpatialDatabasesDSConnection {
 

@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * Spatialite connexion metadata. Some extra processing occurs here: telling if
@@ -30,7 +31,6 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
   public static String GC_COLUMN_NAME = "geometry_columns";
   public static String GPKG_GC_COLUMN_NAME = "gpkg_geometry_columns";
 
-  //TODO= variables for all SQL code + String.format.
   /**
    * True if spatialite mod extension loaded
    */
@@ -157,7 +157,6 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     } else if (this.geometryColumnsLayout == GeometryColumnsLayout.OGC_OGR_LAYOUT) {
       spatialIndexQuery = "select spatial_index_enabled from geometry_columns where f_table_name = '%s' and f_geometry_column = '%s'";
     } else {
-      // TODO: 
       spatialIndexQuery = "";
     }
 
@@ -191,7 +190,6 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
    * Overriden to deal with indexed geo columns, as queries to get features are different
    * if spatial index is detected on the column.
    * Buids a GeometryColumn object with 5 params ctor.
-   * TODO: no more used now all layers info are retrieved at once ? refactor
    * @param sql
    * @param datasetName
    * @return 
@@ -242,7 +240,6 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
     if (gcType == null) {
       return "select 1";
     }
-    // TODO: switch case
     if (this.isSpatialiteLoaded()) {
       if (gcType == GeometricColumnType.WKB) {
         // quotes identifier.
@@ -253,8 +250,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
         ret = String.format("select st_asBinary(extent(CastAutomagic(%s))) from \"%s\"", attributeName, table);
       } else {
         // unknown geom type
-        // TODO: log
-        System.out.println("Unknown geo column type for: " + table + "." + attributeName + " : " + gcType);
+        Logger.warn("Unknown geo column type for: " + table + "." + attributeName + " : " + gcType);
         ret = "select 1";
       }
     } else {
@@ -301,19 +297,18 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
       rs.next();
       this.setSpatialiteVersion(rs.getString(1));
 
-      JUMPWorkbench.getInstance().getFrame().log(
+      Logger.info(
           "SpatialDatabasesPlugin: Spatialite extension loaded for this connexion, version: "
-          + this.getSpatialiteVersion(), this.getClass());
+          + this.getSpatialiteVersion());
     } catch (Exception e) {
-      JUMPWorkbench.getInstance().getFrame().log(
+      Logger.warn(
           "SpatialDatabasesPlugin: CANNOT load Spatialite Extention (mod_spatialite), reason:"
-          + e.getMessage(), this.getClass());
+          + e.getMessage());
     } finally {
       try {
 //        stmt.close();
       } catch (Throwable th) {
-        // TODO: log
-        th.printStackTrace();
+        Logger.error(th.getMessage());
       }
     }
   }
@@ -321,8 +316,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
   /**
    * Sets the geometry_column layout in this sqlite database: either FDO or OGC
    * or GeoPkg or no layout. Also tries to build the geo col type if
-   * geometry_columns table contains such info TODO: generic mechanism to get
-   * geo col type for Spatialite.
+   * geometry_columns table contains such info
    * 
    * Geometry_columns metadata table may have 4 layouts:
    * options used to create the table or using a geo package (http://www.geopackage.org/) layout
@@ -333,20 +327,23 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
    *                coord_dimension	INTEGER	
    *                srid	                INTEGER	
    *                geometry_format	TEXT
+   *
    * 2?) the "OGC Spatialite" flavour, as understood by qgis for instance, as used in spatialite-enabled sqlite database:
    *                f_table_name          VARCHAR
    *                f_geometry_column     VARCHAR
    *                type                  VARCHAR
    *                coord_dimension       INTEGER 
    *                srid                  INTEGER
-   *                spatial_index_enabled INTEGER 
+   *                spatial_index_enabled INTEGER
+   *
    * 3?) the "OGC OGR" layout: 
    *                f_table_name          VARCHAR
    *                f_geometry_column     VARCHAR
    *                geometry_type         VARCHAR
    *                coord_dimension       INTEGER 
    *                srid                  INTEGER
-   *                spatial_index_enabled INTEGER 
+   *                spatial_index_enabled INTEGER
+   *
    * 3?) the "OGC GeoPackage" layout, as specificed by standard:
    *                table_name         TEXT NOT NULL,
    *                column_name        TEXT NOT NULL,
@@ -384,7 +381,6 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
             rs = dbMd.getColumns(null, null, SpatialiteDSMetadata.GC_COLUMN_NAME, null);
             int i = 0;
 
-            i = 0;
             String geoTypeCol = "";
             String extraInfoCol = "";
             while (rs.next()) {
@@ -398,11 +394,11 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
               }
               i++;
             }
-            if (geoTypeCol.equalsIgnoreCase("geometry_type") && extraInfoCol.equalsIgnoreCase("geometry_format")) {
+            if ("geometry_type".equalsIgnoreCase(geoTypeCol) && "geometry_format".equalsIgnoreCase(extraInfoCol)) {
               geometryColumnsLayout = GeometryColumnsLayout.FDO_LAYOUT;
-            } else if (geoTypeCol.equalsIgnoreCase("type") && extraInfoCol.equalsIgnoreCase("spatial_index_enabled")) {
+            } else if ("type".equalsIgnoreCase(geoTypeCol) && "spatial_index_enabled".equalsIgnoreCase(extraInfoCol)) {
               geometryColumnsLayout = GeometryColumnsLayout.OGC_SPATIALITE_LAYOUT;
-            } else if (geoTypeCol.equalsIgnoreCase("geometry_type") && extraInfoCol.equalsIgnoreCase("spatial_index_enabled")) {
+            } else if ("geometry_type".equalsIgnoreCase(geoTypeCol) && "spatial_index_enabled".equalsIgnoreCase(extraInfoCol)) {
               geometryColumnsLayout = GeometryColumnsLayout.OGC_OGR_LAYOUT;
             } else {
               geometryColumnsLayout = GeometryColumnsLayout.NO_LAYOUT;
@@ -414,8 +410,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
 
     } catch (Exception e) {
       e.printStackTrace();
-      //TODO: logging
-      System.out.println("error getting geometry_column layout: " + e.getMessage());
+      Logger.error("Error getting geometry_column layout: " + e.getMessage());
     }
   }
 
@@ -444,12 +439,11 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
             }
           });
     } catch (Exception e) {
-      //TODO...
+      Logger.error("Cannot get geometric column type: " + e.getMessage());
     }
   }
 
   public boolean isSpatialiteLoaded() {
-    // TODO: clean up type detection: geopackage vs spatialite
     return spatialiteLoaded;
   }
 
@@ -489,8 +483,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
             }
           });
     } catch (Exception e) {
-      //TODO...
-      e.printStackTrace();
+      Logger.error("Error when setting index information: " + e.getMessage());
     } finally {
       if (gc.isIndexed() == null) gc.setIndexed(false);
     }
