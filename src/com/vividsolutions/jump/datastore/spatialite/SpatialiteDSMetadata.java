@@ -298,17 +298,17 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
       this.setSpatialiteVersion(rs.getString(1));
 
       Logger.info(
-          "SpatialDatabasesPlugin: Spatialite extension loaded for this connexion, version: "
+          "SpatialDatabasesPlugin: Spatialite extension version loaded for this connection is "
           + this.getSpatialiteVersion());
     } catch (Exception e) {
       Logger.warn(
-          "SpatialDatabasesPlugin: CANNOT load Spatialite Extention (mod_spatialite), reason:"
-          + e.getMessage());
+          "SpatialDatabasesPlugin: CANNOT load Spatialite extension (mod_spatialite)."
+          , e);
     } finally {
       try {
 //        stmt.close();
       } catch (Throwable th) {
-        Logger.error(th.getMessage());
+        Logger.error(th);
       }
     }
   }
@@ -407,10 +407,8 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
           }
         }
       }
-
     } catch (Exception e) {
-      e.printStackTrace();
-      Logger.error("Error getting geometry_column layout: " + e.getMessage());
+        Logger.error("Error getting geometry_column layout.", e);
     }
   }
 
@@ -439,7 +437,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
             }
           });
     } catch (Exception e) {
-      Logger.error("Cannot get geometric column type: " + e.getMessage());
+        Logger.error("Cannot get geometric column type!", e);
     }
   }
 
@@ -483,9 +481,10 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
             }
           });
     } catch (Exception e) {
-      Logger.error("Error when setting index information: " + e.getMessage());
+        Logger.error("Error setting index information!", e );
     } finally {
-      if (gc.isIndexed() == null) gc.setIndexed(false);
+        if (gc.isIndexed() == null)
+          gc.setIndexed(false);
     }
   }
   
