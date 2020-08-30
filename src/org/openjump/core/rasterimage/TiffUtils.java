@@ -2,6 +2,8 @@ package org.openjump.core.rasterimage;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.workbench.Logger;
+
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
@@ -245,6 +247,7 @@ public class TiffUtils {
                 stats = gdalPamDataset.readStatistics(auxXmlFile);
                 return stats;
             } catch(Exception ex) {
+                Logger.error("Failed to read statistics.", ex);
                 return createStatsXml(tiffFile, noDataValue, auxXmlFile);
             }
         }
