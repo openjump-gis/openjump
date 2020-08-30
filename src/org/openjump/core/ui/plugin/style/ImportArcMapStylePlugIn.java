@@ -41,20 +41,17 @@ package org.openjump.core.ui.plugin.style;
 import static com.vividsolutions.jump.I18N.get;
 import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
 import static com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn.get;
-import static java.io.File.createTempFile;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.xml.parsers.DocumentBuilderFactory.newInstance;
 import static org.openjump.core.ui.plugin.style.ImportSLDPlugIn.importSLD;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
@@ -92,49 +89,60 @@ public class ImportArcMapStylePlugIn extends AbstractPlugIn {
 
     private static File findArcMap2SLD(WorkbenchFrame wbframe, Blackboard bb) throws IOException, InterruptedException {
         String arcmap2sld = (String) bb.get("ArcMapStylePlugin.toollocation");
-        if (arcmap2sld == null) {
-            File tmp = createTempFile("amtsldreg", null);
-            ProcessBuilder pb = new ProcessBuilder("regedit", "/e", tmp.toString(),
-                    "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion");
-            pb.start().waitFor();
-            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmp), "UTF-16"));
-            String s;
-            while ((s = in.readLine()) != null) {
-                if (s.startsWith("\"ProgramFilesDir\"=\"")) {
-                    s = s.split("=")[1];
-                    s = s.substring(1, s.length() - 1);
-                    arcmap2sld = s + "\\i3mainz\\ArcMap2SLD_Full_Setup\\ArcGIS_SLD_Converter.exe";
-                    break;
-                }
-            }
-            in.close();
-            tmp.delete();
+        
+        // disabled because it dies with
+        //Caused by: java.io.IOException: CreateProcess error=740, The requested operation requires elevation
+        //at java.lang.ProcessImpl.create(Native Method)
+//        if (arcmap2sld == null) {
+//            File tmp = createTempFile("amtsldreg", null);
+//            ProcessBuilder pb = new ProcessBuilder("regedit", "/e", tmp.toString(),
+//                    "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion");
+//            pb.start().waitFor();
+//            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(tmp), "UTF-16"));
+//            String s;
+//            while ((s = in.readLine()) != null) {
+//                if (s.startsWith("\"ProgramFilesDir\"=\"")) {
+//                    s = s.split("=")[1];
+//                    s = s.substring(1, s.length() - 1);
+//                    arcmap2sld = s + "\\i3mainz\\ArcMap2SLD_Full_Setup\\ArcGIS_SLD_Converter.exe";
+//                    break;
+//                }
+//            }
+//            in.close();
+//            tmp.delete();
+//        }
+
+        final String executableName = "ArcGIS_SLD_Converter.exe";
+        JFileChooser chooser = new JFileChooser(arcmap2sld);
+        chooser.setFileFilter(new FileFilter() {
+          @Override
+          public String getDescription() {
+            return executableName;
+          }
+          @Override
+          public boolean accept(File f) {
+            return f.getName().equals(executableName);
+          }
+        });
+
+        showMessageDialog(wbframe,
+                get("org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn.Must-Select-Location-Of-Tool"),
+                get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), INFORMATION_MESSAGE);
+        if (arcmap2sld != null) {
+            chooser.setSelectedFile(new File(arcmap2sld));
         }
 
-        JFileChooser chooser = new JFileChooser();
-
-        File am2sld = arcmap2sld == null ? null : new File(arcmap2sld);
-        if (am2sld == null || !am2sld.exists()) {
-            showMessageDialog(wbframe,
-                    get("org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn.Must-Select-Location-Of-Tool"),
-                    get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), INFORMATION_MESSAGE);
-            if (arcmap2sld != null) {
-                chooser.setSelectedFile(new File(arcmap2sld));
-            }
-
-            int res = chooser.showOpenDialog(wbframe);
-            if (res == APPROVE_OPTION) {
-                am2sld = chooser.getSelectedFile();
-                if (!am2sld.exists()) {
-                    return null;
-                }
-                bb.put("ArcMapStylePlugin.toollocation", am2sld.getAbsoluteFile().toString());
-            } else {
+        int res = chooser.showOpenDialog(wbframe);
+        if (res == APPROVE_OPTION) {
+            File am2sld = chooser.getSelectedFile();
+            if (!am2sld.exists()) {
                 return null;
             }
+            bb.put("ArcMapStylePlugin.toollocation", am2sld.getAbsoluteFile().toString());
+            return am2sld;
         }
 
-        return am2sld;
+        return null;
     }
 
     @Override
