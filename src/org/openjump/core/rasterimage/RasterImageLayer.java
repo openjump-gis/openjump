@@ -22,12 +22,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
-//import java.awt.image.renderable.ParameterBlock;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.UUID;
-
-//import javax.media.jai.JAI;
 
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.util.metaData.MetaDataMap;
@@ -62,7 +59,7 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  * @version $Rev: 2509 $
  * modified: [sstein]: 16.Feb.2009 changed logger-entries to comments, used frame.warnUser
  */
-public final class RasterImageLayer extends AbstractLayerable implements ObjectContainingMetaInformation {
+public final class RasterImageLayer extends AbstractLayerable implements ObjectContainingMetaInformation, Cloneable {
     
     protected static Blackboard blackboard = null;
     
@@ -218,13 +215,15 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
     /**
      * Constructor to be used in case the image was not loaded from a file, so there is
      * no file name, but an image
-     * 
+     * [mmichaud 2020-08-31] deprecated as this constructor seems not used and building a
+     * RasterImageLayer without fileName is errorprone
      *@param name name of the layer
      *@param layerManager
      *@param imageToDisplay the image (if already loaded) or null
      *@param newRaster the raster (if already loaded) or null
-     *@param envelope real-world coordinates of the image
+     *@param wholeImageEnvelope real-world coordinates of the image
      */
+    @Deprecated
     public RasterImageLayer(String name, LayerManager layerManager, BufferedImage imageToDisplay, Raster newRaster, Envelope wholeImageEnvelope) {
         super(name, layerManager);
         
@@ -235,12 +234,12 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
         
         if (imageToDisplay != null)
             this.setImage(imageToDisplay);
-        else{
+        else {
             //logger.printError("given image is NULL");
         }
         if (newRaster != null) {
 //        	this.setRasterData(newRaster);
-        }else{
+        } else {
             //logger.printError("given raster is NULL");
         }
         //[sstein 9.Aug.2010]
@@ -264,28 +263,16 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        super.clone();
         RasterImageLayer raster = null;
-        if (this.isNeedToKeepImage()) {
-            try {
-                raster = new RasterImageLayer(getName(), getLayerManager(), getImageForDisplay(), getRasterData(null), new Envelope(getWholeImageEnvelope()));
-            } catch (IOException ex) {
-                Logger.error(ex);
-            } catch (NoninvertibleTransformException ex) {
-                Logger.error(ex);
-            } catch (Exception ex) {
-                Logger.error(ex);
-            }
-        } else {
-            try {
-                raster = new RasterImageLayer(getName(), getLayerManager(), getImageFileName(), getImageForDisplay(), new Envelope(getWholeImageEnvelope()));
-            } catch (IOException ex) {
-                Logger.error(ex);
-            } catch (NoninvertibleTransformException ex) {
-                Logger.error(ex);
-            } catch (Exception ex) {
-                Logger.error(ex);
-            }
+        try {
+            raster = new RasterImageLayer(getName(), getLayerManager(), getImageFileName(), getImageForDisplay(), new Envelope(getWholeImageEnvelope()));
+            raster.needToKeepImage = needToKeepImage;
+        } catch (IOException ex) {
+            Logger.error(ex);
+        } catch (NoninvertibleTransformException ex) {
+            Logger.error(ex);
+        } catch (Exception ex) {
+            Logger.error(ex);
         }
         // clone must produce a layerable with the same name (as for Layer) not a unique name
         if (raster != null) {
@@ -302,7 +289,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
      * Giuseppe Aruta [2020-8-26]-  Workaround to solve Error: 
      * Could not find mediaLib accelerator wrapper class 
      * This seems also to speed up the rendering of the image
-     * @param before
+     * @param im
      * @param xScale
      * @param yScale
      * @return
@@ -355,7 +342,6 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
         
         return bim;
         
-        //return PlanarImage.wrapRenderedImage(bim);
     }
     
     /**
@@ -380,7 +366,10 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
             
             //GeoTIFFRaster grr = new GeoTIFFRaster((new File(imageFileName)).toURI().toString());
             
-            java.awt.Point imageDims = RasterImageIO.getImageDimensions(imageFileName);
+            java.awt.Point imageDims = image == null ?
+                     RasterImageIO.getImageDimensions(imageFileName)
+                    : new Point(image.getWidth(), image.getHeight());
+
             
             origImageWidth = imageDims.x;
             origImageHeight = imageDims.y;            
@@ -778,8 +767,9 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
     
     /**
      * Method to change the coordinates of the image and later apply the
-     * changes to the RasterImageLayer by using {@link RasterImageLayer#setGeometryAsEnvelope(Geometry)}.
-     *@return return the imageEnvelope (= bounding box) as a geometry, 
+     * changes to the RasterImageLayer by using
+     * {@link RasterImageLayer#setGeometryAsWholeImageEnvelope(Geometry)}.
+     * @return return the imageEnvelope (= bounding box) as a geometry,
      */
     public Polygon getWholeImageEnvelopeAsGeometry(){
         Coordinate[] coordinates = new Coordinate[5];
@@ -810,7 +800,8 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
     }
     
     /**
-     * Method to set the coordinates of the image, e.g. after changing them after using {@link RasterImageLayer#getEnvelopeAsGeometry()}.
+     * Method to set the coordinates of the image, e.g. after changing them after using
+     * {@link RasterImageLayer#getWholeImageEnvelopeAsGeometry()}.
      */
     public void setGeometryAsWholeImageEnvelope(Geometry geometry){
         setWholeImageEnvelope(geometry.getEnvelopeInternal());
@@ -822,7 +813,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
     
     /**
      * Add transparency to the image (more exactly: to each pixel which a color == this.transparentColor)
-     *@param pImage the image
+     *@param bim the image
      */
     private BufferedImage setupTransparency(BufferedImage bim){
         //BufferedImage bim = pImage.getAsBufferedImage();
