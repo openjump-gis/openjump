@@ -3,14 +3,15 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2 http://maven.apache.org/xsd/component-1.1.2.xsd">
   <dependencySets>
+    <!-- replaced by inclusion below
     <dependencySet>
       <outputDirectory>/lib</outputDirectory>
-      <!-- include batik in PLUS build via copying jars from lib/ folder below -->
-      <excludes>
-        <exclude>batik:*</exclude>
-        <exclude>js:*</exclude>
-      </excludes>
+      <includes>
+        <include>batik:*</include>
+        <include>js:*</include>
+      </includes>
     </dependencySet>
+    -->
   </dependencySets>
   <fileSets>
     <fileSet>
@@ -28,6 +29,8 @@
       <directory>lib/plus</directory>
       <outputDirectory>/lib/ext</outputDirectory>
     </fileSet>
+    <!-- include batik in PLUS build via copying selected jars from lib/ folder
+         to minimize distro size, pom deps pull in more files -->
     <fileSet>
       <directory>lib/</directory>
       <outputDirectory>/lib/</outputDirectory>

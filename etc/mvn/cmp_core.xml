@@ -20,7 +20,6 @@
         <exclude>com.vividsolutions:jts</exclude>
         <!-- exclude batik and js which is a batik dependency from CORE build -->
         <exclude>batik:*</exclude>
-        <exclude>js:*</exclude>
         <!-- exclude junit and hamcrest from CORE build -->
         <exclude>junit:*</exclude>
         <exclude>hamcrest:*</exclude>
