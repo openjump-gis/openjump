@@ -498,15 +498,6 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
             }
         }
 
-        // run all ApplicationExitListeners on JVM shutdown
-        Runtime.getRuntime().addShutdownHook(new Thread() 
-        { 
-          public void run() 
-          { 
-            closeApplication(); 
-          } 
-        }); 
-
         // intercept global key events via custom dispatcher, see
         // http://tips4java.wordpress.com/2009/09/06/global-event-dispatching/
         // this is a HACK. we intercept registered shortcuts here because
