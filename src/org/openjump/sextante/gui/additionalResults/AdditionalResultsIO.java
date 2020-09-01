@@ -37,7 +37,7 @@ import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 import org.openjump.core.ui.util.LayerableUtil;
 import org.openjump.sextante.core.ObjectAndDescription;
 import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.Document;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -401,7 +401,7 @@ public class AdditionalResultsIO {
 		// Get a SVGDOMImplementation and create an XML document
 		DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
 		String svgNS = "http://www.w3.org/2000/svg";
-		SVGDocument svgDocument = (SVGDocument) domImpl.createDocument(svgNS, "svg", null);
+		Document svgDocument = domImpl.createDocument(svgNS, "svg", null);
 
 		// Create an instance of the SVG Generator
 		SVGGraphics2D svgGenerator = new SVGGraphics2D(svgDocument);

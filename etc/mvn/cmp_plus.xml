@@ -5,11 +5,11 @@
   <dependencySets>
     <dependencySet>
       <outputDirectory>/lib</outputDirectory>
-      <!-- include batik only in PLUS build -->
-      <includes>
-        <include>batik:*</include>
-        <include>js:*</include>
-      </includes>
+      <!-- include batik in PLUS build via copying jars from lib/ folder below -->
+      <excludes>
+        <exclude>batik:*</exclude>
+        <exclude>js:*</exclude>
+      </excludes>
     </dependencySet>
   </dependencySets>
   <fileSets>
@@ -27,6 +27,13 @@
     <fileSet>
       <directory>lib/plus</directory>
       <outputDirectory>/lib/ext</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>lib/</directory>
+      <outputDirectory>/lib/</outputDirectory>
+      <includes>
+        <include>batik-*.jar</include>
+      </includes>
     </fileSet>
   </fileSets>
 </component>
