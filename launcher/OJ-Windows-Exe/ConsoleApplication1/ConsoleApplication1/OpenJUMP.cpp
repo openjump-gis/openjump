@@ -41,9 +41,9 @@ int main(int argc, char *argv[])
 	new_argv[new_length-1] = NULL;
 
 	// debug printout
-	for (int i = 0; i < new_length; i++) {
-		printf("Arg %d %s\n", i, new_argv[i]);
-	}
+	//for (int i = 0; i < new_length; i++) {
+	//	printf("Arg %d %s\n", i, new_argv[i]);
+	//}
 
 	//const char *test[3] = { "/C", "oj_windows.bat", NULL };
 	_spawnvp(P_WAIT, "cmd.exe", new_argv );
