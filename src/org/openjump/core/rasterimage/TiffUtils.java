@@ -3,6 +3,8 @@ package org.openjump.core.rasterimage;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
+import com.vividsolutions.jump.workbench.imagery.geoimg.GeoReferencedRaster;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -323,18 +325,71 @@ public class TiffUtils {
         
     }
  
-    public static RenderedOp readSubsampled(File tiffFile, float xScale, float yScale) {
-        
+  /*  public static RenderedOp readSubsampled(File tiffFile, float xScale, float yScale) {
         System.setProperty("com.sun.media.jai.disableMediaLib", "true");
         RenderedOp renderedOp = JAI.create("fileload", tiffFile.getAbsolutePath());
         ParameterBlock parameterBlock = new ParameterBlock();
         parameterBlock.addSource(renderedOp);
-        
         parameterBlock.add(xScale);
         parameterBlock.add(yScale);
         return JAI.create("scale", parameterBlock);
         
-    }
+    }*/
+ 
+    //[Giuseppe Aruta 2020-02-09] whenever it is possible
+    // we use ImageIO-ext first to retrive the Image
+        
+    public static RenderedOp readSubsampled(File tiffFile, float xScale, float yScale) {
+       	RenderedOp renderedOp = null;
+		try {
+			 //We first try with gdal/ImageIO-ext
+			GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(tiffFile.toURI().toString());
+			renderedOp = geoRaster.getImage();
+		} catch (ReferencedImageException e) {
+			//Then we use JAI
+			System.setProperty("com.sun.media.jai.disableMediaLib", "true"); 
+			renderedOp = JAI.create("fileload", tiffFile.getAbsolutePath());
+			 
+		}
+		 ParameterBlock parameterBlock = new ParameterBlock();
+	     parameterBlock.addSource(renderedOp);
+	     parameterBlock.add(xScale);
+	     parameterBlock.add(yScale);
+	     renderedOp =  JAI.create("scale", parameterBlock);
+		 return JAI.create("scale", parameterBlock);
+	    }
     
+    
+    public static Double readCellValue(File tiffFile, int col, int row,
+			int band) {
+ 	 RenderedOp renderedOp = null;
+	 Rectangle rectangle = new Rectangle(col, row, 1, 1);
+		try {
+			GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(tiffFile.toURI().toString());
+			renderedOp = geoRaster.getImage();
+		} 
+		catch (Exception e) {
+			System.setProperty("com.sun.media.jai.disableMediaLib", "true");
+			renderedOp = javax.media.jai.JAI.create("fileload",
+					tiffFile.getAbsolutePath());
+		  	}
+		return renderedOp.getData(rectangle)
+				.getSampleDouble(col, row, band);
+		}
+	
+    
+    public static RenderedOp getRenderedOp(File tiffFile) {
+    	 RenderedOp renderedOp = null;
+ 		try {
+ 			GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(tiffFile.toURI().toString());
+ 			renderedOp = geoRaster.getImage();
+ 		  } 
+ 		catch (Exception e) {
+ 			System.setProperty("com.sun.media.jai.disableMediaLib", "true");
+ 			renderedOp = javax.media.jai.JAI.create("fileload",
+ 					tiffFile.toURI().toString());
+ 			}
+ 		return renderedOp;
+    }
     
 }
