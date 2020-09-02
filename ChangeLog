@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-09-02 mmichaud <m.michael.michaud@orange.fr>
+  * small fix in csv driver -> v1.1.1
+
 2020-08-31 mmichaud <m.michael.michaud@orange.fr>
   * bugfix #385 RasterImageLayer was not cloneable
 
