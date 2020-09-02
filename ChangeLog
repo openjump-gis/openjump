@@ -6,6 +6,7 @@
 
 2020-09-02 mmichaud <m.michael.michaud@orange.fr>
   * small fix in csv driver -> v1.1.1
+  * fix #502 : fatal bug in ColorThemingStyle
 
 2020-08-31 mmichaud <m.michael.michaud@orange.fr>
   * bugfix #385 RasterImageLayer was not cloneable

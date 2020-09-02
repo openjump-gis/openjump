@@ -79,6 +79,10 @@ public class Range {
     public boolean equals(Object obj) {
         return Range.RANGE_COMPARATOR.compare(this, obj) == 0;
     }
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
     public boolean isIncludingMax() {
         return includingMax;
     }
