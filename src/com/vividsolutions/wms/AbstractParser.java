@@ -274,7 +274,7 @@ public abstract class AbstractParser implements IParser {
                 Logger.error( "Exception caught in wmsLayerFromNode(): " + e.toString() );
             }
         }
-
+        if (title == null) title = name + " (untitled)";
         // call the new constructor with boundingBoxList in MapLayer [uwe dalluege]
         return new MapLayer(name, title, srsList, subLayers, geographicBBox, boundingBoxList, styles);
     }
