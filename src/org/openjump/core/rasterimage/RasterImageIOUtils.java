@@ -24,7 +24,7 @@ import javax.media.jai.PlanarImage;
 import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
-import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
+//import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
@@ -42,8 +42,7 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 public class RasterImageIOUtils {
     static Properties properties = null;
     private static String byteOrder = "LSBFIRST";
-    private static String propertiesFile = LoadSextanteRasterImagePlugIn
-            .getPropertiesFile();
+    private static String propertiesFile = "path";
     static NumberFormat cellFormat = null;
     // public static final Double DEFAULT_NODATA = Double.valueOf(-9999.0D);
     public static double defaultNoData = -99999.0D;
@@ -216,7 +215,7 @@ public class RasterImageIOUtils {
             try {
                 FileInputStream fis = new FileInputStream(propertiesFile);
                 properties.load(fis);
-                properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                properties.getProperty(propertiesFile);
                 fis.close();
             } catch (FileNotFoundException localFileNotFoundException) {
             } catch (IOException e) {
@@ -304,7 +303,7 @@ public class RasterImageIOUtils {
             try {
                 FileInputStream fis = new FileInputStream(propertiesFile);
                 properties.load(fis);
-                properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                properties.getProperty(propertiesFile);
                 fis.close();
             } catch (FileNotFoundException localFileNotFoundException) {
             } catch (IOException e) {
@@ -397,7 +396,7 @@ public class RasterImageIOUtils {
             try {
                 FileInputStream fis = new FileInputStream(propertiesFile);
                 properties.load(fis);
-                properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                properties.getProperty(propertiesFile);
                 fis.close();
             } catch (FileNotFoundException localFileNotFoundException) {
             } catch (IOException e) {
@@ -491,7 +490,7 @@ public class RasterImageIOUtils {
             try {
                 FileInputStream fis = new FileInputStream(propertiesFile);
                 properties.load(fis);
-                properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                properties.getProperty(propertiesFile);
                 fis.close();
             } catch (FileNotFoundException localFileNotFoundException) {
             } catch (IOException e) {
@@ -584,7 +583,7 @@ public class RasterImageIOUtils {
             try {
                 FileInputStream fis = new FileInputStream(propertiesFile);
                 properties.load(fis);
-                properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                properties.getProperty(propertiesFile);
                 fis.close();
             } catch (FileNotFoundException localFileNotFoundException) {
             } catch (IOException e) {
@@ -677,7 +676,7 @@ public class RasterImageIOUtils {
             try {
                 FileInputStream fis = new FileInputStream(propertiesFile);
                 properties.load(fis);
-                properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                properties.getProperty(propertiesFile);
                 fis.close();
             } catch (FileNotFoundException localFileNotFoundException) {
             } catch (IOException e) {
@@ -924,7 +923,7 @@ public class RasterImageIOUtils {
             try {
                 FileInputStream fis = new FileInputStream(propertiesFile);
                 properties.load(fis);
-                properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                properties.getProperty(propertiesFile);
                 fis.close();
             } catch (FileNotFoundException localFileNotFoundException) {
             } catch (IOException e) {
@@ -1009,7 +1008,7 @@ public class RasterImageIOUtils {
             try {
                 FileInputStream fis = new FileInputStream(propertiesFile);
                 properties.load(fis);
-                properties.getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                properties.getProperty(propertiesFile);
                 fis.close();
             } catch (FileNotFoundException localFileNotFoundException) {
             } catch (IOException e) {

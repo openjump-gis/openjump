@@ -13,7 +13,7 @@ import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
-import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
+//import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
 import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 import org.openjump.io.PropertiesHandler;
@@ -121,14 +121,14 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     public void open(File file, TaskMonitor monitor) {
         try {
             try {
-                properties.setProperty(LoadSextanteRasterImagePlugIn.KEY_PATH,
+                properties.setProperty("path",
                         file.getPath());
 
                 properties.store(" " + KEY_ZOOM_TO_INSERTED_IMAGE
                         + I18N.get("RasterImagePlugIn.28")
                         + KEY_ALLWAYSACCEPT_TWF_EXT
                         + I18N.get("RasterImagePlugIn.29")
-                        + LoadSextanteRasterImagePlugIn.KEY_PATH
+                        + "path"
                         + I18N.get("RasterImagePlugIn.30"));
 
                 final String selectedFilename = file.getPath();
