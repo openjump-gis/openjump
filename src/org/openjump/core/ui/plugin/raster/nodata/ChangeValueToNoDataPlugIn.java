@@ -30,7 +30,7 @@ import org.openjump.core.rasterimage.RasterImageIOUtils;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
-import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
+//import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
 import com.vividsolutions.jump.I18N;
@@ -87,8 +87,9 @@ public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
             .get("org.openjump.core.ui.plugin.raster.nodata.max");
 
     private Properties properties = null;
-    private static String propertiesFile = LoadSextanteRasterImagePlugIn
-            .getPropertiesFile();
+  //  private static String propertiesFile = LoadSextanteRasterImagePlugIn
+  //          .getPropertiesFile();
+    private static String propertiesFile = "path";
     NumberFormat cellFormat = null;
 
     private static ImageIcon icon16 = IconLoader
