@@ -34,6 +34,7 @@
 package com.vividsolutions.jump.workbench.ui.warp;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 import javax.swing.JComponent;
 
@@ -58,6 +59,7 @@ public class WarpingPlugIn extends ToolboxPlugIn {
 
     protected void initializeToolbox(ToolboxDialog toolbox) {
         WarpingPanel warpingPanel = new WarpingPanel(toolbox);
+        toolbox.getToolBar().setLayout(new FlowLayout());
         toolbox.getCenterPanel().add(warpingPanel, BorderLayout.CENTER);
         add(new DrawWarpingVectorTool(), false, toolbox, warpingPanel);
         add(new DeleteWarpingVectorTool(), false, toolbox, warpingPanel);
