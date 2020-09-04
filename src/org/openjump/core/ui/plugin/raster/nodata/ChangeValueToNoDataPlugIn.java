@@ -239,7 +239,7 @@ public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
                 FileInputStream fis = new FileInputStream(propertiesFile);
                 this.properties.load(fis);
                 this.properties
-                        .getProperty(LoadSextanteRasterImagePlugIn.KEY_PATH);
+                        .getProperty("path");
                 fis.close();
             } catch (FileNotFoundException localFileNotFoundException) {
             } catch (IOException e) {
