@@ -417,8 +417,8 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
     						setImage(stretchImageValuesForDisplay());}
                 	catch (ArrayIndexOutOfBoundsException e){
                 		//[Giuseppe Aruta 2020-09-04]
-                		setImage(image);
-                		//setImage(getImageForDisplay());
+                		//setImage(image); removed as getCellValue seems not working
+                		 setImage(getImageForDisplay());
                 	}
                 	//setImage(stretchImageValuesForDisplay());
                     wasScaledForDisplay = true;
