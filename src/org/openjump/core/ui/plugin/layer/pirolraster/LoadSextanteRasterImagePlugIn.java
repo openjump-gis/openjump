@@ -52,6 +52,15 @@ import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 import org.openjump.core.rasterimage.RasterImageIO;
 
+
+/**
+ * Giuseppe Aruta [2020-09-04]
+ * @deprecated. 
+ * in favor of org.openjump.core.rasterimage.AddRasterImageLayerWizard 
+ * 
+ */
+
+@Deprecated
 public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
     private String imageFileName = "";
     private String cachedLayer = "default-layer-name";
