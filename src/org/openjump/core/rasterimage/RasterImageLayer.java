@@ -410,13 +410,15 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                 double maxMemoryToCommit = availRAM - minRamToKeepFree;
                 boolean needFreeRAM = (committedMemory > maxMemoryToCommit);
                 if(needFreeRAM == false){
-                	//[Giuseppe Aruta 2020-02-09] small patch to solve
+                	//[Giuseppe Aruta 2020-09-04] small patch to solve
                 	//bug 498 "Most GeoTIFF drivers fail with a simple GeoTIFF image"
                 	// at least for RasterImageLayer
                 	try {
     						setImage(stretchImageValuesForDisplay());}
                 	catch (ArrayIndexOutOfBoundsException e){
-                		setImage(getImageForDisplay());
+                		//[Giuseppe Aruta 2020-09-04]
+                		setImage(image);
+                		//setImage(getImageForDisplay());
                 	}
                 	//setImage(stretchImageValuesForDisplay());
                     wasScaledForDisplay = true;
