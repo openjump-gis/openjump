@@ -2,6 +2,7 @@ package org.openjump.core.rasterimage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
@@ -16,6 +17,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import org.openjump.core.ccordsys.utils.SRSInfo;
+import org.openjump.core.ccordsys.utils.SridLookupTable;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -23,6 +27,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
 /**
  *
@@ -84,6 +90,101 @@ public class GDALPamDataset extends DefaultHandler {
             pamDatasetElement = doc.createElement(pamDatasetTagName);
         }
         
+        String pamRasterBandTagName = "PAMRasterBand";
+        String bandAttribute = "band";
+        String metadataElementName = "Metadata";
+        
+        pamRasterBandNodeList = pamDatasetElement.getElementsByTagName(pamRasterBandTagName);
+        if(pamRasterBandNodeList != null && pamRasterBandNodeList.getLength() > 0) {
+            for(int b=0; b<pamRasterBandNodeList.getLength(); b++) {
+                Element pamRasterBandElement = (Element) pamRasterBandNodeList.item(b);
+                int bandNr = Integer.parseInt(pamRasterBandElement.getAttribute(bandAttribute));
+                
+                if(bandNr == b+1) {
+                
+                    Element metadataElement = (Element) pamRasterBandElement.getElementsByTagName(metadataElementName).item(0);
+                    metadataElement = updateMetadataElement(doc, metadataElement, stats, band);
+                
+                    pamRasterBandElement.appendChild(metadataElement);
+                    pamDatasetElement.appendChild(pamRasterBandElement);
+                    
+                }
+            }            
+        } else {
+            for(int b=0; b<stats.getBandCount(); b++) {
+                
+                Element pamRasterBandElement = doc.createElement(pamRasterBandTagName);
+                Attr attr = doc.createAttribute(bandAttribute);
+                attr.setValue(Integer.toString(b+1));
+                pamRasterBandElement.setAttributeNode(attr);
+                
+                Element metadataElement = doc.createElement(metadataElementName);
+                metadataElement = updateMetadataElement(doc, metadataElement, stats, band);
+                pamRasterBandElement.appendChild(metadataElement);
+                pamDatasetElement.appendChild(pamRasterBandElement);
+            }
+            
+            doc.appendChild(pamDatasetElement);
+        }
+ 
+        // write the content into xml file
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+        DOMSource source = new DOMSource(doc);
+        StreamResult result = new StreamResult(auxXmlFile);
+        transformer.transform(source, result);
+        
+    }
+    
+    
+    //[Giuseppe Aruta] 2020-09-05
+    //Method to write raster statistics (max, min, mean,Std) and
+    //projection information to aux.xml file
+    // see https://desktop.arcgis.com/en/arcmap/10.3/manage-data/raster-and-images/auxiliary-files.htm
+    public void writeStatisticsAndSRS(File auxXmlFile, SRSInfo srsInfo, Stats stats)
+            throws ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException {
+        
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+        Document doc;
+        
+        Element pamDatasetElement;
+        NodeList pamRasterBandNodeList;
+        
+        // Try to read the xml file
+        if(auxXmlFile.isFile()) {
+            try {
+                doc = docBuilder.parse(auxXmlFile);
+            } catch(SAXException | IOException ex) {
+                doc = docBuilder.newDocument();
+            }
+        } else {
+            doc = docBuilder.newDocument();
+        }
+            
+        // Check if PAMDataset element exists and, if not, create it
+        String pamDatasetTagName = "PAMDataset";
+        pamDatasetElement = (Element) doc.getElementsByTagName(pamDatasetTagName).item(0);
+        if(pamDatasetElement == null) {
+            pamDatasetElement = doc.createElement(pamDatasetTagName);
+        }
+        
+        //Add SRS element first
+        String SRS;
+		try {
+			SRS = SridLookupTable.getOGCWKTFromWkidCode(srsInfo.getCode());
+			 Element srsElement = doc.createElement("SRS");
+             
+		        srsElement.appendChild(doc.createTextNode(SRS));
+		        pamDatasetElement.appendChild(srsElement);
+		} catch (URISyntaxException | IOException e) {
+			JUMPWorkbench.getInstance() 
+             .getFrame()
+             .warnUser("OpenjUMP cannot decode/record SRS");
+		}
+       
         String pamRasterBandTagName = "PAMRasterBand";
         String bandAttribute = "band";
         String metadataElementName = "Metadata";
