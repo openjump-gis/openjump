@@ -38,6 +38,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
+import com.vividsolutions.jump.workbench.imagery.geoimg.GeoReferencedRaster;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 /**
@@ -194,14 +196,23 @@ public class RasterImageIO {
 			throws IOException {
 
 		if (filenameOrURL.toLowerCase().endsWith(".gif")
-				|| filenameOrURL.toLowerCase().endsWith(".png")
-				|| filenameOrURL.toLowerCase().endsWith(".tif")
-				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
-
+				|| filenameOrURL.toLowerCase().endsWith(".png")) {
 			RenderedOp renderedOp = JAI.create("fileload", filenameOrURL);
 			return renderedOp.getAsBufferedImage(subset, null).getData();
-
-		} else if (filenameOrURL.toLowerCase().endsWith(".jpg")
+		}
+		else if (filenameOrURL.toLowerCase().endsWith(".tif")
+				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
+			GeoReferencedRaster geoRaster;
+			RenderedOp  renderedOp;
+			try {
+				geoRaster = new  GeoReferencedRaster(new File(filenameOrURL).toURI().toString());
+		 renderedOp = geoRaster.getImage();
+			} catch (ReferencedImageException e) {
+				// TODO Auto-generated catch block
+		 renderedOp = JAI.create("fileload", filenameOrURL);
+			}
+			return renderedOp.getAsBufferedImage(subset, null).getData();	
+		}  else if (filenameOrURL.toLowerCase().endsWith(".jpg")
 				|| filenameOrURL.toLowerCase().endsWith(".bmp")
 				|| filenameOrURL.toLowerCase().endsWith(".jp2")) {
 
