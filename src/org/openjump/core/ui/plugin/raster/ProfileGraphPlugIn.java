@@ -135,10 +135,15 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     @Override
     public void initialize(PlugInContext context) throws Exception {
         FeatureInstaller.getInstance().addMainMenuPlugin(this,
-                new String[] { MenuNames.RASTER }, sName + "...", false,
+                new String[] { MenuNames.RASTER }, getName() + "...", false,
                 getIcon(), check());
     }
 
+    @Override
+    public String getName() {
+    	return sName;
+    }
+    
     public static MultiEnableCheck check() {
         final EnableCheckFactory checkFactory = EnableCheckFactory
                 .getInstance();

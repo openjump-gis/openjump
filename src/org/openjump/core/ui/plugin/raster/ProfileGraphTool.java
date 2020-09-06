@@ -164,4 +164,9 @@ public class ProfileGraphTool extends MultiClickTool {
         return distance;
     }
 
+    @Override
+    public String getName() {
+    	return I18N
+        .get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
+    }
 }

@@ -354,4 +354,9 @@ public class RasterQueryCursorTool extends NClickTool {
                 "[" + LAYER + ": " + name + "] " + VALUE + ": "
                         + cellValues.toString());
     }
+    
+    @Override
+    public String getName() {
+    	return  I18N.get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn");
+    }
 }

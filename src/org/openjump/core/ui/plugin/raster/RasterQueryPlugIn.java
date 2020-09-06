@@ -69,12 +69,18 @@ public class RasterQueryPlugIn extends AbstractPlugIn {
                         new String[] { MenuNames.RASTER },
                         // new String[] {MenuNames.PLUGINS,
                         // I18NPlug.getI18N("RasterInfo_Extension")},
-                        I18N.get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn"),
+                        getName(),
                         false, getIcon(),
                         createEnableCheck(context.getWorkbenchContext()));
 
     }
 
+    @Override
+    public String getName() {
+    	return  I18N.get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn");
+    }
+    
+    
     public boolean execute(PlugInContext context) throws Exception {
         try {
 
