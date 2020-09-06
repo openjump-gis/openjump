@@ -314,28 +314,41 @@ public class RasterImageIO {
 
 	public static Double readCellValue(String filenameOrURL, int col, int row,
 			int band) throws IOException {
-
+		RenderedOp  renderedOp;
+		Rectangle rectangle = new Rectangle(col, row, 1, 1);
 		if (filenameOrURL.toLowerCase().endsWith(".gif")
 				|| filenameOrURL.toLowerCase().endsWith(".png")
-				|| filenameOrURL.toLowerCase().endsWith(".tif")
-				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
+				) {
 
-			RenderedOp renderedOp = javax.media.jai.JAI.create("fileload",
+			 renderedOp = javax.media.jai.JAI.create("fileload",
 					filenameOrURL);
-			Rectangle rectangle = new Rectangle(col, row, 1, 1);
+		 
 
 			return renderedOp.getData(rectangle)
 					.getSampleDouble(col, row, band);
-
-			// return pImage.copyData().getSampleDouble(col, row, 0); //copy
-			// data so we do not get a ref
+		}else if (filenameOrURL.toLowerCase().endsWith(".tif")
+				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
+			
+			GeoReferencedRaster geoRaster;
+		
+			try {
+				geoRaster = new  GeoReferencedRaster(new File(filenameOrURL).toURI().toString());
+		 renderedOp = geoRaster.getImage();
+			} catch (ReferencedImageException e) {
+				// TODO Auto-generated catch block
+		 renderedOp = JAI.create("fileload", filenameOrURL);
+			}	
+			
+			return renderedOp.getData(rectangle)
+					.getSampleDouble(col, row, band);	
+		
 
 		} else if (filenameOrURL.toLowerCase().endsWith(".jpg")) {
 			// PlanarImage pimage;
 
-			RenderedOp renderedOp = javax.media.jai.JAI.create("fileload",
+			 renderedOp = javax.media.jai.JAI.create("fileload",
 					filenameOrURL);
-			Rectangle rectangle = new Rectangle(col, row, 1, 1);
+			 
 
 			return renderedOp.getData(rectangle)
 					.getSampleDouble(col, row, band);
@@ -372,18 +385,29 @@ public class RasterImageIO {
 
 	public static Point getImageDimensions(String filenameOrURL)
 			throws IOException {
-
-		if (!filenameOrURL.toLowerCase().endsWith(".jpg")
-				&& !filenameOrURL.toLowerCase().endsWith(".flt")
-				&& !filenameOrURL.toLowerCase().endsWith(".asc")
-				&& !filenameOrURL.toLowerCase().endsWith(".txt")
-				&& !filenameOrURL.toLowerCase().endsWith(".jp2")) {
-
+		if (filenameOrURL.toLowerCase().endsWith(".gif")
+				|| filenameOrURL.toLowerCase().endsWith(".png")) {
 			javax.media.jai.PlanarImage pImage = javax.media.jai.JAI.create(
 					"fileload", filenameOrURL);
 			if (pImage != null) {
 				return new Point(pImage.getWidth(), pImage.getHeight());
 			}
+			
+		} else if (filenameOrURL.toLowerCase().endsWith(".tif")
+				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
+			GeoReferencedRaster geoRaster;
+			RenderedOp  renderedOp;
+			try {
+				geoRaster = new  GeoReferencedRaster(new File(filenameOrURL).toURI().toString());
+		 renderedOp = geoRaster.getImage();
+			} catch (ReferencedImageException e) {
+				// TODO Auto-generated catch block
+		 renderedOp = JAI.create("fileload", filenameOrURL);
+			}	
+			if (renderedOp != null) {
+				return new Point(renderedOp.getWidth(), renderedOp.getHeight());
+			}
+		 
 
 		} else if (filenameOrURL.toLowerCase().endsWith(".flt")) {
 
