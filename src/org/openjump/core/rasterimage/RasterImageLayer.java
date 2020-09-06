@@ -106,7 +106,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
     //-- end
     
     protected BufferedImage imageProcessingStep1 = null, imageProcessingStep2 = null;
-
+    protected BufferedImage imageProcessingStep3=null;
     
     protected Envelope actualImageEnvelope = null, visibleEnv = null, oldVisibleEnv;
     protected Envelope originalImageEnvelope = null;
@@ -483,13 +483,15 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
         }
         
         if (imageToDraw != null) {
-            return imageToDraw;
+        	imageProcessingStep3=imageToDraw;
+            
         } else if (imageProcessingStep2!=null) {
-            return imageProcessingStep2;
+        	imageProcessingStep3=imageProcessingStep2;
+            
         }
         
-        
-        return null;
+       
+        return imageProcessingStep3;
     }
     
     /**
@@ -1677,7 +1679,15 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
         
         int pos = row * origImageWidth + col;
         
-        return RasterImageIO.readCellValue(imageFileName, col, row, band);
+        double value;
+        try {
+        	value =  imageProcessingStep3.getData().getSampleFloat(col, row, band);
+        			
+        		//	imageProcessingStep2.getData().getSampleFloat(col, row, band);//actualRasterData.getSampleDouble(col, row, band);
+        } catch (ArrayIndexOutOfBoundsException e) {
+        	value = RasterImageIO.readCellValue(imageFileName, col, row, band);
+        }
+        return  value;
         
     }   
     
