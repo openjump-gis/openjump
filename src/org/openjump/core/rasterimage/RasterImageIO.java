@@ -327,8 +327,12 @@ public class RasterImageIO {
 		}
 		else if (filenameOrURL.toLowerCase().endsWith(".tif")
 				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
-			return TiffUtils.getRenderedOp(new File(filenameOrURL)).getAsBufferedImage(subset, null).getData();
-			 
+			renderedOp=	TiffUtils.getRenderedOp(new File(filenameOrURL));
+			
+			return renderedOp.getData(rectangle)
+					.getSampleDouble(col, row, band);	
+		
+
 		} else if (filenameOrURL.toLowerCase().endsWith(".jpg")) {
 			// PlanarImage pimage;
 
@@ -379,13 +383,15 @@ public class RasterImageIO {
 				return new Point(pImage.getWidth(), pImage.getHeight());
 			}
 			
-		} else if (filenameOrURL.toLowerCase().endsWith(".tif")
+		}else if (filenameOrURL.toLowerCase().endsWith(".tif")
 				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
+			RenderedOp  renderedOp;
 			renderedOp=	TiffUtils.getRenderedOp(new File(filenameOrURL));
-			
-			return renderedOp.getData(rectangle)
-					.getSampleDouble(col, row, band);	
-		
+		 
+			if (renderedOp != null) {
+				return new Point(renderedOp.getWidth(), renderedOp.getHeight());
+			}
+		 
 
 		} else if (filenameOrURL.toLowerCase().endsWith(".flt")) {
 
