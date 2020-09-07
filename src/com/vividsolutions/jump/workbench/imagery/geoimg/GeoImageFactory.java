@@ -46,6 +46,7 @@ import javax.imageio.spi.ImageReaderSpi;
 import org.geotiff.image.jai.GeoTIFFDescriptor;
 
 import com.sun.media.jai.codec.ImageCodec;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.graphic.AbstractGraphicImageFactory;
@@ -69,19 +70,25 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
   }
 
   public GeoImageFactory() {
-    // register optional codecs TODO: how to register them more effortlessly?
+    // register optional codecs TODO: how to register them more effortlessly
+    try {
     IIORegistry.getDefaultInstance().registerServiceProvider(
         new JP2GDALOpenJPEGImageReaderSpi());
     IIORegistry.getDefaultInstance().registerServiceProvider(
         new JP2GDALEcwImageReaderSpi());
     IIORegistry.getDefaultInstance().registerServiceProvider(
         new JP2GDALJasperImageReaderSpi());
+    }catch( NoClassDefFoundError e){
+      Logger.error("Can't register JP2GDAL readers.",e);
+    }
 
     // initialize extensions
     final Iterator<? extends ImageReaderSpi> iter = IIORegistry
         .getDefaultInstance().getServiceProviders(ImageReaderSpi.class, true);
     for (; iter.hasNext();) {
       ImageReaderSpi reader = (ImageReaderSpi) iter.next();
+      //Logger.trace("GeoImageFactory - Add "+reader.getDescription(Locale.getDefault())+" ext: "+Arrays.toString(reader.getFileSuffixes()));
+      Logger.trace("GeoImageFactory - Add "+loaderString(reader) + " class:" + reader.getClass().getCanonicalName());
       String[] exts = reader.getFileSuffixes();
       // this is mainly for the NITF imageio-ext reader, which has one empty ext
       // supposedly because too much file extensions (?) exist for this format
@@ -130,14 +137,14 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
   }
 
   public String getDescription() {
-    return getTypeName() + " " + loaderString();
+    return getTypeName() + " " + loaderString(this.loader);
   }
 
   /**
    * prepare a proper description of a forced loader
    * currently "(description, version x.x, vendor)"
    */
-  private String loaderString() {
+  private String loaderString(Object loader) {
     // a specified loader
     if (loader != null) {
       String loaderString ="";
