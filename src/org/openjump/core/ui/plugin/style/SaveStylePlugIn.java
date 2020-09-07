@@ -88,14 +88,14 @@ public class SaveStylePlugIn extends ThreadedBasePlugIn {
             "JUMP layer symbology", "style.xml");
     private final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
             "Spatial layer descriptor", "sld");
-    private final JFCWithEnterAction fc = new GUIUtil.FileChooserWithOverwritePrompting();
+    private JFileChooser fc;// = new GUIUtil.FileChooserWithOverwritePrompting();
     private static final String FILE_CHOOSER_DIRECTORY_KEY = SaveFileDataSourceQueryChooser.class
             .getName() + " - FILE CHOOSER DIRECTORY";
 
     @Override
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
-
+        fc = new GUIUtil.FileChooserWithOverwritePrompting();
         layer = context.getSelectedLayer(0);
 
         if (PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).get(

@@ -83,7 +83,7 @@ public class LoadStylePlugIn extends ThreadedBasePlugIn {
 
     File file;
     Layer layer;
-    private final JFCWithEnterAction fc = new JFCWithEnterAction();
+    private JFileChooser fc;// = new JFCWithEnterAction();
     private final FileNameExtensionFilter filter = new FileNameExtensionFilter(
             "JUMP layer symbology", "style.xml");
     private final FileNameExtensionFilter filter2 = new FileNameExtensionFilter(
@@ -95,7 +95,7 @@ public class LoadStylePlugIn extends ThreadedBasePlugIn {
     @Override
     public boolean execute(PlugInContext context) throws Exception {
         layer = context.getSelectedLayer(0);
-
+        fc = new JFCWithEnterAction();
         if (PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).get(
                 FILE_CHOOSER_DIRECTORY_KEY) != null) {
             fc.setCurrentDirectory(new File((String) PersistentBlackboardPlugIn
