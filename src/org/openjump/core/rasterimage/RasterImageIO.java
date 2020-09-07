@@ -322,27 +322,13 @@ public class RasterImageIO {
 
 			 renderedOp = javax.media.jai.JAI.create("fileload",
 					filenameOrURL);
-		 
-
-			return renderedOp.getData(rectangle)
+		 	return renderedOp.getData(rectangle)
 					.getSampleDouble(col, row, band);
-		}else if (filenameOrURL.toLowerCase().endsWith(".tif")
+		}
+		else if (filenameOrURL.toLowerCase().endsWith(".tif")
 				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
-			
-			GeoReferencedRaster geoRaster;
-		
-			try {
-				geoRaster = new  GeoReferencedRaster(new File(filenameOrURL).toURI().toString());
-		 renderedOp = geoRaster.getImage();
-			} catch (ReferencedImageException e) {
-				// TODO Auto-generated catch block
-		 renderedOp = JAI.create("fileload", filenameOrURL);
-			}	
-			
-			return renderedOp.getData(rectangle)
-					.getSampleDouble(col, row, band);	
-		
-
+			return TiffUtils.getRenderedOp(new File(filenameOrURL)).getAsBufferedImage(subset, null).getData();
+			 
 		} else if (filenameOrURL.toLowerCase().endsWith(".jpg")) {
 			// PlanarImage pimage;
 
@@ -395,19 +381,11 @@ public class RasterImageIO {
 			
 		} else if (filenameOrURL.toLowerCase().endsWith(".tif")
 				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
-			GeoReferencedRaster geoRaster;
-			RenderedOp  renderedOp;
-			try {
-				geoRaster = new  GeoReferencedRaster(new File(filenameOrURL).toURI().toString());
-		 renderedOp = geoRaster.getImage();
-			} catch (ReferencedImageException e) {
-				// TODO Auto-generated catch block
-		 renderedOp = JAI.create("fileload", filenameOrURL);
-			}	
-			if (renderedOp != null) {
-				return new Point(renderedOp.getWidth(), renderedOp.getHeight());
-			}
-		 
+			renderedOp=	TiffUtils.getRenderedOp(new File(filenameOrURL));
+			
+			return renderedOp.getData(rectangle)
+					.getSampleDouble(col, row, band);	
+		
 
 		} else if (filenameOrURL.toLowerCase().endsWith(".flt")) {
 
