@@ -23,6 +23,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
+import javax.media.jai.util.ImagingListener;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -336,57 +337,54 @@ public class TiffUtils {
         
     }*/
  
-    //[Giuseppe Aruta 2020-02-09] whenever it is possible
-    // we use ImageIO-ext first to retrive the Image
+    //[Giuseppe Aruta 2020-07-09] whenever it is possible
+    // we use JAI Image I/O
         
     public static RenderedOp readSubsampled(File tiffFile, float xScale, float yScale) {
-       	RenderedOp renderedOp = null;
-		try {
-			 //We first try with gdal/ImageIO-ext
-			GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(tiffFile.toURI().toString());
-			renderedOp = geoRaster.getImage();
-		} catch (ReferencedImageException e) {
-			//Then we use JAI
-			System.setProperty("com.sun.media.jai.disableMediaLib", "true"); 
-			renderedOp = JAI.create("fileload", tiffFile.getAbsolutePath());
-			 
-		}
-		 ParameterBlock parameterBlock = new ParameterBlock();
+       	RenderedOp renderedOp = getRenderedOp(tiffFile);
+		  ParameterBlock parameterBlock = new ParameterBlock();
 	     parameterBlock.addSource(renderedOp);
 	     parameterBlock.add(xScale);
 	     parameterBlock.add(yScale);
 	     renderedOp =  JAI.create("scale", parameterBlock);
-		 return JAI.create("scale", parameterBlock);
-	    }
+		 return JAI.create("scale", parameterBlock); 
+	   
+    }
     
     
     public static Double readCellValue(File tiffFile, int col, int row,
 			int band) {
- 	 RenderedOp renderedOp = null;
-	 Rectangle rectangle = new Rectangle(col, row, 1, 1);
-		try {
-			GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(tiffFile.toURI().toString());
-			renderedOp = geoRaster.getImage();
-		} 
-		catch (Exception e) {
-			System.setProperty("com.sun.media.jai.disableMediaLib", "true");
-			renderedOp = javax.media.jai.JAI.create("fileload",
-					tiffFile.getAbsolutePath());
-		  	}
-		return renderedOp.getData(rectangle)
+ 	 
+    	Rectangle rectangle = new Rectangle(col, row, 1, 1);
+		return getRenderedOp(tiffFile).getData(rectangle)
 				.getSampleDouble(col, row, band);
 		}
 	
     
     public static RenderedOp getRenderedOp(File tiffFile) {
+    	//Since JAI error messages are rerouted to OJ log
+    	//I suppress the error message for absence of mediaLib  accelerator
+    	System.setProperty("com.sun.media.jai.disableMediaLib", "true");
     	 RenderedOp renderedOp = null;
  		try {
+ 			//First try with JAI Image I/O "ImageRead"
  			GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(tiffFile.toURI().toString());
  			renderedOp = geoRaster.getImage();
  		  } 
  		catch (Exception e) {
- 			System.setProperty("com.sun.media.jai.disableMediaLib", "true");
- 			renderedOp = javax.media.jai.JAI.create("fileload",
+ 			//Then with JAI "FileLoad"
+ 			//System.setProperty("com.sun.media.jai.disableMediaLib", "true");
+ 			
+ 		   // <GeoRaster.class> rerouted JAI error messages to OJ log here
+ 		    JAI.getDefaultInstance().setImagingListener(new ImagingListener() {
+ 		      @Override
+			public boolean errorOccurred(String msg, Throwable thrown, Object where,
+ 		          boolean isRetryable) throws RuntimeException {
+ 		        Logger.error(thrown);
+ 		        return false;
+ 		      }
+ 		    });
+ 			renderedOp = JAI.create("fileload",
  					tiffFile.toURI().toString());
  			}
  		return renderedOp;
