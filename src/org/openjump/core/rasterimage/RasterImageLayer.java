@@ -413,13 +413,16 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                 	//[Giuseppe Aruta 2020-09-04] small patch to solve
                 	//bug 498 "Most GeoTIFF drivers fail with a simple GeoTIFF image"
                 	// at least for RasterImageLayer
-                	try {
-    						setImage(stretchImageValuesForDisplay());}
-                	catch (ArrayIndexOutOfBoundsException e){
-                		//[Giuseppe Aruta 2020-09-04]
-                		//setImage(image); removed as getCellValue seems not working
-                		 setImage(getImageForDisplay());
-                	}
+                   	//DEM
+                	if (stats.getBandCount()<3) {
+                	 setImage(stretchImageValuesForDisplay());
+                	 } else {//Other images
+                		 try {
+     						setImage(stretchImageValuesForDisplay());}
+                 	catch (ArrayIndexOutOfBoundsException e){
+                 		setImage(getImageForDisplay());
+                 		}
+                	 }
                 	//setImage(stretchImageValuesForDisplay());
                     wasScaledForDisplay = true;
 
@@ -1680,13 +1683,17 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
         int pos = row * origImageWidth + col;
         
         double value;
-        try {
-        	value =  imageProcessingStep3.getData().getSampleFloat(col, row, band);
-        			
-        		//	imageProcessingStep2.getData().getSampleFloat(col, row, band);//actualRasterData.getSampleDouble(col, row, band);
-        } catch (ArrayIndexOutOfBoundsException e) {
-        	value = RasterImageIO.readCellValue(imageFileName, col, row, band);
-        }
+        if (stats.getBandCount()<3) {
+            value = RasterImageIO.readCellValue(imageFileName, col, row, band);
+            } else {
+            	try {
+                	value =  imageProcessingStep3.getData().getSampleFloat(col, row, band);
+                			
+                		//	imageProcessingStep2.getData().getSampleFloat(col, row, band);//actualRasterData.getSampleDouble(col, row, band);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                	value = RasterImageIO.readCellValue(imageFileName, col, row, band);
+                }
+            }
         return  value;
         
     }   
