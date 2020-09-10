@@ -475,9 +475,9 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
         jPanel1.setBorder(BorderFactory.createTitledBorder(STATISTICS));
         nd = new JTextField(String.valueOf(rLayer.getNoDataValue()));
         nd.setEditable(false);
-        max = new JTextField(min_value + "");
+        max = new JTextField(max_value + "");
         max.setEditable(false);
-        min = new JTextField(max_value + "");
+        min = new JTextField(min_value + "");
         min.setEditable(false);
         final JLabel nd_label = new JLabel(NODATA);
         final JLabel min_label = new JLabel(MIN);
