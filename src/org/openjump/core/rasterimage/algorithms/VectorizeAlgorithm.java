@@ -1034,4 +1034,28 @@ public class VectorizeAlgorithm {
 
     }
 
+    /** Create a FeatureCollection of polygons defining a GridWrapperNotInterpolated and number of band
+     * Sextante algorithm - compatible with OpenKLEM methods
+     * @param gwrapper
+     * @param attributeName
+     * @param band
+     * @return
+     */
+   public static FeatureCollection toPolygons(
+           GridWrapperNotInterpolated gwrapper, String attributeName, int band) {
+       final FeatureSchema featSchema = new FeatureSchema();
+       featSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+       featSchema.addAttribute("ID", AttributeType.INTEGER);
+       featSchema.addAttribute(attributeName, AttributeType.DOUBLE);
+       // Create feature collection
+        FeatureCollection featColl = new FeatureDataset(featSchema);
+     
+       
+       featColl = toPolygonsSextante(
+               gwrapper, attributeName, band);
+       
+      
+       return featColl;
+   }    
+    
 }
