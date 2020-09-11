@@ -17,7 +17,7 @@
         <version.release>svn build</version.release>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
-        <imageio-ext.version>1.1.16</imageio-ext.version>
+        <imageio-ext.version>1.3.2</imageio-ext.version>
         <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
     </properties>
@@ -1016,6 +1016,11 @@
             <version>1.2</version>
         </dependency>
         <dependency>
+            <groupId>com.github.jai-imageio</groupId>
+            <artifactId>jai-imageio-core</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
             <groupId>javax.media</groupId>
             <artifactId>jai_core</artifactId>
             <version>1.1.3</version>
@@ -1055,7 +1060,9 @@
            <groupId>it.geosolutions.imageio-ext</groupId>
            <artifactId>imageio-ext-tiff</artifactId>
            <!-- downgrade, as > 1.1.13 does not load single band TIFFs properly -->
-           <version>1.1.13</version>
+           <!-- not needed anymore as jai-imageio.core works fine and is preferred -->
+           <!-- version>1.1.13</version -->
+           <version>${imageio-ext.version}</version>
            <scope>provided</scope>
         </dependency>
         <dependency>

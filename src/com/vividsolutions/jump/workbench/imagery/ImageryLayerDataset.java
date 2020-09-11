@@ -129,6 +129,8 @@ public class ImageryLayerDataset {
     }
     // set an informational type value
     feature.setAttribute(ATTR_TYPE, referencedImage.getType());
+    // set what loader actually has been used
+    feature.setAttribute(ATTR_LOADER, referencedImage.getLoader());
   }
 
   public void dispose() {
@@ -155,12 +157,6 @@ public class ImageryLayerDataset {
       ReferencedImageFactory imageFactory) {
     feature.setAttribute(ImageryLayerDataset.ATTR_FACTORY, imageFactory
         .getClass().getName());
-    if (imageFactory instanceof GeoImageFactory) {
-      Object loader = ((GeoImageFactory) imageFactory).getLoader();
-      if (loader != null)
-        feature.setAttribute(ImageryLayerDataset.ATTR_LOADER, loader.getClass()
-            .getName());
-    }
     return feature;
   }
   

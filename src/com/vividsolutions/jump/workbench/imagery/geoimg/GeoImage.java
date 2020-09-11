@@ -285,7 +285,7 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
       last_rendering = img.getAsBufferedImage();
       Rectangle b = img.getBounds();
       last_transform = AffineTransform.getTranslateInstance(b.getX(), b.getY());
-      
+
       // eventually draw the image, let g render the chain
       draw(g, img);
 
@@ -319,7 +319,7 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
   }
 
   public String getLoader() {
-    return gtr != null ? gtr.getLoader() : "";
+    return gtr != null ? gtr.getLoader().getClass().getName() : "";
   }
 
   public void dispose() {

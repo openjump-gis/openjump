@@ -61,6 +61,14 @@ import com.vividsolutions.jump.workbench.model.Prioritized;
 public class GeoImageFactory extends AbstractGraphicImageFactory {
   Object loader = null;
 
+  static boolean classGDALImageReaderSpiAvailable = false;
+  static {
+    try {
+      Class.forName("it.geosolutions.imageio.gdalframework.GDALImageReaderSpi");
+      classGDALImageReaderSpiAvailable = true;
+    } catch (ClassNotFoundException e) {} // eat it
+  }
+  
   public void setLoader(Object loader) {
     this.loader = loader;
   }
@@ -88,7 +96,7 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
     for (; iter.hasNext();) {
       ImageReaderSpi reader = (ImageReaderSpi) iter.next();
       //Logger.trace("GeoImageFactory - Add "+reader.getDescription(Locale.getDefault())+" ext: "+Arrays.toString(reader.getFileSuffixes()));
-      Logger.trace("GeoImageFactory - Add "+loaderString(reader) + " class:" + reader.getClass().getCanonicalName());
+      Logger.trace("GeoImageFactory - add "+loaderString(reader) + " " + reader.getClass().getCanonicalName());
       String[] exts = reader.getFileSuffixes();
       // this is mainly for the NITF imageio-ext reader, which has one empty ext
       // supposedly because too much file extensions (?) exist for this format
@@ -133,7 +141,8 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
 
   public ReferencedImage createImage(String location) throws Exception {
     // System.out.println("GIF: " + getDescription());
-    return new GeoImage(location, loader);
+    ReferencedImage img = new GeoImage(location, loader);
+    return img;
   }
 
   public String getDescription() {
@@ -144,7 +153,7 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
    * prepare a proper description of a forced loader
    * currently "(description, version x.x, vendor)"
    */
-  private String loaderString(Object loader) {
+  public static String loaderString(Object loader) {
     // a specified loader
     if (loader != null) {
       String loaderString ="";
@@ -163,9 +172,11 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
           loaderString = loaderString.replace("ImageReaderSpi", "");
           loaderString += " (" + loader.getClass().getPackage().getName() + ")";
         }
-        
-        if (loader instanceof GDALImageReaderSpi) 
+
+        // hint at GDAL nature
+        if (classGDALImageReaderSpiAvailable && loader instanceof GDALImageReaderSpi) 
           loaderString = "GDAL " + loaderString;
+
         // always include version info
         if (!loaderString.toLowerCase().contains("version"))
           loaderString += ", version " + ((ImageReaderSpi) loader).getVersion();
@@ -201,18 +212,23 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
     String name = loader.getClass().getName();
     
     // some special cases
-    if (loader instanceof JP2GDALOpenJPEGImageReaderSpi)
+    if (name.equals("com.vividsolutions.jump.workbench.imagery.imageio.JP2GDALOpenJPEGImageReaderSpi"))
       return Prioritized.NOPRIORITY; // currently very unstable
     if (name.equals("it.geosolutions.imageio.plugins.jp2ecw.JP2GDALEcwImageReaderSpi"))
       return Prioritized.NOPRIORITY; // replaced by our patched version under com.vividsolutions.jump.workbench.imagery
     
     // we've got some patched
-    if (name.startsWith("com.vividsolutions.jump.workbench.imagery"))
+    if (name.startsWith("com.vividsolutions.jump.workbench.imagery")) {
       return 10;
-    // prefer imageio-ext readers
+    }
+    // prefer oss jai core implementation over all
+    else if (name.startsWith("com.github.jaiimageio")){
+      return 19;
+    }
+    // next are imageio-ext readers
     else if (name.startsWith("it.geosolutions.imageio")){
       // prefer plain java readers
-      if (loader instanceof GDALImageReaderSpi)
+      if (classGDALImageReaderSpiAvailable && loader instanceof GDALImageReaderSpi)
         return 25;
       return 20;
     }
@@ -239,6 +255,7 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
       if (c == null || c2 == null)
         return false;
     } catch (ClassNotFoundException e) {
+      Logger.error(e);
       return false;
     }
     

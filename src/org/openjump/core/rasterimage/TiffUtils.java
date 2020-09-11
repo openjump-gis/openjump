@@ -368,7 +368,7 @@ public class TiffUtils {
     	 RenderedOp renderedOp = null;
  		try {
  			//First try with JAI Image I/O "ImageRead"
- 			GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(tiffFile.toURI().toString());
+ 			GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(tiffFile.toURI().toString(), new com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi());
  			renderedOp = geoRaster.getImage();
  		  } 
  		catch (Exception e) {

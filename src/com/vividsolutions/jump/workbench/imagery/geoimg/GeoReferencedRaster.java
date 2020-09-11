@@ -34,6 +34,7 @@ package com.vividsolutions.jump.workbench.imagery.geoimg;
 
 import it.geosolutions.imageio.core.CoreCommonImageMetadata;
 import it.geosolutions.imageio.gdalframework.GDALImageReaderSpi;
+import it.geosolutions.imageio.gdalframework.GDALUtilities;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -188,9 +189,8 @@ public class GeoReferencedRaster extends GeoRaster {
 
   private void parseGDALMetaData(URI uri) throws ReferencedImageException {
 
-    // if (!GDALUtilities.isGDALAvailable())
-    // throw new
-    // ReferencedImageException("no gdal metadata available because gdal is not properly loaded.");
+    if (!areGDALClassesAvailable || !GDALUtilities.isGDALAvailable())
+      throw new ReferencedImageException("no gdal metadata available because gdal is not properly loaded.");
 
     // gdal geo info
     List<ImageReaderSpi> readers;
@@ -278,6 +278,10 @@ public class GeoReferencedRaster extends GeoRaster {
 
   }
 
+  /**
+   * initialize the img and try to parse geo infos via (in this order)
+   * worldfile, gdal or geotiff
+   */
   protected void readRasterfile() throws ReferencedImageException {
     super.readRasterfile();
 
@@ -298,7 +302,6 @@ public class GeoReferencedRaster extends GeoRaster {
       Logger.debug("Worldfile geo metadata unavailable: " + e.getMessage());
     }
 
-    //if (false)
     try {
       // Get access to the tags and geokeys.
       // First, try to get the TIFF directory
@@ -323,6 +326,11 @@ public class GeoReferencedRaster extends GeoRaster {
       Logger.debug("XTIFF geo metadata unavailable: " + e.getMessage());
     }
 
+    Logger.info("No georeference found! Will use default 0,0 placement.");
+    JUMPWorkbench.getInstance().getFrame()
+        .warnUser(this.getClass().getName() + ".no-geo-reference-found");
+
+    // set up a default envelope
     double[] tags = new double[6];
     tags[0] = 1; // pixel size in x
                  // direction
@@ -337,11 +345,6 @@ public class GeoReferencedRaster extends GeoRaster {
                  // center of the upper
                  // left pixel
     setEnvelope(tags);
-
-    Logger.info("No georeference found! Will use default 0,0 placement.");
-    JUMPWorkbench.getInstance().getFrame()
-        .warnUser(this.getClass().getName() + ".no-geo-reference-found");
-
   }
 
   private void setEnvelope(double[] tags) {
