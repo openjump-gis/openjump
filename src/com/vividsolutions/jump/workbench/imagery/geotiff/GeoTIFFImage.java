@@ -79,6 +79,6 @@ public class GeoTIFFImage implements ReferencedImage {
   }
 
   public String getLoader() {
-    return null;
+    return "JAI XTIFF";
   }
 }
