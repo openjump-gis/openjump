@@ -131,10 +131,10 @@ public class RasterQueryCursorTool extends NClickTool {
         RasterImageLayer rLayer = null;
 
         final WorkbenchContext wbcontext = this.getWorkbench().getContext();
-        RasterImageLayer aLayer = null;
-
-        Layerable[] ls = (Layerable[]) wbcontext.getLayerNamePanel()
+        @SuppressWarnings("unchecked")
+		RasterImageLayer[] ls = (RasterImageLayer[]) wbcontext.getLayerableNamePanel()
                 .selectedNodes(RasterImageLayer.class)
+                .toArray(new RasterImageLayer[] {});
                 .toArray(new Layerable[] {});
         if (ls != null && ls.length > 0) {
             rLayer = (RasterImageLayer) ls[0];
@@ -305,21 +305,21 @@ public class RasterQueryCursorTool extends NClickTool {
     public void mouseMoved(MouseEvent me) {
 
         final WorkbenchContext wbcontext = this.getWorkbench().getContext();
-        RasterImageLayer aLayer = null;
-        for (java.util.Iterator i = wbcontext.getLayerNamePanel()
-                .selectedNodes(RasterImageLayer.class).iterator(); i.hasNext();) {
-            aLayer = (RasterImageLayer) i.next();
-        }
+          
+        for (Object layerable : wbcontext.getLayerableNamePanel().selectedNodes(Layerable.class)) {
+            Layerable layer = (Layerable)layerable;
+        
+                if (layer instanceof RasterImageLayer) {
         String cellValues = null;
         try {
             cellValues = "";
             Coordinate tentativeCoordinate = getPanel().getViewport()
                     .toModelCoordinate(me.getPoint());
-            for (int b = 0; b < aLayer.getNumBands(); b++) {
-                Double cellValue = aLayer.getCellValue(tentativeCoordinate.x,
+            for (int b = 0; b < ((RasterImageLayer) layer).getNumBands(); b++) {
+                Double cellValue = ((RasterImageLayer) layer).getCellValue(tentativeCoordinate.x,
                         tentativeCoordinate.y, b);
                 if (cellValue != null) {
-                    if (aLayer.isNoData(cellValue)) {
+                    if (((RasterImageLayer) layer).isNoData(cellValue)) {
                         cellValues = cellValues.concat(Double
                                 .toString(cellValue))
                                 + "("
@@ -336,23 +336,15 @@ public class RasterQueryCursorTool extends NClickTool {
         } catch (RasterDataNotFoundException ex) {
             cellValues = "???";
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	 cellValues = " - ";
         } catch (NoninvertibleTransformException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	 cellValues = " - ";
         }
-        name = aLayer.getName();
-
-        // gContext.getWorkbenchContext()
-        // .getLayerViewPanel()
-        // .setToolTipText(
-        // "(" + name + ") " + VALUE + ": "
-        // + cellValues.toString());
-
+        name = ((RasterImageLayer) layer).getName();
         getPanel().getContext().setStatusMessage(
                 "[" + LAYER + ": " + name + "] " + VALUE + ": "
-                        + cellValues.toString());
+                        + cellValues.toString());}
+        }
     }
     
     @Override
