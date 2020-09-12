@@ -39,18 +39,15 @@ as (Component name - License name - License file in "licenses/" folder or link)
      - https://mariadb.com/kb/en/mariadb/branding-guidelines/
    ok_spatialite.png Spatialite icon, dolphin_icon.png (Edgar Soldin)
      - GPL3 - gpl-3.txt
- ImageIO Ext - LGPL3 - lgpl-3.0.txt
-   except the following dependencies/components:
-   commons-codec, commons-io, commons-lang, commons-logging (see above)
-   imageio-ext-streams - partly LGPL2 or 3 - imageio-ext-streams-LICENSE.txt
-   imageio-ext-tiff - BSD style license - imageio-ext-tiff-BSD-LICENSE.txt
  JAI core, codec - Java Advanced Imaging Distribution License - jdl-jai.pdf
  JAI imageio core - BSD style license - jai-core.BSD-LICENSE.txt
+ jai-imageio-core (standalone) - BSD 3-style with nuclear exception
+   - jai-imageio-core-LICENSE.txt
  JAMA - Public Domain
- Jdom - Apache-style open source jdom license, 
-       with the acknowledgment clause removed - jdom_license.txt
- JMath and its successor projects JMathTools (IO,Plot,Array) - BSD license 
-     - jmath_license.txt
+ Jdom - Apache-style open source jdom license, with the acknowledgment 
+   clause removed - jdom_license.txt
+ JMath and its successor projects JMathTools (IO,Plot,Array)
+   - BSD license - jmath_license.txt
  Javascript library RHINO - GPL2 - gpl-2.txt
  JSON-simple - Apache License Version 2.0 - apache_license-2.0.txt
  JTS Topology Suite - LGPL2 - lgpl-2.1.txt
@@ -78,17 +75,20 @@ Additionally PLUS distribution contains
 ( Component name (Author) - License name - License file in "licenses/" folder
    list of files and dependencies with license if any )
  Batik SVG Toolkit - Apache License Version 2.0 - apache_license-2.0.txt
- ImageIO Ext (mainly libs needing native support) - LGPL3 - lgpl-3.0.txt
-  except the following dependencies/components:
-  imageio-ext-imagereadmt - BSD style license -
-   imageio-ext-imagereadmt-BSD-LICENSE.txt
-  turbojpeg-wrapper - BSD style license - LICENSE.libjpegturbo.txt
  Geoarbores Vertex Symbols Collection (Giuseppe Aruta) - GPL2 - gpl-2.txt
   lib/ext/VertexImages/*.wkt
  ECW and JPEG2000 Read Support based on ECW SDK 3.3 for 
   Windows x86/x64, Linux, Mac OSX with 32bit java runtime - 
   ERDAS ECW JPEG2000 SDK license - ecw license.txt
   lib/native/[os/]{jecw-*.jar,NCS*.dll,ermapper.jar}
+ ImageIO Ext - LGPL3 - lgpl-3.0.txt (imageio-ext-tiff removed)
+  except the following dependencies/components:
+  commons-codec, commons-io, commons-lang, commons-logging (see above)
+  imageio-ext-streams - partly LGPL2 or 3 - imageio-ext-streams-LICENSE.txt
+  imageio-ext-tiff - BSD style license - imageio-ext-tiff-BSD-LICENSE.txt
+  imageio-ext-imagereadmt - BSD style license -
+  imageio-ext-imagereadmt-BSD-LICENSE.txt
+  turbojpeg-wrapper - BSD style license - LICENSE.libjpegturbo.txt
  JEdit (1999) - GPL2 - gpl-2.txt
  JGraphT - LGPL2 - lgpl-2.1.txt
   lib/jgrapht-*.jar
