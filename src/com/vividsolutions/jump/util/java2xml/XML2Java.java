@@ -140,8 +140,12 @@ public class XML2Java extends XMLBinder {
                     // so when a problem with styling appears data are still loaded
                     if (tag.getName().equalsIgnoreCase("style")){
                     	Logger.warn(msg);
-                    	System.out.println(msg);
                     	return; //return to avoid further messages
+                    }
+                    // [mmichaud 2011-07-04] excludes single-side for compatibility
+                    if (tag.getName().equals("line") && xmlName.equals("interior")) {
+                        Logger.warn(msg);
+                        return; //return to avoid further messages
                     }
                     // [mmichaud 2011-07-04] Following attributes were introduced in 1.4.1 release.
                     // Skip them to keep compatibility with old project files
@@ -150,7 +154,6 @@ public class XML2Java extends XMLBinder {
                          xmlName.equalsIgnoreCase("selectable") ||
                          xmlName.equalsIgnoreCase("read-only") ) ) {
                     	Logger.warn(msg);
-                    	System.out.println(msg);
                     	return; //return to avoid further messages
                     }
                     else{

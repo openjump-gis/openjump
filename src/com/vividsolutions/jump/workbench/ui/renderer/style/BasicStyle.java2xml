@@ -11,6 +11,7 @@
   <element xml-name="line">
     <attribute xml-name="enabled" java-name="renderingLine"/>
     <attribute xml-name="width" java-name="lineWidth"/>
+    <attribute xml-name="interior" java-name="interiorBorder"/>
     <element xml-name="pattern" java-name="linePattern">    
    		<attribute xml-name="enabled" java-name="renderingLinePattern"/>    	
     </element>

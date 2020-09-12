@@ -34,6 +34,7 @@ public class XBasicStyle extends BasicStyle {
         setLineWidth(fromBasicStyle.getLineWidth());
         setLinePattern(fromBasicStyle.getLinePattern());
         setRenderingLinePattern(fromBasicStyle.isRenderingLinePattern());
+        setInteriorBorder(fromBasicStyle.hasInteriorBorder());
 
         // XBasicStyle already includes a VertexStyle attribute
         // Use vertexStyle.setEnabled to make vertices visible

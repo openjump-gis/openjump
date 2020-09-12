@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-09-12 mmichaud <m.michael.michaud@orange.fr>
+  * Add an interiorBorder option to BasicStyle
+
 2020-09-06 ede
   * upgrade commons imaging to 1.0-alpha2
 

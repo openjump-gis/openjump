@@ -133,6 +133,8 @@ public class BasicStylePanel extends JPanel {
 
     protected JLabel lineWidthLabel = new JLabel();
 
+    protected JCheckBox interiorBorderCheckBox = new JCheckBox();
+
     protected JCheckBox synchronizeCheckBox = new JCheckBox();
 
     private JCheckBox linePatternCheckBox = new JCheckBox();
@@ -364,6 +366,7 @@ public class BasicStylePanel extends JPanel {
                 newBasicStyle.setRenderingLinePattern(basicStyle.isRenderingLinePattern());
                 newBasicStyle.setRenderingFill(basicStyle.isRenderingFill());
                 newBasicStyle.setRenderingLine(basicStyle.isRenderingLine());
+                newBasicStyle.setInteriorBorder(basicStyle.hasInteriorBorder());
                 setBasicStyle(newBasicStyle);
             }
         });
@@ -445,7 +448,7 @@ public class BasicStylePanel extends JPanel {
             }
         });
         centerPanel.add(GUIUtil.createSyncdTextField(transparencyPanel.getSlider(), SLIDER_TEXT_FIELD_COLUMNS),
-                new GridBagConstraints(2, 21, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new GridBagConstraints(2, 23, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
                         new Insets(2, 2, 2, 2), 0, 0));
         centerPanel.add(lineWidthSlider, new GridBagConstraints(1, 19, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
@@ -458,22 +461,32 @@ public class BasicStylePanel extends JPanel {
             }
         });
         lineWidthLabel.setText(I18N.get("ui.style.BasicStylePanel.line-width"));
+        interiorBorderCheckBox.setText(I18N.get("ui.style.BasicStylePanel.interior-border"));
+        interiorBorderCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (interiorBorderCheckBox.isSelected())
+                    lineCheckBox.setSelected(true);
+                updateControls();
+            }
+        });
         transparencyLabel.setText(I18N.get("ui.style.BasicStylePanel.transparency"));
         centerPanel.add(synchronizeCheckBox, new GridBagConstraints(0, 18, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(transparencyLabel, new GridBagConstraints(0, 21, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+        centerPanel.add(transparencyLabel, new GridBagConstraints(0, 23, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
         centerPanel.add(fillColorChooserPanel, new GridBagConstraints(1, 5, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
         centerPanel.add(lineColorChooserPanel, new GridBagConstraints(1, 11, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(transparencyPanel, new GridBagConstraints(1, 21, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
+        centerPanel.add(transparencyPanel, new GridBagConstraints(1, 23, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
                 GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
         centerPanel.add(fillCheckBox, new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
         centerPanel.add(lineCheckBox, new GridBagConstraints(0, 11, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
         centerPanel.add(lineWidthLabel, new GridBagConstraints(0, 19, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+                GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
+        centerPanel.add(interiorBorderCheckBox, new GridBagConstraints(0, 21, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
         centerPanel.add(linePatternCheckBox, new GridBagConstraints(0, 16, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
@@ -512,6 +525,7 @@ public class BasicStylePanel extends JPanel {
         linePatternCheckBox.setSelected(basicStyle.isRenderingLinePattern());
         fillPatternCheckBox.setSelected(basicStyle.isRenderingFillPattern());
         linePatternComboBox.setSelectedItem(basicStyle.getLinePattern());
+        interiorBorderCheckBox.setSelected(basicStyle.hasInteriorBorder());
         linePatternComboBox.updateUI();
 
         // Update fill pattern colors before finding the basic style's current
@@ -577,6 +591,7 @@ public class BasicStylePanel extends JPanel {
         basicStyle.setLinePattern(clean((String) linePatternComboBox.getEditor().getItem()));
         basicStyle.setFillPattern(cloneIfBasicFillPattern((Paint) fillPatternComboBox.getSelectedItem()));
         basicStyle.setLineWidth(lineWidthSlider.getValue());
+        basicStyle.setInteriorBorder(interiorBorderCheckBox.isSelected());
 
         return basicStyle;
     }

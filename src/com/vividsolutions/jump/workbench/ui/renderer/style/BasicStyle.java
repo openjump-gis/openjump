@@ -38,6 +38,8 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.util.List;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 import org.openjump.util.SLDImporter.StrokeFillStyle;
 
 import com.vividsolutions.jts.geom.Point;
@@ -73,6 +75,7 @@ public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
     private Stroke fillStroke = DEFAULT_FILL_STROKE;
     private boolean enabled = true;
     private String linePattern = "3";
+    private boolean interiorBorder = false;
 
     private boolean renderingVertices = true;
     
@@ -166,11 +169,25 @@ public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
         if (!renderingVertices && f.getGeometry() instanceof Point) {
             return;
         }
-        StyleUtil.paint(f.getGeometry(), g, viewport, renderingFill,
-            fillStroke,
-            (renderingFillPattern && (fillPattern != null)) ? fillPattern
-                                                            : fillColor,
-            renderingLine, lineStroke, lineColor);
+        StyleUtil.paint(f.getGeometry(), g, viewport,
+                renderingFill, fillStroke,
+                (renderingFillPattern && (fillPattern != null)) ? fillPattern : fillColor,
+                renderingLine && !interiorBorder, lineStroke, lineColor);
+        if (interiorBorder) {
+            double scale = viewport.getScale();
+            double width = getLineWidth() / scale;
+            TopologyPreservingSimplifier simplifier = new TopologyPreservingSimplifier(f.getGeometry());
+            simplifier.setDistanceTolerance(0.5/scale);
+            Geometry simplified = simplifier.getResultGeometry();
+            // Polygonal geometries : creates a border area ussing line widh and fill color
+            if (f.getGeometry().getDimension() == 2) {
+                Geometry geom = simplified.difference(simplified.buffer(-width, 4));
+                StyleUtil.paint(geom, g, viewport,
+                        true, fillStroke,
+                        (renderingFillPattern && (fillPattern != null)) ? fillPattern : fillColor,
+                        false, new BasicStroke(), Color.BLACK);
+            }
+        }
     }
 
     /**
@@ -248,6 +265,14 @@ public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
             BasicStroke.JOIN_BEVEL, 1.0f, toArray(linePattern, lineWidth), 0)
         : new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
             BasicStroke.JOIN_BEVEL);
+    }
+
+    public boolean hasInteriorBorder() {
+        return interiorBorder;
+    }
+
+    public void setInteriorBorder(boolean interiorBorder) {
+        this.interiorBorder = interiorBorder;
     }
 
     public static float[] toArray(String linePattern, float lineWidth) {
