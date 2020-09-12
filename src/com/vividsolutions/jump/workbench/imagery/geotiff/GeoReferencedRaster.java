@@ -79,16 +79,7 @@ public abstract class GeoReferencedRaster
    */
   protected void fetchRaster() throws Exception {
     URI uri = new URI(imageFileLocation);
-    // JAI loading streams is slower than fileload, hence we check if we really
-    // try to open a compressed file first
-//    if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
-//      InputStream is = CompressedFile.openFile(uri);
-//      if (!(is instanceof SeekableStream))
-//        is = SeekableStream.wrapInputStream(is, true);
-//      src = JAI.create("stream", is);
-//    } else {
-//      src = JAI.create("fileload", uri.getPath());
-//    }
+
     createJAIRenderedOP(uri);
   }
     
@@ -117,7 +108,10 @@ public abstract class GeoReferencedRaster
             true);
         decs = ImageCodec.getDecoderNames((SeekableStream) is2);
         FileUtil.close(is2);
-        System.out.println(Arrays.toString(decs));
+        //System.out.println(Arrays.toString(decs));
+        
+        // JAI loading streams is slower than fileload, hence we check if we really
+        // try to open a compressed file first
         if (CompressedFile.isArchive(uri) || CompressedFile.isCompressed(uri)) {
           InputStream input = CompressedFile.openFile(uri);
           if (!(input instanceof SeekableStream))
