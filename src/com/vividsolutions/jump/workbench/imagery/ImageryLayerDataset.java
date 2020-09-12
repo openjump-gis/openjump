@@ -157,6 +157,13 @@ public class ImageryLayerDataset {
       ReferencedImageFactory imageFactory) {
     feature.setAttribute(ImageryLayerDataset.ATTR_FACTORY, imageFactory
         .getClass().getName());
+    // GeoImage supports several loaders, set it if one was selected
+    if (imageFactory instanceof GeoImageFactory) {
+      Object loader = ((GeoImageFactory) imageFactory).getLoader();
+      if (loader != null)
+        feature.setAttribute(ImageryLayerDataset.ATTR_LOADER, loader.getClass()
+            .getName());
+    }
     return feature;
   }
   
