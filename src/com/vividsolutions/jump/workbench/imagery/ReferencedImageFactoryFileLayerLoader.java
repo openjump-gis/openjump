@@ -170,6 +170,8 @@ public class ReferencedImageFactoryFileLayerLoader extends
     Feature feature = new ReferencedImageFeature(
         ImageryLayerDataset.getSchema());
     feature.setAttribute(ImageryLayerDataset.ATTR_URI, uri.toString());
+    // save important attributes, later used ImageryLayerDataset.attachImage()
+    // to use the proper factory/loader combination
     ImageryLayerDataset.saveFeatureImgAttribs(feature, referencedImageFactory);
     feature.setGeometry(new GeometryFactory().createPoint((Coordinate) null));
     return feature;
