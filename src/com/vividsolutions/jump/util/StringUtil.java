@@ -94,18 +94,15 @@ public class StringUtil {
      */
     public static String split(String s, int n) {
         StringBuilder b = new StringBuilder();
-        boolean wrapPending = false;
-
+        int index = 0;
         for (int i = 0; i < s.length(); i++) {
-            if (((i % n) == 0) && (i > 0)) {
-                wrapPending = true;
-            }
 
             char c = s.charAt(i);
+            index++;
 
-            if (wrapPending && (c == ' ')) {
+            if (c == '\n' || (index >= n && (c == ' '))) {
                 b.append("\n");
-                wrapPending = false;
+                index = 0;
             } else {
                 b.append(c);
             }
