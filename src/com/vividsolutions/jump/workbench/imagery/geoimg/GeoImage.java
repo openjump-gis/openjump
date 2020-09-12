@@ -78,10 +78,10 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
       throws ReferencedImageException {
     try {
       gtr = new GeoReferencedRaster(location, reader);
+      // Try to access data and fail fast if not possible
+      gtr.src.getData();
     } catch (Exception ex) {
       dispose();
-      String causemsg = ex.getCause() != null ? "\n"
-          + ex.getCause().getMessage() : "";
       throw new ReferencedImageException(ex);
     }
   }

@@ -65,7 +65,6 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
  * www.ashs.isa.com
  */
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
@@ -73,7 +72,6 @@ import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.Imaging;
 import org.openjump.util.UriUtil;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 

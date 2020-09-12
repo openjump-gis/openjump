@@ -34,9 +34,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ui.io.file.AbstractFileLayerLoader;
+import org.openjump.core.ui.util.ExceptionUtil;
 import org.openjump.core.ui.util.TaskUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -53,6 +55,7 @@ import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Prioritized;
+import org.saig.jump.lang.I18N;
 
 public class ReferencedImageFactoryFileLayerLoader extends
     AbstractFileLayerLoader implements Prioritized {
@@ -99,8 +102,17 @@ public class ReferencedImageFactoryFileLayerLoader extends
       layerManager.setFiringEvents(true);
     }
     Feature feature;
-    feature = createImageFeature(imageFactory, uri,
-        getImageryLayerDataset(layer));
+    try {
+      feature = createImageFeature(imageFactory, uri,
+              getImageryLayerDataset(layer));
+    } catch(Exception e) {
+      throw new ReferencedImageException(I18N.getMessage(
+              "com.vividsolutions.jump.workbench.imagery.ReferencedImageException",
+              new Object[]{uri, imageFactory.getTypeName() +
+                      " (" + imageFactory.getDescription() + ")"}) + "\n\n" + e.getMessage(),
+              e
+      );
+    }
 
     // only add layer if no exception occured
     if (targetLayer == null) {

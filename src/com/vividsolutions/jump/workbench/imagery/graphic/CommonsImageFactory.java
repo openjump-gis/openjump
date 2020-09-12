@@ -39,7 +39,7 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 
 public class CommonsImageFactory extends AbstractGraphicImageFactory {
   public String getTypeName() {
-    return "Commons";
+    return "Commons Imaging";
   }
 
   public ReferencedImage createImage(String location) {

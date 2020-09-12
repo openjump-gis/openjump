@@ -57,14 +57,16 @@ public class GeoTIFFImage implements ReferencedImage {
     try {
       gtr = new GeoTIFFRaster(location);
       rasterPainter = new RasterPainter(gtr);
-    } catch (Exception ex) {
+      // Try to access data and fail fast if not possible
+      rasterPainter.geoRaster.src.getData();
+    } catch (Exception e) {
       gtr = null;
-      throw new JUMPException(ex.getMessage());
+      throw new ReferencedImageException(e);
     }
   }
 
   public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport)
-      throws ReferencedImageException {
+          throws ReferencedImageException {
     try {
       rasterPainter.paint(g, viewport);
     } catch (Exception ex) {
@@ -77,7 +79,6 @@ public class GeoTIFFImage implements ReferencedImage {
   }
 
   public String getLoader() {
-    return "null";
+    return null;
   }
-
 }

@@ -69,13 +69,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.imageio.ImageIO;
 
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
+
 
 /**
  * An image whose source is a bitmap
@@ -123,15 +123,13 @@ public class IOGraphicImage extends AbstractGraphicImage
 
       if (image == null)
         throw new IOException("ImageIO read returned null");
+      // Try to access data and fail fast if not possible
+      image.getData().getParent().getDataBuffer();
       setImage(image);
       // infos are difficult to come by, set at least file extension
       setType(FileUtil.getExtension(CompressedFile.getTargetFileWithPath(uri)));
-    } catch (URISyntaxException e) {
-      throw new ReferencedImageException("Could not open image file "
-          + getUri(), e);
-    } catch (IOException e) {
-      throw new ReferencedImageException("Could not open image file "
-          + getUri(), e);
+    } catch (Exception e) {
+      throw new ReferencedImageException(e);
     } finally {
       // close streams on any failure
       close(is);

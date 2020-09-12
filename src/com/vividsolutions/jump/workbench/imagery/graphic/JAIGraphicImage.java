@@ -65,10 +65,8 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
  * www.ashs.isa.com
  */
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
@@ -78,6 +76,7 @@ import com.sun.media.jai.codec.SeekableStream;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
+
 
 /**
  * An image whose source is a bitmap
@@ -126,16 +125,10 @@ public class JAIGraphicImage extends AbstractGraphicImage
       // we assume JAI uses the first listed decoder
       if (decs.length > 0)
         setType(decs[0]);
-      // System.out.println(Arrays.toString(decs));
       // close second stream early
       close(is2);
-
-    } catch (URISyntaxException e) {
-      throw new ReferencedImageException("Could not open image file "
-          + getUri(), e);
-    } catch (IOException e) {
-      throw new ReferencedImageException("Could not open image file "
-          + getUri(), e);
+    } catch (Exception e) {
+      throw new ReferencedImageException(e);
     } finally {
       // close streams on any failure
       close(is);
