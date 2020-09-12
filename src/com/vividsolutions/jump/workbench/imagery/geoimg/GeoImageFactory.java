@@ -66,7 +66,9 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
     try {
       Class.forName("it.geosolutions.imageio.gdalframework.GDALImageReaderSpi");
       classGDALImageReaderSpiAvailable = true;
-    } catch (ClassNotFoundException e) {} // eat it
+    } catch (NoClassDefFoundError|ClassNotFoundException e) {
+      Logger.debug(e);
+    } // eat it
   }
   
   public void setLoader(Object loader) {

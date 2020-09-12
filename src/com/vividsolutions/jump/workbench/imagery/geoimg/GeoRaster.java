@@ -116,7 +116,9 @@ public abstract class GeoRaster implements Disposable {
       Class.forName("it.geosolutions.imageio.gdalframework.GDALUtilities");
       Class.forName("it.geosolutions.imageio.utilities.ImageIOUtilities");
       areGDALClassesAvailable = true;
-    } catch (ClassNotFoundException e) {} // eat it
+    } catch (NoClassDefFoundError|ClassNotFoundException e) {
+      Logger.debug(e);
+    } // eat it
   }
 
   public GeoRaster(String imageFileLocation) {
