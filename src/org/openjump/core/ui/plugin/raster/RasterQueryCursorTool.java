@@ -135,7 +135,7 @@ public class RasterQueryCursorTool extends NClickTool {
 		RasterImageLayer[] ls = (RasterImageLayer[]) wbcontext.getLayerableNamePanel()
                 .selectedNodes(RasterImageLayer.class)
                 .toArray(new RasterImageLayer[] {});
-                .toArray(new Layerable[] {});
+                //.toArray(new Layerable[] {});
         if (ls != null && ls.length > 0) {
             rLayer = (RasterImageLayer) ls[0];
 
