@@ -1,22 +1,16 @@
 package com.vividsolutions.jump.workbench.imagery.imageio;
 
-import it.geosolutions.imageio.gdalframework.GDALImageReaderSpi;
-import it.geosolutions.imageio.stream.input.FileImageInputStreamExt;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageReader;
-import javax.imageio.spi.IIORegistry;
-import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.spi.ServiceRegistry;
 
-import org.gdal.gdal.gdal;
+import it.geosolutions.imageio.gdalframework.GDALImageReaderSpi;
+import it.geosolutions.imageio.stream.input.FileImageInputStreamExt;
 
 /**
  * Service provider interface for the jp2k image
@@ -41,7 +35,7 @@ public class JP2GDALJasperImageReaderSpi extends GDALImageReaderSpi {
 
   static final String readerCN = JP2GDALJasperImageReader.class.getCanonicalName();
 
-  static final String vendorName = "GeoSolutions";
+  static final String vendorName = "GeoSolutions/OpenJUMP";
 
   // writerSpiNames
   static final String[] wSN = { null };
