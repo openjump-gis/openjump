@@ -94,8 +94,9 @@ public abstract class ToolboxPlugIn extends AbstractPlugIn {
    */
   public void createMainMenuItem(String[] menuPath, Icon icon,
       final WorkbenchContext context) throws Exception {
+    // this has a checkbox prepended if there is no icon
     new FeatureInstaller(context).addMainMenuPlugin(this, menuPath, getName()
-        + "...", true, icon, getEnableCheck());
+        + "...", (icon == null), icon, getEnableCheck());
   }
 
   public EnableCheck getEnableCheck() {

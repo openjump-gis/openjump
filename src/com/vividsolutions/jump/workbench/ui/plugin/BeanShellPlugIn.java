@@ -27,7 +27,7 @@ public class BeanShellPlugIn extends ToolboxPlugIn {
   public void initialize(PlugInContext context) throws Exception {
     // [Michael Michaud 2007-03-23]
     // Moves MenuNames.TOOLS/MenuNames.TOOLS_PROGRAMMING to MenuNames.CUSTOMIZE
-    createMainMenuItem(new String[] { MenuNames.CUSTOMIZE }, null,
+    createMainMenuItem(new String[] { MenuNames.CUSTOMIZE }, getIcon(),
         context.getWorkbenchContext());
   }
 
