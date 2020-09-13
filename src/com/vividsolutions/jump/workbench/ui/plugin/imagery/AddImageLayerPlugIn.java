@@ -16,10 +16,12 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImagesLayer;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+import com.vividsolutions.jump.workbench.ui.TreeLayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class AddImageLayerPlugIn extends AbstractUiPlugIn {
@@ -39,10 +41,13 @@ public class AddImageLayerPlugIn extends AbstractUiPlugIn {
   public boolean execute(PlugInContext context) throws Exception {
     LayerManager lm = context.getLayerManager();
     lm.setFiringEvents(false);
-    Layer layer = createLayer(lm);
+    Layerable layer = createLayer(lm);
     lm.setFiringEvents(true);
     Category category = TaskUtil.getSelectedCategoryName(workbenchContext);
     lm.addLayerable(category.getName(), layer);
+    // select the new layer in layer tree
+    final TreeLayerNamePanel lnp = (TreeLayerNamePanel) context.getWorkbenchContext().getLayerableNamePanel();
+    lnp.setSelectedLayerables(new Layerable[]{layer});
 
     boolean success = new ImageLayerManagerPlugIn().execute(context);
 
