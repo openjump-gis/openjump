@@ -39,6 +39,7 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactoryFileLayerLoader;
@@ -146,12 +147,14 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
     private void updateImages() {
       // clone it
       images = new Vector();
+      // no layer, no images
+      if (layer == null)
+        return;
 
       for (Iterator i = layer.getFeatureCollectionWrapper().getFeatures()
           .iterator(); i.hasNext();) {
         images.add(new FeaturePrinter((Feature) i.next()));
       }
-
     }
 
     private void initialize() {
@@ -404,8 +407,7 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
           };
           t.start();
       } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        Logger.error(e);
       }
     }
 
