@@ -17,6 +17,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Locale;
 
+import javax.media.jai.PlanarImage;
 //import javax.media.jai.PlanarImage;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -443,10 +444,10 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         raster_bands = df.format(rLayer.getNumBands());// Get raster number of
                                                        // bands
         Raster raster = rLayer.getRasterData(null);
-        BufferedImage bImage = rLayer.getImage();
+        //  BufferedImage bImage = rLayer.createImage(JUMPWorkbench.getInstance().getContext().getLayerViewPanel());
         raster_datatype = getDataType(raster); // Get raster data type
-        raster_colordepth = getColorDepth(bImage); // Get raster color depth
-        raster_dpi = getDPI(bImage); // Get raster DPI
+        raster_colordepth =  getColorDepth(raster); // Get raster color depth
+        raster_dpi = getDPI(raster); // Get raster DPI
         extent = rLayer.getWholeImageEnvelope(); // Get Envelope
         extent_cellSizeX = df.format(cellSizeX(raster, extent));// Get X Cell
                                                                 // size
@@ -615,35 +616,25 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         return type;
     }
 
+
     /*
      * Gets color depth
      */
-   /* public String getColorDepth(Raster r) throws IOException {
+     public String getColorDepth(Raster r) throws IOException {
         SampleModel sm = r.getSampleModel();
         ColorModel cm = PlanarImage.createColorModel(sm);
         int colordepth = cm.getNumComponents();
         return String.valueOf(colordepth) + " bpp";
-    }*/
-    public String getColorDepth(BufferedImage r) throws IOException {
-
-		ColorModel cm = r.getColorModel();
-		int colordepth = cm.getNumComponents();
-		return String.valueOf(colordepth) + " bpp";
-	}
-
-    /*
-     * Gets Dots per Inch (DPI)
-     */
-  /*  public String getDPI(Raster r) throws IOException {
-        SampleModel sm = r.getSampleModel();
-        ColorModel cm = PlanarImage.createColorModel(sm);
-        return String.valueOf(cm.getPixelSize());
-    }*/
-    public String getDPI(BufferedImage r) throws IOException {
-
-		ColorModel cm = r.getColorModel();
+    } 
+     
+     /*
+      * Gets DPI
+      */
+     public String getDPI(Raster r) throws IOException {
+    	 SampleModel sm = r.getSampleModel();
+         ColorModel cm = PlanarImage.createColorModel(sm);
 		return String.valueOf(cm.getPixelSize());
-	}
+	} 
 
     /*
      * Gets cell size
