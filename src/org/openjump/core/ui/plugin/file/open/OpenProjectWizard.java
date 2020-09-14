@@ -1,6 +1,7 @@
 package org.openjump.core.ui.plugin.file.open;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.image.Raster;
 import java.io.File;
 import java.io.FileInputStream;
@@ -423,11 +424,11 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             throws Exception {
 
         RasterImageIO rasterImageIO = new RasterImageIO();
-        //   Point point = RasterImageIO.getImageDimensions(ril.getImageFileName());
+           Point point = RasterImageIO.getImageDimensions(ril.getImageFileName());
         
-        //    Envelope env = RasterImageIO.getGeoReferencing(ril.getImageFileName(),
-        //           true, point);
-            Envelope env = RasterImageIO.getGeoReferencing(ril.getImageFileName());
+            Envelope env = RasterImageIO.getGeoReferencing(ril.getImageFileName(),
+                   true, point);
+           
 
         Viewport viewport = context.getLayerViewPanel().getViewport();
         Resolution requestedRes = RasterImageIO
