@@ -60,8 +60,8 @@ public class TiffUtils {
                     envelope.getHeight() / originalImageHeight);
         }
         
-     //   Envelope wholeImageEnvelope = getGeoReferencing(tiffFile.getAbsolutePath(), true, new Point (originalImageWidth, originalImageHeight));
-        Envelope wholeImageEnvelope = tiffMetadata.getEnvelope();
+      Envelope wholeImageEnvelope = RasterImageIO.getGeoReferencing(tiffFile.getAbsolutePath(), true, new Point (originalImageWidth, originalImageHeight));
+        
         if(requestedRes == null) {
             requestedRes = cellSize;
         }
