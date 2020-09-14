@@ -4,20 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
-import java.awt.image.SampleModel;
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Locale;
 
-import javax.media.jai.PlanarImage;
 //import javax.media.jai.PlanarImage;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -36,7 +30,6 @@ import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.ccordsys.utils.SridLookupTable;
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
 import org.openjump.core.rasterimage.TiffTags;
 import org.openjump.core.ui.swing.DetachableInternalFrame;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
@@ -418,9 +411,6 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         return true;
     }
 
-    /*
-     * Gets all data info
-     */
     private void setInfo(RasterImageLayer rLayer) throws Exception {
         Locale locale = new Locale("en", "UK");
         String pattern = "###.####";
@@ -435,26 +425,26 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
                 && TiffTags.readMetadata(new File(fileSourcePath)).isGeoTiff()) {
             file_type = "GeoTIFF" + " - " + SEXTANTE;
         } else {
-            file_type = fileExtension(rLayer) + " - " + SEXTANTE;
+            file_type = RasterImageLayerProperties.getFileExtension(rLayer) + " - " + SEXTANTE;
         }
 
-        file_size = getFileSizeBytes(rLayer); // Get file size in byte
-        file_sizeMB = getFileSizeMegaBytes(file_size); // Get file size in Mega
+        file_size = RasterImageLayerProperties.getFileSizeBytes(rLayer); // Get file size in byte
+        file_sizeMB = RasterImageLayerProperties.getFileSizeMegaBytes(file_size); // Get file size in Mega
                                                        // Bytes
         raster_bands = df.format(rLayer.getNumBands());// Get raster number of
                                                        // bands
         Raster raster = rLayer.getRasterData(null);
-        //  BufferedImage bImage = rLayer.createImage(JUMPWorkbench.getInstance().getContext().getLayerViewPanel());
-        raster_datatype = getDataType(raster); // Get raster data type
-        raster_colordepth =  getColorDepth(raster); // Get raster color depth
-        raster_dpi = getDPI(raster); // Get raster DPI
+       // BufferedImage bImage = rLayer.getImage();
+        raster_datatype = RasterImageLayerProperties.getDataType(raster); // Get raster data type
+        raster_colordepth =   RasterImageLayerProperties.getColorDepth(raster,new File(rLayer.getFilePath())); // Get raster color depth
+        raster_dpi =  RasterImageLayerProperties.getDPI(raster,new File(rLayer.getFilePath())); // Get raster DPI
         extent = rLayer.getWholeImageEnvelope(); // Get Envelope
-        extent_cellSizeX = df.format(cellSizeX(raster, extent));// Get X Cell
+        extent_cellSizeX = df.format(RasterImageLayerProperties.cellSizeX(raster, extent));// Get X Cell
                                                                 // size
-        extent_cellSizeY = df.format(cellSizeY(raster, extent));// Get Y Cell
+        extent_cellSizeY = df.format(RasterImageLayerProperties.cellSizeY(raster, extent));// Get Y Cell
                                                                 // size
-        extent_columns = getNumColumns(raster); // Get Number of columns
-        extent_rows = getNumRows(raster); // Get Number of rows
+        extent_columns = RasterImageLayerProperties.getNumColumns(raster); // Get Number of columns
+        extent_rows = RasterImageLayerProperties.getNumRows(raster); // Get Number of rows
         extent_cellnumber = String.valueOf(extent_columns * extent_rows); // Get
                                                                           // cell
                                                                           // number
@@ -469,42 +459,16 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         int numBands = rLayer.getNumBands();
         raster_bands = String.valueOf(numBands);
         if (rLayer.getNumBands() == 1) {
-            extent_cellnumbervalid = String.valueOf(getValidCellsNumber(raster,
+            extent_cellnumbervalid = String.valueOf(RasterImageLayerProperties.getValidCellsNumber(raster,
                     rLayer.getNoDataValue()));
-            extent_cellnumbernodata = String.valueOf(getNodataCellNumber(
+            extent_cellnumbernodata = String.valueOf(RasterImageLayerProperties.getNodataCellNumber(
                     raster, rLayer.getNoDataValue()));
         }
-        // Its is never used. Why it was calculated ?
-        // Stats stats = rLayer.getMetadata().getStats();
-        // for (int b = 0; b < numBands; b++) {
-        // int numerobanda = b + 1;
-        // String.valueOf(numerobanda);
-        // String.valueOf(stats.getMax(b));
-        // String.valueOf(stats.getMin(b));
-        // String.valueOf(stats.getMean(b));
-        // String.valueOf(stats.getStdDev(b));
-        // }
+         
     }
 
-    /*
-     * Get Projection of selected raster. First it checks if selected raster is
-     * a GeoTIF and scan tiff tags for projection. If selected file is not a
-     * GeoTIF, it checks if <Filename>.AUX.XML exists and scans inside it. As
-     * last choice it scans into <filename>.PRJ file
-     */
-    /*
-     * private void setInfoProjection(RasterImageLayer layer) throws Exception {
-     * String fileSourcePath = layer.getImageFileName(); String extension =
-     * FileUtil.getExtension(fileSourcePath).toLowerCase(); SRSInfo srsInfo; if
-     * (extension.equals("tif") || extension.equals("tiff")) {
-     * TiffTags.TiffMetadata metadata = TiffTags.readMetadata(new
-     * File(fileSourcePath)); if (metadata.isGeoTiff()) { proj_file_path =
-     * GEO_METADATA; srsInfo = metadata.getSRSInfo(); } else { srsInfo =
-     * ProjUtils.getSRSInfoFromAuxiliaryFile(fileSourcePath); proj_file_path =
-     * srsInfo.getSource(); } } else { srsInfo =
-     * ProjUtils.getSRSInfoFromAuxiliaryFile(fileSourcePath); proj_file_path =
-     * srsInfo.getSource(); } proj_coordinate = srsInfo.toString(); }
-     */
+
+     
 
     // [Giuseppe Aruta 2017-13-11] new method that checks directly on
     // RasterImageLayer metadata
@@ -525,171 +489,6 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
             proj_file_path = srsInfo.getSource();
         }
     }
-
-    // //////////////////////////////////////////
-
-    private int datatype;
-    private String type;
-
-    private static final String[] Q = new String[] { "", "KB", "MB", "GB",
-            "TB", "PB", "EB" };
-
-    /*
-     * Converts bytes to multiple (Kilo, Mega, Giga-bytes according to the
-     * dimension of the file
-     */
-    public String getFileSizeMegaBytes(long bytes) {
-        for (int i = 6; i > 0; i--) {
-            double step = Math.pow(1024, i);
-            if (bytes > step)
-                return String.format("%3.1f %s", bytes / step, Q[i]);
-        }
-        return Long.toString(bytes);
-    }
-
-    /*
-     * Gets dimension of file in bytes
-     */
-    public long getFileSizeBytes(RasterImageLayer layer) {
-        File rfile = new File(layer.getImageFileName());
-        return rfile.length();
-    }
-
-    /*
-     * Return the extension of the file as String
-     */
-    public String fileExtension(RasterImageLayer layer) {
-        File f = new File(layer.getImageFileName());
-        String ext = null;
-        String s = f.getName();
-        int i = s.lastIndexOf('.');
-        if (i > 0 && i < s.length() - 1) {
-            ext = s.substring(i + 1).toUpperCase();
-        }
-        return ext;
-    }
-
-    /*
-     * Gets the number of bands
-     */
-    public String numBands(RasterImageLayer layer) {
-        int bands = layer.getNumBands();
-        return String.valueOf(bands);
-    }
-
-    /*
-     * Gets data type
-     */
-    public String getDataType(Raster r) throws IOException {
-        SampleModel sm = r.getSampleModel();
-        datatype = sm.getDataType();
-        switch (datatype) {
-        case DataBuffer.TYPE_BYTE: {
-            type = "byte";
-            break;
-        }
-        case DataBuffer.TYPE_SHORT: {
-            type = "short";
-            break;
-        }
-        case DataBuffer.TYPE_USHORT: {
-            type = "ushort";
-            break;
-        }
-        case DataBuffer.TYPE_INT: {
-            type = "int";
-            break;
-        }
-        case DataBuffer.TYPE_FLOAT: {
-            type = "float";
-            break;
-        }
-        case DataBuffer.TYPE_DOUBLE: {
-            type = "double";
-            break;
-        }
-        case DataBuffer.TYPE_UNDEFINED: {
-            type = "undefined";
-            break;
-        }
-        }
-        return type;
-    }
-
-
-    /*
-     * Gets color depth
-     */
-     public String getColorDepth(Raster r) throws IOException {
-        SampleModel sm = r.getSampleModel();
-        ColorModel cm = PlanarImage.createColorModel(sm);
-        int colordepth = cm.getNumComponents();
-        return String.valueOf(colordepth) + " bpp";
-    } 
-     
-     /*
-      * Gets DPI
-      */
-     public String getDPI(Raster r) throws IOException {
-    	 SampleModel sm = r.getSampleModel();
-         ColorModel cm = PlanarImage.createColorModel(sm);
-		return String.valueOf(cm.getPixelSize());
-	} 
-
-    /*
-     * Gets cell size
-     */
-    public double cellSizeX(Raster r, Envelope env) throws IOException {
-        return env.getWidth() / r.getWidth();
-    }
-
-    public double cellSizeY(Raster r, Envelope env) throws IOException {
-        return env.getHeight() / r.getHeight();
-    }
-
-    /*
-     * Gets number of columns
-     */
-    public int getNumColumns(Raster r) throws IOException {
-        return r.getWidth();
-    }
-
-    /*
-     * Gets number of rows
-     */
-    public int getNumRows(Raster r) throws IOException {
-        return r.getHeight();
-    }
-
-    /*
-     * Count the number of cells (of a Sextante monoband raster layer) with no
-     * data value
-     */
-
-    public int getNodataCellNumber(Raster ras, double nodata)
-            throws IOException, RasterDataNotFoundException {
-        int counter = 0;
-
-        int nx = ras.getWidth();
-        int ny = ras.getHeight();
-        for (int y = 0; y < ny; y++) {
-            for (int x = 0; x < nx; x++) {
-                double value = ras.getSampleDouble(x, y, 0);
-                if (value == nodata)
-                    counter++;
-            }
-        }
-        return counter;
-    }
-
-    /*
-     * Counts the number of valid cells. This code is deactivated
-     */
-    public int getValidCellsNumber(Raster raster, double nodata)
-            throws IOException, RasterDataNotFoundException {
-
-        return raster.getWidth() * raster.getHeight()
-                - getNodataCellNumber(raster, nodata);
-    }
+ 
 
 }
