@@ -72,6 +72,7 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.util.Timer;
 import com.vividsolutions.jump.util.commandline.CommandLine;
 import com.vividsolutions.jump.util.commandline.Option;
 import com.vividsolutions.jump.util.commandline.OptionSpec;
@@ -322,7 +323,7 @@ public class JUMPWorkbench {
   }
 
   public static void main(String[] args) {
-    long start = PlugInManager.milliSecondsSince(0);
+    long start = Timer.milliSecondsSince(0);
     try {
       // first fetch parameters, locale might be changed with -i18n switch
       parseCommandLine(args);
@@ -385,7 +386,7 @@ public class JUMPWorkbench {
 
       main(args, I18N.get("JUMPWorkbench.jump"), splashPanel, progressMonitor);
       Logger.info("OJ start took "
-          + PlugInManager.secondsSinceString(start) + "s alltogether.");
+          + Timer.secondsSinceString(start) + "s alltogether.");
 
     } catch (final Throwable t) {
       try {

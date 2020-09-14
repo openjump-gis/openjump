@@ -181,19 +181,19 @@ public class PlugInManager {
       // Find the configurations right away so they get reported to the splash
       // screen ASAP. [Jon Aquino]
       if (plugInDirectory != null) {
-        start = milliSecondsSince(0);
+        start = Timer.milliSecondsSince(0);
         configurations.addAll(findConfigurations(plugInDirectory));
         Logger.info("Finding all OJ extensions took "
-            + secondsSinceString(start) + "s");
+            + Timer.secondsSinceString(start) + "s");
       }
   
       configurations.addAll(findConfigurations(context.getWorkbench()
           .getProperties().getConfigurationClassNames()));
   
-      start = milliSecondsSince(0);
+      start = Timer.milliSecondsSince(0);
       loadConfigurations();
       Logger.info("Loading all OJ extensions took "
-          + secondsSinceString(start) + "s");
+          + Timer.secondsSinceString(start) + "s");
       
       // enable autoseparating in installer for plugins possibly installed later on
       FeatureInstaller.getInstance().setSeparatingEnabled(true);
@@ -208,13 +208,13 @@ public class PlugInManager {
         Configuration configuration = (Configuration) i.next();
         monitor.report(I18N.get(LOADING) + " " + name(configuration) + " "
             + version(configuration));
-        long start = milliSecondsSince(0);
+        long start = Timer.milliSecondsSince(0);
         try {
           // we used the plugin classloader to instantiate extensions already above
           configuration.configure(pc);
           //System.out.println(Arrays.toString(((URLClassLoader)classLoader).getURLs()));
           Logger.info("Loading Config " + name(configuration) + " "
-              + version(configuration) + " took " + secondsSinceString(start)
+              + version(configuration) + " took " + Timer.secondsSinceString(start)
               + "s");
         }
         catch (Throwable e) {
@@ -243,7 +243,7 @@ public class PlugInManager {
 
         Class plugInClass = null;
         try {
-          long start = milliSecondsSince(0);
+          long start = Timer.milliSecondsSince(0);
 
           // make sure we use the plugin classloader for plugins
           plugInClass = classLoader.loadClass(className);
@@ -306,7 +306,7 @@ public class PlugInManager {
               .getWorkbench()
               .getFrame()
               .log(
-                  "Loading Plugin " + className + " took " + secondsSinceString(start)
+                  "Loading Plugin " + className + " took " + Timer.secondsSinceString(start)
                       + "s " );
           
         } catch (Throwable e) {
@@ -315,26 +315,6 @@ public class PlugInManager {
               .log(className + " " + I18N.get(NOT_INITIALIZED), this.getClass());
         }
       }
-    }
-
-    /**
-     *  a helper method to measure time frames in milliseconds 
-     * @param i
-     * @deprecated use utility class Timer instead
-     */
-    @Deprecated
-    public static long milliSecondsSince( long i ){
-      return Timer.milliSecondsSince(i);
-    }
-
-    /**
-     * a helper method to nicely format the above output e.g. 12046ms -> 12.05s
-     * @param i
-     * @deprecated use utility class Timer instead
-     */
-    @Deprecated
-    public static String secondsSinceString( long i ){
-      return Timer.secondsSinceString(i);
     }
 
     public static String name(Configuration configuration) {
@@ -417,7 +397,7 @@ public class PlugInManager {
       ArrayList configurations = new ArrayList();
       long start;
       for (Iterator i = findFilesRecursively( plugInDirectory, false ).iterator(); i.hasNext();) {
-        start = milliSecondsSince(0);
+        start = Timer.milliSecondsSince(0);
         File file = (File) i.next();
         String msg = I18N.getMessage(
             "com.vividsolutions.jump.workbench.plugin.PlugInManager.scan",
@@ -429,7 +409,7 @@ public class PlugInManager {
         } catch (ZipException e) {
           // Might not be a zipfile. Eat it. [Jon Aquino]
         }
-        Logger.info("Scanning " + file + " took " + secondsSinceString(start)
+        Logger.info("Scanning " + file + " took " + Timer.secondsSinceString(start)
             + "s");
       }
   
