@@ -2,7 +2,6 @@ package org.openjump.core.ui.plugin.raster;
 
 import static com.vividsolutions.jump.I18N.get;
 
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -324,11 +323,12 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
             Exception {
 
         final RasterImageIO rasterImageIO = new RasterImageIO();
-        final Point point = RasterImageIO.getImageDimensions(inputFile
-                .getAbsolutePath());
+    //    final Point point = RasterImageIO.getImageDimensions(inputFile
+    //            .getAbsolutePath());
+    //    final Envelope env = RasterImageIO.getGeoReferencing(
+    //            inputFile.getAbsolutePath(), true, point);
         final Envelope env = RasterImageIO.getGeoReferencing(
-                inputFile.getAbsolutePath(), true, point);
-
+                inputFile.getAbsolutePath());
         final Viewport viewport = context.getLayerViewPanel().getViewport();
         final Resolution requestedRes = RasterImageIO
                 .calcRequestedResolution(viewport);
