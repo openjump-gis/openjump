@@ -328,12 +328,11 @@ public class KernelAlgorithm {
             Exception {
 
         final RasterImageIO rasterImageIO = new RasterImageIO();
-     //   final Point point = RasterImageIO.getImageDimensions(outFile
-     //           .getAbsolutePath());
-     //   final Envelope env = RasterImageIO.getGeoReferencing(
-     //           outFile.getAbsolutePath(), true, point);
+        final Point point = RasterImageIO.getImageDimensions(outFile
+                .getAbsolutePath());
         final Envelope env = RasterImageIO.getGeoReferencing(
-                outFile.getAbsolutePath());
+               outFile.getAbsolutePath(), true, point);
+       
         final Viewport viewport = frame.getContext().getLayerViewPanel()
                 .getViewport();
         final Resolution requestedRes = RasterImageIO
