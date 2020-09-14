@@ -9,7 +9,6 @@
  */
 package org.openjump.core.ui.plugin.layer.pirolraster;
 
-import java.awt.Point;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.util.Random;
@@ -67,7 +66,8 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
     /**
      * @inheritDoc
      */
-    public String getName() {
+    @Override
+	public String getName() {
         return I18N
                 .get("org.openjump.core.ui.plugin.layer.pirolraster.WarpImageToFencePlugIn.Warp-Image-To-Fence");
     }
@@ -75,7 +75,8 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
     /**
      * @inheritDoc
      */
-    public boolean execute(PlugInContext context) throws Exception {
+    @Override
+	public boolean execute(PlugInContext context) throws Exception {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
 
@@ -133,11 +134,12 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
         } catch (RuntimeException e1) {
         }
 
-        Point point = RasterImageIO.getImageDimensions(outFile
-                .getAbsolutePath());
+    //    Point point = RasterImageIO.getImageDimensions(outFile
+    //            .getAbsolutePath());
+    //    Envelope env = RasterImageIO.getGeoReferencing(
+    //            outFile.getAbsolutePath(), true, point);
         Envelope env = RasterImageIO.getGeoReferencing(
-                outFile.getAbsolutePath(), true, point);
-
+                outFile.getAbsolutePath());
         Viewport viewport = context.getWorkbenchContext().getLayerViewPanel()
                 .getViewport();
         Resolution requestedRes = RasterImageIO

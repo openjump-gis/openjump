@@ -16,7 +16,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
-import java.awt.image.SampleModel;
+//import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.util.Random;
@@ -74,7 +74,8 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
     /**
      * @inheritDoc
      */
-    public String getName() {
+    @Override
+	public String getName() {
         return I18N
                 .get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.Extract-Selected-Part-Of-Image");
     }
@@ -82,7 +83,8 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
     /**
      * @inheritDoc
      */
-    public boolean execute(PlugInContext context) throws Exception {
+    @Override
+	public boolean execute(PlugInContext context) throws Exception {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
 
@@ -114,7 +116,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         ;
 
         if (rLayer.getImage().getColorModel() instanceof IndexColorModel) {
-            SampleModel sampleModel = rLayer.getImage().getSampleModel();
+          //  SampleModel sampleModel = rLayer.getImage().getSampleModel();
             IndexColorModel indexColorModel = (IndexColorModel) rLayer
                     .getImage().getColorModel();
             DataBuffer dataBufferIn = raster.getDataBuffer();
@@ -170,11 +172,12 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         } catch (RuntimeException e1) {
         }
 
-        Point point = RasterImageIO.getImageDimensions(outFile
-                .getAbsolutePath());
+   //     Point point = RasterImageIO.getImageDimensions(outFile
+   //             .getAbsolutePath());
+   //     Envelope env = RasterImageIO.getGeoReferencing(
+   //             outFile.getAbsolutePath(), true, point);
         Envelope env = RasterImageIO.getGeoReferencing(
-                outFile.getAbsolutePath(), true, point);
-
+                outFile.getAbsolutePath());
         Viewport viewport = context.getWorkbenchContext().getLayerViewPanel()
                 .getViewport();
         Resolution requestedRes = RasterImageIO
@@ -260,7 +263,8 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         return multiEnableCheck;
     }
 
-    public void initialize(PlugInContext context) throws Exception {
+    @Override
+	public void initialize(PlugInContext context) throws Exception {
     }
 
 }
