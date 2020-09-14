@@ -1,5 +1,6 @@
 package org.openjump.core.rasterimage;
 
+import java.awt.Point;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -779,10 +780,10 @@ public class RasterImageIOUtils {
         ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
                 context.getWorkbenchContext(), file.getAbsolutePath(), null,
                 viewport.getEnvelopeInModelCoordinates(), requestedRes);
-      //  Point point = RasterImageIO.getImageDimensions(file.getAbsolutePath());
-      //  Envelope env = RasterImageIO.getGeoReferencing(file.getAbsolutePath(),
-      //          true, point);
-        Envelope env = RasterImageIO.getGeoReferencing(file.getAbsolutePath());
+         Point point = RasterImageIO.getImageDimensions(file.getAbsolutePath());
+       Envelope env = RasterImageIO.getGeoReferencing(file.getAbsolutePath(),
+              true, point);
+       
         RasterImageLayer ril = new RasterImageLayer(file.getName(), context
                 .getWorkbenchContext().getLayerManager(),
                 file.getAbsolutePath(), imageAndMetadata.getImage(), env);
