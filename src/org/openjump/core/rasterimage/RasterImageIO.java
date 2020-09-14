@@ -296,9 +296,9 @@ public class RasterImageIO {
 			Coordinate coordinate, int band) throws Exception {
 
 		Point imageDims = getImageDimensions(fileNameOrURL);
-		Envelope envelope = getGeoReferencing(fileNameOrURL);
-		//Envelope envelope = getGeoReferencing(fileNameOrURL, true, new Point(
-		//		imageDims.x, imageDims.y));
+	//	Envelope envelope = getGeoReferencing(fileNameOrURL);
+		 Envelope envelope = getGeoReferencing(fileNameOrURL, true, new Point(
+		 		imageDims.x, imageDims.y));
 		double cellSizeX = (envelope.getMaxX() - envelope.getMinX())
 				/ imageDims.x;
 		double cellSizeY = (envelope.getMaxY() - envelope.getMinY())
@@ -640,9 +640,9 @@ public class RasterImageIO {
 
 		Point imageDims = getImageDimensions(fileNameOrURL);
 
-		Envelope envelope = getGeoReferencing(fileNameOrURL);
-	//	Envelope envelope = getGeoReferencing(fileNameOrURL, true, new Point(
-//				imageDims.x, imageDims.y));
+	 
+	 Envelope envelope = getGeoReferencing(fileNameOrURL, true, new Point(
+ 				imageDims.x, imageDims.y));
 		double cellSizeX = (envelope.getMaxX() - envelope.getMinX())
 				/ imageDims.x;
 		double cellSizeY = (envelope.getMaxY() - envelope.getMinY())
