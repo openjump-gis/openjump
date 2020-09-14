@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-09-14 mmichaud <m.michael.michaud@orange.fr>
+  * fix #503 : 0.5 pixel shift on raster display
+
 2020-09-12 mmichaud <m.michael.michaud@orange.fr>
   * Add an interiorBorder option to BasicStyle
 

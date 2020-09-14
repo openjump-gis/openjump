@@ -348,8 +348,8 @@ public class GeoReferencedRaster extends GeoRaster {
   }
 
   private void setEnvelope(double[] tags) {
-    setCoorRasterTiff_tiepointLT(new Coordinate(-0.5, -0.5));
-    setCoorModel_tiepointLT(new Coordinate(0, 0));
+    //setCoorRasterTiff_tiepointLT(new Coordinate(-0.5, -0.5));
+    //setCoorModel_tiepointLT(new Coordinate(0, 0));
     AffineTransform transform = new AffineTransform(tags);
 
     double scaleX = Math.abs(transform.getScaleX());
@@ -370,9 +370,18 @@ public class GeoReferencedRaster extends GeoRaster {
   }
 
   void setEnvelope() {
-    Coordinate coorRaster_imageLB = new Coordinate(coorRasterTiff_tiepointLT.x,
-        src.getHeight(), 0);
-    Coordinate coorRaster_imageRT = new Coordinate(src.getWidth(), 0, 0);
+    // Get the image coordinate of the bottom left corner of the bottom left pixel
+    // from the image coordinate of the center of the bottom left pixel
+    Coordinate coorRaster_imageLB = new Coordinate(
+            coorRasterTiff_tiepointLT.x-0.5,
+            src.getHeight()-0.5);
+    // Get the image coordinate of the top right corner of the top right pixel
+    // from the image coordinate of the center of the top right pixel
+    Coordinate coorRaster_imageRT = new Coordinate(
+            src.getWidth()-0.5,
+            -0.5);
+    // Transform the bottom left and the top right corner to model coordinate
+    // to get the envelope of the image
     Coordinate coorModel_imageLB = rasterToModelSpace(coorRaster_imageLB);
     Coordinate coorModel_imageRT = rasterToModelSpace(coorRaster_imageRT);
 
