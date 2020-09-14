@@ -172,12 +172,11 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         } catch (RuntimeException e1) {
         }
 
-   //     Point point = RasterImageIO.getImageDimensions(outFile
-   //             .getAbsolutePath());
-   //     Envelope env = RasterImageIO.getGeoReferencing(
-   //             outFile.getAbsolutePath(), true, point);
-        Envelope env = RasterImageIO.getGeoReferencing(
-                outFile.getAbsolutePath());
+         Point point = RasterImageIO.getImageDimensions(outFile
+               .getAbsolutePath());
+       Envelope env = RasterImageIO.getGeoReferencing(
+               outFile.getAbsolutePath(), true, point);
+         
         Viewport viewport = context.getWorkbenchContext().getLayerViewPanel()
                 .getViewport();
         Resolution requestedRes = RasterImageIO

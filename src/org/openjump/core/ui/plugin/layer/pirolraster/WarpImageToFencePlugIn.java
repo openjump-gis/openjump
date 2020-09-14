@@ -9,6 +9,7 @@
  */
 package org.openjump.core.ui.plugin.layer.pirolraster;
 
+import java.awt.Point;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.util.Random;
@@ -134,12 +135,11 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
         } catch (RuntimeException e1) {
         }
 
-    //    Point point = RasterImageIO.getImageDimensions(outFile
-    //            .getAbsolutePath());
-    //    Envelope env = RasterImageIO.getGeoReferencing(
-    //            outFile.getAbsolutePath(), true, point);
+        Point point = RasterImageIO.getImageDimensions(outFile
+               .getAbsolutePath());
         Envelope env = RasterImageIO.getGeoReferencing(
-                outFile.getAbsolutePath());
+               outFile.getAbsolutePath(), true, point);
+         
         Viewport viewport = context.getWorkbenchContext().getLayerViewPanel()
                 .getViewport();
         Resolution requestedRes = RasterImageIO
