@@ -429,7 +429,6 @@ public class RasterImageIO {
 	
 	/**
 	 * Substituted by method getGeoReferencing(String fileName)
-	 * @deprecated
 	 * @param fileName
 	 * @param allwaysLookForTFWExtension
 	 * @param imageDimensions
@@ -437,7 +436,7 @@ public class RasterImageIO {
 	 * @throws Exception
 	 */
 	
- 	@Deprecated
+ 	 
 	public static Envelope getGeoReferencing(String fileName,
 			boolean allwaysLookForTFWExtension, Point imageDimensions) throws Exception {
 
