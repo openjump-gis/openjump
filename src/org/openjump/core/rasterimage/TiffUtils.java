@@ -1,7 +1,5 @@
 package org.openjump.core.rasterimage;
 
-import static org.openjump.core.rasterimage.RasterImageIO.getGeoReferencing;
-
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
@@ -63,7 +61,7 @@ public class TiffUtils {
         }
         
      //   Envelope wholeImageEnvelope = getGeoReferencing(tiffFile.getAbsolutePath(), true, new Point (originalImageWidth, originalImageHeight));
-        Envelope wholeImageEnvelope = getGeoReferencing(tiffFile.getAbsolutePath());
+        Envelope wholeImageEnvelope = tiffMetadata.getEnvelope();
         if(requestedRes == null) {
             requestedRes = cellSize;
         }

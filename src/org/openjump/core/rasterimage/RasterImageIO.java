@@ -117,9 +117,8 @@ public class RasterImageIO {
 				}
 
 			}
-			Envelope envelope = getGeoReferencing(fileNameOrURL);
-			//Envelope envelope = getGeoReferencing(fileNameOrURL, true,
-			//		new Point(bImage.getWidth(), bImage.getHeight()));
+			 Envelope envelope = getGeoReferencing(fileNameOrURL, true,
+			 	new Point(bImage.getWidth(), bImage.getHeight()));
 			double cellSize = (envelope.getMaxX() - envelope.getMinX())
 					/ bImage.getWidth();
 			return new ImageAndMetadata(bImage, new Metadata(envelope,
@@ -136,7 +135,7 @@ public class RasterImageIO {
 			int imgWidth = tiffMetadata.getColsCount();
 			int imgHeight = tiffMetadata.getRowsCount();
 
-			Envelope imageEnvelope = getGeoReferencing(fileNameOrURL);
+			Envelope imageEnvelope = tiffMetadata.getEnvelope();
 		//	Envelope imageEnvelope = getGeoReferencing(fileNameOrURL, true,
 		//			new Point(imgWidth, imgHeight));
 
@@ -422,11 +421,11 @@ public class RasterImageIO {
 	 * @throws ReferencedImageException
 	 */
 	
-	public static Envelope getGeoReferencing(String fileName) throws ReferencedImageException {
+/*	public static Envelope getGeoReferencing(String fileName) throws ReferencedImageException {
 		GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(new File(fileName).toURI().toString());
 	return geoRaster.getEnvelope();
 	
-	}
+	}*/
 	
 	/**
 	 * Substituted by method getGeoReferencing(String fileName)
