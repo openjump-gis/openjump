@@ -1,10 +1,6 @@
 package org.openjump.core.rasterimage;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jump.workbench.Logger;
-import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
-import com.vividsolutions.jump.workbench.imagery.geoimg.GeoReferencedRaster;
+import static org.openjump.core.rasterimage.RasterImageIO.getGeoReferencing;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -17,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
@@ -27,12 +24,17 @@ import javax.media.jai.util.ImagingListener;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageParser;
-import static org.openjump.core.rasterimage.RasterImageIO.getGeoReferencing;
 import org.xml.sax.SAXException;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.imagery.geoimg.GeoReferencedRaster;
 
 /**
  *
@@ -60,8 +62,8 @@ public class TiffUtils {
                     envelope.getHeight() / originalImageHeight);
         }
         
-        Envelope wholeImageEnvelope = getGeoReferencing(tiffFile.getAbsolutePath(), true, new Point (originalImageWidth, originalImageHeight));
-        
+     //   Envelope wholeImageEnvelope = getGeoReferencing(tiffFile.getAbsolutePath(), true, new Point (originalImageWidth, originalImageHeight));
+        Envelope wholeImageEnvelope = getGeoReferencing(tiffFile.getAbsolutePath());
         if(requestedRes == null) {
             requestedRes = cellSize;
         }
@@ -153,7 +155,7 @@ public class TiffUtils {
 
         if(iterator != null && iterator.hasNext()) {
             
-            ImageReader imageReader = (ImageReader) iterator.next();
+            ImageReader imageReader = iterator.next();
             imageReader.setInput(imageInputStream);
             for(int i=0; i<imageReader.getNumImages(true); i++) {
                 if(i + indexStart == overviewIndex) {

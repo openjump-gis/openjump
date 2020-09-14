@@ -117,9 +117,9 @@ public class RasterImageIO {
 				}
 
 			}
-
-			Envelope envelope = getGeoReferencing(fileNameOrURL, true,
-					new Point(bImage.getWidth(), bImage.getHeight()));
+			Envelope envelope = getGeoReferencing(fileNameOrURL);
+			//Envelope envelope = getGeoReferencing(fileNameOrURL, true,
+			//		new Point(bImage.getWidth(), bImage.getHeight()));
 			double cellSize = (envelope.getMaxX() - envelope.getMinX())
 					/ bImage.getWidth();
 			return new ImageAndMetadata(bImage, new Metadata(envelope,
@@ -136,8 +136,9 @@ public class RasterImageIO {
 			int imgWidth = tiffMetadata.getColsCount();
 			int imgHeight = tiffMetadata.getRowsCount();
 
-			Envelope imageEnvelope = getGeoReferencing(fileNameOrURL, true,
-					new Point(imgWidth, imgHeight));
+			Envelope imageEnvelope = getGeoReferencing(fileNameOrURL);
+		//	Envelope imageEnvelope = getGeoReferencing(fileNameOrURL, true,
+		//			new Point(imgWidth, imgHeight));
 
 			Overviews overviews = OverviewsUtils.getOverviews(new File(
 					fileNameOrURL), imageEnvelope);
@@ -296,9 +297,9 @@ public class RasterImageIO {
 			Coordinate coordinate, int band) throws Exception {
 
 		Point imageDims = getImageDimensions(fileNameOrURL);
-
-		Envelope envelope = getGeoReferencing(fileNameOrURL, true, new Point(
-				imageDims.x, imageDims.y));
+		Envelope envelope = getGeoReferencing(fileNameOrURL);
+		//Envelope envelope = getGeoReferencing(fileNameOrURL, true, new Point(
+		//		imageDims.x, imageDims.y));
 		double cellSizeX = (envelope.getMaxX() - envelope.getMinX())
 				/ imageDims.x;
 		double cellSizeY = (envelope.getMaxY() - envelope.getMinY())
@@ -414,6 +415,30 @@ public class RasterImageIO {
 		return null;
 	}
 
+	/**
+	 * Get Envelope  from file 
+	 * @param fileName
+	 * @return Envelope
+	 * @throws ReferencedImageException
+	 */
+	
+	public static Envelope getGeoReferencing(String fileName) throws ReferencedImageException {
+		GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(new File(fileName).toURI().toString());
+	return geoRaster.getEnvelope();
+	
+	}
+	
+	/**
+	 * Substituted by method getGeoReferencing(String fileName)
+	 * @deprecated
+	 * @param fileName
+	 * @param allwaysLookForTFWExtension
+	 * @param imageDimensions
+	 * @return Envelope
+	 * @throws Exception
+	 */
+	
+ 	@Deprecated
 	public static Envelope getGeoReferencing(String fileName,
 			boolean allwaysLookForTFWExtension, Point imageDimensions) throws Exception {
 
@@ -610,14 +635,15 @@ public class RasterImageIO {
 			}
 		}
 		return env;
-	}
+	} 
 
 	public static CellSizeXY getCellSize(String fileNameOrURL) throws Exception {
 
 		Point imageDims = getImageDimensions(fileNameOrURL);
 
-		Envelope envelope = getGeoReferencing(fileNameOrURL, true, new Point(
-				imageDims.x, imageDims.y));
+		Envelope envelope = getGeoReferencing(fileNameOrURL);
+	//	Envelope envelope = getGeoReferencing(fileNameOrURL, true, new Point(
+//				imageDims.x, imageDims.y));
 		double cellSizeX = (envelope.getMaxX() - envelope.getMinX())
 				/ imageDims.x;
 		double cellSizeY = (envelope.getMaxY() - envelope.getMinY())
@@ -839,9 +865,9 @@ public class RasterImageIO {
 	public static Resolution calcRequestedResolution(Viewport viewport) {
 
 		double xRes = viewport.getEnvelopeInModelCoordinates().getWidth()
-				/ (double) viewport.getPanel().getVisibleRect().width;
+				/ viewport.getPanel().getVisibleRect().width;
 		double yRes = viewport.getEnvelopeInModelCoordinates().getHeight()
-				/ (double) viewport.getPanel().getVisibleRect().height;
+				/ viewport.getPanel().getVisibleRect().height;
 
 		return new Resolution(xRes, yRes);
 	}
