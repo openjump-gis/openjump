@@ -38,6 +38,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.util.Timer;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.AbstractLayerable;
@@ -544,8 +545,9 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
 //        Rectangle visibleRect = viewport.getPanel().getVisibleRect();
             
         Resolution requestedRes = RasterImageIO.calcRequestedResolution(viewport);
-        
+        long start = Timer.milliSecondsSince(0);
         ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(getWorkbenchContext(), imageFileName, stats, viewport.getEnvelopeInModelCoordinates(), requestedRes);
+        Logger.info("Reading '"+getName()+"' took "+Timer.secondsSinceString(start)+"s.");
         metadata = imageAndMetadata.getMetadata();
         image = imageAndMetadata.getImage();
         numBands = metadata.getStats().getBandCount();
