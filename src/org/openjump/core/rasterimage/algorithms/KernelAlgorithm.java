@@ -1,5 +1,6 @@
 package org.openjump.core.rasterimage.algorithms;
 
+import java.awt.Point;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
