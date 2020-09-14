@@ -1,6 +1,5 @@
 package org.openjump.core.rasterimage.algorithms;
 
-import java.awt.Point;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
@@ -115,12 +114,12 @@ public class KernelAlgorithm {
     public String Description02_Laplace = "Laplacian filters are often used for edge detection. They are often applied to an image that has first been smoothed to reduce its sensitivity to noise.";
     public String Description03_LineDetection = "Line detection filters, like the gradient filters, can be used to perform edge detection. You may get better results if you apply a smoothing algorithm before an edge detection algorithm.";
     public String Description04_Roberts = "Roberts filters uses two 2 by 2 kernels to measure gradients in opposing diagonal directions";
-    public String Description05_Prewit = "Mathematically, the operator uses two 3×3 kernels which are convolved with the original image to calculate approximations of the derivatives - one for horizontal changes, and one for vertical";
+    public String Description05_Prewit = "Mathematically, the operator uses two 3ï¿½3 kernels which are convolved with the original image to calculate approximations of the derivatives - one for horizontal changes, and one for vertical";
     public String Description06_Sharpening = "The Sharpening (high-pass) filter accentuates the comparative difference in the values with its neighbors.";
     public String Description07_Smoothing = "Smoothing (low-pass) filters smooth the data by reducing local variation and removing noise.The low-pass filter calculates the average (mean) value for each neighborhood. ";
     public String Description08_Point = "The point spread function portrays the distribution of light from a point source through a lense. This will introduce a slight blurring effect.";
     public String Description08_Others = "Blur and Emboss filters";
-    public String Description10_Sobel = "Sobel filters are used to edge detection. The operator uses two 3×3 kernels which are convolved with the original image to calculate approximations of the derivatives – one for horizontal changes, and one for vertical.";
+    public String Description10_Sobel = "Sobel filters are used to edge detection. The operator uses two 3ï¿½3 kernels which are convolved with the original image to calculate approximations of the derivatives ï¿½ one for horizontal changes, and one for vertical.";
 
     public String S_gradientEast = "Gradient East";
     public String S_gradientNord = "Gradient North";
@@ -194,7 +193,7 @@ public class KernelAlgorithm {
     public float[] roberts_horizontal = { 0f, -1f, 1f, 0f };
     public float[] roberts_vertical = { -1f, 0f, 0f, 1f };
 
-    //Mathematically, the operator uses two 3×3 kernels which are convolved with the original image to calculate approximations of the derivatives - one for horizontal changes, and one for vertical
+    //Mathematically, the operator uses two 3ï¿½3 kernels which are convolved with the original image to calculate approximations of the derivatives - one for horizontal changes, and one for vertical
     public float[] prewitt_vertical = { -1f, 0f, 1f, -1f, 0f, 1f, -1f, 0f, 1f };
     public float[] prewitt_horizontal = { -1f, -1f, -1f, 0f, 0f, 0f, 1f, 1f, 1f };
 
@@ -329,11 +328,12 @@ public class KernelAlgorithm {
             Exception {
 
         final RasterImageIO rasterImageIO = new RasterImageIO();
-        final Point point = RasterImageIO.getImageDimensions(outFile
-                .getAbsolutePath());
+     //   final Point point = RasterImageIO.getImageDimensions(outFile
+     //           .getAbsolutePath());
+     //   final Envelope env = RasterImageIO.getGeoReferencing(
+     //           outFile.getAbsolutePath(), true, point);
         final Envelope env = RasterImageIO.getGeoReferencing(
-                outFile.getAbsolutePath(), true, point);
-
+                outFile.getAbsolutePath());
         final Viewport viewport = frame.getContext().getLayerViewPanel()
                 .getViewport();
         final Resolution requestedRes = RasterImageIO

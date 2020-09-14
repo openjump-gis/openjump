@@ -381,11 +381,12 @@ public class GenericRasterAlgorithm {
             Exception {
 
         final RasterImageIO rasterImageIO = new RasterImageIO();
-        final Point point = RasterImageIO.getImageDimensions(inputFile
-                .getAbsolutePath());
+    //    final Point point = RasterImageIO.getImageDimensions(inputFile
+    //            .getAbsolutePath());
+    //    final Envelope env = RasterImageIO.getGeoReferencing(
+    //            inputFile.getAbsolutePath(), true, point);
         final Envelope env = RasterImageIO.getGeoReferencing(
-                inputFile.getAbsolutePath(), true, point);
-
+                inputFile.getAbsolutePath());
         final Viewport viewport = frame.getContext().getLayerViewPanel()
                 .getViewport();
         final Resolution requestedRes = RasterImageIO
