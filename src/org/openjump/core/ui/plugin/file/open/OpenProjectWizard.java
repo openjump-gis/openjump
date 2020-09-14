@@ -1,7 +1,6 @@
 package org.openjump.core.ui.plugin.file.open;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.image.Raster;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,8 +16,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.xml.namespace.QName;
 
-import com.vividsolutions.jump.workbench.Logger;
-import com.vividsolutions.jump.workbench.model.*;
 import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
@@ -45,7 +42,15 @@ import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.util.java2xml.XML2Java;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.model.Category;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.LayerView;
+import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.model.Task;
+import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
@@ -418,9 +423,11 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             throws Exception {
 
         RasterImageIO rasterImageIO = new RasterImageIO();
-        Point point = RasterImageIO.getImageDimensions(ril.getImageFileName());
-        Envelope env = RasterImageIO.getGeoReferencing(ril.getImageFileName(),
-                true, point);
+        //   Point point = RasterImageIO.getImageDimensions(ril.getImageFileName());
+        
+        //    Envelope env = RasterImageIO.getGeoReferencing(ril.getImageFileName(),
+        //           true, point);
+            Envelope env = RasterImageIO.getGeoReferencing(ril.getImageFileName());
 
         Viewport viewport = context.getLayerViewPanel().getViewport();
         Resolution requestedRes = RasterImageIO
