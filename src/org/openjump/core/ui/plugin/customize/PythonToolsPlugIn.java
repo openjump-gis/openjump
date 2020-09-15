@@ -66,30 +66,16 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
 public class PythonToolsPlugIn extends ToolboxPlugIn {
 
-  private static String sName = "Python Console and Tools";
   private static final ImageIcon icon = IconLoader
       .icon("famfam/application_python.png");
 
   public String getName() {
-    return sName;
+    return I18N
+        .get("org.openjump.core.ui.plugin.customize.PythonToolsPlugIn.Python-Console-and-Tools");
   }
 
   public void initialize(PlugInContext context) throws Exception {
-    this.sName = I18N
-        .get("org.openjump.core.ui.plugin.customize.PythonToolsPlugIn.Python-Console-and-Tools");
-    // [sstein - old, access via button]
-    // context.getWorkbenchContext().getWorkbench().getFrame().getToolBar().addPlugIn(getIcon(),
-    // this, createEnableCheck(context.getWorkbenchContext()),
-    // context.getWorkbenchContext());
-    // [sstein - neu, access via menu]
-    FeatureInstaller featureInstaller = new FeatureInstaller(
-        context.getWorkbenchContext());
-    featureInstaller.addMainMenuItem(this, // exe
-        new String[] { MenuNames.CUSTOMIZE }, // menu path
-        this.sName + "...", // name methode .getName recieved by AbstractPlugIn
-        false, // checkbox
-        null, // icon
-        createEnableCheck(context.getWorkbenchContext())); // enable check
+    FeatureInstaller.getInstance().addMainMenuPlugin(this, new String[] { MenuNames.CUSTOMIZE });
   }
 
   protected void initializeToolbox(ToolboxDialog toolbox) {
@@ -155,7 +141,7 @@ public class PythonToolsPlugIn extends ToolboxPlugIn {
   public MultiEnableCheck createEnableCheck(
       final WorkbenchContext workbenchContext) {
     EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-    return new MultiEnableCheck().add(checkFactory
+    return new MultiEnableCheck().add(super.getEnableCheck()).add(checkFactory
         .createTaskWindowMustBeActiveCheck());
   }
 }

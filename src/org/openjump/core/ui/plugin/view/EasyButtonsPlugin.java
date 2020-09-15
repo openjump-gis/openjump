@@ -44,6 +44,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
@@ -57,8 +58,8 @@ public class EasyButtonsPlugin extends ToolboxPlugIn {
   private EasyPanel buttonPanel = null;
 
   public void initialize(final PlugInContext context) throws Exception {
-    createMainMenuItem(new String[] { MenuNames.CUSTOMIZE }, getIcon(),
-        context.getWorkbenchContext());
+    FeatureInstaller.getInstance().addMainMenuPlugin(this, new String[] { MenuNames.CUSTOMIZE });
+
     // Wait 2 seconds because EasyButtonsPlugIn needs all menu items
     // to be initialized first
     // Initialization is done here rather than in initializeToolbox because
