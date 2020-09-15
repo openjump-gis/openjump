@@ -42,11 +42,12 @@ import javax.swing.JDialog;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.CheckBoxed;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
-public abstract class ToolboxPlugIn extends AbstractPlugIn {
+public abstract class ToolboxPlugIn extends AbstractPlugIn implements CheckBoxed {
   // just one toolbox instance for plugins switching the same toolbox
   private static HashMap toolboxMap = new HashMap<String,ToolboxDialog>();
 
@@ -96,7 +97,7 @@ public abstract class ToolboxPlugIn extends AbstractPlugIn {
       final WorkbenchContext context) throws Exception {
     // this has a checkbox prepended if there is no icon
     new FeatureInstaller(context).addMainMenuPlugin(this, menuPath, getName()
-        + "...", (icon == null), icon, getEnableCheck());
+        + "...", true, icon, getEnableCheck());
   }
 
   public EnableCheck getEnableCheck() {
