@@ -4,6 +4,11 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-09-14 Giuseppe Aruta
+  * Raster Pixel Inspection. Added capability to retrieve a set of pixel 
+    values in a table dragging on an area of the raster (like pixel inspector 
+    in ArcGIS) - currently limited to the first band
+
 2020-09-14 mmichaud <m.michael.michaud@orange.fr>
   * fix #503 : 0.5 pixel shift on raster display
 
