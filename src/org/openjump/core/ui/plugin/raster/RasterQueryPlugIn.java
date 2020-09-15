@@ -45,6 +45,8 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.cursortool.OrCompositeTool;
+import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class RasterQueryPlugIn extends AbstractPlugIn {
@@ -61,7 +63,8 @@ public class RasterQueryPlugIn extends AbstractPlugIn {
     private final static String sErrorSeeOutputWindow = I18N
             .get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
 
-    public void initialize(PlugInContext context) throws Exception {
+    @Override
+	public void initialize(PlugInContext context) throws Exception {
 
         context.getFeatureInstaller()
                 .addMainMenuPlugin(
@@ -81,11 +84,22 @@ public class RasterQueryPlugIn extends AbstractPlugIn {
     }
     
     
-    public boolean execute(PlugInContext context) throws Exception {
+    @Override
+	public boolean execute(PlugInContext context) throws Exception {
         try {
 
-            context.getLayerViewPanel().setCurrentCursorTool(
-                    new RasterQueryCursorTool());
+        	
+        	context.getLayerViewPanel().setCurrentCursorTool(QuasimodeTool.createWithDefaults((new OrCompositeTool() 
+        	{
+                 @Override
+				public String getName() {
+                   return "Test dragging to retrive a set of values";
+                 }
+               }).add(new RasterQueryCursorTool()).add(new RasterQueryDragTool())));
+        	
+        	 
+       //     context.getLayerViewPanel().setCurrentCursorTool(
+       //             new RasterQueryCursorTool());
             return true;
         } catch (Exception e) {
             e.printStackTrace();
