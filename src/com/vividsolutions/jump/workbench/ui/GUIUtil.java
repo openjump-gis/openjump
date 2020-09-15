@@ -819,7 +819,31 @@ public class GUIUtil {
       return image;
     }
   }
-  
+
+  public static ImageIcon toImageIcon(Icon icon) {
+    if (icon instanceof ImageIcon) {
+      return ((ImageIcon) icon);
+    }
+    
+    return new ImageIcon(toImage(icon));
+  }
+
+  /**
+   * Create an ImageIcon from given color and dimensions
+   * 
+   * @param color
+   * @param width
+   * @param height
+   * @return
+   */
+  public static ImageIcon fromColor(Color color, int width, int height) {
+    BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    Graphics g = img.getGraphics();
+    g.setColor(color);
+    g.fillRect(0,0,width,height);
+    return new ImageIcon(img);
+  }
+
   /**
    * resize to a square, even non square images
    * 
@@ -842,7 +866,7 @@ public class GUIUtil {
    */
   public static ImageIcon resize(ImageIcon icon, int extent_x, int extent_y) {
     return new ImageIcon(icon.getImage().getScaledInstance(extent_x, extent_y,
-        Image.SCALE_SMOOTH));
+        Image.SCALE_AREA_AVERAGING));
   }
 
   /**
@@ -871,10 +895,24 @@ public class GUIUtil {
    * @return the enlarged ImageIcon
    */
   public static ImageIcon pad(ImageIcon icon, int border) {
-    BufferedImage padded = new BufferedImage(icon.getIconWidth() + 2 * border,
-        icon.getIconHeight() + 2 * border, BufferedImage.TYPE_INT_ARGB);
+    return pad( icon, border, border, border, border);
+  }
+
+  /**
+   * Enlarge icon by padding it by given number of pixels
+   * 
+   * @param icon
+   * @param top
+   * @param left
+   * @param bottom
+   * @param right
+   * @return
+   */
+  public static ImageIcon pad(ImageIcon icon, int top, int left, int bottom, int right) {
+    BufferedImage padded = new BufferedImage(icon.getIconWidth() + left + right,
+        icon.getIconHeight() + top + bottom, BufferedImage.TYPE_INT_ARGB);
     Graphics g = padded.createGraphics();
-    g.drawImage(icon.getImage(), border, border, null);
+    g.drawImage(icon.getImage(), left, top, null);
     return new ImageIcon(padded);
   }
 
