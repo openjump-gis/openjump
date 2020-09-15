@@ -339,7 +339,7 @@ public class FeatureInstaller {
     if (checkboxSetting.equals(WorkbenchProperties.ATTR_VALUE_TRUE))
       checkBox = true;
 
-    JMenuItem menuItem = createMenuItem(menuItemName, checkBox);
+    JMenuItem menuItem = createMenuItem(menuItemName, checkBox, icon);
     menuItem = addMainMenuPluginItemWithPostProcessing(executable, menuPath,
         menuItem, icon, enableCheck, pos);
     return menuItem;
@@ -363,7 +363,7 @@ public class FeatureInstaller {
     // check and replace with checkbox item if necessary
     if (executable instanceof CheckBoxed
         && !(menuItem instanceof JCheckBoxMenuItem))
-      menuItem = createMenuItem(menuItem.getText(), true);
+      menuItem = createMenuItem(menuItem.getText(), true, icon);
 
     // we silently ignore the pos argument as positions are defined in xml or
     // not at all
@@ -397,7 +397,7 @@ public class FeatureInstaller {
     if (checkBoxSetting.equals(WorkbenchProperties.ATTR_VALUE_TRUE))
       checkBox = true;
 
-    JMenuItem menuItem = createMenuItem(plugin.getName(), checkBox);
+    JMenuItem menuItem = createMenuItem(plugin.getName(), checkBox, null);
     return addMenuPluginItem(menu, plugin, new String[] {}, menuItem, null, null);
 
   }
@@ -857,7 +857,7 @@ public class FeatureInstaller {
       EnableCheck enableCheck) {
 
     checkBox = checkBox || executable instanceof CheckBoxed;
-    JMenuItem menuItem = createMenuItem(menuItemName, checkBox);
+    JMenuItem menuItem = createMenuItem(menuItemName, checkBox, icon);
 
     return addMenuPluginItem(wrapMenu(popupMenu), executable, menuPath,
         menuItem, icon, enableCheck);
@@ -1877,9 +1877,54 @@ public class FeatureInstaller {
     }
   }
 
-  private JMenuItem createMenuItem(String menuItemName, boolean checkBox) {
-    return checkBox ? new JCheckBoxMenuItem(menuItemName) : new JMenuItem(
-        menuItemName);
+  private JMenuItem createMenuItem(String menuItemName, boolean checkBox, Icon icon) {
+    JMenuItem item;
+    if (checkBox) {
+      // create the checkbox menuitem
+      JCheckBoxMenuItem cbi = new JCheckBoxMenuItem(menuItemName, icon) {
+        Icon def = null;
+        ImageIcon sel = null;
+
+        /**
+         * this is a workaround because JCheckBoxMenuItem.setSelectedIcon() and friends do f**k all
+         * 
+         * switch the icon on windows to indicate selection via a green tick
+         * when the selected state changes
+         */
+        @Override
+        public void setSelected(boolean b) {
+          // TODO Auto-generated method stub
+          super.setSelected(b);
+          
+          // all except of the new windows skin have a tick in front of the icon
+          // hence no need to switch icons in that case
+          if (!vista_checkbox_workaround()) {
+            // restore default icon, if set, skin might have been switched
+            if ( def != null && getIcon() != def ) setIcon(def);
+            return;
+          }
+
+          // save default icon, unselected state
+          if (def == null)
+            def = getIcon();
+
+          // no def no fun
+          if (def instanceof ImageIcon) {
+            // draw selected icon, add a tick over the default icon
+            if (sel == null)
+              sel = GUIUtil.overlay(GUIUtil.pad(GUIUtil.resize(GUIUtil.toImageIcon(getIcon()), 12), 0, 0, 4, 4),
+                  GUIUtil.resize(IconLoader.icon("famfam/tick.png"), 12), 4, 4);
+            setIcon(isSelected() ? sel : def);
+          }
+        }
+      };
+
+      item = cbi;
+    } else {
+      item = new JMenuItem(menuItemName, icon);
+    }
+
+    return item;
   }
 
   private void associate(JMenuItem menuItem, PlugIn plugIn) {
@@ -1898,12 +1943,13 @@ public class FeatureInstaller {
   // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7122141
   // we simply leave out the icon, so the tick is displayed instead of the
   // icon with a blue background
-  private boolean vista_checkbox_workaround = CheckOS.isWindows()
-      && Float.valueOf(System.getProperty("os.version")) >= 6
-      && UIManager.getLookAndFeel().getClass().getName()
-          .equals("com.sun.java.swing.plaf.windows.WindowsLookAndFeel")
-      // check windows vista/7 really uses native l&f, not Windows Classic
-      && UIManager.get("CheckBoxMenuItem.checkIconFactory") != null;
+  private static boolean vista_checkbox_workaround() {
+    boolean b = CheckOS.isWindows() && Float.valueOf(System.getProperty("os.version")) >= 6
+        && UIManager.getLookAndFeel().getClass().getName().equals("com.sun.java.swing.plaf.windows.WindowsLookAndFeel")
+        // check windows vista/7 really uses native l&f, not Windows Classic
+        && UIManager.get("CheckBoxMenuItem.checkIconFactory") != null;
+    return b;
+  }
 
   private void addMenuItemIcon(JMenuItem menuItem, Icon icon) {
     // no icons for radio/checkbox on windows laf on vista+, the "highlighted"
@@ -1912,8 +1958,8 @@ public class FeatureInstaller {
     // as items are created with or w/o icon during startup. however it will
     // work correctly when the new skin is restored after a restart
     // [ ede 5.4.2012 ]
-    if (vista_checkbox_workaround
-        && (menuItem instanceof JRadioButtonMenuItem || menuItem instanceof JCheckBoxMenuItem))
+    if (vista_checkbox_workaround()
+        && (menuItem instanceof JRadioButtonMenuItem /*|| menuItem instanceof JCheckBoxMenuItem*/))
       return;
     // ignore null values
     if (icon instanceof Icon)
