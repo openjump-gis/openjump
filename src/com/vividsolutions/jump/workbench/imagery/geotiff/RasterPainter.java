@@ -18,16 +18,13 @@ public class RasterPainter
   double scaleCached;
   RenderedOp imgScaled;
   RenderedOp imgWindow;
-  RenderedOp imgRescaled;
+  //RenderedOp imgRescaled;
 
   // Rescaling parameters
   final static double DEFAULT_RESCALINGCONSTANT = 1;
   final static double DEFAULT_RESCALINGOFFSET = 0;
   double rescalingConstant = DEFAULT_RESCALINGCONSTANT;
   double rescalingOffset = DEFAULT_RESCALINGOFFSET;
-
-//  private final int VIEWPORT_MINX = 0;
-//  private final int VIEWPORT_MINY = 0;
 
   boolean enabled = true;
 
@@ -47,9 +44,9 @@ public class RasterPainter
   }
 
   /**
-   * @param image
-   * @param constant
-   * @param offset
+   * @param image the image to rescale
+   * @param constant multiplication factor
+   * @param offset offset
    * @return
    */
   private RenderedOp rescale(RenderedOp image, double constant, double offset)
@@ -136,48 +133,50 @@ public class RasterPainter
       scaleCached = scale;
     }
 
-    // Next, crop the part which is needed out of the scaled image.
-    // First compute the ratio of the image outside the viewport
+    // Compute the ratio of the image to crop (located on the left of the viewport)
     double ratio_cropX = (envModel_viewport.getMinX() - geoRaster.getEnvelope()
         .getMinX())
         / geoRaster.getEnvelope().getWidth();
+    // Compute the ratio of the image to crop (located on the north of the viewport)
     double ratio_cropY = (geoRaster.getEnvelope().getMaxY() - envModel_viewport
         .getMaxY())
         / geoRaster.getEnvelope().getHeight();
+    // Compute the ratio between the complete image and the viewport
     double ratio_cropW = envModel_viewport.getWidth()
         / geoRaster.getEnvelope().getWidth();
     double ratio_cropH = envModel_viewport.getHeight()
         / geoRaster.getEnvelope().getHeight();
 
     // Compute crop parameters, applying ratio on the scaled image
-    // What is the need for rounding crop paramaters to ints there ?
     float raster_cropX = (float) (ratio_cropX * imgScaled.getWidth());
     float raster_cropY = (float) (ratio_cropY * imgScaled.getHeight());
     float raster_cropW = (float) (ratio_cropW * imgScaled.getWidth());
     float raster_cropH = (float) (ratio_cropH * imgScaled.getHeight());
 
-
+    // Compute the offset to be applied on the scaled image
+    // to shift the image of 1/2 pixel in the upper left direction
     double pixelSizeX = geoRaster.getDblModelUnitsPerRasterUnit_X();
     double pixelSizeY = geoRaster.getDblModelUnitsPerRasterUnit_Y();
     float raster_offsetX = (float)(-0.5*pixelSizeX*scale);
     float raster_offsetY = (float)(-0.5*pixelSizeY*scale);
 
     // left border of the image is on the right of the left border of the viewport
+    // image is not cropped, it is shifted to the right
     if (raster_cropX < 0)
     {
       raster_offsetX = raster_offsetX-raster_cropX;
       raster_cropX = 0;
     }
     // upper border of the image is on the bottom of the upper border of the viewport
+    // image is not cropped, it is shifted to the south
     if (raster_cropY < 0)
     {
       raster_offsetY = raster_offsetY-raster_cropY;
       raster_cropY = 0;
     }
-    raster_cropW = Math.min(raster_cropW, imgScaled.getWidth()
-        - (int) raster_cropX);
-    raster_cropH = Math.min(raster_cropH, imgScaled.getHeight()
-        - (int) raster_cropY);
+    // width and height of the scaled image to be displayed
+    raster_cropW = Math.min(raster_cropW, imgScaled.getWidth() - raster_cropX);
+    raster_cropH = Math.min(raster_cropH, imgScaled.getHeight() - raster_cropY);
 
     ParameterBlock pb = new ParameterBlock();
     pb.addSource(imgScaled);
@@ -216,7 +215,7 @@ public class RasterPainter
 
     g.setComposite(AlphaComposite.SrcOver);
     // The image has been translated and scaled by JAI
-    // allready. Just draw it with an identity transformation.
+    // already. Just draw it with an identity transformation.
     g.drawRenderedImage(imgRescaled, new AffineTransform());
   }
 
