@@ -100,7 +100,7 @@ public class JTablePanel extends JPanel {
                         value, isSelected, hasFocus, row, column);
                 c.setBackground(row % 2 == 0 ? Color.white : LIGHT_GRAY);
                 if (isSelected) {
-                    c.setBackground(Color.black);
+                    c.setBackground(Color.cyan);
                 }
                 return c;
             };
