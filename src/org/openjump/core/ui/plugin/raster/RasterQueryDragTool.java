@@ -42,7 +42,6 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
-import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.Raster;
 import java.io.IOException;
@@ -63,7 +62,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
-import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -176,86 +174,7 @@ public class RasterQueryDragTool extends RectangleTool {
 
     }
 
-     
-    
-    /*
-     * Displays cell values on system bar while moving cursor on the raster
-     */
-    PlugInContext gContext;
-
-   
-    
-    public double cellValue(MouseEvent me,RasterImageLayer layer,Coordinate coordinate, int band) {
-    	double value =0.0D;
-    	try {
-    	value=	layer.getCellValue(coordinate, band);
-    	}catch (Exception e) {
-    	Object object;
-		try {
-			object = layer.getRasterData(null).getDataElements(me.getX(), me.getY(), band);
-		value =new Double(object.toString());
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-    	
-    	}   
-    	return value;
-    }
-    
-    
-    
-    @Override
-   public void mouseMoved(MouseEvent me) {
-
-        final WorkbenchContext wbcontext = this.getWorkbench().getContext();
-          
-        for (Object layerable : wbcontext.getLayerableNamePanel().selectedNodes(Layerable.class)) {
-            Layerable layer = (Layerable)layerable;
-        
-                if (layer instanceof RasterImageLayer) {
-        String cellValues = null;
-        try {
-            cellValues = "";
-            Double cellValue = Double.NaN;
-            Coordinate tentativeCoordinate = getPanel().getViewport()
-                    .toModelCoordinate(me.getPoint());
-            for (int b = 0; b < ((RasterImageLayer) layer).getNumBands(); b++) {
-            	
-            	// cellValue = cellValue(me,((RasterImageLayer) layer),tentativeCoordinate, b);
-               try {
-				cellValue = ((RasterImageLayer) layer).getCellValue(tentativeCoordinate.x,
-				            tentativeCoordinate.y, b);
-			} catch (RasterDataNotFoundException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-                
-                if (cellValue != null) {
-                    if (((RasterImageLayer) layer).isNoData(cellValue)) {
-                        cellValues = cellValues.concat(Double
-                                .toString(cellValue))
-                                + "("
-                                + RASTER_NODATA
-                                + ") ";
-                    } else {
-                        cellValues = cellValues.concat(Double
-                                .toString(cellValue));
-                    }
-                }
-                cellValues = cellValues.concat("  ");
-            }
-
-        } catch (NoninvertibleTransformException e) {
-        	 cellValues = " - ";
-        }
-        name = ((RasterImageLayer) layer).getName();
-        getPanel().getContext().setStatusMessage(
-                "[" + LAYER + ": " + name + "] " + VALUE + ": "
-                        + cellValues.toString());}
-        }
-    } 
-    
+      
    
     
     @Override
@@ -307,10 +226,10 @@ public class RasterQueryDragTool extends RectangleTool {
     	});
         
         
-      jTablePanel.setPreferredSize(new Dimension(300,300));
-     
+        jTablePanel.setPreferredSize(new Dimension(400,300));
         
-       JOptionPane.showMessageDialog(null, jTablePanel, "Values",
-             JOptionPane.INFORMATION_MESSAGE);
+        
+        JOptionPane.showOptionDialog(null, jTablePanel, I18N.get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn"), JOptionPane.DEFAULT_OPTION,JOptionPane.PLAIN_MESSAGE, null, 
+      		  new Object[]{}, null);
      }
 }
