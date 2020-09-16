@@ -33,6 +33,7 @@
 
 package org.openjump.core.ui.plugin.raster;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dialog;
@@ -64,47 +65,24 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.JTablePanel;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.RectangleTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class RasterQueryDragTool extends RectangleTool {
 
-    /*
-     * [2013_05_27] Giuseppe Aruta Simple plugin that allows to inspect raster
-     * cell value for DTM ver 0.1 2013_05_27
-     * 
-     * [2014_01_24] Giuseppe Aruta - Extended inspection to multiband raster
-     * layers. Now multiple measure are displayed (and saved) by default. Press
-     * SHIFT to display only last measure. Moving cursor on image shows raster
-     * cell value on lower panel
-     * 
-     * [2014_02_24] Giuseppe Aruta - Fixed minor bug on lower panel [2015_07_08]
-     * Giuseppe Aruta - Fixed bug #407 Sextante raster : displaying cell values
-     * throws NPE
-     */
-
+   
     protected Coordinate tentativeCoordinate;
     public static final String LAYER_NAME = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.values");
     public static final String LAYER = I18N
             .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.layer");
-    private final static String RASTER_NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
-    private String lastClick = "-";
-    // protected int width, height; // The dimensions of the image
-
-    private String VALUE = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
-    private String name;
-    PlugInContext context;
-    LayerNamePanel namePanel;
+ 
     RasterImageLayer rLayer;
 
     public RasterQueryDragTool() {
-    	 setColor(Color.magenta);
+    	setColor(Color.red);
+   	 	setStroke(new BasicStroke(1.5F));
 
     }
 
