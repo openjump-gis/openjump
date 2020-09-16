@@ -136,8 +136,8 @@ public class RasterPainter
       scaleCached = scale;
     }
 
-    // Next, crop the part which is needed out of the
-    // scaled image.
+    // Next, crop the part which is needed out of the scaled image.
+    // First compute the ratio of the image outside the viewport
     double ratio_cropX = (envModel_viewport.getMinX() - geoRaster.getEnvelope()
         .getMinX())
         / geoRaster.getEnvelope().getWidth();
@@ -149,22 +149,29 @@ public class RasterPainter
     double ratio_cropH = envModel_viewport.getHeight()
         / geoRaster.getEnvelope().getHeight();
 
-    float raster_cropX = (int) (ratio_cropX * imgScaled.getWidth());
-    float raster_cropY = (int) (ratio_cropY * imgScaled.getHeight());
-    float raster_cropW = (int) (ratio_cropW * imgScaled.getWidth());
-    float raster_cropH = (int) (ratio_cropH * imgScaled.getHeight());
+    // Compute crop parameters, applying ratio on the scaled image
+    // What is the need for rounding crop paramaters to ints there ?
+    float raster_cropX = (float) (ratio_cropX * imgScaled.getWidth());
+    float raster_cropY = (float) (ratio_cropY * imgScaled.getHeight());
+    float raster_cropW = (float) (ratio_cropW * imgScaled.getWidth());
+    float raster_cropH = (float) (ratio_cropH * imgScaled.getHeight());
 
-    float raster_offsetX = 0;
-    float raster_offsetY = 0;
 
+    double pixelSizeX = geoRaster.getDblModelUnitsPerRasterUnit_X();
+    double pixelSizeY = geoRaster.getDblModelUnitsPerRasterUnit_Y();
+    float raster_offsetX = (float)(-0.5*pixelSizeX*scale);
+    float raster_offsetY = (float)(-0.5*pixelSizeY*scale);
+
+    // left border of the image is on the right of the left border of the viewport
     if (raster_cropX < 0)
     {
-      raster_offsetX = -raster_cropX;
+      raster_offsetX = raster_offsetX-raster_cropX;
       raster_cropX = 0;
     }
+    // upper border of the image is on the bottom of the upper border of the viewport
     if (raster_cropY < 0)
     {
-      raster_offsetY = -raster_cropY;
+      raster_offsetY = raster_offsetY-raster_cropY;
       raster_cropY = 0;
     }
     raster_cropW = Math.min(raster_cropW, imgScaled.getWidth()
