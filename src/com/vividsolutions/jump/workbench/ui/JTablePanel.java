@@ -237,6 +237,17 @@ public class JTablePanel extends JPanel {
     }
 
     /**
+     * Gets all the lower components (save and query tools) of the
+     * panel. Useful to deactivate all
+     * @return JPanel
+     */
+    public JPanel getAllComponetsExceptTable() {
+        return southPanel;
+    }
+    
+    
+    
+    /**
      * Gets the FeatureCollection added to this panel. Useful if user want to
      * save it as a layer
      * 
