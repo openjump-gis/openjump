@@ -94,13 +94,13 @@
         <include>*.txt</include>
       </includes>
     </fileSet>
-    <!-- fileSet>
+    <fileSet>
       <directory>lib/imageio-ext</directory>
       <outputDirectory>/lib/ext/imageio-ext</outputDirectory>
       <includes>
         <include>*</include>
       </includes>
-    </fileSet -->
+    </fileSet>
   </fileSets>
   <files>
     <file>
