@@ -40,6 +40,8 @@ import java.awt.Toolkit;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+
 
 /**
  * Based on "Java Tip 104: Make a splash with Swing" by Tony Colston
@@ -48,6 +50,10 @@ import javax.swing.JFrame;
 public class SplashWindow extends JFrame {
     public SplashWindow(JComponent contents) {
         super();
+
+        // attach icon early to prevent jdk default icon in task bar
+        JUMPWorkbench.setIcon(this);
+
         setUndecorated(true);
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         if (SplashPanelV2.transparentSplash())
