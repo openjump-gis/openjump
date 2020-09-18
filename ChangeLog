@@ -4,9 +4,13 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
-2020-09-18 mike, ede
+2020-09-18 mmichaud, ede
   * prepend jvm argument -Dcom.sun.media.jai.disableMediaLib=true to start
     scripts to avoid errors thrown by JAI due to the absence of mediaLib
+
+2020-09-15 ede
+  * cutify selected menu item icons (checkboxed) on windows 
+    by ticking them visually
 
 2020-09-14 Giuseppe Aruta
   * Raster Pixel Inspection. Added capability to retrieve a set of pixel 
@@ -16,11 +20,22 @@
 2020-09-14 mmichaud <m.michael.michaud@orange.fr>
   * fix #503 : 0.5 pixel shift on raster display
 
+2020-09-13 ede
+  * fix bug #451 Add image layer throwing NPE
+
 2020-09-12 mmichaud <m.michael.michaud@orange.fr>
   * Add an interiorBorder option to BasicStyle
 
+2020-09-11 ede
+  * make geoimg framework more robust if imageio-ext or gdal is missing
+  * add jai-imageio.core (oss successor of sun's jai-core) to OJ CORE
+  * prefer jai-imageio.core readers over all (primarily just TIF n BMP)
+  * upgrade imageio-ext to latest greatest 1.3.2
+  * ImageLayerManagerPlugin shows actually used loader if none was preselected
+
 2020-09-06 ede
   * upgrade commons imaging to 1.0-alpha2
+  * fix IllegalAccessException when using Sun TIFF reader with java9+
 
 2020-09-02 mmichaud <m.michael.michaud@orange.fr>
   * small fix in csv driver -> v1.1.1
