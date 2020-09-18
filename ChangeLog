@@ -4,6 +4,10 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-09-18 mike, ede
+  * prepend jvm argument -Dcom.sun.media.jai.disableMediaLib=true to start
+    scripts to avoid errors thrown by JAI due to the absence of mediaLib
+
 2020-09-14 Giuseppe Aruta
   * Raster Pixel Inspection. Added capability to retrieve a set of pixel 
     values in a table dragging on an area of the raster (like pixel inspector 

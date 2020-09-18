@@ -251,6 +251,9 @@ if awk "BEGIN{if( $JAVA_VERSION >= 9 && $JAVA_VERSION < 11 )exit 0;else exit 1}"
   JAVA_OPTS="--add-modules java.se.ee $JAVA_OPTS"
 fi
 
+# avoid a NoClassDefFoundError when JAI is used
+JAVA_OPTS="-Dcom.sun.media.jai.disableMediaLib=true $JAVA_OPTS"
+
 # in case some additional archives were placed in native dir inbetween
 extract_libs "$JUMP_NATIVE_DIR"
 
