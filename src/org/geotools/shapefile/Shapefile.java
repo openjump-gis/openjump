@@ -146,7 +146,6 @@ public class Shapefile implements TaskMonitorSupport {
                     Logger.warn("found a negative content length (" + contentLength + ")");
                     continue;
                 }
-                long lastUpdatedAt = 0L;
                 try{
                     body = handler.read(file,geometryFactory,contentLength);
                     Logger.debug("" + recordNumber + " : from " + (pos-4) + " for " + contentLength + " (" + body.getNumPoints() + " pts)");
@@ -504,7 +503,6 @@ public class Shapefile implements TaskMonitorSupport {
         TaskMonitorUtil.report(getTaskMonitor(),
             I18N.getMessage("Reader.parsed-{0}-features", String.format("%,10d", count)));
       }
-  
     }
 
 }
