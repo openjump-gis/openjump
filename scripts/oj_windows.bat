@@ -16,6 +16,7 @@ rem -- uncomment to use 'java' and enable debug console output, if unset default
 rem set JAVA_BIN=java
 
 rem -- set some default OJ options here (eg. -v debug), initialize empty --
+rem -- run OJ with '--help' argument to find out which are available --
 set JUMP_OPTS=
 
 rem -- set some java runtime options here, initialize empty --

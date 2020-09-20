@@ -17,6 +17,10 @@
 ## to overwrite OS default locale setting
 #JAVA_LANG="-Duser.language=de -Duser.country=DE"
 
+## uncomment and edit if you want some default OJ parameter set
+## run OJ with '--help' argument to find out which are available
+#JUMP_OPTS="-v DEBUG"
+
 ## set some defaults (as macosx.command uses this script, it might define other defaults)
 MAIN="com.vividsolutions.jump.workbench.JUMPWorkbench"
 JAVA_SAXDRIVER=${JAVA_SAXDRIVER-org.apache.xerces.parsers.SAXParser}
@@ -217,16 +221,16 @@ done
 CLASSPATH=.:./bin:./conf:$CLASSPATH
 export CLASSPATH;
 
-## compile jump opts
+## prepend jump opts
 #
-JUMP_OPTS="-plug-in-directory $JUMP_PLUGIN_DIR"
+JUMP_OPTS="-plug-in-directory '$JUMP_PLUGIN_DIR' $JUMP_OPTS"
 if [ -f "$JUMP_PLUGINS" ]; then
-  JUMP_OPTS="$JUMP_OPTS -default-plugins $JUMP_PLUGINS"
+  JUMP_OPTS="-default-plugins '$JUMP_PLUGINS' $JUMP_OPTS"
 fi
 # workbench-properties.xml is used to manually load plugins (ISA uses this)
 JUMP_PROPERTIES=./bin/workbench-properties.xml
 if [ -n "$JUMP_PROPERTIES" ] && [ -f "$JUMP_PROPERTIES" ]; then
-  JUMP_OPTS="$JUMP_OPTS -properties $JUMP_PROPERTIES"
+  JUMP_OPTS="-properties '$JUMP_PROPERTIES' $JUMP_OPTS"
 fi
 
 # compile jre opts, respect already set ones from e.g. mac
