@@ -209,40 +209,42 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
     return getPriority(loader);
   }
 
-  // return a pririty for the given loader object
+  // return a priority for the given loader object
   public static int getPriority(Object loader) {
     String name = loader.getClass().getName();
     
     // some special cases
     if (name.equals("com.vividsolutions.jump.workbench.imagery.imageio.JP2GDALOpenJPEGImageReaderSpi"))
-      return Prioritized.NOPRIORITY; // currently very unstable
+      return 10; // tested and working well, preferred for JP2
+    if (name.equals("com.vividsolutions.jump.workbench.imagery.imageio.JP2GDALEcwImageReaderSpi"))
+      return 15; // tested and working well, second best choice for JP2 currently
     if (name.equals("it.geosolutions.imageio.plugins.jp2ecw.JP2GDALEcwImageReaderSpi"))
       return Prioritized.NOPRIORITY; // replaced by our patched version under com.vividsolutions.jump.workbench.imagery
     
     // we've got some patched
     if (name.startsWith("com.vividsolutions.jump.workbench.imagery")) {
-      return 10;
+      return 20;
     }
-    // prefer oss jai core implementation over all
+    // prefer oss jai core implementation, currently only TIF
     else if (name.startsWith("com.github.jaiimageio")){
-      return 19;
+      return 30;
     }
     // next are imageio-ext readers
     else if (name.startsWith("it.geosolutions.imageio")){
       // prefer plain java readers
       if (classGDALImageReaderSpiAvailable && loader instanceof GDALImageReaderSpi)
-        return 25;
-      return 20;
+        return 45;
+      return 40;
     }
     // next are sun's imageio readers
     else if (name.startsWith("com.sun.media.imageio"))
-      return 30;
+      return 60;
     // next in line are all other imageio readers
     else if (loader instanceof ImageReaderSpi)
-      return 40;
+      return 80;
 
-    // return prio or hardcoded 100 priority,
-    // after all GeoImage is supposed to be superior
+    // return priority above or hardcoded 100 priority,
+    // after all GeoImage is supposed to be superior to the other frameworks
     return 100;
   }
 
