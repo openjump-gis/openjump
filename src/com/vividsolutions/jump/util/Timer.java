@@ -3,6 +3,14 @@ package com.vividsolutions.jump.util;
 public class Timer {
   /**
    *  a helper method to measure time frames in milliseconds 
+   * @return current time in milliseconds
+   */
+  public static long now(){
+    return System.currentTimeMillis();
+  }
+
+  /**
+   *  a helper method to measure time frames in milliseconds 
    * @param i time in milliseconds
    * @return milliseconds since time
    */
