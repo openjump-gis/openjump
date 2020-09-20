@@ -7,8 +7,11 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.EndianDataInputStream;
 import com.vividsolutions.jump.io.EndianDataOutputStream;
+import com.vividsolutions.jump.task.*;
+import com.vividsolutions.jump.util.Timer;
 import com.vividsolutions.jump.workbench.Logger;
 
 /**
@@ -28,7 +31,7 @@ import com.vividsolutions.jump.workbench.Logger;
  *
  * <a href="mailto:j.macgill@geog.leeds.ac.uk">Mail the Author</a>
  */
-public class Shapefile  {
+public class Shapefile implements TaskMonitorSupport {
 
     static final int    SHAPEFILE_ID = 9994;
     static final int    VERSION = 1000;
@@ -131,7 +134,7 @@ public class Shapefile  {
 
             errors = 0;
             int count = 1;
-
+            Reporter r = new Reporter();
             while(true){
                 int recordNumber=file.readIntBE(); pos+=2;
                 if (recordNumber != count) {
@@ -143,14 +146,25 @@ public class Shapefile  {
                     Logger.warn("found a negative content length (" + contentLength + ")");
                     continue;
                 }
+                long lastUpdatedAt = 0L;
                 try{
                     body = handler.read(file,geometryFactory,contentLength);
                     Logger.debug("" + recordNumber + " : from " + (pos-4) + " for " + contentLength + " (" + body.getNumPoints() + " pts)");
                     pos += contentLength;
                     list.add(body);
                     count++;
+                    // report to gui
+                    r.report(count);
+                    // cancel if needed
+                    if (getTaskMonitor().isCancelRequested())
+                      throw new TaskCancelledException();
                     if (body.getUserData() != null) errors++;
-                } catch(Exception e) {
+                } 
+                // we're cancelled
+                catch (TaskCancelledException e) {
+                  throw e;
+                }
+                catch(Exception e) {
                     Logger.warn("Error processing record " +recordNumber + " : " + e.getMessage(), e);
                     errors++;
                 }
@@ -393,6 +407,7 @@ public class Shapefile  {
             if(handler==null) throw new ShapeTypeNotSupportedException("Unsupported shape type:" + type);
 
             int recordNumber = 0;
+            Reporter r = new Reporter();
             while (true) {
                 long offset = shx.readIntBE() & 0x00000000ffffffffL;
                 int length = shx.readIntBE();
@@ -405,8 +420,18 @@ public class Shapefile  {
                     body = handler.read(shp, geometryFactory, length);
                     Logger.trace("" + recordNumber + " : from " + offset + " for " + length + " (" + body.getNumPoints() + " pts)");
                     list.add(body);
+                    // report to gui
+                    r.report(recordNumber);
+                    // cancel if needed
+                    if (getTaskMonitor().isCancelRequested())
+                      throw new TaskCancelledException();
                     if (body.getUserData() != null) errors++;
-                } catch(Exception e) {
+                } 
+                // we're cancelled
+                catch (TaskCancelledException e) {
+                  throw e;
+                } 
+                catch(Exception e) {
                     Logger.warn("Error processing record " + recordNumber + ": " + e.getMessage(), e);
                     Logger.warn("an empty Geometry has been returned");
                     list.add(handler.getEmptyGeometry(geometryFactory));
@@ -426,5 +451,61 @@ public class Shapefile  {
 
         return geometryFactory.createGeometryCollection(list.toArray(new Geometry[]{}));
     }
+
+    private TaskMonitor taskMonitor = new DummyTaskMonitor();
+    
+    public void setTaskMonitor(TaskMonitor taskMonitor) {
+      this.taskMonitor = taskMonitor;
+    }
+
+    public TaskMonitor getTaskMonitor() {
+      return taskMonitor;
+    }
+    
+    /**
+     * this class autotunes actual reporting to the samplePeriod given.
+     * turns out calling Timer.now() on every count slows down reading, 
+     * who would have guessed ;)
+     * 
+     * TODO: this probably needs to be made a generic class to be usable
+     *       in other readers/writers as well.
+     * 
+     * @author ed
+     */
+    private class Reporter {
+      long init = Timer.now();
+      int sampleSize = -1;
+      long samplePeriod = 500; //ms
+      int lastUpdateCount = 0;
+      long lastUpdateTime = init;
+
+      public void report(int count) {
+        // show status every sampleSize calculated by the samplePeriod given
+        if (sampleSize < 0 && (init + samplePeriod) <= Timer.now()) {
+          // init a senseful samplesize (number of records counted in samplePeriod)
+          sampleSize = count;
+          print(count);
+        } 
+        else if (sampleSize >= 0 && lastUpdateCount + sampleSize <= count ) {
+          long msSince = Timer.milliSecondsSince(lastUpdateTime);
+          // double sample size if passed time since last update is zero somehow
+          double factor = msSince>0 ? samplePeriod/(double)msSince : 2.0;
+          // update samplesize, make sure it'll never be zero
+          int newSampleSize = (int)(factor*sampleSize);
+          sampleSize = newSampleSize>0?newSampleSize:1;
+          print(count);
+        }
+        return;
+      }
+
+      private void print(int count) {
+        lastUpdateTime = Timer.now();
+        lastUpdateCount = count;
+        TaskMonitorUtil.report(getTaskMonitor(),
+            I18N.getMessage("Reader.parsed-{0}-features", String.format("%,10d", count)));
+      }
+  
+    }
+
 }
 

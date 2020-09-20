@@ -45,6 +45,7 @@ import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.io.DriverProperties;
 import com.vividsolutions.jump.io.JUMPReader;
 import com.vividsolutions.jump.io.JUMPWriter;
+import com.vividsolutions.jump.task.TaskCancelledException;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorSupport;
 import com.vividsolutions.jump.task.TaskMonitorUtil;
@@ -107,7 +108,13 @@ public class ReaderWriterFileDataSource extends FileDataSource {
 
           exceptions.addAll(reader.getExceptions());
           return fc;
-        } catch (Exception e) {
+        }
+        // we were cancelled
+        catch (TaskCancelledException e) {
+          // "nothing to see here. please disperse!"
+          return null;
+        }
+        catch (Exception e) {
           exceptions.add(e);
           return null;
           // <<TODO>> Modify Readers and Writers to store exceptions and

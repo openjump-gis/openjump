@@ -132,8 +132,10 @@ public class ShapefileReader extends AbstractJUMPReader {
             throw new IllegalParametersException(I18N.get("io.ShapefileReader.no-file-property-specified"));
         }
 
-        //okay, we have .shp and .dbf file paths, lets create Shapefile and DbfFile
+        // okay, we have .shp and .dbf file paths, lets create Shapefile and DbfFile
         Shapefile myshape = getShapefile(shpFileName, dp.getProperty(DataSource.COMPRESSED_KEY));
+        // attach task monitor
+        myshape.setTaskMonitor(getTaskMonitor());
 
         // charset used to read dbf (one charset defined by cpg file,
         // charset defined in dp or default platform charset)
@@ -147,7 +149,7 @@ public class ShapefileReader extends AbstractJUMPReader {
             GeometryFactory factory = new GeometryFactory();
             GeometryCollection collection;
             // Read the shapefile either from shx (if provided) or directly from shp
-        	collection = shx == null ? myshape.read(factory) : myshape.readFromIndex(factory, shx);
+            collection = shx == null ? myshape.read(factory) : myshape.readFromIndex(factory, shx);
 
             // Minimal schema for FeatureCollection (if no dbf is provided)
             FeatureSchema fs = new FeatureSchema();
