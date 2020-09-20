@@ -546,6 +546,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
             
         Resolution requestedRes = RasterImageIO.calcRequestedResolution(viewport);
         long start = Timer.milliSecondsSince(0);
+        Logger.debug("Try reading "+getName());
         ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(getWorkbenchContext(), imageFileName, stats, viewport.getEnvelopeInModelCoordinates(), requestedRes);
         Logger.info("Reading '"+getName()+"' took "+Timer.secondsSinceString(start)+"s.");
         metadata = imageAndMetadata.getMetadata();

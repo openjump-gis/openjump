@@ -58,6 +58,7 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -334,11 +335,12 @@ public class RasterQueryCursorTool extends NClickTool {
             }
 
         } catch (RasterDataNotFoundException ex) {
-            cellValues = "???";
+          cellValues = "???";
         } catch (IOException e) {
-        	 cellValues = " - ";
+          cellValues = " - ";
+          Logger.error(e);
         } catch (NoninvertibleTransformException e) {
-        	 cellValues = " - ";
+          cellValues = " - ";
         }
         name = ((RasterImageLayer) layer).getName();
         getPanel().getContext().setStatusMessage(
@@ -346,7 +348,7 @@ public class RasterQueryCursorTool extends NClickTool {
                         + cellValues.toString());}
         }
     }
-    
+
     @Override
     public String getName() {
     	return  I18N.get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn");

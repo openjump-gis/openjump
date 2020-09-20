@@ -126,26 +126,29 @@ public class RasterImageIO {
 					new Point(bImage.getWidth(), bImage.getHeight()), cellSize,
 					cellSize, Double.NaN, stats));
 
-		} else if (fileNameOrURL.toLowerCase().endsWith(".tif")
-				|| fileNameOrURL.toLowerCase().endsWith(".tiff")) {
+    } else if (fileNameOrURL.toLowerCase().endsWith(".tif") || fileNameOrURL.toLowerCase().endsWith(".tiff")) {
 
-			TiffMetadata tiffMetadata = TiffTags.readMetadata(new File(
-					fileNameOrURL));
+      File tiffFile = new File(fileNameOrURL);
 
-			int imgWidth = tiffMetadata.getColsCount();
-			int imgHeight = tiffMetadata.getRowsCount();
+//			TiffMetadata tiffMetadata = TiffTags.readMetadata(new File(
+//					fileNameOrURL));
+//
+//			int imgWidth = tiffMetadata.getColsCount();
+//			int imgHeight = tiffMetadata.getRowsCount();
+//
+//			Envelope imageEnvelope = tiffMetadata.getEnvelope();
+      // Envelope imageEnvelope = getGeoReferencing(fileNameOrURL, true,
+      // new Point(imgWidth, imgHeight));
 
-			Envelope imageEnvelope = tiffMetadata.getEnvelope();
-		//	Envelope imageEnvelope = getGeoReferencing(fileNameOrURL, true,
-		//			new Point(imgWidth, imgHeight));
+//			Overviews overviews = OverviewsUtils.getOverviews(new File(
+//					fileNameOrURL), imageEnvelope);
 
-			Overviews overviews = OverviewsUtils.getOverviews(new File(
-					fileNameOrURL), imageEnvelope);
+      Envelope imageEnvelope = TiffUtilsV2.getEnvelope(tiffFile);
+      Overviews overviews = OverviewsUtils.getOverviews(new File(fileNameOrURL), imageEnvelope);
 
-			return TiffUtils.readImage(new File(fileNameOrURL),
-					viewPortEnvelope, requestedRes, overviews, stats);
+      return TiffUtils.readImage(tiffFile, viewPortEnvelope, requestedRes, overviews, stats);
 
-		} else if (fileNameOrURL.toLowerCase().endsWith(".flt")) {
+    } else if (fileNameOrURL.toLowerCase().endsWith(".flt")) {
 
 			GridFloat gf = new GridFloat(fileNameOrURL);
 			gf.readGrid(null);
@@ -202,16 +205,19 @@ public class RasterImageIO {
 		}
 		else if (filenameOrURL.toLowerCase().endsWith(".tif")
 				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
-			GeoReferencedRaster geoRaster;
-			RenderedOp  renderedOp;
-			try {
-				geoRaster = new  GeoReferencedRaster(new File(filenameOrURL).toURI().toString());
-		 renderedOp = geoRaster.getImage();
-			} catch (ReferencedImageException e) {
-				// TODO Auto-generated catch block
-		 renderedOp = JAI.create("fileload", filenameOrURL);
-			}
-			return renderedOp.getAsBufferedImage(subset, null).getData();	
+//			GeoReferencedRaster geoRaster;
+//			RenderedOp  renderedOp;
+//			try {
+//				geoRaster = new  GeoReferencedRaster(new File(filenameOrURL).toURI().toString());
+//		 renderedOp = geoRaster.getImage();
+//			} catch (ReferencedImageException e) {
+//				// TODO Auto-generated catch block
+//		 renderedOp = JAI.create("fileload", filenameOrURL);
+//			}
+//			return renderedOp.getAsBufferedImage(subset, null).getData();	
+
+        return TiffUtilsV2.getRenderedOp(new File(filenameOrURL)).getAsBufferedImage(subset, null).getData();
+
 		}  else if (filenameOrURL.toLowerCase().endsWith(".jpg")
 				|| filenameOrURL.toLowerCase().endsWith(".bmp")
 				|| filenameOrURL.toLowerCase().endsWith(".jp2")) {
@@ -327,7 +333,7 @@ public class RasterImageIO {
 		}
 		else if (filenameOrURL.toLowerCase().endsWith(".tif")
 				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
-			renderedOp=	TiffUtils.getRenderedOp(new File(filenameOrURL));
+			renderedOp=	TiffUtilsV2.getRenderedOp(new File(filenameOrURL));
 			
 			return renderedOp.getData(rectangle)
 					.getSampleDouble(col, row, band);	
@@ -386,7 +392,7 @@ public class RasterImageIO {
 		}else if (filenameOrURL.toLowerCase().endsWith(".tif")
 				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
 			RenderedOp  renderedOp;
-			renderedOp=	TiffUtils.getRenderedOp(new File(filenameOrURL));
+			renderedOp=	TiffUtilsV2.getRenderedOp(new File(filenameOrURL));
 		 
 			if (renderedOp != null) {
 				return new Point(renderedOp.getWidth(), renderedOp.getHeight());

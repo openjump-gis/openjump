@@ -32,7 +32,6 @@ import org.xml.sax.SAXException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.Logger;
-import com.vividsolutions.jump.workbench.imagery.geoimg.GeoReferencedRaster;
 
 /**
  *
@@ -81,7 +80,7 @@ public class TiffUtils {
       xScale = Math.min(xScale, 1);
       yScale = Math.min(yScale, 1);
 
-      RenderedOp renderedOp = readSubsampled(tiffFile, xScale, yScale);
+      RenderedOp renderedOp = TiffUtilsV2.readSubsampled(tiffFile, xScale, yScale);
 
       // For better looking results, but slower:
       // rop = JAI.create("SubsampleAverage", pb);
@@ -242,7 +241,7 @@ public class TiffUtils {
       throws ParserConfigurationException, TransformerException, TransformerConfigurationException, SAXException,
       IOException {
 
-    BufferedImage bufferedImage = readSubsampled(tiffFile, 1, 1).getAsBufferedImage();
+    BufferedImage bufferedImage = TiffUtilsV2.readSubsampled(tiffFile, 1, 1).getAsBufferedImage();
     int bandCount = bufferedImage.getRaster().getNumBands();
 
     double minValue[] = new double[bandCount];
@@ -314,63 +313,9 @@ public class TiffUtils {
 
   }
 
-  /*
-   * public static RenderedOp readSubsampled(File tiffFile, float xScale, float
-   * yScale) { System.setProperty("com.sun.media.jai.disableMediaLib", "true");
-   * RenderedOp renderedOp = JAI.create("fileload", tiffFile.getAbsolutePath());
-   * ParameterBlock parameterBlock = new ParameterBlock();
-   * parameterBlock.addSource(renderedOp); parameterBlock.add(xScale);
-   * parameterBlock.add(yScale); return JAI.create("scale", parameterBlock);
-   * 
-   * }
-   */
-
-  // [Giuseppe Aruta 2020-07-09] whenever it is possible
-  // we use JAI Image I/O
-
-  public static RenderedOp readSubsampled(File tiffFile, float xScale, float yScale) {
-    RenderedOp renderedOp = getRenderedOp(tiffFile);
-    ParameterBlock parameterBlock = new ParameterBlock();
-    parameterBlock.addSource(renderedOp);
-    parameterBlock.add(xScale);
-    parameterBlock.add(yScale);
-    renderedOp = JAI.create("scale", parameterBlock);
-    return JAI.create("scale", parameterBlock);
-
-  }
-
-  public static Double readCellValue(File tiffFile, int col, int row, int band) {
-
+  public static Double readCellValue(File tiffFile, int col, int row, int band)  throws Exception {
     Rectangle rectangle = new Rectangle(col, row, 1, 1);
-    return getRenderedOp(tiffFile).getData(rectangle).getSampleDouble(col, row, band);
-  }
-
-  public static RenderedOp getRenderedOp(File tiffFile) {
-    // Since JAI error messages are rerouted to OJ log
-    // I suppress the error message for absence of mediaLib accelerator
-    System.setProperty("com.sun.media.jai.disableMediaLib", "true");
-    RenderedOp renderedOp = null;
-    try {
-      // First try with JAI Image I/O "ImageRead"
-      GeoReferencedRaster geoRaster = new GeoReferencedRaster(tiffFile.toURI().toString(),
-          new com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi());
-      renderedOp = geoRaster.getImage();
-    } catch (Exception e) {
-      // Then with JAI "FileLoad"
-      // System.setProperty("com.sun.media.jai.disableMediaLib", "true");
-
-      // <GeoRaster.class> rerouted JAI error messages to OJ log here
-      JAI.getDefaultInstance().setImagingListener(new ImagingListener() {
-        @Override
-        public boolean errorOccurred(String msg, Throwable thrown, Object where, boolean isRetryable)
-            throws RuntimeException {
-          Logger.error(thrown);
-          return false;
-        }
-      });
-      renderedOp = JAI.create("fileload", tiffFile.toURI().toString());
-    }
-    return renderedOp;
+    return TiffUtilsV2.getRenderedOp(tiffFile).getData(rectangle).getSampleDouble(col, row, band);
   }
 
 }

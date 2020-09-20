@@ -91,10 +91,11 @@ public class OverviewsUtils {
      */
     public static void createOverviews(File tiffFile, int overviewsCount) throws IOException {
         
-        ParameterBlock pbjRead = new ParameterBlock();
-        pbjRead.add(ImageIO.createImageInputStream(tiffFile));
-        RenderedOp originalImage = JAI.create("ImageRead", pbjRead, null);
+//        ParameterBlock pbjRead = new ParameterBlock();
+//        pbjRead.add(ImageIO.createImageInputStream(tiffFile));
+//        RenderedOp originalImage = JAI.create("ImageRead", pbjRead, null);
 
+        RenderedOp originalImage = TiffUtilsV2.getRenderedOp(tiffFile);
         
         OutputStream out = new FileOutputStream(new File(tiffFile.getParent(), tiffFile.getName() + ".ovr"));
         
