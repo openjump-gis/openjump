@@ -68,8 +68,6 @@ import com.vividsolutions.jump.workbench.imagery.graphic.WorldFile;
 
 public class GeoReferencedRaster extends GeoRaster {
   private final String MSG_GENERAL = "This is not a valid GeoTIFF file.";
-  String fileName;
-
   Envelope envModel_image;
   Envelope envModel_image_backup;
 
@@ -78,8 +76,6 @@ public class GeoReferencedRaster extends GeoRaster {
 
   private double dblModelUnitsPerRasterUnit_X;
   private double dblModelUnitsPerRasterUnit_Y;
-
-  // boolean hoPatch = false;
 
   /**
    * Called by Java2XML
@@ -93,7 +89,6 @@ public class GeoReferencedRaster extends GeoRaster {
   public GeoReferencedRaster(String location, Object reader)
       throws ReferencedImageException {
     super(location, reader);
-    fileName = imageFileLocation;
     readRasterfile();
   }
 
@@ -257,7 +252,7 @@ public class GeoReferencedRaster extends GeoRaster {
     // String name = worldFileName();
     InputStream is = null;
     try {
-      is = WorldFile.find(fileName);
+      is = WorldFile.find(getURI().toString());
       // Read the tags from the tiff worldfile.
       List lines = FileUtil.getContents(is);
       double[] tags = new double[6];
@@ -285,12 +280,7 @@ public class GeoReferencedRaster extends GeoRaster {
   protected void readRasterfile() throws ReferencedImageException {
     super.readRasterfile();
 
-    URI uri;
-    try {
-      uri = new URI(imageFileLocation);
-    } catch (URISyntaxException e) {
-      throw new ReferencedImageException(e);
-    }
+    URI uri = getURI();
 
     // Try to find and parse world file.
     try {

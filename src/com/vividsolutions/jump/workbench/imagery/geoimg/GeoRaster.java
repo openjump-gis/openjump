@@ -81,8 +81,9 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.model.Disposable;
 import com.vividsolutions.jump.workbench.model.Prioritized;
 
-public abstract class GeoRaster implements Disposable {
+public class GeoRaster implements Disposable {
   protected String imageFileLocation;
+  private URI uri = null;
   protected Object fixed_reader = null;
   protected RenderedOp src = null;
   private ImageReader src_reader = null;
@@ -128,9 +129,12 @@ public abstract class GeoRaster implements Disposable {
   public GeoRaster(String imageFileLocation, Object fixed_reader) {
     this.imageFileLocation = imageFileLocation;
     this.fixed_reader = fixed_reader;
-
   }
 
+  protected URI getURI() {
+    return uri;
+  }
+  
   /**
    * Basic fetchRasters retrieves a raster from a file. To get a raster from
    * somewhere else, override this method in subclasses.
@@ -140,12 +144,17 @@ public abstract class GeoRaster implements Disposable {
    * @throws ReferencedImageException
    */
   protected void fetchRaster() throws ReferencedImageException {
-    final URI uri;
+    // we accept either URI strings or string file paths
     try {
       uri = new URI(imageFileLocation);
     } catch (URISyntaxException e) {
-      throw new ReferencedImageException(e);
+      Logger.debug("not an URI, will treat as path -> "+imageFileLocation, e);
+      File file = new File(imageFileLocation);
+      uri = file.toURI();
     }
+    // check availability early
+    if (!new File(uri).canRead())
+      throw new ReferencedImageException("cannot read file -> "+imageFileLocation);
 
     // prepare jai parameters
     final ParameterBlockJAI pbjImageRead;
@@ -153,77 +162,77 @@ public abstract class GeoRaster implements Disposable {
     pbjImageRead = new ParameterBlockJAI("ImageRead");
     pbjImageRead.setParameter("readParam", param);
 
-    try {
-      // route, if fixed_reader was set
-      List<ImageReaderSpi> affirmed_readers;
-      // default case, auto detection
-      if (fixed_reader == null) {
-        affirmed_readers = new ArrayList(listValidImageIOReaders(uri, null));
-        // sort readers by priority
-        Collections.sort(affirmed_readers, new Comparator<ImageReaderSpi>() {
-          public int compare(final ImageReaderSpi o1, final ImageReaderSpi o2) {
-            final Prioritized p1 = new Prioritized() {
-              public int getPriority() {
-                return GeoImageFactory.getPriority(o1);
-              }
-            };
-            final Prioritized p2 = new Prioritized() {
-              public int getPriority() {
-                return GeoImageFactory.getPriority(o2);
-              }
-            };
+    // route, if fixed_reader was set
+    List<ImageReaderSpi> affirmed_readers;
+    // default case, auto detection
+    if (fixed_reader == null) {
+      affirmed_readers = new ArrayList(listValidImageIOReaders(uri, null));
+      // sort readers by priority
+      Collections.sort(affirmed_readers, new Comparator<ImageReaderSpi>() {
+        public int compare(final ImageReaderSpi o1, final ImageReaderSpi o2) {
+          final Prioritized p1 = new Prioritized() {
+            public int getPriority() {
+              return GeoImageFactory.getPriority(o1);
+            }
+          };
+          final Prioritized p2 = new Prioritized() {
+            public int getPriority() {
+              return GeoImageFactory.getPriority(o2);
+            }
+          };
 //            System.out.println(o1+"="+p1.getPriority()+"/"+o2+"="+p2.getPriority());
-            return Prioritized.COMPARATOR.compare(p1, p2);
-          }
-        });
-      }
-      // fixed reader is imageio reader
-      else if (fixed_reader instanceof ImageReaderSpi)
-        affirmed_readers = Collections.singletonList((ImageReaderSpi) fixed_reader);
-      else {
-        // fixed reader is something else, hopefully jai codec ;)
-        // simply define an empty imageio reader list here to skip to jai below
-        affirmed_readers = Collections.emptyList();
-      }
-
-      // this is skipped if list is empty
-      // TODO: not sure looping makes sense here as image is
-      // actually rendered much later
-      for (Iterator<ImageReaderSpi> i = affirmed_readers.listIterator(); i
-          .hasNext();) {
-
-        ImageReaderSpi readerSpi = ((ImageReaderSpi) i.next());
-
-        Logger.trace("Trying reader "+GeoImageFactory.loaderString(readerSpi));
-
-        try {
-          src_input = createInput(uri, readerSpi);
-
-          src_reader = readerSpi.createReaderInstance(/* src_input */);
-
-          src_reader.setInput(src_input);
-          pbjImageRead.setParameter("Input", src_input);
-          pbjImageRead.setParameter("Reader", src_reader);
-  
-          src = JAI.create("ImageRead", pbjImageRead, null);
-
-          // success OR dispose & try plain JAI below
-          if (src != null && src.getWidth() > 0) {
-            // set info vars
-            type = src_reader.getFormatName();
-            used_loader = src_reader;
-            return;
-          }
-          else
-            dispose();
-        } catch (Exception e) {
-          // ok, this didn't work try the next one
-          Logger.trace(e);
-          dispose();
+          return Prioritized.COMPARATOR.compare(p1, p2);
         }
+      });
+    }
+    // fixed reader is imageio reader
+    else if (fixed_reader instanceof ImageReaderSpi)
+      affirmed_readers = Collections.singletonList((ImageReaderSpi) fixed_reader);
+    else {
+      // fixed reader is something else, hopefully jai codec ;)
+      // simply define an empty imageio reader list here to skip to jai below
+      affirmed_readers = Collections.emptyList();
+    }
+
+    // this is skipped if list is empty
+    // TODO: not sure looping makes sense here as image is
+    // actually rendered much later
+    for (Iterator<ImageReaderSpi> i = affirmed_readers.listIterator(); i
+        .hasNext();) {
+
+      ImageReaderSpi readerSpi = ((ImageReaderSpi) i.next());
+
+      Logger.trace("Trying reader "+GeoImageFactory.loaderString(readerSpi));
+
+      try {
+        src_input = createInput(uri, readerSpi);
+
+        src_reader = readerSpi.createReaderInstance(/* src_input */);
+
+        src_reader.setInput(src_input);
+        pbjImageRead.setParameter("Input", src_input);
+        pbjImageRead.setParameter("Reader", src_reader);
+
+        src = JAI.create("ImageRead", pbjImageRead, null);
+
+        // success OR dispose & try plain JAI below
+        if (src != null && src.getWidth() > 0) {
+          // set info vars
+          type = src_reader.getFormatName();
+          used_loader = src_reader;
+          return;
+        }
+        else
+          dispose();
+      } catch (Exception e) {
+        // if fixed_reader failed, it failed finally and we'll have to throw the reason
+        if (fixed_reader != null && fixed_reader == readerSpi)
+          throw new ReferencedImageException(e);
+        // ok, this didn't work try the next one
+        Logger.trace(e);
+        // clean up any residue
+        dispose();
       }
-    } catch (IOException e) {
-      throw new ReferencedImageException(e);
     }
 
     // try JAI codec as fallthrough or if defined
@@ -304,6 +313,7 @@ public abstract class GeoRaster implements Disposable {
     return used_loader;
   }
 
+  // TODO: probably better moved to GeoImage where the rendering is actually handled
   public RenderingHints createCacheRenderingHints() {
     if (src instanceof RenderedOp && src.getWidth() > 2000
         && src.getHeight() > 2000 && cache_hints == null) {
@@ -433,7 +443,7 @@ public abstract class GeoRaster implements Disposable {
    * create a list of ImageReaderSpi's supposedly able to open the URI
    */
   static protected List<ImageReaderSpi> listValidImageIOReaders(URI uri,
-      Class filter) throws IOException {
+      Class filter) {
 
     resetGDALReaderSelection();
 
