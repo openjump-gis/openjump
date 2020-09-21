@@ -145,13 +145,17 @@ public class GeoRaster implements Disposable {
    */
   protected void fetchRaster() throws ReferencedImageException {
     // we accept either URI strings or string file paths
+    Logger.trace("imageFileLocation is -> "+imageFileLocation);
     try {
       uri = new URI(imageFileLocation);
+      if (!uri.isAbsolute()) // means it has a scheme://
+        throw new URISyntaxException(imageFileLocation, "missing scheme://");
     } catch (URISyntaxException e) {
       Logger.debug("not an URI, will treat as path -> "+imageFileLocation, e);
       File file = new File(imageFileLocation);
       uri = file.toURI();
     }
+    Logger.trace("uri is now -> "+uri.toString());
     // check availability early
     if (!new File(uri).canRead())
       throw new ReferencedImageException("cannot read file -> "+imageFileLocation);
