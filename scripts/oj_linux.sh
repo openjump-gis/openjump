@@ -223,14 +223,14 @@ export CLASSPATH;
 
 ## prepend jump opts
 #
-JUMP_OPTS="-plug-in-directory '$JUMP_PLUGIN_DIR' $JUMP_OPTS"
+JUMP_OPTS="-plug-in-directory $JUMP_PLUGIN_DIR $JUMP_OPTS"
 if [ -f "$JUMP_PLUGINS" ]; then
-  JUMP_OPTS="-default-plugins '$JUMP_PLUGINS' $JUMP_OPTS"
+  JUMP_OPTS="-default-plugins $JUMP_PLUGINS $JUMP_OPTS"
 fi
 # workbench-properties.xml is used to manually load plugins (ISA uses this)
 JUMP_PROPERTIES=./bin/workbench-properties.xml
 if [ -n "$JUMP_PROPERTIES" ] && [ -f "$JUMP_PROPERTIES" ]; then
-  JUMP_OPTS="-properties '$JUMP_PROPERTIES' $JUMP_OPTS"
+  JUMP_OPTS="-properties $JUMP_PROPERTIES $JUMP_OPTS"
 fi
 
 # compile jre opts, respect already set ones from e.g. mac
