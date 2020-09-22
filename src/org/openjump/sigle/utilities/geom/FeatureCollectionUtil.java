@@ -103,8 +103,18 @@ public class FeatureCollectionUtil {
     	
 }
     	/**
-    	 * Method to make a FeatureCollection valid   
-    	 * @param fc
+    	 * Method to make valid all the geometries of a FeatureCollection
+    	 * using the class MakeValidOp.
+    	 * A geometry is not valid if it is not simple:
+    	 * This condition occurs when any of the following conditions are true:
+    	 * Incorrect ring orientation (polygon), self-intersection rings (polygon)
+    	 * self-intersection path (polyline), unclosed ring (polygon)
+    	 * (see also https://desktop.arcgis.com/en/arcmap/latest/extensions/data-reviewer/finding-invalid-geometry.htm
+    	 * for the complete list).
+    	 * This method should be applied before merge feature
+    	 * [see method unionByAttributeValue(FeatureCollection featureCollection, String attrbuteName)]
+    	 * as not simple geometries will be not processed
+    	 * @param FeatureCollection fc
     	 */
      	public static void validFeatureCollection(FeatureCollection fc) {
      		MakeValidOp makeValidOp = new MakeValidOp();
@@ -119,12 +129,12 @@ public class FeatureCollectionUtil {
      	
      	/**
      	 * Mathod to merge geometries of a FeaureCollection according
-     	 * to an attribute
-     	 * @param featureCollection
-     	 * @param value
+     	 * to the values of an attribute name
+     	 * @param FeatureCollection fc
+     	 * @param String attrbuteName
      	 * @throws Exception
      	 */
-     	 public static void unionByAttributeValue(FeatureCollection featureCollection, String value) throws Exception {
+     	 public static void unionByAttributeValue(FeatureCollection featureCollection, String attrbuteName) throws Exception {
      		  FeatureSchema schema = featureCollection.getFeatureSchema();
      	      if (featureCollection.getFeatures().size() > 1 &&
      	        		featureCollection.getFeatures().get(0).getGeometry() != null) {
@@ -139,7 +149,7 @@ public class FeatureCollectionUtil {
      		    newSchema = schema;
      	        Map<Object, FeatureCollection> map = new HashMap<Object, FeatureCollection>();
      	        for (Feature feature  : featureCollection.getFeatures()) {
-     	             Object key = feature.getAttribute(value);
+     	             Object key = feature.getAttribute(attrbuteName);
      	             if (!map.containsKey(key)) {
      	                 FeatureCollection fd = new FeatureDataset(featureCollection.getFeatureSchema());
      	                 fd.add(feature);
@@ -154,7 +164,7 @@ public class FeatureCollectionUtil {
      	                FeatureCollection fca = map.get(key);
      	                if (fca.size() > 0) {
      	                  Feature feature = union(fca);
-     	                  feature.setAttribute(value, key);
+     	                  feature.setAttribute(attrbuteName, key);
      	                  Feature newFeature = new BasicFeature(newSchema);
      	                    // Copy feature attributes in newFeature
      	                  for (int j = 0, max = newSchema.getAttributeCount() ; j < max ; j++) {
