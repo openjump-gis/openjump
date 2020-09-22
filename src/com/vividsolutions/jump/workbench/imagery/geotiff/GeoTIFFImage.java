@@ -36,16 +36,18 @@ import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
+import com.vividsolutions.jump.workbench.imagery.geoimg.GeoImage;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 /**
  * legacy GeoTIFF reader
  */
-public class GeoTIFFImage implements ReferencedImage {
+public class GeoTIFFImage extends GeoImage implements ReferencedImage  {
   private GeoTIFFRaster gtr;
-  private RasterPainter rasterPainter;
+  //private RasterPainter rasterPainter;
 
   public GeoTIFFImage(String location) throws JUMPException {
+    super(location, null);
     init(location);
   }
 
@@ -56,15 +58,17 @@ public class GeoTIFFImage implements ReferencedImage {
   private void init(String location) throws JUMPException {
     try {
       gtr = new GeoTIFFRaster(location);
-      rasterPainter = new RasterPainter(gtr);
+      //rasterPainter = new RasterPainter(gtr);
       // Try to access data and fail fast if not possible
-      rasterPainter.geoRaster.src.getData();
+      gtr.src.getData();
+      //rasterPainter.geoRaster.src.getData();
     } catch (Exception e) {
       gtr = null;
       throw new ReferencedImageException(e);
     }
   }
 
+  /*
   public void paint(Feature f, java.awt.Graphics2D g, Viewport viewport)
           throws ReferencedImageException {
     try {
@@ -73,6 +77,8 @@ public class GeoTIFFImage implements ReferencedImage {
       throw new ReferencedImageException(ex);
     }
   }
+  */
+
 
   public String getType() {
     return "GeoTiff";

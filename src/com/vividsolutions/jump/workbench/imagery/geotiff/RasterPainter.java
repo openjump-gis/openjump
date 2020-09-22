@@ -11,6 +11,11 @@ import javax.media.jai.RenderedOp;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
+/**
+ * @deprecated replaced by geoimg code, more efficient
+ * @TODO to be removed in version 2
+ */
+@Deprecated
 public class RasterPainter
 {
   GeoReferencedRaster geoRaster;
@@ -126,12 +131,21 @@ public class RasterPainter
       Envelope envModel_viewport) throws Exception
   {
     // First, scale the original image if necessary.
+    // imgScaled is scaled to fit the viewport scale
     final double scale = viewport.getScale();
     if (scale != scaleCached)
     {
       scaleImage(scale);
       scaleCached = scale;
     }
+
+    Envelope vpEnv = envModel_viewport;
+    Envelope imEnv = geoRaster.getEnvelope();
+    Envelope intersection = imEnv.intersection(vpEnv);
+    double cropX = Math.max(vpEnv.getMinX() - imEnv.getMinX(), 0.0)/scale;
+    double cropY = Math.max(imEnv.getMaxY() - vpEnv.getMaxY(), 0.0)/scale;
+    double offsetX = Math.max(imEnv.getMinX() - vpEnv.getMinX(), 0.0)/scale;
+    double offsetY = Math.max(vpEnv.getMinY() - imEnv.getMinY(), 0.0)/scale;
 
     // Compute the ratio of the image to crop (located on the left of the viewport)
     double ratio_cropX = (envModel_viewport.getMinX() - geoRaster.getEnvelope()

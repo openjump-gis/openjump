@@ -88,10 +88,10 @@ public abstract class GeoReferencedRaster
       // create a temp stream to find all candidate codecs
       SeekableStream is = SeekableStream.wrapInputStream(CompressedFile.openFile(uri),
           true);
-      String[] decs = ImageCodec.getDecoderNames((SeekableStream) is);
+      String[] decs = ImageCodec.getDecoderNames(is);
       FileUtil.close(is);
 
-      List<ImageCodec> removed_codecs = new ArrayList<ImageCodec>();
+      List<ImageCodec> removed_codecs = new ArrayList<>();
       try {
         // remove all codecs except xtiff
         if (Arrays.asList(decs).contains("xtiff")) {
@@ -100,7 +100,7 @@ public abstract class GeoReferencedRaster
             if (name!="xtiff") {
               ImageCodec.unregisterCodec(name);
               removed_codecs.add(candidate_codec);
-//              System.out.println("removed " + name);
+              //System.out.println("removed " + name);
             }
           }
         }
@@ -217,9 +217,19 @@ public abstract class GeoReferencedRaster
 
   void setEnvelope()
   {
+      //Coordinate coorRaster_imageLB = new Coordinate(
+      //    coorRasterTiff_tiepointLT.x, src.getHeight(), 0);
+      //Coordinate coorRaster_imageRT = new Coordinate(src.getWidth(), 0, 0);
+      // Get the image coordinate of the bottom left corner of the bottom left pixel
+      // from the image coordinate of the center of the bottom left pixel
       Coordinate coorRaster_imageLB = new Coordinate(
-          coorRasterTiff_tiepointLT.x, src.getHeight(), 0);
-      Coordinate coorRaster_imageRT = new Coordinate(src.getWidth(), 0, 0);
+              coorRasterTiff_tiepointLT.x-0.5,
+              src.getHeight()-0.5);
+      // Get the image coordinate of the top right corner of the top right pixel
+      // from the image coordinate of the center of the top right pixel
+      Coordinate coorRaster_imageRT = new Coordinate(
+            src.getWidth()-0.5,
+            -0.5);
       Coordinate coorModel_imageLB = rasterToModelSpace(coorRaster_imageLB);
       Coordinate coorModel_imageRT = rasterToModelSpace(coorRaster_imageRT);
 
