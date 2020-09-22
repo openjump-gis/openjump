@@ -89,6 +89,23 @@ public class TiffUtilsV2 {
     renderedOp = JAI.create("scale", parameterBlock);
     return JAI.create("scale", parameterBlock);
   }
+  
+  /**
+   * Method to buid an ImageAndMetadata file
+   * An ImageAndMetadata groups the Envelope, the Image, the Statistics and 
+   * NoData value of a TIF file
+   * @param tiffFile
+   * @param viewportEnvelope
+   * @param requestedRes
+   * @param overviews
+   * @param stats
+   * @return ImageAndMetadata
+   * @throws NoninvertibleTransformException
+   * @throws IOException
+   * @throws FileNotFoundException
+   * @throws TiffTags.TiffReadingException
+   * @throws Exception
+   */
   public static ImageAndMetadata readImage(File tiffFile, Envelope viewportEnvelope, Resolution requestedRes,
 	      Overviews overviews, Stats stats) throws NoninvertibleTransformException, IOException, FileNotFoundException,
 	      TiffTags.TiffReadingException, Exception {
@@ -101,14 +118,16 @@ public class TiffUtilsV2 {
 	    Double noData = tiffMetadata.getNoData();
 
 	    // Now try with tfw
-	    if (cellSize == null) {
+	 /*   if (cellSize == null) {
 	      WorldFileHandler worldFileHandler = new WorldFileHandler(tiffFile.getAbsolutePath(), true);
 	      Envelope envelope = worldFileHandler.readWorldFile(originalImageWidth, originalImageHeight);
 	      cellSize = new Resolution(envelope.getWidth() / originalImageWidth, envelope.getHeight() / originalImageHeight);
-	    }
+	    }*/
 
-	    Envelope wholeImageEnvelope = RasterImageIO.getGeoReferencing(tiffFile.getAbsolutePath(), true,
-	        new Point(originalImageWidth, originalImageHeight));
+	    Envelope wholeImageEnvelope = getEnvelope(tiffFile);
+	    		
+	    		//RasterImageIO.getGeoReferencing(tiffFile.getAbsolutePath(), true,
+	       // new Point(originalImageWidth, originalImageHeight));
 
 	    if (requestedRes == null) {
 	      requestedRes = cellSize;
@@ -183,6 +202,21 @@ public class TiffUtilsV2 {
 
 	  }
 
+  /**
+   * Method to read overviews of a TIF
+   * @param tiffFile
+   * @param overviewIndex
+   * @param indexStart
+   * @param originalSize
+   * @param originalCellSize
+   * @param wholeImageEnvelope
+   * @param viewportEnvelope
+   * @param noDataValue
+   * @param stats
+   * @return
+   * @throws IOException
+   * @throws NoninvertibleTransformException
+   */
 	  private static ImageAndMetadata readImage(File tiffFile, int overviewIndex, int indexStart, Point originalSize,
 	      Resolution originalCellSize, Envelope wholeImageEnvelope, Envelope viewportEnvelope, double noDataValue,
 	      Stats stats) throws IOException, NoninvertibleTransformException {
@@ -246,6 +280,19 @@ public class TiffUtilsV2 {
 
 	  }
 
+	  /**
+	   * Method to read Statistics of TIF file (if available) on the file itself or
+	   * from an external aux.xml file
+	   * @param tiffFile
+	   * @param noDataValue
+	   * @param imageFile
+	   * @return
+	   * @throws ParserConfigurationException
+	   * @throws TransformerException
+	   * @throws ImageReadException
+	   * @throws IOException
+	   * @throws SAXException
+	   */
 	  private static Stats calculateStats(File tiffFile, double noDataValue, File imageFile)
 	      throws ParserConfigurationException, TransformerException, ImageReadException, IOException, SAXException {
 
@@ -286,7 +333,18 @@ public class TiffUtilsV2 {
 	    return createStatsXml(tiffFile, noDataValue, auxXmlFile);
 
 	  }
-
+      /**
+       * Method to compute statistic of a TIF file and write as aux.xml file
+       * @param tiffFile
+       * @param noDataValue
+       * @param auxXmlFile
+       * @return
+       * @throws ParserConfigurationException
+       * @throws TransformerException
+       * @throws TransformerConfigurationException
+       * @throws SAXException
+       * @throws IOException
+       */
 	  private static Stats createStatsXml(File tiffFile, double noDataValue, File auxXmlFile)
 	      throws ParserConfigurationException, TransformerException, TransformerConfigurationException, SAXException,
 	      IOException {
@@ -363,6 +421,15 @@ public class TiffUtilsV2 {
 
 	  }
 
+	  /**
+	   * Method to read the value of a cell at defined position on the raster
+	   * @param tiffFile
+	   * @param col
+	   * @param row
+	   * @param band
+	   * @return
+	   * @throws Exception
+	   */
 	  public static Double readCellValue(File tiffFile, int col, int row, int band)  throws Exception {
 	    Rectangle rectangle = new Rectangle(col, row, 1, 1);
 	    return getRenderedOp(tiffFile).getData(rectangle).getSampleDouble(col, row, band);
