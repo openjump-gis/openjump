@@ -5,7 +5,6 @@ import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
-import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,9 +15,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
-import javax.media.jai.util.ImagingListener;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -36,7 +33,10 @@ import com.vividsolutions.jump.workbench.Logger;
 /**
  *
  * @author AdL
+ * @deprecated moved all methods to newer
+ * org.openjump.core.rasterimage.TiffUtilsV2 class
  */
+@Deprecated
 public class TiffUtils {
 
   public static ImageAndMetadata readImage(File tiffFile, Envelope viewportEnvelope, Resolution requestedRes,

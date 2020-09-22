@@ -26,7 +26,6 @@ import javax.media.jai.RenderedOp;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
-import org.openjump.core.rasterimage.TiffTags.TiffMetadata;
 
 import com.sun.media.jai.codec.FileSeekableStream;
 import com.sun.media.jai.codec.TIFFDirectory;
@@ -38,8 +37,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
-import com.vividsolutions.jump.workbench.imagery.geoimg.GeoReferencedRaster;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 /**
@@ -146,7 +143,7 @@ public class RasterImageIO {
       Envelope imageEnvelope = TiffUtilsV2.getEnvelope(tiffFile);
       Overviews overviews = OverviewsUtils.getOverviews(new File(fileNameOrURL), imageEnvelope);
 
-      return TiffUtils.readImage(tiffFile, viewPortEnvelope, requestedRes, overviews, stats);
+      return TiffUtilsV2.readImage(tiffFile, viewPortEnvelope, requestedRes, overviews, stats);
 
     } else if (fileNameOrURL.toLowerCase().endsWith(".flt")) {
 
