@@ -140,11 +140,14 @@ public class RasterImageIO {
 //			Overviews overviews = OverviewsUtils.getOverviews(new File(
 //					fileNameOrURL), imageEnvelope);
 
-      Envelope imageEnvelope = TiffUtilsV2.getEnvelope(tiffFile);
-      Overviews overviews = OverviewsUtils.getOverviews(new File(fileNameOrURL), imageEnvelope);
+    //  Envelope imageEnvelope = TiffUtilsV2.getEnvelope(tiffFile);
+     // Overviews overviews = OverviewsUtils.getOverviews(new File(fileNameOrURL), imageEnvelope);
 
-      return TiffUtilsV2.readImage(tiffFile, viewPortEnvelope, requestedRes, overviews, stats);
-
+    //  return TiffUtilsV2.readImage(tiffFile, viewPortEnvelope, requestedRes, overviews, stats);
+      
+      // [Giuseppe Aruta 2020-sept-22] added new method that remove overviews and gets metadata
+      // directly from GeoRasterImage or using JAI
+      return TiffUtilsV2.readImageAndMetadata(tiffFile, viewPortEnvelope, requestedRes, stats);
     } else if (fileNameOrURL.toLowerCase().endsWith(".flt")) {
 
 			GridFloat gf = new GridFloat(fileNameOrURL);

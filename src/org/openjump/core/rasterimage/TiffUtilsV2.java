@@ -29,6 +29,9 @@ import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageParser;
 import org.xml.sax.SAXException;
 
+import com.sun.media.jai.codec.FileSeekableStream;
+import com.sun.media.jai.codec.TIFFDirectory;
+import com.sun.media.jai.codec.TIFFField;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.Logger;
@@ -89,6 +92,7 @@ public class TiffUtilsV2 {
     renderedOp = JAI.create("scale", parameterBlock);
     return JAI.create("scale", parameterBlock);
   }
+  
   
   /**
    * Method to build an ImageAndMetadata file
@@ -199,6 +203,133 @@ public class TiffUtilsV2 {
 	      return imageAndMetadata;
 
 	    }
+
+	  }
+  
+  
+  
+  
+  
+  /**
+   * New method to build an ImageAndMetadata file
+   * An ImageAndMetadata groups the Envelope, the Image, the Statistics and 
+   * NoData value of a TIF file
+   * Removed reading overviews and dependency to commons imaging library
+   * @param tiffFile
+   * @param viewportEnvelope
+   * @param requestedRes
+   * @param stats
+   * @return ImageAndMetadata
+   * @throws NoninvertibleTransformException
+   * @throws IOException
+   * @throws FileNotFoundException
+   * @throws TiffTags.TiffReadingException
+   * @throws Exception
+   */
+  public static ImageAndMetadata readImageAndMetadata(File tiffFile, Envelope viewportEnvelope, Resolution requestedRes,
+	     Stats stats) throws NoninvertibleTransformException, IOException, FileNotFoundException,
+	      TiffTags.TiffReadingException, Exception {
+	  RenderedOp renderedOp1 = getRenderedOp(tiffFile);
+	  Envelope wholeImageEnvelope = getEnvelope(tiffFile);
+	  
+	  //[Giuseppe Aruta 2020-sept-22] Deactivated Commons Imaging <TiffTag class>
+	  // as it throws an error on computing Resolution. 
+	  // This value can be calculated from envelope and image.
+	  //Deactivated code
+	  // TiffTags.TiffMetadata tiffMetadata = TiffTags.readMetadata(tiffFile);
+	  //int originalImageWidth = tiffMetadata.getColsCount();
+	  //int originalImageHeight = tiffMetadata.getRowsCount();
+	  // Resolution cellSize = tiffMetadata.getResolution();
+	  // Double noData = tiffMetadata.getNoData();
+	  
+	   //[Giuseppe Aruta 2020-sept-22]
+	   // Try to read geotiff noData tag using JAI. 
+	   // It also solves the  problem of the size of AsterDEM files
+	   // @ TODO This part should be ported to 
+	   // com.vividsolutions.jump.workbench.imagery.geoimg.GeoReferencedRaster
+	   // as only NoData tag is used = 42113
+	    final FileSeekableStream fileSeekableStream = new FileSeekableStream(
+	    		tiffFile.getAbsoluteFile());
+        final TIFFDirectory tiffDirectory = new TIFFDirectory(
+                fileSeekableStream, 0);
+        Double noData=Double.NEGATIVE_INFINITY;
+        final TIFFField[] availTags = tiffDirectory.getFields();
+        try {
+        for (final TIFFField availTag : availTags) {
+        	if (availTag.getTag() == 42113) {
+        		 String noDataString = "";
+                 if(availTag.getType()== TIFFField.TIFF_ASCII) {
+                     noDataString = availTag.toString();
+                     if(noDataString.equalsIgnoreCase("NaN")) {
+                         noDataString = "NaN";
+                     }                    
+                 } else if(availTag.getType()== TIFFField.TIFF_BYTE) {
+                     noDataString = new String(availTag.getAsBytes());
+                 }else if(availTag.getType()== TIFFField.TIFF_FLOAT) {
+                     noDataString = Float.toString(availTag.getAsFloat(0));
+                 }
+                 noData = Double.valueOf(noDataString);
+        	}
+          } 
+        } catch (NumberFormatException e){
+     	   //[Giuseppe Aruta 2020-sept-22]
+           //Sometimes reading NoData fails with NumberFormatException
+           //Thus the rastee is not well displayed in the view
+           //This code sets a standard (Saga gis) noData value readable for OpenJUMP
+        	noData=-99999.0D;
+        }
+	    /////End of NoData reading
+	    
+	    
+	   
+	    double cellSizeX = wholeImageEnvelope.getWidth()/renderedOp1.getWidth();
+	    double cellSizeY = wholeImageEnvelope.getHeight()/renderedOp1.getHeight();
+        if (requestedRes == null) {
+	      requestedRes = new Resolution(cellSizeX, cellSizeY);
+	    }
+        if (stats == null) {
+	      // Statistics on all pixels
+	      stats = calculateStats(tiffFile, noData, tiffFile);
+	    }
+
+	      float xScale = (float) (cellSizeX / requestedRes.getX());
+	      float yScale = (float) (cellSizeY  / requestedRes.getY());
+	      xScale = Math.min(xScale, 1);
+	      yScale = Math.min(yScale, 1);
+
+	      RenderedOp renderedOp = readSubsampled(tiffFile, xScale, yScale);
+	    
+
+	      Resolution subsetResolution = new Resolution(wholeImageEnvelope.getWidth() / renderedOp.getWidth(),
+	          wholeImageEnvelope.getHeight() / renderedOp.getHeight());
+
+	      Rectangle imageSubset = RasterImageIO.getDrawingRectangle(renderedOp.getWidth(), renderedOp.getHeight(),
+	          wholeImageEnvelope, viewportEnvelope, subsetResolution);
+
+	      BufferedImage bufferedImage;
+	      Envelope imagePartEnvelope;
+	      int actualImageWidth;
+	      int actualImageHeight;
+	      if (imageSubset == null) {
+	        bufferedImage = null;
+	        imagePartEnvelope = null;
+	        actualImageWidth = 0;
+	        actualImageHeight = 0;
+	      } else {
+	        bufferedImage = renderedOp.getAsBufferedImage(imageSubset, null);
+	        imagePartEnvelope =  getImageSubsetEnvelope(wholeImageEnvelope, imageSubset, subsetResolution);
+	        actualImageWidth = bufferedImage.getWidth();
+	        actualImageHeight = bufferedImage.getHeight();
+	      }
+
+	      Metadata metadata = new Metadata(wholeImageEnvelope, imagePartEnvelope,
+	          new Point(renderedOp1.getWidth(), renderedOp1.getHeight()), new Point(actualImageWidth, actualImageHeight),
+	          (cellSizeX + cellSizeY) / 2, (subsetResolution.getX() + subsetResolution.getY()) / 2, noData,
+	          stats);
+	      return new ImageAndMetadata(bufferedImage, metadata);
+ 
+
+	   
 
 	  }
 
