@@ -274,7 +274,7 @@ public class TiffUtilsV2 {
         } catch (NumberFormatException e){
      	   //[Giuseppe Aruta 2020-sept-22]
            //Sometimes reading NoData fails with NumberFormatException
-           //Thus the rastee is not well displayed in the view
+           //Thus the raster is not well displayed in the view
            //This code sets a standard (Saga gis) noData value readable for OpenJUMP
         	noData=-99999.0D;
         }
