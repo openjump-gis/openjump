@@ -91,7 +91,7 @@ public class TiffUtilsV2 {
   }
   
   /**
-   * Method to buid an ImageAndMetadata file
+   * Method to build an ImageAndMetadata file
    * An ImageAndMetadata groups the Envelope, the Image, the Statistics and 
    * NoData value of a TIF file
    * @param tiffFile
@@ -203,7 +203,7 @@ public class TiffUtilsV2 {
 	  }
 
   /**
-   * Method to read overviews of a TIF
+   * Method to read overviews of a TIF from the file metadata or from an external .ovr file
    * @param tiffFile
    * @param overviewIndex
    * @param indexStart
@@ -281,7 +281,7 @@ public class TiffUtilsV2 {
 	  }
 
 	  /**
-	   * Method to read Statistics of TIF file (if available) on the file itself or
+	   * Method to read Statistics of TIF file (if available) from  file metadata or
 	   * from an external aux.xml file
 	   * @param tiffFile
 	   * @param noDataValue
