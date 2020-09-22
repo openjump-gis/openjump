@@ -8,12 +8,23 @@ package org.openjump.sigle.utilities.geom;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.geom.MakeValidOp;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * This class can check if a FeatureCollection has only one Geometry Type
@@ -22,7 +33,8 @@ import com.vividsolutions.jump.feature.FeatureSchema;
  * @author Erwan Bocher 
  * @author Olivier Bedel
  * @version 2005-08-10
- *
+ * @author Giuseppe Aruta [2020-07-22]
+ * added two method to valid and to union by attribute a FeatureCollection
  */
 
 public class FeatureCollectionUtil {
@@ -90,4 +102,88 @@ public class FeatureCollectionUtil {
 			return AttributesList;
     	
 }
+    	/**
+    	 * Method to make a FeatureCollection valid   
+    	 * @param fc
+    	 */
+     	public static void validFeatureCollection(FeatureCollection fc) {
+     		MakeValidOp makeValidOp = new MakeValidOp();
+     	 	 makeValidOp.setPreserveGeomDim(true);
+     	     makeValidOp.setPreserveDuplicateCoord(false);
+     	     for (Feature feature  : fc.getFeatures()) {
+     	          Geometry validGeom = makeValidOp.makeValid(feature.getGeometry());
+     	          feature.setGeometry(validGeom);
+     	        }
+     	  // return fc;     
+     	   }
+     	
+     	/**
+     	 * Mathod to merge geometries of a FeaureCollection according
+     	 * to an attribute
+     	 * @param featureCollection
+     	 * @param value
+     	 * @throws Exception
+     	 */
+     	 public static void unionByAttributeValue(FeatureCollection featureCollection, String value) throws Exception {
+     		  FeatureSchema schema = featureCollection.getFeatureSchema();
+     	      if (featureCollection.getFeatures().size() > 1 &&
+     	        		featureCollection.getFeatures().get(0).getGeometry() != null) {
+     	        	featureCollection.getFeatures().get(0).getGeometry().getFactory();
+     	        }
+     	        else {
+     	        	Logger.error(
+     	                    I18N.get("ui.plugin.analysis.DissolvePlugIn.needs-two-features-or-more"));
+     	          // return null;
+     	        }
+     	        FeatureSchema newSchema;
+     		    newSchema = schema;
+     	        Map<Object, FeatureCollection> map = new HashMap<Object, FeatureCollection>();
+     	        for (Feature feature  : featureCollection.getFeatures()) {
+     	             Object key = feature.getAttribute(value);
+     	             if (!map.containsKey(key)) {
+     	                 FeatureCollection fd = new FeatureDataset(featureCollection.getFeatureSchema());
+     	                 fd.add(feature);
+     	                 map.put(key, fd);
+     	             }  else {
+     	                 map.get(key).add(feature);
+     	             }
+     	         }    
+     	        featureCollection.removeAll(featureCollection.getFeatures());
+     	            for (Iterator<Object> i = map.keySet().iterator() ; i.hasNext() ; ) {
+     	                Object key = i.next();
+     	                FeatureCollection fca = map.get(key);
+     	                if (fca.size() > 0) {
+     	                  Feature feature = union(fca);
+     	                  feature.setAttribute(value, key);
+     	                  Feature newFeature = new BasicFeature(newSchema);
+     	                    // Copy feature attributes in newFeature
+     	                  for (int j = 0, max = newSchema.getAttributeCount() ; j < max ; j++) {
+     	                        newFeature.setAttribute(j, feature.getAttribute(newSchema.getAttributeName(j)));
+     	                 }
+     	                  featureCollection.add(newFeature);
+     	                }
+     	            }      
+     	       // return featureCollection;
+     	     }
+
+     	   
+     	     private static Feature union(FeatureCollection fc) {
+     	    	 GeometryFactory factory = new GeometryFactory();
+     	         Collection<Geometry> geometries  = new ArrayList<Geometry>();
+     	         for (Feature f :  fc.getFeatures()) {
+     	             Geometry g = f.getGeometry();
+     	             geometries.add(g);
+     	         }
+     	         Geometry unioned = UnaryUnionOp.union(geometries);
+     	          FeatureSchema schema = fc.getFeatureSchema();
+     	         Feature feature = new BasicFeature(schema);
+     	         if (geometries.size()==0) {
+     	             feature.setGeometry(factory.createGeometryCollection(new Geometry[]{}));
+     	         }
+     	         else {
+     	             feature.setGeometry(unioned);
+     	         }
+     	         return feature;
+     	     }
+     	
 }
