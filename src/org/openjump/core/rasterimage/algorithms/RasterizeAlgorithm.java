@@ -118,7 +118,11 @@ public class RasterizeAlgorithm {
 	      FeatureDataset inputFC = new FeatureDataset(inputC, schema);
 	      for (Iterator<Feature> it = inputFC.iterator() ; it.hasNext() ; ) {
 	            Feature f = it.next();
-	            dValue = Double.parseDouble(f.getAttribute(attributeName).toString());
+	            try {
+		            dValue = Double.parseDouble(f.getAttribute(attributeName).toString());
+		           } catch (Exception e) {
+		        	dValue = NoData;
+		           }
 	            final Geometry geom = f.getGeometry();
 	      
 	         if (geom.intersects(extent)) {     
