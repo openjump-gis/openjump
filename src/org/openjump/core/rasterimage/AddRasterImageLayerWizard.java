@@ -19,15 +19,14 @@ import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 import org.openjump.io.PropertiesHandler;
 import org.openjump.util.metaData.MetaInformationHandler;
 
-import com.sun.media.jai.codec.FileSeekableStream;
-import com.sun.media.jai.codec.TIFFDirectory;
-import com.sun.media.jai.codec.TIFFField;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.task.TaskMonitorV2Util;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
+import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -102,6 +101,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
      */
     @Override
     public void run(WizardDialog dialog, TaskMonitor monitor) {
+        TaskMonitorV2Util.setTitle(monitor, I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image"));
         properties = new PropertiesHandler(
                 AddRasterImageLayerWizard.propertiesFile);
         if (files == null) {
@@ -113,12 +113,25 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     }
 
     private void open(File[] files, TaskMonitor monitor) {
-        for (final File file : files) {
+      monitor.allowCancellationRequests();
+      LayerManager layerManager = workbenchContext.getLayerManager();
+
+        for (int i = 0; i < files.length; i++) {
+          if (TaskMonitorV2Util.isCancelRequested(monitor))
+            break;
+          try {
+            //layerManager.setFiringEvents(false);
+            File file = files[i];
+            TaskMonitorV2Util.report(monitor, i + 1, files.length, " - " + file.getName());
             open(file, monitor);
+          } finally {
+            //layerManager.setFiringEvents(true);
+          }
         }
+
     }
 
-    public void open(File file, TaskMonitor monitor) {
+    private void open(File file, TaskMonitor monitor) {
         try {
             try {
                 properties.setProperty("path",
@@ -282,99 +295,101 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             if (fileName.toLowerCase().endsWith(".tif")
                     || fileName.toLowerCase().endsWith(".tiff")) {
                 // logger.printDebug("checking for GeoTIFF");
+              
+              TiffUtilsV2.getEnvelope(new File(fileName));
 
-                Coordinate tiePoint = null, pixelOffset = null, pixelScale = null;
-                double[] doubles = null;
-
-                final FileSeekableStream fileSeekableStream = new FileSeekableStream(
-                        fileName);
-                final TIFFDirectory tiffDirectory = new TIFFDirectory(
-                        fileSeekableStream, 0);
-
-                final TIFFField[] availTags = tiffDirectory.getFields();
-
-                for (final TIFFField availTag : availTags) {
-                    if (availTag.getTag() == GeoTiffConstants.ModelTiepointTag) {
-                        doubles = availTag.getAsDoubles();
-
-                        if (doubles.length != 6) {
-                            // logger.printError("unsupported value for ModelTiepointTag ("
-                            // + GeoTiffConstants.ModelTiepointTag + ")");
-                            context.getWorkbench()
-                                    .getFrame()
-                                    .warnUser(
-                                            "unsupported value for ModelTiepointTag ("
-                                                    + GeoTiffConstants.ModelTiepointTag
-                                                    + ")");
-                            break;
-                        }
-
-                        if (doubles[0] != 0 || doubles[1] != 0
-                                || doubles[2] != 0) {
-                            if (doubles[2] == 0) {
-                                pixelOffset = new Coordinate(doubles[0],
-                                        doubles[1]);
-                            } else {
-                                pixelOffset = new Coordinate(doubles[0],
-                                        doubles[1], doubles[2]);
-                            }
-                        }
-
-                        if (doubles[5] == 0) {
-                            tiePoint = new Coordinate(doubles[3], doubles[4]);
-                        } else {
-                            tiePoint = new Coordinate(doubles[3], doubles[4],
-                                    doubles[5]);
-                        }
-
-                        // logger.printDebug("ModelTiepointTag (po): " +
-                        // pixelOffset);
-                        // logger.printDebug("ModelTiepointTag (tp): " +
-                        // tiePoint);
-                    } else if (availTag.getTag() == GeoTiffConstants.ModelPixelScaleTag) {
-                        // Karteneinheiten pro pixel x bzw. y
-
-                        doubles = availTag.getAsDoubles();
-
-                        if (doubles.length == 2 || doubles[2] == 0) {
-                            pixelScale = new Coordinate(doubles[0], doubles[1]);
-                        } else {
-                            pixelScale = new Coordinate(doubles[0], doubles[1],
-                                    doubles[2]);
-                        }
-                        // logger.printDebug("ModelPixelScaleTag (ps): " +
-                        // pixelScale);
-                    } else {
-                        // logger.printDebug("tiff field: " +
-                        // availTags[i].getType() + ", "+ availTags[i].getTag()
-                        // + ", "+ availTags[i].getCount());
-                    }
-
-                }
-
-                fileSeekableStream.close();
-
-                if (tiePoint != null && pixelScale != null) {
-                    isGeoTiff = true;
-                    Coordinate upperLeft = null, lowerRight = null;
-
-                    if (pixelOffset == null) {
-                        upperLeft = tiePoint;
-                    } else {
-                        upperLeft = new Coordinate(tiePoint.x
-                                - (pixelOffset.x * pixelScale.x), tiePoint.y
-                                - (pixelOffset.y * pixelScale.y));
-                    }
-
-                    lowerRight = new Coordinate(upperLeft.x
-                            + (imageDimensions.x * pixelScale.x), upperLeft.y
-                            - (imageDimensions.y * pixelScale.y));
-
-                    // logger.printDebug("upperLeft: " + upperLeft);
-                    // logger.printDebug("lowerRight: " + lowerRight);
-
-                    env = new Envelope(upperLeft, lowerRight);
-                }
+//                Coordinate tiePoint = null, pixelOffset = null, pixelScale = null;
+//                double[] doubles = null;
+//
+//                final FileSeekableStream fileSeekableStream = new FileSeekableStream(
+//                        fileName);
+//                final TIFFDirectory tiffDirectory = new TIFFDirectory(
+//                        fileSeekableStream, 0);
+//
+//                final TIFFField[] availTags = tiffDirectory.getFields();
+//
+//                for (final TIFFField availTag : availTags) {
+//                    if (availTag.getTag() == GeoTiffConstants.ModelTiepointTag) {
+//                        doubles = availTag.getAsDoubles();
+//
+//                        if (doubles.length != 6) {
+//                            // logger.printError("unsupported value for ModelTiepointTag ("
+//                            // + GeoTiffConstants.ModelTiepointTag + ")");
+//                            context.getWorkbench()
+//                                    .getFrame()
+//                                    .warnUser(
+//                                            "unsupported value for ModelTiepointTag ("
+//                                                    + GeoTiffConstants.ModelTiepointTag
+//                                                    + ")");
+//                            break;
+//                        }
+//
+//                        if (doubles[0] != 0 || doubles[1] != 0
+//                                || doubles[2] != 0) {
+//                            if (doubles[2] == 0) {
+//                                pixelOffset = new Coordinate(doubles[0],
+//                                        doubles[1]);
+//                            } else {
+//                                pixelOffset = new Coordinate(doubles[0],
+//                                        doubles[1], doubles[2]);
+//                            }
+//                        }
+//
+//                        if (doubles[5] == 0) {
+//                            tiePoint = new Coordinate(doubles[3], doubles[4]);
+//                        } else {
+//                            tiePoint = new Coordinate(doubles[3], doubles[4],
+//                                    doubles[5]);
+//                        }
+//
+//                        // logger.printDebug("ModelTiepointTag (po): " +
+//                        // pixelOffset);
+//                        // logger.printDebug("ModelTiepointTag (tp): " +
+//                        // tiePoint);
+//                    } else if (availTag.getTag() == GeoTiffConstants.ModelPixelScaleTag) {
+//                        // Karteneinheiten pro pixel x bzw. y
+//
+//                        doubles = availTag.getAsDoubles();
+//
+//                        if (doubles.length == 2 || doubles[2] == 0) {
+//                            pixelScale = new Coordinate(doubles[0], doubles[1]);
+//                        } else {
+//                            pixelScale = new Coordinate(doubles[0], doubles[1],
+//                                    doubles[2]);
+//                        }
+//                        // logger.printDebug("ModelPixelScaleTag (ps): " +
+//                        // pixelScale);
+//                    } else {
+//                        // logger.printDebug("tiff field: " +
+//                        // availTags[i].getType() + ", "+ availTags[i].getTag()
+//                        // + ", "+ availTags[i].getCount());
+//                    }
+//
+//                }
+//
+//                fileSeekableStream.close();
+//
+//                if (tiePoint != null && pixelScale != null) {
+//                    isGeoTiff = true;
+//                    Coordinate upperLeft = null, lowerRight = null;
+//
+//                    if (pixelOffset == null) {
+//                        upperLeft = tiePoint;
+//                    } else {
+//                        upperLeft = new Coordinate(tiePoint.x
+//                                - (pixelOffset.x * pixelScale.x), tiePoint.y
+//                                - (pixelOffset.y * pixelScale.y));
+//                    }
+//
+//                    lowerRight = new Coordinate(upperLeft.x
+//                            + (imageDimensions.x * pixelScale.x), upperLeft.y
+//                            - (imageDimensions.y * pixelScale.y));
+//
+//                    // logger.printDebug("upperLeft: " + upperLeft);
+//                    // logger.printDebug("lowerRight: " + lowerRight);
+//
+//                    env = new Envelope(upperLeft, lowerRight);
+//                }
 
             } else if (fileName.toLowerCase().endsWith(".flt")) {
                 isGeoTiff = true;
