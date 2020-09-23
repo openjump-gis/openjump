@@ -32,6 +32,8 @@
 package com.vividsolutions.jump.workbench.ui.renderer;
 import java.awt.Graphics2D;
 import javax.swing.SwingUtilities;
+
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
@@ -90,7 +92,7 @@ public abstract class ImageCachingRenderer implements Renderer {
 					} catch (Throwable t) {
 						panel.getContext()
 								.warnUser(WorkbenchFrame.toMessage(t));
-						t.printStackTrace(System.err);
+						Logger.error(t);
 						return;
 					}
 					//Don't wait for the RenderingManager's 1-second
