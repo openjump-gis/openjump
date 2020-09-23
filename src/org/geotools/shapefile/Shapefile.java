@@ -148,7 +148,7 @@ public class Shapefile implements TaskMonitorSupport {
                 }
                 try{
                     body = handler.read(file,geometryFactory,contentLength);
-                    Logger.debug("" + recordNumber + " : from " + (pos-4) + " for " + contentLength + " (" + body.getNumPoints() + " pts)");
+                    //Logger.trace("" + recordNumber + " : from " + (pos-4) + " for " + contentLength + " (" + body.getNumPoints() + " pts)");
                     pos += contentLength;
                     list.add(body);
                     count++;
@@ -417,7 +417,7 @@ public class Shapefile implements TaskMonitorSupport {
                     raf.getChannel().read(bb, offset*2 + 8);
                     shp = new EndianDataInputStream(new ByteArrayInputStream(bytes));
                     body = handler.read(shp, geometryFactory, length);
-                    Logger.trace("" + recordNumber + " : from " + offset + " for " + length + " (" + body.getNumPoints() + " pts)");
+                    //Logger.trace("" + recordNumber + " : from " + offset + " for " + length + " (" + body.getNumPoints() + " pts)");
                     list.add(body);
                     // report to gui
                     r.report(recordNumber);
@@ -472,11 +472,20 @@ public class Shapefile implements TaskMonitorSupport {
      * @author ed
      */
     private class Reporter {
+      int totalCount = -1;
+      
       long init = Timer.now();
       int sampleSize = -1;
       long samplePeriod = 500; //ms
       int lastUpdateCount = 0;
       long lastUpdateTime = init;
+
+      public Reporter() {
+      }
+
+      public Reporter(int totalCount) {
+        this.totalCount = totalCount;
+      }
 
       public void report(int count) {
         // show status every sampleSize calculated by the samplePeriod given
@@ -500,8 +509,12 @@ public class Shapefile implements TaskMonitorSupport {
       private void print(int count) {
         lastUpdateTime = Timer.now();
         lastUpdateCount = count;
-        TaskMonitorUtil.report(getTaskMonitor(),
-            I18N.getMessage("Reader.parsed-{0}-features", String.format("%,10d", count)));
+        if (totalCount >= 0)
+          TaskMonitorV2Util.report(getTaskMonitor(),
+              I18N.getMessage("Reader.parsed-{0}-of-totally-{1}-features", String.format("%,10d", count), totalCount));
+        else
+          TaskMonitorV2Util.report(getTaskMonitor(),
+              I18N.getMessage("Reader.parsed-{0}-features", String.format("%,10d", count)));
       }
     }
 
