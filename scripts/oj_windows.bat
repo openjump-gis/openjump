@@ -38,7 +38,7 @@ rem --- if the proxy server requires authentication uncomment and edit also thes
 rem set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyUser=username -Dhttp.proxyPass=password
 
 rem --- avoid a NoClassDefFoundError when JAI is used
-JAVA_OPTS=-Dcom.sun.media.jai.disableMediaLib=true %JAVA_OPTS%
+set JAVA_OPTS=-Dcom.sun.media.jai.disableMediaLib=true %JAVA_OPTS%
 
 rem -- dequote path entries, just to be sure --
 call :dequote %PATH%
