@@ -27,11 +27,9 @@ import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageParser;
+import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.xml.sax.SAXException;
 
-import com.sun.media.jai.codec.FileSeekableStream;
-import com.sun.media.jai.codec.TIFFDirectory;
-import com.sun.media.jai.codec.TIFFField;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.Logger;
@@ -247,7 +245,7 @@ public class TiffUtilsV2 {
 	   // @ TODO This part should be ported to 
 	   // com.vividsolutions.jump.workbench.imagery.geoimg.GeoReferencedRaster
 	   // as only NoData tag is used = 42113
-	    final FileSeekableStream fileSeekableStream = new FileSeekableStream(
+	/*    final FileSeekableStream fileSeekableStream = new FileSeekableStream(
 	    		tiffFile.getAbsoluteFile());
         final TIFFDirectory tiffDirectory = new TIFFDirectory(
                 fileSeekableStream, 0);
@@ -276,7 +274,41 @@ public class TiffUtilsV2 {
            //Thus the raster is not well displayed in the view
            //This code sets a standard (Saga gis) noData value readable for OpenJUMP
         	noData=-99999.0D;
-        }
+        }*/
+        
+        
+        
+        
+		  //[Giuseppe Aruta 020-sept-23]
+		  //Reverted Apache Commons Imaging to read only no data
+		  //as JAI still throws NumberFormatException in
+		  // one of the 24 test files. 
+		  TiffImageParser parser = new TiffImageParser();
+	      TiffImageMetadata tmetadata = (TiffImageMetadata) parser.getMetadata(tiffFile);
+	      List<TiffField> tiffFields = tmetadata.getAllFields();
+	      Double noData=Double.NaN;
+	      for(TiffField tiffField : tiffFields) {
+	    	  if(tiffField.getTag() == TiffTags.TIFFTAG_GDAL_NODATA) {
+	    		  try {
+	    			  String noDataString = "";
+	                  if(tiffField.getFieldType() == FieldType.ASCII) {
+	                      noDataString = tiffField.getStringValue();
+	                      if(noDataString.equalsIgnoreCase("NaN")) {
+	                          noDataString = "NaN";
+	                      }                    
+	                  } else if(tiffField.getFieldType() == FieldType.BYTE) {
+	                      noDataString = new String(tiffField.getByteArrayValue());
+	                  }
+	                  noData = Double.parseDouble(noDataString);
+	    		  }
+	    		  catch(NumberFormatException e){
+	    			  Logger.error("Failed to read no data. Using standard -99999.0D", e);
+	    			  noData=-99999.0D; 
+	    		  }
+	    	  }
+	      }
+        
+        
 	    /////End of NoData reading
 	    
 	    
