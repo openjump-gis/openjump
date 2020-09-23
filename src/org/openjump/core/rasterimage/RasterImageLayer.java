@@ -362,7 +362,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
             java.awt.Point imageDims = RasterImageIO.getImageDimensions(imageFileName);
             
             origImageWidth = imageDims.x;
-            origImageHeight = imageDims.y;            
+            origImageHeight = imageDims.y;
             visibleRect = viewport.getPanel().getVisibleRect();
             
             int visibleX1 = visibleRect.x;
@@ -548,7 +548,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
         long start = Timer.milliSecondsSince(0);
         Logger.debug("Try reading "+getName());
         ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(getWorkbenchContext(), imageFileName, stats, viewport.getEnvelopeInModelCoordinates(), requestedRes);
-        Logger.info("Reading '"+getName()+"' took "+Timer.secondsSinceString(start)+"s.");
+        Logger.debug("Reading '"+getName()+"' took "+Timer.secondsSinceString(start)+"s.");
         metadata = imageAndMetadata.getMetadata();
         image = imageAndMetadata.getImage();
         numBands = metadata.getStats().getBandCount();
