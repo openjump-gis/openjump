@@ -279,7 +279,12 @@ public class GeoRaster implements Disposable {
   protected void normalize(RenderedOp image) {
   }
 
+  @Deprecated // use getRenderedOP() instead
   public RenderedOp getImage() throws ReferencedImageException {
+    return getRenderedOp();
+  }
+
+  public RenderedOp getRenderedOp() throws ReferencedImageException {
     if (src == null)
       readRasterfile();
     return src;

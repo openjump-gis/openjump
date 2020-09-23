@@ -42,13 +42,12 @@ public class TiffUtilsV2 {
   // a File -> RenderedOp cache mapping to prevent recreating inputs for the same file
   private static HashMap<File,GeoReferencedRaster> geoRasterCache = new HashMap<File,GeoReferencedRaster>();
 
-  
   public static RenderedOp getRenderedOp(File tiffFile) throws IOException {
     GeoReferencedRaster geoRaster = getGeoReferencedRaster(tiffFile);
     RenderedOp rop;
     try {
-      rop = geoRaster.getImage();
-    } catch (ReferencedImageException e) {
+      rop = geoRaster.getRenderedOp();
+    } catch (Exception e) {
       // TODO: handle errors better, wrapping it in IOException here
       //       because that's what's handled up from here
       throw new IOException(e);
