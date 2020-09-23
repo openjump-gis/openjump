@@ -12,10 +12,11 @@ package org.openjump.core.rasterimage;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.color.ColorSpace;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -92,7 +93,11 @@ public class RasterImageRenderer extends ImageCachingRenderer {
         if (!getRasterImageLayer().isVisible()) {
             return;
         }
-        
+
+//        if (last_scale == panel.getViewport().getScale() && last_env == panel.getViewport().fullExtent()) {
+//          return;
+//        }
+
 //        while(!this.doneRendering)
 //            Thread.sleep(50);
         
@@ -180,7 +185,19 @@ public class RasterImageRenderer extends ImageCachingRenderer {
                 
                 g.setComposite(AlphaComposite.getInstance( AlphaComposite.SRC_OVER, 1.0f - (float) getRasterImageLayer().getTransparencyLevel()));
                 
-                g.drawImage(sourceImage, xOffset, yOffset, null);
+                // suboptimal but seemingly working, drawing grayscale images throws
+                // Array Index Out Of Bounds Exception because it tries to copy RGB values
+                // why?! don't ask me..
+                BufferedImage outImage = sourceImage;
+                int cs_type = outImage.getColorModel().getColorSpace().getType();
+                if (cs_type != ColorSpace.TYPE_RGB) {
+                  // TODO: this is really slow, replace with something faster
+                  ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);  
+                  ColorConvertOp op = new ColorConvertOp(cs, null);  
+                  outImage = op.filter(sourceImage, null);
+                }
+
+                g.drawImage(outImage, xOffset, yOffset, null);
                 
                 if (oldRenderingKey!=null)
                     g.setRenderingHint(RenderingHints.KEY_RENDERING, oldRenderingKey);
@@ -205,9 +222,8 @@ public class RasterImageRenderer extends ImageCachingRenderer {
             }
         };
 
-       
         image.draw(drawer);
-        
+
         doneRendering = true;
     }
 
