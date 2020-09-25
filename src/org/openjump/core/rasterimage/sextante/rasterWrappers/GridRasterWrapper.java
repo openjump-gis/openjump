@@ -239,7 +239,7 @@ public class GridRasterWrapper {
         final int w = matrix.length;
         final int h = matrix[0].length;
         final WritableRaster raster = RasterFactory.createBandedRaster(
-                DataBuffer.TYPE_FLOAT, w + 1, h + 1, 1, null);
+                DataBuffer.TYPE_FLOAT, w, h, 1, null);
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < h; j++) {
                 raster.setSample(i, j, 0, matrix[i][j]);
