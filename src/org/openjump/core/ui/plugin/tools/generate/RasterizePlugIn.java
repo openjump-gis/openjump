@@ -102,11 +102,11 @@ public class RasterizePlugIn extends AbstractPlugIn
 	            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_cell");
 	    public static final Icon ICON = IconLoader.icon("rasterize.png");   
 	    
-	    private final static String RASTERIZE_VECTOR = "Rasterize vector layer";
-	    private final static String RASTERIZING_VECTOR = "Rasterizing vector layer";
-	    private final static String PREPARING_VECTOR = "Preparing vector layer";
-	    private final static String USE_EXTERNAL_EXTENT = "Use extent for layer";
-	    private final static String DESCRIPTION = "Rasterize a vector layer selecting an attribute value and defining a cell size. Optionally the extent of rasterized area can be defined from another vector or image layer";
+	    private final static String RASTERIZE_VECTOR = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.Name");
+	    private final static String RASTERIZING_VECTOR = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.rasterizing-layer");
+	    private final static String PREPARING_VECTOR = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.preparing-layer");
+	    private final static String USE_EXTERNAL_EXTENT = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.use-extent");
+	    private final static String DESCRIPTION = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.description");
 	 
 	    @Override
 	   public boolean execute(PlugInContext context) throws Exception {
