@@ -6,9 +6,13 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.openjump.core.rasterimage.RasterImageIO;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridCell;
@@ -22,6 +26,9 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import com.vividsolutions.jump.feature.AttributeType;
+import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
@@ -39,7 +46,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
 
 public class RasterizeAlgorithm {
 
-	private static Double NO_DATA;
+	private static Double noData= -99999.0D;
 	private static Double cellSize;
 	private static double dValue;
 	private static int m_iNX;
@@ -65,8 +72,8 @@ public class RasterizeAlgorithm {
 
 	    */
 	   
-	   public static void Rasterize_AdbToolbox(File file, Envelope limitEnvelope, FeatureCollection fCollection, String attributeName, double CellSize, double NoData) throws IOException  {
-		 NO_DATA=NoData;
+	   public static void RasterizeAdbToolbox(File file, Envelope limitEnvelope, FeatureCollection fCollection, String attributeName, double CellSize) throws IOException  {
+			 
 		 cellSize=CellSize;
 		 m_Extent=  new GridExtent();
 		   m_Extent.setCellSize(CellSize, CellSize);
@@ -79,7 +86,7 @@ public class RasterizeAlgorithm {
 			  
 	      for (int x = 0; x < m_iNX; x++){
 		 	for (int y = 0; y < m_iNY; y++){
-		 		valori[x][y]=NoData;
+		 		valori[x][y]=noData;
 		 				 
 		 		}
 		 	}
@@ -118,11 +125,7 @@ public class RasterizeAlgorithm {
 	      FeatureDataset inputFC = new FeatureDataset(inputC, schema);
 	      for (Iterator<Feature> it = inputFC.iterator() ; it.hasNext() ; ) {
 	            Feature f = it.next();
-	            try {
-		            dValue = Double.parseDouble(f.getAttribute(attributeName).toString());
-		           } catch (Exception e) {
-		        	dValue = NoData;
-		           }
+	            dValue = Double.parseDouble(f.getAttribute(attributeName).toString());
 	            final Geometry geom = f.getGeometry();
 	      
 	         if (geom.intersects(extent)) {     
@@ -218,7 +221,7 @@ public class RasterizeAlgorithm {
 	       
 	       RasterImageIO rasterImageIO = new RasterImageIO();
 	      rasterImageIO.writeImage(file, raster, limitEnvelope,
-	                rasterImageIO.new CellSizeXY(CellSize, CellSize), NoData);
+	                rasterImageIO.new CellSizeXY(CellSize, CellSize), noData);
 	      
 	   }
  
@@ -246,36 +249,35 @@ public class RasterizeAlgorithm {
 	    * @param double NoData
 	    * @throws IOException
 	    */
-	   public static void Rasterize_Sextante(File file, Envelope limitEnvelope, FeatureCollection fCollection, 
-			   String attributeName, double CellSize, double NoData) throws IOException  {
-		   NO_DATA=NoData;
+	   public static void RasterizeSextante(File file, Envelope limitEnvelope, FeatureCollection fCollection, 
+			   String attributeName, double CellSize ) throws IOException  {
+		   
 		   cellSize=CellSize;
 		   m_Extent=  new GridExtent();
 		   m_Extent.setCellSize(CellSize, CellSize);
-		   m_Extent.setXRange(limitEnvelope.getMinX(), limitEnvelope.getMaxX());
-		   m_Extent.setYRange(limitEnvelope.getMinY(), limitEnvelope.getMaxY()); 
-	 
-		  m_iNX = m_Extent.getNX();
-	         m_iNY = m_Extent.getNY();
-		  double[][] valori= new double[m_iNX][m_iNY];
+		   double minX = limitEnvelope.getMinX();
+		   double minY = limitEnvelope.getMinY();
+		   double maxX = limitEnvelope.getMaxX();
+		   double maxY = limitEnvelope.getMaxY();
+		   m_Extent.setXRange(minX, maxX);//limitEnvelope.getMaxX());
+		   m_Extent.setYRange(minY, maxY);//limitEnvelope.getMaxY()); 
+		   m_iNX = m_Extent.getNX()+1;
+	       m_iNY = m_Extent.getNY()+1; 
+	      double[][] valori= new double[m_iNX][m_iNY];
 		  
 		  for (int x = 0; x < m_iNX; x++){
 	 			for (int y = 0; y < m_iNY; y++){
-	 				valori[x][y]=NoData;
+	 				valori[x][y]=noData;
 	 				 
 	 			}
 	 		}
-		  
 		  raster = GridRasterWrapper.matrixToRaster(valori);
-
-		    
-		
-	      final Coordinate[] coords = new Coordinate[5];
-	      coords[0] = new Coordinate(limitEnvelope.getMinX(), limitEnvelope.getMinY());
-	      coords[1] = new Coordinate(limitEnvelope.getMinX(), limitEnvelope.getMaxY());
-	      coords[2] = new Coordinate(limitEnvelope.getMaxX(),limitEnvelope.getMaxY());
-	      coords[3] = new Coordinate(limitEnvelope.getMaxX(),limitEnvelope.getMinY());
-	      coords[4] = new Coordinate(limitEnvelope.getMinX(), limitEnvelope.getMinY());
+		  final Coordinate[] coords = new Coordinate[5];
+	      coords[0] = new Coordinate(minX, minY);
+	      coords[1] = new Coordinate(minX, maxY);
+	      coords[2] = new Coordinate(maxX, maxY);
+	      coords[3] = new Coordinate(maxX, minY);
+	      coords[4] = new Coordinate(minX, minY);
 	       
 	      
 	      final GeometryFactory gf = new GeometryFactory();
@@ -288,7 +290,12 @@ public class RasterizeAlgorithm {
 	      FeatureDataset inputFC = new FeatureDataset(inputC, schema);
 	      for (Iterator<Feature> it = inputFC.iterator() ; it.hasNext() ; ) {
 	            Feature f = it.next();
+	            try {
 	            dValue = Double.parseDouble(f.getAttribute(attributeName).toString());
+	           } catch (Exception e) {
+	        	   dValue = noData;
+	           }
+	          
 	            final Geometry geometry = f.getGeometry();
 	            
 	            
@@ -297,12 +304,11 @@ public class RasterizeAlgorithm {
 	            	doGeometry(geometry);
 	            }
 	     }
-	    //   Raster raster = sRasterLayer.getRaster();
-	       
-	       RasterImageIO rasterImageIO = new RasterImageIO();
-	      rasterImageIO.writeImage(file, raster, limitEnvelope,
-	                rasterImageIO.new CellSizeXY(CellSize, CellSize), NoData);
+	      RasterImageIO rasterImageIO = new RasterImageIO();
+	      rasterImageIO.writeImage(file, raster, extent.getEnvelopeInternal(),
+	                rasterImageIO.new CellSizeXY(CellSize, CellSize),noData );
 
+	          
 	   }
 
 
@@ -385,12 +391,12 @@ public class RasterizeAlgorithm {
 	                  final double dPrevValue =raster.getSampleDouble(x, y,0);// sRasterLayer.getCellValueAsDouble(x, y);
 	                  if (bIsHole) {
 	                     if (dPrevValue == dValue) {
-	                    	 raster.setSample(x, y, 0, NO_DATA);
+	                    	 raster.setSample(x, y, 0, noData);
 	                    	 
 	                     }
 	                  }
 	                  else {
-	                     if (dPrevValue == NO_DATA) {
+	                     if (dPrevValue == noData) {
 	                    	 raster.setSample(x, y, 0, dValue);
 	                    	 
 	                     }
@@ -530,7 +536,83 @@ public class RasterizeAlgorithm {
 	         	  }
 	 	      }
 	
-
+		 public static FeatureCollection unionByAttributeValue(FeatureCollection featureCollection, String value) throws Exception {
+			  FeatureDataset outputFC = new FeatureDataset(featureCollection.getFeatureSchema());
+		        
+			    Map<Object, FeatureCollection> map = new HashMap<Object, FeatureCollection>();
+			    Iterator<Feature> itFeat= featureCollection.getFeatures().iterator();
+			     while (itFeat.hasNext()) {
+			    	 Feature feature = itFeat.next();
+			    	 Object key = feature.getAttribute(value);
+		             if (!map.containsKey(key)) {
+		                 FeatureCollection fd = new FeatureDataset(featureCollection.getFeatureSchema());
+		                 fd.add(feature);
+		                 map.put(key, fd);
+		             }  else {
+		                 map.get(key).add(feature);
+		             } 
+			     }
+		
+		        Iterator<Object>  iter = map.keySet().iterator();
+		        while (iter.hasNext()) {
+		        	   Object key = iter.next();
+		                FeatureCollection fca = map.get(key);
+		                if (fca.size() > 0) {
+		                  Feature feature = union(fca);
+		                  feature.setAttribute(value, key);
+		                  outputFC.add(feature);
+		                }
+		        }
+		        
+		      
+		        return  outputFC;
+		     }
+		 
+		 
+		 
+		 
+		     private static Feature union(FeatureCollection fc) {
+		    	 GeometryFactory factory = new  GeometryFactory();
+		         Collection<Geometry> geometries  = new ArrayList<Geometry>();
+		         for (Feature f :  fc.getFeatures()) {
+		             Geometry g = f.getGeometry();
+		             geometries.add(g);
+		         }
+		         Geometry unioned = UnaryUnionOp.union(geometries);
+		          FeatureSchema schema = fc.getFeatureSchema();
+		         Feature feature = new BasicFeature(schema);
+		         if (geometries.size()==0) {
+		             feature.setGeometry(factory.createGeometryCollection(new Geometry[]{}));
+		         }
+		         else {
+		             feature.setGeometry(unioned);
+		         }
+		         return feature;
+		     }
+		    
+		      
+		     
+	  public static FeatureCollection getFeaturesOverlappingEnvelope(FeatureCollection featureCollection, 
+			  	Envelope env, String attributeName) throws Exception {
+		  		Collection<Feature> inputC = featureCollection.getFeatures();
+	 	        FeatureSchema schema1 = featureCollection.getFeatureSchema();
+		        FeatureDataset inputFC = new FeatureDataset(inputC, schema1);  	 
+		  
+		  
+		         FeatureSchema schema = new FeatureSchema();
+		    	 schema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+		    	 schema.addAttribute(attributeName, AttributeType.DOUBLE);
+		    	 FeatureDataset outputFC = new FeatureDataset(schema);
+			     GeometryFactory factory = new GeometryFactory();
+		    	 Geometry geom = factory.toGeometry(env);
+		    	 
+		    	 for (Feature f : inputFC.getFeatures()) {
+		             Geometry g = f.getGeometry();
+		             if (!geom.disjoint(g)){
+		           outputFC.add(f);}
+		         }
+		 	 return outputFC;
+		     }
 	
 }
 
