@@ -744,7 +744,9 @@
     <plug-in>
         org.openjump.core.ui.plugin.tools.generate.LinearReferencingOnSelectionPlugIn
     </plug-in>
-
+    <plug-in>
+     org.openjump.core.ui.plugin.tools.generate.RasterizePlugIn
+    </plug-in>
     <!-- ========= WARP ==================== -->
     <plug-in>
         com.vividsolutions.jump.workbench.ui.warp.WarpingPlugIn
