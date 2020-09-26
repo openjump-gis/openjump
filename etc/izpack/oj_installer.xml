@@ -120,6 +120,7 @@
     <!--panel classname="SummaryPanel" id="summarypanel" / -->
     <panel classname="InstallPanel" id="installpanel" />
     <!--panel classname="FinishPanel" id="finishpanel" / -->
+    <panel classname="SimpleFinishPanel" id="finishpanel" />
   </panels>
 
   <!-- The listeners section for CustomActions -->
