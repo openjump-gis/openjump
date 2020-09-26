@@ -4,9 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
-2020-09-14 Giuseppe Aruta
+2020-09-26 Giuseppe Aruta
   * Added RasterizePlugIn. A plugin to rasterize vector layer according to
-  an attribute value and cell size (located under Tools>Generate)
+  an attribute value and cell size (plugin located under Tools>Generate)
 
 2020-09-18 mmichaud, ede
   * prepend jvm argument -Dcom.sun.media.jai.disableMediaLib=true to start
