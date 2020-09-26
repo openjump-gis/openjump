@@ -99,7 +99,7 @@ public class RasterizePlugIn extends AbstractPlugIn
 	    private final static String TARGET_LAYER = I18N
 	            .get("ui.GenericNames.Target-Layer");
 	    private final static String  CELL_SIZE = I18N
-	            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_cell");
+	            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.size");
 	    public static final Icon ICON = IconLoader.icon("rasterize.png");   
 	    
 	    private final static String RASTERIZE_VECTOR = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.Name");
