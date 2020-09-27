@@ -261,8 +261,8 @@ public class RasterizeAlgorithm {
 		   double maxY = limitEnvelope.getMaxY();
 		   m_Extent.setXRange(minX, maxX);//limitEnvelope.getMaxX());
 		   m_Extent.setYRange(minY, maxY);//limitEnvelope.getMaxY()); 
-		   m_iNX = m_Extent.getNX()+1;
-	       m_iNY = m_Extent.getNY()+1; 
+		   m_iNX = m_Extent.getNX();
+	       m_iNY = m_Extent.getNY(); 
 	      double[][] valori= new double[m_iNX][m_iNY];
 		  
 		  for (int x = 0; x < m_iNX; x++){
