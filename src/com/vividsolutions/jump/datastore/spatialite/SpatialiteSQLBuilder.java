@@ -10,6 +10,7 @@ import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * Creates SQL query strings for a Spatial database. To be overloaded by classes
@@ -42,9 +43,9 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
 
     // quotes identifier to manage several cases. TODO: escape single/double quotes ?
     String s = String.format(ret, cols, SQLUtil.quote(this.datasetName), bbox, and, lim);
-    JUMPWorkbench.getInstance().getFrame().log(
+    Logger.trace(
         "SQL query to get Spatial table features:\n\t"
-        + s, this.getClass());
+        + s);
 
     return s;
   }
