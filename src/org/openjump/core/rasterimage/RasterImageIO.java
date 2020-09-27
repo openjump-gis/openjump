@@ -22,10 +22,15 @@ import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterFactory;
 import javax.media.jai.RenderedOp;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
+import org.openjump.core.ccordsys.utils.SRSInfo;
+import org.xml.sax.SAXException;
 
 import com.sun.media.jai.codec.FileSeekableStream;
 import com.sun.media.jai.codec.TIFFDirectory;
@@ -866,6 +871,104 @@ public class RasterImageIO {
 
 	}
 
+	/**
+	 * Enhanced method to save the TIF with an external aux.xml file
+	 * which contains statistics of raster and srs. Worldfile is not saved as
+	 * geographic position of file are already stored into the TIF file.
+	 * Statistics are calculated from raster
+	 * @param outFile
+	 * @param raster
+	 * @param envelope
+	 * @param cellSizeX
+	 * @param cellSizeY
+	 * @param noData
+	 * @param srsInfo
+	 * @throws IOException
+	 * @throws TransformerConfigurationException
+	 * @throws ParserConfigurationException
+	 * @throws TransformerException
+	 * @throws SAXException
+	 */
+	
+	public void writeImage(File outFile, Raster raster, Envelope envelope,
+			double cellSizeX, double cellSizeY, double noData, SRSInfo srsInfo) 
+					throws IOException, TransformerConfigurationException, ParserConfigurationException, TransformerException, SAXException   {
+
+		SampleModel sm = raster.getSampleModel();
+		ColorModel colorModel = PlanarImage.createColorModel(sm);
+		BufferedImage bufferedImage = new BufferedImage(colorModel,
+				(WritableRaster) raster, false, null);
+
+		TIFFEncodeParam param = new TIFFEncodeParam();
+		param.setCompression(TIFFEncodeParam.COMPRESSION_NONE);
+
+		TIFFField[] tiffFields = new TIFFField[3];
+
+		// Cell size
+		tiffFields[0] = new TIFFField(GeoTiffConstants.ModelPixelScaleTag,
+				TIFFField.TIFF_DOUBLE, 2, new double[] { cellSizeX,
+						cellSizeY});
+
+		// No data
+		String noDataS = Double.toString(noData);
+		byte[] bytes = noDataS.getBytes();
+		tiffFields[1] = new TIFFField(TiffTags.TIFFTAG_GDAL_NODATA,
+				TIFFField.TIFF_BYTE, noDataS.length(), bytes);
+
+		// Tie point
+		tiffFields[2] = new TIFFField(GeoTiffConstants.ModelTiepointTag,
+				TIFFField.TIFF_DOUBLE, 6, new double[] { 0, 0, 0,
+						envelope.getMinX(), envelope.getMaxY(), 0 });
+
+		param.setExtraFields(tiffFields);
+
+		FileOutputStream tifOut = new FileOutputStream(outFile);
+		TIFFImageEncoder encoder = (TIFFImageEncoder) TIFFCodec
+				.createImageEncoder("tiff", tifOut, param);
+		encoder.encode(bufferedImage);
+		tifOut.close();
+		 int bandCount = bufferedImage.getRaster().getNumBands();
+		  double minValue[] = new double[bandCount];
+	        double maxValue[] = new double[bandCount];
+	        double sum[] = new double[bandCount];
+	        double sumSquare[] = new double[bandCount];
+	        long cellsCount[] = new long[bandCount];
+	        
+	        for(int b=0; b<bandCount; b++) {
+	            minValue[b] = Double.MAX_VALUE;
+	            maxValue[b] = -Double.MAX_VALUE;
+	        }
+	        
+	        for(int r=0; r<bufferedImage.getHeight(); r++) {
+	            Raster raster2 = bufferedImage.getData(new Rectangle(0, r, bufferedImage.getWidth(), 1));
+	            for(int c=0; c<bufferedImage.getWidth(); c++) {
+	                for(int b=0; b<bandCount; b++) {
+	                    double value = raster2.getSampleDouble(c, r, b);
+	                    if(value != noData && (float)value != (float)noData &&
+	                            !Double.isNaN(value) && !Double.isInfinite(value)) {
+	                        if(value < minValue[b]) minValue[b] = value;
+	                        if(value > maxValue[b]) maxValue[b] = value;
+	                        cellsCount[b]++;
+	                        sum[b] += value;
+	                        sumSquare[b] += value * value;
+	                    }
+	                }
+	            }
+	        }
+	        Stats stats = new Stats(bandCount);
+	        for(int b=0; b<bandCount; b++) {
+	            double meanValue = sum[b] / cellsCount[b];
+	            double stdDevValue = Math.sqrt(sumSquare[b] / cellsCount[b] - meanValue * meanValue);
+	            stats.setStatsForBand(b, minValue[b], maxValue[b], meanValue, stdDevValue);
+	        }
+	    		File auxXmlFile = new File(outFile.getParent(), outFile.getName()
+								+ ".aux.xml");
+				GDALPamDataset gPam = new GDALPamDataset();
+		    	gPam.writeStatisticsAndSRS(auxXmlFile, srsInfo, stats);
+		}
+	
+	
+	
 	public static Resolution calcRequestedResolution(Viewport viewport) {
 
 		double xRes = viewport.getEnvelopeInModelCoordinates().getWidth()
