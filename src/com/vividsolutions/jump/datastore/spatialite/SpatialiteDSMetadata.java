@@ -1,13 +1,5 @@
 package com.vividsolutions.jump.datastore.spatialite;
 
-import com.vividsolutions.jump.datastore.DataStoreConnection;
-import com.vividsolutions.jump.datastore.DataStoreLayer;
-import com.vividsolutions.jump.datastore.GeometryColumn;
-import com.vividsolutions.jump.datastore.SQLUtil;
-import com.vividsolutions.jump.datastore.spatialdatabases.*;
-import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
-import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,6 +10,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import com.vividsolutions.jump.datastore.DataStoreConnection;
+import com.vividsolutions.jump.datastore.DataStoreLayer;
+import com.vividsolutions.jump.datastore.GeometryColumn;
+import com.vividsolutions.jump.datastore.SQLUtil;
+import com.vividsolutions.jump.datastore.jdbc.JDBCUtil;
+import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSMetadata;
 import com.vividsolutions.jump.workbench.Logger;
 
 /**
@@ -287,10 +287,13 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
 
   private void checkSpatialiteLoaded() {
     // tries to load spatialite, assuming it is available on the system's path
+    Logger.trace("PATH -> "+System.getenv("PATH"));
     Statement stmt = null;
     try {
       stmt = conn.getJdbcConnection().createStatement();
+      //stmt.setQueryTimeout(30); // set timeout to 30 sec.
       stmt.executeUpdate("SELECT load_extension('mod_spatialite')");
+      
       // ex is thrown if extension cannot be loaded
       this.spatialiteLoaded = true;
       ResultSet rs = stmt.executeQuery("select spatialite_version()");
@@ -298,15 +301,15 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
       this.setSpatialiteVersion(rs.getString(1));
 
       Logger.info(
-          "SpatialDatabasesPlugin: Spatialite extension version loaded for this connection is "
-          + this.getSpatialiteVersion());
+          "sqlite mod_spatialite version "
+          + this.getSpatialiteVersion() + " loaded successfully.");
     } catch (Exception e) {
       Logger.warn(
-          "SpatialDatabasesPlugin: CANNOT load Spatialite extension (mod_spatialite)."
+          "FAILED to load sqlite extension mod_spatialite."
           , e);
     } finally {
       try {
-//        stmt.close();
+        stmt.close();
       } catch (Throwable th) {
         Logger.error(th);
       }
