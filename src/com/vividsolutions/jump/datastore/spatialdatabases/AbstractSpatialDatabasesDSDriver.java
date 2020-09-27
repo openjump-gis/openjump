@@ -166,29 +166,11 @@ public abstract class AbstractSpatialDatabasesDSDriver implements
       Properties connProps) throws Exception {
 
     String url = createJdbcUrl(params);
-    Logger.info("Target database URL : " + url);
+    Logger.debug("Target database URL : " + url);
 
     // only register once per driver
     if (jdbcDriver == null)
       initializeJdbcDriver();
-
-    // some helpful debugging output
-    // DriverManager.setLogWriter(new java.io.PrintWriter(System.out));
-    // java.util.Enumeration<Driver> ds = DriverManager.getDrivers();
-    // while (ds.hasMoreElements()) {
-    // Driver d = ds.nextElement();
-    // System.out.println(d.toString());
-    // System.out.println(url);
-    // System.out.println(d.acceptsURL(url));
-    // }
-
-    // mmichaud 2013-08-27 workaround for ticket #330
-    // deactivated on 2016-02-29 as it does not seem to work anymore...
-    // String savePreferIPv4Stack = System.getProperty("java.net.preferIPv4Stack");
-    // String savePreferIPv6Addresses = System
-    //     .getProperty("java.net.preferIPv6Addresses");
-    // System.setProperty("java.net.preferIPv4Stack", "true");
-    // System.setProperty("java.net.preferIPv6Addresses", "false");
 
     // workaround a bug in DriverManager.getConnection() when used like this:
     // Connection conn = DriverManager.getConnection(url, user, password);
@@ -218,32 +200,24 @@ public abstract class AbstractSpatialDatabasesDSDriver implements
       throw new JUMPException(getJdbcClass()
           + " is not registered with driver manager.");
 
+    // add auth info to a props copy for security reasons
     String user = params.getParameterString(PARAM_User);
     String password = params.getParameterString(PARAM_Password);
-    Properties info = connProps != null ? new Properties(connProps)
-        : new Properties();
+    // cloning props here as 'new Properties(connProps)' for some reason results 
+    // in an empty Properties map but defaults can be received via get()
+    // however, driver.connect(url, info) does not see the info params that way
+    Properties info = (Properties)connProps.clone();
     if (user != null) {
       info.put("user", user);
     }
     if (password != null) {
       info.put("password", password);
     }
-    Logger.info("java.net.preferIPv4Stack=" + System.getProperty("java.net.preferIPv4Stack"));
-    Logger.info("java.net.preferIPv6Addresses="+System.getProperty("java.net.preferIPv6Addresses"));
-    Connection conn = driver.connect(url, info);
+    Logger.debug("java.net.preferIPv4Stack=" + System.getProperty("java.net.preferIPv4Stack"));
+    Logger.debug("java.net.preferIPv6Addresses=" + System.getProperty("java.net.preferIPv6Addresses"));
+    //Logger.trace("conninfo -> "+info);
 
-    // deactivated on 2016-02-29 as it does not seem to work anymore...
-    //if (savePreferIPv4Stack == null) {
-    //  System.getProperties().remove("java.net.preferIPv4Stack");
-    //} else {
-    //  System.setProperty("java.net.preferIPv4Stack", savePreferIPv4Stack);
-    //}
-    //if (savePreferIPv6Addresses == null) {
-    //  System.getProperties().remove("java.net.preferIPv6Addresses");
-    //} else {
-    //  System.setProperty("java.net.preferIPv6Addresses",
-    //      savePreferIPv6Addresses);
-    //}
+    Connection conn = driver.connect(url, info);
 
     return conn;
   }
