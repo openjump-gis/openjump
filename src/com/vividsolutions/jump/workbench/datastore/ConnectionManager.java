@@ -8,22 +8,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JFrame;
+
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.datastore.DataStoreException;
 import com.vividsolutions.jump.datastore.DataStoreMetadata;
 import com.vividsolutions.jump.datastore.Query;
 import com.vividsolutions.jump.datastore.SpatialReferenceSystemID;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDSLayer;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesSQLBuilder;
 import com.vividsolutions.jump.io.FeatureInputStream;
 import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.ApplicationExitHandler;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-
-import java.sql.Connection;
-
-import javax.swing.JFrame;
+import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataSource;
 
 /**
  * Reuses existing connections where possible.
@@ -74,11 +76,7 @@ public class ConnectionManager {
         context.getWorkbench().getFrame()
             .addApplicationExitHandler(new ApplicationExitHandler() {
               public void exitApplication(JFrame mainFrame) {
-                try {
                   closeConnections();
-                } catch (DataStoreException e) {
-                  throw new RuntimeException(e);
-                }
               }
             });
     }
@@ -86,14 +84,14 @@ public class ConnectionManager {
     private Map<ConnectionDescriptor,DataStoreConnection> connectionDescriptorToConnectionMap =
             new HashMap<>();
 
-    public DataStoreConnection getOpenConnection(
-            ConnectionDescriptor connectionDescriptor) throws Exception {
-        if (getConnection(connectionDescriptor).isClosed()) {
-            connectionDescriptorToConnectionMap.put(connectionDescriptor,
-                    connectionDescriptor.createConnection(
-                    getDriver(connectionDescriptor.getDataStoreDriverClassName())));
-        }
-        return getConnection(connectionDescriptor);
+    public DataStoreConnection getOpenConnection(ConnectionDescriptor connectionDescriptor) throws Exception {
+      if (getConnection(connectionDescriptor).isClosed()) {
+        // create a connection and put into cache
+        connectionDescriptorToConnectionMap.put(connectionDescriptor,
+                connectionDescriptor.createConnection(
+                getDriver(connectionDescriptor.getDataStoreDriverClassName())));
+      }
+      return getConnection(connectionDescriptor);
     }
 
     public DataStoreDriver getDriver(String driverClassName) {
@@ -132,7 +130,7 @@ public class ConnectionManager {
          * (needed by DataStoreDataSource classes (Oracle, Postgis, ...)
          * @return the jdbc Connection
          */
-        public Connection getJdbcConnection() {
+        public java.sql.Connection getJdbcConnection() {
             throw new UnsupportedOperationException();
         }
 
@@ -221,12 +219,83 @@ public class ConnectionManager {
         listeners.add(listener);
     }
 
-    public void closeConnections() throws DataStoreException {
-        for (ConnectionDescriptor connectionDescriptor : getConnectionDescriptors()) {
-            if (!getConnection(connectionDescriptor).isClosed()) {
-                getConnection(connectionDescriptor).close();
-            }
-        }
+    /**
+     * run by Exit handler, close all 
+     * @throws DataStoreException
+     */
+    public void closeConnections() {
+      for (ConnectionDescriptor connectionDescriptor : getConnectionDescriptors()) {
+        closeConnection(connectionDescriptor);
+      }
     }
 
+    /**
+     * close all connections currently not used by any layer in any open task
+     */
+    public void closeConnectionsUnused() {
+      for (ConnectionDescriptor connectionDescriptor : getConnectionDescriptors()) {
+        if (getLayersUsing(connectionDescriptor).isEmpty()) {
+          closeConnection(connectionDescriptor);
+        }
+      }
+    }
+
+    /**
+     * used by {@link SpatialDSLayer#dispose()}
+     * close the connection utilized by the layer given if no other layer
+     * is currently needing it
+     */
+    public void closeConnection(SpatialDSLayer layer2remove) {
+      ConnectionDescriptor cd2remove = (ConnectionDescriptor) layer2remove.getDataSourceQuery()
+          .getDataSource().getProperties().get(DataStoreQueryDataSource.CONNECTION_DESCRIPTOR_KEY);
+      
+      // find out if same connection is used in another layer
+      List<SpatialDSLayer> layers = getLayersUsing(cd2remove);
+      for (SpatialDSLayer layer : layers) {
+        ConnectionDescriptor layerCd = (ConnectionDescriptor) layer.getDataSourceQuery()
+            .getDataSource().getProperties().get(DataStoreQueryDataSource.CONNECTION_DESCRIPTOR_KEY);
+        if (layer != layer2remove) {
+          // still needed? nothing to do and return
+          return;
+        }
+      }
+      
+      closeConnection(cd2remove);
+    }
+
+    /**
+     * try to close the connection for the given connection descriptor
+     */
+    public void closeConnection(ConnectionDescriptor cd2remove) {
+      try {
+        if (!getConnection(cd2remove).isClosed())
+          getConnection(cd2remove).close();
+      } catch (DataStoreException e) {
+        // ignore but log it
+        Logger.error(e);
+      }
+    }
+
+    /**
+     * gather a list of all spatial db datasource layers using the given
+     * connection descriptor
+     */
+    private List<SpatialDSLayer> getLayersUsing(ConnectionDescriptor cd) {
+      // iterate over al tasks collecting datastore layers
+      List<SpatialDSLayer> layers = new ArrayList();
+      for (TaskFrame frame : context.getWorkbench().getFrame().getTaskFrames()) {
+        layers.addAll(frame.getLayerManager().getLayerables(SpatialDSLayer.class));
+      }
+
+      // check if anyone is using the connection descriptor given
+      List<SpatialDSLayer> layersUsingThisCD = new ArrayList();
+      for (SpatialDSLayer layer : layers) {
+        ConnectionDescriptor layerCd = (ConnectionDescriptor) layer.getDataSourceQuery()
+            .getDataSource().getProperties().get(DataStoreQueryDataSource.CONNECTION_DESCRIPTOR_KEY);
+        if (cd == layerCd) {
+          layersUsingThisCD.add(layer);
+        }
+      }
+      return layersUsingThisCD;
+    }
 }
