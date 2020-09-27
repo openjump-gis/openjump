@@ -70,7 +70,7 @@ public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDSDriver 
     ClassLoader cl = JUMPWorkbench.getInstance().getPlugInManager()
         .getClassLoader();
 
-    // mandatory to enable loading extensions
+    // enable loading extensions is mandatory or else mod_spatialite will fail to load
     Class configClazz = cl.loadClass("org.sqlite.SQLiteConfig");
     Method enableMethod = configClazz.getMethod("enableLoadExtension",
         new Class[] { boolean.class });
@@ -94,7 +94,7 @@ public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDSDriver 
         .getSpatialiteVersion();
     // report if spatialite could not be loaded
     if (this.spatialiteVersion.isEmpty())
-      this.spatialiteVersion = "missing";
+      this.spatialiteVersion = "unavailable";
 
     return dsConn;
   }
