@@ -203,7 +203,9 @@ public class RasterizePlugIn extends AbstractPlugIn
 	            	layerableComboBox.setEnabled(externalLayerCheck.isSelected());
 	            		            }
 	      });
-	     layerableComboBox.addActionListener(new ActionListener() {
+      //[Giuseppe Aruta 2020-09-27] deactivated. As suggested by Roberto Rossi
+	  //It is better to leave a standard value for cell that user can modified
+	  /*   layerableComboBox.addActionListener(new ActionListener() {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 	            	final Layerable slayer = (Layerable) layerableComboBox
@@ -212,7 +214,7 @@ public class RasterizePlugIn extends AbstractPlugIn
 	            		cellYextFiels.setText(""+((RasterImageLayer) slayer).getMetadata().getOriginalCellSize());
 	            	}
 	            }
-	      });
+	      });*/
 	   
          final FileNameExtensionFilter filter;
           filter = new FileNameExtensionFilter("TIF", "tif");
