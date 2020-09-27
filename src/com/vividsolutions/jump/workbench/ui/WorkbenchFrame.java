@@ -1175,12 +1175,17 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         return taskFrame;
     }
 
-    // private class ActivateTaskFrame extends InternalFrameAdapter{
-    // public void internalFrameActivated(InternalFrameEvent e) {
-    // activeTaskFrame = (TaskFrame)e.getInternalFrame();
-    // toolBar.reClickSelectedCursorToolButton();
-    // }
-    // }
+    /**
+     * gather a list of open task frames and return them
+     */
+    public List<TaskFrame> getTaskFrames() {
+      List<TaskFrame> taskframes = new ArrayList();
+      for (JInternalFrame frame : getInternalFrames()) {
+        if (frame instanceof TaskFrame)
+          taskframes.add((TaskFrame)frame);
+      }
+      return taskframes;
+    }
 
     public TaskFrame getActiveTaskFrame() {
         return activeTaskFrame;
