@@ -114,8 +114,18 @@ public class ValueConverterFactory {
         }
     }
 
-    public static class  DateConverter implements ValueConverter {
+    public static class DateConverter implements ValueConverter {
+        FlexibleDateParser parser;
+
+        public DateConverter() {
+          // keep one caching instance assuming that one DateConverter
+          // is instantiated per dataset to speed up date parsing
+          parser = new FlexibleDateParser();
+          parser.cachingEnabled(true);
+        }
+
         public AttributeType getType() { return AttributeType.DATE; }
+ 
         public Object getValue(ResultSet rs, int columnIndex) throws SQLException {
               // always return string for dates and let FlexibleFeature convert later during runtime
               //return rs.getString(columnIndex);
@@ -126,7 +136,6 @@ public class ValueConverterFactory {
               } catch (Exception e) {
                   // try to read date from string, as some SpatialDatabases like SQLite
                   // can store DATE type in string
-                  FlexibleDateParser parser = new FlexibleDateParser();
                   try {
                       ret = parser.parse(rs.getString(columnIndex), false);
                   } catch (Exception ee) {
