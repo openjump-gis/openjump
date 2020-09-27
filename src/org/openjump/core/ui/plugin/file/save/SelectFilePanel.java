@@ -275,4 +275,9 @@ public class SelectFilePanel extends JFCWithEnterAction implements
       return dialog.getData(key);
     return null;
   }
+
+  @Override
+  public void exitingToLeft() {
+    // nothing to do
+  }
 }

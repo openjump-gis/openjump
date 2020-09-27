@@ -11,4 +11,10 @@ public interface WizardPanelV2 extends WizardPanel {
    * next panel to (re)initialize this panel, see e.g. {@link org.openjump.core.ui.plugin.file.open.SelectFilesPanel}
    */
   void enteredFromRight() throws Exception;
+  
+  /**
+   * Called in WizardDialog when the user leaves this panel without taking action
+   * @throws Exception
+   */
+  void exitingToLeft();
 }

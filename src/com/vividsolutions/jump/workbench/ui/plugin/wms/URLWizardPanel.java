@@ -283,13 +283,17 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
   }
   
 
-
   public static URLWizardPanel getInstance(){
     if (instance == null) {
       instance = new URLWizardPanel();
     }
     
     return instance;
+  }
+
+  @Override
+  public void exitingToLeft() {
+    // nothing to do
   }
 }
 

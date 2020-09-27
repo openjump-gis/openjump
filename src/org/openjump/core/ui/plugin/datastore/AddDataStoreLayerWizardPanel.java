@@ -32,6 +32,11 @@ public class AddDataStoreLayerWizardPanel extends AbstractWizardPanel {
     dataStorePanel.populateConnectionComboBox();
   }
 
+  public void exitingToLeft() {
+    // remove established connection
+    dataStorePanel.closeConnectionsUnused();
+  }
+
   public String getID() {
     return KEY;
   }

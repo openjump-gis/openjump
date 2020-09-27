@@ -70,7 +70,6 @@ public class ConnectionPanel extends JPanel {
         return context;
     }
 
-
     public void populateConnectionComboBox() {
         ConnectionDescriptor selectedConnectionDescriptor = getConnectionDescriptor();
         connectionComboBox.setModel( new DefaultComboBoxModel(
@@ -79,6 +78,13 @@ public class ConnectionPanel extends JPanel {
         // in which case #setSelectedItem will have no effect.
         // [Jon Aquino 2005-03-10]
         connectionComboBox.setSelectedItem( selectedConnectionDescriptor );
+    }
+
+    /**
+     * close opened connectors not in use currently
+     */
+    public void closeConnectionsUnused() {
+      connectionManager().closeConnectionsUnused();
     }
 
     public String validateInput() {

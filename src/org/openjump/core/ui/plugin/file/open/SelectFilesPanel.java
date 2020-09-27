@@ -286,5 +286,10 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanelV
       listener.inputChanged();
     }
   }
+
+  @Override
+  public void exitingToLeft() {
+    // nothing to do
+  }
   
 }

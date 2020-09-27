@@ -118,7 +118,11 @@ public class WizardDialog extends JDialog implements WizardContext,
 
   private void setCurrentWizardPanel(WizardPanel wizardPanel) {
     if (currentWizardPanel != null) {
+      // remove actionlistener
       currentWizardPanel.remove(this);
+      // inform panel that we left it
+      if (currentWizardPanel instanceof WizardPanelV2)
+        ((WizardPanelV2)currentWizardPanel).exitingToLeft();
     }
 
     titleLabel.setText(wizardPanel.getTitle());

@@ -71,6 +71,9 @@ public class AbstractWizardPanel extends JPanel implements WizardPanelV2 {
   public void exitingToRight() throws Exception {
   }
 
+  public void exitingToLeft() {
+  }
+
   public String getID() {
     return id;
   }

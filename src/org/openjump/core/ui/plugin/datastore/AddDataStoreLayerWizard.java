@@ -1,11 +1,12 @@
 package org.openjump.core.ui.plugin.datastore;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
@@ -13,11 +14,13 @@ import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDSLayer;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.Connection;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.model.Category;
@@ -29,8 +32,6 @@ import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddDataStoreLayerWizard extends AbstractWizardGroup {
 
@@ -113,7 +114,7 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
     LayerManager layerManager = workbenchContext.getLayerManager();
     Color fillColor = layerManager.generateLayerFillColor();
     FeatureCollection featureCollection = AddNewLayerPlugIn.createBlankFeatureCollection();
-    Layer layer = new Layer(dsLayer.getFullName(), fillColor, featureCollection,
+    Layer layer = new SpatialDSLayer(dsLayer.getFullName(), fillColor, featureCollection,
         layerManager);
     
     String geometryAttributeName = dsLayer.getGeoCol().getName();
