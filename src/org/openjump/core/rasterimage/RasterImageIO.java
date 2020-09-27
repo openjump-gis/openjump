@@ -872,9 +872,10 @@ public class RasterImageIO {
 	}
 
 	/**
-	 * Enhanced method to save the TIF with an external aux.xml file
-	 * which contains statistics of raster and srs. Worldfile is not saved as
-	 * geographic position of file are already stored into the TIF file.
+	 * Enhanced method to save the TIF with an external TIF.AUX.XML file
+	 * which contains statistics of raster and spatial reference system. 
+	 * Worldfile is not saved as geographic position  is already stored 
+	 * into the TIF file.
 	 * Statistics are calculated from raster
 	 * @param outFile
 	 * @param raster
