@@ -1037,12 +1037,13 @@ public class VectorizeAlgorithm {
     /** Create a FeatureCollection of polygons defining a GridWrapperNotInterpolated and number of band
      * Sextante algorithm - compatible with OpenKLEM methods
      * @param gwrapper
+     * @param explodeMultipolygons
      * @param attributeName
      * @param band
      * @return
      */
    public static FeatureCollection toPolygons(
-           GridWrapperNotInterpolated gwrapper, String attributeName, int band) {
+           GridWrapperNotInterpolated gwrapper,  boolean explodeMultipolygons,String attributeName,int band) {
        final FeatureSchema featSchema = new FeatureSchema();
        featSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
        featSchema.addAttribute("ID", AttributeType.INTEGER);
@@ -1051,8 +1052,8 @@ public class VectorizeAlgorithm {
         FeatureCollection featColl = new FeatureDataset(featSchema);
      
        
-       featColl = toPolygonsSextante(
-               gwrapper, attributeName, band);
+       featColl = toPolygonsAdbToolBox(
+               gwrapper, explodeMultipolygons,attributeName, band);
        
       
        return featColl;
