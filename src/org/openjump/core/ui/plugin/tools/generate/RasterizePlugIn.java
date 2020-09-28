@@ -226,26 +226,36 @@ public class RasterizePlugIn extends AbstractPlugIn
 
 	Envelope envWanted, fix;
 	
+	//Expand the envelope in order to recover data on last column and row
 	private void getCroppedEnvelope(Layer layer) {
+		 Envelope env;
 		if (externalLayerCheck.isSelected()) {
-        envWanted = new Envelope();
-        final Layerable slayer = (Layerable) layerableComboBox
-                    .getSelectedItem();
-           if (slayer instanceof WFSLayer) {
-                envWanted.expandToInclude(((WFSLayer) slayer)
-                        .getFeatureCollectionWrapper().getEnvelope());
-            } else if (slayer instanceof Layer) {
-                envWanted.expandToInclude(((Layer) slayer)
-                        .getFeatureCollectionWrapper().getEnvelope());
-            } else if (slayer instanceof RasterImageLayer) {
-                envWanted.expandToInclude(((RasterImageLayer) slayer)
-                        .getWholeImageEnvelope());
-            }
-          fix = envWanted.intersection(layer.getFeatureCollectionWrapper().getEnvelope());
+       envWanted = new Envelope();
+      
+       final Layerable slayer = (Layerable) layerableComboBox
+                   .getSelectedItem();
+          if (slayer instanceof WFSLayer) {
+               envWanted.expandToInclude(((WFSLayer) slayer)
+                       .getFeatureCollectionWrapper().getEnvelope());
+           } else if (slayer instanceof Layer) {
+               envWanted.expandToInclude(((Layer) slayer)
+                       .getFeatureCollectionWrapper().getEnvelope());
+           } else if (slayer instanceof RasterImageLayer) {
+               envWanted.expandToInclude(((RasterImageLayer) slayer)
+                       .getWholeImageEnvelope());
+           }
+          env = envWanted.intersection(layer.getFeatureCollectionWrapper().getEnvelope());
+		
 		}
 		else { 
-			fix=sourceLayer.getFeatureCollectionWrapper().getEnvelope();
+			env=sourceLayer.getFeatureCollectionWrapper().getEnvelope();
 		}
+		
+		double minX = env.getMinX();
+		double minY = env.getMinY();
+		double maxX = env.getMinX()+Math.round(env.getWidth())+cellValue;
+		double maxY = env.getMinY()+Math.round(env.getHeight())+cellValue;
+		fix = new Envelope(minX, maxX, minY, maxY);
 	}
 	
 	
@@ -355,7 +365,7 @@ public class RasterizePlugIn extends AbstractPlugIn
 	        } catch (RuntimeException e1) {
 	        }
 	        context.getLayerManager().addLayerable(category, ril);
-	        ril.setName(selAttribute);
+	      //  ril.setName(selAttribute);
 	    }
    
     
