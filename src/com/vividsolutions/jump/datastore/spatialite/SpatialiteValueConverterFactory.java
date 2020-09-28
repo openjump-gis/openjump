@@ -44,7 +44,12 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
     String tableName = rsm.getTableName(columnIndex).toLowerCase();
     String columnName = rsm.getColumnName(columnIndex).toLowerCase();
 
-    GeometricColumnType gcType = metadata.getGeoColTypesdMap().get(tableName + "." + columnName);
+    // SELECT geom AS geometry ... or
+    // SELECT ST_Centroid(geom) from ...
+    // result in empty tableNames
+    // to "reuse" the GeometricColumnType of a valid table's column by selecting as you can however eg.
+    // SELECT ST_Centroid(geom) as 'table.geom' from table
+    GeometricColumnType gcType = metadata.getGeoColTypesdMap().get((tableName==null||tableName.isEmpty()?"":tableName+".") + columnName);
     if (gcType == null) {
       ValueConverter stdConverter = ValueConverterFactory.getConverter(rsm, columnIndex);
       if (stdConverter != null) {
