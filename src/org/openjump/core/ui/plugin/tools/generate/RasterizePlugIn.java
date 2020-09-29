@@ -31,6 +31,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -49,6 +50,7 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -69,7 +71,6 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
-import de.latlon.deejump.wfs.jump.WFSLayer;
 import it.betastudio.adbtoolbox.libs.FileOperations;
 
  
@@ -79,11 +80,10 @@ public class RasterizePlugIn extends AbstractPlugIn
 
 	 	private Layer sourceLayer;
 	    private JTextField cellYextFiels;
-	    private JCheckBox externalLayerCheck;
-	    private JComboBox<Layerable> layerableComboBox;
-	    private JComboBox<Layer>   selectLayerComboBox;
-	     private JComboBox<String> jcb_attribute;
-	     private LayerNameRenderer layerListCellRenderer = new LayerNameRenderer();
+	    private JCheckBox externalLayerCheck,expandCheck, loadCheck;
+	    private JComboBox<Layerable> layerableComboBox, selectLayerComboBox;
+	    private JComboBox<String> jcb_attribute;
+	    private LayerNameRenderer layerListCellRenderer = new LayerNameRenderer();
 	   
 	  private static String selAttribute = null;
 	    private String ATTRIBUTE = GenericNames.SELECT_ATTRIBUTE;
@@ -108,6 +108,15 @@ public class RasterizePlugIn extends AbstractPlugIn
 	    private final static String USE_EXTERNAL_EXTENT = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.use-extent");
 	    private final static String DESCRIPTION = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.description");
 	 
+	    //TODO internationalize
+	    private final static String EXPAND_ONE_CELL = "Expand one cell size to each direction";
+	    private final static String EXPAND_ONE_CELL_TIP = "It expands the extension layer but can generate area of no data at the border";
+	    private final static String LOAD_RASTER_INTO_VIEW = "Load ouput raster into the view";
+	    
+	    private final static String sSaved = I18N
+				.get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+		private final static String SCouldNotSave = I18N
+				.get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
 	    @Override
 	   public boolean execute(PlugInContext context) throws Exception {
 	        MultiInputDialog dialog = new MultiInputDialog(
@@ -188,6 +197,8 @@ public class RasterizePlugIn extends AbstractPlugIn
 	     layerableComboBox.setEnabled(false);
 	     layerableComboBox.setSize(240,
 	    		 layerableComboBox.getPreferredSize().height);
+	     expandCheck=dialog.addCheckBox(EXPAND_ONE_CELL, false, EXPAND_ONE_CELL_TIP);
+	     expandCheck.setEnabled(false);
 	     selectLayerComboBox.addActionListener(new ActionListener() {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
@@ -195,6 +206,7 @@ public class RasterizePlugIn extends AbstractPlugIn
 	                        .filter(dialog.getLayer(SOURCE_LAYER));
 	               jcb_attribute.setModel(new DefaultComboBoxModel<>(list
 	                        .toArray(new String[0])));
+	               expandCheck.setEnabled(externalLayerCheck.isSelected());
 	            }
 	      });
 	     externalLayerCheck.addActionListener(new ActionListener() {
@@ -205,7 +217,8 @@ public class RasterizePlugIn extends AbstractPlugIn
 	      });
       //[Giuseppe Aruta 2020-09-27] deactivated. As suggested by Roberto Rossi
 	  //It is better to leave a standard value for cell that user can modified
-	  /*   layerableComboBox.addActionListener(new ActionListener() {
+	  // [Giuseppe Aruta 2020-09-29]  reactivated
+	    layerableComboBox.addActionListener(new ActionListener() {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 	            	final Layerable slayer = (Layerable) layerableComboBox
@@ -214,48 +227,45 @@ public class RasterizePlugIn extends AbstractPlugIn
 	            		cellYextFiels.setText(""+((RasterImageLayer) slayer).getMetadata().getOriginalCellSize());
 	            	}
 	            }
-	      });*/
+	      }); 
 	   
          final FileNameExtensionFilter filter;
           filter = new FileNameExtensionFilter("TIF", "tif");
           dialog.addRow("Save", new JLabel(OUTPUT_FILE + ":"),
                   createOutputFilePanel(filter), saveCheck, null);
-        // dialog.addRow("Save", createOutputFilePanel(filter), saveCheck, null);
+          loadCheck=dialog.addCheckBox(LOAD_RASTER_INTO_VIEW, true);
          GUIUtil.centreOnWindow(dialog);
     }
 
 	Envelope envWanted, fix;
 	
-	//Expand the envelope in order to recover data on last column and row
+	//Expand ouput envelope only if required
 	private void getCroppedEnvelope(Layer layer) {
-		 Envelope env;
+		 Envelope env = null;
 		if (externalLayerCheck.isSelected()) {
        envWanted = new Envelope();
-      
        final Layerable slayer = (Layerable) layerableComboBox
                    .getSelectedItem();
-          if (slayer instanceof WFSLayer) {
-               envWanted.expandToInclude(((WFSLayer) slayer)
-                       .getFeatureCollectionWrapper().getEnvelope());
-           } else if (slayer instanceof Layer) {
-               envWanted.expandToInclude(((Layer) slayer)
-                       .getFeatureCollectionWrapper().getEnvelope());
+           if (slayer instanceof Layer) {
+           	env =((Layer) slayer)
+                       .getFeatureCollectionWrapper().getEnvelope().intersection(layer.getFeatureCollectionWrapper().getEnvelope());
+              
            } else if (slayer instanceof RasterImageLayer) {
-               envWanted.expandToInclude(((RasterImageLayer) slayer)
-                       .getWholeImageEnvelope());
+           	env = ((RasterImageLayer) slayer)
+                       .getWholeImageEnvelope().intersection(layer.getFeatureCollectionWrapper().getEnvelope());
+              
            }
-          env = envWanted.intersection(layer.getFeatureCollectionWrapper().getEnvelope());
-		
+           if (expandCheck.isSelected()) {
+           	envWanted= new Envelope(env.getMinX() - cellValue, env.getMaxX() + 2*cellValue,
+       	            env.getMinY() - cellValue, env.getMaxY() + cellValue);
+           } else {
+           envWanted=env;
+           }
 		}
 		else { 
-			env=sourceLayer.getFeatureCollectionWrapper().getEnvelope();
+			envWanted=sourceLayer.getFeatureCollectionWrapper().getEnvelope();
 		}
-		
-		double minX = env.getMinX();
-		double minY = env.getMinY();
-		double maxX = env.getMinX()+Math.round(env.getWidth())+cellValue;
-		double maxY = env.getMinY()+Math.round(env.getHeight())+cellValue;
-		fix = new Envelope(minX, maxX, minY, maxY);
+		fix = envWanted;
 	}
 	
 	
@@ -297,11 +307,25 @@ public class RasterizePlugIn extends AbstractPlugIn
 	       try {
 	           catName = ((Category) context.getLayerNamePanel()
 	                    .getSelectedCategories().toArray()[0]).getName();
+	       saved(outFile);
 	       } catch (final RuntimeException e1) {
+	    	   notsaved();
+	    	   Logger.error(e1);
 	       }
 	       load(outFile, context, catName);
 	    
 	     }
+	
+	protected static void saved(File file) {
+		JUMPWorkbench.getInstance().getFrame()
+		.setStatusMessage(sSaved + " :" + file.getAbsolutePath());
+	}
+	
+	
+	protected static void notsaved() {
+		JOptionPane.showMessageDialog(null, SCouldNotSave, I18N.get(SCouldNotSave),
+				JOptionPane.WARNING_MESSAGE);
+	}
 	
 	public JPanel createOutputFilePanel(FileNameExtensionFilter filter) {
         JPanel jPanel = new JPanel(new GridBagLayout());
@@ -358,15 +382,14 @@ public class RasterizePlugIn extends AbstractPlugIn
 	        RasterImageLayer ril = new RasterImageLayer(file.getName(), context
 	                .getWorkbenchContext().getLayerManager(),
 	                file.getAbsolutePath(), imageAndMetadata.getImage(), env);
-	        // String catName = StandardCategoryNames.RESULT;
-	        try {
+	         try {
 	            category = ((Category) context.getLayerNamePanel()
 	                    .getSelectedCategories().toArray()[0]).getName();
 	        } catch (RuntimeException e1) {
+	        	Logger.error(e1);
 	        }
 	        context.getLayerManager().addLayerable(category, ril);
-	      //  ril.setName(selAttribute);
-	    }
+	       }
    
     
 }
