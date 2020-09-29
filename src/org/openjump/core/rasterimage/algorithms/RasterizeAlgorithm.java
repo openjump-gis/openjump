@@ -261,6 +261,11 @@ public class RasterizeAlgorithm {
 		   double maxY = limitEnvelope.getMaxY();
 		   m_Extent.setXRange(minX, maxX);//limitEnvelope.getMaxX());
 		   m_Extent.setYRange(minY, maxY);//limitEnvelope.getMaxY()); 
+		   minX = m_Extent.getXMin();
+		   minY = m_Extent.getYMin();
+		    maxX = m_Extent.getXMax();
+		   maxY = m_Extent.getYMax();
+		   //Recalculate cols and rows to avoid resampling of cell size
 		   m_iNX = m_Extent.getNX();
 	       m_iNY = m_Extent.getNY(); 
 	      double[][] valori= new double[m_iNX][m_iNY];
