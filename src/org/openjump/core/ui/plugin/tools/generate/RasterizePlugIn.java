@@ -108,9 +108,9 @@ public class RasterizePlugIn extends AbstractPlugIn
 	    private final static String DESCRIPTION = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.description");
 	 
 	    //TODO internationalize
-	    private final static String EXPAND_ONE_CELL = "Expand one cell size to each direction";
-	    private final static String EXPAND_ONE_CELL_TIP = "It expands the extension layer but can generate area of no data at the border";
-	    private final static String LOAD_RASTER_INTO_VIEW = "Load ouput raster into the view";
+	    private final static String EXPAND_ONE_CELL = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.expand-one-cell");
+	    private final static String EXPAND_ONE_CELL_TIP = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.expand-one-cell-tip");
+	    private final static String LOAD_RASTER_INTO_VIEW = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.load-raster");
 	   
 	    @Override
 	   public boolean execute(PlugInContext context) throws Exception {
