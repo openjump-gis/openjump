@@ -67,7 +67,8 @@ public class TiffUtilsV2 {
     GeoReferencedRaster geoRaster;
     try {
       geoRaster = new GeoReferencedRaster(tiffFile.toString(),
-          new com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi());
+          new it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi());
+          //new com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi());
     } catch (ReferencedImageException e) {
       // TODO: handle errors better, wrapping it in IOException here
       //       because that's what's handled up from here

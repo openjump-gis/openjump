@@ -151,7 +151,7 @@ public class GeoRaster implements Disposable {
       if (!uri.isAbsolute()) // means it has a scheme://
         throw new URISyntaxException(imageFileLocation, "missing scheme://");
     } catch (URISyntaxException e) {
-      Logger.debug("not an URI, will treat as path -> "+imageFileLocation, e);
+      Logger.trace("not an URI, will treat as path -> "+imageFileLocation, e);
       File file = new File(imageFileLocation);
       uri = file.toURI();
     }
