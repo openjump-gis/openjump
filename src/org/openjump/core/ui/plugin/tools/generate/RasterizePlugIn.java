@@ -31,7 +31,6 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -112,11 +111,7 @@ public class RasterizePlugIn extends AbstractPlugIn
 	    private final static String EXPAND_ONE_CELL = "Expand one cell size to each direction";
 	    private final static String EXPAND_ONE_CELL_TIP = "It expands the extension layer but can generate area of no data at the border";
 	    private final static String LOAD_RASTER_INTO_VIEW = "Load ouput raster into the view";
-	    
-	    private final static String sSaved = I18N
-				.get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
-		private final static String SCouldNotSave = I18N
-				.get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
+	   
 	    @Override
 	   public boolean execute(PlugInContext context) throws Exception {
 	        MultiInputDialog dialog = new MultiInputDialog(
@@ -307,25 +302,17 @@ public class RasterizePlugIn extends AbstractPlugIn
 	       try {
 	           catName = ((Category) context.getLayerNamePanel()
 	                    .getSelectedCategories().toArray()[0]).getName();
-	       saved(outFile);
+	        
 	       } catch (final RuntimeException e1) {
-	    	   notsaved();
+	    	 
 	    	   Logger.error(e1);
 	       }
-	       load(outFile, context, catName);
+	       if (loadCheck.isSelected()) {
+		       load(outFile, context, catName);
+		    }
 	    
 	     }
-	
-	protected static void saved(File file) {
-		JUMPWorkbench.getInstance().getFrame()
-		.setStatusMessage(sSaved + " :" + file.getAbsolutePath());
-	}
-	
-	
-	protected static void notsaved() {
-		JOptionPane.showMessageDialog(null, SCouldNotSave, I18N.get(SCouldNotSave),
-				JOptionPane.WARNING_MESSAGE);
-	}
+ 
 	
 	public JPanel createOutputFilePanel(FileNameExtensionFilter filter) {
         JPanel jPanel = new JPanel(new GridBagLayout());
