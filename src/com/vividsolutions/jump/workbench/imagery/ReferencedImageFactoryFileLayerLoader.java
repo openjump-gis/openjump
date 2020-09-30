@@ -40,6 +40,7 @@ import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ui.io.file.AbstractFileLayerLoader;
 import org.openjump.core.ui.util.ExceptionUtil;
 import org.openjump.core.ui.util.TaskUtil;
+import org.openjump.util.UriUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -108,8 +109,7 @@ public class ReferencedImageFactoryFileLayerLoader extends
     } catch(Exception e) {
       throw new ReferencedImageException(I18N.getMessage(
               "com.vividsolutions.jump.workbench.imagery.ReferencedImageException",
-              new Object[]{uri, imageFactory.getTypeName() +
-                      " (" + imageFactory.getDescription() + ")"}) + "\n\n" + e.getMessage(),
+              new Object[]{UriUtil.getFileName(uri), imageFactory.getDescription() }),
               e
       );
     }
