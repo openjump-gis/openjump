@@ -400,9 +400,12 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                 double maxMemoryToCommit = availRAM - minRamToKeepFree;
                 boolean needFreeRAM = (committedMemory > maxMemoryToCommit);
                 if(needFreeRAM == false){
-
+                	 setImage(stretchImageValuesForDisplay());
+                	 //Reverted to previous code as now rLayers are loaded using
+                	 // ImageIO which solved image display
+                	 //described on bug 498
                 	//DEM
-                	if (stats.getBandCount()<3) {
+                	/*if (stats.getBandCount()<3) {
                 	 setImage(stretchImageValuesForDisplay());
                 	 } else {//Other images
                 		 try {
@@ -410,7 +413,7 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                  	catch (ArrayIndexOutOfBoundsException e){
                  		setImage(getImageForDisplay());
                  		}
-                	 }
+                	 }*/
                 	
                 	
                   //  setImage(stretchImageValuesForDisplay());
