@@ -209,14 +209,26 @@ public class RasterizeAlgorithm {
 		            }
 	            }
 	         }
-	     }
-	      for (int x=0;  x < m_iNX; x++ ) {
-	    	  for (int y=0;  y < m_iNY; y++ ) {
-	    		  if(bimage.getRGB(x, y) != 0 && bimage.getRGB(x, y) != -1){
-	    			  raster.setSample(x, y, 0, dValue);
-	                }
+	         for (int x=0;  x < m_iNX; x++ ) {
+		    	  for (int y=0;  y < m_iNY; y++ ) {
+		    		  if(bimage.getRGB(x, y) != 0 && bimage.getRGB(x, y) != -1){
+		    			 valori[x][y]=1;
+		                }
+			      }
 		      }
-	      }
+	     }
+	      for (Iterator<Feature> it = inputFC.iterator() ; it.hasNext() ; ) {
+		        Feature f = it.next();
+		        dValue = Double.parseDouble(f.getAttribute(attributeName).toString());    
+	          raster = GridRasterWrapper.matrixToRaster(valori);
+	         for (int x=0;  x < m_iNX; x++ ) {
+	    	     for (int y=0;  y < m_iNY; y++ ) {
+	    		    if( valori[x][y]==1){
+	    			    raster.setSample(x, y, 0, dValue);
+	                }
+		          }
+	          }
+	        }
 	    
 	       
 	       RasterImageIO rasterImageIO = new RasterImageIO();
