@@ -33,6 +33,7 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
  */
 import org.apache.commons.imaging.ImageFormat;
 import org.apache.commons.imaging.ImageFormats;
+import org.apache.commons.io.FilenameUtils;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
@@ -43,6 +44,10 @@ public class CommonsImageFactory extends AbstractGraphicImageFactory {
   }
 
   public ReferencedImage createImage(String location) {
+    String ext = FilenameUtils.getExtension(location).toLowerCase();
+    if (ext.matches("tiff?"))
+      return new CommonsTIFFImage(location, null);
+    
     return new CommonsImage(location, null);
   }
 
