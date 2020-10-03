@@ -4,6 +4,10 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->#
 
+2020-10-03 mmichaud
+  * Update GraphToolBox extension to 0.8.0 : improve strahler order
+    calculation and add shreve, horton and hack orders
+
 2020-09-26 Giuseppe Aruta
   * Added RasterizePlugIn. A plugin to rasterize vector layer according to
   an attribute value and cell size (plugin located under Tools>Generate)
