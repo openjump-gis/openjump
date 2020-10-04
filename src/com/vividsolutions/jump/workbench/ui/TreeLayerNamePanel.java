@@ -155,7 +155,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
 
   private Object popupNode;
 
-  private ArrayList listeners = new ArrayList();
+  private ArrayList<LayerNamePanelListener> listeners = new ArrayList();
 
   private LayerManagerProxy layerManagerProxy;
 
@@ -908,17 +908,17 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     return tree;
   }
 
-  public void addListener(LayerNamePanelListener listener) {
+  public synchronized void addListener(LayerNamePanelListener listener) {
     listeners.add(listener);
   }
 
-  public void removeListener(LayerNamePanelListener listener) {
+  public synchronized void removeListener(LayerNamePanelListener listener) {
     listeners.remove(listener);
   }
 
-  public void fireLayerSelectionChanged() {
-    for (Iterator i = listeners.iterator(); i.hasNext();) {
-      LayerNamePanelListener l = (LayerNamePanelListener) i.next();
+  public synchronized void fireLayerSelectionChanged() {
+    for (Iterator<LayerNamePanelListener> i = listeners.iterator(); i.hasNext();) {
+      LayerNamePanelListener l = i.next();
       l.layerSelectionChanged();
     }
   }
