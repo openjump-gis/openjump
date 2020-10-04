@@ -89,6 +89,9 @@ public class OptionSpec {
     return null;
   }
 
+  /**
+   * get last option from the options list
+   */
   public Option getOption() {
     if (options.size() > 0) {
       return options.lastElement();
@@ -97,9 +100,14 @@ public class OptionSpec {
     return null;
   }
 
-  // merge all options into one list e.g. -param value1 -param value2
-  public Iterator<String> getAllOptions() {
-    Vector<String> all = new Vector<>();
+  /**
+   * merge all option args into one list e.g. 
+   * value1, value2
+   * from
+   * -param value1 -param value2
+   */
+  public Iterator<String> getAllArguments() {
+    Vector<String> all = new Vector<String>();
     for (Option option : options) {
       all.addAll(Arrays.asList(option.getArgs()));
     }
