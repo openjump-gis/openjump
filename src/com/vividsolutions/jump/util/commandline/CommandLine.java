@@ -33,6 +33,7 @@
 package com.vividsolutions.jump.util.commandline;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -81,6 +82,18 @@ public class CommandLine {
   public Option getOption(String name) {
     OptionSpec spec = getOptionSpec(name);
     return spec != null ? spec.getOption() : null;
+  }
+
+  /**
+   * get all values of all parameters(options) with the given name
+   * see {@link OptionSpec#getAllArguments()}
+   * 
+   * @param name
+   * @return iterator
+   */
+  public Iterator<String> getAllArguments(String name) {
+    OptionSpec spec = getOptionSpec(name);
+    return spec != null ? spec.getAllArguments() : Collections.<String>emptyList().iterator();
   }
 
   public Iterator<String> getParams() {
