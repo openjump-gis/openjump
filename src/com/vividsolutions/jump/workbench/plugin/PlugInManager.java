@@ -70,7 +70,7 @@ public class PlugInManager {
     private Collection configurations = new ArrayList();
 
     private File plugInDirectory;
-    private ClassLoader classLoader;
+    private PlugInClassLoader classLoader;
 
     /**
      * @param plugInDirectory
@@ -81,11 +81,6 @@ public class PlugInManager {
         this.monitor = monitor;
         Assert.isTrue((plugInDirectory == null)
                 || plugInDirectory.isDirectory());
-        // add plugin folder and recursively all jar/zip files in it to classpath
-        if ( plugInDirectory instanceof File ) {
-          ArrayList<File> files = new ArrayList();
-          files.add( plugInDirectory );
-          files.addAll( findFilesRecursively( plugInDirectory,true) );
 
 //          class ExtendedURLClassLoader extends URLClassLoader{
 //
@@ -137,35 +132,30 @@ public class PlugInManager {
           
 //          System.out.println("A:"+ClassLoader.getSystemClassLoader().getClass().getClassLoader());
 //          System.out.println("B:"+PlugInClassLoader.class.getClassLoader());;
-            PlugInClassLoader mycl = null;
-            try {
-              mycl = (PlugInClassLoader) ClassLoader.getSystemClassLoader();
-            } catch (ClassCastException e) {
-              Exception je = new JUMPException(
-                  "Wrong classloader. Make sure to run JRE with property -Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader set!",e);
-              throw je;
-            }
 
-//          
-//          // add system classpath (eg. org.deegree overrides classes in deegree.jar)
-//          System.out.println(Arrays.toString(((URLClassLoader) mycl.getParent()).getURLs()));
-//          System.out.println(mycl);
-//          System.out.println(mycl.getParent());
-//          if (getClass().getClassLoader() instanceof URLClassLoader)
-//            mycl.addUrls(((URLClassLoader) mycl.getParent()).getURLs());
-          // add jars in lib/ext and subfolders
-          mycl.addUrls(toURLs(files));
-          classLoader = mycl;
-          
-          // debugging output of all urls in our classloader
-          Logger.debug(Arrays.toString(mycl.getURLs()));
-        } else {
-          classLoader = getClass().getClassLoader();
+        try {
+          classLoader = (PlugInClassLoader) ClassLoader.getSystemClassLoader();
+        } catch (ClassCastException e) {
+          Exception je = new JUMPException(
+              "Wrong classloader. Make sure to run JRE with property -Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader set!",e);
+          throw je;
+        }
+
+        // add plugin folder and recursively all jar/zip files in it to classpath
+        if ( plugInDirectory instanceof File ) {
+          addExtensionDir(plugInDirectory);
+          this.plugInDirectory = plugInDirectory;
         }
 
         I18N.setClassLoader(classLoader);
         this.context = context;
-        this.plugInDirectory = plugInDirectory;
+    }
+
+    public void addExtensionDir(File dir) {
+      ArrayList<File> files = new ArrayList();
+      files.add( dir );
+      files.addAll( findFilesRecursively( dir,true) );
+      classLoader.addUrls(toURLs(files));
     }
 
     // pretty much the main method, finds and loads extensions from
@@ -368,7 +358,7 @@ public class PlugInManager {
       return configurations;
     }
 
-    FileFilter jarfilter = new FileFilter(){
+    static FileFilter jarfilter = new FileFilter(){
       public boolean accept(File f) {
         return f.getName().matches(".*\\.(?i:jar|zip)$") || f.isDirectory();
       }
@@ -518,7 +508,7 @@ public class PlugInManager {
      * To access extension classes, use this ClassLoader rather than the default
      * ClassLoader. Extension classes will not be present in the latter.
      */
-    public ClassLoader getClassLoader() {
+    public PlugInClassLoader getClassLoader() {
         return classLoader;
     }
     /**
