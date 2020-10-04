@@ -104,9 +104,13 @@ public abstract class ToolboxPlugIn extends AbstractPlugIn implements CheckBoxed
     return new EnableCheck() {
       // switch checkbox menu item on/off, depending on current visibility 
       public String check(JComponent component) {
-        JDialog tb = getToolbox();
+        //// do not initialize toolbox here, it delays menu opening!
+        // JDialog tb = getToolbox();
+        //// but assume not initialized/null equals not activated :)
+        String name = getName();
+        ToolboxDialog tb = (ToolboxDialog) toolboxMap.get(name);
         if (component instanceof JCheckBoxMenuItem)
-          ((JCheckBoxMenuItem) component).setSelected(tb.isVisible());
+          ((JCheckBoxMenuItem) component).setSelected(tb!=null && tb.isVisible());
         return null;
       }
     };
