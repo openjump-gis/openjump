@@ -402,6 +402,9 @@ public class FeatureInstaller {
 
   }
 
+  // regex pattern to strip position setting from strings, keep static to prevent recompilation
+  static Pattern posPattern = Pattern.compile("^(.*)\\{(?:pos\\:)?(\\d+)\\}$");
+
   /**
    * The addMenu method. it adds a given menu item to a menu path
    * associates the given plugin and generally does everything so
@@ -469,9 +472,6 @@ public class FeatureInstaller {
 //    if (plugin.getClass().getName().contains("Printer"))
 //      System.out.println(plugin.getClass().getName());
 
-    // regex pattern to strip position setting from strings
-    Pattern posPattern = Pattern.compile("^(.*)\\{(?:pos\\:)?(\\d+)\\}$");
-    
     // strip pospattern from menuitem name e.g. foo{pos:3}
     // we ignore them, positions are determined by position in *.xml config
     // anything not listed in there will be appended.
