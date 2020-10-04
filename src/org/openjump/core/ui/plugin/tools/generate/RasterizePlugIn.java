@@ -291,11 +291,8 @@ public class RasterizePlugIn extends AbstractPlugIn
 		   monitor.allowCancellationRequests();
 		   FeatureCollection fc = sourceLayer.getFeatureCollectionWrapper();
 		   final File outFile = FileUtil.addExtensionIfNone(new File(path), "tif");  
-	       monitor.report(PREPARING_VECTOR+"...");
-	       FeatureCollection fc2 = RasterizeAlgorithm.getFeaturesOverlappingEnvelope(fc, fix, selAttribute);
-	       FeatureCollection fc3 = RasterizeAlgorithm.unionByAttributeValue(fc2, selAttribute);
 	       monitor.report(RASTERIZING_VECTOR+"...");
-	       RasterizeAlgorithm.RasterizeSextante(outFile, fix, fc3, selAttribute, cellValue);
+	       RasterizeAlgorithm.Rasterize(outFile, fix, fc, selAttribute, cellValue);
 	       
 	        
 	       String catName = StandardCategoryNames.WORKING;

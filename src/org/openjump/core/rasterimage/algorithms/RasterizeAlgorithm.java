@@ -18,6 +18,7 @@ import org.openjump.core.rasterimage.RasterImageIO;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridCell;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridExtent;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridRasterWrapper;
+import org.openjump.core.ui.util.LayerableUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -51,204 +52,216 @@ public class RasterizeAlgorithm {
 	private static double dValue;
 	private static int m_iNX;
 	private static int m_iNY;
-	 
-	//private static OpenJUMPSextanteRasterLayer sRasterLayer;
 	private static GridExtent m_Extent;
-	  
-
-	   static WritableRaster raster;
+	public static WritableRaster raster;
 	
+	
+	 //[Giuseppe Aruta 2020-10-4] used to methods to rasterize:
+    // a) From AdbToolbox. Quite efficient with different types of geometries but slow
+    // b) From Sextante, almost faster but still not working with ponts and linestrings
+   // The code below simplefies the access to the the method
+    /**
+     * Convert a feature collection to a raster according to a numeric attribute, a limi envelope
+     * and a cell size. Raster is saved as TIFF file.
+     * Feature are first selected by the envelope and merged according the
+     * attribute, then converted to a java.awt.image.WritableRaster
+     * @param File file to save
+     * @param Envelope limitEnvelope 
+     * @param FeatureCollection fCollection 
+     * @param String attributeName 
+     * @param double CellSize
+     * @throws OutOfMemoryError
+     * @throws Exception
+     */
+    public static void Rasterize(File file, Envelope limitEnvelope, FeatureCollection fCollection, 
+			   String attributeName, double CellSize) throws OutOfMemoryError, Exception {
+    	 FeatureCollection fc = fCollection;
+    	 FeatureCollection fc2 = getFeaturesOverlappingEnvelope(fc, limitEnvelope, attributeName);
+	       FeatureCollection fc3 =  unionByAttributeValue(fc2, attributeName);
+    	 if (!LayerableUtil.isPolygonalLayer(fCollection)) {
+  	       RasterizeAlgorithm.RasterizeAdbToolbox(file, limitEnvelope, fc3, attributeName, CellSize);
+  	       } else   {
+  	    	   RasterizeAlgorithm.RasterizeSextante(file, limitEnvelope, fc3, attributeName, CellSize);  
+  	       } 
+    }
+	
+	
+	
+	
+	/**
+     * Method to rasterize a FeatureCollection using AdBToolboxframework
+     * @param file
+     * @param limitEnvelope
+     * @param fCollection
+     * @param attributeName
+     * @param CellSize
+     * @throws OutOfMemoryError
+     * @throws Exception
+     */
 	   
-		/**
-	    * Method to rasterize a FeatureCollection using AdBToolbox framework
-	    * @TODO check why the output shows non exact values
-	    * @param file
-	    * @param Envelope limitEnvelope
-	    * @param Layer m_Layer
-	    * @param String attributeName
-	    * @param double CellSize
-	    * @param double NoData
-	    * @throws IOException
-
-	    */
-	   
-	   public static void RasterizeAdbToolbox(File file, Envelope limitEnvelope, FeatureCollection fCollection, String attributeName, double CellSize) throws IOException  {
-			 
-		 cellSize=CellSize;
-		 m_Extent=  new GridExtent();
-		   m_Extent.setCellSize(CellSize, CellSize);
-		   m_Extent.setXRange(limitEnvelope.getMinX(), limitEnvelope.getMaxX());
-		   m_Extent.setYRange(limitEnvelope.getMinY(), limitEnvelope.getMaxY()); 
-	 
+	  
+     private static void RasterizeAdbToolbox(File file, Envelope limitEnvelope, FeatureCollection fCollection, 
+			   String attributeName, double CellSize) throws OutOfMemoryError, Exception  {
+		   cellSize=CellSize;
+		   m_Extent=  new GridExtent();
+	       m_Extent.setCellSize(CellSize, CellSize);
+		   double minX = limitEnvelope.getMinX();
+		   double minY = limitEnvelope.getMinY();
+		   double maxX = limitEnvelope.getMaxX();
+		   double maxY = limitEnvelope.getMaxY();
+		   m_Extent.setXRange(minX, maxX);
+		   m_Extent.setYRange(minY, maxY);
+		   minX = m_Extent.getXMin();
+		   minY = m_Extent.getYMin();
+		   maxX = m_Extent.getXMax();
+		   maxY = m_Extent.getYMax(); 
 		   m_iNX = m_Extent.getNX();
-	       m_iNY = m_Extent.getNY();
-	      double[][] valori= new double[m_iNX][m_iNY];
-			  
-	      for (int x = 0; x < m_iNX; x++){
-		 	for (int y = 0; y < m_iNY; y++){
-		 		valori[x][y]=noData;
-		 				 
-		 		}
-		 	}
-			  
-		raster = GridRasterWrapper.matrixToRaster(valori);
-		        BufferedImage bimage = new BufferedImage(m_iNX, m_iNY, BufferedImage.TYPE_INT_ARGB);
-		        bimage.setAccelerationPriority(1.0f);
-		        Graphics2D graphics = bimage.createGraphics();
-
-		        Coordinate[] coord;
-		        int[] coordGridX;
-		        int[] coordGridY;
-
-		        Color color = new Color(100);
-		        graphics.setPaint(color);
-		        graphics.setPaintMode();
-	         
-	         
-	         
-	         
-	      final Coordinate[] coords = new Coordinate[5];
-	      coords[0] = new Coordinate(limitEnvelope.getMinX(), limitEnvelope.getMinY());
-	      coords[1] = new Coordinate(limitEnvelope.getMinX(), limitEnvelope.getMaxY());
-	      coords[2] = new Coordinate(limitEnvelope.getMaxX(),limitEnvelope.getMaxY());
-	      coords[3] = new Coordinate(limitEnvelope.getMaxX(),limitEnvelope.getMinY());
-	      coords[4] = new Coordinate(limitEnvelope.getMinX(), limitEnvelope.getMinY());
-	       
-	      
-	      final GeometryFactory gf = new GeometryFactory();
-	      final LinearRing ring = gf.createLinearRing(coords);
-	      final Polygon extent = gf.createPolygon(ring, null);
-	      
-	      
-	      List<Feature> inputC = fCollection.getFeatures();
-	      FeatureSchema schema = fCollection.getFeatureSchema();
-	      FeatureDataset inputFC = new FeatureDataset(inputC, schema);
-	      for (Iterator<Feature> it = inputFC.iterator() ; it.hasNext() ; ) {
-	            Feature f = it.next();
-	            dValue = Double.parseDouble(f.getAttribute(attributeName).toString());
-	            final Geometry geom = f.getGeometry();
-	      
-	         if (geom.intersects(extent)) {     
-	        	 for(int g=0; g<geom.getNumGeometries(); g++){    
-	            	  // Check if polygons has holes
-		        if(geom.getGeometryN(g).getGeometryType().equals("Polygon")){
-		          Polygon polygon = (Polygon) geom.getGeometryN(g);
-		          java.awt.geom.Area awtArea;
-		             if(polygon.getNumInteriorRing() > 0){
-		                    // Holes found
-		                    // Exterior ring
-		             coord = polygon.getExteriorRing().getCoordinates();
-		             coordGridX = new int[coord.length];
-		             coordGridY = new int[coord.length];
-
-		                    // From geographic coords to image coords
-		                    for(int p=0; p<coord.length; p++){
-		                        java.awt.Point point = fromCoordToCell(coord[p], CellSize, extent);
-		                        coordGridX[p] = point.x;
-		                        coordGridY[p] = point.y;
-		                    }
-
-		                    java.awt.Polygon awtPolygon = new java.awt.Polygon(coordGridX, coordGridY, coord.length);
-		                    awtArea = new java.awt.geom.Area(awtPolygon);
-
-		                    // Subtract inner rings
-		                    for(int ir=0; ir<polygon.getNumInteriorRing(); ir++){
-		                        coord = polygon.getInteriorRingN(ir).getCoordinates();
-		                        coordGridX = new int[coord.length];
-		                        coordGridY = new int[coord.length];
-		                        // From geographic coords to image coords
-		                        for(int p=0; p<coord.length; p++){
-		                            java.awt.Point point = fromCoordToCell(coord[p], CellSize, extent);
-		                            coordGridX[p] = point.x;
-		                            coordGridY[p] = point.y;
-		                        }
-		                        awtPolygon = new java.awt.Polygon(coordGridX, coordGridY, coord.length);
-		                        java.awt.geom.Area awtArea2 = new java.awt.geom.Area(awtPolygon);
-		                        awtArea.subtract(awtArea2);
-		                    }
-		                }else{
-		                    coord = polygon.getCoordinates();
-		                    coordGridX = new int[coord.length];
-		                    coordGridY = new int[coord.length];
-
-		                    // From geographic coords to image coords
-		                    for(int p=0; p<coord.length; p++){
-		                        java.awt.Point point = fromCoordToCell(coord[p], CellSize, extent);
-		                        coordGridX[p] = point.x;
-		                        coordGridY[p] = point.y;
-		                    }
-		                    java.awt.Polygon awtPolygon = new java.awt.Polygon(coordGridX, coordGridY, coord.length);
-		                    awtArea = new java.awt.geom.Area(awtPolygon);
-		                }
-
-		                graphics.setPaint(color);
-		                graphics.setPaintMode();
-		                graphics.draw(awtArea);
-		                graphics.fill(awtArea);
-
-		            }else{
-		                coord = geom.getGeometryN(g).getCoordinates();
-		                coordGridX = new int[coord.length];
-		                coordGridY = new int[coord.length];
-
-		                // From geographic coords to image coords
-		                for(int p=0; p<coord.length; p++){
-		                    java.awt.Point point = fromCoordToCell(coord[p], CellSize, extent);
-		                    coordGridX[p] = point.x;
-		                    coordGridY[p] = point.y;
-		                }
-		                if(geom.getGeometryN(g).getGeometryType().equals("LineString") || geom.getGeometryN(g).getGeometryType().equals("MultiLineString")){
-		                    graphics.setPaint(color);
-		                    graphics.setPaintMode();
-		                    graphics.drawPolyline(coordGridX, coordGridY, coord.length);
-		                }else if(geom.getGeometryN(g).getGeometryType().equals("Point") || geom.getGeometryN(g).getGeometryType().equals("MultiPoint")){
-		                    graphics.setPaint(color);
-		                    graphics.setPaintMode();
-		                    graphics.fillRect(coordGridX[0], coordGridY[0], 1, 1);
-		                }
-		            }
-	            }
-	         }
-	         for (int x=0;  x < m_iNX; x++ ) {
-		    	  for (int y=0;  y < m_iNY; y++ ) {
-		    		  if(bimage.getRGB(x, y) != 0 && bimage.getRGB(x, y) != -1){
-		    			 valori[x][y]=1;
-		                }
-			      }
-		      }
-	     }
-	      for (Iterator<Feature> it = inputFC.iterator() ; it.hasNext() ; ) {
-		        Feature f = it.next();
-		        dValue = Double.parseDouble(f.getAttribute(attributeName).toString());    
-	          raster = GridRasterWrapper.matrixToRaster(valori);
-	         for (int x=0;  x < m_iNX; x++ ) {
-	    	     for (int y=0;  y < m_iNY; y++ ) {
-	    		    if( valori[x][y]==1){
-	    			    raster.setSample(x, y, 0, dValue);
-	                }
-		          }
-	          }
-	        }
-	    
-	       
-	       RasterImageIO rasterImageIO = new RasterImageIO();
-	      rasterImageIO.writeImage(file, raster, limitEnvelope,
-	                rasterImageIO.new CellSizeXY(CellSize, CellSize), noData);
-	      
+	       m_iNY = m_Extent.getNY(); 
+	      double[][] valori= new double[m_iNX][m_iNY];  
+		  for (int x = 0; x < m_iNX; x++){
+	 			for (int y = 0; y < m_iNY; y++){
+	 				valori[x][y]=noData;
+              }
+	 	  } 
+	      final Iterator<?> iter = fCollection.iterator();
+           while (iter.hasNext()) {
+            Feature feature = (Feature) iter.next();
+			dValue = Double.parseDouble(feature.getAttribute(attributeName).toString());
+			double[][] rasterized = new double[m_iNX][m_iNY];
+ 		    rasterized	= rasterize(feature.getGeometry(), cellSize);
+			for (int r = 1; r < m_iNX; r++) {
+				for (int c = 1; c < m_iNY; c++) {
+					if (rasterized[r][c] == 1) {
+						valori[r][c] = dValue;
+					}
+				}
+			  }
+			}
+		raster =  GridRasterWrapper.matrixToRaster(valori); 
+		Envelope    m_Envelope = new Envelope(minX, maxX,minY, maxY );
+	    RasterImageIO rasterImageIO = new RasterImageIO();
+	    rasterImageIO.writeImage(file, raster, m_Envelope,
+	          rasterImageIO.new CellSizeXY(CellSize, CellSize), noData);
 	   }
  
 		   
-	   private static java.awt.Point fromCoordToCell(Coordinate coord, double CellSize, Polygon extent){
-	        Envelope env = extent.getEnvelopeInternal();
-	        int x = (int)((coord.x - env.getMinX()) / CellSize);
-	        int y = (int)((coord.y - env.getMinY()) / CellSize);
-	    
+     /**
+      * Converts World coordinates to grid coordinates
+      * @param Coordinate coordinate
+      * @param double CellSize
+      * @return
+      */
+     
+	   private static java.awt.Point fromCoordToCell(Coordinate coordinate, double CellSize){
+	        int x = (int)Math.floor((coordinate.x  - m_Extent.getXMin()) / CellSize);
+	       // int y = (int)Math.floor((m_Extent.getYMax()-coord.y) / CellSize);
+	        int y = (int)Math.floor((coordinate.y-m_Extent.getYMin()) / CellSize);
 	        return new java.awt.Point(x, y);
 	        
 	    }
 	   
 	   
-	   
+	   private static double[][] rasterize(Geometry geom, double cellSize)
+		          throws Exception, OutOfMemoryError {
+		     double[][] grid = new double[m_iNX+2][m_iNY+2];
+		      for(int row = 0; row <= m_iNY; row++){
+		          for(int col = 0; col <= m_iNX; col++){
+		              grid[col][row] = 0;
+		          }
+		      }
+		      BufferedImage bimage = new BufferedImage(m_iNX, m_iNY, BufferedImage.TYPE_INT_ARGB);
+		      bimage.setAccelerationPriority(1.0f);
+		      Graphics2D graphics = bimage.createGraphics();
+		      Coordinate[] coord;
+		      int[] coordGridX;
+		      int[] coordGridY;
+		      Color color = new Color(100);
+		      graphics.setPaint(color);
+		      graphics.setPaintMode();
+		      for(int g=0; g<geom.getNumGeometries(); g++){
+		          // Check if polygons has holes
+		          if(geom.getGeometryN(g).getGeometryType().equals("Polygon")){
+		              Polygon polygon = (Polygon) geom.getGeometryN(g);
+		              java.awt.geom.Area awtArea;
+		              if(polygon.getNumInteriorRing() > 0){
+		                  // Holes found
+		                  // Exterior ring
+		                  coord = polygon.getExteriorRing().getCoordinates();
+		                  coordGridX = new int[coord.length];
+		                  coordGridY = new int[coord.length];
+		                  // From geographic coords to image coords
+		                  for(int p=0; p<coord.length; p++){
+		                      java.awt.Point point = fromCoordToCell(coord[p], cellSize);
+		                      coordGridX[p] = point.x;
+		                      coordGridY[p] = point.y;
+		                  }
+		                  java.awt.Polygon awtPolygon = new java.awt.Polygon(coordGridX, coordGridY, coord.length);
+		                  awtArea = new java.awt.geom.Area(awtPolygon);
+		                  // Subtract inner rings
+		                  for(int ir=0; ir<polygon.getNumInteriorRing(); ir++){
+		                      coord = polygon.getInteriorRingN(ir).getCoordinates();
+		                      coordGridX = new int[coord.length];
+		                      coordGridY = new int[coord.length];
+		                      // From geographic coords to image coords
+		                      for(int p=0; p<coord.length; p++){
+		                          java.awt.Point point = fromCoordToCell(coord[p], cellSize);
+		                          coordGridX[p] = point.x;
+		                          coordGridY[p] = point.y;
+		                      }
+		                      awtPolygon = new java.awt.Polygon(coordGridX, coordGridY, coord.length);
+		                      java.awt.geom.Area awtArea2 = new java.awt.geom.Area(awtPolygon);
+		                      awtArea.subtract(awtArea2);
+		                  }
+		              }else{
+		                  coord = polygon.getCoordinates();
+		                  coordGridX = new int[coord.length];
+		                  coordGridY = new int[coord.length];
+		                  // From geographic coords to image coords
+		                  for(int p=0; p<coord.length; p++){
+		                      java.awt.Point point = fromCoordToCell(coord[p], cellSize);
+		                      coordGridX[p] = point.x;
+		                      coordGridY[p] = point.y;
+		                  }
+		                  java.awt.Polygon awtPolygon = new java.awt.Polygon(coordGridX, coordGridY, coord.length);
+		                  awtArea = new java.awt.geom.Area(awtPolygon);
+		              }
+
+		              graphics.setPaint(color);
+		              graphics.setPaintMode();
+		              graphics.draw(awtArea);
+		              graphics.fill(awtArea);
+		          }else{
+		              coord = geom.getGeometryN(g).getCoordinates();
+		              coordGridX = new int[coord.length];
+		              coordGridY = new int[coord.length];
+
+		              // From geographic coords to image coords
+		              for(int p=0; p<coord.length; p++){
+		                  java.awt.Point point = fromCoordToCell(coord[p], cellSize);
+		                  coordGridX[p] = point.x;
+		                  coordGridY[p] = point.y;
+		              }
+		              if(geom.getGeometryN(g).getGeometryType().equals("LineString") || geom.getGeometryN(g).getGeometryType().equals("MultiLineString")){
+		                  graphics.setPaint(color);
+		                  graphics.setPaintMode();
+		                  graphics.drawPolyline(coordGridX, coordGridY, coord.length);
+		              }else if(geom.getGeometryN(g).getGeometryType().equals("Point") || geom.getGeometryN(g).getGeometryType().equals("MultiPoint")){
+		                  graphics.setPaint(color);
+		                  graphics.setPaintMode();
+		                  graphics.fillRect(coordGridX[0], coordGridY[0], 1, 1);
+		              }
+		          }
+		       }
+		      for(int r=0; r<m_iNY; r++){
+		          for(int c=0; c<m_iNX; c++){
+		              if(bimage.getRGB(c, r) != 0 && bimage.getRGB(c, r) != -1){
+		                 
+		                  grid[c+1][m_iNY-r] = 1;
+		              }
+		          }
+		      }        
+		      return grid;
+		  }  
 	   
 	   
 	   /**
@@ -261,7 +274,7 @@ public class RasterizeAlgorithm {
 	    * @param double NoData
 	    * @throws IOException
 	    */
-	   public static void RasterizeSextante(File file, Envelope limitEnvelope, FeatureCollection fCollection, 
+	   private static void RasterizeSextante(File file, Envelope limitEnvelope, FeatureCollection fCollection, 
 			   String attributeName, double CellSize ) throws IOException  {
 		   
 		   cellSize=CellSize;
