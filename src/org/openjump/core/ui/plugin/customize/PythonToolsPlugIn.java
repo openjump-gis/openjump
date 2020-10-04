@@ -44,16 +44,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
-
 import org.openjump.util.python.JUMP_GIS_Framework;
 import org.openjump.util.python.ModifyGeometry;
 import org.openjump.util.python.PythonInteractiveInterpreter;
 import org.python.core.PySystemState;
 
-import bsh.util.JConsole;
-
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -63,6 +60,8 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
+
+import bsh.util.JConsole;
 
 public class PythonToolsPlugIn extends ToolboxPlugIn {
 
@@ -138,9 +137,10 @@ public class PythonToolsPlugIn extends ToolboxPlugIn {
     return icon;
   }
 
-  public MultiEnableCheck createEnableCheck(
-      final WorkbenchContext workbenchContext) {
-    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+  @Override
+  public EnableCheck getEnableCheck() {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance();
+    // add parent's enablecheck as well to switch en/disable states properly
     return new MultiEnableCheck().add(super.getEnableCheck()).add(checkFactory
         .createTaskWindowMustBeActiveCheck());
   }
