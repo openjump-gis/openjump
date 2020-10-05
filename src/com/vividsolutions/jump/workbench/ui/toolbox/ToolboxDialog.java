@@ -42,9 +42,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -69,7 +71,119 @@ import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 // taskframe has been reworked, still it works, so leave it in peace [ede 01.2013]
 public class ToolboxDialog extends JDialog {
     private ArrayList pluginsTools = new ArrayList();
-  
+
+    public ToolboxDialog(final WorkbenchContext context) {
+      super(context.getWorkbench().getFrame(), "", false);
+      jbInit();
+      this.context = context;
+      setResizable(true);
+      setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+      this.addComponentListener(new ComponentAdapter() {
+        public void componentHidden(ComponentEvent e) {
+          if (buttons.contains(context.getWorkbench().getFrame().getToolBar().getSelectedCursorToolButton())) {
+            ((AbstractButton) context.getWorkbench().getFrame().getToolBar().getButtonGroup().getElements()
+                .nextElement()).doClick();
+          }
+        }
+      });
+    }
+
+    private WorkbenchContext context;
+
+    private JPanel northPanel = new JPanel();
+    private JPanel centerPanel = new JPanel();
+    private JPanel southPanel = new JPanel();
+
+    private JPanel toolbarsPanel = new JPanel();
+    private JSeparator northPanelSeparator = new JSeparator(JSeparator.HORIZONTAL);
+
+    private GridLayout gridLayout1 = new GridLayout();
+
+    private void jbInit() {
+      getContentPane().setLayout(new BorderLayout());
+
+      northPanel.setLayout(new BorderLayout());
+      getContentPane().add(northPanel, BorderLayout.NORTH);
+      centerPanel.setLayout(new BorderLayout());
+      getContentPane().add(centerPanel, BorderLayout.CENTER);
+      southPanel.setLayout(new BorderLayout());
+      getContentPane().add(southPanel, BorderLayout.SOUTH);
+
+      toolbarsPanel.setLayout(gridLayout1);
+      // pad toolbar left/right a bit
+      toolbarsPanel.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
+      gridLayout1.setColumns(1);
+
+      // add toolbar panel to the north panel
+      northPanel.add(toolbarsPanel, BorderLayout.CENTER);
+      // separate toolbar visually from the center panel
+      northPanel.add(northPanelSeparator, BorderLayout.SOUTH);
+      // only shown if there are buttons registered
+      this.addComponentListener(new ComponentAdapter() {
+        @Override
+        public void componentShown(ComponentEvent e) {
+          northPanelSeparator.setVisible(pluginsTools.size()>0);
+        }
+      });
+    }
+
+    public JPanel getNorthPanel() {
+      return northPanel;
+    }
+
+    public JPanel getSouthPanel() {
+      return southPanel;
+    }
+
+    public JPanel getCenterPanel() {
+      return centerPanel;
+    }
+
+    /**
+     * [ede 01.2013] disabled and replaced with ComponentListener above Call this
+     * method after all the CursorTools have been added.
+     */
+    public void finishAddingComponents() {
+    }
+
+    public void setVisible(boolean visible) {
+      if (visible && !locationInitializedBeforeMakingDialogVisible) {
+        // here comes a hack
+        addComponentListener(new ComponentListener() {
+          public void componentShown(ComponentEvent e) {
+            // we assume all plugins registered before us, so they will
+            // install before us also, so we pack and unregister ourself
+            pack();
+            removeComponentListener(this);
+          }
+
+          public void componentResized(ComponentEvent e) {
+          }
+
+          public void componentMoved(ComponentEvent e) {
+          }
+
+          public void componentHidden(ComponentEvent e) {
+          }
+        });
+
+        // #initializeLocation was called in #finishAddingComponents,
+        // but the Workbench may have moved since then, so call
+        // #initializeLocation again just before making the dialog
+        // visible. [Jon Aquino 2005-03-14]
+        pack();
+        initializeLocation();
+        locationInitializedBeforeMakingDialogVisible = true;
+      }
+      // TODO: change this strange programming, see above
+      // weird shit.. Plugins register as ComponentListeners to us, so
+      // they can add buttons as soon as we are shown [ede 01.2013]
+      // this leads to the phenomenon that on shown we see the editTooolbar
+      // extending while plugins add their tools to it and pack() it after
+      // each entry in finishAddingComponents()
+      super.setVisible(visible);
+    }
+
     public AbstractButton getButton(Class cursorToolClass) {
         for (Iterator i = toolBars.iterator(); i.hasNext();) {
             WorkbenchToolBar toolBar = (WorkbenchToolBar) i.next();
@@ -149,69 +263,6 @@ public class ToolboxDialog extends JDialog {
         toolbarsPanel.add(getToolBar());
     }
 
-    public ToolboxDialog(final WorkbenchContext context) {
-        super(context.getWorkbench().getFrame(), "", false);
-        try {
-            jbInit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        this.context = context;
-        setResizable(true);
-        setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-        this.addComponentListener(new ComponentAdapter() {
-            public void componentHidden(ComponentEvent e) {
-                if (buttons.contains(context.getWorkbench().getFrame()
-                        .getToolBar().getSelectedCursorToolButton())) {
-                    ((AbstractButton) context.getWorkbench().getFrame()
-                            .getToolBar().getButtonGroup().getElements()
-                            .nextElement()).doClick();
-                }
-            }
-        });
-    }
-
-    /**
-     * [ede 01.2013] disabled and replaced with ComponentListener above
-     * Call this method after all the CursorTools have been added.
-     */
-    public void finishAddingComponents() {}
-
-    public void setVisible(boolean visible) {
-        if (visible && !locationInitializedBeforeMakingDialogVisible) {
-            //here comes a hack
-            addComponentListener(new ComponentListener() {
-              public void componentShown(ComponentEvent e) {
-                // we assume all plugins registered before us, so they will
-                // install before us also, so we pack and unregister ourself
-                pack();
-                removeComponentListener(this);
-              }
-              
-              public void componentResized(ComponentEvent e) {}
-              
-              public void componentMoved(ComponentEvent e) {}
-              
-              public void componentHidden(ComponentEvent e) {}
-            });
-          
-            // #initializeLocation was called in #finishAddingComponents,
-            // but the Workbench may have moved since then, so call
-            // #initializeLocation again just before making the dialog
-            // visible. [Jon Aquino 2005-03-14]
-            pack();
-            initializeLocation();
-            locationInitializedBeforeMakingDialogVisible = true;
-        }
-        // TODO: change this strange programming, see above
-        // weird shit.. Plugins register as ComponentListeners to us, so 
-        // they can add buttons as soon as we are shown [ede 01.2013]
-        // this leads to the phenomenon that on shown we see the editTooolbar 
-        //  extending while plugins add their tools to it and pack() it after
-        //  each entry in finishAddingComponents()
-        super.setVisible(visible);
-    }
-    
     private boolean locationInitializedBeforeMakingDialogVisible = false;
 
     private void initializeLocation() {
@@ -221,29 +272,6 @@ public class ToolboxDialog extends JDialog {
 
     private GUIUtil.Location initialLocation = new GUIUtil.Location(0, false,
             0, false);
-
-    private WorkbenchContext context;
-
-    private JPanel centerPanel = new JPanel();
-    private JPanel floatPanel = new JPanel();
-    private JPanel toolbarsPanel = new JPanel();
-    
-    private GridLayout gridLayout1 = new GridLayout();
-
-    private void jbInit() throws Exception {
-        getContentPane().setLayout(new BorderLayout());
-        toolbarsPanel.setLayout(gridLayout1);
-        gridLayout1.setColumns(1);
-        // float them to the middle
-        floatPanel.add(toolbarsPanel);
-        getContentPane().add(floatPanel, BorderLayout.CENTER);
-        centerPanel.setLayout(new BorderLayout());
-        getContentPane().add(centerPanel, BorderLayout.SOUTH);
-    }
-
-    public JPanel getCenterPanel() {
-        return centerPanel;
-    }
 
     public void updateEnabledState() {
         for (Iterator i = toolBars.iterator(); i.hasNext();) {
