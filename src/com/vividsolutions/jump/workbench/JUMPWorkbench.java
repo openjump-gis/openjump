@@ -267,25 +267,42 @@ public class JUMPWorkbench {
     properties = new WorkbenchPropertiesFile(files, frame);
     
     // -- end new
-    File extensionsDirectory;
+    
+    File extensionsDirectory = null;
+    List<File> moreDirs = new ArrayList<File>();
     if (commandLine.hasOption(PLUG_IN_DIRECTORY_OPTION)) {
-      extensionsDirectory = new File(commandLine.getOption(
-          PLUG_IN_DIRECTORY_OPTION).getArg(0));
-      if (!extensionsDirectory.exists()) {
-        Logger.warn("Extensions directory does not exist: "
-                + extensionsDirectory);
-        extensionsDirectory = null;
+      // we support multiple -plug-in-directory definitions, where the first is set default
+      // and all others and contained jar/zip files get added to classpath below
+      // this mainly helps when run during development where lib/plus/ & lib/ext/ are different folders
+      Iterator<String> paths = commandLine.getAllArguments(PLUG_IN_DIRECTORY_OPTION);
+      while (paths.hasNext()) {
+        String path = paths.next();
+        if (extensionsDirectory == null) {
+          // first entry get's default
+          extensionsDirectory = new File(path);
+          Logger.debug("Set plugin-dir -> "+path);
+          continue;
+        }
+        // rest get's added to classloader
+        File dir = new File(path);
+        if (!dir.exists()) {
+          Logger.error("given parameter "+PLUG_IN_DIRECTORY_OPTION+" '"+path+"' does not exist.");
+          continue;
+        }
+        Logger.debug("Add plugin-dir -> "+path);
+        moreDirs.add(dir);
       }
     } else {
       extensionsDirectory = new File("lib/ext");
-      if (!extensionsDirectory.exists()) {
-        // Added further information so that debug user will know where
-        // it is actually looking for as the extension directory. [Ed Deen]
-        Logger.warn("Extensions directory does not exist: "
-                + extensionsDirectory + " where homedir = ["
-                + System.getProperty("user.dir") + "]");
-        extensionsDirectory = null;
-      }
+    }
+
+    if (!extensionsDirectory.exists()) {
+      // Added further information so that debug user will know where
+      // it is actually looking for as the extension directory. [Ed Deen]
+      Logger.error("Extensions directory does not exist: "
+              + extensionsDirectory + " where homedir = ["
+              + System.getProperty("user.dir") + "]");
+      extensionsDirectory = null;
     }
 
     // [ede 12.2012] deprecated -project option
@@ -308,7 +325,14 @@ public class JUMPWorkbench {
       }
     }
 
+    // create plugin manager
     plugInManager = new PlugInManager(context, extensionsDirectory, monitor);
+    // add secondary extension folders (mainly for dev where we have lib/ext/ & lib/plus/)
+    for (File dir : moreDirs) {
+      plugInManager.addExtensionDir(dir);
+    }
+    // debugging output of all urls in our classloader
+    Logger.debug("Classpath -> "+Arrays.toString(plugInManager.getClassLoader().getURLs()));
 
     // Load drivers before initializing the frame because part of the frame
     // initialization is the initialization of the driver dialogs. [Jon

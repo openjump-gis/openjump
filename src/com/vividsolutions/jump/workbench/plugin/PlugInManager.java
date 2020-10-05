@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,9 +66,9 @@ public class PlugInManager {
 
     private TaskMonitor monitor;
     private WorkbenchContext context;
-    private Collection configurations = new ArrayList();
+    private Collection<Configuration> configurations = new ArrayList();
 
-    private File plugInDirectory;
+    private List<File> extensionDirs = new ArrayList<File>();
     private PlugInClassLoader classLoader;
 
     /**
@@ -79,8 +78,6 @@ public class PlugInManager {
     public PlugInManager(WorkbenchContext context, File plugInDirectory,
             TaskMonitor monitor) throws Exception {
         this.monitor = monitor;
-        Assert.isTrue((plugInDirectory == null)
-                || plugInDirectory.isDirectory());
 
 //          class ExtendedURLClassLoader extends URLClassLoader{
 //
@@ -144,7 +141,6 @@ public class PlugInManager {
         // add plugin folder and recursively all jar/zip files in it to classpath
         if ( plugInDirectory instanceof File ) {
           addExtensionDir(plugInDirectory);
-          this.plugInDirectory = plugInDirectory;
         }
 
         I18N.setClassLoader(classLoader);
@@ -152,10 +148,17 @@ public class PlugInManager {
     }
 
     public void addExtensionDir(File dir) {
+      // already added? we don't want duplicates
+      if (extensionDirs.contains(dir))
+        return;
+
+      // add contained jars/zips and base folder to classloader
       ArrayList<File> files = new ArrayList();
       files.add( dir );
       files.addAll( findFilesRecursively( dir,true) );
       classLoader.addUrls(toURLs(files));
+      // add to internal list
+      extensionDirs.add(dir);
     }
 
     // pretty much the main method, finds and loads extensions from
@@ -170,9 +173,11 @@ public class PlugInManager {
   
       // Find the configurations right away so they get reported to the splash
       // screen ASAP. [Jon Aquino]
-      if (plugInDirectory != null) {
+      if (!extensionDirs.isEmpty()) {
         start = Timer.milliSecondsSince(0);
-        configurations.addAll(findConfigurations(plugInDirectory));
+        for (File dir : extensionDirs) {
+          configurations.addAll(findConfigurations(dir));
+        }
         Logger.info("Finding all OJ extensions took "
             + Timer.secondsSinceString(start) + "s");
       }
@@ -511,10 +516,21 @@ public class PlugInManager {
     public PlugInClassLoader getClassLoader() {
         return classLoader;
     }
+
     /**
+     * fetch a list of folders holding extension jars that were added during start 
+     */
+    public List<File> getExtensionDirs(){
+      return Collections.unmodifiableList(extensionDirs);
+    }
+
+    /**
+     * get extension folder, cloned to prevent modification
+     * @deprecated use {@link #getExtensionDirs()}
      * @return possibly null
      */
+    @Deprecated
     public File getPlugInDirectory() {
-        return plugInDirectory;
+      return extensionDirs.isEmpty() ? null : new File(extensionDirs.get(0).toURI());
     }
 }
