@@ -14,7 +14,7 @@
     <uninstaller path="${INSTALL_PATH}/uninstall" write="yes" />
     <javaversion>1.5</javaversion>
     <run-privileged
-      condition="izpack.windowsinstall.xp|izpack.windowsinstall.2003|izpack.windowsinstall.vista|izpack.windowsinstall.7" />
+      condition="izpack.windowsinstall.xp|izpack.windowsinstall" />
     <summarylogfilepath>
       $INSTALL_PATH/uninstall/InstallSummary.htm
     </summarylogfilepath>
@@ -88,7 +88,7 @@
     <res id="HTMLInfoPanel.info" src="../readme.html" />
     <!--res id="LicencePanel.licence" src="licenses/gpl-2.txt" encoding="ISO-8859-1"/ -->
     <res src="shortcuts.xml" id="shortcutSpec.xml" />
-    <res src="shortcuts_unix.xml" id="Unix_shortcutSpec.xml" />
+    <!-- res src="shortcuts_unix.xml" id="Unix_shortcutSpec.xml" /-->
     <res src="registry.xml" id="RegistrySpec.xml" />
 
 
@@ -116,7 +116,7 @@
     <panel classname="LicencePanel" id="licensepanel" />
     <panel classname="TargetPanel" id="targetpanel" condition="!izpack.macinstall"/>
     <!--panel classname="PacksPanel" id="packspanel" / -->
-    <panel classname="ShortcutPanel" id="shortcutpanel" />
+    <panel classname="ShortcutPanel" id="shortcutpanel" condition="izpack.windowsinstall"/>
     <!--panel classname="SummaryPanel" id="summarypanel" / -->
     <panel classname="InstallPanel" id="installpanel" />
     <!--panel classname="FinishPanel" id="finishpanel" / -->
