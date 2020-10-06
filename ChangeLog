@@ -2,11 +2,34 @@
 # 1. for display continuity sake please indent by 2 spaces instead of tabs
 # 2. make sure that lines break at 80 chars for constricted display situations
 # 3. be concise but convey the change in a way that ordinary users understand
-#<-------------------------------- 80 chars ---------------------------------->#
+#<-------------------------------- 80 chars ---------------------------------->
+
+2020-10-06 ede
+  * added gdal support for debian/ubuntu, installing package libgdal-java
+    suffices now to have gdal image loaders up and running, tested on Ubuntu 20
+  * tested spatialite DB Datastore support on Ubuntu 20, works with package
+    libsqlite3-mod-spatialite installed
+
+2020-10-05 ede
+  * make toolbar panel wrap properly and align it left
+  * add multiple extension dirs support, needed eg. in eclipse where lib/ext/
+    and lib/plus/ are separate folders, use by giving multiple 
+    -plug-in-directory params as OJ parameters eg.
+      -plug-in-directory "lib\plus" -plug-in-directory "lib\ext"
 
 2020-10-03 mmichaud
   * Update GraphToolBox extension to 0.8.0 : improve strahler order
     calculation and add shreve, horton and hack orders
+
+20-09-27 ede
+  SpatialDBDSDriver
+  * fix sqlite not loading mod_spatialite anymore because connection properties
+    were not delegated properly
+  * keep one caching Dateparser instance assuming that one DateConverter is
+    instantiated per result dataset to speed up date parsing by magnitudes
+
+2020-09-26 ede
+  * added a FinishPanel to installer as requested in featreq #270
 
 2020-09-26 Giuseppe Aruta
   * Added RasterizePlugIn. A plugin to rasterize vector layer according to
