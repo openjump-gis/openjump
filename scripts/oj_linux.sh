@@ -266,19 +266,28 @@ NATIVE_PATH="$JUMP_NATIVE_DIR/$JAVA_ARCH:$JUMP_NATIVE_DIR:$JUMP_PLUGIN_DIR"
 # allow jre to find executable binaries located under the native folder
 export PATH="$JUMP_NATIVE_DIR:$PATH"
 
-# generate gdal settings
-export GDAL_DATA="$JUMP_NATIVE_DIR/gdal-linux-data"
-GDALPATH="$JUMP_NATIVE_DIR/gdal-linux-$JAVA_ARCH"
-NATIVE_PATH="$GDALPATH:$GDALPATH/lib:$GDALPATH/java:$NATIVE_PATH"
-CLASSPATH="$GDALPATH/java/gdal.jar:$CLASSPATH"
-
 # export (DY)LD_LIBRARY_PATH depending on platform
 if [ "$(basename "$0")" = "oj_macosx.command" ]; then
-  ## Export environment variables for C-coded functions.
+  ## add lib/native/[arch/] to lib path
   export DYLD_LIBRARY_PATH="$NATIVE_PATH:$DYLD_LIBRARY_PATH"
   echo ---DYLD_LIBRARY_PATH---
   echo $DYLD_LIBRARY_PATH
 else
+  ## generate gdal & other native libs settings
+  GDALPATH="$JUMP_NATIVE_DIR/gdal-linux-$JAVA_ARCH"
+  # debian/ubuntu need package libgdal-java
+  # it keeps java bindings in /usr/share/java
+  # and jni libs in /usr/lib/jni, gdal-data in /usr/share/gdal
+  # let's add those locations for convenience sake but prefer lib/native
+  [ -e "$JUMP_NATIVE_DIR/gdal-linux-data" ] && \
+  export GDAL_DATA="$JUMP_NATIVE_DIR/gdal-linux-data" || \
+  export GDAL_DATA="/usr/share/gdal/"
+  echo ---GDAL_DATA---
+  echo $GDAL_DATA
+
+  NATIVE_PATH="$GDALPATH:$GDALPATH/lib:$GDALPATH/java:$NATIVE_PATH:/usr/lib/jni"
+  CLASSPATH="$GDALPATH/java/gdal.jar:/usr/share/java/gdal.jar:$CLASSPATH"
+
   export LD_LIBRARY_PATH="$NATIVE_PATH:$LD_LIBRARY_PATH"
   echo ---LD_LIBRARY_PATH---
   echo $LD_LIBRARY_PATH
