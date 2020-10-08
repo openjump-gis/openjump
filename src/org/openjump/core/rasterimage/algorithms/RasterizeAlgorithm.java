@@ -208,6 +208,14 @@ public class RasterizeAlgorithm {
 	   }
 	   
 	   
+	   /**
+	    * gets com.vividsolutions.jts.geom.Envelope, recalculated
+	    * according to the cell size
+	    * @return com.vividsolutions.jts.geom.Envelope
+	    */
+	   public Envelope getEnvelope() {
+	 		return m_Extent.getEnvelope();
+	 	}
 	  
 	   
 	   
