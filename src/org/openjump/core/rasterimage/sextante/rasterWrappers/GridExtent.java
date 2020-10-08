@@ -24,6 +24,8 @@ import java.awt.geom.Rectangle2D;
 import org.openjump.core.rasterimage.sextante.ISextanteLayer;
 import org.openjump.core.rasterimage.sextante.ISextanteRasterLayer;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 
 /**
  * This class defines a grid system (coordinates and cellsize)
@@ -38,9 +40,10 @@ public class GridExtent {
 	double m_dXMax;
 	double m_dYMax;
 	double m_dCellSizeX = 1;
-        double m_dCellSizeY = 1;
+    double m_dCellSizeY = 1;
 	int m_iNX;
 	int m_iNY;
+	Envelope m_Envelope;
 
 	public GridExtent(){}
 
@@ -109,7 +112,7 @@ public class GridExtent {
 	public void setCellSize(double cellSizeX, double cellSizeY) {
 
 		m_dCellSizeX = cellSizeX;
-                m_dCellSizeY = cellSizeY;
+        m_dCellSizeY = cellSizeY;
 		recalculateNXAndNY();
 
 	}
@@ -134,12 +137,24 @@ public class GridExtent {
 
 	}
 
+	/**
+	 * Returns the extension of Grid as com.vividsolutions.jts.geom.Envelope
+	 * @return Envelope
+	 */
+	
+	public Envelope getEnvelope() {
+ 		return m_Envelope;
+ 	}
+	
 	private void recalculateNXAndNY(){
 
 		m_iNY = (int) Math.floor((m_dYMax - m_dYMin) / m_dCellSizeY);
 		m_iNX = (int) Math.floor((m_dXMax - m_dXMin) / m_dCellSizeX);
 		m_dXMax = m_dXMin + m_dCellSizeX * m_iNX;
 		m_dYMax = m_dYMin + m_dCellSizeY * m_iNY;
+		//Recalculating we get the Envelope, useful when a raster is saved as
+		//layer
+		m_Envelope = new Envelope(m_dXMin,m_dXMax,m_dYMin, m_dYMax );
 
 	}
 
