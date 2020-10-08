@@ -292,8 +292,9 @@ public class RasterizePlugIn extends AbstractPlugIn
 		   FeatureCollection fc = sourceLayer.getFeatureCollectionWrapper();
 		   final File outFile = FileUtil.addExtensionIfNone(new File(path), "tif");  
 	       monitor.report(RASTERIZING_VECTOR+"...");
-	       RasterizeAlgorithm.Rasterize(outFile, fix, fc, selAttribute, cellValue);
-	       
+	       RasterizeAlgorithm rasterize = new RasterizeAlgorithm(fix, fc, selAttribute, cellValue);
+	       rasterize.process();
+	       rasterize.saveToFile(outFile);
 	        
 	       String catName = StandardCategoryNames.WORKING;
 	       try {
