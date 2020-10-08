@@ -233,12 +233,12 @@ if [ -n "$JUMP_PROPERTIES" ] && [ -f "$JUMP_PROPERTIES" ]; then
   JUMP_OPTS="-properties $JUMP_PROPERTIES $JUMP_OPTS"
 fi
 
-# compile jre opts, respect already set ones from e.g. mac
-JAVA_OPTS=""
-JAVA_OPTS="$JAVA_OPTS $JAVA_MAXMEM $JAVA_LANG"
+# compile jre opts, respect already set ones by environment
+JAVA_OPTS="$JAVA_MAXMEM $JAVA_LANG $JAVA_OPTS"
 JAVA_OPTS="$JAVA_OPTS -Djump.home=."
 [ -n "JAVA_SAXDRIVER"    ] && JAVA_OPTS="$JAVA_OPTS -Dorg.xml.sax.driver=$JAVA_SAXDRIVER"
 [ -n "$JAVA_LOOKANDFEEL" ] && JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=$JAVA_LOOKANDFEEL"
+# apply mac overrides
 JAVA_OPTS="$JAVA_OPTS $JAVA_OPTS_OVERRIDE"
 
 # java9+ needs some packages explicitly added/exported
@@ -268,10 +268,29 @@ export PATH="$JUMP_NATIVE_DIR:$PATH"
 
 # export (DY)LD_LIBRARY_PATH depending on platform
 if [ "$(basename "$0")" = "oj_macosx.command" ]; then
+  ## generate gdal & other native libs settings
+  # spatialite also works if homebrew java is installed and used
+  # via JAVA_HOME above e.g. /usr/local/opt/java11
+  # home-brew gdal on mac mini-howto
+  # 1. Install home-brew according to https://brew.sh
+  # 2. Add osgeo4mac repo 'brew tap osgeo/osgeo4mac'
+  # 3. Install gdal 'brew install osgeo-gdal'
+  # DO NOT install default home-brew gdal, it lacks java support!
+  # java bindings and uni libs are in /usr/local/lib/
+  # gdal-data can be found in /usr/local/share/gdal
+  export GDAL_DATA="/usr/local/share/gdal"
+  echo ---GDAL_DATA---
+  echo $GDAL_DATA
+
+  NATIVE_PATH="$NATIVE_PATH:/usr/local/opt/sqlite/lib/:/usr/local/lib/"
+  CLASSPATH="/usr/local/lib/gdal.jar:$CLASSPATH"
+
   ## add lib/native/[arch/] to lib path
-  export DYLD_LIBRARY_PATH="$NATIVE_PATH:$DYLD_LIBRARY_PATH"
-  echo ---DYLD_LIBRARY_PATH---
-  echo $DYLD_LIBRARY_PATH
+  # this used to be DYLD_LIBRARY_PATH which is not working anymore
+  # see https://stackoverflow.com/questions/20038789/default-java-library-path
+  export JAVA_LIBRARY_PATH="$NATIVE_PATH"
+  echo ---JAVA_LIBRARY_PATH---
+  echo $JAVA_LIBRARY_PATH
 else
   ## generate gdal & other native libs settings
   GDALPATH="$JUMP_NATIVE_DIR/gdal-linux-$JAVA_ARCH"
