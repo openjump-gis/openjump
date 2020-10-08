@@ -20,6 +20,10 @@ package org.openjump.core.rasterimage.sextante.rasterWrappers;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.DataBuffer;
+import java.awt.image.WritableRaster;
+
+import javax.media.jai.RasterFactory;
 
 import org.openjump.core.rasterimage.sextante.ISextanteLayer;
 import org.openjump.core.rasterimage.sextante.ISextanteRasterLayer;
@@ -44,6 +48,9 @@ public class GridExtent {
 	int m_iNX;
 	int m_iNY;
 	Envelope m_Envelope;
+	//Added Raster to bypass java hip space on building  a double array of cell values
+	//if cols*rows is big (large rasters)
+    WritableRaster m_Raster;
 
 	public GridExtent(){}
 
@@ -118,6 +125,49 @@ public class GridExtent {
 	}
 
 	/**
+	 * Method to build a GridExtent with a defined Raster
+	 * 
+	 * @param double cellSize along X
+	 * @param double cellSize along Y
+	 * @param Envelope envelope
+	 * @param double nodata value
+	 */
+
+	   public void setValuesAndRaster(double cellSizeX, double cellSizeY, Envelope envelope, double nodata) {
+		   m_dCellSizeX = cellSizeX;
+		   m_dCellSizeY = cellSizeY;	
+		   m_dXMin = Math.min(envelope.getMinX(), envelope.getMaxX());
+		   m_dXMax = Math.max(envelope.getMinX(), envelope.getMaxX());
+		   m_dYMin = Math.min(envelope.getMinY(), envelope.getMaxY());
+		   m_dYMax = Math.max(envelope.getMinY(), envelope.getMaxY());
+		   recalculateNXAndNY();
+		   m_iNX = this.getNX();
+		   m_iNY = this.getNY();
+		   m_Raster = RasterFactory.createBandedRaster(
+	                DataBuffer.TYPE_FLOAT, m_iNX , m_iNY , 1, null);
+	       for (int i = 0; i < m_iNX; i++) {
+	            for (int j = 0; j < m_iNY; j++) {
+	            	m_Raster.setSample(i, j, 0, nodata);
+	            }
+	        }	            
+		}
+	 
+	
+
+		
+	 	public WritableRaster getRaster() {
+	 		return m_Raster;
+	 	}
+	 
+	 	/**
+		 * Returns the extension of Grid as com.vividsolutions.jts.geom.Envelope
+		 * @return Envelope
+		 */
+	 	public Envelope getEnvelope() {
+	 		return new Envelope(m_dXMin,m_dXMax,m_dYMin, m_dYMax );
+	 	}
+	
+	/**
 	 * Returns the number of columns in the extent
 	 * @return the number of columns
 	 */
@@ -136,15 +186,7 @@ public class GridExtent {
 		return m_iNY;
 
 	}
-
-	/**
-	 * Returns the extension of Grid as com.vividsolutions.jts.geom.Envelope
-	 * @return Envelope
-	 */
-	
-	public Envelope getEnvelope() {
- 		return m_Envelope;
- 	}
+ 
 	
 	private void recalculateNXAndNY(){
 
