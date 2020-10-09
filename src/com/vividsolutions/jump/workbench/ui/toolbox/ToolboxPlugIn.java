@@ -47,6 +47,11 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
+import jdk.internal.misc.InnocuousThread;
+
+/**
+ * @deprecated future implementations should use {@link ToolboxPlugInV2} instead
+ */
 public abstract class ToolboxPlugIn extends AbstractPlugIn implements CheckBoxed {
   // just one toolbox instance for plugins switching the same toolbox
   private static HashMap toolboxMap = new HashMap<String,ToolboxDialog>();
