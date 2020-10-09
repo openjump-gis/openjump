@@ -44,6 +44,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
  */
  
 
+
 public class RasterizeAlgorithm {
 
 	private static Double noData = -99999.0D;
@@ -76,7 +77,7 @@ public class RasterizeAlgorithm {
     // b) From Sextante, almost faster but still not working with ponts and linestrings
     // The code below simplefies the access to the the method
     /**
-     * Convert a feature collection to a raster according to a numeric attribute, a limit envelope
+     * process a feature collection to create a raster according to a numeric attribute, a limit envelope
      * and a cell size.  Feature are first chosen according if they overlap the limit envelope. Then they are merged according 
      * the chosen  attribute, then converted to a grid
      * Methods saveToFile(File) and getRaster() and getEnvelope() allows to save to file
