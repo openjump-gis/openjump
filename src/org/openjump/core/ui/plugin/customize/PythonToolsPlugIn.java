@@ -37,6 +37,8 @@ package org.openjump.core.ui.plugin.customize;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.File;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import javax.swing.Icon;
@@ -50,6 +52,9 @@ import org.openjump.util.python.PythonInteractiveInterpreter;
 import org.python.core.PySystemState;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.JUMPException;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
@@ -59,11 +64,11 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
-import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
+import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugInV2;
 
 import bsh.util.JConsole;
 
-public class PythonToolsPlugIn extends ToolboxPlugIn {
+public class PythonToolsPlugIn extends ToolboxPlugInV2 {
 
   private static final ImageIcon icon = IconLoader
       .icon("famfam/application_python.png");
@@ -77,7 +82,35 @@ public class PythonToolsPlugIn extends ToolboxPlugIn {
     FeatureInstaller.getInstance().addMainMenuPlugin(this, new String[] { MenuNames.CUSTOMIZE });
   }
 
-  protected void initializeToolbox(ToolboxDialog toolbox) {
+  protected ToolboxDialog initializeToolbox() throws Exception {
+    WorkbenchContext context = JUMPWorkbench.getInstance().getContext();
+    
+    // setup the interpreter
+    ClassLoader classLoader = context.getWorkbench()
+        .getPlugInManager().getClassLoader();
+    Properties preProperties = new Properties(System.getProperties());
+    String homepath = preProperties.getProperty("user.home");
+
+    String sep = File.separator;
+
+    // find files via classloader which works even when lib/ext/ is not -plug-in-dir
+    String startupfile, startuppath, extPath, libPath = "";
+
+    URL res = classLoader.getResource("jython/startup.py");
+    if (res == null)
+      throw new JUMPException("missing jython/startup.py in classpath.");
+    File file = Paths.get(res.toURI()).toFile();
+
+    startupfile = file.getPath();
+    // make sure folder string end w/ path separator as startup.py does assume they do
+    startuppath = file.getParentFile().getPath() + sep;
+    extPath = file.getParentFile().getParent() + sep;
+    libPath = file.getParentFile().getParentFile().getParent() + sep;
+
+    // files found? let's get ready to rumble
+    ToolboxDialog toolbox = new ToolboxDialog(context);
+    toolbox.setTitle(getName());
+    
     final JConsole console = new JConsole();
     console.setPreferredSize(new Dimension(450, 120));
     console
@@ -89,33 +122,14 @@ public class PythonToolsPlugIn extends ToolboxPlugIn {
     
     toolbox.setIconImage(icon.getImage());
 
-    // setup the interpreter
-    ClassLoader classLoader = toolbox.getContext().getWorkbench()
-        .getPlugInManager().getClassLoader();
-    Properties preProperties = new Properties(System.getProperties());
-    String homepath = preProperties.getProperty("user.home");
-    File empty = new File("");
-    String sep = File.separator;
-    // -- [sstein] - old */
-    /*
-     * String WORKING_DIR = empty.getAbsoluteFile().getParent() + sep; String
-     * jarpathX = new String(WORKING_DIR + "lib"); String startuppathX = new
-     * String(WORKING_DIR + "lib" + sep + "ext" + sep + "jython" + sep);
-     */
-    // -- [sstein] - new
-    File plugInDirectory = toolbox.getContext().getWorkbench()
-        .getPlugInManager().getPlugInDirectory();
-    String jarpath = plugInDirectory.getPath();
-    String startuppath = plugInDirectory.getPath() + sep + "jython" + sep;
-
     Properties postProperties = new Properties();
     postProperties.put("python.home", homepath);
     postProperties.put("python.path", startuppath);
     PySystemState.initialize(preProperties, postProperties,
         new String[] { "" }, classLoader);
-    String startupfile = startuppath + "startup.py";
-    PySystemState.add_extdir(jarpath);
-    PySystemState.add_extdir(jarpath + sep + "ext");
+
+    PySystemState.add_extdir(libPath);
+    PySystemState.add_extdir(extPath);
     PythonInteractiveInterpreter interpreter = new PythonInteractiveInterpreter(
         console);
     interpreter.set("wc", toolbox.getContext());
@@ -131,6 +145,8 @@ public class PythonToolsPlugIn extends ToolboxPlugIn {
     if (new File(startupfile).exists())
       interpreter.execfile(startupfile);
     new Thread(interpreter).start();
+    
+    return toolbox;
   }
 
   public static Icon getIcon(){
