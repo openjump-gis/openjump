@@ -17,7 +17,6 @@ import java.util.Map;
 import org.openjump.core.rasterimage.RasterImageIO;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridCell;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridExtent;
-import org.openjump.core.rasterimage.sextante.rasterWrappers.GridRasterWrapper;
 import org.openjump.core.ui.util.LayerableUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -45,7 +44,6 @@ import com.vividsolutions.jump.feature.FeatureSchema;
  */
  
 
-
 public class RasterizeAlgorithm {
 
 	private static Double noData = -99999.0D;
@@ -57,31 +55,19 @@ public class RasterizeAlgorithm {
     private static WritableRaster raster;
     private static  FeatureCollection featureCollection;
     private static String attrName;
-    private static double[][] values;
-    private static Envelope env;
+    private static Envelope envelope;
      
     public RasterizeAlgorithm(Envelope limitEnvelope, FeatureCollection fCollection, 
     		    		String attributeName, double CellSize) throws OutOfMemoryError, Exception  {
     	   featureCollection = fCollection; 
-    	   env=limitEnvelope;
+    	   envelope=limitEnvelope;
 		   attrName=attributeName;
     	   cellSize=CellSize;
 		   m_Extent= new GridExtent();
-	       m_Extent.setCellSize(CellSize, CellSize);
-	       double minX = limitEnvelope.getMinX();
-	       double minY = limitEnvelope.getMinY();
-	       double maxX = limitEnvelope.getMaxX();
-	       double maxY = limitEnvelope.getMaxY();
-		   m_Extent.setXRange(minX, maxX);
-		   m_Extent.setYRange(minY, maxY);
-		   m_iNX = m_Extent.getNX();
+		   m_Extent.setValuesAndRaster(CellSize, CellSize, limitEnvelope, noData);
+	       m_iNX = m_Extent.getNX();
 		   m_iNY = m_Extent.getNY(); 
-	       values= new double[m_iNX][m_iNY];  
-		   for (int x = 0; x < m_iNX; x++){
-	 			for (int y = 0; y < m_iNY; y++){
-	 				values[x][y]=noData;
-           }
-	 	  } 
+	      raster = m_Extent.getRaster();
       }
     
     
@@ -91,20 +77,21 @@ public class RasterizeAlgorithm {
     // The code below simplefies the access to the the method
     /**
      * Convert a feature collection to a raster according to a numeric attribute, a limit envelope
-     * and a cell size.  Feature are first selected by the envelope and merged according 
+     * and a cell size.  Feature are first chosen according if they overlap the limit envelope. Then they are merged according 
      * the chosen  attribute, then converted to a grid
+     * Methods saveToFile(File) and getRaster() and getEnvelope() allows to save to file
+     * or to get raster and envelope for further manipulations
      */
     public void process() throws OutOfMemoryError, Exception {
-     
-    	 FeatureCollection fc2 = getFeaturesOverlappingEnvelope();
+    
+         FeatureCollection fc2 = getFeaturesOverlappingEnvelope();
 	     FeatureCollection fc3 =  unionByAttributeValue(fc2);
     	 if (!LayerableUtil.isPolygonalLayer(fc3)) {
   	       RasterizeAlgorithm.RasterizeAdbToolbox(fc3);
   	      } else   {
-  	    	   RasterizeAlgorithm.RasterizeSextante(fc3);  
+  	      RasterizeAlgorithm.RasterizeSextante(fc3);  
   	      } 
-    	 
-    }
+     }
     
     /**
      * Method to save results to a TIFF file
@@ -126,45 +113,20 @@ public class RasterizeAlgorithm {
 	   
 	  
      private static  void RasterizeAdbToolbox(FeatureCollection fCollection) throws OutOfMemoryError, Exception  {
-		   final Iterator<?> iter = fCollection.iterator();
-           while (iter.hasNext()) {
-            Feature feature = (Feature) iter.next();
+		   final Iterator<?> it = fCollection.iterator();
+           while (it.hasNext()) {
+            Feature feature = (Feature) it.next();
             try {
 	            dValue = Double.parseDouble(feature.getAttribute(attrName).toString());
 	           } catch (Exception e) {
 	        	 dValue = noData;
 	           }
-		    double[][] rasterized = new double[m_iNX][m_iNY];
- 		    rasterized	= rasterize(feature.getGeometry());
-			for (int r = 1; r < m_iNX; r++) {
-				for (int c = 1; c < m_iNY; c++) {
-					if (rasterized[r][c] == 1) {
-						values[r][c] = dValue;
-					}
-				}
-			  }
-			}
-		raster =  GridRasterWrapper.matrixToRaster(values); 
-	   }
+            
+            rasterize(feature.getGeometry(), dValue);
+           }
+		 }
 	   
-     
-     /**
-      * Converts World coordinates to grid coordinates
-      * @param Coordinate coordinate
-      * @param double CellSize
-      * @return
-      */
-     
-	   private static java.awt.Point fromCoordToCell(Coordinate coordinate, double CellSize){
-	        int x = (int)Math.floor((coordinate.x  - m_Extent.getXMin()) / CellSize);
-	       // int y = (int)Math.floor((m_Extent.getYMax()-coord.y) / CellSize);
-	        int y = (int)Math.floor((coordinate.y-m_Extent.getYMin()) / CellSize);
-	        return new java.awt.Point(x, y);
-	        
-	    }
-	   
-	  
-	   
+   
 	   /**
 	    * Method Rasterize a FeatureCollection using Sextante framework
 	    * @throws Exception 
@@ -172,8 +134,7 @@ public class RasterizeAlgorithm {
 	    */
 	   private static void RasterizeSextante(FeatureCollection fCollection ) throws OutOfMemoryError, Exception  {
 		   
-		  raster = GridRasterWrapper.matrixToRaster(values);
-	 	  final Coordinate[] coords = new Coordinate[5];
+		 final Coordinate[] coords = new Coordinate[5];
 	      coords[0] = new Coordinate(m_Extent.getXMin(), m_Extent.getYMin());
 	      coords[1] = new Coordinate(m_Extent.getXMin(), m_Extent.getYMax());
 	      coords[2] = new Coordinate(m_Extent.getXMax(), m_Extent.getYMax());
@@ -186,13 +147,13 @@ public class RasterizeAlgorithm {
 	      FeatureSchema schema = fCollection.getFeatureSchema();
 	      FeatureDataset inputFC = new FeatureDataset(inputC, schema);
 	      for (Iterator<Feature> it = inputFC.iterator() ; it.hasNext() ; ) {
-	            Feature f = it.next();
+	    	  Feature feature = it.next();
 	            try {
-	            dValue = Double.parseDouble(f.getAttribute(attrName).toString());
+	            dValue = Double.parseDouble(feature.getAttribute(attrName).toString());
 	           } catch (Exception e) {
 	        	 dValue = noData;
 	           }
-	         final Geometry geometry = f.getGeometry();
+	         final Geometry geometry = feature.getGeometry();
 	         if (geometry.intersects(extent)) { 
 	        	doGeometry(geometry);
 	         }
@@ -207,14 +168,13 @@ public class RasterizeAlgorithm {
 		   return raster;
 	   }
 	   
-	   
 	   /**
-	    * gets com.vividsolutions.jts.geom.Envelope, recalculated
+	    * gets Raster com.vividsolutions.jts.geom.Envelope, recalculated
 	    * according to the cell size
 	    * @return com.vividsolutions.jts.geom.Envelope
 	    */
 	   public Envelope getEnvelope() {
-	 		return m_Extent.getEnvelope();
+	 		return new Envelope(m_Extent.getXMin(), m_Extent.getXMax(),m_Extent.getYMin(),  m_Extent.getYMax() );
 	 	}
 	  
 	   
@@ -362,7 +322,7 @@ public class RasterizeAlgorithm {
 	   private static void doPoint(final Geometry geometry) {
 		   final Coordinate coord = geometry.getCoordinate();
 	    // final GridCell cell = m_Extent.getGridCoordsFromWorldCoords(coord.x, coord.y);
-		    java.awt.Point cell = fromCoordToCell(coord, cellSize);
+		    java.awt.Point cell =  m_Extent.getGridCoordsFromWorldCoords(coord);
 		   raster.setSample(cell.x, cell.y, 0,dValue);
 	   }
  
@@ -435,11 +395,8 @@ public class RasterizeAlgorithm {
 	                  Feature feature = union(fca);
 	                  feature.setAttribute(attrName, key);
 	                  outputFC.add(feature);
-	                //  tree_map.put(feature.getID(), key.toString());
 	                }
 	        }
-	        
-	      
 	        return  outputFC;
 	     }
 	 
@@ -474,7 +431,7 @@ public class RasterizeAlgorithm {
 	    	 schema.addAttribute(attrName, AttributeType.DOUBLE);
 	    	 FeatureDataset outputFC = new FeatureDataset(schema);
 		     GeometryFactory factory = new GeometryFactory();
-	    	 Geometry geom = factory.toGeometry(env);
+	    	 Geometry geom = factory.toGeometry(envelope);
 	    	 for (Feature f : inputFC.getFeatures()) {
 	             Geometry g = f.getGeometry();
 	             if (!geom.disjoint(g)){
@@ -484,15 +441,9 @@ public class RasterizeAlgorithm {
 	     }
  
   
-  
-  private static double[][] rasterize(Geometry geom)
+  private static void  rasterize(Geometry geom, double value)
           throws Exception, OutOfMemoryError {
-     double[][] grid = new double[m_iNX+2][m_iNY+2];
-      for(int row = 0; row <= m_iNY; row++){
-          for(int col = 0; col <= m_iNX; col++){
-              grid[col][row] = 0;
-          }
-      }
+    
       BufferedImage bimage = new BufferedImage(m_iNX, m_iNY, BufferedImage.TYPE_INT_ARGB);
       bimage.setAccelerationPriority(1.0f);
       Graphics2D graphics = bimage.createGraphics();
@@ -515,7 +466,7 @@ public class RasterizeAlgorithm {
                   coordGridY = new int[coord.length];
                   // From geographic coords to image coords
                   for(int p=0; p<coord.length; p++){
-                      java.awt.Point point = fromCoordToCell(coord[p], cellSize);
+                      java.awt.Point point = m_Extent.getGridCoordsFromWorldCoords(coord[p]);
                       coordGridX[p] = point.x;
                       coordGridY[p] = point.y;
                   }
@@ -528,7 +479,7 @@ public class RasterizeAlgorithm {
                       coordGridY = new int[coord.length];
                       // From geographic coords to image coords
                       for(int p=0; p<coord.length; p++){
-                          java.awt.Point point = fromCoordToCell(coord[p], cellSize);
+                          java.awt.Point point = m_Extent.getGridCoordsFromWorldCoords(coord[p]);
                           coordGridX[p] = point.x;
                           coordGridY[p] = point.y;
                       }
@@ -542,7 +493,7 @@ public class RasterizeAlgorithm {
                   coordGridY = new int[coord.length];
                   // From geographic coords to image coords
                   for(int p=0; p<coord.length; p++){
-                      java.awt.Point point = fromCoordToCell(coord[p], cellSize);
+                      java.awt.Point point =  m_Extent.getGridCoordsFromWorldCoords(coord[p]);
                       coordGridX[p] = point.x;
                       coordGridY[p] = point.y;
                   }
@@ -561,7 +512,7 @@ public class RasterizeAlgorithm {
 
               // From geographic coords to image coords
               for(int p=0; p<coord.length; p++){
-                  java.awt.Point point = fromCoordToCell(coord[p], cellSize);
+                  java.awt.Point point =  m_Extent.getGridCoordsFromWorldCoords(coord[p]);
                   coordGridX[p] = point.x;
                   coordGridY[p] = point.y;
               }
@@ -579,12 +530,14 @@ public class RasterizeAlgorithm {
       for(int r=0; r<m_iNY; r++){
           for(int c=0; c<m_iNX; c++){
               if(bimage.getRGB(c, r) != 0 && bimage.getRGB(c, r) != -1){
-                 
-                  grid[c+1][m_iNY-r] = 1;
+            	  raster.setSample(c,m_iNY-r-1, 0, dValue);
+                
               }
           }
-      }        
-      return grid;
+      }
+	     
+    
   }
+  
 }
 

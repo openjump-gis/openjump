@@ -28,6 +28,7 @@ import javax.media.jai.RasterFactory;
 import org.openjump.core.rasterimage.sextante.ISextanteLayer;
 import org.openjump.core.rasterimage.sextante.ISextanteRasterLayer;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
 
@@ -364,6 +365,11 @@ public class GridExtent {
 
 	}
 
+	
+	
+	
+	
+	
 	/**
 	 * Converts a world coordinate to grid coordinates
 	 * @param x the x coordinate of the point
@@ -408,6 +414,21 @@ public class GridExtent {
 
 	}
 
+	/**
+	 * Convert World coordinates to grid coordinates
+	 * @param coordinate
+	 * @return java.awt.Point
+	 */
+	 public  java.awt.Point getGridCoordsFromWorldCoords(Coordinate coordinate){
+	     int x = (int)Math.floor((coordinate.x-m_dXMin) / m_dCellSizeX);
+	    // int y = (int)Math.floor((m_Extent.getYMax()-coord.y) / CellSize);
+	     int y = (int)Math.floor((coordinate.y-m_dYMin) / m_dCellSizeY);
+	     return new java.awt.Point(x, y);
+	     
+	 }
+	
+	
+	
         @Override
 	public String toString(){
 
