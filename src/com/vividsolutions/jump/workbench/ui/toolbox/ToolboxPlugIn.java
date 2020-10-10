@@ -37,7 +37,6 @@ import java.util.HashMap;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -46,8 +45,6 @@ import com.vividsolutions.jump.workbench.plugin.CheckBoxed;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-
-import jdk.internal.misc.InnocuousThread;
 
 /**
  * @deprecated future implementations should use {@link ToolboxPlugInV2} instead
