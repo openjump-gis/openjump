@@ -70,9 +70,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  * Creates a lattice for the current selected raster image
@@ -104,16 +102,8 @@ public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn
     private final String sSidebar = sLattice;
 
     @Override
-    public void initialize(PlugInContext context) throws Exception {
-
-        FeatureInstaller.getInstance()
-                .addMainMenuPlugin(
-                        this, //exe
-                        new String[] { MenuNames.RASTER,
-                                MenuNames.RASTER_VECTORIALIZE }, //menu path
-                        sName + "...", false, //checkbox
-                        null, //icon
-                        createEnableCheck(context.getWorkbenchContext()));
+    public String getName() {
+        return sName;
     }
 
     public static MultiEnableCheck createEnableCheck(

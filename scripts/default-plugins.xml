@@ -897,16 +897,36 @@
     <!-- ====================== Raster ================================= -->
     <plug-in>
         org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn
+         <menus>
+            <main-menu
+                menupath=" MenuNames.RASTER/MenuNames.RASTER_VECTORIALIZE"
+                install="true" />
+        </menus>
     </plug-in>
     <plug-in>
         org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn
+         <menus>
+            <main-menu
+                menupath=" MenuNames.RASTER/MenuNames.RASTER_VECTORIALIZE"
+                install="true" />
+        </menus>
     </plug-in>
      <separator />
     <plug-in>
         org.openjump.core.ui.plugin.raster.VectorizeToPolygonsPlugIn
+         <menus>
+            <main-menu
+                menupath=" MenuNames.RASTER/MenuNames.RASTER_VECTORIALIZE"
+                install="true" />
+        </menus>
         </plug-in>
      <plug-in>
         org.openjump.core.ui.plugin.raster.VectorizeToContoursPlugIn
+         <menus>
+            <main-menu
+                menupath=" MenuNames.RASTER/MenuNames.RASTER_VECTORIALIZE"
+                install="true" />
+        </menus>
      </plug-in>
      <plug-in>
         org.openjump.core.ui.plugin.raster.ManageDataPlugIn
@@ -932,35 +952,7 @@
                 install="true" />
         </menus>
     </plug-in>
-    <!--plug-in>
-        org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn
-        <menus>
-            <main-menu
-                menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
-                install="true" />
-        </menus>
-    </plug-in-->
-
-    <!--plug-in>
-        org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn
-        <menus>
-            <main-menu
-                menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
-                install="true" />
-        </menus>
-    </plug-in-->
-
-    <!--plug-in>
-        org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn
-        <menus>
-            <main-menu
-                menupath=" MenuNames.RASTER/MenuNames.RASTER_SINGLE_BAND_RASTER/MenuNames.RASTER_NODATA"
-                install="true" />
-        </menus>
-    </plug-in-->
     <separator />
-
-
     <plug-in>
         org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn
     </plug-in>

@@ -46,10 +46,8 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.Viewport;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
 
@@ -382,17 +380,6 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
     private final static String CHECK_FILE = I18N
             .get("plugin.EnableCheckFactory.at-least-one-single-banded-layer-should-exist");
 
-    @Override
-    public void initialize(PlugInContext context) throws Exception {
-
-        FeatureInstaller.getInstance()
-                .addMainMenuPlugin(
-                        this, //exe
-                        new String[] { MenuNames.RASTER,
-                                MenuNames.RASTER_VECTORIALIZE }, //menu path
-                        NAME, false, //checkbox
-                        null, //icon
-                        createEnableCheck(context.getWorkbenchContext()));
-    }
+  
 
 }

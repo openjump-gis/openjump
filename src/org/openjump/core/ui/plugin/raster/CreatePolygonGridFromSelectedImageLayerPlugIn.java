@@ -70,9 +70,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedPlugIn;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  * Creates a polygon grid from the current selected raster image
@@ -119,16 +117,8 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends
     List<RasterImageLayer> fLayers = new ArrayList<RasterImageLayer>();
 
     @Override
-    public void initialize(PlugInContext context) throws Exception {
-
-        FeatureInstaller.getInstance()
-                .addMainMenuPlugin(
-                        this, //exe
-                        new String[] { MenuNames.RASTER,
-                                MenuNames.RASTER_VECTORIALIZE }, //menu path
-                        sName + "...", false, //checkbox
-                        null, //icon
-                        createEnableCheck(context.getWorkbenchContext()));
+    public String getName() {
+        return sName;
     }
 
     public static MultiEnableCheck createEnableCheck(
