@@ -65,7 +65,6 @@ import com.vividsolutions.jump.workbench.ui.AttributeTypeFilter;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -131,14 +130,14 @@ public class RasterizePlugIn extends AbstractPlugIn
 	        return RASTERIZE_VECTOR;
 	    }
 
-    @Override
+ /*   @Override
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addMainMenuPlugin(
                 this,
                 new String[]{MenuNames.TOOLS,MenuNames.TOOLS_GENERATE},
                 getName(), false,ICON,
                 createEnableCheck(context.getWorkbenchContext()), -1);
-    }
+    }*/
 
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
