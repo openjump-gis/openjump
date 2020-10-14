@@ -263,28 +263,16 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        super.clone();
         RasterImageLayer raster = null;
-        if (this.isNeedToKeepImage()) {
-            try {
-                raster = new RasterImageLayer(getName(), getLayerManager(), getImageForDisplay(), getRasterData(null), new Envelope(getWholeImageEnvelope()));
-            } catch (IOException ex) {
-                Logger.error(ex);
-            } catch (NoninvertibleTransformException ex) {
-                Logger.error(ex);
-            } catch (Exception ex) {
-                Logger.error(ex);
-            }
-        } else {
-            try {
-                raster = new RasterImageLayer(getName(), getLayerManager(), getImageFileName(), getImageForDisplay(), new Envelope(getWholeImageEnvelope()));
-            } catch (IOException ex) {
-                Logger.error(ex);
-            } catch (NoninvertibleTransformException ex) {
-                Logger.error(ex);
-            } catch (Exception ex) {
-                Logger.error(ex);
-            }
+        try {
+            raster = new RasterImageLayer(getName(), getLayerManager(), getImageFileName(), getImageForDisplay(), new Envelope(getWholeImageEnvelope()));
+            raster.needToKeepImage = needToKeepImage;
+        } catch (IOException ex) {
+            Logger.error(ex);
+        } catch (NoninvertibleTransformException ex) {
+            Logger.error(ex);
+        } catch (Exception ex) {
+            Logger.error(ex);
         }
         // clone must produce a layerable with the same name (as for Layer) not a unique name
         if (raster != null) {
