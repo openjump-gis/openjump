@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2020-10-24 mmichaud
+  * fix #382 : deleting warping vectors was not possible with incremental mode
+
 2020-10-06 ede
   * added gdal support for debian/ubuntu, installing package libgdal-java
     suffices now to have gdal image loaders up and running, tested on Ubuntu 20

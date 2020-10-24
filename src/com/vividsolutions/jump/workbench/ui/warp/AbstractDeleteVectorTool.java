@@ -42,6 +42,7 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.workbench.model.AbstractVectorLayerFinder;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.ui.cursortool.Animations;
@@ -55,7 +56,7 @@ public abstract class AbstractDeleteVectorTool extends SpecifyFeaturesTool {
         setViewClickBuffer(6);
     }
        
-    private void showAnimation(Collection vectorFeatures) {
+    void showAnimation(Collection vectorFeatures) {
         try {
             Animations.drawExpandingRings(
                 getPanel().getViewport().toViewPoints(centres(vectorFeatures)),
@@ -66,9 +67,9 @@ public abstract class AbstractDeleteVectorTool extends SpecifyFeaturesTool {
         } catch (NoninvertibleTransformException e) {
             //Eat it. [Jon Aquino]
         }
-    }        
+    }
 
-    private Collection centres(Collection vectorFeatures) {
+    Collection centres(Collection vectorFeatures) {
         ArrayList centers = new ArrayList();
         for (Iterator i = vectorFeatures.iterator(); i.hasNext();) {
             Feature vectorFeature = (Feature) i.next();
@@ -83,27 +84,35 @@ public abstract class AbstractDeleteVectorTool extends SpecifyFeaturesTool {
     }
     
     protected abstract AbstractVectorLayerFinder createVectorLayerFinder(LayerManagerProxy layerManagerProxy);
-                
+
     protected void gestureFinished() throws Exception {
         reportNothingToUndoYet();
         AbstractVectorLayerFinder finder = createVectorLayerFinder(getPanel());
-        if (finder.getLayer() == null) {
+        Layer layer = finder.getLayer();
+        if (layer == null) {
             return;
         }
+        boolean oldVisible = layer.isVisible();
+        layer.setVisible(true); // next instruction search only in visible layers
         if (!layerToSpecifiedFeaturesMap().containsKey(finder.getLayer())) {
             return;
         }
+        layer.setVisible(oldVisible);
         execute(createCommand());        
     }
     
     protected UndoableCommand createCommand() throws NoninvertibleTransformException {
         final AbstractVectorLayerFinder finder = createVectorLayerFinder(getPanel());
+        Layer layer = finder.getLayer();
+        boolean oldVisible = layer.isVisible();
+        layer.setVisible(true); // next instruction search only in visible layers
         final Collection vectorFeaturesToDelete =
-            (Collection) layerToSpecifiedFeaturesMap().get(finder.getLayer());
+                (Collection) layerToSpecifiedFeaturesMap().get(layer);
+        layer.setVisible(oldVisible);
         Assert.isTrue(vectorFeaturesToDelete != null);
         Assert.isTrue(!vectorFeaturesToDelete.isEmpty());
         return new UndoableCommand(getName()) {
-            public void execute() {                
+            public void execute() {
                 finder.getLayer().getFeatureCollectionWrapper().removeAll(vectorFeaturesToDelete);
                 showAnimation(vectorFeaturesToDelete);
             }

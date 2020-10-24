@@ -34,10 +34,13 @@ package com.vividsolutions.jump.workbench.ui.warp;
 
 import java.awt.Cursor;
 import java.awt.geom.NoninvertibleTransformException;
+import java.util.Collection;
 
 import javax.swing.Icon;
 
+import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.workbench.model.AbstractVectorLayerFinder;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -51,11 +54,15 @@ public class DeleteIncrementalWarpingVectorTool extends AbstractDeleteVectorTool
     private WarpingPanel warpingPanel;
 
     protected AbstractVectorLayerFinder createVectorLayerFinder(LayerManagerProxy layerManagerProxy) {
+        return new WarpingVectorLayerFinder(layerManagerProxy);
+    }
+
+    protected AbstractVectorLayerFinder createIncrementalVectorLayerFinder(LayerManagerProxy layerManagerProxy) {
         return new IncrementalWarpingVectorLayerFinder(layerManagerProxy);
     }
 
     protected UndoableCommand createCommand() throws NoninvertibleTransformException {
-        return warpingPanel.addWarping(warpingPanel.addWarpingVectorGeneration(super.createCommand()));
+        return warpingPanel.addWarping(warpingPanel.addWarpingVectorGeneration(createBaseCommand()));
     }
 
     public Icon getIcon() {
@@ -64,6 +71,41 @@ public class DeleteIncrementalWarpingVectorTool extends AbstractDeleteVectorTool
 
     public Cursor getCursor() {
         return createCursor(IconLoader.icon("DeleteVectorCursor.gif").getImage());
+    }
+
+    /**
+     * The command returned uses super.createCommand to delete the feature in VectorLayer
+     * and add the deletion of the feature from IncrementalVectorLayer
+     * @return
+     * @throws NoninvertibleTransformException
+     */
+    protected UndoableCommand createBaseCommand() throws NoninvertibleTransformException {
+        final UndoableCommand superCommand = super.createCommand();
+        final AbstractVectorLayerFinder incrementalVectorLayerFinder =
+                createIncrementalVectorLayerFinder(getPanel());
+        Assert.isTrue(incrementalVectorLayerFinder != null);
+        Layer layer = incrementalVectorLayerFinder.getLayer();
+        Assert.isTrue(layer != null);
+        boolean oldVisible = layer.isVisible();
+        layer.setVisible(true); // next instruction search only in visible layers
+        final Collection incrementalVectorFeaturesToDelete =
+                (Collection) layerToSpecifiedFeaturesMap().get(layer);
+        layer.setVisible(oldVisible);
+        Assert.isTrue(incrementalVectorFeaturesToDelete != null);
+        Assert.isTrue(!incrementalVectorFeaturesToDelete.isEmpty());
+        return new UndoableCommand(getName()) {
+            public void execute() {
+                superCommand.execute();
+                incrementalVectorLayerFinder.getLayer().getFeatureCollectionWrapper()
+                        .removeAll(incrementalVectorFeaturesToDelete);
+                showAnimation(incrementalVectorFeaturesToDelete);
+            }
+            public void unexecute() {
+                superCommand.unexecute();
+                incrementalVectorLayerFinder.getLayer()
+                        .getFeatureCollectionWrapper().addAll(incrementalVectorFeaturesToDelete);
+            }
+        };
     }
 
 }

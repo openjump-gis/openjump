@@ -150,7 +150,7 @@ public class WarpingPanel extends JPanel {
         });
     }
 
-    /*
+    /**
      * Method used by Draw/Delete incremental warping vector toos
      */
     public UndoableCommand addWarping(final UndoableCommand wrappeeCommand) {
@@ -158,8 +158,7 @@ public class WarpingPanel extends JPanel {
             // Cache warping because user may change #isWarpingIncrementally.
             // [Jon Aquino]
             // Must cache warping lazily because #warpConditionsMet requires
-            // that
-            // drawCommand execute first. [Jon Aquino]
+            // that drawCommand execute first. [Jon Aquino]
             private Boolean warping = null;
             // Must create warpCommand lazily because it requires that
             // #warping return true. [Jon Aquino]
@@ -167,13 +166,12 @@ public class WarpingPanel extends JPanel {
 
             private boolean warping() {
                 if (warping == null) {
-                    warping = new Boolean(isWarpingIncrementally()
-                            && warpConditionsMet());
-                    if (warping.booleanValue()) {
+                    warping = isWarpingIncrementally() && warpConditionsMet();
+                    if (warping) {
                         warpCommand = executeCommand();
                     }
                 }
-                return warping.booleanValue();
+                return warping;
             }
 
             @Override
@@ -288,8 +286,7 @@ public class WarpingPanel extends JPanel {
                                 @Override
                                 public void unexecute() {
                                     // Triangulation layer undo is handled by
-                                    // ShowTriangulationPlugIn#addUndo. [Jon
-                                    // Aquino]
+                                    // ShowTriangulationPlugIn#addUndo. [Jon Aquino]
                                     try {
                                         if (willShowSourceLayer) {
                                             sourceLayer.setVisible(false);
@@ -371,6 +368,13 @@ public class WarpingPanel extends JPanel {
                         MODIFIED_OUTSIDE_WARP_KEY) ? new ArrayList()
                 : (Collection) currentOutputLayer().getBlackboard().get(
                         RECONSTRUCTION_VECTORS_KEY);
+        // Fix #382 : if we are deleting a vector incrementally, we don't
+        // want to use reconstructionVectors cached from the Blackboard but
+        // an upadated collection where the deleted vector has been removed
+        if (isWarpingIncrementally() && warpingVectorLayerFinder().getLayer() != null) {
+            reconstructionVectors = warpingVectorLayerFinder().getLayer()
+                    .getFeatureCollectionWrapper().getFeatures();
+        }
         final Collection newWarpingVectors = toWarpingVectors(
                 incrementalWarpingVectorLayerFinder().getLayer()
                         .getFeatureCollectionWrapper().getFeatures(),
@@ -738,6 +742,7 @@ public class WarpingPanel extends JPanel {
                                             .getUndoableEditReceiver()
                                             .reportIrreversibleChange();
                                 }
+                                System.out.println("main : end");
                             }
 
                             @Override
