@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2020-10-25 mmichaud
+  * fix #508 : java2xml with setInteriorBorder/hasInteriorBorder property
+
 2020-10-24 mmichaud
   * fix #382 : deleting warping vectors was not possible with incremental mode
 

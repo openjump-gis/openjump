@@ -176,7 +176,9 @@ public class Java2XML extends XMLBinder {
             if (!method.getName().toUpperCase().equals(
                     "GET" + field.toUpperCase())
                     && !method.getName().toUpperCase().equals(
-                            "IS" + field.toUpperCase())) {
+                            "IS" + field.toUpperCase())
+                    && !method.getName().toUpperCase().equals(
+                            "HAS" + field.toUpperCase())) {
                 continue;
             }
             if (method.getParameterTypes().length != 0) {
