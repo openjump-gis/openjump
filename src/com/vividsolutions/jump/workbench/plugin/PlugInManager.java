@@ -512,8 +512,18 @@ public class PlugInManager {
     /**
      * To access extension classes, use this ClassLoader rather than the default
      * ClassLoader. Extension classes will not be present in the latter.
+     * 
+     * @deprecated use {@link #getPlugInClassLoader()} instead
      */
-    public PlugInClassLoader getClassLoader() {
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    /**
+     * To access extension classes, use this ClassLoader rather than the default
+     * ClassLoader. Extension classes will not be present in the latter.
+     */
+    public PlugInClassLoader getPlugInClassLoader() {
         return classLoader;
     }
 

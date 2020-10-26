@@ -332,7 +332,7 @@ public class JUMPWorkbench {
       plugInManager.addExtensionDir(dir);
     }
     // debugging output of all urls in our classloader
-    Logger.debug("Classpath -> "+Arrays.toString(plugInManager.getClassLoader().getURLs()));
+    Logger.debug("Classpath -> "+Arrays.toString(plugInManager.getPlugInClassLoader().getURLs()));
 
     // Load drivers before initializing the frame because part of the frame
     // initialization is the initialization of the driver dialogs. [Jon
