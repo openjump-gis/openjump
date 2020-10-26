@@ -4,6 +4,11 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2020-10-25 Giuseppe Aruta
+   * Updated CadTool plugin to ver. 1.0: activated Add and remove area plugin
+     from Kosmo to test complementary edition on polygons touching the edited
+     one. Minor corrections of bugs on the block panel
+
 2020-10-25 mmichaud
   * fix #508 : java2xml with setInteriorBorder/hasInteriorBorder property
 
