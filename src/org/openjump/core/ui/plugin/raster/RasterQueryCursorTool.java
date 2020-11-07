@@ -138,11 +138,11 @@ public class RasterQueryCursorTool extends NClickTool {
                 .toArray(new RasterImageLayer[] {});
                 //.toArray(new Layerable[] {});
         if (ls != null && ls.length > 0) {
-            rLayer = (RasterImageLayer) ls[0];
+            rLayer = ls[0];
 
             name = rLayer.getName();
             Coordinate coord = (Coordinate) getCoordinates().get(0);
-            String cellValues = null;
+            String cellValues;
             if (getPoint().within(rLayer.getWholeImageEnvelopeAsGeometry())) {
                 try {
                     cellValues = "";
@@ -157,6 +157,8 @@ public class RasterQueryCursorTool extends NClickTool {
                                 cellValues = cellValues.concat(Double
                                         .toString(cellValue));
                             }
+                        } else {
+                            cellValues = cellValues.concat("???");
                         }
                         cellValues = cellValues.concat("  ");
                         if (Double.isNaN(cellValue))
@@ -165,8 +167,9 @@ public class RasterQueryCursorTool extends NClickTool {
                             this.lastClick = cellValues;
                         }
                     }
-                } catch (RasterDataNotFoundException ex) {
-                    cellValues = "???";
+                } catch (IOException ex) {
+                    cellValues = " - ";
+                    Logger.error(ex);
                 }
                 Geometry measureGeometry = null;
                 if (wasShiftPressed()) {
@@ -311,7 +314,7 @@ public class RasterQueryCursorTool extends NClickTool {
             Layerable layer = (Layerable)layerable;
         
                 if (layer instanceof RasterImageLayer) {
-        String cellValues = null;
+        String cellValues;
         try {
             cellValues = "";
             Coordinate tentativeCoordinate = getPanel().getViewport()
@@ -330,12 +333,12 @@ public class RasterQueryCursorTool extends NClickTool {
                         cellValues = cellValues.concat(Double
                                 .toString(cellValue));
                     }
+                } else {
+                    cellValues = cellValues.concat("???");
                 }
                 cellValues = cellValues.concat("  ");
             }
 
-        } catch (RasterDataNotFoundException ex) {
-          cellValues = "???";
         } catch (IOException e) {
           cellValues = " - ";
           Logger.error(e);

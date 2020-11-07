@@ -220,24 +220,22 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
         int l=0;
         for(RasterImageLayer rasterImageLayer : layerables_l) {
             layerNames[l] = rasterImageLayer.getName();
-            try {
 
-                cellValues[l] = "";
-                for(int b=0; b<rasterImageLayer.getNumBands(); b++) {
-                    Double cellValue = rasterImageLayer.getCellValue(coord.x, coord.y, b);
-                    if(cellValue != null) {
-                        if(rasterImageLayer.isNoData(cellValue)) {
-                            cellValues[l] = Double.toString(Double.NaN);
-                        } else {
-                            cellValues[l] = cellValues[l].concat(Double.toString(cellValue));
-                        }
+            cellValues[l] = "";
+            for(int b=0; b<rasterImageLayer.getNumBands(); b++) {
+                Double cellValue = rasterImageLayer.getCellValue(coord.x, coord.y, b);
+                if(cellValue != null) {
+                    if(rasterImageLayer.isNoData(cellValue)) {
+                        cellValues[l] = Double.toString(Double.NaN);
+                    } else {
+                        cellValues[l] = cellValues[l].concat(Double.toString(cellValue));
                     }
-                    cellValues[l] = cellValues[l].concat(";");
+                } else {
+                    cellValues[l] = "???";
                 }
-
-            } catch(RasterDataNotFoundException ex) {
-                cellValues[l] = "???";
+                cellValues[l] = cellValues[l].concat(";");
             }
+
             l++;
         }
             

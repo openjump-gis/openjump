@@ -94,7 +94,7 @@ public class GDALInternalMetadata extends DefaultHandler {
     @Override
     public void characters(char[] ac, int i, int j) throws SAXException {
         tmpValue = new String(ac, i, j);
-        System.out.println(tmpValue);
+        //System.out.println(tmpValue);
     }
     
     private String tmpValue;
