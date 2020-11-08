@@ -1,8 +1,6 @@
 package org.openjump.core.rasterimage;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -18,10 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.RasterFactory;
-import javax.media.jai.RenderedOp;
+import javax.media.jai.*;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -394,7 +389,15 @@ public class RasterImageIO {
 				return new Point(pImage.getWidth(), pImage.getHeight());
 			}
 			
-		}else if (filenameOrURL.toLowerCase().endsWith(".tif")
+		} else if (filenameOrURL.toLowerCase().endsWith(".jpg") ||
+				filenameOrURL.toLowerCase().endsWith(".jpeg")) {
+			try {
+				Dimension dimension = org.apache.commons.imaging.Imaging.getImageSize(new File(filenameOrURL));
+				return new Point((int)dimension.getWidth(), (int)dimension.getHeight());
+			} catch(ImageReadException e) {
+				throw new IOException(e);
+			}
+		} else if (filenameOrURL.toLowerCase().endsWith(".tif")
 				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
 			RenderedOp  renderedOp;
 			renderedOp=	TiffUtilsV2.getRenderedOp(new File(filenameOrURL));
@@ -402,7 +405,6 @@ public class RasterImageIO {
 			if (renderedOp != null) {
 				return new Point(renderedOp.getWidth(), renderedOp.getHeight());
 			}
-		 
 
 		} else if (filenameOrURL.toLowerCase().endsWith(".flt")) {
 
@@ -416,7 +418,7 @@ public class RasterImageIO {
 			return new Point(ga.getnCols(), ga.getnRows());
 
 		} else {
-
+			System.out.println("Filename " + filenameOrURL);
 			BufferedImage image = ImageIO.read(new File(filenameOrURL));
 			return new Point(image.getWidth(), image.getHeight());
 
