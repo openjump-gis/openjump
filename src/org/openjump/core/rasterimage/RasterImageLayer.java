@@ -418,11 +418,6 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
         } catch (Exception e){
             Logger.warn(e);
         }
-        System.out.println(
-                "" + getCommittedMemory() + " " + imageFileName + " " +
-                        image.getWidth()+"x"+image.getHeight() + " - " +
-                        scaledBufferedImage.getWidth()+"x"+scaledBufferedImage.getHeight()
-        );
         if (imageToDraw != null) {
             return imageToDraw;
         } else {
