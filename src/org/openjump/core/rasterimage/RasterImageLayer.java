@@ -345,6 +345,11 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
                 symbologyChanged = false;
                 this.setNeedToKeepImage(false);
                 clearImageAndRaster(true);
+                if (getAvailRAM()-getCommittedMemory() < origImageWidth*origImageHeight*4 + getAvailRAM()*0.01) {
+                    layerViewPanel.getContext().warnUser("Low Memory : image " +
+                            imageFileName + " will not be displayed");
+                    return null;
+                }
                 // Load the part of the image intersecting the viewport and setting this.image
                 reLoadImage();
                 if(image == null) {
