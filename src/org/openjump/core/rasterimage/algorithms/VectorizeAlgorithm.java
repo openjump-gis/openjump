@@ -3,8 +3,7 @@ package org.openjump.core.rasterimage.algorithms;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.DataBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
@@ -43,24 +42,21 @@ public class VectorizeAlgorithm {
 
     public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
 
-    private static int arrPos(int valIn, double[] arrayIn) {
-
-        int valOut = -9999;
-        for (int i = 0; i < arrayIn.length; i++) {
-            if (arrayIn[i] == valIn) {
-                valOut = i;
-                break;
-            }
-        }
-        return valOut;
-    }
+    //private static int arrPos(double valIn, double[] arrayIn) {
+    //    for (int i = 0; i < arrayIn.length; i++) {
+    //        if (arrayIn[i] == valIn) {
+    //            return i;
+    //        }
+    //    }
+    //    return -1;
+    //}
 
     /**
      * Create a FeatureCollection of polygons defining a GridWrapperNotInterpolated and number of band
      * AdbToolbox algorithm
-     * @param gwrapper. GridWrapperNotInterpolated
-     * @param explodeMultipolygons. Explode MultiPolygons in Polygons
-     * @param band. Number of band (0,1,2,etc)
+     * @param gwrapper GridWrapperNotInterpolated
+     * @param explodeMultipolygons Explode MultiPolygons in Polygons
+     * @param band Number of band (0,1,2,etc)
      * @return
      */
     public static FeatureCollection toPolygonsAdbToolBox(
@@ -74,11 +70,12 @@ public class VectorizeAlgorithm {
         // Find unique values
         final double[] uniqueVals = findUniqueVals(gwrapper, noData, band);
         final int uniqueValsCount = uniqueVals.length;
+        final Map<Double,Integer> index = index(uniqueVals);
         // Scan lines
         @SuppressWarnings("unchecked")
         final ArrayList<Polygon>[] arrAll = new ArrayList[uniqueValsCount];
         for (int i = 0; i < arrAll.length; i++) {
-            arrAll[i] = new ArrayList<Polygon>();
+            arrAll[i] = new ArrayList<>();
         }
         final Coordinate[] coords = new Coordinate[5];
         final PackedCoordinateSequenceFactory pcsf = new PackedCoordinateSequenceFactory();
@@ -110,7 +107,8 @@ public class VectorizeAlgorithm {
                         final CoordinateSequence cs = pcsf.create(coords);
                         lr = new LinearRing(cs, geomFactory);
                         polygon = new Polygon(lr, null, geomFactory);
-                        arrAll[arrPos((int) oldVal, uniqueVals)].add(polygon);
+                        //arrAll[arrPos((int) oldVal, uniqueVals)].add(polygon);
+                        arrAll[index.get(oldVal)].add(polygon);
                     }
                     oldVal = val;
                     cStart = c;
@@ -134,14 +132,14 @@ public class VectorizeAlgorithm {
                 for (int g = 0; g < geom.getNumGeometries(); g++) {
                     feature = new BasicFeature(featSchema);
                     feature.setGeometry(geom.getGeometryN(g));
-                    feature.setAttribute(1, new Integer(ID));
+                    feature.setAttribute(1, ID);
                     feature.setAttribute(2, uniqueVals[i]);
                     featColl.add(feature);
                     ID++;
                 }
             } else {
                 feature = new BasicFeature(featSchema);
-                feature.setAttribute(1, new Integer(ID));
+                feature.setAttribute(1, ID);
                 feature.setGeometry(geom);
                 feature.setAttribute(2, uniqueVals[i]);
                 featColl.add(feature);
@@ -181,6 +179,14 @@ public class VectorizeAlgorithm {
             uniqueVals[i] = uniqueValsArr.get(i);
         }
         return uniqueVals;
+    }
+
+    private static Map<Double,Integer> index(double[] values) {
+        Map<Double,Integer> map = new HashMap<>(values.length);
+        for (int i = 0 ; i < values.length ; i++) {
+            map.put(values[i],i);
+        }
+        return map;
     }
 
     private static int[][] m_Lock;
