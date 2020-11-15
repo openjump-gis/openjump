@@ -148,7 +148,7 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
 
           // First, scale the original image
           double scaleX = scale * gtr.getDblModelUnitsPerRasterUnit_X();
-          double scaleY = scale * gtr.getDblModelUnitsPerRasterUnit_Y();
+          double scaleY = scale * Math.abs(gtr.getDblModelUnitsPerRasterUnit_Y());
 
           // calculate predicted dimensions
           double scaledW = scaleX * src_img.getWidth();

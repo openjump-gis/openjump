@@ -6,6 +6,7 @@
 
 2020-11-15 mmichaud
   * fix #512 about georeferencing (introduced by r6523)
+  * fix #503 again (half-pixel shift)
 
 2020-10-25 Giuseppe Aruta
   * Updated CadTool plugin to ver. 1.0: activated Add and remove area plugin
