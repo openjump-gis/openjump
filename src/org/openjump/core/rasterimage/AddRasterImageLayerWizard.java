@@ -295,8 +295,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             if (fileName.toLowerCase().endsWith(".tif")
                     || fileName.toLowerCase().endsWith(".tiff")) {
                 // logger.printDebug("checking for GeoTIFF");
-              
-              TiffUtilsV2.getEnvelope(new File(fileName));
+                env = TiffUtilsV2.getEnvelope(new File(fileName));
+                // TiffUtilsV2 returns an enveloppe even if no geotags are found
+                // If env = image size, image is not considered as georeferenced
+                isGeoTiff = env.getWidth() != imageDimensions.getX() ||
+                    env.getHeight() != imageDimensions.getY();
 
 //                Coordinate tiePoint = null, pixelOffset = null, pixelScale = null;
 //                double[] doubles = null;
