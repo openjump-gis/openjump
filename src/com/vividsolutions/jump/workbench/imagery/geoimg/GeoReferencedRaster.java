@@ -41,7 +41,6 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -77,6 +76,10 @@ public class GeoReferencedRaster extends GeoRaster {
   @Deprecated
   Coordinate coorModel_tiepointLT;
 
+  // AreaOrPoint=AREA (default) means that image coordinates
+  // refer to the upper left corner of the upper left angle.
+  // AreaOrPoint=POINT means that image coordinates refer to
+  // the center of the upper left pixel
   public enum AreaOrPoint {AREA,POINT}
   AreaOrPoint areaOrPoint = AreaOrPoint.AREA;
 
@@ -91,6 +94,8 @@ public class GeoReferencedRaster extends GeoRaster {
   private Coordinate modelULPixelCenter;
 
   private double dblModelUnitsPerRasterUnit_X;
+  // [michaudm 2020-11-16] signed y-scale
+  // to be able to handle north-south oriented or south-north oriented images
   private double dblModelUnitsPerRasterUnit_Y;
 
   /**
@@ -120,7 +125,7 @@ public class GeoReferencedRaster extends GeoRaster {
       re = new ReferencedImageException("probably no tiff image: "
           + e.getMessage());
     } catch (IOException e) {
-      re = new ReferencedImageException("problem acessing tiff image: "
+      re = new ReferencedImageException("problem accessing tiff image: "
           + e.getMessage());
     } finally {
       // clean up
@@ -155,7 +160,7 @@ public class GeoReferencedRaster extends GeoRaster {
       tags[4] = fieldModelGeoTransform.getAsDouble(3);
       // y-ordinate of the center of the upper left pixel
       tags[5] = fieldModelGeoTransform.getAsDouble(7);
-      Logger.debug("gtiff trans: " + Arrays.toString(tags));
+      Logger.debug("gtiff transform: " + Arrays.toString(tags));
       setEnvelope(tags);
     }
     // use the tiepoints as defined
@@ -166,25 +171,20 @@ public class GeoReferencedRaster extends GeoRaster {
       // Map the modeltiepoints from raster to model space
 
       // Read the tiepoints
-      double offset = (areaOrPoint == AreaOrPoint.AREA) ? 0.5 : 0.0;
-      // in areaOrPoint=AREA model, reference for the TiePoint is the UL
-      // corner of the pixel
-      // To set the transformation parameters we use the center of the
-      // UL coordinate
+      // imageCoord has not the same meaning in AREA and in POINT mode,
+      // but here, we don't mind, imageCoord may represent any point in
+      // the image, important thing is that imageCoord and modelCoord
+      // represent the same point in the image and in the model
+      // coordinate system.
       Coordinate imageCoord = new Coordinate(
-              fieldModelTiePoints.getAsDouble(0)-offset,
-              fieldModelTiePoints.getAsDouble(1)-offset);
+              fieldModelTiePoints.getAsDouble(0),
+              fieldModelTiePoints.getAsDouble(1));
       Coordinate modelCoord = new Coordinate(
               fieldModelTiePoints.getAsDouble(3),
               fieldModelTiePoints.getAsDouble(4));
 
-      //setCoorRasterTiff_tiepointLT(new Coordinate(
-      //    fieldModelTiePoints.getAsDouble(0),
-      //    fieldModelTiePoints.getAsDouble(1), 0));
-      //setCoorModel_tiepointLT(new Coordinate(
-      //    fieldModelTiePoints.getAsDouble(3),
-      //    fieldModelTiePoints.getAsDouble(4), 0));
-      //setEnvelope();
+      Logger.debug("gtiff tiepoints found : " + Arrays.toString(fieldModelTiePoints.getAsDoubles()));
+
       // Find the ModelPixelScale field
       XTIFFField fieldModelPixelScale = dir
           .getField(XTIFF.TIFFTAG_GEO_PIXEL_SCALE);
@@ -195,22 +195,26 @@ public class GeoReferencedRaster extends GeoRaster {
             + "\n" + MSG_GENERAL);
       }
 
-      Logger.debug("gtiff tiepoints found : " + Arrays.toString(fieldModelTiePoints.getAsDoubles()));
-
       dblModelUnitsPerRasterUnit_X = fieldModelPixelScale.getAsDouble(0);
       dblModelUnitsPerRasterUnit_Y = fieldModelPixelScale.getAsDouble(1);
       //https://trac.osgeo.org/gdal/ticket/4977
       if (!honourNegativeScaleY) dblModelUnitsPerRasterUnit_Y = - Math.abs(dblModelUnitsPerRasterUnit_Y);
       Logger.debug("gtiff scale : scalex=" + dblModelUnitsPerRasterUnit_X + ", scaley=" + dblModelUnitsPerRasterUnit_Y);
 
-      double tx = modelCoord.x-getDblModelUnitsPerRasterUnit_X()*(imageCoord.x);
-      double ty = modelCoord.y-getDblModelUnitsPerRasterUnit_Y()*(imageCoord.y);
+      // To compute the translation parameters of the transformation, we need
+      // to know how a point is converted from image to model coordinate, we
+      // don't mind where this point is.
+      double tx = modelCoord.x - dblModelUnitsPerRasterUnit_X * imageCoord.x;
+      double ty = modelCoord.y - dblModelUnitsPerRasterUnit_Y * imageCoord.y;
 
-      // Compute the model coordinate for the center of UL and LR pixels
-      rasterULPixelCenter = new Coordinate(0.0,0.0);
+      // Now, we want to know the model coordinate of the point precisely
+      // located at the center of the upper left pixel.
+      // Coordinates of this point is not the same in AREA and in POINT modes
+      rasterULPixelCenter = (areaOrPoint == AreaOrPoint.AREA) ?
+              new Coordinate(0.5,0.5) : new Coordinate(0.0,0.0);
       modelULPixelCenter = new Coordinate(
-              getDblModelUnitsPerRasterUnit_X()*rasterULPixelCenter.x + tx,
-              getDblModelUnitsPerRasterUnit_Y()*rasterULPixelCenter.y + ty);
+              getDblModelUnitsPerRasterUnit_X() * rasterULPixelCenter.x + tx,
+              getDblModelUnitsPerRasterUnit_Y() * rasterULPixelCenter.y + ty);
 
       setEnvelope();
 
@@ -294,7 +298,7 @@ public class GeoReferencedRaster extends GeoRaster {
         tags[i] = Double.parseDouble(line);
       }
 
-      Logger.debug("wf: " + Arrays.toString(tags));
+      Logger.debug("worldfile: " + Arrays.toString(tags));
 
       setEnvelope(tags);
 
@@ -355,24 +359,17 @@ public class GeoReferencedRaster extends GeoRaster {
 
     // set up a default envelope
     double[] tags = new double[6];
-    tags[0] = 1; // pixel size in x
-                 // direction
+    tags[0] = 1; // pixel size in x direction
     tags[1] = 0; // rotation about y-axis
     tags[2] = 0; // rotation about x-axis
-    tags[3] = -1;// pixel size in the
-                 // y-direction
-    tags[4] = 0; // x-coordinate of the
-                 // center of the upper
-                 // left pixel
-    tags[5] = 0; // y-coordinate of the
-                 // center of the upper
-                 // left pixel
+    tags[3] = -1;// pixel size in the y-direction
+    tags[4] = 0; // x-coordinate of the center of the upper left pixel
+    tags[5] = 0; // y-coordinate of the center of the upper left pixel
     setEnvelope(tags);
   }
 
   private void setEnvelope(double[] tags) {
-    //setCoorRasterTiff_tiepointLT(new Coordinate(-0.5, -0.5));
-    //setCoorModel_tiepointLT(new Coordinate(0, 0));
+
     AffineTransform transform = new AffineTransform(tags);
 
     //We should honour negative scale y, but gdal created plenty of
@@ -386,32 +383,36 @@ public class GeoReferencedRaster extends GeoRaster {
     dblModelUnitsPerRasterUnit_X = transform.getScaleX();
     dblModelUnitsPerRasterUnit_Y = transform.getScaleY();
 
-    Point2D rasterLT = new Point2D.Double(src.getMinX(), src.getMinY());
+    // To compute the envelope in AreaOrPoint.AREA mode, we need to
+    // know that upper left pixel center is at 0.5, 0.5, not 0, 0
+    double offset = (areaOrPoint == AreaOrPoint.AREA) ? 0.5 : 0.0;
+    Point2D rasterLT = new Point2D.Double(src.getMinX()+offset, src.getMinY()+offset);
     Point2D modelLT = new Point2D.Double();
     transform.transform(rasterLT, modelLT);
 
-    rasterULPixelCenter = new Coordinate(src.getMinX(), src.getMinY());
+    rasterULPixelCenter = new Coordinate(rasterLT.getX(), rasterLT.getY());
     modelULPixelCenter = new Coordinate(modelLT.getX(), modelLT.getY());
 
     setEnvelope();
   }
 
   void setEnvelope() {
-    double offset = (areaOrPoint == AreaOrPoint.AREA) ? 0.5 : 0.0;
-    // Get the image coordinate of the bottom left corner of the bottom left pixel
-    // from the image coordinate of the center of the bottom left pixel
-    Coordinate coorRaster_imageLB = new Coordinate(
-            rasterULPixelCenter.x-offset,src.getHeight()-offset);
-    // Get the image coordinate of the top right corner of the top right pixel
-    // from the image coordinate of the center of the top right pixel
-    Coordinate coorRaster_imageRT = new Coordinate(
-            src.getWidth()-offset, -offset);
-    // Transform the bottom left and the top right corner to model coordinate
-    // to get the envelope of the image
-    Coordinate coorModel_imageLB = rasterToModelSpace(coorRaster_imageLB);
-    Coordinate coorModel_imageRT = rasterToModelSpace(coorRaster_imageRT);
 
-    envModel_image = new Envelope(coorModel_imageLB, coorModel_imageRT);
+    // Image coordinate of the upper left corner of the envelope
+    double ulx = rasterULPixelCenter.x-0.5;
+    double uly = rasterULPixelCenter.y-0.5;
+
+    // Bottom left coordinate of the envelope
+    Coordinate imageEnvelopeBL = new Coordinate(ulx,uly+src.getHeight());
+
+    // Top right coordinate of the envelope
+    Coordinate imageEnvelopeTR = new Coordinate(ulx+src.getWidth(), uly);
+
+    // Transform envelope corners to the model coordinate system
+    Coordinate modelEnvelopeBL = rasterToModelSpace(imageEnvelopeBL);
+    Coordinate modelEnvelopeTR = rasterToModelSpace(imageEnvelopeTR);
+
+    envModel_image = new Envelope(modelEnvelopeBL, modelEnvelopeTR);
 
     // backup original envelope
     envModel_image_backup = envModel_image;
@@ -426,13 +427,14 @@ public class GeoReferencedRaster extends GeoRaster {
    */
   private Coordinate rasterToModelSpace(Coordinate coorRaster) {
     Coordinate coorModel = new Coordinate();
-
     coorModel.x = modelULPixelCenter.x
         + (coorRaster.x - rasterULPixelCenter.x)
         * dblModelUnitsPerRasterUnit_X;
+    System.out.println("" + modelULPixelCenter.x + " + (" + coorRaster.x + "-" + rasterULPixelCenter.x + ")*" + dblModelUnitsPerRasterUnit_X + " = " + coorModel.x);
     coorModel.y = modelULPixelCenter.y
         + (coorRaster.y - rasterULPixelCenter.y)
         * dblModelUnitsPerRasterUnit_Y;
+    System.out.println("" + modelULPixelCenter.y + " + (" + coorRaster.y + "-" + rasterULPixelCenter.y + ")*" + dblModelUnitsPerRasterUnit_Y + " = " + coorModel.y);
     coorModel.z = 0;
 
     return coorModel;

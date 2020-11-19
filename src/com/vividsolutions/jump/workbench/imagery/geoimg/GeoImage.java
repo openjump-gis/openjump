@@ -43,6 +43,7 @@ import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.media.jai.InterpolationNearest;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.AffineDescriptor;
@@ -147,7 +148,7 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
 //          System.out.println("GI: NO SCALE CACHE");
 
           // First, scale the original image
-          double scaleX = scale * gtr.getDblModelUnitsPerRasterUnit_X();
+          double scaleX = scale * Math.abs(gtr.getDblModelUnitsPerRasterUnit_X());
           double scaleY = scale * Math.abs(gtr.getDblModelUnitsPerRasterUnit_Y());
 
           // calculate predicted dimensions
@@ -209,7 +210,11 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
             // Interpolation interp = Interpolation
             // .getInstance(Interpolation.INTERP_BICUBIC);
             // pb.add(interp); // add interpolation method
-            img = JAI.create("scale", pb, hints);
+            //img = JAI.create("scale", pb, hints);
+            // Prefer affine to scale as affine uses double parameters and preserve scale signus
+            // while scale uses float parameters and forbid negative scaleY
+            AffineTransform tr = new AffineTransform(scaleX_toUse, 0, 0, scaleY_toUse, 0, 0);
+            img = JAI.create("affine", scale_src_img, tr, new InterpolationNearest());
           } else {
             pb.add(scaleX_toUse);
             pb.add(scaleY_toUse);
@@ -270,9 +275,9 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
       raster_cropX = Math.min((float)raster_cropX, (float)img.getWidth());
       raster_cropY = Math.min((float)raster_cropY, (float)img.getHeight());
       raster_cropW = Math
-          .min((float)raster_cropW, (float)img.getWidth() - /*(int)*/ raster_cropX);
-      raster_cropH = Math.min((float)raster_cropH, (float)img.getHeight()
-          - /*(int)*/ raster_cropY);
+          .min((float)raster_cropW, (float)(img.getWidth() - raster_cropX));
+      raster_cropH = Math.min((float)raster_cropH, (float)(img.getHeight()
+          - raster_cropY));
 
       pb = new ParameterBlock();
       pb.addSource(img);
@@ -282,8 +287,11 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
       //System.out.println("croph " + (float)raster_cropH + " " + (img.getHeight() - /*(int)*/ raster_cropY));
       pb.add((float)raster_cropX);
       pb.add((float)raster_cropY);
-      pb.add((float)raster_cropW);
-      pb.add((float)raster_cropH);
+      // conversions of cropX/Y and width/height from double to float may
+      // create an envelope slightly outside the real envelope of the image
+      // removing ulp to the width/height solve the problem
+      pb.add((float)raster_cropW-Math.ulp((float)raster_cropW));
+      pb.add((float)raster_cropH-Math.ulp((float)raster_cropH));
       img = JAI.create("crop", pb, null);
 
       // move the image to the model coordinates
