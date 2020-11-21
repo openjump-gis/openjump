@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.WeakHashMap;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
@@ -37,8 +38,10 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.imagery.geoimg.GeoReferencedRaster;
 
 public class TiffUtilsV2 {
+
   // a File -> RenderedOp cache mapping to prevent recreating inputs for the same file
-  private static HashMap<File,GeoReferencedRaster> geoRasterCache = new HashMap<File,GeoReferencedRaster>();
+  private static WeakHashMap<File,GeoReferencedRaster> geoRasterCache = new WeakHashMap<File,GeoReferencedRaster>();
+
 
   public static RenderedOp getRenderedOp(File tiffFile) throws IOException {
     GeoReferencedRaster geoRaster = getGeoReferencedRaster(tiffFile);
@@ -87,7 +90,7 @@ public class TiffUtilsV2 {
     parameterBlock.addSource(renderedOp);
     parameterBlock.add(xScale);
     parameterBlock.add(yScale);
-    renderedOp = JAI.create("scale", parameterBlock);
+    //renderedOp = JAI.create("scale", parameterBlock);
     return JAI.create("scale", parameterBlock);
   }
   
@@ -177,7 +180,6 @@ public class TiffUtilsV2 {
 	        actualImageWidth = bufferedImage.getWidth();
 	        actualImageHeight = bufferedImage.getHeight();
 	      }
-
 	      Metadata metadata = new Metadata(wholeImageEnvelope, imagePartEnvelope,
 	          new Point(originalImageWidth, originalImageHeight), new Point(actualImageWidth, actualImageHeight),
 	          (cellSize.getX() + cellSize.getY()) / 2, (subsetResolution.getX() + subsetResolution.getY()) / 2, noData,
@@ -225,8 +227,7 @@ public class TiffUtilsV2 {
    * @throws Exception
    */
   public static ImageAndMetadata readImageAndMetadata(File tiffFile, Envelope viewportEnvelope, Resolution requestedRes,
-	     Stats stats) throws NoninvertibleTransformException, IOException, FileNotFoundException,
-	      TiffTags.TiffReadingException, Exception {
+	     Stats stats) throws NoninvertibleTransformException, IOException, FileNotFoundException, Exception {
 	  RenderedOp renderedOp1 = getRenderedOp(tiffFile);
 	  Envelope wholeImageEnvelope = getEnvelope(tiffFile);
 	  
@@ -359,11 +360,8 @@ public class TiffUtilsV2 {
 	          (cellSizeX + cellSizeY) / 2, (subsetResolution.getX() + subsetResolution.getY()) / 2, noData,
 	          stats);
 	      return new ImageAndMetadata(bufferedImage, metadata);
- 
 
-	   
-
-	  }
+  }
 
   /**
    * Method to read overviews of a TIF from the file metadata or from an external .ovr file
@@ -380,43 +378,43 @@ public class TiffUtilsV2 {
    * @throws IOException
    * @throws NoninvertibleTransformException
    */
-	  private static ImageAndMetadata readImage(File tiffFile, int overviewIndex, int indexStart, Point originalSize,
+  private static ImageAndMetadata readImage(File tiffFile, int overviewIndex, int indexStart, Point originalSize,
 	      Resolution originalCellSize, Envelope wholeImageEnvelope, Envelope viewportEnvelope, double noDataValue,
 	      Stats stats) throws IOException, NoninvertibleTransformException {
 
-	    ImageInputStream imageInputStream = ImageIO.createImageInputStream(tiffFile);
-	    Iterator<ImageReader> iterator = ImageIO.getImageReaders(imageInputStream);
+  	ImageInputStream imageInputStream = ImageIO.createImageInputStream(tiffFile);
+  	Iterator<ImageReader> iterator = ImageIO.getImageReaders(imageInputStream);
 
-	    if (iterator != null && iterator.hasNext()) {
+  	if (iterator != null && iterator.hasNext()) {
 
-	      ImageReader imageReader = iterator.next();
-	      imageReader.setInput(imageInputStream);
-	      for (int i = 0; i < imageReader.getNumImages(true); i++) {
-	        if (i + indexStart == overviewIndex) {
+  		ImageReader imageReader = iterator.next();
+  		imageReader.setInput(imageInputStream);
+  		for (int i = 0; i < imageReader.getNumImages(true); i++) {
+  			if (i + indexStart == overviewIndex) {
 
-	          Resolution subsetResolution = new Resolution(wholeImageEnvelope.getWidth() / imageReader.getWidth(i),
+  				Resolution subsetResolution = new Resolution(wholeImageEnvelope.getWidth() / imageReader.getWidth(i),
 	              wholeImageEnvelope.getHeight() / imageReader.getHeight(i));
 
-	          Rectangle imageSubset = RasterImageIO.getDrawingRectangle(imageReader.getWidth(i), imageReader.getHeight(i),
+  				Rectangle imageSubset = RasterImageIO.getDrawingRectangle(imageReader.getWidth(i), imageReader.getHeight(i),
 	              wholeImageEnvelope, viewportEnvelope, subsetResolution);
 
-	          BufferedImage bufferedImage;
-	          Envelope imagePartEnvelope;
-	          int imageWidth;
-	          int imageHeight;
-	          if (imageSubset == null) {
+  				BufferedImage bufferedImage;
+  				Envelope imagePartEnvelope;
+  				int imageWidth;
+  				int imageHeight;
+  				if (imageSubset == null) {
 	            bufferedImage = null;
 	            imagePartEnvelope = null;
 	            imageWidth = 0;
 	            imageHeight = 0;
-	          } else {
+  				} else {
 	            ImageReadParam imageReadParam = new ImageReadParam();
 	            imageReadParam.setSourceRegion(imageSubset);
 	            bufferedImage = imageReader.read(i, imageReadParam);
 	            imagePartEnvelope =  getImageSubsetEnvelope(wholeImageEnvelope, imageSubset, subsetResolution);
 	            imageWidth = bufferedImage.getWidth();
 	            imageHeight = bufferedImage.getHeight();
-	          }
+  				}
 
 //	                    double originalCellSize = subsetResolution.getX();
 //	                    int cellsCount = imageReader.getWidth(i) * imageReader.getHeight(i);
@@ -428,20 +426,23 @@ public class TiffUtilsV2 {
 //	                        stats = calculateStats(statsBufferedImage, noDataValue);
 //	                    }
 
-	          Metadata metadata = new Metadata(wholeImageEnvelope, imagePartEnvelope, originalSize,
+					Metadata metadata = new Metadata(wholeImageEnvelope, imagePartEnvelope, originalSize,
 	              new Point(imageWidth, imageHeight), (originalCellSize.getX() + originalCellSize.getY()) / 2,
 	              (subsetResolution.getX() + subsetResolution.getY()) / 2, noDataValue, stats);
+  				if (imageReader != null) {
+  					imageReader.dispose();
+			  	}
+  				if (imageInputStream != null) {
+				  	imageInputStream.close();
+			  	}
+  				return new ImageAndMetadata(bufferedImage, metadata);
+  			}
+  		}
 
-	          return new ImageAndMetadata(bufferedImage, metadata);
+  	}
+  	return null;
 
-	        }
-	      }
-
-	    }
-
-	    return null;
-
-	  }
+  }
 
 	  /**
 	   * Method to read Statistics of TIF file (if available) from  file metadata or
@@ -496,6 +497,7 @@ public class TiffUtilsV2 {
 	    return createStatsXml(tiffFile, noDataValue, auxXmlFile);
 
 	  }
+
       /**
        * Method to compute statistic of a TIF file and write as aux.xml file
        * @param tiffFile
