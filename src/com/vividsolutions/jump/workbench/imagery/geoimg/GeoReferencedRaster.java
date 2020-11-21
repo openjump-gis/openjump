@@ -164,7 +164,7 @@ public class GeoReferencedRaster extends GeoRaster {
       setEnvelope(tags);
     }
     // use the tiepoints as defined
-    else {
+    else if (fieldModelTiePoints.getType() == XTIFFField.TIFF_DOUBLE) {
       // Get the number of modeltiepoints
       // int numModelTiePoints = fieldModelTiePoints.getCount() / 6;
       // ToDo: alleen numModelTiePoints == 1 ondersteunen.
@@ -346,16 +346,18 @@ public class GeoReferencedRaster extends GeoRaster {
       // First, try to get the TIFF directory
       // Object dir = src.getProperty("tiff.directory");
       parseGeoTIFFDirectory(uri);
-      // still with us? must have succeeded
-      Logger.debug("XTIFF geo metadata fetched.");
-      return;
+      if (envModel_image != null) {
+        // still with us? must have succeeded
+        Logger.debug("XTIFF geo metadata fetched.");
+        return;
+      }
     } catch (ReferencedImageException e) {
       Logger.debug("XTIFF geo metadata unavailable: " + e.getMessage());
     }
 
     Logger.info("No georeference found! Will use default 0,0 placement.");
     JUMPWorkbench.getInstance().getFrame()
-        .warnUser(this.getClass().getName() + ".no-geo-reference-found");
+        .warnUser(this.getClass().getName() + ".no-georeference-found");
 
     // set up a default envelope
     double[] tags = new double[6];
