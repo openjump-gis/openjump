@@ -158,7 +158,7 @@
     (thanks to János Kis)
 
 2020-06-08 Giuseppe Aruta
-   Apdated JumpPrinter plugin to version 1.90:
+   Updated JumpPrinter plugin to version 1.90:
    Added a valid plugin to export the view to several file formats (Raster, 
    SVG, PDF). Export view to scale: style elements will be resized according
    to the selected scale. This plugin substitutes SaveViewAsRaster and 
@@ -171,7 +171,7 @@
 
 2020-06-02 Giuseppe Aruta
 	Upgraded patch of VertexSymbols plugin (ver. 0.20a)
-	Correct bug: styles didn't upgrade into the workbech view
+	Correct bug: styles didn't upgrade into the workbench view
 
 2020-06-02 Giuseppe Aruta
   * Updated CadPlan Jump Printer plugin to version 1.89

@@ -1,6 +1,86 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
   New Features
+  * Raster : Added RasterizePlugIn
+  * Graph : Added capabilities in GraphToolBox 0.8.0 (stream order computation)
+  * Raster : Raster Pixel Inspection. Added capability to retrieve a set of pixel values
+  * Symbolizing : Add an interiorBorder option to BasicStyle
+  * Sextante : Added new tools in SextanteGIS :
+    - Under "DEM Processing" menu (Raster analysis)
+    a) Map pits. Tool to map pits and sinks to verify the quality of a raster
+       for hydrological analysis
+    b) Remove single-cell pits. To remove single pits in order to speed sink
+       filling of a DEM
+    c) Remove sinks. Modified from "Sink Filling" Sextante tool, to solve
+       a bug (Schröder et al,, 2010, 6 International gvSIG Conference) and
+       to speed the process
+    - Under "Rasterization and interpolation" menu
+    d) Rasterize vector layer (2). Modified version of "Rasterize vector layer"
+       to solve a bug on rasterize polygons
+  * Symbolizing : Updated VertexSymbols plugin to version 0.20:
+        a) Extended capability of the plugin to feature classification by attribute value
+        b) Added capability to style linestrings with symbols at user-defined distance
+           between each other, offset to the line, and rotation according to segments orientation
+        c) better visual and command organization
+        d) activated capability to read/use pure WKT files as symbols (already embedded by Geoff)
+        e) integration with some basic style parameters (line/fill colors, global transparency,..)
+        f) improved panels, commands and GUI
+
+
+  Improvements
+  * Symbolizing : Updated CadTool plugin to ver. 1.0
+    - added capability to load Python console and tools
+  * Raster : Added gdal support for debian/ubuntu
+  * Database : Tested spatialite DB Datastore support on Ubuntu 20
+  * UI : Add multiple extension dirs support
+  * UI : FR #270 : added a FinishPanel to installer
+  * Raster : Make geoimg framework more robust if imageio-ext or gdal is missing
+  * Raster : Add jai-imageio.core (oss successor of sun's jai-core) to OJ CORE
+  * Raster : Prefer jai-imageio.core readers over all (primarily just TIF n BMP)
+  * Raster : Upgrade imageio-ext to latest greatest 1.3.2
+  * Raster : ImageLayerManagerPlugin shows actually used loader if none was preselected
+  * Database : Spatialite : Protection against null GeometryColumn when building spatial filter
+  * IO : reworked FlexDateParser speedup to enable caching selectively
+  * UI : improved component layout of ConnectionDescriptorPanel
+  * Database : update postgresql and sqlite jdbc drivers
+  * UI : EditOptionPanel : option to automatically open a feature attributes Info Frame after a new feature is created
+  * UI : Converted Sextante Toolbox as OpenJUMP Detached InternaFrame
+  * UI : Update and fixes BeanShell Editor PlugIn and dependencies
+  * UI : ojmapcoloring, added Hungarian, Polish translation
+  * Printing : Updated JumpPrinter plugin to version 1.90
+    - can export as raster, SVG, PDF (can replace SaveViewAsRaster and SaveViewAsSVG)
+    - works with new VertexSymbol plugin upgrades
+  * Symbolizing : CAD tools : a new saved block will be automatically available as a symbol
+  * Symbolizing : Fix VertexSymbols plugin (ver. 0.20a) : styles didn't upgrade into the workbench view
+  * UI : Fix text preview panel of TextEditor (text is now wrapped into multiple lines)
+  * WMS : upgrade libraries, fix encoding problem, save trusted url per session,
+         fix http auth on cert unverified requests, rework allow cert unverified dialog
+
+
+  Bug Fixes
+  * fix #512 about georeferencing (introduced by r6523)
+  * fix #503 0.5 pixel shift on raster display
+  * fix #508 : java2xml with setInteriorBorder/hasInteriorBorder property
+  * fix #382 : deleting warping vectors was not possible with incremental mode
+  * make toolbar panel wrap properly and align it left
+  * SpatialDBDSDriver : fix sqlite not loading mod_spatialite
+  * SpatialDBDSDriver : fix sqlite not loading mod_spatialite
+  * fix bug #451 Add image layer throwing NPE
+  * fix IllegalAccessException when using Sun TIFF reader with java9+
+  * fix #494 : fix serialization problem in csv driver -> v1.1.1
+  * fix #502 : fatal bug in ColorThemingStyle
+  * fix #385 RasterImageLayer was not cloneable
+  * fix #491 WMS getCapability without title
+  * fix a bug in spatialite loader making it incompatible with QGis export
+  * #497 : read dates from database as java.util.Date, not String
+  * reverted apache batik to 1.6 due to incompatibilities with printing extensions
+  * fix #492 GetFeatureInfo without certificate + encoding
+  * IO : Now tolerate an empty cpg file along with shapefile
+
+
+Version 1.14.1 release rev.6241 (released on 16. February 2020)
+
+  New Features
   * RasterLayerEditor can now apply a style to several layers (FR #263)
   * Implements FR #262 : copy info to clipboard (patch from Rashad)
   * FR#265 : add a plugin to make line from ordered points
