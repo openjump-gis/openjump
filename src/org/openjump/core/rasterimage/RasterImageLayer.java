@@ -17,12 +17,14 @@ import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.renderable.ParameterBlock;
+import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
 import javax.media.jai.JAI;
 
+import com.vividsolutions.jump.workbench.model.Disposable;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.util.metaData.MetaDataMap;
 import org.openjump.util.metaData.ObjectContainingMetaInformation;
@@ -56,7 +58,8 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  * @version $Rev: 2509 $
  * modified: [sstein]: 16.Feb.2009 changed logger-entries to comments, used frame.warnUser
  */
-public final class RasterImageLayer extends AbstractLayerable implements ObjectContainingMetaInformation {
+public final class RasterImageLayer extends AbstractLayerable
+        implements ObjectContainingMetaInformation, Disposable {
     
     protected static Blackboard blackboard = null;
     
@@ -1410,7 +1413,9 @@ public final class RasterImageLayer extends AbstractLayerable implements ObjectC
     
     public void dispose() {
         // TODO: probably a good idea to remove resources when the layer is closed up
-        // dunno what is needed to clean up Sextante though, hence leave it for now
+        // TiffUtilsV2 contains a cache to avoid reading image files again and again
+        // but which can hold file lock for ever if entries are not removed.
+        TiffUtilsV2.removeFromGeoRastercache(new File(imageFileName));
     }
            
     public Double getCellValue(Coordinate coordinate, int band) throws IOException {

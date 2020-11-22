@@ -40,8 +40,11 @@ import com.vividsolutions.jump.workbench.imagery.geoimg.GeoReferencedRaster;
 public class TiffUtilsV2 {
 
   // a File -> RenderedOp cache mapping to prevent recreating inputs for the same file
-  private static WeakHashMap<File,GeoReferencedRaster> geoRasterCache = new WeakHashMap<File,GeoReferencedRaster>();
+  private static WeakHashMap<File,GeoReferencedRaster> geoRasterCache = new WeakHashMap<>();
 
+	public static void removeFromGeoRastercache(File file) {
+		geoRasterCache.remove(file);
+	}
 
   public static RenderedOp getRenderedOp(File tiffFile) throws IOException {
     GeoReferencedRaster geoRaster = getGeoReferencedRaster(tiffFile);
