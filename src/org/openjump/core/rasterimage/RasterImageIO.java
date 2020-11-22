@@ -205,16 +205,6 @@ public class RasterImageIO {
 		}
 		else if (filenameOrURL.toLowerCase().endsWith(".tif")
 				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
-//			GeoReferencedRaster geoRaster;
-//			RenderedOp  renderedOp;
-//			try {
-//				geoRaster = new  GeoReferencedRaster(new File(filenameOrURL).toURI().toString());
-//		 renderedOp = geoRaster.getImage();
-//			} catch (ReferencedImageException e) {
-//				// TODO Auto-generated catch block
-//		 renderedOp = JAI.create("fileload", filenameOrURL);
-//			}
-//			return renderedOp.getAsBufferedImage(subset, null).getData();	
 
         return TiffUtilsV2.getRenderedOp(new File(filenameOrURL)).getAsBufferedImage(subset, null).getData();
 

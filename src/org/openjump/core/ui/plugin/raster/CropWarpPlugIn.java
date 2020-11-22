@@ -80,18 +80,15 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     JTextField jTextField_RasterOut = new JTextField();
     JTextField jTextField_RasterIn = new JTextField();
     private JPanel cropPanel;
-    private RasterImageLayer rLayer;
-    private JComboBox<String> comboBox = new JComboBox<String>();
-    private JComboBox<String> cropComboBox = new JComboBox<String>();
-    private JComboBox<Object> layerComboBox = new JComboBox<Object>();
-    private JComboBox<RasterImageLayer> layerableComboBox = new JComboBox<RasterImageLayer>();
+    private String rLayerName;
+    private JComboBox<String> comboBox = new JComboBox<>();
+    private JComboBox<String> cropComboBox = new JComboBox<>();
+    private JComboBox<Object> layerComboBox = new JComboBox<>();
     private String ACTION;
     private String CROP;
     private String path;
     Envelope envWanted = new Envelope();
     Envelope fix = new Envelope();
-    GenericRasterAlgorithm IO = new GenericRasterAlgorithm();
-    List<RasterImageLayer> fLayers = new ArrayList<RasterImageLayer>();
     private MultiInputDialog dialog;
     public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
     private JPanel coordsPanel;
@@ -165,17 +162,24 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
 
     private void setDialogValues(PlugInContext context) throws IOException {
         dialog.setSideBarDescription(CROP_RASTER_TIP);
-        if (!context.getLayerNamePanel().selectedNodes(RasterImageLayer.class)
+        List<RasterImageLayer> imageLayers = context.getLayerManager().getRasterImageLayers();
+        RasterImageLayer rLayer;
+        if (imageLayers.contains(rLayerName)) {
+            rLayer = imageLayers.get(imageLayers.indexOf(rLayerName));
+        }
+        else if (!context.getLayerNamePanel().selectedNodes(RasterImageLayer.class)
                 .isEmpty()) {
             rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(
                     context, RasterImageLayer.class);
-        } else {
+        }
+        else {
             rLayer = context.getTask().getLayerManager()
                     .getLayerables(RasterImageLayer.class).get(0);
         }
-        fLayers = context.getTask().getLayerManager()
+        List<RasterImageLayer> fLayers = context.getTask().getLayerManager()
                 .getLayerables(RasterImageLayer.class);
-        layerableComboBox = dialog.addLayerableComboBox(CLAYER, rLayer, "",
+        JComboBox<RasterImageLayer> layerableComboBox =
+                dialog.addLayerableComboBox(CLAYER, rLayer, "",
                 fLayers);
         layerableComboBox.setSize(200,
                 layerableComboBox.getPreferredSize().height);
@@ -186,7 +190,7 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
                 dialog.repaint();
             }
         });
-        final ArrayList<String> srsArray = new ArrayList<String>();
+        final ArrayList<String> srsArray = new ArrayList<>();
         srsArray.add(CROP_RASTER);
         srsArray.add(WARP_RASTER);
         comboBox = dialog.addComboBox(ACTION_LABEL, srsArray.get(0), srsArray,
@@ -223,14 +227,14 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     } };
 
     private void getDialogValues(MultiInputDialog dialog) {
-        rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
+        rLayerName = dialog.getLayerable(CLAYER).getName();
         ACTION = dialog.getText(ACTION_LABEL);
         CROP = cropComboBox.getSelectedItem().toString();
         getCroppedEnvelope();
         path = getOutputFilePath();
         final int i = path.lastIndexOf('.');
         if (i > 0) {
-            path = path.substring(0, path.length() - path.length() + i);
+            path = path.substring(0, i);
         }
     }
 
@@ -257,6 +261,8 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
         monitor.report(PROCESSING);
         reportNothingToUndoYet(context);
         final File outFile = FileUtil.addExtensionIfNone(new File(path), "tif");
+        RasterImageLayer rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
+        GenericRasterAlgorithm IO = new GenericRasterAlgorithm();
         if (ACTION.equals(CROP_RASTER)) {
 
             IO.save_CropToEnvelope(outFile, rLayer, fix);
@@ -271,12 +277,12 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
         } catch (final RuntimeException e1) {
         }
         IO.load(outFile, catName);
-        return;
     }
 
     private void getCroppedEnvelope() {
         envWanted = new Envelope();
         fix = new Envelope();
+        RasterImageLayer rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
         if (CROP.equals(LAYER)) {
             final Layerable slayer = (Layerable) layerComboBox
                     .getSelectedItem();
@@ -327,15 +333,14 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     }
 
     public JPanel createOutputFilePanel(FileNameExtensionFilter filter) {
-        JPanel jPanel = new JPanel(new GridBagLayout());
-        jPanel = new javax.swing.JPanel();
+        JPanel jPanel = new javax.swing.JPanel();
         jTextField_RasterOut = new JTextField();
         final JButton jButton_Dir = new JButton();
         jTextField_RasterOut.setText("");
         jButton_Dir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                File outputPathFile = null;
+                File outputPathFile;
                 final JFileChooser chooser = new GUIUtil.FileChooserWithOverwritePrompting();
                 chooser.setDialogTitle(getName());
                 chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -367,15 +372,14 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
                 "asc", "bil", "bip", "bsq", "bmp", "ecw", "flt", "gif", "gis",
                 "grd", "img", "jpg", "jpeg", "jp2", "j2k", "lan", "map", "mpr",
                 "mpl", "pdf", "sid", "raw", "xyz", "sid", "tiff", "tif" });
-        JPanel jPanel = new JPanel(new GridBagLayout());
-        jPanel = new javax.swing.JPanel();
+        JPanel jPanel = new javax.swing.JPanel();
         jTextField_RasterIn = new JTextField();
         final JButton jButton_Dir = new JButton();
         jTextField_RasterIn.setText("");
         jButton_Dir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                File outputPathFile = null;
+                File outputPathFile;
                 final JFileChooser chooser = new GUIUtil.FileChooserWithOverwritePrompting();
                 chooser.setDialogTitle(getName());
                 chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
