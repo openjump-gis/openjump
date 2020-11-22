@@ -1,6 +1,6 @@
 package org.geotiff.image.jai;
 
-import org.geotiff.image.KeyRegistry;
+import com.vividsolutions.jump.workbench.Logger;
 import org.libtiff.jai.codec.XTIFFDirectory;
 import org.libtiff.jai.codec.XTIFFField;
 import org.libtiff.jai.codec.XTIFF;
@@ -43,14 +43,14 @@ implements java.io.Serializable {
    *   TIFF file that are not part of the normal sequence of IFDs.
    */
 
-   public GeoTIFFDirectory(SeekableStream stream,
-                     long ifd_offset)
-              throws java.io.IOException
-   {
-	super(stream,ifd_offset);
-	readGeoKeys();
-	log("GeoTIFFDirectory constructor success.");
-   }
+	public GeoTIFFDirectory(SeekableStream stream,
+													long ifd_offset)
+					throws java.io.IOException
+	{
+		super(stream,ifd_offset);
+		readGeoKeys();
+		log("GeoTIFFDirectory constructor success.");
+	}
 
   /**
    * Constructs a GeoTIFFDirectory from a SeekableStream. 
@@ -204,11 +204,15 @@ implements java.io.Serializable {
 	 * populates the geoKeyIndex table from the values stored in
 	 * the current TIFF fields.
 	 */
-   private void readGeoKeys() throws java.io.IOException {
+	private void readGeoKeys() throws java.io.IOException {
 
-	  // read in the keys
-	 XTIFFField geoKeyTag=getField(XTIFF.TIFFTAG_GEO_KEY_DIRECTORY);
-	 if (geoKeyTag !=null) {
+		// read in the keys
+	  XTIFFField geoKeyTag=getField(XTIFF.TIFFTAG_GEO_KEY_DIRECTORY);
+	  if (geoKeyTag != null) {
+	 	if (geoKeyTag.getType() != XTIFFField.TIFF_SHORT) {
+			Logger.warn("GeoKeyDirectoryTag (34735) cannot be read : it is not of type SHORT");
+			return;
+		}
 		char[] keys = geoKeyTag.getAsChars();
 
 		// Set up header info
