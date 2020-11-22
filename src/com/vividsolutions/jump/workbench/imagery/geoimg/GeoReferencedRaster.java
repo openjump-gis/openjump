@@ -433,11 +433,9 @@ public class GeoReferencedRaster extends GeoRaster {
     coorModel.x = modelULPixelCenter.x
         + (coorRaster.x - rasterULPixelCenter.x)
         * dblModelUnitsPerRasterUnit_X;
-    System.out.println("" + modelULPixelCenter.x + " + (" + coorRaster.x + "-" + rasterULPixelCenter.x + ")*" + dblModelUnitsPerRasterUnit_X + " = " + coorModel.x);
     coorModel.y = modelULPixelCenter.y
         + (coorRaster.y - rasterULPixelCenter.y)
         * dblModelUnitsPerRasterUnit_Y;
-    System.out.println("" + modelULPixelCenter.y + " + (" + coorRaster.y + "-" + rasterULPixelCenter.y + ")*" + dblModelUnitsPerRasterUnit_Y + " = " + coorModel.y);
     coorModel.z = 0;
 
     return coorModel;
