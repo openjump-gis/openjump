@@ -32,6 +32,7 @@ package com.vividsolutions.jump.workbench.imagery.geoimg;
  * www.vividsolutions.com
  */
 
+import com.vividsolutions.jump.I18N;
 import it.geosolutions.imageio.core.CoreCommonImageMetadata;
 import it.geosolutions.imageio.gdalframework.GDALImageReaderSpi;
 import it.geosolutions.imageio.gdalframework.GDALUtilities;
@@ -357,7 +358,7 @@ public class GeoReferencedRaster extends GeoRaster {
 
     Logger.info("No georeference found! Will use default 0,0 placement.");
     JUMPWorkbench.getInstance().getFrame()
-        .warnUser(this.getClass().getName() + ".no-georeference-found");
+        .warnUser(I18N.get(this.getClass().getName() + ".no-georeference-found"));
 
     // set up a default envelope
     double[] tags = new double[6];
