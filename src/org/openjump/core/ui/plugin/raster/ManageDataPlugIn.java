@@ -109,7 +109,7 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
     private final static String CHECK_FILE = I18N
             .get("plugin.EnableCheckFactory.at-least-one-single-banded-layer-should-exist");
     private final String NO_OVERWRITE = I18N
-            .get("ui.GenericNames.cannot-overwrite");
+            .get("ui.GenericNames.cannot-overwrite-input-layer");
     private final ImageIcon icon16 = IconLoader
             .icon("fugue/folder-horizontal-open_16.png");
     private JTextField target_nodata, source_nodata, lv_field, uv_field, nd,

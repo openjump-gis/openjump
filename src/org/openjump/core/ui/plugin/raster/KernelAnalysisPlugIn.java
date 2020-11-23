@@ -64,7 +64,7 @@ public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
     private final String PROCESSING = I18N
             .get("jump.plugin.edit.NoderPlugIn.processing");
     private final String NO_OVERWRITE = I18N
-            .get("ui.GenericNames.cannot-overwrite");
+            .get("ui.GenericNames.cannot-overwrite-input-layer");
     private JComboBox<RasterImageLayer> layerableComboBox = new JComboBox<RasterImageLayer>();
     private RasterImageLayer rLayer;
     private final ImageIcon icon16 = IconLoader

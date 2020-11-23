@@ -107,7 +107,7 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
 
     private final String CHECK = RasterMenuNames.Check_field;
     private final String NO_OVERWRITE = I18N
-            .get("ui.GenericNames.cannot-overwrite");
+            .get("ui.GenericNames.cannot-overwrite-input-layer");
     private final String ACTION_LABEL = RasterMenuNames.Choose_an_action;
 
     private void updateGUI1(ActionEvent evt, MultiInputDialog dialog) {
