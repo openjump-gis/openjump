@@ -20,7 +20,6 @@
 package org.openjump.core.ui.plugin.raster;
 
 import static com.vividsolutions.jump.I18N.get;
-import it.betastudio.adbtoolbox.libs.FileOperations;
 
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
@@ -74,6 +73,8 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
+import it.betastudio.adbtoolbox.libs.FileOperations;
+
 public class ManageDataPlugIn extends ThreadedBasePlugIn {
     /**
      * 
@@ -107,7 +108,8 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
             .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.select-one-band");
     private final static String CHECK_FILE = I18N
             .get("plugin.EnableCheckFactory.at-least-one-single-banded-layer-should-exist");
-
+    private final String NO_OVERWRITE = I18N
+            .get("ui.GenericNames.cannot-overwrite");
     private final ImageIcon icon16 = IconLoader
             .icon("fugue/folder-horizontal-open_16.png");
     private JTextField target_nodata, source_nodata, lv_field, uv_field, nd,
@@ -135,6 +137,7 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
     private Integer dimension;
     Envelope envWanted = new Envelope();
     Envelope fix = new Envelope();
+    private MultiInputDialog dialog;
 
     private final String CLAYER = I18N.get("ui.GenericNames.Source-Layer");
     private final String OUTPUT_FILE = I18N
@@ -300,8 +303,15 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
     private final EnableCheck[] saveCheck = new EnableCheck[] { new EnableCheck() {
         @Override
         public String check(JComponent component) {
+        	  rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
+            return jTextField_RasterOut.getText().equals(rLayer.getImageFileName()) ? 
+            		NO_OVERWRITE : null;
+        }
+    },  new EnableCheck() {
+        @Override
+        public String check(JComponent component) {
             return jTextField_RasterOut.getText().isEmpty() ? CHECK
-                    .concat(": ").concat(OUTPUT_FILE) : null;
+                    .concat(OUTPUT_FILE) : null;
         }
     } };
 
@@ -323,7 +333,7 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
     @Override
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
-        final MultiInputDialog dialog = new MultiInputDialog(
+        dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(), NAME, true);
         setDialogValues(dialog, context);
         if (fLayers.isEmpty()) {
