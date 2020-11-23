@@ -143,7 +143,7 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
             .get("jump.plugin.edit.NoderPlugIn.processing");
     private final String NAME = I18N
             .get("ui.plugin.raster.ManageDataPlugIn.Name");
-    private final String CHECK = I18N.get("ui.GenericNames.chech-field");
+    private final String CHECK = I18N.get("ui.GenericNames.check-field");
     private final String ACTION = I18N.get("ui.GenericNames.choose-an-action");
 
     private final String CHANGE_NODATA_TIP = I18N

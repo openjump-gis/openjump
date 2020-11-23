@@ -92,7 +92,7 @@ public class RasterizePlugIn extends AbstractPlugIn
 	    JTextField jTextField_RasterOut = new JTextField();
 	    private final String OUTPUT_FILE = I18N
 	            .get("driver.DriverManager.file-to-save");
-	    private final String CHECK = I18N.get("ui.GenericNames.chech-field");
+	    private final String CHECK = I18N.get("ui.GenericNames.check-field");
 	    private final static String SOURCE_LAYER= I18N.get("ui.GenericNames.Source-Layer");
 	    private final static String TARGET_LAYER = I18N
 	            .get("ui.GenericNames.Target-Layer");

@@ -19,7 +19,7 @@ public class RasterMenuNames {
     public static String Choose_an_action = I18N
             .get("ui.GenericNames.choose-an-action");
     public static String Check_field = I18N
-            .get("ui.GenericNames.chech-field");
+            .get("ui.GenericNames.check-field");
     public static String PROCESSING = I18N
             .get("jump.plugin.edit.NoderPlugIn.processing");
 

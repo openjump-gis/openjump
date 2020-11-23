@@ -56,7 +56,7 @@ public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
     private final String CLAYER = I18N.get("ui.GenericNames.Source-Layer");
     private final String OUTPUT_FILE = I18N
             .get("driver.DriverManager.file-to-save");
-    private final String CHECK = I18N.get("ui.GenericNames.chech-field");
+    private final String CHECK = I18N.get("ui.GenericNames.check-field");
     private final String KernelAnalysis = I18N
             .get("ui.plugin.raster.KernelAnalysisPlugIn.Name");
     private final String defaultKernels = I18N
