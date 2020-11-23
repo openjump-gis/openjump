@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.NoninvertibleTransformException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ import org.openjump.core.rasterimage.algorithms.GenericRasterAlgorithm;
 import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -79,7 +77,6 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     JTextField jTextField_RasterOut = new JTextField();
     JTextField jTextField_RasterIn = new JTextField();
     private JPanel cropPanel;
-    private String rLayerName;
     private JComboBox<String> comboBox = new JComboBox<>();
     private JComboBox<String> cropComboBox = new JComboBox<>();
     private JComboBox<Object> layerComboBox = new JComboBox<>();
@@ -90,7 +87,7 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     Envelope fix = new Envelope();
     private MultiInputDialog dialog;
     public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
-    private JPanel coordsPanel;
+    private RasterImageLayer rLayer;
 
     private final String NAME = I18N
             .get("ui.plugin.raster.CropWarpPlugIn.Name");
@@ -107,8 +104,6 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     private final String TARGET_LAYER = I18N
             .get("ui.plugin.raster.CropWarpPlugIn.target-layer");
 
-    private final String NO_INTERSECTION = I18N
-            .get("ui.plugin.raster.CropWarpPlugIn.no-intersection");
 
     private final String CHECK = RasterMenuNames.Check_field;
     private final String NO_OVERWRITE = I18N
@@ -163,12 +158,7 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
 
     private void setDialogValues(PlugInContext context) throws IOException {
         dialog.setSideBarDescription(CROP_RASTER_TIP);
-        List<RasterImageLayer> imageLayers = context.getLayerManager().getRasterImageLayers();
-       
-        if (imageLayers.contains(rLayerName)) {
-            rLayer = imageLayers.get(imageLayers.indexOf(rLayerName));
-        }
-        else if (!context.getLayerNamePanel().selectedNodes(RasterImageLayer.class)
+       if (!context.getLayerNamePanel().selectedNodes(RasterImageLayer.class)
                 .isEmpty()) {
             rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(
                     context, RasterImageLayer.class);
@@ -217,7 +207,7 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
         public String check(JComponent component) {
         	  rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
             return jTextField_RasterOut.getText().equals(rLayer.getImageFileName()) ? 
-            		"Cannot overwrite the input file" : null;
+            		NO_OVERWRITE : null;
         }
     },  new EnableCheck() {
         @Override
@@ -228,10 +218,9 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     } };
 
     
-    private RasterImageLayer rLayer;
+
     private void getDialogValues(MultiInputDialog dialog) {
-    	  rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
-        rLayerName = dialog.getLayerable(CLAYER).getName();
+    	rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
         ACTION = dialog.getText(ACTION_LABEL);
         CROP = cropComboBox.getSelectedItem().toString();
         getCroppedEnvelope();
@@ -415,104 +404,8 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     public String getName() {
         return NAME;
     }
-
-    public static final String MINX_KEY = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.minx");
-    public static final String MAXX_KEY = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxx");
-    public static final String MINY_KEY = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.miny");
-    public static final String MAXY_KEY = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxy");
-    private final JLabel minxLabel = new JLabel();
-    public static JTextField minxTextField = new JTextField();
-    private final JLabel maxxLabel = new JLabel();
-    public static JTextField maxxTextField = new JTextField();
-    private final JLabel minyLabel = new JLabel();
-    public static JTextField minyTextField = new JTextField();
-    private final JLabel maxyLabel = new JLabel();
-    public static JTextField maxyTextField = new JTextField();
-
-    private JPanel jcoordsPanel(MultiInputDialog dialog) {
-        coordsPanel = new JPanel(new GridBagLayout());
-        minxTextField.setPreferredSize(new Dimension(100, 21));
-        minxTextField.setCaretPosition(minxTextField.getText().length());
-        maxxTextField.setPreferredSize(new Dimension(100, 21));
-        maxxTextField.setCaretPosition(maxxTextField.getText().length());
-        minyTextField.setPreferredSize(new Dimension(100, 21));
-        minyTextField.setCaretPosition(minyTextField.getText().length());
-        maxyTextField.setPreferredSize(new Dimension(100, 21));
-        maxyTextField.setCaretPosition(maxyTextField.getText().length());
-
-        minxLabel.setText("X:");
-        maxxLabel.setText("X:");
-        minyLabel.setText("Y:");
-        maxyLabel.setText("Y:");
-
-        final JButton ulbutton = new JButton();
-        ulbutton.setIcon(IconLoader.icon("Select.gif"));
-        ulbutton.setPreferredSize(new Dimension(22, 22));
-        ulbutton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    final Coordinate c1 = frame
-                            .getContext()
-                            .getLayerViewPanel()
-                            .getViewport()
-                            .toModelCoordinate(
-                                    frame.getContext().getLayerViewPanel()
-                                            .getLastClickedPoint());
-                    minxTextField.setText(Double.toString(c1.x));
-                    maxyTextField.setText(Double.toString(c1.y));
-                    dialog.pack();
-                    dialog.repaint();
-                } catch (final NoninvertibleTransformException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-
-            }
-        });
-
-        final JButton lrbutton = new JButton();
-        lrbutton.setIcon(IconLoader.icon("Select.gif"));
-        lrbutton.setPreferredSize(new Dimension(22, 22));
-        ulbutton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    final Coordinate c2 = frame
-                            .getContext()
-                            .getLayerViewPanel()
-                            .getViewport()
-                            .toModelCoordinate(
-                                    frame.getContext().getLayerViewPanel()
-                                            .getLastClickedPoint());
-                    maxxTextField.setText(Double.toString(c2.x));
-                    minyTextField.setText(Double.toString(c2.y));
-                    dialog.pack();
-                    dialog.repaint();
-                } catch (final NoninvertibleTransformException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-
-            }
-        });
-
-        FormUtils.addRowInGBL(coordsPanel, 1, 0, new ImageIcon(getClass()
-                .getResource("lowright.png")), minxLabel, minxTextField,
-                maxyLabel, maxyTextField);
-        FormUtils.addRowInGBL(coordsPanel, 1, 5, lrbutton);
-
-        FormUtils.addRowInGBL(coordsPanel, 0, 0, new ImageIcon(getClass()
-                .getResource("upleft.png")), maxxLabel, maxxTextField,
-                minyLabel, minyTextField);
-        FormUtils.addRowInGBL(coordsPanel, 0, 5, ulbutton);
-        return coordsPanel;
-
-    }
+ 
+ 
 
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
