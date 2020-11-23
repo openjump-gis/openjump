@@ -1,7 +1,5 @@
 package org.openjump.core.ui.plugin.raster;
 
-import it.betastudio.adbtoolbox.libs.FileOperations;
-
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -48,6 +46,8 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
+import it.betastudio.adbtoolbox.libs.FileOperations;
+
 public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
 
     public static String dimension = I18N
@@ -63,7 +63,8 @@ public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
             .get("ui.plugin.raster.KernelAnalysisPlugIn.default-kernels");
     private final String PROCESSING = I18N
             .get("jump.plugin.edit.NoderPlugIn.processing");
-
+    private final String NO_OVERWRITE = I18N
+            .get("ui.GenericNames.cannot-overwrite");
     private JComboBox<RasterImageLayer> layerableComboBox = new JComboBox<RasterImageLayer>();
     private RasterImageLayer rLayer;
     private final ImageIcon icon16 = IconLoader
@@ -72,7 +73,7 @@ public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
     private JComboBox<String> kernelComboBox = new JComboBox<String>();
 
     JTextField jTextField_RasterOut = new JTextField();
-
+    private MultiInputDialog dialog;
     private JScrollPane jScrollPane1;
     private JTable jTable;
     private DefaultTableModel dtm = null;
@@ -268,7 +269,7 @@ public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
     @Override
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
-        final MultiInputDialog dialog = new MultiInputDialog(
+      dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(), KernelAnalysis, true);
         setDialogValues(dialog, context);
         if (fLayers.isEmpty()) {
@@ -305,6 +306,13 @@ public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
     }
 
     private final EnableCheck[] saveCheck = new EnableCheck[] { new EnableCheck() {
+        @Override
+        public String check(JComponent component) {
+        	  rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
+            return jTextField_RasterOut.getText().equals(rLayer.getImageFileName()) ? 
+            		NO_OVERWRITE : null;
+        }
+    },  new EnableCheck() {
         @Override
         public String check(JComponent component) {
             return jTextField_RasterOut.getText().isEmpty() ? CHECK
