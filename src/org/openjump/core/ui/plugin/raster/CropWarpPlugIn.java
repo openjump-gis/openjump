@@ -1,7 +1,5 @@
 package org.openjump.core.ui.plugin.raster;
 
-import it.betastudio.adbtoolbox.libs.FileOperations;
-
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -60,6 +58,7 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 import de.latlon.deejump.wfs.jump.WFSLayer;
+import it.betastudio.adbtoolbox.libs.FileOperations;
 
 public class CropWarpPlugIn extends ThreadedBasePlugIn {
 
@@ -112,6 +111,8 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
             .get("ui.plugin.raster.CropWarpPlugIn.no-intersection");
 
     private final String CHECK = RasterMenuNames.Check_field;
+    private final String NO_OVERWRITE = I18N
+            .get("ui.GenericNames.cannot-overwrite");
     private final String ACTION_LABEL = RasterMenuNames.Choose_an_action;
 
     private void updateGUI1(ActionEvent evt, MultiInputDialog dialog) {
@@ -163,7 +164,7 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     private void setDialogValues(PlugInContext context) throws IOException {
         dialog.setSideBarDescription(CROP_RASTER_TIP);
         List<RasterImageLayer> imageLayers = context.getLayerManager().getRasterImageLayers();
-        RasterImageLayer rLayer;
+       
         if (imageLayers.contains(rLayerName)) {
             rLayer = imageLayers.get(imageLayers.indexOf(rLayerName));
         }
@@ -214,19 +215,22 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     private final EnableCheck[] saveCheck = new EnableCheck[] { new EnableCheck() {
         @Override
         public String check(JComponent component) {
+        	  rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
+            return jTextField_RasterOut.getText().equals(rLayer.getImageFileName()) ? 
+            		"Cannot overwrite the input file" : null;
+        }
+    },  new EnableCheck() {
+        @Override
+        public String check(JComponent component) {
             return jTextField_RasterOut.getText().isEmpty() ? CHECK
                     .concat(OUTPUT_FILE) : null;
         }
     } };
 
-    private final EnableCheck[] cropCheck = new EnableCheck[] { new EnableCheck() {
-        @Override
-        public String check(JComponent component) {
-            return fix.isNull() ? NO_INTERSECTION : null;
-        }
-    } };
-
+    
+    private RasterImageLayer rLayer;
     private void getDialogValues(MultiInputDialog dialog) {
+    	  rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
         rLayerName = dialog.getLayerable(CLAYER).getName();
         ACTION = dialog.getText(ACTION_LABEL);
         CROP = cropComboBox.getSelectedItem().toString();
@@ -261,7 +265,6 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
         monitor.report(PROCESSING);
         reportNothingToUndoYet(context);
         final File outFile = FileUtil.addExtensionIfNone(new File(path), "tif");
-        RasterImageLayer rLayer = (RasterImageLayer) dialog.getLayerable(CLAYER);
         GenericRasterAlgorithm IO = new GenericRasterAlgorithm();
         if (ACTION.equals(CROP_RASTER)) {
 
