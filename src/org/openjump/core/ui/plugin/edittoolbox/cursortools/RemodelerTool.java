@@ -170,6 +170,7 @@ public class RemodelerTool extends MultiClickTool {
     newPath = clipNewPath(selection, newPath);
 
     // Compute the location of the insertion points in selection
+    // (i.e. location of the first and last points of the clipped newPath)
     LocationIndexedLine selectionIndexedLine = new LocationIndexedLine(selection);
     LinearLocation loc1 = selectionIndexedLine.indexOf(newPath.getStartPoint().getCoordinate());
     LinearLocation loc2 = selectionIndexedLine.indexOf(newPath.getEndPoint().getCoordinate());
@@ -229,6 +230,7 @@ public class RemodelerTool extends MultiClickTool {
     newPath = clipNewPath(selection, newPath);
 
     // Compute the location of the insertion points in selection
+    // (i.e. location of the first and last points of the clipped newPath)
     LocationIndexedLine selectionIndexedLine = new LocationIndexedLine(selection);
     LinearLocation loc1 = selectionIndexedLine.indexOf(newPath.getStartPoint().getCoordinate());
     LinearLocation loc2 = selectionIndexedLine.indexOf(newPath.getEndPoint().getCoordinate());
@@ -254,7 +256,8 @@ public class RemodelerTool extends MultiClickTool {
     return selection.getFactory().createLineString(list.toCoordinateArray());
   }
 
-
+  // Extract the useful part of the newPath, from the first to the last
+  // intersection with the selection
   private LineString clipNewPath(LineString selection, LineString newPath) {
     Coordinate c1 = firstIntersectionAlongNewPath(selection, newPath);
     Coordinate c2 = firstIntersectionAlongNewPath(selection, (LineString)newPath.reverse());
@@ -265,7 +268,7 @@ public class RemodelerTool extends MultiClickTool {
   }
 
 
-  // Walk along newPath from the start point and findthe first intersection with selection
+  // Walk along newPath from the start point and find the first intersection with selection
   private Coordinate firstIntersectionAlongNewPath(LineString selection, LineString newPath) {
     for (int i = 0 ; i < newPath.getNumPoints()-1 ; i++) {
       LineSegment newPathSegment = new LineSegment(newPath.getCoordinateN(i), newPath.getCoordinateN(i+1));
@@ -298,21 +301,24 @@ public class RemodelerTool extends MultiClickTool {
     return new GeometryFactory().createLineString(toArray(getCoordinates()));
   }
 
+  // Used to interpolate the two insertion points on the original LineString
   private double interpolateZ(LinearLocation loc, LineString lineString) {
     if (loc.getSegmentFraction()==0.0) {
       return lineString.getPointN(loc.getSegmentIndex()).getCoordinate().z;
     } else {
       double previousZ = lineString.getPointN(loc.getSegmentIndex()).getCoordinate().z;
       double nextZ = lineString.getPointN(loc.getSegmentIndex()+1).getCoordinate().z;
-      if (Double.isNaN(previousZ) && Double.isNaN(nextZ)) return Double.NaN;
-      else if (Double.isNaN(previousZ)) return nextZ;
-      else if (Double.isNaN(nextZ)) return previousZ;
+      if (Double.isNaN(previousZ) || Double.isNaN(nextZ)) return Double.NaN;
+      //else if (Double.isNaN(previousZ)) return nextZ;
+      //else if (Double.isNaN(nextZ)) return previousZ;
       else {
         return previousZ + (nextZ-previousZ)*loc.getSegmentFraction();
       }
     }
   }
 
+  // Used to interpolate z between indice start and indice end where start and end
+  // have valid values
   private void interpolateZbetweenIndices(LineString lineString, int start, int end) {
     double zi = lineString.getCoordinateN(start).z;
     double zj = lineString.getCoordinateN(end).z;
@@ -324,11 +330,13 @@ public class RemodelerTool extends MultiClickTool {
     double dz = zj-zi;
     double partialLength = 0;
     for (int i = start+1 ; i < end ; i++) {
-      partialLength += lineString.getPointN(i).distance(lineString.getPointN(i+1));
+      partialLength += lineString.getPointN(i-1).distance(lineString.getPointN(i));
       lineString.getPointN(i).getCoordinate().z = zi + dz * (partialLength/totalLength);
     }
   }
 
+  // Identify non null z along the lineString, and between two points
+  // with valid z, interpolate a z
   private void interpolateZ(LineString lineString) {
     int start = -1;
     for (int i = 0 ; i < lineString.getNumPoints() ; i++) {
