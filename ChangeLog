@@ -4,6 +4,10 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2020-11-25 mmichaud
+  * fix #516 modeler, z-interpolation was incorrect and transaction
+    management was error-prone
+
 2020-11-15 mmichaud
   * fix #512 about georeferencing (introduced by r6523)
   * fix #503 again (half-pixel shift)

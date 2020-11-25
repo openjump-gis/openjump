@@ -58,6 +58,7 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
 
 
   Bug Fixes
+  * fix #516 modeler : z-interpolation and transaction fix
   * fix #512 about georeferencing (introduced by r6523)
   * fix #503 0.5 pixel shift on raster display
   * fix #508 : java2xml with setInteriorBorder/hasInteriorBorder property
