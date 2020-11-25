@@ -84,9 +84,9 @@ public class RemodelerTool extends MultiClickTool {
                   context.getLayerViewPanel()
           );
           for (Feature featureSelected : selectedFeatures) {
-            geomSelected = featureSelected.getGeometry();
+            geomSelected = (Geometry)featureSelected.getGeometry().clone();
             newPath = getLineString();
-            Geometry newGeometry =geomSelected;
+            Geometry newGeometry = geomSelected;
             if ((geomSelected.isEmpty())) {
               continue;
             }
@@ -119,7 +119,6 @@ public class RemodelerTool extends MultiClickTool {
                 newGeometry = getNewLineString((LineString) geomSelected, newPath);
               }
               transaction.modifyFeatureGeometry(featureSelected, newGeometry);
-              featureSelected.setGeometry(newGeometry);
             }
             //else {// No intersection : don't modify the selected feature}
           }
