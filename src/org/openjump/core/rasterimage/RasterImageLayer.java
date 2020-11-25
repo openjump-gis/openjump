@@ -25,6 +25,7 @@ import java.util.UUID;
 import javax.media.jai.JAI;
 
 import com.vividsolutions.jump.workbench.model.Disposable;
+import org.apache.commons.imaging.Imaging;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.util.metaData.MetaDataMap;
 import org.openjump.util.metaData.ObjectContainingMetaInformation;
@@ -129,6 +130,7 @@ public final class RasterImageLayer extends AbstractLayerable
     //-- end
 
     private Metadata metadata;
+    private int bitsPerPixel = -1;
     
     private Stats stats;
     
@@ -275,7 +277,6 @@ public final class RasterImageLayer extends AbstractLayerable
         pb.addSource(im);
         pb.add(xScale);
         pb.add(yScale);
-        JAI.create("Scale", pb, null).getAsBufferedImage();
         // @TODO Try to replace JAI by Graphics2D after migration to 2.0
         //BufferedImage resizedImage =
         //        new BufferedImage((int)(im.getWidth()*xScale), (int)(im.getHeight()*yScale), im.getType());
@@ -347,11 +348,21 @@ public final class RasterImageLayer extends AbstractLayerable
                     
                 symbologyChanged = false;
                 this.setNeedToKeepImage(false);
+                if (bitsPerPixel == -1) {
+                    bitsPerPixel = Imaging.getImageInfo(new File(imageFileName)).getBitsPerPixel();
+                }
                 clearImageAndRaster(true);
-                if (getAvailRAM()-getCommittedMemory() < origImageWidth*origImageHeight*4 + getAvailRAM()*0.01) {
+                // Check that there is enough free memory for the image + 1% of available memory + 10Mb
+                if (getAvailRAM()-getCommittedMemory() <
+                        origImageWidth*origImageHeight*bitsPerPixel/8 + getAvailRAM()*0.01 + 10*1024*1024) {
                     layerViewPanel.getContext().warnUser("Low Memory : image " +
                             imageFileName + " will not be displayed");
+                    System.out.println("" + (getAvailRAM()-getCommittedMemory())/1024 + "kb < " +
+                            (origImageWidth*origImageHeight*bitsPerPixel/8)/1024 + "kb " +
+                            getAvailRAM()*0.01/1024 + "kb + 10240");
                     return null;
+                } else {
+                    System.out.println("Reload image");
                 }
                 // Load the part of the image intersecting the viewport and setting this.image
                 reLoadImage();
@@ -368,8 +379,8 @@ public final class RasterImageLayer extends AbstractLayerable
                 double scaledHeight = upperLeftCornerOfImage.getY() - lowerRightCornerOfImage.getY();
 
                 // Apply symbology to this.image
-                setImage(stretchImageValuesForDisplay());
                 imageToDraw = stretchImageValuesForDisplay();
+                setImage(imageToDraw);
 
                 //if(getCommittedMemory() + minRamToKeepFree < availRAM){
                     //setNeedToKeepImage(true); //so small images are not reloaded every time
@@ -497,7 +508,7 @@ public final class RasterImageLayer extends AbstractLayerable
         actualImageEnvelope = imageAndMetadata.getMetadata().getActualEnvelope();
         originalCellSize = imageAndMetadata.getMetadata().getOriginalCellSize();        
         actualCellSize = imageAndMetadata.getMetadata().getActualCellSize();
-        
+
         if(image != null) {
             setImage(image);
         }
