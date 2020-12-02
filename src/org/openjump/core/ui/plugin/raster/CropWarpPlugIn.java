@@ -358,43 +358,7 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
         return jPanel;
     }
 
-    public JPanel createInputFilePanel() {
-        final FileNameExtensionFilter filter;
-        filter = new FileNameExtensionFilter("GDAL raster", new String[] {
-                "asc", "bil", "bip", "bsq", "bmp", "ecw", "flt", "gif", "gis",
-                "grd", "img", "jpg", "jpeg", "jp2", "j2k", "lan", "map", "mpr",
-                "mpl", "pdf", "sid", "raw", "xyz", "sid", "tiff", "tif" });
-        JPanel jPanel = new javax.swing.JPanel();
-        jTextField_RasterIn = new JTextField();
-        final JButton jButton_Dir = new JButton();
-        jTextField_RasterIn.setText("");
-        jButton_Dir.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                File outputPathFile;
-                final JFileChooser chooser = new GUIUtil.FileChooserWithOverwritePrompting();
-                chooser.setDialogTitle(getName());
-                chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                chooser.setSelectedFile(FileOperations.lastVisitedFolder);
-                chooser.setDialogType(JFileChooser.SAVE_DIALOG);
-                GUIUtil.removeChoosableFileFilters(chooser);
-                chooser.setFileFilter(filter);
-                final int ret = chooser.showOpenDialog(null);
-                if (ret == JFileChooser.APPROVE_OPTION) {
-                    outputPathFile = chooser.getSelectedFile();
-                    jTextField_RasterIn.setText(outputPathFile.getPath()
-                            .concat(".tif"));
-                    FileOperations.lastVisitedFolder = outputPathFile;
-                }
-            }
-        });
-        jTextField_RasterIn.setEditable(false);
-        jButton_Dir.setIcon(icon16);
-        jTextField_RasterIn.setPreferredSize(new Dimension(250, 20));
-        FormUtils.addRowInGBL(jPanel, 3, 0, jTextField_RasterIn);
-        FormUtils.addRowInGBL(jPanel, 3, 1, jButton_Dir);
-        return jPanel;
-    }
+  
 
     public String getOutputFilePath() {
         return jTextField_RasterOut.getText();
