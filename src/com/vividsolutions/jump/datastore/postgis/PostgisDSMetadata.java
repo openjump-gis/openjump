@@ -17,7 +17,7 @@ public class PostgisDSMetadata extends SpatialDatabasesDSMetadata {
         datasetNameQuery = "SELECT DISTINCT f_table_schema, f_table_name FROM geometry_columns";
         defaultSchemaName = "public";
         spatialDbName = "PostGIS";
-        spatialExtentQuery1 = "SELECT ST_AsBinary(ST_Estimated_Extent( '%s', '%s', '%s' ))";
+        spatialExtentQuery1 = "SELECT ST_AsBinary(ST_EstimatedExtent( '%s', '%s', '%s' ))";
         // Nicolas Ribot: add double quotes for identifiers
         spatialExtentQuery2 = "SELECT ST_AsBinary(ST_Envelope(ST_Extent(\"%s\"))) FROM \"%s\".\"%s\"";
         geoColumnsQuery = "SELECT f_geometry_column, coord_dimension, srid, type FROM geometry_columns where f_table_schema='%s' and f_table_name = '%s'";

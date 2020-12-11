@@ -267,7 +267,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                     if (jdbcConn != null) jdbcConn.setAutoCommit(true);
                 }
                 // Adding vacuum analyze seems to be necessary to be able to use
-                // ST_Estimated_Extent on the newly created table
+                // ST_EstimatedExtent on the newly created table
                 //finalizeUpdate(conn);
             }
 
@@ -283,7 +283,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     /**
      * With some databases, it may be useful to do some cleaning after a big update.
      * Example : perform a vacuum analyze in PostgreSQL to compact database and to
-     * update statistics (needed by ST_Estimated_Extent function)
+     * update statistics (needed by ST_EstimatedExtent function)
      */
     @Deprecated // maybe much time consuming, to be driven by the server, not the client
     public abstract void finalizeUpdate(SpatialDatabasesDSConnection conn) throws Exception;

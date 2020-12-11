@@ -55,7 +55,7 @@ public class DynamicFeatureCollection implements FeatureCollection {
     currentQueryContext = myQueryContext;
 
     // [mmichaud 2013-10-20] remove the test using dataset envelope.
-    // Indeed, dataset envelope is generally computed using ST_Estimated_Extent,
+    // Indeed, dataset envelope is generally computed using ST_EstimatedExtent,
     // which is fast, but may be false.
     // Using a false envelope is not too severe as long as it is used in functions
     // like "zoom on the whole layer", but if used in this function, it can prevent
