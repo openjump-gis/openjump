@@ -77,8 +77,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  * @author sstein
- * 
+ * @deprecated see new MergePolygonsWithNeighbourPlugIn
  **/
+@Deprecated
 public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn{
 
 

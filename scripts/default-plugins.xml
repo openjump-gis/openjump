@@ -825,8 +825,11 @@
     <plug-in>
         org.openjump.core.ui.plugin.tools.MergeTwoSelectedPolygonsPlugIn
     </plug-in>
-    <plug-in>
+    <!--plug-in>
         org.openjump.core.ui.plugin.tools.analysis.onelayer.MergeSelectedPolygonsWithNeighbourPlugIn
+    </plug-in-->
+    <plug-in>
+        org.openjump.core.ui.plugin.tools.analysis.onelayer.MergePolygonsWithNeighbourPlugIn
     </plug-in>
     <plug-in>
         org.openjump.core.ui.plugin.tools.SplitPolygonPlugIn
