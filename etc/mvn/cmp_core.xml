@@ -20,9 +20,10 @@
         <exclude>com.vividsolutions:jts</exclude>
         <!-- exclude batik and js which is a batik dependency from CORE build -->
         <exclude>batik:*</exclude>
+        <exclude>rhino:js</exclude>
         <!-- exclude junit and hamcrest from CORE build -->
         <exclude>junit:*</exclude>
-        <exclude>hamcrest:*</exclude>
+        <exclude>org.hamcrest:hamcrest-core</exclude>
         <!-- exclude Apple stubs -->
         <exclude>*:orange-extensions</exclude>
       </excludes>

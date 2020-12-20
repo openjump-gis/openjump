@@ -24,8 +24,9 @@ as (Component name - License name - License file in "licenses/" folder or link)
  BeanShell - LGPL2.1 - lgpl-2.1.txt
  Buoy Framework - Public Domain
  Code2000 Unicode font - GPL2 - gpl-2.txt
- Commons Codec, Compress, IO, Lang, Logging
+ Commons Codec, Compress, Imaging, IO, Lang, Logging
    - Apache License Version 2.0 - apache_license-2.0.txt
+ CTS - GNU Lesser General Public License (GNU LGPL)
  Extensible-TIFF-JAI (xtiff jai) - MIT License - MIT-license.txt
  Icons (some original or based fully or in part on the following)
    FAMFAMFAM Silk by http://www.famfamfam.com - CC BY 2.5
@@ -57,7 +58,10 @@ as (Component name - License name - License file in "licenses/" folder or link)
  Logo
    Splash Logo designed by Paola Zanetti (paoladorileo<AT>gmail.com)
    Vertical Design used in the installer by Stefan Steiniger 2012
+ Netbeans swing outline - Apache License Version 2.0 - apache_license-2.0.txt
  Postgresql JDBC driver - Postgresql BSD license - postgresql-BSD_license.txt
+ Simple Logging Facade for Java (SLF4J) - MIT License - MIT-license.txt
+   lib/slf4j-api-*.jar,slf4j-api-*.jar
  Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
  XZ for Java - Public Domain
  Outline Swing Component by Netbeans.org, GPL2 - gpl-2.txt
@@ -75,12 +79,12 @@ Additionally PLUS distribution contains
 ( Component name (Author) - License name - License file in "licenses/" folder
    list of files and dependencies with license if any )
  Batik SVG Toolkit - Apache License Version 2.0 - apache_license-2.0.txt
- Geoarbores Vertex Symbols Collection (Giuseppe Aruta) - GPL2 - gpl-2.txt
-  lib/ext/VertexImages/*.wkt
  ECW and JPEG2000 Read Support based on ECW SDK 3.3 for 
   Windows x86/x64, Linux, Mac OSX with 32bit java runtime - 
   ERDAS ECW JPEG2000 SDK license - ecw license.txt
   lib/native/[os/]{jecw-*.jar,NCS*.dll,ermapper.jar}
+ Geoarbores Vertex Symbols Collection (Giuseppe Aruta) - GPL2 - gpl-2.txt
+   lib/ext/VertexImages/*.wkt
  ImageIO Ext - LGPL3 - lgpl-3.0.txt (imageio-ext-tiff removed)
   except the following dependencies/components:
   commons-codec, commons-io, commons-lang, commons-logging (see above)
@@ -95,8 +99,6 @@ Additionally PLUS distribution contains
  Postgis driver (postgis-*.jar) - LGPL2 - lgpl-2.1.txt
  MariaDB Connector/J (mariadb-java-client-*.jar) - LGPL2 - lgpl-2.1.txt
  MySQL Connector/J (mysql-connector-java-*-bin.jar) - GPL2 - gpl-2.txt
- Simple Logging Facade for Java (SLF4J) - MIT License - MIT-license.txt
-  lib/slf4j-api-*.jar,slf4j-api-*.jar
  Xerial SQLite JDBC driver (sqlite-jdbc-*.jar) - apache_license-2.0.txt
  
 and the following plugins
@@ -322,7 +324,6 @@ OpenJUMP project team (in alphabetical order):
   Giuseppe Aruta
   Jukka Rahkonen
   Michaël Michaud
-  Stefan Steiniger (on hiatus)
 
 Continuous or recent contributors (in alphabetical order):
   Nicolas Ribot
@@ -356,6 +357,7 @@ Past contributors (in alphabetical order):
   Paul Austin
   Pedro Doria Meunier
   Sascha Teichmann (intevation.de)
+  Stefan Steiniger (on hiatus)
   Stephan Holl
   Steve Tanner
   Ugo Taddei
