@@ -80,7 +80,7 @@ public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
     // First use StringWriter to make sure no errors occur before we touch the
     // original file -- we don't want to damage the original if an error occurs.
     // [Jon Aquino]
-    JInternalFrame taskWindow = frame.getActiveInternalFrame();
+    JInternalFrame taskWindow = frame.getActiveTaskFrame();
     task.setMaximized(taskWindow.isMaximum());
     if (taskWindow.isMaximum()) { // save the rectangle that it would be
                                   // restored to
