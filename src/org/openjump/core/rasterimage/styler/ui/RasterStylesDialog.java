@@ -57,9 +57,14 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         this.rasterImageLayer = rasterImageLayer;
         this.band = band;
         
-        initComponents();        
-        fixComponents();
-        
+        try {
+          initComponents();
+          fixComponents();
+        } catch (Exception e) {
+          // survive exception during initialization
+          Logger.error(e);
+          context.getErrorHandler().handleThrowable(e);
+        }
     }
 
 
