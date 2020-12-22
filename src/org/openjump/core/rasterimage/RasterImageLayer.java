@@ -550,7 +550,9 @@ public final class RasterImageLayer extends AbstractLayerable
                         } else {
                             rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
                         }
-                        rasterSymbology.addColorMapEntry(metadata.getNoDataValue(), transparentColor);
+                        if (!Double.isNaN(metadata.getNoDataValue())) {
+                            rasterSymbology.addColorMapEntry(metadata.getNoDataValue(), transparentColor);
+                        }
                         rasterSymbology.addColorMapEntry(metadata.getStats().getMin(0), Color.WHITE);
                         rasterSymbology.addColorMapEntry(metadata.getStats().getMax(0), Color.BLACK);
                         setSymbology(rasterSymbology);

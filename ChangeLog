@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2020-12-22 mmichaud
+  * fix #517 : raster styling of float32 image
+
 2020-12-21 ede
   * update finnish translation courtesy of Jukka Rahkonen
 

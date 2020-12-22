@@ -252,7 +252,7 @@ public class StretchedPanel extends javax.swing.JPanel {
         colorMapEntries = rasterSymbology.getColorMapEntries();
         
         // Convert values to relative values
-        ColorMapEntry[] relColMapEntries = new ColorMapEntry[rasterSymbology.getColorMapEntries().length - 1];
+        ColorMapEntry[] relColMapEntries = new ColorMapEntry[rasterSymbology.getColorMapEntries().length];
         double minVal = 0;
         if(rasterSymbology.getColorMapEntries()[0].getColor() != null) {
             minVal = rasterSymbology.getColorMapEntries()[0].getUpperValue();
@@ -260,10 +260,11 @@ public class StretchedPanel extends javax.swing.JPanel {
             minVal = rasterSymbology.getColorMapEntries()[1].getUpperValue();
         }
         double maxVal = rasterSymbology.getColorMapEntries()[rasterSymbology.getColorMapEntries().length-1].getUpperValue();
-        
+
+        relColMapEntries[0] = new ColorMapEntry(0, rasterSymbology.getColorMapEntries()[0].getColor());
         for(int i=1; i<rasterSymbology.getColorMapEntries().length; i++) {
             double relVal = (rasterSymbology.getColorMapEntries()[i].getUpperValue() - minVal)  / (maxVal - minVal);
-            relColMapEntries[i-1] = new ColorMapEntry(relVal, rasterSymbology.getColorMapEntries()[i].getColor());
+            relColMapEntries[i] = new ColorMapEntry(relVal, rasterSymbology.getColorMapEntries()[i].getColor());
         }
 
         GUIUtils.updateGradientComboBoxes(relColMapEntries, width, height);
