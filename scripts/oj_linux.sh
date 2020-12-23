@@ -218,7 +218,7 @@ for libfile in "$JUMP_LIB/"*.zip "$JUMP_LIB/"*.jar "$JUMP_NATIVE_DIR/$JAVA_ARCH/
 do
   CLASSPATH="$libfile":"$CLASSPATH";
 done
-CLASSPATH=.:./bin:./conf:$CLASSPATH
+CLASSPATH=.:./bin:$CLASSPATH
 export CLASSPATH;
 
 ## prepend jump opts

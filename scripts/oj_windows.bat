@@ -10,12 +10,12 @@ rem -- defaults to 'JUMP_HOME', if former is not writable 'userprofile/.openjump
 rem set SETTINGS_HOME="%HOMEDRIVE%%HOMEPATH%"\.openjump
 
 rem -- uncomment to manually set java home, wrap in double quotes to protect special chars --
-rem set JAVA_HOME="C:\Program Files (x86)\Java\jre1.8.0_xx"
+rem set "JAVA_HOME=C:\Program Files (x86)\Java\jre1.8.0_xx"
 
 rem -- uncomment to use 'java' and enable debug console output, if unset defaults to 'javaw' for background jre  --
 rem set JAVA_BIN=java
 
-rem -- set some default OJ options here (eg. -v debug), initialize empty --
+rem -- set some default OJ options here (eg. '-v debug'), initialize empty --
 rem -- run OJ with '--help' argument to find out which are available --
 set JUMP_OPTS=
 
@@ -219,7 +219,7 @@ rem -- debug info --
 if /i NOT "%JAVA_BIN%"=="javaw" echo ---PATH--- & echo %PATH%
 
 rem -- set classpath --
-set CLASSPATH=.;bin;conf
+set CLASSPATH=.;bin
 rem -- add jars to classpath --
 for %%i in (
   "%LIB%\*.jar" "%LIB%\*.zip" "%LIB%\imageio-ext\*.jar"
