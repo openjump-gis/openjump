@@ -2,6 +2,8 @@ package com.vividsolutions.jump.workbench.plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -140,8 +142,14 @@ public class PlugInClassLoader extends URLClassLoader {
       return Paths.get(s).toRealPath().toUri().toURL();
     } catch (InvalidPathException | IOException ignore) {
       // malformed path string or class path element does not exist
-      // we cannot use Logger during VM init, so we simply print to STDERR
-      ignore.printStackTrace(System.err);
+      // we _cannot_ use Logger during VM init, so we have to print to STDERR
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      ignore.printStackTrace(pw);
+      String stack = sw.toString();
+      // print first line of stack only containing Exception class name and message
+      int index = stack.indexOf("\n");
+      System.err.println("Problem adding classpath entry '"+s+"': "+stack.substring(0, index>0?index:stack.length()));
       return null;
     }
   }
