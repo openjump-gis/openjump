@@ -4,11 +4,15 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2020-12-23 ede
+  * start scripts - remove obsolete "./conf/" classpath entry
+
 2020-12-22 mmichaud
   * fix #517 : raster styling of float32 image
 
 2020-12-21 ede
   * update finnish translation courtesy of Jukka Rahkonen
+  * reorder app exit handlers, do not run if exit is cancelled
 
 2020-12-20 mmichaud
   * replaced MergeSelectedPolygonsWithNeighbourPlugIn by
@@ -33,11 +37,28 @@
 2020-10-24 mmichaud
   * fix #382 : deleting warping vectors was not possible with incremental mode
 
+2020-10-09 ede
+  * PythonToolsPlugIn - find resourcefiles by classpath, which works in distro
+    as well when multiple extension dirs are defined in devel environment
+
+2020-10-08 ede
+  * add support for gdal/spatialite via homebrew on macOS
+   - spatialite works if homebrew java is installed and used via JAVA_HOME
+     above e.g. usr/local/opt/java11
+   - home-brew gdal on mac mini-howto
+     1. Install home-brew according to https://brew.sh
+     2. Add osgeo4mac repo 'brew tap osgeo/osgeo4mac'
+     3. Install gdal 'brew install osgeo-gdal'
+     4. run OJ
+
 2020-10-06 ede
   * added gdal support for debian/ubuntu, installing package libgdal-java
     suffices now to have gdal image loaders up and running, tested on Ubuntu 20
   * tested spatialite DB Datastore support on Ubuntu 20, works with package
     libsqlite3-mod-spatialite installed
+  * installer
+    - disable shortcut creation on linux, not working properly anymore
+    - enable run-privileged for all windows versions
 
 2020-10-05 ede
   * make toolbar panel wrap properly and align it left
