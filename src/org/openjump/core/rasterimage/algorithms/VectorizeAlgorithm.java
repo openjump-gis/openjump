@@ -156,6 +156,7 @@ public class VectorizeAlgorithm {
         final ArrayList<Double> vals = new ArrayList<Double>();
         final int nx = gwrapper.getNX();//rstLayer.getLayerGridExtent().getNX();
         final int ny = gwrapper.getNY();// rstLayer.getLayerGridExtent().getNY();
+        vals.add(nodata);
         for (int x = 0; x < nx; x++) {//cols
             for (int y = 0; y < ny; y++) {//rows
                 final double value = gwrapper.getCellValueAsDouble(x, y, band);
