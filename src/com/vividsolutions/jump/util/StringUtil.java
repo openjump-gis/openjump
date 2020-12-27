@@ -35,10 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import com.vividsolutions.jts.util.Assert;
 
@@ -376,7 +373,7 @@ public class StringUtil {
     // set up a locale independent decimal formatter, using dot separator and no grouping
     static DecimalFormat allDecimals;
     static {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ENGLISH);
         symbols.setDecimalSeparator('.');
         allDecimals = new DecimalFormat("#0.0###########", symbols);
         allDecimals.setGroupingUsed(false);
