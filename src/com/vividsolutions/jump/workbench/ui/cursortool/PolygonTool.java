@@ -52,6 +52,8 @@ public abstract class PolygonTool extends MultiClickTool {
 
     /**
      * Callers should check whether the polygon returned is valid.
+     * @return a Polygon
+     * @throws NoninvertibleTransformException if an exception occurs during coordinate transformation
      */
     protected Polygon getPolygon() throws NoninvertibleTransformException {
         ArrayList closedPoints = new ArrayList(getCoordinates());

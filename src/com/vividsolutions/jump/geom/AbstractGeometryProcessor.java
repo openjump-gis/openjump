@@ -23,6 +23,8 @@ public class AbstractGeometryProcessor {
     /**
      * Main method taking an input geometry and returning a new Geometry which
      * may have different properties.
+     * @param geometry the Geometry to process
+     * @return a new Geometry
      */
     public Geometry process(Geometry geometry) {
         List<Geometry> list= new ArrayList<>();
@@ -46,28 +48,44 @@ public class AbstractGeometryProcessor {
         }
     }
 
-    /** Method to process Points. Override this method to transform punctal elements).*/
+    /**
+     * Method to process Points. Override this method to transform punctal elements).
+     * @param point input Point
+     * @param list the list accumulating all processed simple component.
+     */
     public void process(Point point, List<Geometry> list) {
         Point clone = (Point)point.clone();
         process(clone.getCoordinateSequence());
         list.add(clone);
     }
 
-    /** Method to process LineStrings. Override this method to transform linear elements).*/
+    /**
+     * Method to process LineStrings. Override this method to transform linear elements).
+     * @param lineString input LineString
+     * @param list the list accumulating all processed simple component.
+     */
     public void process(LineString lineString, List<Geometry> list) {
         LineString clone = (LineString)lineString.clone();
         process(clone.getCoordinateSequence());
         list.add(clone);
     }
 
-    /** Method to process LinearRings.*/
+    /**
+     * Method to process LinearRings.
+     * @param linearRing input LinearRing
+     * @return a new processed LinearRing
+     */
     public LinearRing process(LinearRing linearRing) {
         LinearRing clone = (LinearRing)linearRing.clone();
         process(clone.getCoordinateSequence());
         return clone;
     }
 
-    /** Method to process Polygons. Override this method to transform areal elements).*/
+    /**
+     * Method to process Polygons. Override this method to transform areal elements).
+     * @param polygon input Polygon
+     * @param list the list accumulating all processed simple component.
+     */
     public void process(Polygon polygon, List<Geometry> list) {
         LinearRing ext = process((LinearRing)polygon.getExteriorRing());
         LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
@@ -77,7 +95,10 @@ public class AbstractGeometryProcessor {
         list.add(polygon.getFactory().createPolygon(ext, holes));
     }
 
-    /** Method to change CoordinateSequences of a geometry - ex. simplifiers. */
+    /**
+     * Method to change CoordinateSequences of a geometry - ex. simplifiers.
+     * @param sequence the CoordinateSequence to process
+     */
     public void process(CoordinateSequence sequence) {
         int d = sequence.getDimension();
         for (int i = 0 ; i < sequence.size() ; i++) {
@@ -92,7 +113,9 @@ public class AbstractGeometryProcessor {
         }
     }
 
-    /** Method to change each single coordinate of a Geometry - ex. coord transformation. */
+    /**
+     * Method to change each single coordinate of a Geometry - ex. coord transformation.
+     */
     public double[] process(double[] dd) {
         return dd;
     }

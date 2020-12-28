@@ -48,11 +48,11 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jump.workbench.Logger;
 
 /**
- * Adapter between deegree-<tt>Geometry</tt>s and JTS-<tt>Geometry<tt> objects.
+ * Adapter between deegree-<code>Geometry</code>s and JTS-<code>Geometry</code> objects.
  * <p>
  * Please note that the generated deegree-objects use null as
- * <tt>CS_CoordinateSystem</tt>!
- * <p>
+ * <code>CS_CoordinateSystem</code>!
+ * </p>
  * 
  * @author <a href="mailto:mschneider@lat-lon.de">Markus Schneider</a>
  * @version $Revision: 9343 $ $Date: 2007-12-27 14:30:32 +0100 (Do, 27 Dez 2007) $

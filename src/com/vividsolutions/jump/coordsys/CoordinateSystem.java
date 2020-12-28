@@ -79,6 +79,7 @@ public class CoordinateSystem implements Comparable, Serializable {
 
     /**
      * @deprecated reprojection will be implemented differently at a later point
+     * @return the Projection
      */
     @Deprecated
     public Projection getProjection() {

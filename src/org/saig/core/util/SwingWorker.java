@@ -39,13 +39,7 @@ package org.saig.core.util;
 import javax.swing.SwingUtilities;
 
 /**
- * 
- * 
- * <p>
  *
- * </p>
- * @author 
- * @since 1.0.0
  */
 public abstract class SwingWorker {
     private Object value;  // see getValue(), setValue()

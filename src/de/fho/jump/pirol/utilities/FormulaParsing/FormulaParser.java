@@ -53,7 +53,7 @@ import de.fho.jump.pirol.utilities.FormulaParsing.Values.PiValue;
  * 
  * @version $Rev$
  * 
- * @see de.fho.jump.pirol.utilities.FeatureCollectionTools#applyFormulaToFeatureCollection(FeatureCollection, AttributeInfo, FormulaValue, boolean)
+ * @see org.openjump.core.apitools.FeatureCollectionTools#applyFormulaToFeatureCollection(FeatureCollection, AttributeInfo, FormulaValue, boolean)
  * 
  */
 public class FormulaParser {

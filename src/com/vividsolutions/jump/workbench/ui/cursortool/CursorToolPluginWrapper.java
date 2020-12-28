@@ -20,7 +20,7 @@ public class CursorToolPluginWrapper implements PlugIn {
    * make sure the cursor tool respects shortcuts by wrapping it into
    * {@link com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool}
    * 
-   * @param cursorTool
+   * @param cursorTool the cursor tool
    */
   public CursorToolPluginWrapper(CursorTool cursorTool) {
     super();

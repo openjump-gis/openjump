@@ -204,6 +204,8 @@ public abstract class AbstractCursorTool implements CursorTool {
 
   /**
    * The cursor will look best if the image is a 32 x 32 transparent GIF.
+   * @param image the cursor image
+   * @return a Cursor
    */
   public static Cursor createCursor(Image image) {
     // <<TODO>> Compute image center rather than hardcoding 16, 16. [Jon
@@ -245,6 +247,7 @@ public abstract class AbstractCursorTool implements CursorTool {
   /**
    * Important for XOR drawing. Even if #getShape returns null, this method will
    * return true between calls of #redrawShape and #clearShape.
+   * @return true if the cursor shape is on screen (even if not visible)
    */
   public boolean isShapeOnScreen() {
     return shapeOnScreen;
@@ -337,6 +340,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 
   /**
    * @deprecated Use #setStroke instead.
+   * @param strokeWidth stroke width of this cursor tool
    */
   protected void setStrokeWidth(int strokeWidth) {
     setStroke(new BasicStroke(strokeWidth));
@@ -356,6 +360,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 
   /**
    * @return null if nothing should be drawn
+   * @throws Exception if an Exception occurs during Shape construction
    */
   protected abstract Shape getShape() throws Exception;
 
@@ -438,8 +443,8 @@ public abstract class AbstractCursorTool implements CursorTool {
    * Draw the image in XOR mode at the specified position on screen. The
    * position and the image is remembered for a later clear.
    * 
-   * @param g
-   * @throws Exception
+   * @param g the graphics context
+   * @throws Exception if an Exception occurs during drawing
    */
   protected void drawImageXOR(Graphics2D g) throws Exception {
     Image newImage = getImage();
@@ -502,7 +507,7 @@ public abstract class AbstractCursorTool implements CursorTool {
   /**
    * Redraws the image on screen.
    * 
-   * @throws Exception
+   * @throws Exception if an Exception occurs during drawing
    */
   protected void redrawImage() throws Exception {
     redrawImage(getGraphics2D());
@@ -628,6 +633,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 
   /**
    * Optional means of execution, with undoability.
+   * @param command undoable command to execute
    */
   protected void execute(UndoableCommand command) {
     AbstractPlugIn.execute(command, getPanel());

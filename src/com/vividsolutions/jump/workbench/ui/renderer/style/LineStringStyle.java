@@ -105,6 +105,9 @@ public abstract class LineStringStyle implements Style {
 
     /**
      * @param lineString has 2 or more points
+     * @param viewport the viewport to paint the lineString to
+     * @param graphics the graphic context
+     * @throws Exception if an Exception occurs during painting
      */
     protected abstract void paintLineString(LineString lineString,
         Viewport viewport, Graphics2D graphics) throws Exception;

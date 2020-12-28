@@ -29,14 +29,17 @@ public abstract class HorizontalCS {
 	}
 
 	/**
-	 * This method must be implemented by the extendend
-	 * class to return the undelying geographic coordinate
-	 * system.
+	 * This method must be implemented by the concrete class
+	 * to return the underlying geographic coordinate system.
+	 * @return the GeographicCS for this HorizontalCS
 	 */
 	public abstract HorizontalCS getGeographicCS();
 
 	/**
 	 * Factory method for coordinate systems.
+	 * @param code EPSG code of this Coordinate Reference System
+	 * @return a Horizontal Coordinate Reference System
+	 * @throws InvalidCodeException if code is not valid
 	 */
 	public static HorizontalCS create(int code) 
 	 throws InvalidCodeException

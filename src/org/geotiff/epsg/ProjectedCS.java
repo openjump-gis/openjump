@@ -11,11 +11,12 @@ package org.geotiff.epsg;
 
 public class ProjectedCS extends HorizontalCS {
 
-	GeographicCS   geographicCS;
+	GeographicCS geographicCS;
 
 	/**
 	 * Protected Constructor; use the factory method
 	 * in HorizontalCS to make this.
+	 * @param code EPSG code of this ProjectedCS
 	 */
 	protected ProjectedCS(int code) { 
 		super(code); 
@@ -26,6 +27,7 @@ public class ProjectedCS extends HorizontalCS {
 
 	/**
 	 * Standard accessor.
+	 * @return the GeographicCS of this ProjectedCS
 	 */
 	public HorizontalCS getGeographicCS() {return geographicCS;}
 

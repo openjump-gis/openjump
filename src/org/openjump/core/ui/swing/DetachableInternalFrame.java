@@ -29,12 +29,12 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
  * and adds a popup menu to the JInternalFrame's tiltle pane (the northpane).
  * With this popupmenu you can detach this JInternalFrame to a separate JFrame.
  * If the JFrame gets closing, the JInternalFrame comes back into the application.
- * <br/>
+ * <br>
  * It is possible to detach and attach without the popup menu. There are public
  * detach() and attach() methods. The detached state is queryable with the
  * isDetached() method.
  *
- * @author Matthias Scholz <ms@jammerhund.de>
+ * @author Matthias Scholz &lt;ms@jammerhund.de&gt;
  */
 public class DetachableInternalFrame extends JInternalFrame {
 

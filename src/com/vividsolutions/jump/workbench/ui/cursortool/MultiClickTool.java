@@ -80,8 +80,10 @@ public abstract class MultiClickTool extends AbstractCursorTool {
 
   /**
    * Will return an empty List once the shape is cleared.
+   *
+   * @return a list of clicked coordinates
    * 
-   * @see MultiClickTool#clearShape
+   * @see MultiClickTool#clearShape()
    */
   public List getCoordinates() {
     return Collections.unmodifiableList(coordinates);

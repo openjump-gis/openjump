@@ -59,7 +59,10 @@ public class Animations {
     }
 
     /**
+     * @param center center of the Animation in view coordinates
      * @param expanding true to expand; false to contract
+     * @param color color of the animation
+     * @param panel LayerViewPanel to draw animation to
      * @param dash null for no dashes
      */
     public static void drawExpandingRing(Point2D center, boolean expanding,

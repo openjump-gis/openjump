@@ -15,10 +15,8 @@ public class GeometryUtils {
   /**
    * Method to scale a selected geometry of a scale factor
    * 
-   * @param input
-   *          geometry
-   * @param double. Scale factor (50 = half, 100 = no rescale, 200 = scale two
-   *        times)
+   * @param geometry the geometry to be scaled
+   * @param scale the scale factor to apply (50 = half, 100 = no rescale, 200 = scale two times)
    */
   public static void scaleGeometry(Geometry geometry, final double scale) {
     final Coordinate center = geometry.getCentroid().getCoordinate();
@@ -33,10 +31,8 @@ public class GeometryUtils {
   /**
    * Method to clock wise rotate a geometry of a defined angle
    * 
-   * @param input
-   *          geometry
-   * @param angle
-   *          in degree
+   * @param geometry the geometry to be rotated
+   * @param angle in degree
    */
   public static void rotateGeometry(Geometry geometry, final double angle) {
     final Coordinate center = geometry.getCentroid().getCoordinate();
@@ -55,10 +51,8 @@ public class GeometryUtils {
   /**
    * Method to counterclock wise rotate a geometry of a defined angle
    * 
-   * @param input
-   *          geometry
-   * @param angle
-   *          in degree
+   * @param geometry the geometry to be rotated
+   * @param angle in degree
    */
   public static void rotateGeometry(Geometry geometry, final int angle) {
     final Coordinate center = geometry.getCentroid().getCoordinate();
@@ -80,9 +74,8 @@ public class GeometryUtils {
   /**
    * Move a geometry to a defined coordinate
    * 
-   * @param geometry
-   * @param coordinate
-   *          to move
+   * @param geometry the geometry to be moved
+   * @param displacement the new geometry coordinate
    */
   public static void centerGeometry(final Geometry geometry,
       final Coordinate displacement) {
@@ -96,8 +89,10 @@ public class GeometryUtils {
   /**
    * creates an empty geometry matching the geom type set already or an empty
    * geom collection if that fails
-   * 
-   * @return geometry
+   *
+   * @param geometryClass the geometry Class
+   * @param geometryFactory the GeometryFactory to create the empty Geometry
+   * @return an empty Geometry of the specified class
    */
   public static Geometry createEmptyGeometry(Class geometryClass,
       GeometryFactory geometryFactory) {

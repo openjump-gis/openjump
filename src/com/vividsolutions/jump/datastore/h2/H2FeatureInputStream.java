@@ -26,8 +26,8 @@ public class H2FeatureInputStream extends SpatialDatabasesFeatureInputStream {
 
     /**
      * Returns a H2ResultSetConverter
-     * @param rs
-     * @return
+     * @param rs a ResultSet
+     * @return the SpatialDatabasesResultSetConverter to be used
      */
     @Override
     protected SpatialDatabasesResultSetConverter getResultSetConverter(ResultSet rs) {

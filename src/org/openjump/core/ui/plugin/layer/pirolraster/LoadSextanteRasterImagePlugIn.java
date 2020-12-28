@@ -55,8 +55,7 @@ import org.openjump.core.rasterimage.RasterImageIO;
 
 /**
  * Giuseppe Aruta [2020-09-04]
- * @deprecated. 
- * in favor of org.openjump.core.rasterimage.AddRasterImageLayerWizard 
+ * @deprecated in favor of org.openjump.core.rasterimage.AddRasterImageLayerWizard
  * 
  */
 

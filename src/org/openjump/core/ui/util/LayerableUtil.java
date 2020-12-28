@@ -56,12 +56,13 @@ public abstract class LayerableUtil {
      */
 
     /**
-     * Boolean to verify if a <RasterImageLayer> rLayer1 is spatially equivalent to another <RasterImageLayer> rLayer2
-     * @param RasterImageLayer layer
-     * @return True if they are equivalent. False if they are not equivalent
-     * @throws IOException
+     * Boolean to verify if a &lt;RasterImageLayer&gt; rLayer1 is spatially equivalent
+     * to another &lt;RasterImageLayer&gt; rLayer2
+     * @param rLayer1 first layer
+     * @param rLayer2 second layer
+     * @return true if they are equivalent. False if they are not equivalent
+     * @throws IOException if an IOException occurs during layer reading
      */
-
     public static boolean isSpatiallyEqualTo(RasterImageLayer rLayer1,
             RasterImageLayer rLayer2) throws IOException {
 
@@ -93,49 +94,41 @@ public abstract class LayerableUtil {
 
     /**
      * RasterImageLayer.class
-     * 
+     *
+     * @param layer the layer to test
      * @return true if selected sextante raster (RasterImageLayer.class) is
      *         Temporary layer (layer stored into TEMP folder)
      */
     public static boolean isTemporary(RasterImageLayer layer) {
-        if (layer.getImageFileName().contains(
-                System.getProperty("java.io.tmpdir"))) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * RasterImageLayer.class
-     * 
-     * @return true if selected sextante raster (RasterImageLayer.class) has
-     *         been modified
-     */
-    public static boolean isModified(RasterImageLayer layer) {
-        if (layer.isRasterDataChanged()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * RasterImageLayer.class
-     * 
-     * @return true if selected sextante raster layer is monoband layer
-     */
-    public static boolean isMonoband(RasterImageLayer layer) {
-        if (layer.getNumBands() == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return layer.getImageFileName().contains(
+                System.getProperty("java.io.tmpdir"));
     }
 
     /**
      * RasterImageLayer.class
      *
+     * @param layer the layer to test
+     * @return true if selected sextante raster (RasterImageLayer.class) has
+     *         been modified
+     */
+    public static boolean isModified(RasterImageLayer layer) {
+        return layer.isRasterDataChanged();
+    }
+
+    /**
+     * RasterImageLayer.class
+     *
+     * @param layer the RasterImageLayer to test
+     * @return true if selected sextante raster layer is monoband layer
+     */
+    public static boolean isMonoband(RasterImageLayer layer) {
+        return layer.getNumBands() == 1;
+    }
+
+    /**
+     * RasterImageLayer.class
+     *
+     * @param layer the layer to query
      * @return the File path of a sextante raster (RasterImageLayer.class) eg.
      *         C/File/imagename.tif
      */
@@ -150,13 +143,11 @@ public abstract class LayerableUtil {
         return fileName;
     }
 
-    /*
-     * Methods for Layer.class
-     */
 
     /**
      * Layer.class
-     * 
+     *
+     * @param layer the layer to test
      * @return true if the layer (Layer.class) is a temporary layer Both layers
      *         in memory and layes stored into TEMP folder are considered as
      *         "Temporary layers"
@@ -172,19 +163,18 @@ public abstract class LayerableUtil {
     }
 
     /**
+     *
+     * @param layer the layer to test
      * @return true if the layer (Layer.class) has been modified
      */
     public static boolean isModified(Layer layer) {
-        if (layer.isFeatureCollectionModified()) {
-            return true;
-        } else {
-            return false;
-        }
+        return layer.isFeatureCollectionModified();
     }
 
     /**
      * Layer.class
-     * 
+     *
+     * @param layer the layer to test
      * @return true if the layer (Layer,class) is a vector layer Eg. layer with
      *         datastore belonging to Shapefile, JML or GML file). This method
      *         excludes Datastores and Image file loaded by Layer,class
@@ -200,65 +190,53 @@ public abstract class LayerableUtil {
 
     /**
      * Layer.class
-     * 
+     *
+     * @param layer the layer to test
      * @return true if the layer (Layer.class) belongs form an image file (eg.
      *         JPG, TIF, ECW)
      */
     public static boolean isImage(Layer layer) {
-        if (layer.getStyle(ReferencedImageStyle.class) != null) {
-
-            return true;
-        } else {
-            return false;
-        }
+        return layer.getStyle(ReferencedImageStyle.class) != null;
     }
 
     /**
      * Layer.class
-     * 
+     *
+     * @param layer the layer to test
      * @return true if the Layer (Layer.class) is a collection of Image layers
      *         (eg. JPG, TIF, ECW)
      */
     public static boolean isMultipleImages(Layer layer) {
-        if (layer.getStyle(ReferencedImageStyle.class) != null
-                && layer.getFeatureCollectionWrapper().getFeatures().size() > 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return layer.getStyle(ReferencedImageStyle.class) != null
+                && layer.getFeatureCollectionWrapper().getFeatures().size() > 1;
     }
 
     /**
      * Layer.class
-     * 
+     *
+     * @param layer the layer to test
      * @return true if the layer (Layer.class) is a datastore layer (eg. Oracle,
      *         SpatiaLite, MySQL)
      */
     public static boolean isDataStore(Layer layer) {
-        if (layer.getDataSourceQuery().getDataSource() instanceof DataStoreQueryDataSource) {
-            return true;
-        } else {
-            return false;
-        }
+        return layer.getDataSourceQuery().getDataSource() instanceof DataStoreQueryDataSource;
     }
 
     /**
      * Layer.class
-     * 
+     *
+     * @param layer the layer to test
      * @return true if the layer is a system Layer currently Fence and Measure
      *         Layers
      */
     public static boolean isSystem(Layer layer) {
-        if (layer.equals(SystemLayerFinder.class)) {
-            return true;
-        } else {
-            return false;
-        }
+        return layer.equals(SystemLayerFinder.class);
     }
 
     /**
      * Layer.class
-     * 
+     *
+     * @param layer the layer to test
      * @return true Check if the layer is a cad Layer following DXF PlugIn
      *         schema it defines Cad layer with the presence of COLOR and TEXT
      *         attributes
@@ -276,114 +254,80 @@ public abstract class LayerableUtil {
 
     /**
      * Layer.class
-     * 
+     *
+     * @param layer the layer to test
      * @return true if the layer is empty
      */
-
     public static boolean isEmpty(Layer layer) {
-        final FeatureCollectionWrapper fcw = layer
-                .getFeatureCollectionWrapper();
-        if (fcw.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return layer.getFeatureCollectionWrapper().isEmpty();
     }
 
     /**
      * check if selected layer has only polygons and/or multipolygons
      * 
-     * @param layer
+     * @param layer the layer to test
      * @return boolean - true if the vector layer has only polygon/multipolygon
      *         geometries (Shapefile model)
      */
     public static boolean isPolygonalLayer(Layer layer) {
         final FeatureCollectionWrapper featureCollection = layer
                 .getFeatureCollectionWrapper();
-        if (FeatureCollectionUtil
-                .getFeatureCollectionDimension(featureCollection) == 2) {
-
-            return true;
-        } else {
-            return false;
-        }
+        return FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 2;
     }
 
     /**
      * check if selected featureCollection has only polygons and/or
      * multipolygons
      * 
-     * @param featureCollection
+     * @param featureCollection the feature collection to test
      * @return boolean - true if the vector layer has only polygon/multipolygon
      *         geometries (Shapefile model)
      */
     public static boolean isPolygonalLayer(FeatureCollection featureCollection) {
-
-        if (FeatureCollectionUtil
-                .getFeatureCollectionDimension(featureCollection) == 2) {
-
-            return true;
-        } else {
-            return false;
-        }
+        return FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 2;
     }
 
     /**
      * Check if selected layer has only points and/or multipoints
      * 
-     * @param layer
+     * @param layer the layer to test
      * @return boolean - true if the vector layer has only point/multipoint
      *         geometries (Shapefile model)
      */
     public static boolean isPointLayer(Layer layer) {
         final FeatureCollectionWrapper featureCollection = layer
                 .getFeatureCollectionWrapper();
-        if (FeatureCollectionUtil
-                .getFeatureCollectionDimension(featureCollection) == 0) {
-
-            return true;
-        } else {
-            return false;
-        }
+        return FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 0;
     }
 
     /**
      * Check if selected featureCollection has only points and/or multipoints
      * 
-     * @param featureCollection
+     * @param featureCollection the feature collection to test
      * @return boolean - true if the vector layer has only point/multipoint
      *         geometries (Shapefile model)
      */
     public static boolean isPointLayer(FeatureCollection featureCollection) {
-
-        if (FeatureCollectionUtil
-                .getFeatureCollectionDimension(featureCollection) == 0) {
-
-            return true;
-        } else {
-            return false;
-        }
+        return FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 0;
     }
 
     /**
      * Check if selected layer has only linestring and/or multilinestring and/or
      * multilinearings
      * 
-     * @param layer
+     * @param layer the layer to test
      * @return boolean - true if the vector layer has only
      *         LineString/MultiLineString geometries (Shapefile model)
      */
     public static boolean isLinealLayer(Layer layer) {
         final FeatureCollectionWrapper featureCollection = layer
                 .getFeatureCollectionWrapper();
-
-        if (FeatureCollectionUtil
-                .getFeatureCollectionDimension(featureCollection) == 1) {
-
-            return true;
-        } else {
-            return false;
-        }
+        return FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 1;
 
     }
 
@@ -391,24 +335,19 @@ public abstract class LayerableUtil {
      * Check if selected FeatureCollection has only linestring and/or
      * multilinestring and/or multilinearings (Shapefile model)
      * 
-     * @param FeatureCollection
+     * @param featureCollection the feature collection to test
      * @return boolean - true if the vector layer has only
      *         LineString/MultiLineString geometries (Shapefile model)
      */
     public static boolean isLinealLayer(FeatureCollection featureCollection) {
-
-        if (FeatureCollectionUtil
-                .getFeatureCollectionDimension(featureCollection) == 1) {
-
-            return true;
-        } else {
-            return false;
-        }
+        return FeatureCollectionUtil
+                .getFeatureCollectionDimension(featureCollection) == 1;
     }
 
     /**
      * Check if selected layer has geoemtries of different types
-     * 
+     *
+     * @param layer the layer to test
      * @return true if the selected layer has features of different geometries
      *         types (Shapefile model) (Shapefile model)
      */
@@ -419,7 +358,6 @@ public abstract class LayerableUtil {
         if ((FeatureCollectionUtil
                 .getFeatureCollectionDimension(featureCollection) == -1)
                 && featureCollection.size() > 0) {
-
             return true;
         } else {
             return false;
@@ -428,7 +366,8 @@ public abstract class LayerableUtil {
 
     /**
      * Check if selected FeatureCollection has geoemtries of different types
-     * 
+     *
+     * @param featureCollection the feature collection to test
      * @return true if the selected layer has features of different geometries
      *         types (Shapefile model)
      */
@@ -484,6 +423,8 @@ public abstract class LayerableUtil {
     }
 
     /**
+     *
+     * @param layer the layer from which to get the file path
      * @return the File path of a Layer.class eg. C/File/vectorname.shp
      */
     public static String getFilePath(Layer layer) {
@@ -508,6 +449,7 @@ public abstract class LayerableUtil {
     }
 
     /**
+     * @param layer the Layer from which to get the DataSource class
      * @return the source class of a Layer.class eg. C/File/vectorname.shp
      */
 
@@ -543,7 +485,8 @@ public abstract class LayerableUtil {
 
     /**
      * input file
-     * 
+     *
+     * @param file the file whose type we want to know
      * @return the type of the file as string
      */
     public static String getFileType(File file) {
@@ -657,7 +600,7 @@ public abstract class LayerableUtil {
 
     /**
      *
-     * @param layer
+     * @param layer the Layer whose description we want to know
      * @return a description of the vector file ex. "SHP - ESRI Shapefile" if
      *         the file extension is not into the enum list it returns the
      *         extension (eg. "DWG")
@@ -689,11 +632,11 @@ public abstract class LayerableUtil {
     }
 
     /**
-     * Export vector layer as SHP or JML depending to the geometries
+     * Export vector layer as SHP or JML depending on the geometries
      * 
-     * @param context
-     * @param layer
-     * @param path
+     * @param context the plugin context
+     * @param layer a layer
+     * @param path the path to export to
      */
     // TODO: to check if vector layer is multigeometry and to divide it into
     // primitives collections (Point, Linestring and Polygon)
@@ -732,9 +675,9 @@ public abstract class LayerableUtil {
     /**
      * Export Sextante Raster layerable to TIF
      * 
-     * @param context
-     * @param layer
-     * @param path
+     * @param context plugin context
+     * @param layer the RasterImageLayer to export
+     * @param path the path to export to
      */
 
     public static void ExportSextanteRaster(PlugInContext context,
@@ -755,10 +698,10 @@ public abstract class LayerableUtil {
      * Export Image: simple method to save an image file, loaded to a folde by
      * Layer.class, with corresponding worldfile, if exists
      * 
-     * @param context
-     * @param layer
-     * @param path
-     * @throws IOException
+     * @param context the plugin context
+     * @param layer the image layer to export
+     * @param path the path to export the image to
+     * @throws IOException if an IOException occurs during export
      */
 
     public static void ExportImage(PlugInContext context, Layer layer,
@@ -793,10 +736,10 @@ public abstract class LayerableUtil {
      * de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn.class and it has been
      * modified to automatically export SLD files for vectors
      * 
-     * @param context
-     * @param layer
-     * @param path
-     * @throws IOException
+     * @param context the plugin context
+     * @param layer the layer whose style to export
+     * @param path the path to export to
+     * @throws IOException if an IOException occurs during SLD writing
      */
 
     public static void ExportVectorStyleToSLD(PlugInContext context,
@@ -865,9 +808,9 @@ public abstract class LayerableUtil {
     /**
      * Export RasterImage layer styles as SLD
      * 
-     * @param context
-     * @param rLayer
-     * @param path
+     * @param context the plugin context
+     * @param rLayer the RasterImageLayer to export
+     * @param path the path to export to
      */
     public static void ExportRasterStyleToSLD(PlugInContext context,
             RasterImageLayer rLayer, String path) {
@@ -885,13 +828,11 @@ public abstract class LayerableUtil {
     /**
      * Export .prj projection auxiliary file for vector/image layer
      * 
-     * @param context
-     * @param layer
-     * @param proj
-     *            OGC wkt projection code
-     * @param path
-     *            to export
-     * @throws IOException
+     * @param context the plugin context
+     * @param layer the layer to export
+     * @param proj OGC wkt projection code
+     * @param path the path to export to
+     * @throws IOException if an IOException occurs during export
      */
     public static void ExportVectorProjection(PlugInContext context,
             Layer layer, String proj, String path) throws IOException {
@@ -907,13 +848,11 @@ public abstract class LayerableUtil {
     /**
      * Export .prj projection auxiliary file for sextante raster image
      * 
-     * @param context
-     * @param layer
-     * @param proj
-     *            OGC wkt projection code
-     * @param path
-     *            to export
-     * @throws IOException
+     * @param context the plugin context
+     * @param layer the rasterImageLayer
+     * @param proj OGC wkt projection code
+     * @param path the path to export to
+     * @throws IOException if an IOException occurs during export
      */
     public static void ExportRasterProjection(PlugInContext context,
             RasterImageLayer layer, String proj, String path)
@@ -931,6 +870,9 @@ public abstract class LayerableUtil {
 
     /**
      * Simple method to copy a file (as worldfile)
+     * @param layer the image layer whose worldfile we want to copy
+     * @param path the path to copy to
+     * @throws IOException if an IOException occurs during world file writing
      */
     public static void copyWorldFile(Layer layer, String path)
             throws IOException {
@@ -956,8 +898,8 @@ public abstract class LayerableUtil {
      * Return the path of the file associated to a ReferencedImage layer /* EX.
      * c:\folder\image.tif
      * 
-     * @param layer
-     * @return file path
+     * @param layer the Layer whose file path we want to know
+     * @return file path of the Layer
      */
     public static String filepath(Layer layer) {
         String sourcePathImage = null;
@@ -979,8 +921,8 @@ public abstract class LayerableUtil {
      * Return path/name of a worldfile associated to a ReferencedImage layer /*
      * Ex. if c:\folder\image.tif exists, it returns c:\folder\image.tfw
      * 
-     * @param layer
-     * @return
+     * @param layer the layer whose worldfile path we want to know
+     * @return the path of the worldfile associated to the layer
      */
     public static String worldFilepath(Layer layer) {
         String sourcePathImage = null;

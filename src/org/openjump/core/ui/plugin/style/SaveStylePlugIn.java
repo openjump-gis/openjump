@@ -57,7 +57,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
  * Currently supported JUMP XML format [file_name.style.xml] and (partially) 
  * Spatial layer descriptor [file_name.sld]
  * @author Giuseppe Aruta
- * @date 2018_21_2
+ * @version 2018_21_2
  *
  */
 public class SaveStylePlugIn extends ThreadedBasePlugIn {

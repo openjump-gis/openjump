@@ -23,10 +23,10 @@ public class SQLUtil {
      * name), the returned array contains a null element at index 0<br>
      * Examples :<br>
      * <ul>
-     * <li>myschema.mytable -> [myschema, mytable]</li>
-     * <li>"MySchema"."MyTable" -> [MySchema, MyTable]</li>
-     * <li>MyTable -> [null, MyTable]</li>
-     * <li>2_table -> [null, 2_table]</li>
+     * <li>myschema.mytable -&gt; [myschema, mytable]</li>
+     * <li>"MySchema"."MyTable" -&gt; [MySchema, MyTable]</li>
+     * <li>MyTable -&gt; [null, MyTable]</li>
+     * <li>2_table -&gt; [null, 2_table]</li>
      * </ul>
      */
     public static String[] splitTableName(String fullName) {

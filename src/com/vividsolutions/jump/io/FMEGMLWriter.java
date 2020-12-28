@@ -53,53 +53,52 @@ import com.vividsolutions.jump.io.datasource.DataSource;
  * interface: 
  * </p>
  * 
- *  <table border='1' cellspacing='0' cellpadding='4'>
+ *  <table style="border-collapse: collapse;" summary="">
  *     <tr>
- *       <th>Parameter</th>
- *       <th>Meaning</th>
+ *       <th style="border: 1px solid #999; padding: 4px;">Parameter</th>
+ *       <th style="border: 1px solid #999; padding: 4px;">Meaning</th>
  *     </tr>
  *     <tr>
- *       <td>OutputFile or DefaultValue</td>
- *       <td>File name for output .xml file</td>
+ *       <td style="border: 1px solid #999; padding: 4px;">OutputFile or DefaultValue</td>
+ *       <td style="border: 1px solid #999; padding: 4px;">File name for output .xml file</td>
  *     </tr>
  *     <tr>
- *       <td>FMEFormatVersion</td>
- *       <td>'2000' or '2001'</td>
+ *       <td style="border: 1px solid #999; padding: 4px;">FMEFormatVersion</td>
+ *       <td style="border: 1px solid #999; padding: 4px;">'2000' or '2001'</td>
  *     </tr>
  *  </table>
  *  <br>
- * </p>
-
+ *
  *  <p>
  *  The format version specifies which version of FME GML this
  *  should produce. 
  *  </p>
  *
- *  <table border='1' cellspacing='0' cellpadding='4'>
+ *  <table style="border-collapse: collapse;" summary="">
  *   <tr>
- *     <td> 2000 </td>
- *     <td><pre> 
-             &lt;dataset 
-               xmlns="http://www.safe.com/xml/namespaces/fmegml2" 
-               xmlns:fme="http://www.safe.com/xml/namespaces/fmegml2" 
-	       xmlns:gml="http://www.opengis.net/gml" 
-	       xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance" 
-	       xsi:schemaLocation="http://www.safe.com/xml/schemas/fmegml2.xsd" &gt; 
-           </pre> 
-       </td>
-     </tr>
+ *     <td style="border: 1px solid #999; padding: 4px;"> 2000 </td>
+ *     <td style="border: 1px solid #999; padding: 4px;"><pre>
+ *            &lt;dataset
+ *              xmlns="http://www.safe.com/xml/namespaces/fmegml2"
+ *              xmlns:fme="http://www.safe.com/xml/namespaces/fmegml2"
+ *	       xmlns:gml="http://www.opengis.net/gml"
+ *	       xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
+ *	       xsi:schemaLocation="http://www.safe.com/xml/schemas/fmegml2.xsd" &gt;
+ *          </pre>
+ *      </td>
+ *    </tr>
  *   <tr>
- *     <td> 2001 </td>
-       <td><pre>
-             &lt;dataset 
-               xmlns="http://www.safe.com/xml/schemas/FMEFeatures" 
-	       xmlns:fme="http://www.safe.com/xml/schemas/FMEFeatures" 
-	       xmlns:gml="http://www.opengis.net/gml" 
-	       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	       xsi:schemaLocation="http://www.safe.com/xml/schemas/FMEFeatures.xsd" &gt;
-	   </pre>
-       </td>
-     </tr>
+ *     <td style="border: 1px solid #999; padding: 4px;"> 2001 </td>
+ *      <td style="border: 1px solid #999; padding: 4px;"><pre>
+ *            &lt;dataset
+ *              xmlns="http://www.safe.com/xml/schemas/FMEFeatures"
+ *	       xmlns:fme="http://www.safe.com/xml/schemas/FMEFeatures"
+ *	       xmlns:gml="http://www.opengis.net/gml"
+ *	       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ *	       xsi:schemaLocation="http://www.safe.com/xml/schemas/FMEFeatures.xsd" &gt;
+ *	   </pre>
+ *      </td>
+ *    </tr>
  * </table>
  *
  */

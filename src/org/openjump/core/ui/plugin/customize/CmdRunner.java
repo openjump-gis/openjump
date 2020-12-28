@@ -45,10 +45,10 @@ public class CmdRunner {
 	
 	/**
 	 * Essentialy a wrapper for Runtime.getRuntime().exec() that waits and catches exceptions.
-	 * @param runStr
+	 * @param runStr a command and its parameters
 	 * @param runAndWait True - wait for process to end, False - do not wait for process to end
 	 */
-	public void run(String [] runStr, boolean runAndWait) {
+	public void run(String[] runStr, boolean runAndWait) {
 				
 		try
 		{        

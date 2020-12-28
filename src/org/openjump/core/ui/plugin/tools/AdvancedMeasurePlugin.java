@@ -8,7 +8,7 @@ import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 /**
  * Plugin for the AdvancedMeasureTool.
  * 
- * @author Matthias Scholz <ms@jammerhund.de>
+ * @author Matthias Scholz &lt;ms@jammerhund.de&gt;
  * @version 0.1
  */
 public class AdvancedMeasurePlugin extends AbstractPlugIn {

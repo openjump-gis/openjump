@@ -37,11 +37,7 @@ import javax.swing.JPanel;
 
 /**
  * TODO Purpose of
- * <p>
- * </p>
- * 
- * @author
- * @since 1.0
+ *
  */
 public abstract class OptionsPanelV2 extends JPanel implements OptionsPanel {
 

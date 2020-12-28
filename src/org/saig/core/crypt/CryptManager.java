@@ -38,8 +38,6 @@ package org.saig.core.crypt;
 
 /**
  * Crypt manager abstract class
- * <p>
- * </p>
  * 
  * @author Sergio Ba&ntilde;os Calvo - sbc@saig.es
  * @since 1.0

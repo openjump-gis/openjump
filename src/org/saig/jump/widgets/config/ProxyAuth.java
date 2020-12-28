@@ -41,8 +41,6 @@ import java.net.PasswordAuthentication;
 
 /**
  * Authentification for net requests
- * <p>
- * </p>
  * 
  * @author Sergio Baños Calvo
  * @since 1.3

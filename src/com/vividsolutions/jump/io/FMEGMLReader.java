@@ -45,15 +45,15 @@ import java.nio.charset.Charset;
 
 /**
  * A driver that reads GML files following the FME default schema.
- * <p>
+ *
  * <h3>DataProperties for the driver</h3>
  *
- * <table border=1 width=100%>
+ * <table border=1 style="width:100%;" summary="">
  * <tr><th>Parameter</th><th>Meaning</th></tr>
  * <tr><td>File <i>or</i> DefaultValue</td><td>File name for the input FME .xml file</td></tr>
  * <tr><td>CompressedFile</td><td>File name (a .zip or .gz) with a .jml/.xml/.gml inside (specified by File)</td></tr>
  * </table>
- * <p>
+ *
  * This is implemented using the more general {@link GMLReader}.
  * It makes a {@link GMLInputTemplate} to pass to the GMLReader by examining
  * the schema specified in the input file.

@@ -69,21 +69,22 @@ import com.vividsolutions.jump.util.Timer;
  * <p>
  * DataProperties for the JCSWriter write(featureSchema,DataProperties) interface:<br>
  * </p>
- * <p>
- * <table border='1' cellspacing='0' cellpadding='4'>
+ *
+ * <table style="border-collapse: collapse;" summary="">
  * <tr>
- *    <th>Parameter</th><th>Meaning</th>
+ *    <th style="border: 1px solid #999; padding: 4px;">Parameter</th>
+ *    <th style="border: 1px solid #999; padding: 4px;">Meaning</th>
  * </tr>
  * <tr>
- *   <td>OutputFile or DefaultValue</td>
- *   <td>File name for output .xml file</td>
+ *   <td style="border: 1px solid #999; padding: 4px;">OutputFile or DefaultValue</td>
+ *   <td style="border: 1px solid #999; padding: 4px;">File name for output .xml file</td>
  * </tr>
  * <tr>
- *   <td>OutputTemplateFile</td>
- *   <td>File name for GMLOutputTemplate file</td>
+ *   <td style="border: 1px solid #999; padding: 4px;">OutputTemplateFile</td>
+ *   <td style="border: 1px solid #999; padding: 4px;">File name for GMLOutputTemplate file</td>
  * </tr>
  * </table><br>
- * </p>
+ *
  * NOTE: If OutputTemplateFile is unspecified, one will be auto-created (the JCS format).
  * <br>
  * <br>
@@ -97,7 +98,7 @@ import com.vividsolutions.jump.util.Timer;
  * or: 
  * <pre>
  *    gmlWriter.setOutputTemplate( GMLOutputTemplate);
- *    gmlWriter.write( <writer>, <stream name>);
+ *    gmlWriter.write( &lt;writer&gt;, &lt;stream name&gt;);
  * </pre>
  * <br>
 
@@ -106,7 +107,7 @@ import com.vividsolutions.jump.util.Timer;
  * <br>
  * <br>
  *
- * Output will be formed from the OutputTeplate like:<Br>
+ * Output will be formed from the OutputTeplate like:<br>
  * <br>
  * <pre>
  * headerText
@@ -432,7 +433,7 @@ public class GMLWriter implements JUMPWriter, TaskMonitorSupport {
     /**
      * Given a FeatureSchema, make an output template
      * in the JCS  format
-     * @param fcmd input featureSchema
+     * @param fc input FeatureCollection
      */
     private static GMLOutputTemplate makeOutputTemplate(FeatureCollection fc) {
         GMLOutputTemplate result;
@@ -485,7 +486,7 @@ public class GMLWriter implements JUMPWriter, TaskMonitorSupport {
      * GMLInputTemplate for the JCS format.  Used by makeOutputTemplate since the
      * output template includes an inputtemplate.
      *
-     * @param fcmd the featureSchema to describe
+     * @param fc the FeatureCollection to describe
      */
     private static String makeInputTemplate(FeatureCollection fc) {
         String result = "";

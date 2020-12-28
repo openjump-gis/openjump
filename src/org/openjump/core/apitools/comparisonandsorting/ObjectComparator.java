@@ -40,8 +40,8 @@ public class ObjectComparator {
 
     /**
      * Method to generate a <code>double</code> value out of different number objects.
-     *@param o
-     *@return a double value representing to given object or <code>Double.NAN</code> if it can't be parsed
+     * @param o an object
+     * @return a double value representing to given object or <code>Double.NAN</code> if it can't be parsed
      */
 	public static double getDoubleValue(Object o){
 		double value = Double.NaN;

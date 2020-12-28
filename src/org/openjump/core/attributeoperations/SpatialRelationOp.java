@@ -49,12 +49,14 @@ import com.vividsolutions.jump.feature.Feature;
 
 /**
  *
- * contains some method to extract sets of features
- * which fullfill some spatial criterion<p>
- * notes:<p>
- * - use "intersects" only for polygon geometries (condition intersection area > 0).<p>
- * - "contains" can be used for polygons and points (centroid from polygon is calculated)<p>
- * 
+ * Contains methods to extract sets of features
+ * which fullfill some spatial criterion.
+ * <p>notes:</p>
+ * <ul>
+ * <li>use "intersects" only for polygon geometries (condition intersection area &gt; 0)</li>
+ * <li>"contains" can be used for polygons and points (centroid from polygon is calculated)</li>
+ * </ul>
+ *
  * @author sstein
  * 
  */
@@ -78,10 +80,10 @@ public class SpatialRelationOp {
     /**
      * note: if input feature is point and spatial attribute is "intersect" or "covered by" the 
      * candidate features are selected from a 10.0m radius   
-     * @param spatialRelation
-     * @param featureTree
-     * @param g
-     * @param radius
+     * @param spatialRelation spatial relation
+     * @param featureTree feature index as a Quadtree
+     * @param g a Geometry
+     * @param radius a searching radius
      * @return ArrayList of Feature fullfilling the spatial criterion
      */
     public static List evaluateSpatial(int spatialRelation, Quadtree featureTree, Geometry g, double radius){

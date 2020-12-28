@@ -44,7 +44,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
 /**
  * pretty much {@link ToolboxPlugIn} but cleaned up plus propagating errors
- * from initializeToolbox() -> getToolbox() -> execute() making implementations
+ * from initializeToolbox() -&gt; getToolbox() -&gt; execute() making implementations
  * easier and more failsafe
  */
 public abstract class ToolboxPlugInV2 extends AbstractPlugIn implements CheckBoxed {
@@ -53,8 +53,9 @@ public abstract class ToolboxPlugInV2 extends AbstractPlugIn implements CheckBox
 
   /**
    * @return the toolbox for this plug-in class.
+   * @throws Exception if an Exception occurs during Toolbox initialization
    */
-  public ToolboxDialog getToolbox() throws Exception{
+  public ToolboxDialog getToolbox() throws Exception {
     String name = getName();
     ToolboxDialog toolbox = (ToolboxDialog) toolboxMap.get(name);
     if (toolbox == null) {

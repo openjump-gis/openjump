@@ -44,21 +44,22 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  */
 public interface Style extends Cloneable {
     
-    public void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception;
+    void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception;
 
     /**
      * Called before #paint is applied to each Feature.
+     * @param layer the layer on which to apply this style
      */
-    public void initialize(Layer layer);
+    void initialize(Layer layer);
 
-    public Object clone();
+    Object clone();
 
-    public void setEnabled(boolean enabled);
+    void setEnabled(boolean enabled);
 
     /**
      * @return false if #paint should not be called e.g. because vertices are not
      * shown. Don't need to check whether the layer is visible.
      */
-    public boolean isEnabled();
+    boolean isEnabled();
 
 }

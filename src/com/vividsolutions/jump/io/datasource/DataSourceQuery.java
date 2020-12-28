@@ -67,6 +67,7 @@ public class DataSourceQuery {
 	/**
 	 * Returns the DataSource against which to apply the
 	 * (implementation-dependent) query string.
+   * @return the DataSource of this DataSourceQuery
 	 */
     public DataSource getDataSource() {
         return dataSource;
@@ -75,6 +76,7 @@ public class DataSourceQuery {
 	/**
 	 * Returns the implementation-dependent query string wrapped by this
 	 * DataSourceQuery
+   * @return the Query String of this DataSourceQuery
 	 */
     public String getQuery() {
         return query;
@@ -89,6 +91,7 @@ public class DataSourceQuery {
 
     /**
      * Called by Java2XML
+     * @param dataSource the DataSource to use for this DataSourceQuery
      */
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -96,6 +99,7 @@ public class DataSourceQuery {
 
     /**
      * Called by Java2XML
+     * @param query the query String to use for this DataSourceQuery
      */    
     public void setQuery(String query) {
         this.query = query;

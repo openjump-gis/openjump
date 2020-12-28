@@ -35,9 +35,9 @@ public class FeatureSchemaUtils {
     /**
      * save Feature schema of a selected Layer.class to external text file
      * 
-     * @param layer
-     * @return
-     * @throws Exception
+     * @param layer the layer from which to save the schema
+     * @return true if the schema has been saved
+     * @throws Exception if an Exception occurs during schema writing
      */
     public static boolean saveSchema(Layer layer) throws Exception {
         String schemaString = "";
@@ -96,9 +96,9 @@ public class FeatureSchemaUtils {
      * load feature schema into a selected Layer.class from an external text
      * file
      * 
-     * @param layer
-     * @return
-     * @throws Exception
+     * @param layer the Layer to which we want to apply or add the schema
+     * @return true if the schema could be applied to the layer
+     * @throws Exception if an Exception occurs during schema reading or applying
      */
     public static boolean loadSchema(Layer layer) throws Exception {
         final FileNameExtensionFilter filter = new FileNameExtensionFilter(

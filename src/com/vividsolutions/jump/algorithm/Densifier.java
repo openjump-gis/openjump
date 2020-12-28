@@ -74,6 +74,7 @@ public class Densifier {
      *
      * @param geom the geometry to densify
      * @param maxLength the maximum length between two vertices
+     * @return a new, densified Geometry
      */
     public static Geometry densify(Geometry geom, double maxLength) {
         Densifier densifier = new Densifier(geom, maxLength);

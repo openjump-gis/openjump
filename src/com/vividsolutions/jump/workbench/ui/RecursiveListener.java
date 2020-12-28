@@ -51,13 +51,13 @@ import java.awt.event.ContainerListener;
  *
  *  <p>
  *  Uses:
+ *  </p>
  *  <ul>
  *    <li> add a KeyListener to all components in an application to
  *    watch for global function keys </li>
  *    <li> add a FocusListener to all components in a scrollable panel
  *    to allow auto scrolling on tab </li>
  * </ul>
- * </p>
  *
  * <p>
  *    Subclass and implement addListenerTo() and removeListenerFrom().

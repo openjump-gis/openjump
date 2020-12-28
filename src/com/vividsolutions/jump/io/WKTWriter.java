@@ -49,19 +49,17 @@ import com.vividsolutions.jump.io.datasource.DataSource;
  *   write(featureSchema,DataProperties) interface:<br>
  * </p>
  *
- * <p>
- * <table border='1' cellspacing='0' cellpadding='4'>
+ * <table style="border-collapse: collapse;" summary="">
  *   <tr>
- *     <th>Parameter</th>
- *     <th>Meaning</th>
+ *     <th style="border: 1px solid #999; padding: 4px;">Parameter</th>
+ *     <th style="border: 1px solid #999; padding: 4px;">Meaning</th>
  *   </tr>
  *   <tr>
- *     <td>OutputFile or DefaultValue</td>
- *     <td>File name for output .wkt file</td>
+ *     <td style="border: 1px solid #999; padding: 4px;">OutputFile or DefaultValue</td>
+ *     <td style="border: 1px solid #999; padding: 4px;">File name for output .wkt file</td>
  *   </tr>
  * </table>
  * <br>
- * </p>
  */
 public class WKTWriter implements JUMPWriter {
 

@@ -39,7 +39,7 @@ import java.util.ArrayList;
 
 /**
  * This class provides a parser for reading GMLOuputTemplates.  This does NOT contain an evaluator for <br>
- * taking the parsed GMLOutputTemplate and a featureCollection and producing properly <bR>
+ * taking the parsed GMLOutputTemplate and a featureCollection and producing properly <br>
  * formatted output GML. Thats the {@link GMLWriter} class.<br>
  *<br>
  *<br>
@@ -49,7 +49,7 @@ import java.util.ArrayList;
  *method. <br>
  *The valuators (things that look like "&lt;%") are:<br>
  * &lt;%=GEOMETRY&gt; - replace this with a GML represention of the geometry<br>
- * &lt;%=COLUMN <column name>&gt; - replace this with the corresponding JCS column value <br>
+ * &lt;%=COLUMN &lt;column name&gt;&gt; - replace this with the corresponding JCS column value <br>
  *  &lt;%FEATURE&gt;  - this marks the start of a feature in the OutputTemplate <Br>
  * &lt;%ENDFEATURE&gt;  - This marks the end of a feature in the OutputTempalte <br>
  *<br>

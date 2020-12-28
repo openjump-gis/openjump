@@ -77,9 +77,9 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
 
   /**
    * implement to assign a readable name to the datastore driver extension
-   * 
-   * @Override
+   * @return the name of this SpatialDatabase
    */
+  @Override
   abstract public String getName();
 
   /**

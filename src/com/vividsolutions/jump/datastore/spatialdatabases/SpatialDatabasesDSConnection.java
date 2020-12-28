@@ -67,7 +67,7 @@ public class SpatialDatabasesDSConnection implements DataStoreConnection {
    *
    * @param query the query to execute
    * @return the results of the query
-   * @throws SQLException
+   * @throws SQLException if an Exception occurs during query execution
    */
   public FeatureInputStream executeFilterQuery(FilterQuery query)
       throws SQLException {

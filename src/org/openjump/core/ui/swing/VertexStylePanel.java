@@ -26,7 +26,7 @@ import javax.swing.border.EmptyBorder;
  * A JPanel for styling a vertex. The stylings you can apply to the
  * {@linkplain de.latlon.deejump.plugin.style.VertexStylesFactory VertexStylesFactory}.
  *
- * @author Matthias Scholz <ms@jammerhund.de>
+ * @author Matthias Scholz &lt;ms@jammerhund.de&gt;
  */
 public class VertexStylePanel extends JPanel implements ListCellRenderer {
 

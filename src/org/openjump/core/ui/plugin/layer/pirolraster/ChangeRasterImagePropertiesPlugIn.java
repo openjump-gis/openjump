@@ -40,7 +40,7 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  *          Add Added Raster Transparency, ScaleStyle and ColorEditor Panels
  * @version Jul 03 2015 [Giuseppe Aruta] - Renamed plugin name to "Change Style"
  * @version Jul 06 2015 [Giuseppe Aruta] - correct bug when Largest scale
- *          >Smallest scale
+ *          &gt; Smallest scale
  * @version Nov 14 2015 [Giuseppe Aruta] - chosen colorset is stored into the Blackboard
  * @version Jan 27 2017 [Michaël Michaud] - fix close dialog problem
  */

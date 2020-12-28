@@ -60,24 +60,24 @@ import java.util.*;
  * DataProperties for the ShapefileWriter write(DataProperties) interface:<br><br>
  * </p>
  *
- * <p>
- * <table border='1' cellspacing='0' cellpadding='4'>
+ * <table style="border-collapse: collapse;" summary="">
  *   <tr>
- *       <th>Parameter</th>
- *       <th>Meaning</th>
+ *       <th style="border: 1px solid #999; padding: 4px;">Parameter</th>
+ *       <th style="border: 1px solid #999; padding: 4px;">Meaning</th>
  *   </tr>
  *   <tr>
- *       <td>OutputFile or DefaultValue</td>
- *       <td>File name for the output .shp file</td>
+ *       <td style="border: 1px solid #999; padding: 4px;">OutputFile or DefaultValue</td>
+ *       <td style="border: 1px solid #999; padding: 4px;">File name for the output .shp file</td>
  *   </tr>
  *   <tr>
- *       <td>ShapeType</td>
- *       <td>
+ *       <td style="border: 1px solid #999; padding: 4px;">ShapeType</td>
+ *       <td style="border: 1px solid #999; padding: 4px;">
  *          Dimensionality of the Shapefile - 'xy', 'xym' or 'xyz'.  'xymz' and
  *          'xyzm' are the same as 'xyz' 
  *       </td>
  *   </tr>
- * </table><br>
+ * </table>
+ * <br>
  *
  * <p>
  * NOTE: The input .dbf and .shx is assumed to be 'beside' (in the
@@ -91,22 +91,22 @@ import java.util.*;
  * JUMP columns are converted to DBF columns by:
  * </p>
  *
- * <table border='1' cellspacing='0' cellpadding='4'>
+ * <table style="border-collapse: collapse;" summary="">
  *   <tr>
- *     <th>JUMP Column</th>
- *     <th>DBF column</th>
+ *     <th style="border: 1px solid #999; padding: 4px;">JUMP Column</th>
+ *     <th style="border: 1px solid #999; padding: 4px;">DBF column</th>
  *   </tr>
  *   <tr>
- *     <td>STRING</td>
- *     <td>Type 'C' length is size of longest string in the FeatureCollection </td>
+ *     <td style="border: 1px solid #999; padding: 4px;">STRING</td>
+ *     <td style="border: 1px solid #999; padding: 4px;">Type 'C' length is size of longest string in the FeatureCollection </td>
  *   </tr>
  *   <tr>
- *     <td>DOUBLE</td>
- *     <td>Type 'N' length is 33, with 16 digits right of the decimal</td>
+ *     <td style="border: 1px solid #999; padding: 4px;">DOUBLE</td>
+ *     <td style="border: 1px solid #999; padding: 4px;">Type 'N' length is 33, with 16 digits right of the decimal</td>
  *   </tr>
  *   <tr>
- *     <td>INTEGER</td>
- *     <td>Type 'N' length is 16, with 0 digits right of the decimal</td>
+ *     <td style="border: 1px solid #999; padding: 4px;">INTEGER</td>
+ *     <td style="border: 1px solid #999; padding: 4px;">Type 'N' length is 16, with 0 digits right of the decimal</td>
  *   </tr>
  * </table>
  *
@@ -125,58 +125,58 @@ import java.util.*;
  *   FeatureCollection must be first be normalized to one type:
  * </p>
  *
- * <table border='1' cellspacing='0' cellpadding='4'>
+ * <table style="border-collapse: collapse;" summary="">
  *   <tr>
- *     <th>First non-NULL non-Point geometry in FeatureCollection</th>
- *      <th>Coordinate Dimensionality</th>
- *      <th>Shape Type</th>
+ *      <th style="border: 1px solid #999; padding: 4px;">First non-NULL non-Point geometry in FeatureCollection</th>
+ *      <th style="border: 1px solid #999; padding: 4px;">Coordinate Dimensionality</th>
+ *      <th style="border: 1px solid #999; padding: 4px;">Shape Type</th>
  *   </tr>
  *   <tr>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *        MULTIPOINT
  *     </td>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *        xy xym xyzm     
  *     </td>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *	  MULTIPOINT MULTIPOINTM MULTIPOINTZ
  *     </td>
  *   </tr>
  *   <tr>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *       LINESTRING/MULTILINESTRING    
  *     </td>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *       xy xym xyzm    
  *     </td>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *	 POLYLINE POLYLINEM POLYLINEZ
  *     </td>
  *   </tr>
  *   <tr>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *       POLYGON/MULTIPOLYGON     
  *     </td>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *        xy xym xyzm    
  *     </td>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *	   POLYGON POLYGONM POLYGONZ
  *     </td>
  *   </tr>
  *   <tr>
- *     <th>All geometries in FeatureCollection are</th>
- *      <th>Coordinate Dimensionality</th>
- *      <th>Shape Type</th>
+ *      <th style="border: 1px solid #999; padding: 4px;">All geometries in FeatureCollection are</th>
+ *      <th style="border: 1px solid #999; padding: 4px;">Coordinate Dimensionality</th>
+ *      <th style="border: 1px solid #999; padding: 4px;">Shape Type</th>
  *   </tr>
  *   <tr>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *        POINT
  *     </td>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *        xy xym xyzm     
  *     </td>
- *     <td>
+ *     <td style="border: 1px solid #999; padding: 4px;">
  *	     POINT POINTM POINTZ
  *     </td>
  *   </tr>

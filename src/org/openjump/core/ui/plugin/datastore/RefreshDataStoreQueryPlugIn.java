@@ -96,6 +96,8 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
     /**
      * Creates an EnableCheck object to enable the plugin if a project is active
      * and if only layers connected to a DataStoreQueryDataSource are selected.
+		 * @param workbenchContext global context of the application
+		 * @return the EnableCheck to use to check if RefreshDataStoreQueryPlugIn can be run
      */
     public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
 	    final WorkbenchContext wc = workbenchContext;

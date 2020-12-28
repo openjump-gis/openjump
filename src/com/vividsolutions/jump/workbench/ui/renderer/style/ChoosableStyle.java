@@ -6,12 +6,14 @@ public interface ChoosableStyle extends Style {
 
     /**
      * For display.
+     * @return the name of this Style
      */
-    public String getName();
+    String getName();
 
     /**
-     * For display. 20 x 20 pixels. 
+     * For display. 20 x 20 pixels.
+     * @return an Icon representing this Style
      */
-    public Icon getIcon();
+    Icon getIcon();
 
 }

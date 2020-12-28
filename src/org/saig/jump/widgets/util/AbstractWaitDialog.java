@@ -52,8 +52,6 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 /**
  * Shows a modal dialog while an operating is in process
- * <p>
- * </p>
  * 
  * @author Eduardo Montero Ruiz - emontero@saig.es
  * @since 1.0

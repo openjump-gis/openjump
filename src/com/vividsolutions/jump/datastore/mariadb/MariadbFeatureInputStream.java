@@ -20,8 +20,8 @@ public class MariadbFeatureInputStream extends SpatialDatabasesFeatureInputStrea
     
     /**
      * Returns a MariadbResultSetConverter
-     * @param rs
-     * @return 
+     * @param rs a ResultSet
+     * @return the SpatialDatabasesResultSetConverter to convert the ResultSet
      */
     @Override
     protected SpatialDatabasesResultSetConverter getResultSetConverter(ResultSet rs) {

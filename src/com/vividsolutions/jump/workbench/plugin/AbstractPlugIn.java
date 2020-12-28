@@ -141,6 +141,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
    * system yet or (2) does not modify the system. In either case, the undo
    * history will be preserved. If this method is not called, then this plug-in
    * will be assumed to be non-undoable, and the undo history will be truncated.
+   * @param context plugin context
    */
   protected void reportNothingToUndoYet(PlugInContext context) {
     // The LayerManager can be null if for example there are no TaskFrames
@@ -311,9 +312,12 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
   }
 
   /**
+   * @param plugIn the plugin
+   * @param workbenchContext context of the application
    * @param taskMonitorManager
    *          can be null if you do not wish to use the Task Monitor
    *          progress-reporting framework
+   * @return an ActionListener for this PlugIn
    */
 
   public static ActionListener toActionListener(final PlugIn plugIn,
@@ -416,7 +420,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
   /**
    * Utility method to fetch enable checks from enablechecked plugins.
    * 
-   * @param plugin
+   * @param plugin a PlugIn
    * @return enable check
    */
   public static EnableCheck getEnableCheck(PlugIn plugin) {
@@ -429,11 +433,11 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
    * enabled plugin. Used to register multiple shortcut enabled plugins in one
    * go.
    * 
-   * @param plugin
+   * @param plugin a PlugIn
    * @return plugins array
    */
   public static PlugIn[] fetchShortcutEnabledPlugins(PlugIn plugin) {
-    Vector plugins = new Vector();
+    Vector<PlugIn> plugins = new Vector();
     // add plugin
     if (plugin instanceof ShortcutEnabled
         && ((ShortcutEnabled) plugin).isShortcutEnabled())
@@ -453,8 +457,8 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
    * Utility method to register global shortcuts. Should be preferred to the 
    * more direct approach using WorkbenchFrame.addKeyboardShortcut() .
    * 
-   * @param plugin
-   * @return done
+   * @param plugin a PlugIn
+   * @return true if shortcuts have been added for the PlugIn
    */
   public static boolean registerShortcuts(PlugIn plugin) {
     PlugIn[] shortys = fetchShortcutEnabledPlugins(plugin);

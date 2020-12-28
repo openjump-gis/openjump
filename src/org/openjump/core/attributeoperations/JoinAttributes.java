@@ -61,21 +61,19 @@ public class JoinAttributes {
 
     /**
      * 
-     * @param sourceFeatures
-     * @param targetFeatures
-     * @param attributeName
-     * @param attributeOp
-     * @param spatialRelation
-     * @param bufferRadius
+     * @param sourceFeatures source features
+     * @param targetFeatures target features
+     * @param attributeName attribute name
+     * @param attributeOp attribute operation
+     * @param spatialRelation spatial relation
+     * @param bufferRadius buffer radius
+		 * @param monitor task monitor
      * @return a feature dataset
      */
-    public static FeatureDataset joinAttributes(Collection sourceFeatures, Collection targetFeatures, String attributeName, int attributeOp, int spatialRelation, double bufferRadius, TaskMonitor monitor){
-        /*
-        System.out.println("Join Attributes --- attribute op:" + attributeOp + " - " + 
-                AttributeOp.getName(attributeOp) + " --- spatial op: " + spatialRelation + " - " +
-                SpatialRelationOp.getName(spatialRelation));
-        */
-        FeatureDataset fd = null;
+    public static FeatureDataset joinAttributes(
+    				Collection sourceFeatures, Collection targetFeatures, String attributeName, int attributeOp,
+						int spatialRelation, double bufferRadius, TaskMonitor monitor) {
+    	FeatureDataset fd = null;
 	    AttributeType newAttributeType = AttributeType.DOUBLE;
 	    String newAttributeName = attributeName + "_" + AttributeOp.getName(attributeOp);
 	    if (attributeOp == AttributeOp.COUNT){
@@ -140,11 +138,17 @@ public class JoinAttributes {
     
 	/**
 	 * 
-	 * @param poly
-	 * @param 
+	 * @param poly polygonal geometry
+	 * @param fqTree quad tree indexing a feature collection
+	 * @param attributeName attribute name
+	 * @param attributeOp attribute operation
+	 * @param spatialRelation spatial relation
+	 * @param bufferRadius buffer radius
 	 * @return value 
 	 */
-	private static double evaluateSinglePolygon(Geometry poly, Quadtree fqTree, String attributeName, int attributeOp, int spatialRelation, double bufferRadius){	    
+	private static double evaluateSinglePolygon(
+					Geometry poly, Quadtree fqTree, String attributeName,
+					int attributeOp, int spatialRelation, double bufferRadius) {
 	    List items = SpatialRelationOp.evaluateSpatial(spatialRelation, fqTree, poly, bufferRadius);
 	    double val = AttributeOp.evaluateAttributes(attributeOp, items, attributeName);	        
 	    return val;	    
@@ -153,7 +157,7 @@ public class JoinAttributes {
     
 	/**
 	 * Copy/clone the input featureSchema since it is not proper implemented in Jump 
-	 * @param oldSchema
+	 * @param oldSchema old schema
 	 * @return a clone of oldSchema
 	 */
 	public static FeatureSchema copyFeatureSchema(FeatureSchema oldSchema){
@@ -170,8 +174,8 @@ public class JoinAttributes {
 	/**
 	 * Copy the input feature to a new Schema whereby the new 
 	 * Feature Schema must be an extended or shortened one 
-	 * @param feature
-	 * @param newSchema
+	 * @param feature the Feature to copy
+	 * @param newSchema the taget schema
 	 * @return a new Feature with newSchema as Schema and feature values
 	 */
 	public static Feature copyFeature(Feature feature, FeatureSchema newSchema){

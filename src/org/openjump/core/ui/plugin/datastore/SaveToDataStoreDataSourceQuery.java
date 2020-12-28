@@ -36,6 +36,7 @@ public class SaveToDataStoreDataSourceQuery extends DataSourceQuery {
     /**
      * Property map for the query object.
      * For defined keys see: {@link org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource}
+     * @param properties a Map containing properties to save data to a DataStoreDataSource
      */
     public void setProperties(Map properties) {
         this.properties = new HashMap(properties);

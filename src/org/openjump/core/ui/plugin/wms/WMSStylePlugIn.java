@@ -60,7 +60,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  * @version July 3 2015 [Giuseppe Aruta] WMS style plugin Added Transparency and
  *          scale display to WMS layers
  * @version July 3 2015 [Giuseppe Aruta] correct a bug when Largest
- *          scale>Smallest scale
+ *          scale &gt; Smallest scale
  */
 
 public class WMSStylePlugIn extends AbstractPlugIn {

@@ -20,12 +20,13 @@ import java.util.Map;
 /**
  * A base class for Spatial Databases DataStore Metadata: DB accessed through
  * JDBC driver, implementing if possible OGC SFSQL. Uses postgis default values
- * => already implements mechanism for postgis databases
+ * =&lt; already implements mechanism for postgis databases
  *
- * Ex: Postgis, Oracle Spatial, SpatiaLite, SQL Server.<br:>
- * For each spatial db support, a child class should be added based on this
+ * <p>Ex: Postgis, Oracle Spatial, SpatiaLite, SQL Server.</p>
+ * <p>For each spatial db support, a child class should be added based on this
  * class implementing methods as needed. PostGIS was the Spatial DB used for
- * first impl. TODO: sql injection
+ * first impl.</p>
+ * TODO: sql injection
  *
  * @author Nicolas Ribot
  */
@@ -183,14 +184,14 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * Returns the schema name based on the given tableName: string before . if
    * exists, else returns schemaName
    *
-   * @param schemaName
-   * @return
+   * @param tableName the table name, eventually qualified
+   * @return the name of the schema
    */
-  protected String getSchemaName(String schemaName) {
-    int dotPos = schemaName.indexOf(".");
+  protected String getSchemaName(String tableName) {
+    int dotPos = tableName.indexOf(".");
     String schema = this.defaultSchemaName;
     if (dotPos != -1) {
-      schema = schemaName.substring(0, dotPos);
+      schema = tableName.substring(0, dotPos);
     }
     return schema;
   }
@@ -199,8 +200,8 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * Returns the table name based on the given tableName: string after "." if
    * exists, else returns tableName
    *
-   * @param tableName
-   * @return
+   * @param tableName the table name, eventually qualified
+   * @return the table part of the eventually qualified table name
    */
   protected String getTableName(String tableName) {
     int dotPos = tableName.indexOf(".");
@@ -214,8 +215,8 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
   /**
    * Returns true if the given Exception concerns a missing geometric metadata
    * table
-   *
-   * @return
+   * @param e an exception
+   * @return true if the exception is about missing geometry column
    */
   protected boolean missingGeoException(Exception e) {
     return (e instanceof SQLException && e.getMessage().contains("geometry_columns"));
@@ -256,7 +257,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
   /**
    * Nico Ribot: 2018-08-07: new method using a query to get all information for datasets
    * in a structure, to avoid querying too much the server
-   * @return
+   * @return dataset (table) names from this spatial Database
    */
   public String[] getDatasetNames() {
     final List datasetNames = new ArrayList();
@@ -362,8 +363,8 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * Retrieves list of geometric tables from a custom DB Query: Should use OGC
    * metadata geoemtry_columns or equivalent mechanism according to target DB.
    *
-   * @param datasetName
-   * @return
+   * @param datasetName name of a dataset
+   * @return list of GeometryColumn's referenced in this dataset
    */
   public List<GeometryColumn> getGeometryAttributes(String datasetName) {
     String sql = getGeoColumnsQuery(datasetName);
@@ -399,6 +400,8 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * name)
    * @return the list of columns involved in the Primary Key (generally, a
    * single column)
+   * @throws SQLException if the server throws an Exception while trying to get
+   *    PrimaryKey columns
    */
   public List<PrimaryKeyColumn> getPrimaryKeyColumns(String datasetName) throws SQLException {
     final List<PrimaryKeyColumn> identifierColumns = new ArrayList<PrimaryKeyColumn>();
@@ -448,11 +451,11 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * gets the list of columns for the given dataset. TODO: factorize MD
    * retrieval in an Util class ?
    *
-   * @param datasetName
+   * @param datasetName the dataset (table) name
    * @return an array of column names
    */
   public synchronized String[] getColumnNames(String datasetName) {
-    final List<String> cols = new ArrayList<String>();
+    final List<String> cols = new ArrayList<>();
     ResultSet rs = null;
 
     try {
@@ -476,10 +479,10 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
 
   /**
    * Returns whether column is used by a spatial index (Gist) or not.
-   * @param dsName
-   * @param column
-   * @return 
-   * @throws java.sql.SQLException
+   * @param dsName a dataset (table) name
+   * @param column a column name
+   * @return true if the column is indexed
+   * @throws java.sql.SQLException if an exception occurs during metadata querying
    */
   public boolean isIndexed(final String dsName, final String column) throws SQLException {
     ResultSet rs = null;
@@ -579,6 +582,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * @param tableName unquoted table name
    * @param normalizeColumnNames whether column names must be normalized (lowercased
    *                              and without special characters) or not
+   * @return the sql string to create the table
    */
   public String getCreateTableStatement(FeatureSchema fSchema,
                                         String schemaName, String tableName, boolean normalizeColumnNames) {
@@ -597,6 +601,7 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * @param normalizeColumnNames whether feature attribute names must be normalized
    *                             (lower case without spacial characters) to specify
    *                             table column names.
+   * @return the sql string containing the list of columns for this schema
    */
   public String createColumnList(FeatureSchema schema,
                                     boolean includeSQLDataType,
@@ -645,6 +650,14 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * rather than constraints (new default behaviour in 2.x)</p>
    * <p>The geometry column name must have its final form. Attribute name normalization
    * is the responsability of the calling method.</p>
+   *
+   * @param schemaName the name of the Schema
+   * @param tableName the name of the Table
+   * @param geometryColumn the name of the geometry column
+   * @param srid the SRID for the geometry column
+   * @param geometryType the (SQL) geometry type as a String
+   * @param dim the coordinate dimension (2 or 3)
+   * @return a SQL query string to add a geometry column to a table
    */
   public String getAddGeometryColumnStatement(String schemaName, String tableName,
                                                      String geometryColumn, int srid, String geometryType, int dim) {

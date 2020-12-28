@@ -18,8 +18,8 @@ public class StylePlugger {
     
     /**
      * Plugs the given style into the raster image layer.
-     * @param rasterSymbolizer The style.
-     * @param raster
+     * @param rasterSymbolizer the style.
+     * @param raster the raster data
      */
     public void plug(RasterSymbology rasterSymbolizer, Raster raster) {
         

@@ -17,7 +17,7 @@ import static org.openjump.core.ccordsys.Quantity.LENGTH;
  *     rpad((coalesce(factor_b,0)/coalesce(factor_c,1))::text, 21, ' ') || ', ' ||
  *     '"m"' || '),'
  * FROM epsg_unitofmeasure
- * WHERE deprecated = 0 AND unit_of_meas_type IN ('length','angle') AND uom_code > 9000
+ * WHERE deprecated = 0 AND unit_of_meas_type IN ('length','angle') AND uom_code &gt; 9000
  * ORDER BY uom_code
  *
  * Some handwriting reformatting/correction are necessary though

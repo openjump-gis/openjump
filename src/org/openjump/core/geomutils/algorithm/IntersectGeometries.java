@@ -142,17 +142,17 @@ public class IntersectGeometries {
 	
 	/**
 	 * the method intersects all polygons in the geometry list with each other. An intersection is only
-	 * proceeded if it returns another polygon (i.e. the intersection area > 0). Unfortunately the method
+	 * proceeded if it returns another polygon (i.e. the intersection area &gt; 0). Unfortunately the method
 	 * returns results where some polygons may contain spikes. For this reason it may be better to create an 
 	 * an intersection of Linestrings (derived from the Polygons) and then use the Polygonizer (see IntersectPolygonLayersPlugIn).  
 	 * 
 	 * @param geomList list of geometries to process
-	 * @param accurracy this parameter is currently not used and replaced by the use of a fixed precision model
+	 * @param accuracy this parameter is currently not used and replaced by the use of a fixed precision model
 	 * @param monitor can be null
 	 * @param context can be null
 	 * @return an ArrayList of processed geometries
 	 */
-	public static ArrayList<Geometry> intersectPolygons(ArrayList<Geometry> geomList, double accurracy, TaskMonitor monitor, PlugInContext context){
+	public static ArrayList<Geometry> intersectPolygons(ArrayList<Geometry> geomList, double accuracy, TaskMonitor monitor, PlugInContext context){
 		ArrayList<Geometry> withoutIntersection = new ArrayList<Geometry>(); 
 		//-- resolve all GeometryCollections/Multigeometries
 		ArrayList<Geometry> tempList = new ArrayList();
@@ -429,7 +429,7 @@ public class IntersectGeometries {
 	 * 
 	 * @param g1 first geometry
 	 * @param g2 second geometry
-	 * @return true if area(intersection) > 0 
+	 * @return true if area(intersection) &gt; 0
 	 * 
 	 * TODO : enable check of mixed geometries. 
 	 */

@@ -53,7 +53,7 @@ import java.util.Map;
  * corresponding SegmentString's Map</li>
  * </ul>
  *
- * @author Micha&eumll Michaud
+ * @author Micha&euml;l Michaud
  */
 public class SegmentStringsWithData2Features {
 

@@ -15,7 +15,6 @@ import org.openjump.core.rasterimage.styler.ColorUtils;
 /**
  * A SWING table used to represent class intervals values and corresponding
  * colours. The colors can be changed using a color picker.
- * @author 
  */
 public class ColorsTablePanel extends JPanel {
     

@@ -44,14 +44,14 @@ public class SpatialDatabasesFeatureInputStream extends BaseFeatureInputStream {
     
     /**
      * 
-     * @return 
+     * @return the underlaying query String
      */
     public String getQueryString(){return queryString;}
     
     /**
      * To overload
-     * @param rs
-     * @return 
+     * @param rs a ResultSet
+     * @return the SpatialDatabasesResultSetConverter to be used
      */
     protected SpatialDatabasesResultSetConverter getResultSetConverter(ResultSet rs) {
       return new SpatialDatabasesResultSetConverter(conn, rs);

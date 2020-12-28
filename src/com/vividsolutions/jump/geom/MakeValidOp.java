@@ -44,9 +44,9 @@ import static com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory.*
 
 /**
  * Operator to make a geometry valid.
- * <br/>
- * Making a geometry valid will remove duplicate points although duplicate points
- * do not make a geometry invalid.
+ *
+ * <p>Making a geometry valid will remove duplicate points although duplicate points
+ * do not make a geometry invalid.</p>
  *
  * @author Michaël Michaud
  */

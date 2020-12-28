@@ -29,10 +29,10 @@ public class SLDHandler {
      * Reads the SLD file and creates a raster symbolizer.
      * @param SLDFile The SLD file to be read.
      * @return The raster symbolizer.
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     * @throws Exception 
+     * @throws ParserConfigurationException if an Exception occurs during XML parser configuration
+     * @throws SAXException if a Sax exception occurs during XML parsing
+     * @throws IOException if an IOException occurs during file reading
+     * @throws Exception if an other kind of Exception occurs
      */
     public static RasterSymbology read(File SLDFile)
             throws ParserConfigurationException, SAXException, IOException, Exception {

@@ -13,7 +13,7 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 
 /**
  * @deprecated replaced by geoimg code, more efficient
- * @TODO to be removed in version 2
+ * TODO to be removed in version 2
  */
 @Deprecated
 public class RasterPainter

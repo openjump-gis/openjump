@@ -56,10 +56,14 @@ package com.vividsolutions.jump.workbench.plugin;
  * @see PlugInManager
  */
 public interface PlugIn {
+
     /**
      * Called when Workbench starts up to allow plugins to initialize themselves.
+     *
+     * @param context context of the PlugIn
+     * @throws Exception if an exception occur during initialization
      */
-    public void initialize(PlugInContext context) throws Exception;
+    void initialize(PlugInContext context) throws Exception;
 
     /**
      * Performs the action for this plugin.
@@ -68,17 +72,18 @@ public interface PlugIn {
      * should return <code>false</code> to prevent the run method
      * from being called.
      *
+     * @param context context of this PlugIn
      * @return true if the action completed, false if it was aborted.
      * Used by ThreadedPlugIns to indicate that their #run method needn't be
      * called next.
      * @throws Exception if a problem occurs during plug-in execution
      * @see ThreadedPlugIn
      */
-    public boolean execute(PlugInContext context) throws Exception;
+    boolean execute(PlugInContext context) throws Exception;
 
     /**
      * Returns a very brief description of this PlugIn e.g. for display as a menu item
      * @return the name of this PlugIn
      */
-    public String getName();
+    String getName();
 }

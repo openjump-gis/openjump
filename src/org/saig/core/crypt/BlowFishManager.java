@@ -47,8 +47,6 @@ import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * BlowFish algorithm crypt manager
- * <p>
- * </p>
  * 
  * @author Sergio Ba&ntilde;os Calvo - sbc@saig.es
  * @since 1.1.1

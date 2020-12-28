@@ -45,14 +45,14 @@ import java.util.*;
 /**
  * Takes care of "rollback" (if any geometries are invalid) and undo,
  * for PlugIns and CursorTools that modify geometries.
- * <p> Also:
+ * <p> Also:</p>
  * <UL>
  *      <LI>warns the user if invalid geometries are found</LI>
  *      <LI>invalidates the layer envelope cache</LI>
  *      <LI>invalidates the geometry envelope caches</LI>
  *      <LI>(undoably) removes features from the layer when their geometries are made empty</LI>
  *      <LI>(undoably) adds features to the layer when they start with empty geometries </LI>
- * </UL></p>
+ * </UL>
  */
 public class EditTransaction {
 

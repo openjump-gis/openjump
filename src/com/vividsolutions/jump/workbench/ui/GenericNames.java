@@ -36,7 +36,7 @@ import com.vividsolutions.jump.I18N;
 /**
  * Use these for generic names as layer, layer A, function...
  * 
- * @author Basile Chandesris - <chandesris@pt-consulting.lu>
+ * @author Basile Chandesris - &lt;chandesris@pt-consulting.lu&gt;
  */
 public interface GenericNames {
 	String LAYER = I18N.get("ui.GenericNames.LAYER");

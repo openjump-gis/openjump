@@ -44,7 +44,9 @@ import de.latlon.deejump.wfs.client.AbstractWFSWrapper;
 /**
  * This class represents a WFS layer. The important difference to a common Layer is that a WFS layer
  * keeps hold of its original WFS name no matter how JUMP changes it. This original name
- * (FeatureType name)is used for transactions.<br/> Another addition concerns a layer listener. By
+ * (FeatureType name)is used for transactions.
+ * <br>
+ * Another addition concerns a layer listener. By
  * setting the WFSLayerListener one can keep track of the changes performed to the layer and use
  * those changes for creation transaction statements. <br/>
  * 

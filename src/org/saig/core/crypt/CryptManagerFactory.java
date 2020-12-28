@@ -40,8 +40,6 @@ import org.saig.jump.lang.I18N;
 
 /**
  * Crypt manager factory
- * <p>
- * </p>
  * 
  * @author Sergio Ba&ntilde;os Calvo - sbc@saig.es
  * @since 1.0

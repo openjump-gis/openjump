@@ -24,7 +24,7 @@ import java.text.DecimalFormat;
  * This Style paints the area and distance in the center of the Geometry's
  * Envelope. At every vertex the actual distance will be painted.
  * 
- * @author Matthias Scholz <ms@jammerhund.de>
+ * @author Matthias Scholz &lt;ms@jammerhund.de&gt;
  */
 public class MeasurementStyle implements Style {
 

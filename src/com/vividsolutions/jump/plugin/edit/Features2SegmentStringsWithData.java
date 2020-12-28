@@ -42,7 +42,7 @@ import java.util.List;
  * Utility class to transform a collection of Features into a List of
  * SegmentStrings, and to store genealogy data into their data field.
  *
- * @author Micha&eumll Michaud
+ * @author Micha&euml;l Michaud
  */
 public class Features2SegmentStringsWithData {
 

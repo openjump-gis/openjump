@@ -42,7 +42,7 @@ public class AddTextFieldTextToTextAreaOnClick_Action extends AbstractAction {
     }
     
     /**
-     *@inheritDoc
+     * @param arg0 the event to process
      */
     public void actionPerformed(ActionEvent arg0) {
         String number = textFrom.getText();

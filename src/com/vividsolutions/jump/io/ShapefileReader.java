@@ -67,29 +67,29 @@ import com.vividsolutions.jump.workbench.Logger;
  *   DataProperties for the JUMPReader load(DataProperties) interface:<br><br>
  * </p>
  *
- * <p>
- *  <table border='1' cellspacing='0' cellpadding='4'>
+ *  <table style="border-collapse: collapse;" summary="">
  *    <tr>
- *      <th>Parameter</th><th>Meaning</th>
+ *      <th style="border: 1px solid #999; padding: 4px;">Parameter</th>
+ *      <th style="border: 1px solid #999; padding: 4px;">Meaning</th>
  *    </tr>
  *    <tr>
- *      <td>InputFile or DefaultValue</td>
- *      <td>File name for the input .shp file</td>
+ *      <td style="border: 1px solid #999; padding: 4px;">InputFile or DefaultValue</td>
+ *      <td style="border: 1px solid #999; padding: 4px;">File name for the input .shp file</td>
  *    </tr>
  *    <tr>
- *      <td colspan='2'>
+ *      <td colspan='2' style="border: 1px solid #999; padding: 4px;">
  *         NOTE: The input .dbf is assumed to be 'beside' (in the same
  *         directory) as the .shp file.
  *      </td>
  *    </tr>
 
  *    <tr>
- *      <td>CompressedFile</td>
- *      <td>File name (.zip or .tgz NOT a .gz) with .shp and .dbf file inside</td>
+ *      <td style="border: 1px solid #999; padding: 4px;">CompressedFile</td>
+ *      <td style="border: 1px solid #999; padding: 4px;">File name (.zip or .tgz NOT a .gz) with .shp and .dbf file inside</td>
  *    </tr>
  *
  *    <tr>
- *      <td colspan='2'>
+ *      <td colspan='2' style="border: 1px solid #999; padding: 4px;">
  *         Uses a modified version of geotools to do the .dbf and .shp
  *         file reading.  If you are reading from a .zip file, the dbf
  *         file will be copied to your temp directory and deleted
@@ -97,7 +97,6 @@ import com.vividsolutions.jump.workbench.Logger;
  *      </td>
  *    </tr>
  *  </table>
-
  */
 public class ShapefileReader extends AbstractJUMPReader {
 

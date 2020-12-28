@@ -90,6 +90,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * @param datasetName dataset name
      * @param geometryAttributeName geometry attribute name
      * @param externalPKName database primary key used to manage feature updates
+     * @param txManager the transaction manager
+     * @param context global context of the application
      */
     public WritableDataStoreDataSource(ConnectionDescriptor connectionDescriptor,
                                        String datasetName,
@@ -145,6 +147,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * supposed to change (I tried to change the value at the end of an executeUpdate,
      * but initial properties set in the dialog box are re-applied and overwrite
      * changed value after that).
+     *
+     * @param tableAlreadyCreated true if the table already exists
      */
     public void setTableAlreadyCreated(boolean tableAlreadyCreated) {
         this.tableAlreadyCreated = tableAlreadyCreated;
@@ -284,6 +288,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * With some databases, it may be useful to do some cleaning after a big update.
      * Example : perform a vacuum analyze in PostgreSQL to compact database and to
      * update statistics (needed by ST_EstimatedExtent function)
+     * @param conn the Connection to use to finalize the update
+     * @throws Exception if an Exception occurs during update finalization
      */
     @Deprecated // maybe much time consuming, to be driven by the server, not the client
     public abstract void finalizeUpdate(SpatialDatabasesDSConnection conn) throws Exception;
@@ -330,6 +336,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * Create a statement to insert a feature into the database
      * @param conn connection to the database to update.
      * @param fSchema feature schema
+     * @param multi true to force geometry to be a MultiGeometry
      * @param normalizedColumnNames whether database column names should be normalized (lowercase) or not
      * @return a PreparedStatement
      * @throws SQLException  if an exception occurs during insert
@@ -539,6 +546,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
     /**
      * Check if this [schema.]table exists in this database.
+     * @param conn connection to use to check if table exists
+     * @throws SQLException if the server returns an exception while checking
      */
     private boolean tableExists(java.sql.Connection conn) throws SQLException {
         DatabaseMetaData metadata = conn.getMetaData();
@@ -548,6 +557,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     /**
      * Execute a query against this connection to delete the reference to this
      * table in the PostGIS's geometry_columns table.
+     * @param conn connection to use to delete the table
+     * @throws SQLException if the server returns an exception while deleting
      */
     abstract protected void deleteTableQuery(SpatialDatabasesDSConnection conn) throws SQLException;
 
@@ -557,6 +568,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * @param fc featureCollection to upload to the database
      * @param srid srid of the geometry
      * @param geometryType geometry type
+     * @param multi true to force geometry to be a MultiGeometry
      * @param dim geometry dimension
      * @param normalizedColumnNames whether columns names have to be normalized or not
      * @throws SQLException if an exception occurs during table creation or inserts
@@ -570,11 +582,14 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
 
     /**
      * Add an automatically named primary key constraint to the table.
+     * @param conn the Connection to use to add the Primary Key
+     * @param primaryKey the column name for th primary key
+     * @throws SQLException if an exception occurs during primary key addition
      */
     protected abstract void addDBPrimaryKey(SpatialDatabasesDSConnection conn, String primaryKey) throws SQLException;
 
 
-    // @TODO Bad design : it should be possible to do this kind of post-processing
+    // TODO Bad design : it should be possible to do this kind of post-processing
     // in the loader (where layer name is known rather than in the datasource)
     private void reloadDataFromDataStore(Connection conn, TaskMonitor monitor) throws Exception {
         Layer[] selectedLayers = JUMPWorkbench.getInstance().getContext().getLayerableNamePanel().getSelectedLayers();
@@ -602,6 +617,9 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     /**
      * Return 3 if coll contains at least one 3d geometry, 2 if coll contains
      * only 2d geometries and defaultDim if coll is empty.
+     * @param coll featureCollection to extract geometry dimension from
+     * @param defaultDim set a default in the case coll is empty
+     * @return the geometry dimension of collection features
      */
     protected static int getGeometryDimension(FeatureCollection coll, int defaultDim) {
         if (coll.size() > 0) {
@@ -638,6 +656,10 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      *   geometry types into multigeometry types to be able to use the same
      *   type (multi) for geometries of same dimension (single or multi)</li>
      * </ul>
+     * @param coll featureCollection to extract geometry dimension from
+     * @param narrow true to use a specific geometry type where possible
+     * @param multi true to always use a MultiGeometry
+     * @return the geometry class to be used
      */
     protected static Class getGeometryType(FeatureCollection coll, boolean narrow, boolean multi) {
         if (!narrow && !multi) return Geometry.class;

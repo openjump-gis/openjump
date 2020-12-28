@@ -86,8 +86,8 @@ public class Classifier1D {
 	
     /**
      * calculates class limits with equal range
-     * @param data
-     * @param numberClasses
+     * @param data input data
+     * @param numberClasses number of classes
      * @return break values for classes. E.g. for 4 ranges 3 breaks are returned. Min and Max Values are not returned.   
      */
     public static double[] classifyEqualRange(double[] data, int numberClasses){
@@ -105,8 +105,8 @@ public class Classifier1D {
      * calculates class limits with equal number, which is euqal to the "quantiles" method.
      * Note that differences in the items per classes occure, if items have same values
      * and need to be grouped into the same class. 
-     * @param data
-     * @param numberClasses
+     * @param data input data
+     * @param numberClasses number of classes
      * @return break values for classes. E.g. for 4 ranges 3 breaks are returned. Min and Max Values are not returned.   
      */
     public static double[] classifyEqualNumber(double[] data, int numberClasses){
@@ -138,12 +138,12 @@ public class Classifier1D {
 
     /**
      * calculates class limits using mean value and standard deviation, i.e. for 5 classes:
-     * c1: values < m- 2std, c2: m - 2std < values < m - 1std, 
-     * c3: m - 1std < values < m + 1std, c4: m + 1std < values < m + 2std 
-     * c5: values > m- 2std
+     * c1: values &lt; m- 2std, c2: m - 2std &lt; values &lt; m - 1std,
+     * c3: m - 1std &lt; values &lt; m + 1std, c4: m + 1std &lt; values &lt; m + 2std
+     * c5: values &gt; m- 2std
      * 
-     * @param data
-     * @param numberClasses
+     * @param data input data
+     * @param numberClasses number of classes
      * @return break values for classes. E.g. for 4 ranges 3 breaks are returned. Min and Max Values are not returned.   
      */
     public static double[] classifyMeanStandardDeviation(double[] data, int numberClasses){
@@ -175,8 +175,8 @@ public class Classifier1D {
      * calculates class limits using Maximum Breaks method (see e.g. T. A. Slocum:
      * "Thematic Cartography and Visualization", 1999)
      * 
-     * @param data
-     * @param numberClasses
+     * @param data input data
+     * @param numberClasses number of classes
      * @return break values for classes. E.g. for 4 ranges 3 breaks are returned. Min and Max Values are not returned.   
      */
     public static double[] classifyMaxBreaks(double[] data, int numberClasses){
@@ -216,8 +216,8 @@ public class Classifier1D {
 	/**
 	 * calculates class limits using Jenks's Optimisation Method(Natural Break)
 	 * 
-	 * @param data
-	 * @param numberClasses
+	 * @param data input data
+	 * @param numberClasses number of classes
 	 * @return break values for classes. E.g. for 4 ranges 3 breaks are
 	 *         returned. Min and Max Values are not returned.
 	 */
@@ -288,11 +288,12 @@ public class Classifier1D {
     /**
      * calculates class limits using optimal breaks method (see e.g. T. A. Slocum:
      * "Thematic Cartography and Visualization", 1999, p.73) or B.D. Dent: "Cartography: 
-     *  Thematic Map Design", 1999, p.146). \n 
-     * Note: limits should not be equal to values. Since values that are equal to bounds 
-     * can be classified into 2 classes. 
-     * @param data
-     * @param numberClasses
+     *  Thematic Map Design", 1999, p.146).
+     * <p>Note: limits should not be equal to values. Since values that are equal to bounds
+     * can be classified into 2 classes.</p>
+     *
+     * @param data input data
+     * @param numberClasses number of classes
      * @param initialLimitAlgorithm 1: maxBreaks, 2: equalRange, 3: quantiles, 4: MeanStd-Dev 5: Jenks
      * @return break values for classes. E.g. for 4 ranges 3 breaks are returned. Min and Max Values are not returned.   
      */
@@ -357,10 +358,10 @@ public class Classifier1D {
     
     /**
      * Moves the limits, by assigning data points to the closest class mean value.
-     * This approach is equal to the k-means procedure (see e.g. Duda, Hart and 
-     * Stork 2000, p. 526).   
+     * <p>This approach is equal to the k-means procedure (see e.g. Duda, Hart and
+     * Stork 2000, p. 526).</p>
      * @param data (sortedData from min to max, e.g. use jmathtools DoubleArray.sort())
-     * @param oldLimits
+     * @param oldLimits old limits array
      * @return a double array of adjusted limits
      */
     public static double[] adjustLimitsKMeans(double[] data, double[] oldLimits){
@@ -422,7 +423,7 @@ public class Classifier1D {
     
     /**
      * Classifies the given data according to the given limits. 
-     * @param data
+     * @param data input data
      * @param limits The break/decision values between the classes. Highest and lowest values
      *          are not delivered. Example Limits are for instance delivered by the  
      *          Classifier1D.classifyEqualNumber() method.
@@ -466,12 +467,13 @@ public class Classifier1D {
     }
     
     /**
-     * Checks if value is within limits.\n
-     * Note: values equal to the bound values return "true".
-     * (qery: lowerlimit <= val <= upperlimit)
-     * @param val
-     * @param lowerBound
-     * @param upperBound
+     * Checks if value is within limits.
+     * <p>Note: values equal to the bound values return "true".
+     * (qery: lowerlimit &lt;= val &lt;= upperlimit)</p>
+     *
+     * @param val the value to test
+     * @param lowerBound the lower bound
+     * @param upperBound the upper bound
      * @return true if val is included between lowerBound (included) and upperBound (included)
      */
     public static boolean isInClass(double val, double lowerBound, double upperBound){
@@ -486,9 +488,9 @@ public class Classifier1D {
     
     /**
      * SDAM (squared deviation [from] array mean): see B.D. Dent (1999, p. 148)
-     * alternatively look for T.A. Slocum (1999, p. 73). \n
-     * Used for Optimal Breaks Method.
-     * @param data
+     * alternatively look for T.A. Slocum (1999, p. 73).
+     * <p>Used for Optimal Breaks Method.</p>
+     * @param data input data
      * @return the squared deviation from double array mean
      */
     public static double calcSDAM(double[] data){
@@ -506,10 +508,11 @@ public class Classifier1D {
      * alternatively look for T.A. Slocum (1999, p. 73). \n
      * Used for Optimal Breaks Method.
      * TODO : definition of SDCM (relative to SDAM)
-     * @param data
+     * @param data input data
      * @param classes the classes for every item of the data array
-     * @param classMeans
-     * @param numClasses
+     * @param classMeans class means
+     * @param numClasses number of classes
+     * @return squared deviations from class means
      */
     public static double calcSDCM(double[] data, int[] classes, double[] classMeans, int numClasses){
         
@@ -545,11 +548,12 @@ public class Classifier1D {
      * GVF (goodness of variance fit): see B.D. Dent (1999, p. 148)
      * alternatively look for T.A. Slocum (1999, p. 73). \n
      * Used for Optimal Breaks Method.
-     * @param data
+     * @param data input data
      * @param limits The break/decision values between the classes. Highest and lowest values
      *          are not delivered. Example Limits are for instance delivered by the  
      *          Classifier1D.classifyEqualNumber() method.
      * @param SDAM squared deviation [from] array mean
+     * @return goodness of variance fit
      */
     public static double calcGVF(double[] data, double[] limits, double SDAM){
         int numberClasses = limits.length+1;
@@ -569,6 +573,7 @@ public class Classifier1D {
      * @param data input data
      * @param classes the vector containing the information on the class for an item
      * @param numClasses the number of classes
+     * @return class means
      */
     public static double[] calcClassMeans(double[] data, int[] classes, int numClasses){
         

@@ -53,7 +53,7 @@ import com.vividsolutions.jump.I18N;
  * Based on FontChooser by Janos Szatmary. Posted on the Sun Java forums.
  *
  * Szatmary, Janos. "A FontChooser Class (source included)." April 2001.
- * Available from http://forum.java.sun.com/thread.jsp?forum=57&thread=124810.
+ * Available from <a href="http://forum.java.sun.com/thread.jsp?forum=57&thread=124810">java forum</a>
  * Internet; accessed 6 November 2002.
  *
 */

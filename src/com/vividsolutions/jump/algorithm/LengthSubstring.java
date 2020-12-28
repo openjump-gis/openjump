@@ -14,7 +14,7 @@ import com.vividsolutions.jts.util.Assert;
  * an inverted section of the line is returned
  * </ul>
  * <p>
- * FUTURE: should handle startLength > endLength, and flip the returned
+ * FUTURE: should handle startLength &gt; endLength, and flip the returned
  * linestring. Also should handle negative lengths (they are measured from end
  * of line backwards).
  */

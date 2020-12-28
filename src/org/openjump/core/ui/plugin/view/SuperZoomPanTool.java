@@ -42,7 +42,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  * - zoom in/out with mousewheel and then left click for zoom or right click for cancel
  * In wheelMode you can see the new area after zooming. Also known as "Area of interest".
  * 
- * @author Matthias Scholz <ms@jammerhund.de>
+ * @author Matthias Scholz &lt;ms@jammerhund.de&gt;
  */
 public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 

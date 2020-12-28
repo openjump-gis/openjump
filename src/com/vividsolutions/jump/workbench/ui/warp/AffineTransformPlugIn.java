@@ -80,12 +80,16 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 /**
  * Applies an affine transform to the selected layers. The affine transform is
  * specified using three vectors drawn by the user.
- * 
- * @date 2015_06_18 Giuseppe Aruta (giuseppe_aruta[AT]yahoo.it) Modified plugin.
+ *
+ * <p>
+ * 2015_06_18 Giuseppe Aruta (giuseppe_aruta[AT]yahoo.it) Modified plugin.
  *       It allowas now to perform a 3-vector affine transformation either to a
  *       vector or to an image loaded via Sextante Raster Framework.
- * @date 2017_11_10 Giuseppe Aruta (giuseppe_aruta[AT]yahoo.it) Added some
+ * </p>
+ * <p>
+ * 2017_11_10 Giuseppe Aruta (giuseppe_aruta[AT]yahoo.it) Added some
  *       method to call it from WarpPanel
+ * </p>
  */
 
 public class AffineTransformPlugIn extends AbstractPlugIn {

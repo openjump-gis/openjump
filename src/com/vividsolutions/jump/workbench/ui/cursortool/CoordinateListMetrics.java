@@ -64,12 +64,12 @@ public class CoordinateListMetrics
    * Display the coordinates metrics with the option to compute the distance for
    * a closed geometry.
    *
-   * @param coordinates
-   * @param panel
-   * @param closedDistance
+   * @param coordinates list of coordinates
+   * @param panel the LayerViewPanel
+   * @param closedDistance true if coordinates represent a closed line (ring)
    */
   public void displayMetrics(List coordinates, LayerViewPanel panel, boolean closedDistance) {
-	panel.getContext().setStatusMessage(getMetricsString(coordinates, panel, closedDistance));
+	  panel.getContext().setStatusMessage(getMetricsString(coordinates, panel, closedDistance));
   }
 
   public String getMetricsString(List coordinates, LayerViewPanel panel)
@@ -83,9 +83,9 @@ public class CoordinateListMetrics
    * 14-3-2014 (Giuseppe Aruta) Added compute of last distance (between last point 
    *            and the cursor and the compute of azimuth
    *
-   * @param coordinates
-   * @param panel
-   * @param closedDistance
+   * @param coordinates list of coordinates
+   * @param panel the LayerViewPanel
+   * @param closedDistance true if coordinates represent a closed line (ring)
    * @return the String representing the geometry metrics
    */
   public String getMetricsString(List coordinates, LayerViewPanel panel, boolean closedDistance)
@@ -117,8 +117,8 @@ public class CoordinateListMetrics
    * Computes the distance with the option to compute the distance for
    * a closed geometry.
    *
-   * @param coordinates
-   * @param closedDistance
+   * @param coordinates list of coordinates
+   * @param closedDistance true if coordinates represent a closed line (ring)
    * @return the sum of the distance between coordinates 
    */
   public static double distance(List coordinates, boolean closedDistance)
@@ -138,7 +138,7 @@ public class CoordinateListMetrics
   /**
    * Computes the angle between the last 2 segments in the coordinates list
    *
-   * @param coordinates
+   * @param coordinates list of coordinates
    * @return the angle in degrees
    */
   public static double angle(List coordinates)
@@ -160,8 +160,10 @@ public class CoordinateListMetrics
 
   /**
    * Computes the area for the coordinates list.
-   * The area is forcd to be positive.
+   * The area is forced to be positive.
    * The coordinate list can be open, and the closing coordinate is supplied
+   * @param coordinates list of coordinates
+   * @return the area as a double
    */
   private static double area(List coordinates)
   {
@@ -185,7 +187,8 @@ public class CoordinateListMetrics
    * Giuseppe Aruta (Peppe - ma15569) 03-14-2014
    * Computes the angle facing North (upper side of the view)
    *
-   * @param coordinates
+   * @param coordinates list of coordinates
+   * @param closedDistance true if coordinates represent a closed line (ring)
    * @return the angle in degrees
    */
   public static double azimuth(List coordinates, boolean closedDistance)
@@ -217,9 +220,9 @@ public class CoordinateListMetrics
      * Computes the angle between the last drawn segment 
      * and the position of the cursor
      *
-     * @param coordinates
-     * @param closedDistance
-     * @return the the distance between coordinates of last point and coordinates of cursor
+     * @param coordinates list of coordinates
+     * @param closedDistance true if coordinates represent a closed line (ring)
+     * @return the distance between coordinates of last point and coordinates of cursor
      */
   public static double distancelast(List coordinates, boolean closedDistance)
 	   {
@@ -241,8 +244,11 @@ public class CoordinateListMetrics
 	   	}
    
    /**
-    * Giuseppe Aruta 2015_01_10 code from ConstrainedMamager.class return
+    * Giuseppe Aruta 2015_01_10 code from ConstrainedManager.class return
     * Bearing in degrees (between EW axes, -180 to +180) from 2 coordinates
+    * @param coordinates list of coordinates
+    * @param closedDistance true if coordinates represent a closed line (ring)
+    * @return bearing in degrees
     */
    public static double bearing(List coordinates, boolean closedDistance) {
 

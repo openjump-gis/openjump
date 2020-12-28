@@ -12,6 +12,7 @@ public interface DataStoreMetadata {
 
   /**
    * list all tables
+   * @return an array of dataset names for this DataStore
    */
   String[] getDatasetNames();
 
@@ -23,6 +24,8 @@ public interface DataStoreMetadata {
    * 
    * @param datasetName
    *          the table name (optionally prefixed by a schema name)
+   * @return the list of columns to be used as a PrimaryKey
+   * @throws SQLException if the server throws an Exception during Primary Key retrieval
    */
   List<PrimaryKeyColumn> getPrimaryKeyColumns(String datasetName)
       throws SQLException;
@@ -37,18 +40,26 @@ public interface DataStoreMetadata {
   Envelope getExtents(String datasetName, String attributeName);
 
   /**
-   * get the SRID of a table's (geometry) column
+   * Get the SRID of a table's (geometry) column
+   *
+   * @param datasetName the dataset name
+   * @param colName the column name
+   * @return the SpatialReferenceSystemID for this column
+   * @throws SQLException if the server throws an Exception during SRID retrieval
    */
   SpatialReferenceSystemID getSRID(String datasetName, String colName)
       throws SQLException;
 
   /**
    * list columns of a table
+   * @param datasetName name of the table or dataset
+   * @return the names of this dataset columns
    */
   String[] getColumnNames(String datasetName);
   
   /**
    * DataSoreConnection used by these metadata
+   * @return a DataStoreConnection
    */
   DataStoreConnection getDataStoreConnection();
 }

@@ -20,8 +20,8 @@ public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
 
   /**
    * Builds a valid SQL spatial query with the given spatial filter.
-   * @param query
-   * @return a SQL query to get column names
+   * @param query a spatial filter
+   * @return the SQL query string for this spatial filter
    */
   @Override
   public String getSQL(FilterQuery query) {
@@ -48,7 +48,8 @@ public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
   /**
    * Returns the query allowing to test a DataStoreLayer: builds a query with where
    * clause and limit 0 to check where clause.
-   * @return 
+   * @param dsLayer a DataStoreLayer
+   * @return a SQL String querying dsLayer with an optional where clause and a limit of 0
    */
   @Override
   public String getCheckSQL(DataStoreLayer dsLayer) {
@@ -68,8 +69,8 @@ public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
   /**
    * Returns the string representing a SQL column definition.
    * Implementors should take care of column names (case, quotes)
-   * @param colNames
-   * @param geomColName
+   * @param colNames array of column names
+   * @param geomColName geometry column name
    * @return column list
    */
   @Override

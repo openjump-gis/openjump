@@ -17,7 +17,7 @@ import org.openjump.core.ccordsys.srid.SRIDStyle;
 import javax.swing.ImageIcon;
 
 /**
- * @see {@link org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizard}
+ * @see org.openjump.core.ui.plugin.datastore.AddDataStoreLayerWizard
  */
 @Deprecated 
 public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {

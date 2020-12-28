@@ -65,7 +65,7 @@ public class ImageryUtils {
      *            : ex. C:/Folder/file.tif
      * @param bufferedImage
      *            : BufferedImage from a layer
-     * @return
+     * @return true if the image has been saved
      */
     @Deprecated
     public static boolean saveToTiff(File tiffFile, BufferedImage bufferedImage) {
@@ -104,11 +104,10 @@ public class ImageryUtils {
      * 
      * @param pngFile
      *            : ex. C:/Folder/file.png
-     * @param bufferedImage
+     * @param image
      *            : BufferedImage from a layer
-     * @return
+     * @return true if the image has been saved
      */
-
     public static boolean saveToPng(File pngFile, BufferedImage image) {
         try {
             ImageIO.write(image, "png", pngFile);
@@ -124,9 +123,9 @@ public class ImageryUtils {
     /**
      * Check if ImageLayer has been modified
      * 
-     * @throws ReferencedImageException
+     * @param layer the layer to test
+     * @return true if the layer has been modified
      */
-
     public static boolean hasBeenModified(Layer layer) {
         final FeatureCollection featureCollection = layer
                 .getFeatureCollectionWrapper();
@@ -166,10 +165,9 @@ public class ImageryUtils {
     /**
      * Check if the selected layer is BMP, JPG, GIF, PNG or TIF
      * 
-     * @param layer
-     * @return
+     * @param layer the layer to test
+     * @return true if layer has a well known image format
      */
-
     public static boolean isCompatibleImageLayer(Layer layer) {
         final FeatureCollection featureCollection = layer
                 .getFeatureCollectionWrapper();
@@ -202,11 +200,10 @@ public class ImageryUtils {
     /**
      * Get a bufferedImage from a ReferencedImage layer
      * 
-     * @param layer
-     * @return
-     * @throws IOException
+     * @param layer a ReferencedImage layer
+     * @return a BufferedImage
+     * @throws IOException if an IOException occurs while reading the image
      */
-
     public static BufferedImage getBufferFromReferenceImageLayer2(Layer layer)
             throws IOException {
 
@@ -237,11 +234,10 @@ public class ImageryUtils {
     /**
      * Get a bufferedImage from a ReferencedImage layer
      * 
-     * @param layer
-     * @return
-     * @throws IOException
+     * @param layer a ReferencedImage layer
+     * @return a BufferedImage
+     * @throws IOException if an IOException occurred while reading the file
      */
-
     public static BufferedImage getBufferFromReferenceImageLayer(Layer layer)
             throws IOException {
 
@@ -327,10 +323,9 @@ public class ImageryUtils {
     /**
      * Add an alpha channel to a BufferedImage
      * 
-     * @param image
-     * @return
+     * @param image a BufferedImage
+     * @return the same BufferedImage with an alpha channel
      */
-
     public static BufferedImage addAlphaChannel(BufferedImage image) {
         final BufferedImage bufferedImage = new BufferedImage(
                 image.getWidth(null), image.getHeight(null),
@@ -344,10 +339,10 @@ public class ImageryUtils {
 
     /**
      * Resize image
-     * @param originalImage
-     * @param width
-     * @param height
-     * @return
+     * @param bufferedImage a BufferedImage
+     * @param width the width of the target image
+     * @param height the height of the target image
+     * @return a new BufferedImage containing a resized version of the source image
      */
     public static BufferedImage resizeImage(BufferedImage bufferedImage,
             int width, int height) {
@@ -394,10 +389,11 @@ public class ImageryUtils {
 
     /**
      * Affine transformation of an image file loaded as ReferencedImageLayer.class
-     * @param Layer.  (as ReferencedImageLayer.class)
-     * @param AffineTransformation. com.vividsolutions.jts.geom.util.AffineTransformation
-     * @param resizeImageToHalf. Resize image to half dimension
-     * @throws Exception
+     *
+     * @param layer a ReferencedImageLayer
+     * @param trans the AffineTransformation to apply
+     * @param resizeImageToHalf true to resize the image to half dimension
+     * @throws Exception if an Exception occurs during transformation
      */
     public static void affineTransformation(Layer layer,
             AffineTransformation trans, boolean resizeImageToHalf)
@@ -505,12 +501,11 @@ public class ImageryUtils {
 
     /**
      * Affine transformation of an image file loaded as RasterImageLaye.class
-     * @param RasterImageLayer.  
-     * @param AffineTransformation. com.vividsolutions.jts.geom.util.AffineTransformation
-     * @param resizeImageToHalf. Resize image to half dimension
-     * @throws Exception
+     * @param layer a RasterImageLayer
+     * @param trans the AffineTransformation to apply to the image
+     * @param resizeImageToHalf true to resize the image to half dimension
+     * @throws Exception if an Exception occurs during transformation
      */
-
     public static void affineTransformation(RasterImageLayer layer,
             AffineTransformation trans, boolean resizeImageToHalf)
             throws Exception {

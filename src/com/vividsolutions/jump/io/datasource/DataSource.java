@@ -52,6 +52,7 @@ public abstract class DataSource {
   /**
    * Sets properties required to open a DataSource, such as username, password,
    * filename, coordinate system, etc. Called by DataSourceQueryChoosers.
+   * @param properties the map containing properties for this DataSource
    */
   public void setProperties(Map<String,Object> properties) {
     this.properties = new HashMap<>(properties);
@@ -69,6 +70,7 @@ public abstract class DataSource {
 
   /**
    * Creates a new Connection to this DataSource.
+   * @return a Connection to connect to this DataSource
    */
   public abstract Connection getConnection();
 

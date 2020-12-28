@@ -65,8 +65,8 @@ import java.util.*;
 
 /**
  * Noder PlugIn computes intersection nodes in a collection of linear or areal
- * features.</p>
- * Main options are :
+ * features.
+ * <p>Main options are :</p>
  * <ul>
  * <li>Input features : selected features or selected layer</li>
  * <li>Output : new layer or layer update</li>

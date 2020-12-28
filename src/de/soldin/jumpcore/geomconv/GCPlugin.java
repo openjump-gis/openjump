@@ -681,6 +681,8 @@ public class GCPlugin extends ExtCorePlugIn {
 	/**
 	 * borrowed from org.geotools.shapefile.PolygonHandler
 	 * try to construct multiple polygons from the given geometry
+	 * @param src source Geometry
+	 * @return an array of Polygons
 	 */
 	public Polygon[] constructPolygons( Geometry src ) {
 

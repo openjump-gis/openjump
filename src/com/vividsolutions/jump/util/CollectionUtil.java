@@ -142,7 +142,7 @@ public class CollectionUtil {
         return new List[] { keys, values };
     }
 
-    public static <T> Collection<T> concatenate(Collection<Collection<T>> collections) {
+    public static <T> Collection<T> concatenate(Collection<? extends Collection<T>> collections) {
         List<T> concatenation = new ArrayList<>();
         for (Collection<T> collection : collections) {
             concatenation.addAll(collection);

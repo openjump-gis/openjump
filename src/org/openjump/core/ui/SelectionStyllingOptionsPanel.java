@@ -34,7 +34,7 @@ import javax.swing.event.ChangeListener;
 /**
  * OptionsPanel for setting up the size, color and the from of selected features.
  *
- * @author Matthias Scholz <ms@jammerhund.de>
+ * @author Matthias Scholz &lt;ms@jammerhund.de&gt;
  */
 public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPanel {
 

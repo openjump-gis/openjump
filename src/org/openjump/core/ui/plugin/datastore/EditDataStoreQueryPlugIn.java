@@ -97,8 +97,7 @@ public class EditDataStoreQueryPlugIn extends RunDatastoreQueryPlugIn {
     return panel;
   }
 
-  /**
-   */
+
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
     final WorkbenchContext wc = workbenchContext;
     EnableCheckFactory enableCheckFactory = new EnableCheckFactory(

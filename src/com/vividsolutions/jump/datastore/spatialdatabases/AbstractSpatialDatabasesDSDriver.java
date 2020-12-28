@@ -127,8 +127,8 @@ public abstract class AbstractSpatialDatabasesDSDriver implements
    * overwrite this method if you have some fancy url scheme and
    * createJdbcConnection() will use that instead of the default implementation
    * 
-   * @param params
-   * @return
+   * @param params list of parameters to create a JDBC URL
+   * @return an URL String from given parameters
    */
   protected String createJdbcUrl(ParameterList params) {
     String url;
@@ -150,9 +150,9 @@ public abstract class AbstractSpatialDatabasesDSDriver implements
    * convenience wrapper for the
    * {@link #createJdbcConnection(ParameterList, Properties)} below
    * 
-   * @param params
-   * @return
-   * @throws Exception
+   * @param params list of parameters to create a Connection to a Spatial Database
+   * @return a Connection from the given parameters
+   * @throws Exception if an exception occurs during connection creation
    */
   protected Connection createJdbcConnection(ParameterList params)
       throws Exception {
@@ -161,6 +161,10 @@ public abstract class AbstractSpatialDatabasesDSDriver implements
 
   /**
    * use this method in your implementation to create the actual JDBC connection
+   * @param params list of parameters to create a Connection to a Spatial Database
+   * @param connProps properties to create the connection
+   * @return a Connection from the list of parameters and the database properties
+   * @throws Exception if an exception occurs during connection creation
    */
   protected Connection createJdbcConnection(ParameterList params,
       Properties connProps) throws Exception {

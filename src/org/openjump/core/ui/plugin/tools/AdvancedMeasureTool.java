@@ -34,7 +34,7 @@ import org.openide.awt.DropDownButtonFactory;
  * A tool for measurment of distance or area.
  *
  *
- * @author Matthias Scholz  <ms@jammerhund.de>
+ * @author Matthias Scholz  &lt;ms@jammerhund.de&gt;
  * @version 0.1
  */
 /*

@@ -38,10 +38,11 @@ public class SpatialDatabasesValueConverterFactory {
   /**
    * Base class to get converter from factory.
    * Should never be called !!
-   * @param rsm
-   * @param columnIndex
-   * @return
-   * @throws SQLException 
+   * @param rsm a ResultSetMetaData
+   * @param columnIndex column index
+   * @return the value converter to use for this column
+   * @throws SQLException if the server throws an exception during ResultSetMetaData reading
+   * @throws UnsupportedOperationException if the method is not implemented
    */
   public ValueConverter getConverter(ResultSetMetaData rsm, int columnIndex)
       throws SQLException {

@@ -38,13 +38,16 @@ import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 
 
 public interface WizardPanel {
+
     /**
      * Called when the user presses Next on this panel's previous panel
+     * @param dataMap the dataMap containing all parameters
      */
     void enteredFromLeft(Map dataMap);
 
     /**
      * Called when the user presses Next on this panel
+     * @throws Exception if an Exception occurs
      */
     void exitingToRight() throws Exception;
 

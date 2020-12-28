@@ -66,6 +66,7 @@ public abstract class AbstractDriverPanel extends JPanel {
     /**
      * Adds an ActionListener that should be notified when the user presses
      * this panel's OK or Cancel button.
+     * @param l an ActionListener
      */
     public abstract void addActionListener(ActionListener l);
 
@@ -91,6 +92,7 @@ public abstract class AbstractDriverPanel extends JPanel {
      * Returns the current panel values. Subclasses overriding this method should
      * call the superclass method first. DriverDialog takes care of merging
      * the returned cache with the original cache.
+     * @return the DriverPanelCache
      */
     public DriverPanelCache getCache() {
         return new DriverPanelCache();

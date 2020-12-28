@@ -20,7 +20,7 @@ import org.openjump.core.ui.plugin.tools.MeasurementStyle;
 /**
  * A special LayerFinder for the AdvancedMeasureTool.
  *
- * @author Matthias Scholz <ms@jammerhund.de>
+ * @author Matthias Scholz &lt;ms@jammerhund.de&gt;
  */
 public class MeasureLayerFinder extends SystemLayerFinder {
 

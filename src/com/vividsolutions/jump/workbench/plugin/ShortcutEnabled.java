@@ -10,18 +10,20 @@ import javax.swing.KeyStroke;
  *
  */
 public interface ShortcutEnabled {
-  public boolean isShortcutEnabled();
+
+  boolean isShortcutEnabled();
   
   /**
    * Convenience Method for getShortcutKeys() and getShortcutModifiers()
+   * @return the KeyStroke associated to the shortcut
    */
-  public KeyStroke getShortcutKeyStroke();
+  KeyStroke getShortcutKeyStroke();
   
-  public int getShortcutModifiers();
+  int getShortcutModifiers();
 
-  public void setShortcutModifiers(int shortcutModifiers);
+  void setShortcutModifiers(int shortcutModifiers);
 
-  public int getShortcutKeys();
+  int getShortcutKeys();
 
-  public void setShortcutKeys(int shortcutKeys);
+  void setShortcutKeys(int shortcutKeys);
 }

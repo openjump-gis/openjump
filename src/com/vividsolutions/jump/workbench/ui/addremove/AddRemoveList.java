@@ -40,16 +40,19 @@ import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 
 
 public interface AddRemoveList {
-    public AddRemoveListModel getModel();
 
-    public void add(InputChangedListener listener);
-    public void add(MouseListener listener);
+    AddRemoveListModel getModel();
 
-    public List getSelectedItems();
+    void add(InputChangedListener listener);
+
+    void add(MouseListener listener);
+
+    List getSelectedItems();
 
     /**
      * Will only be called if the AddRemovePanel's Move Up and Move Down
      * buttons are visible.
+     * @param items to be selected
      */
-    public void setSelectedItems(Collection items);
+    void setSelectedItems(Collection items);
 }

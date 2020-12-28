@@ -23,9 +23,9 @@ public class MariadbDataStoreDriver
     
     /**
      * returns the right type of DataStoreConnection
-     * @param params
-     * @return
-     * @throws Exception 
+     * @param params list of parameters to connect to a MariadbDataStore
+     * @return a Connection to a MariadbDataStore
+     * @throws Exception if an exception occurs while building the connection
      */
     @Override
     public DataStoreConnection createConnection(ParameterList params)

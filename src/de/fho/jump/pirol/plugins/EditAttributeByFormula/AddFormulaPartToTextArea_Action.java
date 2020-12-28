@@ -42,8 +42,10 @@ public class AddFormulaPartToTextArea_Action extends AbstractAction {
     
     
     /**
-     * 
-     *@param textArea text area to add the button text to
+     * @param formulaPart a formula part
+     * @param textArea text area to add the button text to
+     * @param mathSigns the array of math signs
+     * @param featureSchema the feature schema
      */
     public AddFormulaPartToTextArea_Action(String formulaPart, JTextArea textArea, String[] mathSigns, FeatureSchema featureSchema) {
         super();
@@ -67,7 +69,7 @@ public class AddFormulaPartToTextArea_Action extends AbstractAction {
     }
     
     /**
-     *@inheritDoc
+     * @param event event to process
      */
     public void actionPerformed(ActionEvent event) {
         String buttonText = this.formulaPart;
@@ -85,7 +87,6 @@ public class AddFormulaPartToTextArea_Action extends AbstractAction {
             // TODO: check whether two operators or two operands in a row were used...
             
             if (formulaOk){
-                //this.textArea.append(buttonText);
                 this.textArea.setText(this.textArea.getText() + buttonText);
             }
         }

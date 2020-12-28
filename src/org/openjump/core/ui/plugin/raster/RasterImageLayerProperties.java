@@ -22,7 +22,7 @@ import com.vividsolutions.jts.geom.Envelope;
 public class RasterImageLayerProperties {
 
 	 
-	  private static int datatype;
+	   private static int datatype;
 	   private static String type;
 
 	   private static final String[] Q = new String[] { "", "KB", "MB", "GB",
@@ -35,7 +35,6 @@ public class RasterImageLayerProperties {
 	    * @param bytes as long
 	    * @return java.lang.String
 	    */
-	    
 	    public static String getFileSizeMegaBytes(long bytes) {
 	        for (int i = 6; i > 0; i--) {
 	            double step = Math.pow(1024, i);
@@ -47,10 +46,9 @@ public class RasterImageLayerProperties {
 
 	    /**
 	     * Gets dimension of RasterImageLayer in long
-	     * @param org.openjump.core.rasterimage.RasterImageLayer
-	     * @return long
+	     * @param layer a RasterImageLayer
+	     * @return the size of the file containing the image
 	     */
-	    
 	    public static long getFileSizeBytes(RasterImageLayer layer) {
 	        File rfile = new File(layer.getImageFileName());
 	        return rfile.length();
@@ -58,10 +56,9 @@ public class RasterImageLayerProperties {
 
 	    /**
 	     * Return the extension of the file as String
-	     * @param org.openjump.core.rasterimage.RasterImageLayer
-	     * @return java.lang.String
+	     * @param layer a RasterImageLayer
+	     * @return the file extension as String
 	     */
-	    
 	    public static String getFileExtension(RasterImageLayer layer) {
 	        File f = new File(layer.getImageFileName());
 	        String ext = null;
@@ -75,21 +72,19 @@ public class RasterImageLayerProperties {
 
 	    /**
 	     * Gets the number of bands from A RasterImageLayer as String
-	     * @param org.openjump.core.rasterimage.RasterImageLayer
-	     * @return java.lang.String
+	     * @param layer a RasterImageLayer
+	     * @return the number of bands as a String
 	     */
-	    
 	    public static String numBands(RasterImageLayer layer) {
 	        int bands = layer.getNumBands();
 	        return String.valueOf(bands);
 	    }
 	    /**
 	     * Gets data type as String
-	     * @param java.awt.image.Raster
-	     * @return java.lang.String
-	     * @throws IOException
+	     * @param raster a java.awt.image.Raster
+	     * @return the data type as a String
+	     * @throws IOException never
 	     */
-	     
 	    public static String getDataType(Raster raster) throws IOException {
 	        SampleModel sm = raster.getSampleModel();
 	        datatype = sm.getDataType();
@@ -125,28 +120,28 @@ public class RasterImageLayerProperties {
 	        }
 	        return type;
 	    }
+
 	    /**
 	     * Gets color depth as String
 	     * It first check into the Raster
 	     * otherwise uses first Commons Imaging then ImageIO
 	     * to check into the file
-	     * @param java.awt.image.Raster
-	     * @param java.io.File
-	     * @return java.lang.String
-	     * @throws IOException
-	     * @throws ImageReadException
+	     * @param raster a java.awt.image.Raster
+	     * @param file the File containing the image
+	     * @return the color depth as a String
+	     * @throws IOException if an IOException occurs during file I/O
+	     * @throws ImageReadException if an Exception occurs during image reading
 	     */
-	    
-	    public static String getColorDepth(Raster r, File file) throws IOException, ImageReadException {
-	    	 BufferedImage buf = null;
+	    public static String getColorDepth(Raster raster, File file) throws IOException, ImageReadException {
+	    	 BufferedImage buf;
 	    	 String components ="(Cannot read num componets)";
 	    	 ColorModel cm;
 	    	 int colordepth;
 	    	 try {
-	    		 SampleModel sm = r.getSampleModel();
-	            cm = PlanarImage.createColorModel(sm);
-	            colordepth = cm.getNumColorComponents(); 
-	    	 }catch (Exception e) {
+	    		 SampleModel sm = raster.getSampleModel();
+	    		 cm = PlanarImage.createColorModel(sm);
+	    		 colordepth = cm.getNumColorComponents();
+	    	 } catch (Exception e) {
 	    		 try {
 	    		 buf =  Imaging.getBufferedImage(file);
 	             cm  =buf.getColorModel();
@@ -163,20 +158,19 @@ public class RasterImageLayerProperties {
 	     }
 	   
 	    /**
-	     * Gets DPI, first check into the raster then into the file
+	     * Gets BPP (bits per pixel), first check into the raster then into the file
 	     * using Commons Imaging
-	     * @param java.awt.image.Raster
-	     * @param java.io.File
-	     * @return java.lang.String
-	     * @throws IOException
-	     * @throws ImageReadException
+	     * @param raster the java.awt.image.Raster
+	     * @param file the File containing the image
+	     * @return the number of bits per pixel as a String
+	     * @throws IOException if an IOException occurs during file I/O
+			 * @throws ImageReadException if an Exception occurs during image reading
 	     */
-	     
-	    public static  String getDPI(Raster r, File file) throws IOException, ImageReadException {
+	    public static  String getDPI(Raster raster, File file) throws IOException, ImageReadException {
 	    	 int pixelSize;
 	    	 String pixelSizeS="";
 	    	 try {
-	         SampleModel sm = r.getSampleModel();
+	         SampleModel sm = raster.getSampleModel();
 	         ColorModel cm = PlanarImage.createColorModel(sm);
 	         pixelSize = cm.getPixelSize();
 	         }catch (Exception e) {
@@ -188,71 +182,70 @@ public class RasterImageLayerProperties {
 	    	 } catch (Exception ex){
 	    		 pixelSizeS="Not recognized";
 	    	 }
-	         return pixelSizeS;
-	     } 
+	    	 return pixelSizeS;
+	    }
 	     
 	     /**
 	      * Gets the cell size along X as Double
-	      * @param java.awt.image.Raster
-	      * @param com.vividsolutions.jts.geom.Envelope
-	      * @return double
-	      * @throws IOException
+	      * @param raster the java.awt.image.Raster
+	      * @param env image Envelope
+	      * @return pixel width as a double
+	      * @throws IOException never
 	      */
-	    
-	    public static  double cellSizeX(Raster r, Envelope env) throws IOException {
-	        return env.getWidth() / r.getWidth();
+	    public static double cellSizeX(Raster raster, Envelope env) throws IOException {
+	        return env.getWidth() / raster.getWidth();
 	    }
 
 	    
 	    /**
 	      * Gets the cell size along Y as double
-	      * @param java.awt.image.Raster
-	      * @param com.vividsolutions.jts.geom.Envelope
-	      * @return double
-	      * @throws IOException
+	      * @param raster the java.awt.image.Raster
+	      * @param env the Envelope
+	      * @return pixel height as a double
+	      * @throws IOException never
 	      */
-	    public static  double cellSizeY(Raster r, Envelope env) throws IOException {
-	        return env.getHeight() / r.getHeight();
+	    public static  double cellSizeY(Raster raster, Envelope env) throws IOException {
+	        return env.getHeight() / raster.getHeight();
 	    }
 
 	    /**
 	     * Gets the number of column in a Raster as int
-	     * @param java.awt.image.Raster
-	     * @return int
-	     * @throws IOException
+	     * @param raster the java.awt.image.Raster
+	     * @return the number of columns
+	     * @throws IOException never
 	     */
-	    public static  int getNumColumns(Raster r) throws IOException {
-	        return r.getWidth();
+	    public static  int getNumColumns(Raster raster) throws IOException {
+	        return raster.getWidth();
 	    }
 
 	    /**
 	     * Gets number of rows as int
-	     * @param java.awt.image.Raster
-	     * @return int
-	     * @throws IOException
+	     * @param raster the java.awt.image.Raster
+	     * @return the number of rows
+	     * @throws IOException never
 	     */
-	    public static  int getNumRows(Raster r) throws IOException {
-	        return r.getHeight();
+	    public static  int getNumRows(Raster raster) throws IOException {
+	        return raster.getHeight();
 	    }
 
 	    /**
 	     * Count the number of cells in a Raster of a specific double value and 
 	     * return as int.
-	     * @param java.awt.image.Raster
-	     * @param double value
-	     * @return int
-	     * @throws IOException
+	     * @param raster the java.awt.image.Raster
+	     * @param nodata the value meaning "no data"
+	     * @return the number of nodata cells
+	     * @throws IOException if an IOException occurs during I/O
+			 * @throws RasterDataNotFoundException if an error occurs accessing raster data
 	     */
-
-	    public static  int getNodataCellNumber(Raster ras, double nodata)
+	    public static int getNodataCellNumber(Raster raster, double nodata)
 	            throws IOException, RasterDataNotFoundException {
 	        int counter = 0;
 
-	        int nx = ras.getWidth();
-	        int ny = ras.getHeight();
+	        int nx = raster.getWidth();
+	        int ny = raster.getHeight();
 	        for (int y = 0; y < ny; y++) {
 	            for (int x = 0; x < nx; x++) {
-	                double value = ras.getSampleDouble(x, y, 0);
+	                double value = raster.getSampleDouble(x, y, 0);
 	                if (value == nodata)
 	                    counter++;
 	            }
@@ -265,18 +258,17 @@ public class RasterImageLayerProperties {
 	     * Count the number of cells in a Raster excluding 
 	     * the ones of a specific double value and 
 	     * return as int.
-	     * @param java.awt.image.Raster
-	     * @param double value
-	     * @return int
-	     * @throws IOException
+			 * @param raster the java.awt.image.Raster
+			 * @param nodata the value meaning "no data"
+			 * @return the number of valid cells (different from no data)
+			 * @throws IOException if an IOException occurs during I/O
+			 * @throws RasterDataNotFoundException if an error occurs accessing raster data
 	     */
-	    
 	    public static  int getValidCellsNumber(Raster raster, double nodata)
 	            throws IOException, RasterDataNotFoundException {
 
 	        return raster.getWidth() * raster.getHeight()
 	                - getNodataCellNumber(raster, nodata);
 	    }
-	
 	
 }

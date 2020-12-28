@@ -38,10 +38,8 @@ package org.saig.core.crypt;
 
 /**
  * The correct crypt manager couldn't be created
- * <p>
- * </p>
  * 
- * @author @author Sergio Ba&ntilde;os Calvo - sbc@saig.es
+ * @author Sergio Ba&ntilde;os Calvo - sbc@saig.es
  * @since 1.1.1
  */
 public class CryptManagerException extends Exception {

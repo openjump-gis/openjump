@@ -21,14 +21,14 @@ import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 /**
- * Plug in for navigation with keyboards keys. <br/>
- * Navigation is as follows:<br/>
- * Arrows keys move the viewport.<br/>
- * Page down and up are zoom in and zoom out, respectively<br/>
- * Home key zooms in or out to full extent<br/>
+ * Plug in for navigation with keyboards keys. <br>
+ * Navigation is as follows:<br>
+ * Arrows keys move the viewport.<br>
+ * Page down and up are zoom in and zoom out, respectively<br>
+ * Home key zooms in or out to full extent<br>
  * Pan and zoom percentage is, by default, 20%
  * 
- * @author Ugo Taddei <taddei@lat-lon.de>
+ * @author Ugo Taddei &lt;taddei@lat-lon.de&gt;
  *
  */
 public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcutEnabled {

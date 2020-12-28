@@ -14,7 +14,7 @@ import java.util.Comparator;
 /**
  * 
  * Comparator class for Sortable objects, sets comparision criteria
- * on the fly -> no need to set them manually before sorting
+ * on the fly -&gt; no need to set them manually before sorting
  *
  * @author orahn
  *

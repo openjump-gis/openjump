@@ -69,7 +69,7 @@ import java.util.Collection;
 /**
  * Simplifies a selected line, criterion is a maximal line displacement <p>
  * it uses JTS TopologyPreservingSimplifier.
- * n.b.: since version > 1.9.1 the plugin handles all geometry types
+ * n.b.: since version &gt; 1.9.1 the plugin handles all geometry types
  *
  * @author sstein, mmichaud
  *

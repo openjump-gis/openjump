@@ -65,7 +65,9 @@ public interface ThreadedPlugIn extends PlugIn {
      * executed on the GUI thread.
      * @param monitor context to which this task can report its progress and
      * check whether a party has requested its cancellation
+     * @param context context of this PlugIn
+     * @throws Exception if an Exception occurs during the run
      */
-    public void run(TaskMonitor monitor, PlugInContext context)
+    void run(TaskMonitor monitor, PlugInContext context)
         throws Exception;
 }

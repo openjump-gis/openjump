@@ -54,7 +54,7 @@ import org.openjump.core.ui.swing.VertexStylePanel;
  *			- fillcolor
  *
  *
- * @author Matthias Scholz <ms@jammerhund.de>
+ * @author Matthias Scholz &lt;ms@jammerhund.de&gt;
  */
 public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel {
 

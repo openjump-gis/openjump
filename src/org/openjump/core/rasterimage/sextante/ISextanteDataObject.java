@@ -15,19 +15,19 @@ public interface ISextanteDataObject {
 	 * this class wraps, which contains the data itself)
 	 * @return the base data object
 	 */
-	public Object getBaseDataObject();
+	Object getBaseDataObject();
 
 	/**
 	 * Returns the name of this data object
 	 * @return the name of this data object
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * Sets a new name for this object
 	 * @param sName the new name
 	 */
-	public void setName(String sName);
+	void setName(String sName);
 
 	/**
 	 * Returns the filename associated to this data object.
@@ -35,24 +35,25 @@ public interface ISextanteDataObject {
 	 * Can be null, since the object wrapped by this class doesn't
 	 * have to be file-based.
 	 */
-	public String getFilename();
+	String getFilename();
 
 	/**
 	 * This method post-processes the object after it has been created.
 	 * If, for instance, data are kept in memory before they are dumped
 	 * to file, this method should write that file.
+	 * @throws Exception if an Exception occurs during post-processing
 	 */
-	public void postProcess() throws Exception;
+	void postProcess() throws Exception;
 
 	/**
 	 * This methods initialize the data object, so it is ready to be accessed
 	 */
-	public void open();
+	void open();
 
 	/**
 	 * This method closes the data object, which was opened using the
 	 * open() method.
 	 */
-	public void close();
+	void close();
 
 }

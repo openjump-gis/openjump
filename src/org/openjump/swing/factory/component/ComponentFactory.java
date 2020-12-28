@@ -35,7 +35,6 @@ import javax.swing.Icon;
  * type T.
  * 
  * @author Paul Austin
- * @param The type of component created.
  */
 public interface ComponentFactory<T extends Component> {
   /**

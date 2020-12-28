@@ -64,7 +64,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
  * Applies a projective transform to the selected layers. The projective
  * transform is specified using four vectors drawn by the user.
  * 
- * @date 2017_11_10 Giuseppe Aruta (giuseppe_aruta[AT]yahoo.it) First realize
+ * @version 2017_11_10 Giuseppe Aruta (giuseppe_aruta[AT]yahoo.it) First realize
  */
 
 public class ProjectiveTransformPlugIn extends AbstractPlugIn {

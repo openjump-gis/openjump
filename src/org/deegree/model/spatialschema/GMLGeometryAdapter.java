@@ -78,10 +78,10 @@ import com.vividsolutions.jump.workbench.Logger;
  * Adapter class for converting GML geometries to deegree geometries and vice versa. Some logical
  * problems results from the fact that an envelope isn't a geometry according to ISO 19107 (where
  * the deegree geometry model is based on) but according to GML2/3 specification it is.<br>
- * So if the wrap(..) method is called with an envelope a <tt>Surface</tt> will be returned
- * representing the envelops shape. To export an <tt>Envelope</tt> to a GML box/envelope two
+ * So if the wrap(..) method is called with an envelope a <code>Surface</code> will be returned
+ * representing the envelops shape. To export an <code>Envelope</code> to a GML box/envelope two
  * specialized export methods are available.<BR>
- * The export method(s) doesn't return a DOM element as one may expect but a <tt>StringBuffer</tt>.
+ * The export method(s) doesn't return a DOM element as one may expect but a <code>StringBuffer</code>.
  * This is done because the transformation from deegree geometries to GML mainly is required when a
  * GML representation of a geometry shall be serialized to a file or to a network connection. For
  * both cases the string representation is required and it is simply faster to create the string

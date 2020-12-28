@@ -77,7 +77,7 @@ import de.latlon.deejump.wfs.jump.WFSFeature;
 import de.latlon.deejump.wfs.plugin.WFSPlugIn;
 
 /**
- * Utility functions to create different kinds of FeatureDatasets. <br/>
+ * Utility functions to create different kinds of FeatureDatasets. <br>
  * Further methods provided for JUMPlon implemented by UT
  * 
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei </a>
@@ -209,8 +209,8 @@ public class JUMPFeatureFactory {
    * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei </a>
    * @param server
    *          the URL of the WFS server
-   * @param request
-   *          the GetFeature request
+   * @param is
+   *          the InputStream
    * @param featureType
    *          if non null, a DescribeFeatureType will be performed to get the
    *          correct schema

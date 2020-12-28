@@ -46,9 +46,9 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 /**
  * 
  * 
- * /** Modified from
+ * Modified from
  * http://jfontchooser.osdn.jp/site/jfontchooser/project-summary.html MIT/X
- * common Licence, Copyright (c) <2004> <Masahiko SAWAI>
+ * common Licence, Copyright (c) 2004 Masahiko SAWAI
  * 
  * - The panel gets Font and Text preview from a selected Text component -
  * Preview panel works as text editor. Preview is saved as text -
@@ -59,7 +59,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  *   TextEditor editor = new JFontChooser();
  *   editor.showDialog(Component.getParent(), "Title of this font/editor panel");
  *   
- *   // <Optional, set font, font size, font style and preview text in the TextEditor from a JTextComponent>
+ *   // Optional, set font, font size, font style and preview text in the TextEditor from a JTextComponent
  *   //                                                                                    
  *   //   editor.setSelectedFont(JTextComponent.getFont());                            
  *   //   editor.setSelectedFontSize(JTextComponent.getFont().getSize());                   
@@ -71,7 +71,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  *        Font font = editor.getSelectedFont(); 
  *       System.out.println("Selected Font : " + font);
  *      
- *     // <Optional, get modified text String from preview panel>  
+ *     // Optional, get modified text String from preview panel
  *     //                                    
  *     //  String string = editor.getSampleTextField().getText() 
  *     //  System.out.println("Selected modified text: "string);
@@ -80,7 +80,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  *    reportNothingToUndoYet(null);
  * }
  * 
- * <pre>
+ * </pre>
  * 
  * 
  * @author Giuseppe Aruta
@@ -345,7 +345,7 @@ public class TextEditor extends JComponent {
 	 * @param name
 	 *            the family name of the selected font.
 	 *
-	 * @see getSelectedFontFamily
+	 * @see #getSelectedFontFamily
 	 **/
 	public void setSelectedFontFamily(String name) {
 		final String[] names = getFontFamilies();

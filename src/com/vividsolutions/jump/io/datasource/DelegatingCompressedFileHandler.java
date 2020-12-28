@@ -48,7 +48,7 @@ import com.vividsolutions.jump.io.JUMPReader;
  * data before handing it to the JUMPReader. Anyway, developers should now be
  * writing DataSources instead of JUMPReaders.
  * 
- * @Deprecated use CompressedFile instead [07.2016]
+ * @deprecated use CompressedFile instead [07.2016]
  */
 @Deprecated
 public class DelegatingCompressedFileHandler extends AbstractJUMPReader {

@@ -46,27 +46,26 @@ import java.util.*;
  * around them. Works with invalid features (using EnvelopeIntersector).
  */
 public abstract class SpecifyFeaturesTool extends DragTool {
+
 	public SpecifyFeaturesTool() {
 	}
 
-	protected Iterator candidateLayersIterator() {
+	protected Iterator<Layer> candidateLayersIterator() {
 		return getPanel().getLayerManager().iterator();
 	}
 
 	/**
+	 * @param layer a Layer
 	 * @param envelope
 	 *            the envelope, which may have zero area
 	 * @return those features of the layer that intersect the given envelope; an
 	 *         empty FeatureCollection if no features intersect it
 	 */
-	private static Set intersectingFeatures(Layer layer, Envelope envelope) {
-		HashSet intersectingFeatures = new HashSet();
-		List candidateFeatures = layer.getFeatureCollectionWrapper().query(
+	private static Set<Feature> intersectingFeatures(Layer layer, Envelope envelope) {
+		HashSet<Feature> intersectingFeatures = new HashSet<>();
+		List<Feature> candidateFeatures = layer.getFeatureCollectionWrapper().query(
 				envelope);
-		//String a = "" + layer.getFeatureCollectionWrapper().getUltimateWrappee();
-		//String b = "" + layer.getFeatureCollectionWrapper().getUltimateWrappee().size();
-		for (Iterator i = candidateFeatures.iterator(); i.hasNext();) {
-			Feature feature = (Feature) i.next();
+		for (Feature feature : candidateFeatures) {
 
 			// optimization - if the feature envelope is completely inside the
 			// query envelope it must be selected
@@ -91,12 +90,10 @@ public abstract class SpecifyFeaturesTool extends DragTool {
 		}
 	}
 
-	protected Set specifiedFeatures() throws NoninvertibleTransformException {
-		HashSet allFeatures = new LinkedHashSet();
+	protected Set<Feature> specifiedFeatures() throws NoninvertibleTransformException {
+		HashSet<Feature> allFeatures = new LinkedHashSet<>();
 
-		for (Iterator i = layerToSpecifiedFeaturesMap().values().iterator(); i
-				.hasNext();) {
-			Set features = (Set) i.next();
+		for (Set<Feature> features : layerToSpecifiedFeaturesMap().values()) {
 			allFeatures.addAll(features);
 		}
 
@@ -106,26 +103,28 @@ public abstract class SpecifyFeaturesTool extends DragTool {
 	/**
 	 * Returns the layers containing the specified features, and the specified
 	 * features themselves.
+	 * @return a Map mapping layers to features of this layer and intersecting the box
+	 * @throws NoninvertibleTransformException if a problem occurs during intersection operation
 	 */
-	protected Map layerToSpecifiedFeaturesMap()
+	protected Map<Layer,Set<Feature>> layerToSpecifiedFeaturesMap()
 			throws NoninvertibleTransformException {
 		return layerToSpecifiedFeaturesMap(candidateLayersIterator(),
 				getBoxInModelCoordinates());
 	}
 
-	public static Map layerToSpecifiedFeaturesMap(Iterator layerIterator,
+	public static Map<Layer,Set<Feature>> layerToSpecifiedFeaturesMap(Iterator<Layer> layerIterator,
 			Envelope boxInModelCoordinates)
 			throws NoninvertibleTransformException {
-		HashMap layerToFeaturesMap = new HashMap();
+		HashMap<Layer,Set<Feature>> layerToFeaturesMap = new HashMap<>();
 
-		for (Iterator i = layerIterator; i.hasNext();) {
-			Layer layer = (Layer) i.next();
+		while (layerIterator.hasNext()) {
+			Layer layer = layerIterator.next();
 
 			if (!layer.isVisible()) {
 				continue;
 			}
 
-			Set intersectingFeatures = intersectingFeatures(layer,
+			Set<Feature> intersectingFeatures = intersectingFeatures(layer,
 					boxInModelCoordinates);
 
 			if (intersectingFeatures.isEmpty()) {
@@ -139,24 +138,22 @@ public abstract class SpecifyFeaturesTool extends DragTool {
 	}
 
 	/**
-	 * @param layers
-	 *            Layers to filter in
+	 * @param layers Layers to filter in
+	 * @return a collection of features belonging to layers and intersecting the box
+	 * @throws NoninvertibleTransformException if a problem occurs during intersection operation
 	 */
-	protected Collection specifiedFeatures(Collection layers)
+	protected Collection<Feature> specifiedFeatures(Collection<Layer> layers)
 			throws NoninvertibleTransformException {
-		ArrayList specifiedFeatures = new ArrayList();
-		Map layerToSpecifiedFeaturesMap = layerToSpecifiedFeaturesMap();
+		ArrayList<Feature> specifiedFeatures = new ArrayList<>();
+		Map<Layer,Set<Feature>> layerToSpecifiedFeaturesMap = layerToSpecifiedFeaturesMap();
 
-		for (Iterator i = layerToSpecifiedFeaturesMap.keySet().iterator(); i
-				.hasNext();) {
-			Layer layer = (Layer) i.next();
+		for (Layer layer : layerToSpecifiedFeaturesMap.keySet()) {
 
 			if (!layers.contains(layer)) {
 				continue;
 			}
 
-			specifiedFeatures.addAll((Collection) layerToSpecifiedFeaturesMap
-					.get(layer));
+			specifiedFeatures.addAll(layerToSpecifiedFeaturesMap.get(layer));
 		}
 
 		return specifiedFeatures;

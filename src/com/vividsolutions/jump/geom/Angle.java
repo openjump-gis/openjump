@@ -66,6 +66,8 @@ public class Angle {
   /**
    * Returns the angle of the vector from p0 to p1.
    * The angle will be between -Pi and Pi.
+   * @param p0 first coordinate
+   * @param p1 second coordinate
    * @return the angle (in radians) that p0-p1 makes with the positive x-axis.
    */
   public static double angle(Coordinate p0, Coordinate p1) {
@@ -77,6 +79,7 @@ public class Angle {
   /**
    * Returns the angle of the vector from (0,) to p.
    * The angle will be between -Pi and Pi.
+   * @param p coordinate of a point p
    * @return the angle (in radians) that p makes with the positive x-axis.
    */
   public static double angle(Coordinate p) {

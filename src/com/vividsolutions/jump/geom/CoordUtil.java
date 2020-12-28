@@ -63,6 +63,7 @@ public class CoordUtil {
 
     /**
      * @param coordinates not empty
+     * @return the average position of all input coordinates
      */
     public static Coordinate average(Collection coordinates) {
         Assert.isTrue(!coordinates.isEmpty());

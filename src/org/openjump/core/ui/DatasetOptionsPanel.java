@@ -25,7 +25,7 @@ import org.openjump.core.ui.io.file.FileLayerLoader;
  * OptionsPanel for setting up some dataset options.
  * - should the Charset selection be shown
  *
- * @author Matthias Scholz <ms@jammerhund.de>
+ * @author Matthias Scholz &lt;ms@jammerhund.de&gt;
  */
 public class DatasetOptionsPanel extends JPanel implements OptionsPanel {
 

@@ -35,7 +35,7 @@ import com.vividsolutions.jump.I18N;
 
 /**
  * First level menus names of JUMP
- * @author Basile Chandesris - <chandesris@pt-consulting.lu>
+ * @author Basile Chandesris - &lt;chandesris@pt-consulting.lu&gt;
  */
 public class MenuNames {
     public static final String FILE = I18N.get("ui.MenuNames.FILE");

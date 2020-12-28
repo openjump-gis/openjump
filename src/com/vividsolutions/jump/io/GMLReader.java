@@ -79,41 +79,40 @@ import com.vividsolutions.jump.util.Timer;
  * <p>
  * DataProperties for the JCSReader load(DataProperties) interface:
  * </p>
- * <p>
- * <table border='1' cellspacing='0' cellpadding='4'>
+ *
+ * <table style="border-collapse: collapse;" summary="">
  * <tr>
- * <th>Parameter</th>
- * <th>Meaning</th>
+ * <th style="border: 1px solid #999; padding: 4px;">Parameter</th>
+ * <th style="border: 1px solid #999; padding: 4px;">Meaning</th>
  * </tr>
  * <tr>
- * <td>
+ * <td style="border: 1px solid #999; padding: 4px;">
  * File or DefaultValue</td>
  *
- * <td>
+ * <td style="border: 1px solid #999; padding: 4px;">
  * File name for the input .xml file</td>
  * </tr>
  *
  * <tr>
- * <td>
+ * <td style="border: 1px solid #999; padding: 4px;">
  * InputTemplateFile</td>
- * <td>
+ * <td style="border: 1px solid #999; padding: 4px;">
  * Filename for the GMLInputTemplate .xml file</td>
  * </tr>
  *
  * <tr>
- * <td>CompressedFile</td>
- * <td>
+ * <td style="border: 1px solid #999; padding: 4px;">CompressedFile</td>
+ * <td style="border: 1px solid #999; padding: 4px;">
  * File name (a .zip or .gz) with a .jml/.xml/.gml inside (specified by File)</td>
  * </tr>
  *
  * <tr>
- * <td>
+ * <td style="border: 1px solid #999; padding: 4px;">
  * CompressedFileTemplate</td>
- * <td>File name (.zip or .gz) with the input template in (specified by
+ * <td style="border: 1px solid #999; padding: 4px;">File name (.zip or .gz) with the input template in (specified by
  * InputTemplateFile)</td>
  * </tr>
  * </table>
- * </p>
  *
  * <br>
  * NOTE: If InputTemplateFile is unspecified, GMLReader will try to read one off
@@ -132,7 +131,7 @@ import com.vividsolutions.jump.util.Timer;
  * 
  * <pre>
  *     gmlReader.setInputTemplate( GMLInputTemplate);
- *     gmlReader.load( <Reader> , <stream name> );
+ *     gmlReader.load( &lt;Reader&gt; , &lt;stream name&gt; );
  * </pre>
  * 
  * <br>
@@ -156,15 +155,15 @@ import com.vividsolutions.jump.util.Timer;
  * init <br>
  * 
  * <PRE>
- *        0  ----->  1
+ *        0  -----&gt;  1
  *                   |
  *                   | Collection start Tag
  *                   |
- *                -->2---------------->     FINISH
+ *                --&gt;2----------------&gt;     FINISH
  *                \  |   End Collection tag
  * End Feature tag \ |
  *                  \|
- *        4<-------->3
+ *        4&lt;--------&gt;3
  *           Geometry start/end
  * </PRE>
  * 
@@ -172,7 +171,7 @@ import com.vividsolutions.jump.util.Timer;
  * For multi-geometries <br>
  * On start Multi-geometry, increment state by 1 (or jump to 1000 if at state 4) <br>
  * make sure recursivegeometry[state-1000] is null <br>
- * <put any object into the recursivegeometry[state-1000] collection>
+ * &lt;put any object into the recursivegeometry[state-1000] collection&gt;
  *
  * <br>
  * <br>
@@ -193,39 +192,39 @@ import com.vividsolutions.jump.util.Timer;
  * 
  * <pre>
  *  example of double GCs:
- *  START geometry     ->move to state 4
- *  START TAG: multi*  -> move to state 1000, geometry = recursivegeometry[0]
- *  <POINT>
+ *  START geometry     -&gt; move to state 4
+ *  START TAG: multi*  -&gt; move to state 1000, geometry = recursivegeometry[0]
+ *  &lt;POINT&gt;
  * 
- *  -> added to geometry <POINT>
+ *  -&gt; added to geometry &lt;POINT&gt;
  * 
- *  -> added to geometry START TAG: multi* -> move to state 1001, geometry =
- *  recursivegeometry[1] <POINT>
+ *  -&gt; added to geometry START TAG: multi* -&gt; move to state 1001, geometry =
+ *  recursivegeometry[1] &lt;POINT&gt;
  * 
- *  -> added to geometry <POINT>
+ *  -&gt; added to geometry &lt;POINT&gt;
  * 
- *  -> added to geometry END TAG: multi -> move to state 1000, build geometry in
+ *  -&gt; added to geometry END TAG: multi -&gt; move to state 1000, build geometry in
  *  recursivegeometry[1], add to recursivegeometry[0], geometry =
- *  recursivegeometry[0] <POINT>
+ *  recursivegeometry[0] &lt;POINT&gt;
  * 
- *  -> added to geometry END TAG: multi -> <finished> move to state 4, build
+ *  -&gt; added to geometry END TAG: multi -&gt; &lt;finished&gt; move to state 4, build
  *  geometry in recursivegeometry[0] (thats the result) and put it in
- *  finalGeometry END geometry -> add to feature collection example of simple
- *  geometry: START geometry ->move to state 4 BEGIN polygon ->clear out inner
- *  ring accumulator BEGIN outerboundary BEGIN linearring END linearring -> put
- *  points in linearRing END outerboundary -> put linearRing in outerBoundary
- *  BEGIN innerboundary BEGIN linearring END linearring -> put points in
- *  linearRing END innerboundary -> add linearRing to innerBoundary list END
- *  polygon -> build polygon (put in geometry, which is recursivegeometry[0] END
- *  geometry => add to feature collection
+ *  finalGeometry END geometry -&gt; add to feature collection example of simple
+ *  geometry: START geometry -&gt; move to state 4 BEGIN polygon -&gt; clear out inner
+ *  ring accumulator BEGIN outerboundary BEGIN linearring END linearring -&gt; put
+ *  points in linearRing END outerboundary -&gt; put linearRing in outerBoundary
+ *  BEGIN innerboundary BEGIN linearring END linearring -&gt; put points in
+ *  linearRing END innerboundary -&gt; add linearRing to innerBoundary list END
+ *  polygon -&gt; build polygon (put in geometry, which is recursivegeometry[0] END
+ *  geometry =&gt; add to feature collection
  * </pre>
  *
  * Most of the work is done in the endTag method! <br>
  * <br>
  * New additions: Jan 2005 by Dave Blasby allow srid to be parsed from the GML
- * file For example: <gml:LineString srsName="EPSG:42102"> ....
- * </gml:LineString> The SRID of the created geometry will be 42102. It accepts
- * srsNames of the form "<letters>:<number>". ie. "EPSG:111" or "DAVE:222" or
+ * file For example: &lt;gml:LineString srsName="EPSG:42102"&gt; ....
+ * &lt;/gml:LineString&gt; The SRID of the created geometry will be 42102. It accepts
+ * srsNames of the form "&lt;letters&gt;:&lt;number&gt;". ie. "EPSG:111" or "DAVE:222" or
  * "BCGOV:333" etc... The Geometry's SRID will be the number. If you have a
  * GEOMETRYCOLLECTION with more than one SRID specified the SRID of the result
  * will be indeterminate (this isnt correct GML).
@@ -237,12 +236,12 @@ import com.vividsolutions.jump.util.Timer;
  *
  * New Addition: Jan, 2005by Dave Blasby Added slightly better support for
  * type=OBJECT. It sticks a String in. Before it would probably throw an error.
- * Added support for multi-objects for example: <a> <b>...1...</b>
- * <b>...2...</b> <b>...3...</b> </a> Old behavior would be to for column 'b' to
+ * Added support for multi-objects for example: &lt;a&gt; &lt;b&gt;...1...&lt;/b&gt;
+ * &lt;b&gt;...2...&lt;/b&gt; &lt;b&gt;...3...&lt;/b&gt; &lt;/a&gt; Old behavior would be to for column 'b' to
  * have value "...3...". New behavior (only if you set b's type to 'OBJECT' and
- * set the GMLReader to processMultiItems as lists) <a><b>...1...</b></a> --> b
+ * set the GMLReader to processMultiItems as lists) &lt;a&gt;&lt;b&gt;...1...&lt;/b&gt;&lt;/a&gt; --&gt; b
  * get the string "...1..." (as before)
- * <a><b>...1...</b><b>...2...</b><b>...3...</b></a> --> 'b' is a list of String
+ * &lt;a&gt;&lt;b&gt;...1...&lt;/b&gt;&lt;b&gt;...2...&lt;/b&gt;&lt;b&gt;...3...&lt;/b&gt;&lt;/a&gt; --&gt; 'b' is a list of String
  * ['...1...','...2...','...3...']
  *
  */

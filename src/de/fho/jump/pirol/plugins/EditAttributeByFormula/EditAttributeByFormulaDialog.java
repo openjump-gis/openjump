@@ -132,6 +132,7 @@ public class EditAttributeByFormulaDialog extends JDialog {
     public String getFormula() {
         return formPanel.getFormula();
     }
+
     /**
      * @see NewAttributePanel#getAttributeInfo()
      * @return Info on the new attribute
@@ -139,7 +140,9 @@ public class EditAttributeByFormulaDialog extends JDialog {
     public AttributeInfo getAttributeInfo() {
         return newAttrPanel.getAttributeInfo();
     }
+
     /**
+     * @return true if OK button was clicked
      * @see OKCancelListener#wasOkClicked()
      */
     public boolean wasOkClicked() {

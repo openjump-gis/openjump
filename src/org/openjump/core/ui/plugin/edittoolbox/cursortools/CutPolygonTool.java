@@ -32,7 +32,7 @@ import java.util.Iterator;
 * hand, every selected polygon a will be changed into a - b.
 *
 * @author ERWAN BOCHER Laboratoire RESO UMR CNRS 6590 et Olivier Bonnefont
-* @see <a href="http://url www.projet-sigle.org">projet-sigle</a>
+* @see <a href="http://www.projet-sigle.org">projet-sigle</a>
 * @version 2006-05-18
 */
 public class CutPolygonTool extends PolygonTool {

@@ -81,6 +81,7 @@ public abstract class DragTool extends AbstractCursorTool {
     /**
      * A click is converted into a box by being expanded by this amount in the
      * four directions.
+     * @param clickBuffer buffer size in view coordinates
      */
     protected void setViewClickBuffer(int clickBuffer) {
         this.viewClickBuffer = clickBuffer;
@@ -184,7 +185,11 @@ public abstract class DragTool extends AbstractCursorTool {
     }    
 
     /**
-     *@return    null if nothing should be drawn
+     * @param source initial position
+     * @param destination final position
+     * @return a Rectangle defined by the initial and final position or
+     *          null if nothing should be drawn
+     * @throws Exception if an Exception occurs during the Rectangle construction
      */
     protected Shape getShape(Point2D source, Point2D destination)
         throws Exception {

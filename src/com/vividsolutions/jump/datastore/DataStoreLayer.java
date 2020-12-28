@@ -65,6 +65,7 @@ public class DataStoreLayer {
     
     /**
      * Returns the where clause with WHERE keyword removed
+     * @return the where clause String without the "where" keyword
      */
     public String getWhereClause() {
         return where.trim().toLowerCase().startsWith("where")

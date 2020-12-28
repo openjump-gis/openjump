@@ -255,7 +255,8 @@ public final class I18N {
    * 
    * use static I18N.getMessage() methods instead
    * 
-   * @param categoryPrefix
+   * @param categoryPrefix the category
+   * @return I18N object for this category
    */
   public static I18N getInstance(final String categoryPrefix) {
     return getInstance((Object) categoryPrefix);
@@ -268,6 +269,7 @@ public final class I18N {
    * use static I18N.getMessage() methods instead
    * 
    * @param path path of the ResourceBundle
+   * @return I18N object for the ResourceBundle located at path
    */
   public static I18N getInstance(final File path) {
     return getInstance((Object) path);
@@ -278,6 +280,7 @@ public final class I18N {
    * knows what is using this code anyway.
    * 
    * use static I18N.getMessage() methods instead
+   * @return singleton I18N object for OpenJUMP
    */
   public static I18N getInstance() {
     // is initialized statically above
@@ -287,7 +290,7 @@ public final class I18N {
   /**
    * [ede] utility method which is used in several places
    * (loadFile,getLanguage...)
-   * 
+   * @param localeCode a locale code String
    * @return a Locale from the localeCode
    */
   public static Locale fromCode(final String localeCode) {
@@ -315,7 +318,7 @@ public final class I18N {
    * and country, and if only lang is specified, loads the corresponding
    * resource bundle.
    * 
-   * @param langcountry
+   * @param langcountry the code for the lang and country locale to set
    */
   public static void setLocale(final String langcountry) {
     Locale loc = fromCode(langcountry);
@@ -335,7 +338,7 @@ public final class I18N {
   }
 
   /**
-   * Process text with the locale 'jump_<locale>.properties' file
+   * Process text with the locale 'jump_&lt;locale&gt;.properties' file
    * 
    * @param label the key to look for.
    * @return i18n label [Michael Michaud 2007-03-23] If no resourcebundle is

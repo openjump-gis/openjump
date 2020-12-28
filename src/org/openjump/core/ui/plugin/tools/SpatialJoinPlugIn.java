@@ -32,7 +32,7 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 * This PlugIn can make spatial joins using different geometry predicates.
 * 
 * @author ERWAN BOCHER Laboratoire RESO UMR CNRS 6590
-* @see <a ref="http://www.projet-sigle.org">projet-sigle</a>
+* @see <a href="http://www.projet-sigle.org">projet-sigle</a>
 * @version 2006-02-20
 *
 */

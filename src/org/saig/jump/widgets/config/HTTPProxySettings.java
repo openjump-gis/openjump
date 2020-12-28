@@ -45,9 +45,7 @@ import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * Wrapper to the HTTP Proxy settings parameters 
- * <p>
  *
- * </p>
  * @author Sergio Baños Calvo
  * @since 2.0
  */
