@@ -518,6 +518,7 @@
                             <outputDirectory>${project.build.directory}/apidocs/</outputDirectory>
                             <reportOutputDirectory>${project.build.directory}/apidocs/</reportOutputDirectory>
                             <!-- destDir>${version.string}</destDir -->
+                            <source>8</source>
                             <quiet>true</quiet>
                         </configuration>
                         <executions>
