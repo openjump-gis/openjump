@@ -53,6 +53,9 @@ public class FeatureEvent {
     private Collection<Feature> oldFeatureAttClones;
     
     /**
+     * @param features a collection of features
+     * @param type the type of event (one of ADDED, DELETED, GEOMETRY_MODIFIED, ATTRIBUTES_MODIFIED)
+     * @param layer the target layer
      * @param oldFeatureClones for GEOMETRY_MODIFIED events, clones of the Features before
      * they were modified; null for other events
      */

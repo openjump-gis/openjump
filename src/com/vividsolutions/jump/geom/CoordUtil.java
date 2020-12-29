@@ -92,6 +92,8 @@ public class CoordUtil {
 
     /**
      * @param coordinates not empty
+     * @param p the point to measure distance to
+     * @return the closest coordinate to p
      */
     public static Coordinate closest(Collection coordinates, Coordinate p) {
         Assert.isTrue(!coordinates.isEmpty());

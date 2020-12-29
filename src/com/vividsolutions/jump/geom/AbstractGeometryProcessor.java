@@ -115,6 +115,8 @@ public class AbstractGeometryProcessor {
 
     /**
      * Method to change each single coordinate of a Geometry - ex. coord transformation.
+     * @param dd the input Coordinate
+     * @return the transformed Coordinate
      */
     public double[] process(double[] dd) {
         return dd;

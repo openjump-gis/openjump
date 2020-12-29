@@ -12,11 +12,7 @@
 package de.fho.jump.pirol.plugins.EditAttributeByFormula;
 
 import java.awt.Frame;
-import java.awt.BorderLayout;
-//import java.awt.GridBagConstraints;
-//import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
-import java.awt.Insets;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -54,21 +50,25 @@ public class EditAttributeByFormulaDialog extends JDialog {
     protected OkCancelButtonPanel okCancelPanel = null;
     protected FormulaEditingPanel formPanel = null;
     
-    protected OKCancelListener okCancelListener = null;
+    protected OKCancelListener okCancelListener;
     
-    protected String text = null;
+    protected String text;
     
-    protected FeatureSchema featureSchema = null;
+    protected FeatureSchema featureSchema;
     
     protected PropertiesHandler storedFormulas = null;
 
     /**
-     * @param parentFrame
-     * @param title
-     * @param modal
-     * @throws java.awt.HeadlessException
+     * @param parentFrame the parent frame
+     * @param title title of the dialog box
+     * @param modal true if the dialog must be modal
+     * @param text explanation text to display on top of the dialog
+     * @param featureSchema feature schema of the layer
+     * @param storedFormulas PropertiesHandler containing formulas
+     * @throws java.awt.HeadlessException if the environment does not support keyboard, display or mouse
      */
-    public EditAttributeByFormulaDialog(Frame parentFrame, String title, boolean modal, String text, FeatureSchema featureSchema, PropertiesHandler storedFormulas )
+    public EditAttributeByFormulaDialog(Frame parentFrame, String title, boolean modal, String text,
+                                        FeatureSchema featureSchema, PropertiesHandler storedFormulas )
             throws HeadlessException {
         super(parentFrame, title, modal);
         
@@ -80,9 +80,18 @@ public class EditAttributeByFormulaDialog extends JDialog {
         
         this.setupUI();
     }
-    
+
+    /**
+     * @param parentFrame the parent frame
+     * @param title title of the dialog box
+     * @param modal true if the dialog must be modal
+     * @param text explanation text to display on top of the dialog
+     * @param featureSchema feature schema of the layer
+     * @throws java.awt.HeadlessException if the environment does not support keyboard, display or mouse
+     */
     //[sstein 24.March 2007] new - since we dont have stored formulas
-    public EditAttributeByFormulaDialog(Frame parentFrame, String title, boolean modal, String text, FeatureSchema featureSchema)
+    public EditAttributeByFormulaDialog(Frame parentFrame, String title, boolean modal,
+                                        String text, FeatureSchema featureSchema)
     	throws HeadlessException {
     	super(parentFrame, title, modal);
 

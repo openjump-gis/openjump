@@ -44,8 +44,11 @@ public class EnvelopeUtil {
     private static GeometryFactory factory = new GeometryFactory();
 
     /**
-     *  Expands an Envelope by a given distance.
+     * Expands an Envelope by a given distance.
      * Both positive and negative distances are handled.
+     * @param env the source envelope
+     * @param distance the distance we want to expand the envelop in all directions
+     * @return the expanded envelope
      */
     public static Envelope expand(Envelope env, double distance) {
         /**
@@ -80,6 +83,7 @@ public class EnvelopeUtil {
      * @param originalEnvelope the original envelope
      * @param extentFraction the buffer distance expressed as a fraction of the
      * average envelope extent
+     * @return the buffered envelope
      */
     public static Envelope bufferByFraction(Envelope originalEnvelope,
         double extentFraction) {

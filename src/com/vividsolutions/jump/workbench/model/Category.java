@@ -108,6 +108,7 @@ public class Category {
     }
 
     /**
+     * @param layerable the layerable whose index we want to know
      * @return -1 if the category does not contain the layerable
      */
     public int indexOf(Layerable layerable) {
@@ -120,6 +121,7 @@ public class Category {
 
     /**
      * @param index 0 to add to the top
+     * @param layerable the layerable to add
      */
     public void add(int index, Layerable layerable) {
         layerables.add(index, layerable);
@@ -131,6 +133,7 @@ public class Category {
 
     /**
      * Called by Java2XML
+     * @param layerable the Layerable to add
      */
     public void addPersistentLayerable(Layerable layerable) {
         add(layerables.size(), layerable);

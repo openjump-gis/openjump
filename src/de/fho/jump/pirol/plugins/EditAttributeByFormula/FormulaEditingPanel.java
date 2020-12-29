@@ -219,7 +219,7 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
 
     /**
      * ... to react on a selection in the stored formula drop down menu ...
-     *@param event
+     * @param event the event to process
      */
     public void actionPerformed(ActionEvent event) {
         if (this.storedFormulas != null){
@@ -230,7 +230,8 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
     }
 
     /**
-     *@inheritDoc
+     * Check the formula and return false if it could not be parsed
+     * @return false if the formula could not be parsed
      */
     public boolean areValuesOk() {
         try {

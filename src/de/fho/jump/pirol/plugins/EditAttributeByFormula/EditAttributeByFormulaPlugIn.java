@@ -144,30 +144,26 @@ public class EditAttributeByFormulaPlugIn extends AbstractPlugIn {
                         .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1))
                         .add(checkFactory.createSelectedLayersMustBeEditableCheck());
     }
-    
-    /* //-- [sstein 24.March 2007] disabled since we make it to a 
-       //    normal plugin, not a StandardPirolPlugin
-    public EditAttributeByFormulaPlugIn(){
-        super(new PersonalLogger(DebugUserIds.ALL)); 
-    }
-    */
+
     
     /**
-     * @inheritDoc
+     * Return Icon as String
+     * @return null
      */
     public String getIconString() {
         return null;
     }
     
     /**
-     *@inheritDoc
+     * Return the name of the menu where this plugin can be found
+     * @return the name of the menu where this plugin can be found
      */
     public String getCategoryName() {
         return PirolPlugInSettings.getName_AttributeMenu();
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public boolean execute(PlugInContext context) throws Exception {
         Layer layer = StandardPirolPlugIn.getSelectedLayer(context);

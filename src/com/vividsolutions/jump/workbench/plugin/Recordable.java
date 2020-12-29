@@ -12,6 +12,6 @@ public interface Recordable {
      * Set parameters with which to execute a plugin.
      * @param map a map of parameters
      */
-    public void setParameters(Map<String,Object> map);
+    void setParameters(Map<String,Object> map);
 
 }

@@ -128,6 +128,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
   }
 
   /**
+   * @param fillColor the fillColor we want to derive a lineColor
    * @return a darker version of the given fill colour, for use as the line
    *         colour
    */
@@ -249,6 +250,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
    * using FeatureCollectionWrapper#getWrappee. However, parties are encouraged
    * to use the FeatureCollectionWrapper instead, so that feature additions and
    * removals cause FeatureEvents to be fired (by the Layer).
+   * @return the FeatureCollectionWrapper containing features
    */
   public FeatureCollectionWrapper getFeatureCollectionWrapper() {
     return featureCollectionWrapper;
@@ -284,6 +286,8 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
 
   /**
    * get a list of all enabled styles matching the parameter class
+   * @param filter superclass of the requested styles
+   * @return a list containing enabled styles implementing the requested class
    */
   public List<Style> getStylesIfEnabled(Class filter) {
     List<Style> enabledStyles = new ArrayList<>();
@@ -297,6 +301,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
 
   /**
    * get a list of all styles
+   * @return all Styles of this Layer in a new unmodifiable List
    */
   public List<Style> getStyles() {
     return Collections.unmodifiableList(styles);
@@ -304,6 +309,8 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
 
   /**
    * get a list of all styles matching the parameter class
+   * @param filter superclass of the requested styles
+   * @return a list containing all styles implementing the requested class
    */
   public List<Style> getStyles(Class filter) {
     List<Style> someStyles = new ArrayList<>();
@@ -456,6 +463,10 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
   /**
    * Enables a layer to be changed undoably. Since the layer's features are
    * saved, only use this method for layers with few features.
+   * @param layerName the target Layer name
+   * @param proxy a LayerManager proxy
+   * @param wrappeeCommand the undoable command
+   * @return the command to be executed
    */
   public static UndoableCommand addUndo(final String layerName,
                                         final LayerManagerProxy proxy,
@@ -509,6 +520,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
 
   /**
    * Does nothing if the underlying feature collection is not a FeatureDataset.
+   * @param layer the Layer whose envelope must be invalidated
    */
   public static void tryToInvalidateEnvelope(Layer layer) {
     if (layer.getFeatureCollectionWrapper().getUltimateWrappee() instanceof FeatureDataset) {

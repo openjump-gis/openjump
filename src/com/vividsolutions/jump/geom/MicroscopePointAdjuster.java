@@ -83,6 +83,7 @@ public class MicroscopePointAdjuster {
     /**
      * Return a list of adjusted Segments.
      * Probably for testing only.
+     * @return a list of adjusted segments
      */
     public List adjustSegments() {
         // find all points in Envelope

@@ -132,6 +132,12 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
   public void initialize(PlugInContext context) throws Exception {
   }
 
+  /**
+   * Execute the PlugIn.
+   * @param context context of this PlugIn
+   * @return true if the PlugIn has been executed
+   * @throws Exception if an Exception occurs during execution
+   */
   public boolean execute(PlugInContext context) throws Exception {
     return true;
   }

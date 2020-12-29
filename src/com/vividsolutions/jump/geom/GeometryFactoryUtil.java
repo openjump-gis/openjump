@@ -51,8 +51,9 @@ public class GeometryFactoryUtil {
      * input list which have the requested dimension.
      * The result is thus guaranteed to have the dimension requested.
      *
-     * @param geom
-     * @param dimension
+     * @param geom input Geometry
+     * @param dimension requested dimension
+     * @return geometry made of the elements having the requested dimension
      */
     public static Geometry buildGeometry(Geometry geom, int dimension) {
         GeometryFactory factory = new GeometryFactory(geom.getPrecisionModel(),

@@ -63,6 +63,7 @@ public interface Layerable {
 
   /**
    * Called by Java2XML
+   * @param layerManager the LayerManager
    */
   void setLayerManager(LayerManager layerManager);
 

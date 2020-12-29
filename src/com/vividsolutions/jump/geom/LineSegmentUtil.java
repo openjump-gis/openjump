@@ -97,8 +97,8 @@ public class LineSegmentUtil {
      * the distance from one segment's endpoints to the other segment
      * and choose the maximum.
      *
-     * @param seg0
-     * @param seg1
+     * @param seg0 first line segment
+     * @param seg1 second line segment
      * @return the Hausdorff distance between the segments
      */
     public static double hausdorffDistance(LineSegment seg0, LineSegment seg1) {
