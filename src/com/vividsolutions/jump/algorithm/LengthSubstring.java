@@ -20,7 +20,8 @@ import com.vividsolutions.jts.util.Assert;
  */
 // Martin made a decision to create this duplicate of a class from JCS. 
 // [Jon Aquino 2004-10-25]
-  //TODO check if it can be replaced by linear referencing package from JTS
+//TODO check if it can be replaced by linear referencing package from JTS in
+//see org.locationtech.jts.linearref.LengthIndexedLine
 public class LengthSubstring
 {
   public static LineString getSubstring(LineString line, double startLength,

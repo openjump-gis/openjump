@@ -10,6 +10,7 @@ import com.vividsolutions.jts.geom.*;
  * of a point a given length along a line.
  */
 //TODO check if it can be replaced by linear referencing package from JTS
+//see org.locationtech.jts.linearref.LinearLocation
 public class LocatePoint {
 
   /**

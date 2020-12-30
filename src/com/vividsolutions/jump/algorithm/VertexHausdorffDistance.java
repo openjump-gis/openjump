@@ -49,6 +49,7 @@ import com.vividsolutions.jts.algorithm.distance.*;
  * and roughly equal in length - just what is needed for line matching.
  * </b>
  */
+// TODO replace by org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance
 public class VertexHausdorffDistance
 {
 

@@ -49,6 +49,7 @@ import java.util.List;
  * Inser vertices every x units along linear components of a Geometry.
  *
  * @author Micha&euml; Michaud
+ * TODO should be replaced by JTS Densifier, but JTS does not take care of z value
  */
 public class Densifier {
 
