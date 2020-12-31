@@ -947,4 +947,46 @@ public abstract class LayerableUtil {
         return worldPath;
     }
 
+    /**
+     * Returns the area of feature collection (only Polygons or MultiPolygons)
+     * in the selected Vector Layer.class.
+     * This method exclude area of the layer which are not covered by feature
+     * @param com.vividsolutions.jump.workbench.model.Layer
+     * @return area ad double
+     */
+    public static double getValidArea(Layer layer) {
+    	double area=0;
+    	final FeatureCollection featureCollection = layer
+                .getFeatureCollectionWrapper();
+    	 for (final Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
+             final Feature feature = (Feature) i.next();
+             area+= feature.getGeometry().getArea();
+             }
+		return area;
+    }
+    
+    /**
+     * Returns the area of selected RasterImageLayer.class.
+     * This method excludes cells with no data value
+     * @param org.openjump.core.rasterimage.RasterImageLayer
+     * @return area as double
+     */
+    public static double getValidArea(RasterImageLayer layer) throws IOException {
+    	Raster ras=layer.getRasterData(null);
+    	double noData =layer.getNoDataValue();
+    	double cellSize=layer.getMetadata().getOriginalCellSize();
+    	int counter = 0;
+    	int nx = ras.getWidth();
+        int ny = ras.getHeight();
+        for (int y = 0; y < ny; y++) {
+            for (int x = 0; x < nx; x++) {
+                double value = ras.getSampleDouble(x, y, 0);
+                if (value != noData)
+                    counter++;
+            }
+        }
+		return cellSize*cellSize*counter;
+    }
+    
+    
 }
