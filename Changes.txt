@@ -1,5 +1,136 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
+  Announcement
+  This is the final release of the long lasting OJ version 1.x series.
+
+  The next release will introduce backward incompatible changes that'll 
+  initially break all unmodified extensions/plugins. So enjoy this one and
+  look forward to OJ2 developed in a Git-repo using the latest locationtech JTS.
+
+
+  New Features
+  * Added RasterizePlugIn. A plugin to rasterize vector layer according to
+    an attribute value and cell size (plugin located under Tools>Generate)
+  * Raster Pixel Inspection. Added capability to retrieve a set of pixel 
+    values in a table dragging on an area of the raster (like pixel inspector 
+    in ArcGIS) - currently limited to the first band
+  * Add an interiorBorder option to BasicStyle
+  * Added new tools in SextanteGIS :
+  - Under "DEM Processing" menu (Raster analisys)
+  a) Map pits. Tool to map pits and sinks to verify the quality of a raster 
+     for hydrological analisys
+  b) Remove single-cell pits. To remove single pits in order to speed sink 
+     filling of a DEM
+  c) Remove sinks. Modified from "Sink Filling" Sextante tool, to solve
+     a bug (SchrÃ¶der et al,, 2010, 6 International gvSIG Conference) and 
+     to speed the process
+  - Under "Rasterization and interpolation" menu
+  d) Rasterize vector layer (2). Modified version of "Rasterize vector layer" 
+     to solve a bug on rasterize polygons
+  * EditOptionPanel : Added option to automatically open a feature attributes 
+    Info Frame after a new feature is created. Workaround to Feature request 
+    #245 "Create form to edit attribute values" 
+  * CadTools Plugin version 0.9: added capability to load Python console and 
+    tools: added Align and Distribute selected features tools
+
+
+  Improvements
+  * reorder app exit handlers, do not run if exit is cancelled
+  * replaced MergeSelectedPolygonsWithNeighbourPlugIn by
+    MergePolygonsWithNeighbourPlugIn :faster, transactional, more
+  * Updated CadTool plugin to ver. 1.0: activated Add and remove area plugin
+  * add support for gdal/spatialite via homebrew on macOS
+   - spatialite works if homebrew java is installed and used via JAVA_HOME
+     above e.g. usr/local/opt/java11
+   - home-brew gdal on mac mini-howto
+     1. Install home-brew according to https://brew.sh
+     2. Add osgeo4mac repo 'brew tap osgeo/osgeo4mac'
+     3. Install gdal 'brew install osgeo-gdal'
+     4. run OJ
+  * added gdal support for debian/ubuntu, installing package libgdal-java
+    suffices now to have gdal image loaders up and running, tested on Ubuntu 20
+  * tested spatialite DB Datastore support on Ubuntu 20, works with package
+    libsqlite3-mod-spatialite installed
+  * installer
+    - added a FinishPanel to installer as requested in featreq #270
+    - disable shortcut creation on linux, not working properly anymore
+    - enable run-privileged for all windows versions
+  * add multiple extension dirs support eg.
+     -plug-in-directory "lib\plus" -plug-in-directory "lib\ext"
+  * Update GraphToolBox extension to 0.8.0 : improve strahler order
+    calculation and add shreve, horton and hack orders
+  * SpatialDBDSDriver
+    - fix sqlite not loading mod_spatialite anymore because 
+      connection properties were not delegated properly
+    - keep one caching Dateparser instance per result dataset to speed up date
+      parsing by magnitudes
+  * beautify selected menu item icons (checkboxed) on windows 
+    by ticking them visually
+  * make geoimg framework more robust if imageio-ext or gdal is missing
+  * add jai-imageio.core (oss successor of sun's jai-core) to OJ CORE
+  * prefer jai-imageio.core readers over all (primarily just TIF n BMP)
+  * upgrade imageio-ext to latest greatest 1.3.2
+  * ImageLayerManagerPlugin shows actually used loader if none was preselected
+  * upgrade commons imaging to 1.0-alpha2
+  * update postgresql and sqlite jdbc drivers
+  * converted Sextante Toolbox as OpenJUMP Detached InternaFrame
+  * Update and fixes BeanShell Editor PlugIn and dependencies
+  * Updated CadPlan Jump Printer plugin
+  * Updated VertexSymbols plugin to version 0.20:
+    a) Extended capability of the plugin to feature classification by attribute
+       value
+    b) Added capability to style linestrings with symbols at user-defined
+       distance between each other, offset to the line, and rotation according
+       to segments orientation
+    c) better visual and command organization
+    d) activated capability to read/use pure WKT files as symbols (already
+       embedded by Geoff)
+    e) integration with some basic style parameters (line/fill colors, global
+       transparency,..)
+    f) improved panels, commands and GUI
+  * Correct text preview panel of TextEditor for wrapped text
+  * upgrade apache-commons jars codec, compress, imaging, lang3 to latest stable
+  * WMS client
+  - text request fetches encoding from header content-type now
+  - save trusted url that needs no cert verification only per session
+  - fix http auth on cert unverified requests
+  - rework allow cert unverified dialog, properly wraps and resizes now
+  * Now tolerate an empty cpg file along with shapefile
+
+
+  PLUS
+  * Added a valid plugin to export the view to several file formats (Raster, 
+    SVG, PDF). Export view to scale: style elements will be resized according
+    to the selected scale. This plugin substitutes SaveViewAsRaster and 
+    SaveViewAsSVG plugins in OpenJUMP PLUS version 
+  * PLUS upgrade ojmapcoloring, added Hungarian translation
+    (thanks to János Tamás Kis), polish translation
+
+
+  Bug Fixes
+  * fix #517 : raster styling of float32 image
+  * fix #516 modeler, z-interpolation was incorrect and transaction
+    management was error-prone
+  * fix #512 about georeferencing (introduced by r6523)
+  * fix #503 again (half-pixel shift)
+  * fix #508 : java2xml with setInteriorBorder/hasInteriorBorder property
+  * fix #382 : deleting warping vectors was not possible with incremental mode
+  * fix #451 : Add image layer throwing NPE
+  * fix IllegalAccessException when using Sun TIFF reader with java9+
+  * fix #502 : fatal bug in ColorThemingStyle
+  * small fix in csv driver -> v1.1.1
+  * bugfix #385 RasterImageLayer was not cloneable
+  * Protection against null GeometryColumn when building spatial filter for Spatialite
+  * bugfix #491 WMS getCapability without title
+  * Fix a bug in spatialite loader preventing loading anything exported
+    from QGis using spatialite format (OGC_OGR_LAYOUT)
+  * fix #497 : read dates from database as java.util.Date, not String
+  * fix #494 : csv driver 1.0.3 : fix serialization problem
+  * Fix #492 GetFeatureInfo without certificate + encoding
+
+
+Version 1.15 release rev.6241 (released on 16. February 2020)
+
   New Features
   * Raster : Added RasterizePlugIn
   * Graph : Added capabilities in GraphToolBox 0.8.0 (stream order computation)

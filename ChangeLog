@@ -4,6 +4,8 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+* release 1.16 Changes updated til here ****************************************
+
 2020-12-23 ede
   * start scripts - remove obsolete "./conf/" classpath entry
 
