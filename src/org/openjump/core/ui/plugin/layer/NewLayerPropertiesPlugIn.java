@@ -86,7 +86,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.AlphaSetting;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 
-import de.latlon.deejump.wfs.jump.WFSLayer;
+//import de.latlon.deejump.wfs.jump.WFSLayer;
 
 public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
     private static String LAYER_PROPERTIES = I18N
@@ -386,26 +386,27 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
                 // If it is a WFS
                 String sclass = layers[0].getClass().getSimpleName();
 
-                if (sclass.equals("WFSLayer")) {
-                    // WFSLayer layer = (WFSLayer) layers[0];
-                    String server;
-                    String urlLayer;
-                    try {
-                        WFSLayer layer = (WFSLayer) layers[0];
-                        server = layer.getServerURL();
-                        urlLayer = layer.getGeoPropertyNameAsString();
-                    } catch (Exception ex) {
-                        server = "";
-                        urlLayer = "";
-                    }
-                    info = info + header("", WEB_SERVICE);
-                    info = info
-                            + property(DATASOURCE_CLASS,
-                                    "WFS - Web Feature Services", bgColor0);
-                    info = info + property(WFS_SERVER, server, bgColor1);
-                    info = info + property(WFS_LAYER_NAME, urlLayer, bgColor0);
-                    // Other types of layer.class (vector or image files)
-                } else {
+                //if (sclass.equals("WFSLayer")) {
+                //    // WFSLayer layer = (WFSLayer) layers[0];
+                //    String server;
+                //    String urlLayer;
+                //    try {
+                //        WFSLayer layer = (WFSLayer) layers[0];
+                //        server = layer.getServerURL();
+                //        urlLayer = layer.getGeoPropertyNameAsString();
+                //    } catch (Exception ex) {
+                //        server = "";
+                //        urlLayer = "";
+                //    }
+                //    info = info + header("", WEB_SERVICE);
+                //    info = info
+                //            + property(DATASOURCE_CLASS,
+                //                    "WFS - Web Feature Services", bgColor0);
+                //    info = info + property(WFS_SERVER, server, bgColor1);
+                //    info = info + property(WFS_LAYER_NAME, urlLayer, bgColor0);
+                //    // Other types of layer.class (vector or image files)
+                //} else {
+                if (!sclass.equals("WFSLayer")) {
                     // LAYER Name and check if FeatureCollection was modified
                     info = info + header("", DATASOURCE);
                     // IMAGE layer sub-section
@@ -650,7 +651,7 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             // The next section is added for referenceImage layers.
             // It gets:
             // a) the extension of file (JPG, TIF, etc)
-            // b) the file path (ex C:/foòder/filepath.tif)
+            // b) the file path (ex C:/foï¿½der/filepath.tif)
             if (layers[0].getStyle(ReferencedImageStyle.class) != null
                     && (layers[0].getDescription() != null)) {
                 String sourcePathImage;

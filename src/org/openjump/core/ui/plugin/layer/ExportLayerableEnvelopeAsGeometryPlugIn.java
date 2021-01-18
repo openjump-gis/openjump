@@ -47,7 +47,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource;
 
-import de.latlon.deejump.wfs.jump.WFSLayer;
+//import de.latlon.deejump.wfs.jump.WFSLayer;
 
 /**
  * Giuseppe Aruta 2015_01_15
@@ -130,10 +130,9 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
             Layerable slayer = (Layerable)layerable;
             if (slayer instanceof WMSLayer) {
                 envelope.expandToInclude(((WMSLayer) slayer).getEnvelope());
-            } else if (slayer instanceof WFSLayer) {
-                envelope.expandToInclude(((WFSLayer) slayer)
-                        .getFeatureCollectionWrapper().getEnvelope());
-
+            //} else if (slayer instanceof WFSLayer) {
+            //    envelope.expandToInclude(((WFSLayer) slayer)
+            //            .getFeatureCollectionWrapper().getEnvelope());
             } else if (slayer instanceof Layer) {
                 if (((Layer) slayer).getFeatureCollectionWrapper().isEmpty()) {
                     context.getWorkbenchFrame()
@@ -180,9 +179,9 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
             if (layer instanceof WMSLayer) {
                 path = ((WMSLayer)layer).getServerURL();
                 srid = ((WMSLayer) layer).getSRS();
-            } else if (layer instanceof WFSLayer) {
-                path = ((WFSLayer)layer).getServerURL();
-                srid = ((WFSLayer)layer).getCrs();
+            //} else if (layer instanceof WFSLayer) {
+            //    path = ((WFSLayer)layer).getServerURL();
+            //    srid = ((WFSLayer)layer).getCrs();
             } else if (layer instanceof RasterImageLayer) {
                 path = ((RasterImageLayer)layer).getImageFileName();
                 srid = getInfoProjection((RasterImageLayer)layer).getCode();

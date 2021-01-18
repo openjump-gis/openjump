@@ -77,7 +77,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource
 import com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
-import de.latlon.deejump.wfs.jump.WFSLayer;
+//import de.latlon.deejump.wfs.jump.WFSLayer;
 
 public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         TreeCellRenderer {
@@ -755,32 +755,32 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
             tooltip += "<b>" + EXTENT + ": </b>" + env.toString() + "<br>";
             tooltip += "</DIV></BODY></HTML>";
         }
-        /*
-         * WFSLayer.class
-         */
-        else if (layerable instanceof WFSLayer) {
-            WFSLayer layer = (WFSLayer) layerable;
-            String url = layer.getServerURL();// Url server of WFS layer
-            String srs = layer.getCrs();// SRS of WFS layer
-
-            Envelope env = layer.getFeatureCollectionWrapper().getEnvelope();// Get
-                                                                             // Envelope
-                                                                             // of
-                                                                             // WFS
-                                                                             // layer
-            int size = -1;// Layer size
-            size = layer.getFeatureCollectionWrapper().size();// Get number
-            tooltip = "<HTML><BODY>";
-            tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
-            tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName() + "<br>";
-            tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + "WFS" + "<br>";
-            tooltip += "<b>" + URL + ": </b>" + StringUtil.split(url, 350)
-                    + "<br>";
-            tooltip += "<b>" + SRS + ": </b>" + srs + "<br>";
-            tooltip += "<b>" + EXTENT + ": </b>" + env.toString() + "<br>";
-            tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
-            tooltip += "</DIV></BODY></HTML>";
-        }
+        ///*
+        // * WFSLayer.class
+        // */
+        //else if (layerable instanceof WFSLayer) {
+        //    WFSLayer layer = (WFSLayer) layerable;
+        //    String url = layer.getServerURL();// Url server of WFS layer
+        //    String srs = layer.getCrs();// SRS of WFS layer
+//
+        //    Envelope env = layer.getFeatureCollectionWrapper().getEnvelope();// Get
+        //                                                                     // Envelope
+        //                                                                     // of
+        //                                                                     // WFS
+        //                                                                     // layer
+        //    int size = -1;// Layer size
+        //    size = layer.getFeatureCollectionWrapper().size();// Get number
+        //    tooltip = "<HTML><BODY>";
+        //    tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
+        //    tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName() + "<br>";
+        //    tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + "WFS" + "<br>";
+        //    tooltip += "<b>" + URL + ": </b>" + StringUtil.split(url, 350)
+        //            + "<br>";
+        //    tooltip += "<b>" + SRS + ": </b>" + srs + "<br>";
+        //    tooltip += "<b>" + EXTENT + ": </b>" + env.toString() + "<br>";
+        //    tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
+        //    tooltip += "</DIV></BODY></HTML>";
+        //}
         /*
          * Sextante RasterImageLayer.class
          */

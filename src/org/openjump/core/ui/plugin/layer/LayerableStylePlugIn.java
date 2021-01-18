@@ -20,7 +20,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
-import de.latlon.deejump.wfs.jump.WFSLayer;
+//import de.latlon.deejump.wfs.jump.WFSLayer;
 
 public class LayerableStylePlugIn extends AbstractPlugIn {
     public boolean execute(final PlugInContext context) throws Exception {
@@ -42,11 +42,9 @@ public class LayerableStylePlugIn extends AbstractPlugIn {
             ChangeRasterImagePropertiesPlugIn rasterLayerChangeStylePlugIn = new ChangeRasterImagePropertiesPlugIn();
             rasterLayerChangeStylePlugIn.execute(context);
 
-        } else if (layer instanceof WMSLayer) {
-
-            WMSStylePlugIn wmsLayerChangeStylePlugIn = new WMSStylePlugIn();
-            wmsLayerChangeStylePlugIn.execute(context);
-
+        //} else if (layer instanceof WMSLayer) {
+        //    WMSStylePlugIn wmsLayerChangeStylePlugIn = new WMSStylePlugIn();
+        //    wmsLayerChangeStylePlugIn.execute(context);
         } else if (layer instanceof WFSLayer) {
 
             DeeChangeStylesPlugIn vectorLayerChangeStylePlugIn = new DeeChangeStylesPlugIn();
