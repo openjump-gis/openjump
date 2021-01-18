@@ -803,14 +803,9 @@
     </build>
     <repositories>
         <repository>
-            <id>maven central</id>
-            <name>Central Maven 2 Repository</name>
-            <url>http://central.maven.org/maven2</url>
-        </repository>
-        <repository>
-            <id>cam</id>
-            <name>Cambridge Maven 2 Repository</name>
-            <url>http://maven.ch.cam.ac.uk/m2repo/</url>
+            <id>Maven Central group</id>
+            <name>Maven Central group Repository</name>
+            <url>https://mvnrepository.com/artifact/</url>
         </repository>
         <repository>
             <id>openjump</id>
