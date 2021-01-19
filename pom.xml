@@ -7,10 +7,10 @@
     <version>${version.release}</version>
     <name>OpenJUMP</name>
     <scm>
-        <connection>scm:svn:https://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/core/trunk</connection>
-        <developerConnection>scm:svn:https://jump-pilot.svn.sourceforge.net/svnroot/jump-pilot/core/trunk</developerConnection>
-        <tag>HEAD</tag>
-        <url>http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/core/trunk/</url>
+        <connection>scm:git:https://github.com/openjump-gis/openjump.git</connection>
+        <developerConnection>scm:git:https://github.com/openjump-gis/openjump.git</developerConnection>
+        <tag>master</tag>
+        <url>https://github.com/openjump-gis/openjump/tree/master</url>
     </scm>
     <properties>
         <version.number>0.0.0</version.number>
