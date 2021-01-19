@@ -29,7 +29,7 @@ import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 import org.openjump.core.ui.util.LayerableUtil;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureCollection;

@@ -31,13 +31,13 @@
  */
 package com.vividsolutions.jump.plugin.edit;
 
-import com.vividsolutions.jts.algorithm.RobustLineIntersector;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.index.strtree.STRtree;
-import com.vividsolutions.jts.noding.*;
-import com.vividsolutions.jts.noding.snapround.MCIndexSnapRounder;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
-import com.vividsolutions.jts.precision.CoordinatePrecisionReducerFilter;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.noding.*;
+import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.precision.CoordinatePrecisionReducerFilter;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;

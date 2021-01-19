@@ -43,9 +43,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import org.openjump.core.geomutils.Arc;
 import org.openjump.core.geomutils.MathVector;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.operation.valid.IsValidOp;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;

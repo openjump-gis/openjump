@@ -21,7 +21,7 @@ import org.openjump.core.apitools.objecttyperoles.FeatureCollectionRole;
 import org.openjump.core.apitools.objecttyperoles.PirolFeatureCollection;
 import org.openjump.core.apitools.objecttyperoles.RoleTriangularIrregularNet;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;

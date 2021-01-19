@@ -31,13 +31,13 @@
  */
 package com.vividsolutions.jump.workbench.ui.snap;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.index.strtree.STRtree;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.util.Assert;
 
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;

@@ -2,8 +2,8 @@ package jumptest.junit;
 
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 import com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn;
 
 public class VerticesInFencePlugInTestCase extends TestCase {

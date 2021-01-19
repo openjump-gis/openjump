@@ -55,7 +55,7 @@ import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 import org.openjump.core.ui.util.LayerableUtil;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.FileUtil;

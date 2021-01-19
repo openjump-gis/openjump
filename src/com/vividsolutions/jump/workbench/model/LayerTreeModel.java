@@ -36,7 +36,7 @@ import java.util.*;
 
 import javax.swing.tree.TreePath;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.util.SimpleTreeModel;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;

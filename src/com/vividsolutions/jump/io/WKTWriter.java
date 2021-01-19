@@ -63,8 +63,8 @@ import com.vividsolutions.jump.io.datasource.DataSource;
  */
 public class WKTWriter implements JUMPWriter {
 
-    private com.vividsolutions.jts.io.WKTWriter wktWriter = 
-        new com.vividsolutions.jts.io.WKTWriter(3);
+    private org.locationtech.jts.io.WKTWriter wktWriter =
+        new org.locationtech.jts.io.WKTWriter(3);
 
     /**constuctor*/
     public WKTWriter() {

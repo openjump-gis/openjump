@@ -33,7 +33,7 @@
 
 package com.vividsolutions.jump.feature;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import java.io.Serializable;
 import java.util.*;

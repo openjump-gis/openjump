@@ -36,8 +36,8 @@ package com.vividsolutions.jump.warp;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.task.TaskMonitor;
 
 

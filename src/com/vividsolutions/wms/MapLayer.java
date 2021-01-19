@@ -39,7 +39,7 @@ package com.vividsolutions.wms;
 import java.util.*;
 
 import com.vividsolutions.jump.util.CollectionUtil;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * Represents a WMS Layer.

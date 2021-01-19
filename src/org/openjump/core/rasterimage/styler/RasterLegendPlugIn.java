@@ -36,7 +36,7 @@ import com.sun.media.jai.codec.TIFFEncodeParam;
 import com.sun.media.jai.codec.TIFFField;
 import com.sun.media.jai.codecimpl.TIFFCodec;
 import com.sun.media.jai.codecimpl.TIFFImageEncoder;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;

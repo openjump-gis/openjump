@@ -31,8 +31,8 @@ import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.Resolution;
 
 import com.sun.media.jai.codecimpl.util.RasterFactory;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;

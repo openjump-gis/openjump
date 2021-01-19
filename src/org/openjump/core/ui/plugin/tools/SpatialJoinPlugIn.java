@@ -10,7 +10,7 @@ import java.util.Collection;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GenericNames;

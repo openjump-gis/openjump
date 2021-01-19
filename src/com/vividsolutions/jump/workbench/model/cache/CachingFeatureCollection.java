@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;

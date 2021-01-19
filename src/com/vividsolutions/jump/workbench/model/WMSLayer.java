@@ -44,8 +44,8 @@ import java.util.List;
 
 import javax.swing.JButton;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;

@@ -33,7 +33,7 @@ import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.ccordsys.utils.SridLookupTable;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layerable;

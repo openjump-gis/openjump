@@ -43,7 +43,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * Whatever the user needs to do a particular task. Currently a thin wrapper

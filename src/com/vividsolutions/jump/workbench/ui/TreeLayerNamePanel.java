@@ -64,8 +64,8 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.openjump.core.rasterimage.RasterImageLayer;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.workbench.model.Category;

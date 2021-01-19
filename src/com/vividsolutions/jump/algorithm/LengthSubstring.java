@@ -1,7 +1,7 @@
 package com.vividsolutions.jump.algorithm;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Computes a substring of a {@link LineString}

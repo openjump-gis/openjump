@@ -38,7 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.io.WKTWriter;
+import org.locationtech.jts.io.WKTWriter;
 import com.vividsolutions.jump.feature.Feature;
 
 public class CollectionOfFeaturesTransferable extends AbstractTransferable {

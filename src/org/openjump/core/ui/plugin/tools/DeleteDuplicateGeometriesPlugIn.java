@@ -34,7 +34,7 @@ import java.util.Set;
 
 import javax.swing.JMenuItem;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -70,7 +70,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  * </ul>
  * 
  * @author Stefan Steiniger <i>(original author)</i>
- * @author Michaël Michaud <i>(algorithm reworked to take advantage of indexes)</i>
+ * @author Michaï¿½l Michaud <i>(algorithm reworked to take advantage of indexes)</i>
  * @author Benjamin Gudehus <i>(refactored class in order to improve readabilty)</i>
  */
 public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implements

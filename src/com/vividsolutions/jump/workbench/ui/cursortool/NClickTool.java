@@ -34,7 +34,7 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import java.awt.event.MouseEvent;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 
 /**

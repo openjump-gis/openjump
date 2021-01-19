@@ -31,10 +31,10 @@
  */
 package com.vividsolutions.jump.plugin.edit;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.noding.*;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
-import com.vividsolutions.jts.operation.linemerge.LineSequencer;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.noding.*;
+import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.operation.linemerge.LineSequencer;
 import com.vividsolutions.jump.feature.Feature;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -238,9 +238,9 @@ public class SegmentStringsWithData2Features {
      */
     public static Map<Feature,Map<Integer,Map<Integer,List<SegmentString>>>> 
                     getFeature2SegmentStringTreeMap(Collection nodedSubstring) {
-        // Création de geomStructureMap, une table regroupant les SegmentStrings
-        // résultant du traitement en fonction du feature, du component, 
-        // (GeometryCollection) et de l'élément linéaire d'origine.
+        // Crï¿½ation de geomStructureMap, une table regroupant les SegmentStrings
+        // rï¿½sultant du traitement en fonction du feature, du component, 
+        // (GeometryCollection) et de l'ï¿½lï¿½ment linï¿½aire d'origine.
         // geomStructureMap     : 1 Feature --> N components
         // componentMap         : 1 component --> N linearElements
         // segmentString List   : 1 linearElement --> N SegmentStringWithRef
@@ -252,9 +252,9 @@ public class SegmentStringsWithData2Features {
             Feature feature = metadata.getFeature();
             int component = metadata.getComponent();
             int linearElement = metadata.getLinearElement();
-            // Récupérer la table pour ce Feature
+            // Rï¿½cupï¿½rer la table pour ce Feature
             Map<Integer,Map<Integer,List<SegmentString>>> components = geomStructureMap.get(feature);
-            // Ce Feature n'a pas encore d'entrée
+            // Ce Feature n'a pas encore d'entrï¿½e
             if (components == null) {
                 components = new HashMap<>(1);
                 Map<Integer,List<SegmentString>> linearElements = new HashMap<>(1);

@@ -45,7 +45,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.Blackboard;

@@ -1,10 +1,10 @@
 package org.openjump.core.ui.plugin.edittoolbox.cursortools;
 
-import com.vividsolutions.jts.algorithm.distance.DiscreteHausdorffDistance;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.linearref.LinearLocation;
-import com.vividsolutions.jts.linearref.LocationIndexedLine;
+import org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.linearref.LinearLocation;
+import org.locationtech.jts.linearref.LocationIndexedLine;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.WorkbenchContext;

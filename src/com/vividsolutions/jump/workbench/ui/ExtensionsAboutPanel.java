@@ -46,7 +46,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.InlineView;
 
-import com.vividsolutions.jts.JTSVersion;
+import org.locationtech.jts.JTSVersion;
 import com.vividsolutions.jump.workbench.plugin.Configuration;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
 

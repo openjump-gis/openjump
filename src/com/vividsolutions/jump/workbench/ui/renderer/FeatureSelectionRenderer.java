@@ -33,7 +33,7 @@
 
 package com.vividsolutions.jump.workbench.ui.renderer;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.model.Layer;

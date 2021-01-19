@@ -48,7 +48,7 @@ import javax.swing.WindowConstants;
 
 import org.openjump.swing.listener.InvokeMethodActionListener;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;

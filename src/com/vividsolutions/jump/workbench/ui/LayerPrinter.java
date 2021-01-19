@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.ui.renderer.LayerRenderer;

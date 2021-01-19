@@ -7,7 +7,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.cursortool.FeatureInfoTool;

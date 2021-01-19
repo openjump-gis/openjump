@@ -33,7 +33,7 @@
 
 package com.vividsolutions.jump.workbench.model;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 
 /**
  * An addition, removal, or modification of a Layer.

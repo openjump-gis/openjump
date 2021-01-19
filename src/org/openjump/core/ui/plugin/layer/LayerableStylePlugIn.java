@@ -42,13 +42,15 @@ public class LayerableStylePlugIn extends AbstractPlugIn {
             ChangeRasterImagePropertiesPlugIn rasterLayerChangeStylePlugIn = new ChangeRasterImagePropertiesPlugIn();
             rasterLayerChangeStylePlugIn.execute(context);
 
-        //} else if (layer instanceof WMSLayer) {
-        //    WMSStylePlugIn wmsLayerChangeStylePlugIn = new WMSStylePlugIn();
-        //    wmsLayerChangeStylePlugIn.execute(context);
-        } else if (layer instanceof WFSLayer) {
+        } else if (layer instanceof WMSLayer) {
 
-            DeeChangeStylesPlugIn vectorLayerChangeStylePlugIn = new DeeChangeStylesPlugIn();
-            vectorLayerChangeStylePlugIn.execute(context);
+            WMSStylePlugIn wmsLayerChangeStylePlugIn = new WMSStylePlugIn();
+            wmsLayerChangeStylePlugIn.execute(context);
+
+        //} else if (layer instanceof WFSLayer) {
+        //
+        //    DeeChangeStylesPlugIn vectorLayerChangeStylePlugIn = new DeeChangeStylesPlugIn();
+        //    vectorLayerChangeStylePlugIn.execute(context);
 
         } else {
 

@@ -38,7 +38,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;

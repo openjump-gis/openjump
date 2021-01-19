@@ -73,9 +73,9 @@ import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundExceptio
 import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 
 import com.sun.media.jai.codecimpl.util.RasterFactory;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;

@@ -85,7 +85,7 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
 
 import org.openjump.util.CustomTexturePaint;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.CollectionUtil;

@@ -59,7 +59,7 @@ import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridRasterWrapper;
 import org.openjump.sextante.gui.additionalResults.AdditionalResults;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.util.StatisticIndices;

@@ -1,9 +1,9 @@
 package jumptest.junit;
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.tools.OverlayEngine;

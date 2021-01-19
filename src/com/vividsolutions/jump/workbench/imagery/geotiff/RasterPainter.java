@@ -8,7 +8,7 @@ import java.awt.image.renderable.ParameterBlock;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 /**

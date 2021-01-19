@@ -37,7 +37,7 @@ import javax.swing.ImageIcon;
 
 import org.openjump.core.ui.images.IconLoader;
 
-import com.vividsolutions.jts.io.WKTWriter;
+import org.locationtech.jts.io.WKTWriter;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;

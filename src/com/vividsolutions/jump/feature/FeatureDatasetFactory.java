@@ -36,7 +36,7 @@ package com.vividsolutions.jump.feature;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 
 /**

@@ -77,8 +77,8 @@ import com.sun.media.jai.codec.TIFFEncodeParam;
 import com.sun.media.jai.codec.TIFFField;
 import com.sun.media.jai.codecimpl.TIFFCodec;
 import com.sun.media.jai.codecimpl.TIFFImageEncoder;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
@@ -1207,7 +1207,7 @@ public class IOTools {
      * nodata is set to SAGA standard value (-99999.00)
      * compression is set to packbits
      * @param java.awt.image.BufferedImage
-     * @param com.vividsolutions.jts.geom.Envelope
+     * @param org.locationtech.jts.geom.Envelope
      * @param outFile
      * @throws IOException
      */
@@ -1226,7 +1226,7 @@ public class IOTools {
      * Save a given BufferedImage and envelope to GeoTIFF file, giving nodata value, x and y values of 
      * cell size and compsession
      * @param java.awt.image.BufferedImage
-     * @param com.vividsolutions.jts.geom.Envelope
+     * @param org.locationtech.jts.geom.Envelope
      * @param cellsizex. Double cell size in x direction
      * @param cellsizey. Double cell size in y direction
      * @param nodata. Double nodata value

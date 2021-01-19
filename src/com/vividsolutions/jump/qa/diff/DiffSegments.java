@@ -32,7 +32,7 @@
 
 package com.vividsolutions.jump.qa.diff;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.*;
 import java.util.*;
 import com.vividsolutions.jump.task.TaskMonitor;

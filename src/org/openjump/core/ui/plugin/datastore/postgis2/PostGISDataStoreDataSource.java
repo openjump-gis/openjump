@@ -10,7 +10,7 @@ import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConn
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;
 import com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver;

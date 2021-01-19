@@ -39,7 +39,7 @@ import java.awt.event.ActionListener;
 import java.io.StringReader;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.operation.valid.IsValidOp;
+import org.locationtech.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;

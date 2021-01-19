@@ -31,8 +31,8 @@
  */
 package com.vividsolutions.jump.workbench.ui.cursortool.editing;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;

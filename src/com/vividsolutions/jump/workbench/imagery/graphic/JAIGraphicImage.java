@@ -73,7 +73,7 @@ import javax.media.jai.RenderedOp;
 
 import com.sun.media.jai.codec.ImageCodec;
 import com.sun.media.jai.codec.SeekableStream;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 

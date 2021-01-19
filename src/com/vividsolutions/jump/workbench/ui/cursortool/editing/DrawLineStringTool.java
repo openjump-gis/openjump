@@ -39,9 +39,9 @@ import java.util.List;
 
 import javax.swing.Icon;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.operation.valid.IsValidOp;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;

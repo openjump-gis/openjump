@@ -46,7 +46,7 @@ import org.openjump.core.ui.plugin.tools.AdvancedMeasureTool;
 import org.openjump.core.ui.plugin.tools.ZoomRealtimeTool;
 import org.openjump.core.ui.plugin.view.SuperZoomPanTool;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.WMSLayer;

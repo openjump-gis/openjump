@@ -31,7 +31,7 @@
  */
 
 package com.vividsolutions.jump.workbench.ui.snap;
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 public interface SnapPolicy {
     public Coordinate snap(LayerViewPanel panel, Coordinate originalCoordinate);

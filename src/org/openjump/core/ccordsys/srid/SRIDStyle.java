@@ -3,7 +3,7 @@ package org.openjump.core.ccordsys.srid;
 import java.awt.Graphics2D;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.*;

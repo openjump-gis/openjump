@@ -32,9 +32,9 @@
 
 package org.openjump.core.ui.plugin.tools;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;

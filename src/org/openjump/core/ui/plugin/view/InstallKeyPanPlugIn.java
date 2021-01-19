@@ -8,7 +8,7 @@ import java.awt.geom.NoninvertibleTransformException;
 
 import javax.swing.JInternalFrame;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;

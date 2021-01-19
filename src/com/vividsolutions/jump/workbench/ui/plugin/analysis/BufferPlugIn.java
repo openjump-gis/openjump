@@ -41,12 +41,12 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jts.operation.buffer.BufferOp;
-import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.workbench.WorkbenchContext;

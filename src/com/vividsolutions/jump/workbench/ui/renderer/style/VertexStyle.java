@@ -39,7 +39,7 @@ import java.awt.geom.RectangularShape;
 import de.latlon.deejump.plugin.style.BitmapVertexStyle;
 import org.openjump.util.SLDImporter.SizedStrokeFillStyle;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;

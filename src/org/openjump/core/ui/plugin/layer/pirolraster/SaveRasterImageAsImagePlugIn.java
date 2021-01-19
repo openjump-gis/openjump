@@ -19,7 +19,7 @@ import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageIOUtils;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;

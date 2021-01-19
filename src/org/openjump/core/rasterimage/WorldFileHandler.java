@@ -43,7 +43,7 @@ import java.util.List;
 
 import org.openjump.core.apitools.HandlerToMakeYourLifeEasier;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 

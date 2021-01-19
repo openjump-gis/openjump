@@ -33,8 +33,8 @@
 
 package com.vividsolutions.jump.workbench.ui.zoom;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;

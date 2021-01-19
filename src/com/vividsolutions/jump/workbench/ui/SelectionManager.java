@@ -32,7 +32,7 @@
 
 package com.vividsolutions.jump.workbench.ui;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEvent;

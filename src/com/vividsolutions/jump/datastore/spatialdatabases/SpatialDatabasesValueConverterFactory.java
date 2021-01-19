@@ -1,9 +1,9 @@
 package com.vividsolutions.jump.datastore.spatialdatabases;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBReader;
+import org.locationtech.jts.io.WKTReader;
 import java.sql.*;
 import com.vividsolutions.jump.datastore.jdbc.*;
 import com.vividsolutions.jump.feature.AttributeType;

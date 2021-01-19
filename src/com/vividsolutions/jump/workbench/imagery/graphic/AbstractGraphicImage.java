@@ -71,7 +71,7 @@ import java.awt.image.BufferedImage;
 import java.io.Closeable;
 import java.io.IOException;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;

@@ -50,7 +50,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LineStringVertexStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexIndexLineSegmentStyle;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 import org.openjump.core.ui.images.IconLoader;
 

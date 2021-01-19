@@ -12,7 +12,7 @@ package org.openjump.core.graph.pirolProject;
 import org.openjump.core.apitools.comparisonandsorting.CoordinateComparator;
 import org.openjump.core.apitools.comparisonandsorting.Sortable;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 
 /** 

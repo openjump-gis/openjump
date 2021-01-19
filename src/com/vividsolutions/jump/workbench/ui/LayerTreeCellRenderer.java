@@ -44,7 +44,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.LayerTreeModel;
 import com.vividsolutions.jump.workbench.model.Layerable;

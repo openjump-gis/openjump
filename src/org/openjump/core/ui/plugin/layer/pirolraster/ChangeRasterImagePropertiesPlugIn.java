@@ -22,7 +22,7 @@ import org.openjump.core.ui.plugin.layer.pirolraster.panel.RasterColorEditorPane
 import org.openjump.core.ui.plugin.layer.pirolraster.panel.RasterScaleStylePanel;
 import org.openjump.core.ui.plugin.layer.pirolraster.panel.RasterTransparencyPanel;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -42,7 +42,7 @@ import com.vividsolutions.jump.workbench.ui.style.StylePanel;
  * @version Jul 06 2015 [Giuseppe Aruta] - correct bug when Largest scale
  *          &gt; Smallest scale
  * @version Nov 14 2015 [Giuseppe Aruta] - chosen colorset is stored into the Blackboard
- * @version Jan 27 2017 [Michaël Michaud] - fix close dialog problem
+ * @version Jan 27 2017 [Michaï¿½l Michaud] - fix close dialog problem
  */
 @SuppressWarnings("deprecation")
 public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {

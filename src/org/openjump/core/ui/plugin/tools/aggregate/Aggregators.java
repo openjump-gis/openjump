@@ -1,10 +1,10 @@
 package org.openjump.core.ui.plugin.tools.aggregate;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.feature.AttributeType;
 
 import java.util.*;

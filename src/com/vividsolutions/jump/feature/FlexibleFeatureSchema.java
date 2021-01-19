@@ -2,8 +2,8 @@ package com.vividsolutions.jump.feature;
 
 import org.openjump.core.ui.util.GeometryUtils;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.workbench.Logger;
 
 /**

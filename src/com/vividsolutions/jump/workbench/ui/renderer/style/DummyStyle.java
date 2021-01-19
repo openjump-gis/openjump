@@ -35,7 +35,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.Icon;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.Viewport;

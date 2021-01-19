@@ -39,7 +39,7 @@ import javax.swing.JInternalFrame;
 
 import org.openjump.core.rasterimage.RasterImageLayer;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.driver.DriverManager;

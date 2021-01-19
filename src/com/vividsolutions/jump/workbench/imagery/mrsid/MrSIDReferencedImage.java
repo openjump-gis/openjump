@@ -82,7 +82,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 
 import com.sun.media.jai.codec.FileSeekableStream;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;

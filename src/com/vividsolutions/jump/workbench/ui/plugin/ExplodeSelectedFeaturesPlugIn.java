@@ -43,7 +43,7 @@ import javax.swing.JComponent;
 
 import org.openjump.core.ui.images.IconLoader;
 
-import com.vividsolutions.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryCollection;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;

@@ -32,8 +32,8 @@
 package com.vividsolutions.jump.feature;
 import java.io.Serializable;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.util.Assert;
 import java.util.HashMap;
 import java.util.Map;
 

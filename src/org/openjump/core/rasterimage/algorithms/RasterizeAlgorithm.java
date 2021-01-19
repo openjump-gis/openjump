@@ -19,14 +19,14 @@ import org.openjump.core.rasterimage.sextante.rasterWrappers.GridCell;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridExtent;
 import org.openjump.core.ui.util.LayerableUtil;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
@@ -170,9 +170,9 @@ public class RasterizeAlgorithm {
 	   }
 	   
 	   /**
-	    * gets Raster com.vividsolutions.jts.geom.Envelope, recalculated
+	    * gets Raster org.locationtech.jts.geom.Envelope, recalculated
 	    * according to the cell size
-	    * @return com.vividsolutions.jts.geom.Envelope
+	    * @return org.locationtech.jts.geom.Envelope
 	    */
 	   public Envelope getEnvelope() {
 	 		return new Envelope(m_Extent.getXMin(), m_Extent.getXMax(),m_Extent.getYMin(),  m_Extent.getYMax() );

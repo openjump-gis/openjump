@@ -25,8 +25,8 @@ import java.util.Collection;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.BasicFeature;

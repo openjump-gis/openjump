@@ -40,11 +40,11 @@ import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.geom.CoordUtil;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;

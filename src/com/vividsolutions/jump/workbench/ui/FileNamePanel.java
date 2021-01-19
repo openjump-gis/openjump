@@ -56,7 +56,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.openjump.core.ui.plugin.file.open.JFCWithEnterAction;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 
 public class FileNamePanel extends JPanel {

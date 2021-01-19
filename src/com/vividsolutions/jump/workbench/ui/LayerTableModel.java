@@ -39,8 +39,8 @@ import java.util.*;
 import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;

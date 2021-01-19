@@ -63,8 +63,8 @@ import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.ui.swing.DetachableInternalFrame;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;

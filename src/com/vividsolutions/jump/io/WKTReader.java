@@ -35,8 +35,8 @@ package com.vividsolutions.jump.io;
 
 import java.io.*;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.io.datasource.DataSource;
 
@@ -69,7 +69,7 @@ import com.vividsolutions.jump.io.datasource.DataSource;
 public class WKTReader extends AbstractJUMPReader {
 
     private GeometryFactory geometryFactory = new GeometryFactory();
-    private com.vividsolutions.jts.io.WKTReader wktReader = new com.vividsolutions.jts.io.WKTReader(geometryFactory);
+    private org.locationtech.jts.io.WKTReader wktReader = new org.locationtech.jts.io.WKTReader(geometryFactory);
 
     /**constructor**/
     public WKTReader() {

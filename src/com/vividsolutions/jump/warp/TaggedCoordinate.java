@@ -33,7 +33,7 @@
 
 package com.vividsolutions.jump.warp;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 
 /**

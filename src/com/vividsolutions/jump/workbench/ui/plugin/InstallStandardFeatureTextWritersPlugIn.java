@@ -1,7 +1,7 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.io.WKTWriter;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.io.WKTWriter;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.io.GMLGeometryWriter;
 import com.vividsolutions.jump.util.Fmt;

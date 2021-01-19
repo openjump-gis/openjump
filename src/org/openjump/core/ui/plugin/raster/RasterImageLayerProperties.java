@@ -17,7 +17,7 @@ import org.apache.commons.imaging.Imaging;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 public class RasterImageLayerProperties {
 

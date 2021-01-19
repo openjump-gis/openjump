@@ -3,10 +3,10 @@ package org.openjump.core.ui.util;
 import java.lang.reflect.Constructor;
 import java.security.InvalidParameterException;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateFilter;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateFilter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.geom.CoordUtil;
 import com.vividsolutions.jump.workbench.Logger;
 
@@ -122,7 +122,7 @@ public class GeometryUtils {
   public static Geometry createEmptyGeometry(String geometryName,
       GeometryFactory geometryFactory) throws ClassNotFoundException {
     
-    Class geometryClass = Class.forName("com.vividsolutions.jts.geom."+geometryName);
+    Class geometryClass = Class.forName("org.locationtech.jts.geom."+geometryName);
     return createEmptyGeometry(geometryClass, geometryFactory);
   }
 }

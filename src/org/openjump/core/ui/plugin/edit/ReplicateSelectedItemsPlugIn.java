@@ -47,7 +47,7 @@ import javax.swing.ImageIcon;
 
 import org.openjump.core.ui.images.IconLoader;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;

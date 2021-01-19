@@ -31,8 +31,8 @@
  */
 package com.vividsolutions.jump.feature;
 
-import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jts.util.AssertionFailedException;
+import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.AssertionFailedException;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 

@@ -6,7 +6,7 @@ package org.openjump.core.ui.plugin.edittoolbox.cursortools;
  */
 import java.awt.event.MouseEvent;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 public abstract class ConstrainedNClickTool extends ConstrainedMultiClickTool {
     protected int n;

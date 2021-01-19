@@ -33,8 +33,8 @@
 
 package com.vividsolutions.jump.qa;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.operation.valid.TopologyValidationError;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.operation.valid.TopologyValidationError;
 import com.vividsolutions.jump.feature.Feature;
 
 

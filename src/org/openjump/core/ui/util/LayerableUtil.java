@@ -18,8 +18,8 @@ import org.openjump.core.rasterimage.WorldFileHandler;
 import org.openjump.core.rasterimage.styler.SLDHandler;
 import org.openjump.sigle.utilities.geom.FeatureCollectionUtil;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;

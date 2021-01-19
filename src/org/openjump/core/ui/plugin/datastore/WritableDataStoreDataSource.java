@@ -6,7 +6,7 @@ import java.util.Date;
 
 import javax.swing.JOptionPane;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
 import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.SQLUtil;

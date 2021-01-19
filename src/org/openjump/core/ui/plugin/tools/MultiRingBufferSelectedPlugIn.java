@@ -49,8 +49,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
@@ -64,7 +64,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorScheme;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 
 public class MultiRingBufferSelectedPlugIn extends AbstractPlugIn
         implements ThreadedPlugIn {

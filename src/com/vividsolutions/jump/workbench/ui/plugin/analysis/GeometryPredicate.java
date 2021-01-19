@@ -34,9 +34,9 @@
 package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
 import java.util.*;
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.simplify.*;
+import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.simplify.*;
 import com.vividsolutions.jump.qa.diff.BufferGeometryMatcher;
 import com.vividsolutions.jump.workbench.ui.GenericNames;
 

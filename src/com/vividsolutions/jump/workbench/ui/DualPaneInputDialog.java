@@ -47,7 +47,7 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.I18N;
@@ -161,7 +161,7 @@ public class DualPaneInputDialog extends MultiInputDialog {
         d.addTextField("Nom", "", 24, null, "");
         d.addPositiveIntegerField("Age", 0, 6, "");
         d.addNonNegativeDoubleField("Salaire", 0, 12, "");
-        d.addComboBox("Métier", "Cadre", Arrays.asList("Cadre","Charpentier","Maçon","Boulanger"), "");
+        d.addComboBox("Mï¿½tier", "Cadre", Arrays.asList("Cadre","Charpentier","Maï¿½on","Boulanger"), "");
         
         d.addSubTitle("Layer and attribute selection");
         AttributeTypeFilter STRING_FILTER = new AttributeTypeFilter(AttributeTypeFilter.STRING);
@@ -188,7 +188,7 @@ public class DualPaneInputDialog extends MultiInputDialog {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (d.getDescriptionPanel().getDescription().equals("")) {
-                    d.setSideBarDescription("Description de la boîte de dialogue et des paramètres pour aider l'utilisateur");
+                    d.setSideBarDescription("Description de la boï¿½te de dialogue et des paramï¿½tres pour aider l'utilisateur");
                     d.getConsole().flashMessage("Add description");
                 }
                 else {
@@ -209,7 +209,7 @@ public class DualPaneInputDialog extends MultiInputDialog {
                 }
             }
         });
-        JButton button2 = d.addButton("Deuxième bouton", "OK", "");
+        JButton button2 = d.addButton("Deuxiï¿½me bouton", "OK", "");
         d.addRow();
         d.setVisible(true);
         GUIUtil.centreOnScreen(d);

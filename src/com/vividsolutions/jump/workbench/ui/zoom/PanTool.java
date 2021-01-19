@@ -43,7 +43,7 @@ import java.awt.geom.Point2D;
 
 import javax.swing.Icon;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 /**

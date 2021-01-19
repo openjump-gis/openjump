@@ -1,7 +1,7 @@
 package org.openjump.core.ui.plugin.tools;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
 import com.vividsolutions.jump.workbench.WorkbenchContext;

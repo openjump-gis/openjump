@@ -33,7 +33,7 @@ package com.vividsolutions.jump.util;
 
 import java.util.*;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Utilities to support the Java language.

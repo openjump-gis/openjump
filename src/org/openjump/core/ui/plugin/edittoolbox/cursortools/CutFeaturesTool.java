@@ -1,10 +1,10 @@
   package org.openjump.core.ui.plugin.edittoolbox.cursortools;
   
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
-import com.vividsolutions.jts.operation.valid.IsValidOp;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureUtil;

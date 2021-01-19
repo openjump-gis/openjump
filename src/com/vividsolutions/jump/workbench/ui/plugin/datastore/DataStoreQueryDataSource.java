@@ -1,8 +1,8 @@
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;

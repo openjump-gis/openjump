@@ -34,8 +34,8 @@ package com.vividsolutions.jump.feature;
 
 import java.util.*;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Delegates to another instance of FeatureCollection. A useful means of

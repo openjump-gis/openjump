@@ -42,7 +42,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Blackboard;
@@ -409,22 +409,22 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
             Feature f = (Feature) value;
             Geometry g = f.getGeometry();
 
-            if (g instanceof com.vividsolutions.jts.geom.LinearRing)
+            if (g instanceof org.locationtech.jts.geom.LinearRing)
                 return g.isEmpty() ? buttonLinearRingEmpty : buttonLinearRing;
-            if (g instanceof com.vividsolutions.jts.geom.Point)
+            if (g instanceof org.locationtech.jts.geom.Point)
                 return g.isEmpty() ? buttonPointEmpty : buttonPoint;
-            if (g instanceof com.vividsolutions.jts.geom.MultiPoint)
+            if (g instanceof org.locationtech.jts.geom.MultiPoint)
                 return g.isEmpty() ? buttonMultiPointEmpty
                   : isPartlyEmpty(g) ? buttonMultiPointPartlyEmpty : buttonMultiPoint;
-            if (g instanceof com.vividsolutions.jts.geom.LineString)
+            if (g instanceof org.locationtech.jts.geom.LineString)
                 return g.isEmpty() ? buttonLineStringEmpty : buttonLineString;
-            if (g instanceof com.vividsolutions.jts.geom.MultiLineString)
+            if (g instanceof org.locationtech.jts.geom.MultiLineString)
                 return g.isEmpty() ? buttonMultiLineStringEmpty
                   : isPartlyEmpty(g) ? buttonMultiLineStringPartlyEmpty
                       : buttonMultiLineString;
-            if (g instanceof com.vividsolutions.jts.geom.Polygon)
+            if (g instanceof org.locationtech.jts.geom.Polygon)
                 return g.isEmpty() ? buttonPolygonEmpty : buttonPolygon;
-            if (g instanceof com.vividsolutions.jts.geom.MultiPolygon)
+            if (g instanceof org.locationtech.jts.geom.MultiPolygon)
                 return g.isEmpty() ? buttonMultiPolygonEmpty
                   : isPartlyEmpty(g) ? buttonMultiPolygonPartlyEmpty
                       : buttonMultiPolygon;

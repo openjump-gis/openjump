@@ -35,7 +35,7 @@ package com.vividsolutions.jump.workbench.ui.plugin.generate;
 
 import javax.swing.ImageIcon;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;

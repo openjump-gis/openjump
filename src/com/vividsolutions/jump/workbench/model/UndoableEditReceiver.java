@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 
 
 /**

@@ -35,7 +35,7 @@ package com.vividsolutions.jump.tools;
 
 import java.util.*;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.feature.*;
 
 

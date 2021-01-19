@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ChoosableStyle;
 
 public class MultiRecursiveKeyListener extends RecursiveKeyListener {

@@ -38,11 +38,11 @@ package com.vividsolutions.jump.geom;
 import com.vividsolutions.jump.I18N;
 
 /**
- * Indicates that a {@link com.vividsolutions.jts.algorithm.HCoordinate} has been computed which is
+ * Indicates that a {@link org.locationtech.jts.algorithm.HCoordinate} has been computed which is
  * not representable on the Cartesian plane.
  *
  * @version 1.7
- * @see com.vividsolutions.jts.algorithm.HCoordinate
+ * @see org.locationtech.jts.algorithm.HCoordinate
  */
 public class NotRepresentableException extends Exception {
 

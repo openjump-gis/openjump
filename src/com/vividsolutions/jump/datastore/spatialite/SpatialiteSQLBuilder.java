@@ -2,7 +2,7 @@ package com.vividsolutions.jump.datastore.spatialite;
 
 import java.util.Locale;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.datastore.DataStoreLayer;
 import com.vividsolutions.jump.datastore.FilterQuery;
 import com.vividsolutions.jump.datastore.GeometryColumn;

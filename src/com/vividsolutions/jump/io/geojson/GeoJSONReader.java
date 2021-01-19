@@ -20,10 +20,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openjump.core.ui.util.GeometryUtils;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.geojson.GeoJsonConstants;
-import com.vividsolutions.jts.io.geojson.GeoJsonReader;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.geojson.GeoJsonConstants;
+import org.locationtech.jts.io.geojson.GeoJsonReader;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -242,7 +242,7 @@ public class GeoJSONReader extends AbstractJUMPReader {
  * JTS-io's GeoJsonReader
  */
 class MapGeoJsonGeometryReader extends
-    com.vividsolutions.jts.io.geojson.GeoJsonReader {
+    org.locationtech.jts.io.geojson.GeoJsonReader {
   GeometryFactory geometryFactory = null;
   Method m, m2;
 
@@ -270,12 +270,12 @@ class MapGeoJsonGeometryReader extends
    * @throws IllegalAccessException
    * @throws IllegalArgumentException
    * @throws InvocationTargetException
-   * @throws com.vividsolutions.jts.io.ParseException
+   * @throws org.locationtech.jts.io.ParseException
    * @throws ClassNotFoundException 
    */
   public Geometry read(Map geometryMap) throws IllegalAccessException,
       IllegalArgumentException, InvocationTargetException,
-      com.vividsolutions.jts.io.ParseException, ClassNotFoundException {
+      org.locationtech.jts.io.ParseException, ClassNotFoundException {
     if (this.geometryFactory == null) {
       geometryFactory = (GeometryFactory) m2.invoke(this, geometryMap);
     }
@@ -286,7 +286,7 @@ class MapGeoJsonGeometryReader extends
       Object coords = geometryMap.get(GeoJsonConstants.NAME_COORDINATES);
       // are we a list of objects?
       if (!(coords instanceof List))
-        throw new com.vividsolutions.jts.io.ParseException(
+        throw new org.locationtech.jts.io.ParseException(
             GeoJsonConstants.NAME_COORDINATES + " is not a list: " + JSONObject.toJSONString(geometryMap));
 
       // are we an empty list? OJ allows empty geometries, so do we

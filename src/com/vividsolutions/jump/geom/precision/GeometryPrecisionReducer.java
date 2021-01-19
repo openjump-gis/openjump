@@ -32,8 +32,8 @@
 
 package com.vividsolutions.jump.geom.precision;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.*;
 
 /**
  * Reduces the precision of a {@link Geometry}

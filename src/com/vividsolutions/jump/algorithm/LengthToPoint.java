@@ -1,6 +1,6 @@
 package com.vividsolutions.jump.algorithm;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 /**
  * Computes the length along a LineString to the point on the line nearest a given point.

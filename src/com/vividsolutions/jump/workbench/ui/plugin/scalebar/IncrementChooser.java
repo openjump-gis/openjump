@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.util.MathUtil;
 
 

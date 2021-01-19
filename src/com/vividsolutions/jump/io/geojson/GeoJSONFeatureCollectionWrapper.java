@@ -12,8 +12,8 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONStreamAware;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.geojson.GeoJsonWriter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;

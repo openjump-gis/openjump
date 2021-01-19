@@ -32,9 +32,9 @@
 
 package com.vividsolutions.jump.algorithm;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
-import com.vividsolutions.jts.algorithm.distance.*;
+import org.locationtech.jts.algorithm.distance.*;
 
 /**
  * Implements algorithm for computing a distance metric

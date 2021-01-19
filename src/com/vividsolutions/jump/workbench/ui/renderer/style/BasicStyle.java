@@ -38,12 +38,12 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 import org.openjump.util.SLDImporter.StrokeFillStyle;
 
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.StringUtil;

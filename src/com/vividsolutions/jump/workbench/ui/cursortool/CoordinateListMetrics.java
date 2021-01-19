@@ -33,8 +33,8 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import java.util.*;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineSegment;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineSegment;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.geom.Angle;

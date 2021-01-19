@@ -38,8 +38,8 @@ import java.util.List;
 
 import org.openjump.core.geomutils.GeoUtils;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.math.Vector2D;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.math.Vector2D;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;

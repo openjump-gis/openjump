@@ -19,8 +19,8 @@ import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 import org.openjump.io.PropertiesHandler;
 import org.openjump.util.metaData.MetaInformationHandler;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorV2Util;

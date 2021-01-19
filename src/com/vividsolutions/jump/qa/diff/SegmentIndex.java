@@ -32,9 +32,9 @@
 
 package com.vividsolutions.jump.qa.diff;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.index.*;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.index.*;
+import org.locationtech.jts.index.quadtree.Quadtree;
 import com.vividsolutions.jump.feature.*;
 import java.util.*;
 import com.vividsolutions.jump.util.CoordinateArrays;

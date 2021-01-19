@@ -33,8 +33,8 @@
 
 package com.vividsolutions.jump.qa;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.InteriorPointFinder;
 

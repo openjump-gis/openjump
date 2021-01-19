@@ -43,18 +43,18 @@ import java.awt.geom.Point2D.Double;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 
 /**
  * Converts JTS Geometry objects into Java 2D Shape objects
@@ -230,10 +230,10 @@ public class Java2DConverter {
 	// the general path
 	private GeneralPath toShape(LineString lineString) 
 	                                    throws NoninvertibleTransformException {
-	    com.vividsolutions.jts.geom.GeometryFactory gf = lineString.getFactory();
+	    org.locationtech.jts.geom.GeometryFactory gf = lineString.getFactory();
 	    Coordinate[] cc = lineString.getCoordinates();
 	    GeneralPath shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, cc.length);
-	    com.vividsolutions.jts.geom.CoordinateList list = new com.vividsolutions.jts.geom.CoordinateList();
+	    org.locationtech.jts.geom.CoordinateList list = new org.locationtech.jts.geom.CoordinateList();
 	    Envelope view = pointConverter.getEnvelopeInModelCoordinates();
 	    Coordinate c0 = cc[0];
 	    boolean start = true;

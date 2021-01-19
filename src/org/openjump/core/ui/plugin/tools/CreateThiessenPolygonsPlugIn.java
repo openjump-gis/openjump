@@ -53,10 +53,10 @@ import javax.swing.JComboBox;
 
 import org.openjump.core.graph.delauneySimplexInsert.DTriangulationForJTS;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.index.quadtree.Quadtree;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;

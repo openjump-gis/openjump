@@ -43,7 +43,7 @@ import javax.swing.JInternalFrame;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImagesLayer;

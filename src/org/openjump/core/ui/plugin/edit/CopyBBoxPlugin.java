@@ -41,7 +41,7 @@ package org.openjump.core.ui.plugin.edit;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;

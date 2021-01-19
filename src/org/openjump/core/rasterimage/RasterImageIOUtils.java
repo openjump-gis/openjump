@@ -26,7 +26,7 @@ import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 //import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.model.Category;

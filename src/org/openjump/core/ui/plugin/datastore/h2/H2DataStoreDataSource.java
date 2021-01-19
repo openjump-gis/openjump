@@ -1,6 +1,6 @@
 package org.openjump.core.ui.plugin.datastore.h2;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.datastore.AdhocQuery;
 import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.h2.H2DSConnection;

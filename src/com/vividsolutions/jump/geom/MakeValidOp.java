@@ -2,7 +2,7 @@
  * This program extends Java Topology Suite (JTS) capability and is made
  * available to any Software already using Java Topology Suite.
  *
- * Copyright (C) Michaël Michaud (2017)
+ * Copyright (C) Michaï¿½l Michaud (2017)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
@@ -21,26 +21,26 @@
 
 package com.vividsolutions.jump.geom;
 
-import com.vividsolutions.jts.algorithm.RayCrossingCounter;
-import com.vividsolutions.jts.algorithm.RobustLineIntersector;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequenceFactory;
-import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
-import com.vividsolutions.jts.geom.util.LineStringExtracter;
-import com.vividsolutions.jts.geom.util.PointExtracter;
-import com.vividsolutions.jts.geom.util.PolygonExtracter;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.noding.IntersectionAdder;
-import com.vividsolutions.jts.noding.MCIndexNoder;
-import com.vividsolutions.jts.noding.NodedSegmentString;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.algorithm.RayCrossingCounter;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
+import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
+import org.locationtech.jts.geom.util.LineStringExtracter;
+import org.locationtech.jts.geom.util.PointExtracter;
+import org.locationtech.jts.geom.util.PolygonExtracter;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.noding.IntersectionAdder;
+import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.NodedSegmentString;
+import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 
 import java.util.*;
 
-import static com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory.*;
+import static org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory.*;
 
 /**
  * Operator to make a geometry valid.
@@ -48,7 +48,7 @@ import static com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory.*
  * <p>Making a geometry valid will remove duplicate points although duplicate points
  * do not make a geometry invalid.</p>
  *
- * @author Michaël Michaud
+ * @author Michaï¿½l Michaud
  */
 public class MakeValidOp {
 
@@ -138,21 +138,36 @@ public class MakeValidOp {
 
         // Each single component is made valid
         Collection<Geometry> list2 = new ArrayList<>();
+        int coordDim = 0;
         for (Geometry component : list) {
             if (component instanceof Point) {
                 Point p = makePointValid((Point)component);
-                if (!p.isEmpty()) list2.add(p);
+                if (!p.isEmpty()) {
+                  list2.add(p);
+                  coordDim = p.getCoordinateSequence().getDimension();
+                }
             }
             else if (component instanceof LineString) {
                 Geometry geom = makeLineStringValid((LineString) component);
                 for (int i = 0 ; i < geom.getNumGeometries() ; i++) {
-                    if (!geom.getGeometryN(i).isEmpty()) list2.add(geom.getGeometryN(i));
+                    if (!geom.getGeometryN(i).isEmpty()) {
+                      list2.add(geom.getGeometryN(i));
+                      if (geom.getGeometryN(i) instanceof LineString) {
+                        coordDim = ((LineString) geom.getGeometryN(i)).getCoordinateSequence().getDimension();
+                      }
+                    }
                 }
             }
             else if (component instanceof Polygon) {
                 Geometry geom = makePolygonValid((Polygon) component);
                 for (int i = 0 ; i < geom.getNumGeometries() ; i++) {
-                    if (!geom.getGeometryN(i).isEmpty()) list2.add(geom.getGeometryN(i));
+                    if (!geom.getGeometryN(i).isEmpty()) {
+                      list2.add(geom.getGeometryN(i));
+                      if (geom.getGeometryN(i) instanceof Polygon) {
+                        coordDim = ((Polygon) geom.getGeometryN(i))
+                                .getExteriorRing().getCoordinateSequence().getDimension();
+                      }
+                    }
                 }
             }
             else assert false : "Should never reach here";
@@ -194,8 +209,9 @@ public class MakeValidOp {
         } else {
             CoordinateSequenceFactory csFactory = geometry.getFactory().getCoordinateSequenceFactory();
             // Preserve 4th coordinate dimension as much as possible if preserveCoordDim is true
+
             if (preserveCoordDim && csFactory instanceof PackedCoordinateSequenceFactory
-                    && ((PackedCoordinateSequenceFactory)csFactory).getDimension() == 4) {
+                    && coordDim == 4) {
                 Map<Coordinate,Double> map = new HashMap<>();
                 gatherDim4(geometry, map);
                 list2 = restoreDim4(list2, map);
@@ -526,7 +542,7 @@ public class MakeValidOp {
     // Use ring to restore M values on geoms
     private Collection<Geometry> restoreDim4(Collection<Geometry> geoms, Map<Coordinate,Double> map) {
         GeometryFactory factory = new GeometryFactory(
-                new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE, 4));
+                new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE));
         Collection<Geometry> result = new ArrayList<>();
         for (Geometry geom : geoms) {
             if (geom instanceof Point) {
@@ -587,7 +603,7 @@ public class MakeValidOp {
 
     // Use map to restore M values on the coordinate array
     private CoordinateSequence restoreDim4(CoordinateSequence cs, Map<Coordinate,Double> map) {
-        CoordinateSequence seq = new PackedCoordinateSequenceFactory(DOUBLE, 4).create(cs.size(), 4);
+        CoordinateSequence seq = new PackedCoordinateSequenceFactory(DOUBLE).create(cs.size(), 4);
         for (int i = 0 ; i < cs.size() ; i++) {
             seq.setOrdinate(i,0,cs.getOrdinate(i,0));
             seq.setOrdinate(i,1,cs.getOrdinate(i,1));
@@ -642,7 +658,7 @@ public class MakeValidOp {
 
     public static void main(String[] args) throws ParseException {
         GeometryFactory factory3 = new GeometryFactory(CoordinateArraySequenceFactory.instance());
-        GeometryFactory factory4 = new GeometryFactory(new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE,4));
+        GeometryFactory factory4 = new GeometryFactory(new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE));
         WKTReader reader;
         MakeValidOp op = new MakeValidOp();
         MakeValidOp opGeomDimNotPreserved = new MakeValidOp().setPreserveGeomDim(false);
@@ -738,7 +754,7 @@ public class MakeValidOp {
         assert result.getNumPoints() == 4;
 
         cs1 = DOUBLE_FACTORY.create(new double[]{0,0,2,3, 10,0,4,5, 20,0,6,7}, 4);
-        input = new GeometryFactory(new PackedCoordinateSequenceFactory(DOUBLE, 4)).createLineString(cs1);
+        input = new GeometryFactory(new PackedCoordinateSequenceFactory(DOUBLE)).createLineString(cs1);
         // preserve 4th coordinate dimension
         result = op.makeValid(input);
         assert ((LineString)result).getCoordinateSequence().getOrdinate(1,3) == 5;

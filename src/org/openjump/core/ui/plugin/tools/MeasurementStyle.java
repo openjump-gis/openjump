@@ -1,8 +1,8 @@
 package org.openjump.core.ui.plugin.tools;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -112,13 +112,13 @@ public class MeasurementStyle implements Style {
                     // compute the rotation of this part
                     LineSegment lineSegment = new LineSegment(coordinates[i], coordinates[i -1]);
                     /*
-                     * The angle() method returns a counterclockwise angle in radians from -PI to PI (-180° to 180°).
+                     * The angle() method returns a counterclockwise angle in radians from -PI to PI (-180ï¿½ to 180ï¿½).
                      * Graphics2D.rotate use clockwise angle from 0 to 2PI.
                      * So we must invert (* -1) and shift the range ( + Math.PI) to get the same.
                      */
                     angle = lineSegment.angle() * -1 + Math.PI;
                     // take care, that the text is not upside down
-                    // from PI/2 (90°) to PI*1.5 (270°) we rotate for PI (180°)
+                    // from PI/2 (90ï¿½) to PI*1.5 (270ï¿½) we rotate for PI (180ï¿½)
                     if (angle > Math.PI / 2 && angle < Math.PI * 1.5) {
                         angle += Math.PI;
                         rotateText = true; // indicator for decision of outside printing, see below

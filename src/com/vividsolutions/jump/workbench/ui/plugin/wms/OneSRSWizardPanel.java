@@ -42,7 +42,7 @@ import java.util.Map;
 
 import javax.swing.*;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.InputChangedFirer;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;

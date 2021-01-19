@@ -1,8 +1,8 @@
 package jumptest.junit;
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.feature.*;
 
 public class FeatureTestCase extends TestCase {

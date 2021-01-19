@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 

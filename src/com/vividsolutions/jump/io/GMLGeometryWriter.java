@@ -31,7 +31,7 @@
  */
 package com.vividsolutions.jump.io;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import java.io.*;
 import java.io.IOException;
 

@@ -1,8 +1,8 @@
 package com.vividsolutions.jump.datastore.mariadb;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBReader;
 import com.vividsolutions.jump.datastore.jdbc.ValueConverter;
 import com.vividsolutions.jump.datastore.jdbc.ValueConverterFactory;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesValueConverterFactory;

@@ -36,7 +36,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ArrowLineStringEndpointStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.CircleLineStringEndpointStyle;

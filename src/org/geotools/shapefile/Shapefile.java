@@ -6,7 +6,7 @@ import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.EndianDataInputStream;
 import com.vividsolutions.jump.io.EndianDataOutputStream;

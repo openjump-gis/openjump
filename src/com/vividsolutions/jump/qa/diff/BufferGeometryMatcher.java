@@ -32,8 +32,8 @@
 
 package com.vividsolutions.jump.qa.diff;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import com.vividsolutions.jump.workbench.Logger;
 
 /**

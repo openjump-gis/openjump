@@ -34,7 +34,7 @@ package com.vividsolutions.jump.util;
 import java.util.Comparator;
 import java.util.TreeMap;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 
 public class Range {
     private boolean includingMin;

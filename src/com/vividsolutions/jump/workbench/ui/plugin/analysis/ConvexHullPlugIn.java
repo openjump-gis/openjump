@@ -39,7 +39,7 @@ import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;

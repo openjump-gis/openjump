@@ -1,9 +1,9 @@
 package jumptest.junit;
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.WKTReader;
 import com.vividsolutions.jump.geom.EnvelopeIntersector;
 
 public class EnvelopeIntersectorTestCase extends TestCase {

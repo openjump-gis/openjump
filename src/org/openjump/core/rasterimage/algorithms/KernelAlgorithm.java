@@ -23,7 +23,7 @@ import org.openjump.core.rasterimage.Resolution;
 import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 import org.openjump.core.ui.util.LayerableUtil;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.ui.Viewport;

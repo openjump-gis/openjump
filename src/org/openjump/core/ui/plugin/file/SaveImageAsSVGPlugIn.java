@@ -26,7 +26,7 @@ import org.openjump.core.ui.util.ScreenScale;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.task.TaskMonitor;

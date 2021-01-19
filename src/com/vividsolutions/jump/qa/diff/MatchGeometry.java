@@ -33,7 +33,7 @@
 package com.vividsolutions.jump.qa.diff;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 public class MatchGeometry {
 

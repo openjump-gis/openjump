@@ -43,7 +43,7 @@ import org.openjump.core.rasterimage.algorithms.RasterizeAlgorithm;
 import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.task.TaskMonitor;

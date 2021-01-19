@@ -44,7 +44,7 @@ import javax.xml.namespace.QName;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.Logger;
 

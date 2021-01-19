@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.regex.Pattern;
 
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.ParseException;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 

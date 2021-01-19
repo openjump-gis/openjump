@@ -31,7 +31,7 @@ package com.vividsolutions.jump.workbench.imagery;
  * (250)385-6040
  * www.vividsolutions.com
  */
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.feature.Feature;

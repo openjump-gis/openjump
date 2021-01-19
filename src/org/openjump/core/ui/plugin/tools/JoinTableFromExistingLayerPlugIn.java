@@ -38,7 +38,7 @@ import javax.swing.JComboBox;
 
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;

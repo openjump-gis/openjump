@@ -47,7 +47,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JToggleButton;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;

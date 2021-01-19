@@ -33,8 +33,8 @@
 package com.vividsolutions.jump.qa.diff;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.LineSegment;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.LineSegment;
 import com.vividsolutions.jump.util.Counter;
 import com.vividsolutions.jump.util.CoordinateArrays;
 

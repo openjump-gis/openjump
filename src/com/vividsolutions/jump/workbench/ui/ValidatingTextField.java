@@ -31,7 +31,7 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;

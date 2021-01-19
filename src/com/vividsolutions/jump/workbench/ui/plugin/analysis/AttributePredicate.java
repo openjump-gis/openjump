@@ -38,7 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FlexibleDateParser;
 import com.vividsolutions.jump.workbench.ui.GenericNames;

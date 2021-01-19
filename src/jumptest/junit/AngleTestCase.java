@@ -2,7 +2,7 @@ package jumptest.junit;
 
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.geom.Angle;
 
 public class AngleTestCase extends TestCase {

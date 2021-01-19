@@ -32,7 +32,7 @@
 
 package com.vividsolutions.jump.workbench.ui.cursortool;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeIntersector;
 import com.vividsolutions.jump.workbench.model.Layer;

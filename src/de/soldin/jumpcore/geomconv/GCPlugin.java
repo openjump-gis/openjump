@@ -41,19 +41,19 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryComponentFilter;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.util.GeometryEditor;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryComponentFilter;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.util.GeometryEditor;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -77,11 +77,11 @@ import de.soldin.jumpcore.UndoableSetGeometry;
  * A jump plugin for the conversion of geometries into one another. Currently
  * supported are geometries of the type
  * <ul>
- * <li>{@link com.vividsolutions.jts.geom.LineString}</li>
- * <li>{@link com.vividsolutions.jts.geom.LinearRing}</li>
- * <li>{@link com.vividsolutions.jts.geom.MultiPoint}</li>
- * <li>{@link com.vividsolutions.jts.geom.Point}</li>
- * <li>{@link com.vividsolutions.jts.geom.Polygon}</li>
+ * <li>{@link org.locationtech.jts.geom.LineString}</li>
+ * <li>{@link org.locationtech.jts.geom.LinearRing}</li>
+ * <li>{@link org.locationtech.jts.geom.MultiPoint}</li>
+ * <li>{@link org.locationtech.jts.geom.Point}</li>
+ * <li>{@link org.locationtech.jts.geom.Polygon}</li>
  * </ul>
  * 
  * 
@@ -495,11 +495,11 @@ public class GCPlugin extends ExtCorePlugIn {
 			name = clazz.getComponentType().getName();
 		else
 			name = clazz.getName();
-		return name.equals("com.vividsolutions.jts.geom.Coordinate")
-				|| name.equals("com.vividsolutions.jts.geom.LinearRing")
-				|| name.equals("com.vividsolutions.jts.geom.LineString")
-				|| name.equals("com.vividsolutions.jts.geom.Polygon")
-				|| name.equals("com.vividsolutions.jts.geom.Geometry");
+		return name.equals("org.locationtech.jts.geom.Coordinate")
+				|| name.equals("org.locationtech.jts.geom.LinearRing")
+				|| name.equals("org.locationtech.jts.geom.LineString")
+				|| name.equals("org.locationtech.jts.geom.Polygon")
+				|| name.equals("org.locationtech.jts.geom.Geometry");
 	}
 
 	private void warnUser(final String message) {
@@ -546,7 +546,7 @@ public class GCPlugin extends ExtCorePlugIn {
 		String name = isArray ? cparams[0].getComponentType()
 				.getName() : cparams[0].getName();
 		// made from one coord, probably point ;)
-		if (!isArray && name.equals("com.vividsolutions.jts.geom.Coordinate")) {
+		if (!isArray && name.equals("org.locationtech.jts.geom.Coordinate")) {
 			// factory method needs exactly one coord or null
 			if (geom_src.getCoordinates().length > 1) {
 				warnUser(m("only-one-coordinate", type));
@@ -559,14 +559,14 @@ public class GCPlugin extends ExtCorePlugIn {
 		}
 		// simple geometries made from coord[]
 		else if (isArray
-				&& name.equals("com.vividsolutions.jts.geom.Coordinate")) {
+				&& name.equals("org.locationtech.jts.geom.Coordinate")) {
 			// System.out.println("mehrere koordinaten");
 			geom_new = (Geometry) method.invoke(factory,
 					new Object[] { geom_src.getCoordinates() });
 		}
 		// multilinestring
 		else if (isArray
-				&& name.equals("com.vividsolutions.jts.geom.LineString")) {
+				&& name.equals("org.locationtech.jts.geom.LineString")) {
 			Coordinate[] coords = geom_src.getCoordinates();
 
 			geom_new = (Geometry) method.invoke(factory,
@@ -575,7 +575,7 @@ public class GCPlugin extends ExtCorePlugIn {
 		}
 		// polygon
 		else if (cparams.length == 2
-				&& name.equals("com.vividsolutions.jts.geom.LinearRing")
+				&& name.equals("org.locationtech.jts.geom.LinearRing")
 				&& cparams[1].isArray()
 				&& name.equals(cparams[1].getComponentType()
 						.getName())) {
@@ -585,7 +585,7 @@ public class GCPlugin extends ExtCorePlugIn {
 		}
 		// multipolygon
 		else if (isArray
-				&& name.equals("com.vividsolutions.jts.geom.Polygon")) {
+				&& name.equals("org.locationtech.jts.geom.Polygon")) {
 			// feed the line separated geom into algorithm
 			Polygon[] polys = constructPolygons(geom_src);
 			if ( polys != null )
@@ -594,7 +594,7 @@ public class GCPlugin extends ExtCorePlugIn {
 		}
 		// geometrycollection
 		else if (isArray
-				&& name.equals("com.vividsolutions.jts.geom.Geometry")) {
+				&& name.equals("org.locationtech.jts.geom.Geometry")) {
 			// get all geoms and feed them to create
 			Geometry[] geoms = new Geometry[geom_src.getNumGeometries()];
 			for (int j = 0; j < geom_src.getNumGeometries(); j++) {

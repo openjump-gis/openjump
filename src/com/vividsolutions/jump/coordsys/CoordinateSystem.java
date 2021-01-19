@@ -34,7 +34,7 @@ package com.vividsolutions.jump.coordsys;
 
 import java.io.Serializable;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 
 /** 

@@ -33,7 +33,7 @@
 
 package com.vividsolutions.jump.plugin.edit;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.geom.*;
 
 /**

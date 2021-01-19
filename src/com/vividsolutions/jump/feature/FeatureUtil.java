@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Useful utility functions for working with Features.

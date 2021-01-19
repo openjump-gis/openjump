@@ -41,7 +41,7 @@ import org.geotiff.image.jai.GeoTIFFDirectory;
 import org.libtiff.jai.codec.XTIFF;
 import org.libtiff.jai.codec.XTIFFField;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.imagery.graphic.WorldFile;
 

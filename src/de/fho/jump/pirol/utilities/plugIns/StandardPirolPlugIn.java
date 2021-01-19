@@ -22,7 +22,7 @@ import org.openjump.core.apitools.FeatureCollectionTools;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.apitools.SelectionTools;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;

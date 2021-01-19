@@ -2,8 +2,8 @@ package jumptest.io;
 
 import java.io.*;
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.io.*;
 
@@ -38,7 +38,7 @@ public class GMLGeometryWriterTest {
       throws Exception
   {
     //GeometryFactory factor = new GeometryFactory();
-    com.vividsolutions.jts.io.WKTReader rdr = new com.vividsolutions.jts.io.WKTReader();
+    org.locationtech.jts.io.WKTReader rdr = new org.locationtech.jts.io.WKTReader();
     List geomList = new ArrayList();
     geomList.add(rdr.read(
                           "POINT (100 100)"

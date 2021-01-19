@@ -33,10 +33,10 @@
 package com.vividsolutions.jump.qa.diff;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jts.index.SpatialIndex;
-import com.vividsolutions.jts.index.strtree.STRtree;
+import org.locationtech.jts.index.SpatialIndex;
+import org.locationtech.jts.index.strtree.STRtree;
 
 /**
  * Indexes a MatchCollection to optimize the spatial queries

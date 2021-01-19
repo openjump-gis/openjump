@@ -10,9 +10,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.algorithm.LengthSubstring;
 import com.vividsolutions.jump.algorithm.LengthToPoint;
 import com.vividsolutions.jump.feature.Feature;

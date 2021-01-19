@@ -31,7 +31,7 @@
  */
 package com.vividsolutions.jump.feature;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * A representation of an object in the world, including its location, geometry,

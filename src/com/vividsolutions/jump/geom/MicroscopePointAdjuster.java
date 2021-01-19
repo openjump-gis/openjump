@@ -35,7 +35,7 @@ package com.vividsolutions.jump.geom;
 
 import java.util.*;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 
 /**

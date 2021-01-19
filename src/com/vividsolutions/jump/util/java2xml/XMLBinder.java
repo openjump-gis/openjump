@@ -31,10 +31,10 @@
  */
 package com.vividsolutions.jump.util.java2xml;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.util.Assert;
 
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.util.LangUtil;
@@ -67,8 +67,8 @@ import java.util.regex.Pattern;
 //have better error reporting. [Jon Aquino]
 public class XMLBinder {
 
-    private static final WKTReader WKT_READER = new com.vividsolutions.jts.io.WKTReader();
-    private static final WKTWriter WKT_WRITER = new com.vividsolutions.jts.io.WKTWriter();
+    private static final WKTReader WKT_READER = new org.locationtech.jts.io.WKTReader();
+    private static final WKTWriter WKT_WRITER = new org.locationtech.jts.io.WKTWriter();
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
@@ -296,7 +296,7 @@ public class XMLBinder {
                         try {
                             return WKT_READER.read(value);
                         }
-                        catch(com.vividsolutions.jts.io.ParseException e) {
+                        catch(org.locationtech.jts.io.ParseException e) {
                             e.printStackTrace();
                             return null;
                         }

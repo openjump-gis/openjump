@@ -37,7 +37,7 @@ import java.awt.geom.NoninvertibleTransformException;
 
 import javax.swing.Icon;
 
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygon;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 

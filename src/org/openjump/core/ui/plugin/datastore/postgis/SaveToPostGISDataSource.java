@@ -1,7 +1,7 @@
 package org.openjump.core.ui.plugin.datastore.postgis;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.postgis.PostgisDSConnection;

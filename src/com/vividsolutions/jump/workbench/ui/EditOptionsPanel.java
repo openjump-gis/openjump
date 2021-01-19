@@ -45,7 +45,7 @@ import javax.swing.border.TitledBorder;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 import org.saig.jump.widgets.config.ConfigTooltipPanel;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 

@@ -42,8 +42,8 @@ import org.openjump.core.geomutils.Arc;
 import org.openjump.core.geomutils.GeoUtils;
 import org.openjump.core.geomutils.MathVector;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
 
 /**
  *  A VisualIndicatorTool that allows the user to draw shapes with multiple

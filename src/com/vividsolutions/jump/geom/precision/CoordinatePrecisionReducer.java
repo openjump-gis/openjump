@@ -32,7 +32,7 @@
 
 package com.vividsolutions.jump.geom.precision;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 public class CoordinatePrecisionReducer {
 

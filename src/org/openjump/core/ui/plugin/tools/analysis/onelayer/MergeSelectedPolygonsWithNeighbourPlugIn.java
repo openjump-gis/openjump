@@ -52,9 +52,9 @@ import org.openjump.core.graph.polygongraph.PolygonGraph;
 import org.openjump.core.graph.polygongraph.PolygonGraphEdge;
 import org.openjump.core.graph.polygongraph.PolygonGraphNode;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.index.quadtree.Quadtree;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;

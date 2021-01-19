@@ -61,7 +61,7 @@ import org.openjump.core.attributeoperations.Classifier1D;
 
 //import org.openjump.core.ui.style.classification.CalculRange;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.Range;

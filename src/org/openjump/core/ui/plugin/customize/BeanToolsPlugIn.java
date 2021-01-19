@@ -206,7 +206,7 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
           .getPlugInManager().getClassLoader());
       interpreter.set("wc", context.getWorkbenchContext());
       interpreter.eval("setAccessibility(true)");
-      interpreter.eval("import com.vividsolutions.jts.geom.*");
+      interpreter.eval("import org.locationtech.jts.geom.*");
       interpreter.eval("import com.vividsolutions.jump.feature.*");
       interpreter.source(lastcmd);
       console.append("\nExecuted in " + (System.currentTimeMillis() - t0)

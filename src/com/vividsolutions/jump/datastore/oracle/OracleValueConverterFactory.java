@@ -1,6 +1,6 @@
 package com.vividsolutions.jump.datastore.oracle;
 
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.io.ParseException;
 import com.vividsolutions.jump.datastore.jdbc.ValueConverter;
 import com.vividsolutions.jump.datastore.jdbc.ValueConverterFactory;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesValueConverterFactory;

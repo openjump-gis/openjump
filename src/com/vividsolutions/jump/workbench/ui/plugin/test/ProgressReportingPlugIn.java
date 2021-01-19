@@ -33,7 +33,7 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.test;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.plugin.ThreadedBasePlugIn;

@@ -1,7 +1,7 @@
 package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.valid.IsValidOp;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.geom.AbstractGeometryProcessor;
 
 import java.util.List;

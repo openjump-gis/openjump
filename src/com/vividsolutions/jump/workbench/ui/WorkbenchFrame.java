@@ -111,8 +111,8 @@ import org.openjump.core.ui.swing.DetachableInternalFrame;
 import org.openjump.core.ui.util.ScreenScale;
 import org.openjump.swing.factory.component.ComponentFactory;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.Block;

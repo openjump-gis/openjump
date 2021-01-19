@@ -43,7 +43,7 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;

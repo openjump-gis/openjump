@@ -32,7 +32,7 @@
 
 package com.vividsolutions.jump.coordsys.impl;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.coordsys.*;
 import com.vividsolutions.jump.coordsys.Geographic;
 import com.vividsolutions.jump.coordsys.Planar;

@@ -57,7 +57,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.StringUtil;
@@ -121,7 +121,7 @@ public abstract class AbstractCursorTool implements CursorTool {
     public void cursorPositionChanged(String x, String y) {
       // show scale view when cursos moves on view //
       // [Giuseppe Aruta 2012-feb-18] //
-      // [Michaël Michaud 2013-03-13] move to workbenchFrame.changeZoom()
+      // [Michaï¿½l Michaud 2013-03-13] move to workbenchFrame.changeZoom()
       // getWorkbench().getFrame().setScaleText("1:" + (int)
       // Math.floor(ScreenScale.getHorizontalMapScale(panel.getViewport())));
     }

@@ -35,7 +35,7 @@ import javax.swing.JRadioButtonMenuItem;
 
 import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;

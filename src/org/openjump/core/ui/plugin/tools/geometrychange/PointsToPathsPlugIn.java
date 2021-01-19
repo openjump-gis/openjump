@@ -1,7 +1,7 @@
 package org.openjump.core.ui.plugin.tools.geometrychange;
 
-import com.vividsolutions.jts.geom.CoordinateList;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.Point;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;

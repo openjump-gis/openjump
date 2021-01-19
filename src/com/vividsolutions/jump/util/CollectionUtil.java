@@ -31,7 +31,7 @@
  */
 package com.vividsolutions.jump.util;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Collection;

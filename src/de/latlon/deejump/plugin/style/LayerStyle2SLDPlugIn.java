@@ -74,7 +74,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.util.ScreenScale;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;

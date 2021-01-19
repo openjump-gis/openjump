@@ -33,7 +33,7 @@
 
 package org.openjump.core.geomutils;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 public class Circle extends Arc
 {

@@ -48,7 +48,7 @@ import java.util.Map;
 
 import javax.swing.Icon;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeUtil;

@@ -34,11 +34,11 @@ import org.openjump.sextante.core.ObjectAndDescription;
 import org.openjump.sextante.gui.additionalResults.AdditionalResults;
 import org.openjump.sextante.gui.additionalResults.AdditionalResultsFrame;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
@@ -169,7 +169,7 @@ public class ProfileGraphGUI {
             unit = " ?[m]";
         } else if (layerUnit.equals("degree")) {
             speedUnit = " [arc-second/h]";
-            unitConvert = 0.00027777777;// =1°/3600
+            unitConvert = 0.00027777777;// =1ï¿½/3600
             unit = " [deg]";
         }
 
@@ -466,8 +466,8 @@ public class ProfileGraphGUI {
                     dtm.addColumn("Z", zData);
                     dtm.addColumn("PlaneDist", planetDistData);
                     dtm.addColumn("TerrainDist", terrainDistData);
-                    dtm.addColumn(RELATIVE_SLOPE + " (°)", slopeData);
-                    dtm.addColumn(ABSOLUTE_SLOPE + " (°)", absoluteSlopeData);
+                    dtm.addColumn(RELATIVE_SLOPE + " (ï¿½)", slopeData);
+                    dtm.addColumn(ABSOLUTE_SLOPE + " (ï¿½)", absoluteSlopeData);
                     final JTablePanel jTablePanel = new JTablePanel(dtm);
                     jTablePanel.getCommandPanel().setVisible(false);
                     freqFrame.add(jTablePanel);
@@ -667,7 +667,7 @@ public class ProfileGraphGUI {
                 htmlString += "<b><font face=\"" + darkLabelFont + "\">"
                         + HEIGHT + ": </b>" + df.format(height1) + "<br>";
                 htmlString += "<b><font face=\"" + darkLabelFont + "\">"
-                        + MEAN_SLOPE + ": </b>" + df.format(slope1) + "°<br>";
+                        + MEAN_SLOPE + ": </b>" + df.format(slope1) + "ï¿½<br>";
                 if (!layerUnit.equals("degree") || !layerUnit.equals("UnKnown")) {
                     htmlString += "<b><font face=\"" + darkLabelFont + "\">"
                             + UNIT + " </b>" + layerUnit + "<br>";

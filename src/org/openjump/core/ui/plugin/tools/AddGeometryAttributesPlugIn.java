@@ -25,9 +25,9 @@
  
 package org.openjump.core.ui.plugin.tools;
 
-import com.vividsolutions.jts.algorithm.MinimumDiameter;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.algorithm.MinimumDiameter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;
@@ -320,10 +320,10 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
             double area = g.getArea();
             double val = (( length * length ) / 4.0 )-( 4.0 * area );
             if (val >= 0.0) {
-                //calcul normal sur surface allongée
+                //calcul normal sur surface allongï¿½e
                 return (((length / 2.0) - Math.sqrt(val)) / 2.0);
             } else {
-                //diamètre du disque de même surface, sur une surface ramassée
+                //diamï¿½tre du disque de mï¿½me surface, sur une surface ramassï¿½e
                 //return 2.0 * Math.sqrt(area / Math.PI);
                 //improve width calculation for compact geometries
                 MinimumDiameter diameter = new MinimumDiameter(g);
@@ -340,10 +340,10 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
             double area = g.getArea();
             double val = (( length * length ) / 4.0 )-( 4.0 * area );
             if (val >= 0.0) {
-                //calcul normal sur surface allongée
+                //calcul normal sur surface allongï¿½e
                 return area / (((length / 2.0) - Math.sqrt(val)) / 2.0);
             } else {
-                //diamètre du disque de même surface, sur une surface ramassée
+                //diamï¿½tre du disque de mï¿½me surface, sur une surface ramassï¿½e
                 //return 2.0 * Math.sqrt(area / Math.PI);
                 //improve width calculation for compact geometries
                 MinimumDiameter diameter = new MinimumDiameter(g);

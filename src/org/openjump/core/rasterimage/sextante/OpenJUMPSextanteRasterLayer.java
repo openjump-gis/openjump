@@ -18,7 +18,7 @@ import org.openjump.core.rasterimage.sextante.rasterWrappers.GridExtent;
 import com.sun.media.jai.codec.TIFFEncodeParam;
 import com.sun.media.jai.codecimpl.TIFFCodec;
 import com.sun.media.jai.codecimpl.TIFFImageEncoder;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import java.io.IOException;
 

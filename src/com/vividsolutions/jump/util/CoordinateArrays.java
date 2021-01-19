@@ -35,9 +35,9 @@ package com.vividsolutions.jump.util;
 
 import java.util.*;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.util.Assert;
 
 
 /**
@@ -77,7 +77,7 @@ public class CoordinateArrays {
     }
 
     public static boolean equals(Coordinate[] coord1, Coordinate[] coord2) {
-        return com.vividsolutions.jts.geom.CoordinateArrays.equals(coord1, coord2);
+        return org.locationtech.jts.geom.CoordinateArrays.equals(coord1, coord2);
     }
 
     /**
@@ -161,7 +161,7 @@ public class CoordinateArrays {
 
         if (orientation != desiredOrientation) {
             Coordinate[] reverse = coord.clone();
-            com.vividsolutions.jts.geom.CoordinateArrays.reverse(reverse);
+            org.locationtech.jts.geom.CoordinateArrays.reverse(reverse);
 
             return reverse;
         }

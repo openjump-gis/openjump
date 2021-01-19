@@ -31,11 +31,11 @@
  */
 package com.vividsolutions.jump.workbench.ui.style;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.util.Assert;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;

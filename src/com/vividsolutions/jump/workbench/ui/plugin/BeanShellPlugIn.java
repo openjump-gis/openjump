@@ -55,7 +55,7 @@ public class BeanShellPlugIn extends ToolboxPlugIn {
           .getPlugInManager().getClassLoader());
       interpreter.set("wc", toolbox.getContext());
       interpreter.eval("setAccessibility(true)");
-      interpreter.eval("import com.vividsolutions.jts.geom.*");
+      interpreter.eval("import org.locationtech.jts.geom.*");
       interpreter.eval("import com.vividsolutions.jump.feature.*");
       new Thread(interpreter).start();
     } catch (EvalError e) {

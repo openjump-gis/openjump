@@ -1,6 +1,6 @@
 package com.vividsolutions.jump.datastore;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 /**
  * A spatial filter {@link Query} on a {@link DataStoreConnection}.

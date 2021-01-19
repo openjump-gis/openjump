@@ -34,7 +34,7 @@ import org.openjump.core.rasterimage.TiffTags;
 import org.openjump.core.ui.swing.DetachableInternalFrame;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;

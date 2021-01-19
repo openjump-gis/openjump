@@ -40,7 +40,7 @@ import javax.swing.JComboBox;
 
 import org.openjump.core.graph.polygongraph.PolygonGraph;
 
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygon;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;

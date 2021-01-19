@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Michaël Michaud
+Copyright (c) 2012, Michaï¿½l Michaud
 All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -56,9 +56,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.DefaultComboBoxModel;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
@@ -373,7 +373,7 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         BasicFeature bf = new BasicFeature(fs);
         for (int i = 0 ; i < fs.getAttributeCount() ; i++) {
             if (fs.isOperation(i)) continue;
-            else if (fs.getAttributeType(i) == AttributeType.STRING) bf.setAttribute(i,"Michaël");
+            else if (fs.getAttributeType(i) == AttributeType.STRING) bf.setAttribute(i,"Michaï¿½l");
             else if (fs.getAttributeType(i) == AttributeType.DOUBLE) bf.setAttribute(i,9.999);
             else if (fs.getAttributeType(i) == AttributeType.INTEGER) bf.setAttribute(i,100);
             else if (fs.getAttributeType(i) == AttributeType.LONG) bf.setAttribute(i,1000000L);

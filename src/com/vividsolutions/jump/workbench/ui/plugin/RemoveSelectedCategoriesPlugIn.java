@@ -37,7 +37,7 @@ import java.util.*;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;

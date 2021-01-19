@@ -21,9 +21,9 @@ import javax.swing.filechooser.FileFilter;
 import org.openjump.core.ui.plugin.file.LayerPrinter2;
 import org.openjump.core.ui.plugin.file.WorldFileWriter;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;

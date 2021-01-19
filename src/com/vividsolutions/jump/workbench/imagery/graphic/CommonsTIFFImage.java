@@ -23,7 +23,7 @@ import org.apache.commons.imaging.formats.tiff.photometricinterpreters.floatingp
 import org.apache.commons.imaging.formats.tiff.photometricinterpreters.floatingpoint.PhotometricInterpreterFloat;
 import org.openjump.util.UriUtil;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 

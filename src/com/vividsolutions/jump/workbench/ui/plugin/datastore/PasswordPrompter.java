@@ -20,7 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.DataStoreException;

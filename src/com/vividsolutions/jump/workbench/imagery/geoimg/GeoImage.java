@@ -48,10 +48,10 @@ import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.AffineDescriptor;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.util.AffineTransformation;
-import com.vividsolutions.jts.geom.util.AffineTransformationBuilder;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.util.AffineTransformation;
+import org.locationtech.jts.geom.util.AffineTransformationBuilder;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Timer;

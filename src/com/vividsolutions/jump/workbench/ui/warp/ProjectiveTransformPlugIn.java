@@ -39,9 +39,9 @@ import javax.swing.JOptionPane;
 
 import org.openjump.core.apitools.LayerTools;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.util.AssertionFailedException;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.util.AssertionFailedException;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;

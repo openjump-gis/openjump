@@ -3,7 +3,7 @@ import java.util.*;
 
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.tools.AttributeMapping;
 

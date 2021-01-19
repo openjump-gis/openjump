@@ -58,8 +58,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  *
  * Creates a new layer containing intersections of all pairs of
  * features from two input layers.  Splits {@link
- * com.vividsolutions.jts.geom.MultiPolygon Multipolygons} and {@link
- * com.vividsolutions.jts.geom.GeometryCollection
+ * org.locationtech.jts.geom.MultiPolygon Multipolygons} and {@link
+ * org.locationtech.jts.geom.GeometryCollection
  * GeometryCollections}, and filters out non-Polygons.
  */
 

@@ -37,8 +37,8 @@ import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.util.MathUtil;
 
 

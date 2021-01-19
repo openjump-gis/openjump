@@ -39,7 +39,7 @@ import java.util.*;
 
 import javax.swing.Icon;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.workbench.WorkbenchContext;

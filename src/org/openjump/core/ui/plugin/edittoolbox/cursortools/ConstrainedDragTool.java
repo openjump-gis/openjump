@@ -45,8 +45,8 @@ import java.util.List;
 
 import org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintManager;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;

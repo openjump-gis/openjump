@@ -1,13 +1,13 @@
 package org.openjump.core.ui.plugin.tools;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.util.LineStringExtracter;
-import com.vividsolutions.jts.geom.util.PointExtracter;
-import com.vividsolutions.jts.geom.util.PolygonExtracter;
-import com.vividsolutions.jts.index.strtree.STRtree;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.util.LineStringExtracter;
+import org.locationtech.jts.geom.util.PointExtracter;
+import org.locationtech.jts.geom.util.PolygonExtracter;
+import org.locationtech.jts.index.strtree.STRtree;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;

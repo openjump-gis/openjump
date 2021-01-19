@@ -36,7 +36,7 @@ import java.util.Iterator;
 
 import org.openjump.core.rasterimage.RasterImageLayer;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;

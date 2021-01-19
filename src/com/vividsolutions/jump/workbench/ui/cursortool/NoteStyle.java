@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.workbench.model.Layer;

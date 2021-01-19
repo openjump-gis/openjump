@@ -33,7 +33,7 @@
 
 package com.vividsolutions.jump.util;
 
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.util.Stopwatch;
 
 
 public class DebugTimer {

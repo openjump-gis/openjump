@@ -38,7 +38,7 @@ import java.util.Collection;
 
 import javax.swing.Icon;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.workbench.model.AbstractVectorLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;

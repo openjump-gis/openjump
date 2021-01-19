@@ -35,7 +35,7 @@ package com.vividsolutions.jump.qa.diff;
 
 import com.vividsolutions.jump.feature.*;
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.geom.LineSegmentUtil;
 
 /**

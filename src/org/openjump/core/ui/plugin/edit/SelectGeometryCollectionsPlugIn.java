@@ -1,6 +1,6 @@
 package org.openjump.core.ui.plugin.edit;
 
-import com.vividsolutions.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryCollection;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.WorkbenchContext;

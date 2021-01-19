@@ -45,7 +45,7 @@ import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 import javax.swing.undo.UndoableEdit;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;

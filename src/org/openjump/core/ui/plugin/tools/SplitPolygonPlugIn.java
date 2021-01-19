@@ -39,7 +39,7 @@ import javax.swing.JComponent;
 
 import org.openjump.core.geomutils.GeoUtils;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;

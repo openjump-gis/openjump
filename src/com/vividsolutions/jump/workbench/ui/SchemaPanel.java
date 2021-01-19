@@ -79,7 +79,7 @@ import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
 import org.openjump.core.ui.util.FeatureSchemaUtils;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;

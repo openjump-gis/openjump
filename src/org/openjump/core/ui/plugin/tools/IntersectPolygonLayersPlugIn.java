@@ -30,15 +30,15 @@ package org.openjump.core.ui.plugin.tools;
 
 import java.util.*;
 
-import com.vividsolutions.jts.algorithm.locate.SimplePointInAreaLocator;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.algorithm.locate.SimplePointInAreaLocator;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.openjump.core.geomutils.algorithm.IntersectGeometries;
 
-import com.vividsolutions.jts.index.SpatialIndex;
-import com.vividsolutions.jts.index.strtree.STRtree;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.index.SpatialIndex;
+import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;

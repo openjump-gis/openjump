@@ -1,6 +1,6 @@
 package org.openjump.core.ui.plugin.edittoolbox.cursortools;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeUtil;

@@ -33,16 +33,16 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
-import com.vividsolutions.jts.algorithm.ConvexHull;
-import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
-import com.vividsolutions.jts.algorithm.MinimumDiameter;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
-import com.vividsolutions.jts.operation.linemerge.LineSequencer;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
-import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
-import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
-import com.vividsolutions.jts.simplify.VWSimplifier;
+import org.locationtech.jts.algorithm.ConvexHull;
+import org.locationtech.jts.algorithm.MinimumBoundingCircle;
+import org.locationtech.jts.algorithm.MinimumDiameter;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.operation.linemerge.LineSequencer;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
+import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
+import org.locationtech.jts.simplify.VWSimplifier;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.algorithm.Densifier;
 import com.vividsolutions.jump.geom.AbstractGeometryProcessor;

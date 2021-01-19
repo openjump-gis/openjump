@@ -1,6 +1,6 @@
 package com.vividsolutions.jump.geom;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -34,7 +34,7 @@ import java.awt.event.MouseEvent;
 
 import org.openjump.core.ui.plugin.edittoolbox.cursortools.ConstrainedMultiClickTool;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * Whereas a MultiClickTool looks for a double-click to end the gesture,

@@ -12,9 +12,9 @@
  ***********************************************/
 package org.openjump.core.geomutils.algorithm;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.IntersectionMatrix;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.IntersectionMatrix;
+import org.locationtech.jts.geom.Polygon;
 
 /** 
  *  Merges two polygon and returns the result via

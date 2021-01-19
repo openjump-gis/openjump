@@ -33,9 +33,9 @@
 
 package com.vividsolutions.jump.geom;
 
-import com.vividsolutions.jts.algorithm.LineIntersector;
-import com.vividsolutions.jts.algorithm.RobustLineIntersector;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.*;
 
 
 /**

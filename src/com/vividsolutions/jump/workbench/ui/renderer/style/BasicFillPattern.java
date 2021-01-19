@@ -1,6 +1,6 @@
 package com.vividsolutions.jump.workbench.ui.renderer.style;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.util.Blackboard;
 
 import java.awt.*;

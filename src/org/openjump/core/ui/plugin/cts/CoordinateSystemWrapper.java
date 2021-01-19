@@ -1,7 +1,7 @@
 package org.openjump.core.ui.plugin.cts;
 
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import com.vividsolutions.jump.coordsys.Geographic;
 import com.vividsolutions.jump.coordsys.Planar;
@@ -30,13 +30,13 @@ public class CoordinateSystemWrapper extends CoordinateSystem {
                     public Planar asPlanar(Geographic q0, Planar p) {
                         double[] dd = new double[]{q0.lat, q0.lon, q0.hgt};
                         try {
-                            // La latitude et la longitude sont échangées si besoin
+                            // La latitude et la longitude sont ï¿½changï¿½es si besoin
                             if (crs.getCoordinateSystem().getAxis(0) == Axis.LONGITUDE) {
                                 dd = CoordinateSwitch.SWITCH_LAT_LON.transform(dd);
                             }
-                            // Les coordonnées géographiques sont passées en radian
+                            // Les coordonnï¿½es gï¿½ographiques sont passï¿½es en radian
                             dd = UnitConversion.createUnitConverter(Unit.DEGREE, Unit.RADIAN).transform(dd);
-                            // puis projetées
+                            // puis projetï¿½es
                             dd = crs.getProjection().transform(dd);
                             return new Planar(dd[0], dd[1]);
                         } catch(CoordinateOperationException|IllegalCoordinateException e) {
@@ -48,13 +48,13 @@ public class CoordinateSystemWrapper extends CoordinateSystem {
                     public Geographic asGeographic(Planar p, Geographic q) {
                         double[] dd = new double[]{p.x, p.y, p.z};
                         try {
-                            // Les coordonnées sont passées en géographiques
+                            // Les coordonnï¿½es sont passï¿½es en gï¿½ographiques
                             dd = crs.getProjection().inverse().transform(dd);
-                            // La latitude et la longitude sont échangées au besoin
+                            // La latitude et la longitude sont ï¿½changï¿½es au besoin
                             if (crs.getCoordinateSystem().getAxis(0) == Axis.LONGITUDE) {
                                 dd = CoordinateSwitch.SWITCH_LAT_LON.transform(dd);
                             }
-                            // Les unités sont converties en degrés
+                            // Les unitï¿½s sont converties en degrï¿½s
                             dd = UnitConversion.createUnitConverter(Unit.RADIAN, Unit.DEGREE).transform(dd);
                             return new Geographic(dd[0], dd[1]);
                         } catch(CoordinateOperationException|IllegalCoordinateException e) {

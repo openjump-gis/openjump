@@ -36,9 +36,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vividsolutions.jts.algorithm.PointLocator;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTWriter;
+import org.locationtech.jts.algorithm.PointLocator;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTWriter;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Fmt;

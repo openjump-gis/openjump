@@ -35,10 +35,10 @@ package com.vividsolutions.jump.qa;
 
 import java.util.*;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.IsSimpleOp;
-import com.vividsolutions.jts.operation.valid.*;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.IsSimpleOp;
+import org.locationtech.jts.operation.valid.*;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.Angle;

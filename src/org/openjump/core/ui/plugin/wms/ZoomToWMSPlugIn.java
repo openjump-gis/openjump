@@ -32,7 +32,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.wms.*;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 
 public class ZoomToWMSPlugIn extends AbstractPlugIn {

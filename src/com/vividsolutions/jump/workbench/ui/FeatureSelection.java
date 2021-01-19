@@ -31,8 +31,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.renderer.FeatureSelectionRenderer;

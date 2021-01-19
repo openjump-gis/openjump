@@ -28,8 +28,8 @@ import javax.media.jai.RasterFactory;
 import org.openjump.core.rasterimage.sextante.ISextanteLayer;
 import org.openjump.core.rasterimage.sextante.ISextanteRasterLayer;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 
 
 /**
@@ -161,7 +161,7 @@ public class GridExtent {
 	 	}
 	 
 	 	/**
-		 * Returns the extension of Grid as com.vividsolutions.jts.geom.Envelope
+		 * Returns the extension of Grid as org.locationtech.jts.geom.Envelope
 		 * @return Envelope
 		 */
 	 	public Envelope getEnvelope() {

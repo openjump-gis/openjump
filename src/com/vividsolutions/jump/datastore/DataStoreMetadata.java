@@ -1,6 +1,6 @@
 package com.vividsolutions.jump.datastore;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import java.sql.SQLException;
 import java.util.List;

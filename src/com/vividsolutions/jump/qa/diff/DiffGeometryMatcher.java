@@ -32,7 +32,7 @@
 
 package com.vividsolutions.jump.qa.diff;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 public interface DiffGeometryMatcher {
 

@@ -3,7 +3,7 @@ package com.vividsolutions.jump.algorithm;
 //Martin made a decision to create this duplicate of a class from JCS. 
 //[Jon Aquino 2004-10-25]
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 /**
  * Provides various ways of computing the actual value

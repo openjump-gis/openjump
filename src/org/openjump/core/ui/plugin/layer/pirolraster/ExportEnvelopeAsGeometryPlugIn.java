@@ -13,7 +13,7 @@ import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.apitools.objecttyperoles.RoleOutline;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;

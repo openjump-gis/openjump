@@ -51,8 +51,8 @@ import org.openjump.core.CheckOS;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;

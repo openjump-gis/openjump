@@ -1,9 +1,9 @@
 package org.openjump.core.ui.plugin.tools;
 
-import com.vividsolutions.jts.algorithm.Angle;
-import com.vividsolutions.jts.algorithm.distance.DistanceToPoint;
-import com.vividsolutions.jts.algorithm.distance.PointPairDistance;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.algorithm.Angle;
+import org.locationtech.jts.algorithm.distance.DistanceToPoint;
+import org.locationtech.jts.algorithm.distance.PointPairDistance;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.TaskMonitor;

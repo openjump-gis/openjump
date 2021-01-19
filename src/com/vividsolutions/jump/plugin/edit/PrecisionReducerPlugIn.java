@@ -41,7 +41,7 @@ import javax.swing.event.*;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.geom.precision.*;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.util.*;
