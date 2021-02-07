@@ -74,9 +74,9 @@
     <plug-in>
         org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGIS2PlugIn
     </plug-in>
-    <extension>
+    <!--extension>
         de.latlon.deejump.wfs.WFSExtension
-    </extension>
+    </extension-->
 
     <!-- load wizards -->
     <!-- <plug-in> -->
