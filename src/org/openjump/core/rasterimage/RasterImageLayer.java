@@ -19,6 +19,7 @@ import java.awt.image.Raster;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -349,7 +350,10 @@ public final class RasterImageLayer extends AbstractLayerable
                 symbologyChanged = false;
                 this.setNeedToKeepImage(false);
                 if (bitsPerPixel == -1) {
-                    bitsPerPixel = Imaging.getImageInfo(new File(imageFileName)).getBitsPerPixel();
+                    if (imageFileName.toLowerCase().endsWith(".flt")) bitsPerPixel = 16;
+                    else if (imageFileName.toLowerCase().endsWith(".asc")) bitsPerPixel = 16;
+                    else if (imageFileName.toLowerCase().endsWith(".txt")) bitsPerPixel = 16;
+                    else bitsPerPixel = Imaging.getImageInfo(new File(imageFileName)).getBitsPerPixel();
                 }
                 clearImageAndRaster(true);
                 // Check that there is enough free memory for the image + 1% of available memory + 10Mb
