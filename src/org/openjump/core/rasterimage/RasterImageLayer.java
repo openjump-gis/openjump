@@ -26,6 +26,7 @@ import java.util.UUID;
 import javax.media.jai.JAI;
 
 import com.vividsolutions.jump.workbench.model.Disposable;
+import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.util.metaData.MetaDataMap;
@@ -353,7 +354,13 @@ public final class RasterImageLayer extends AbstractLayerable
                     if (imageFileName.toLowerCase().endsWith(".flt")) bitsPerPixel = 16;
                     else if (imageFileName.toLowerCase().endsWith(".asc")) bitsPerPixel = 16;
                     else if (imageFileName.toLowerCase().endsWith(".txt")) bitsPerPixel = 16;
-                    else bitsPerPixel = Imaging.getImageInfo(new File(imageFileName)).getBitsPerPixel();
+                    else {
+                        try {
+                            bitsPerPixel = Imaging.getImageInfo(new File(imageFileName)).getBitsPerPixel();
+                        } catch(ImageReadException e) {
+                            Logger.warn("Can't get ImageInfo of " + imageFileName, e);
+                        }
+                    }
                 }
                 clearImageAndRaster(true);
                 // Check that there is enough free memory for the image + 1% of available memory + 10Mb
