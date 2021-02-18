@@ -2,6 +2,62 @@
 ## OpenJUMP TODO
 ##
 
+2021-feb-16 mmichaud <m.michael.michaud@orange.fr>
+
+    build system : migrate automatic build system
+
+    documentation : do we
+        - keep/update our wiki documentation on ojwiki.soldin.de
+        - migrate it to github wiki
+        - adopt a more modern documentation system like sphinx, mkdocs, gitbook or asciidoctor
+
+    test : we must really add more tests to avoid regression
+
+    plugin migration : list of extensions to migrate : we should first organize plugin development
+        Many plugin projects are currently compiled with ant or directly with and IDE
+        We may stay with ant or switch to maven or gradle (using the same project management
+        tool as OpenJUMP should facilitate development cycle though)
+        In all cases, we'll need a maven artefact of the main OpenJUMP project.
+        - drivers
+            - csvdriver : mmichaud
+            - dxfdriver : mmichaud
+            - kmldriver : edso
+            - osmfilereaderplugin : edso
+        - priority 1
+            - bsheditor4jump : mmichaud
+            - ctsplugin : mmichaud
+            - graphtoolbox + jumpjgrapht : mmichaud
+            - matchingplugin : mmichaud
+            - openklem : peppe
+            - rasterlayerexport : peppe
+            - setattributesplugin : mmichaud
+            - sextanteplugin : peppe
+            - topologyplugin : mmichaud
+            - viewmanagerplugin : mmichaud
+            - ojmapcoloring : peppe
+        - priority 2
+            - cadextension : peppe
+            - cadplan x 4 extensions : peppe
+            - colorchooser : peppe
+            - concavehullplugin : mmichaud or egrosso
+            - importarcmaptyleplugin : peppe
+            - landscapeanalysis : mantaer
+            - mapgentoolbox : mmichaud
+            - ojworldwind : elnico
+            - printlayoutplugin : ?
+            - roadmatcher : mmichaud
+            - skyprinterplugin : ?
+            - spatialdatabaseplugin : elnico ?
+            - spatialiteplugin : jratike80 ?
+            - wfsplugin : edso
+            - horae : mantaer
+
+        refactoring : e should reorganize layerable interface and subclasses a bit
+            so that we have less code smell like if layerable instance of ...
+
+        redundancy : clean code, remove redundancy
+
+
 2020-may- 26 Giuseppe Aruta (Peppe)
 	simplify GUI for new Up-to-come vertexstyle plugin
 
