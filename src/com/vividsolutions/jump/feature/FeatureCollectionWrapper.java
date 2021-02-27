@@ -102,8 +102,8 @@ public abstract class FeatureCollectionWrapper implements FeatureCollection {
   /**
    * Return the wrapper matching the given class or null, if there is none.
    * 
-   * @param c
-   * @return
+   * @param c the Class of the wrapper we are looking for
+   * @return a wrapper of Class c
    */
   public FeatureCollection getWrappee(Class c) {
     Assert.isTrue(FeatureCollectionWrapper.class.isAssignableFrom(c));

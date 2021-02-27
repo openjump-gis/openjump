@@ -70,9 +70,6 @@ public class Option {
    * Overwrite equals(), because the Object.equals works wrong for an Option
    * instance. So we must compare each single value. This is especially
    * important if we have some Options stored in a List and do a List.remove().
-   *
-   * @param obj
-   * @return true if both objects are equal.
    */
   public boolean equals(Object obj) {
 	  boolean equal = false;

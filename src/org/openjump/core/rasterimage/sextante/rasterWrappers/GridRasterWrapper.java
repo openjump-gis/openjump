@@ -22,10 +22,12 @@ public class GridRasterWrapper {
     /**
      * Convert a OpenJUMPSextanteRasterLayer to a 2D Array as double
      * 
-     * @param OpenJUMPSextanteRasterLayer
+     * @param rstLayer
+     *              OpenJUMP Sextante Raster Layer
      * @param band
-     *            (integer)
+     *              (integer)
      * @return
+     *              the matrix representing this Raster as a 2-dimensional double array
      */
     public static double[][] rasterToMatrix(
             OpenJUMPSextanteRasterLayer rstLayer, int band) {
@@ -47,11 +49,14 @@ public class GridRasterWrapper {
 
     /**
      * create an empty 2D Array from a OpenJUMPSextanteRasterLayer
-     * 
-     * @param OpenJUMPSextanteRasterLayer
+     *
+     * @param rstLayer
+     *              OpenJUMP Sextante Raster Layer
      * @param band
      *            (integer)
      * @return
+     *            a 2-dimensional double array sized after this raster
+     *            and filled with nodata values
      */
 
     public static double[][] rasterToEmptyMatrix(
@@ -73,9 +78,12 @@ public class GridRasterWrapper {
     /**
      * Convert the first band of OpenJUMPSextanteRasterLayer to a 2D Array as
      * double Useful for single banded raster
-     * 
-     * @param OpenJUMPSextanteRasterLayer
+     *
+     * @param rstLayer
+     *              OpenJUMP Sextante Raster Layer
      * @return
+     *              the matrix representing this OpenJUMPSextanteRasterLayer
+     *              as a 2-dimensional double array
      */
     public static double[][] rasterToMatrix(OpenJUMPSextanteRasterLayer rstLayer) {
         return rasterToMatrix(rstLayer, 0);
@@ -84,10 +92,11 @@ public class GridRasterWrapper {
     /**
      * Convert the first band of OpenJUMPSextanteRasterLayer to a 1D Array as
      * double
-     * 
-     * @param OpenJUMPSextanteRasterLayer
-     * @param band
-     * @return
+     *
+     * @param rstLayer OpenJUMPSextanteRasterLayer to convert to a double array
+     * @param band the Raster band to export
+     * @return a 1-dimensional double array containing all the
+     *      OpenJUMPSextanteRasterLayer values contained in a band
      */
     public static double[] rasterToArray(OpenJUMPSextanteRasterLayer rstLayer,
             int band) {
@@ -114,9 +123,11 @@ public class GridRasterWrapper {
     /**
      * Convert the first band of OpenJUMPSextanteRasterLayer to a 1D Array as
      * double Useful for single banded raster
-     * 
-     * @param OpenJUMPSextanteRasterLayer
-     * @return
+     *
+     * @param rstLayer
+     *              OpenJUMP Sextante Raster Layer
+     * @return a 1-dimensional double array containing all
+     *      OpenJUMPSextanteRasterLayer values contained in band 0
      */
     public static double[] rasterToArray(OpenJUMPSextanteRasterLayer rstLayer) {
         return rasterToArray(rstLayer, 0);
@@ -125,12 +136,13 @@ public class GridRasterWrapper {
     /**
      * Convert a band of OpenJUMPSextanteRasterLayer to a 1D Array as
      * double. Limit the array to min/max values
-     * 
-     * @param OpenJUMPSextanteRasterLayer
-     * @param int band
-     * @param double min
-     * @param double max
-     * @return
+     *
+     * @param rstLayer OpenJUMP Sextante Raster Layer
+     * @param band the Raster band to analyze
+     * @param min minimum value to copy
+     * @param max maximum value to copy
+     * @return a 1-dimensional double array containing all the Raster values
+     *      for this band which are strictly higher than min and lower than max
      */
     public static double[] rasterToArray(OpenJUMPSextanteRasterLayer rstLayer,
             int band, double min, double max) {
@@ -158,11 +170,13 @@ public class GridRasterWrapper {
     /**
      * Convert the first band of of OpenJUMPSextanteRasterLayer to a 1D Array as
      * double. Limit the array to min/max values
-     * 
-     * @param OpenJUMPSextanteRasterLayer
-     * @param double min
-     * @param double max
-     * @return
+     *
+     * @param rstLayer
+     *              OpenJUMP Sextante Raster Layer
+     * @param min minimum value to copy
+     * @param max maximum value to copy
+     * @return a 1-dimensional double array containing all the Raster values
+     *      for band 0 which are strictly higher than min and lower than max
      */
 
     public static double[] rasterToArray(OpenJUMPSextanteRasterLayer rstLayer,
@@ -173,8 +187,8 @@ public class GridRasterWrapper {
     /**
      * Convert a 2DArray (Matrix) as double to java.awt.image.Raster, to band 0
      * 
-     * @param 2D Array as double
-     * @param SampleModel
+     * @param matrix 2D Array as double
+     * @param model Sample Model
      * @return java.awt.image.Raster
      */
     public static Raster matrixToRaster(double[][] matrix, SampleModel model) {
@@ -186,8 +200,8 @@ public class GridRasterWrapper {
      * Convert a 2DArray (Matrix) as double to java.awt.image.Raster, defining
      * the band number
      * 
-     * @param 2D Array as double
-     * @param SampleModel
+     * @param matrix 2D Array as double
+     * @param model Sample Model
      * @param band
      *            number
      * @return java.awt.image.Raster
@@ -209,7 +223,7 @@ public class GridRasterWrapper {
     /**
      * Convert a java.awt.image.Raster to 2DArray (Matrix) as double
      * 
-     * @param matrix
+     * @param raster input raster
      * @return 2DArray (Matrix) as double[][]
      */
 
@@ -231,7 +245,7 @@ public class GridRasterWrapper {
 
     /**
      * Convert a double 2DArray (matrix)  to java.awt.image.WritableRaster (single band)
-     * @param matrix[][]. 2DArray
+     * @param matrix 2D double Array
      * @return WritableRaster
      */
 

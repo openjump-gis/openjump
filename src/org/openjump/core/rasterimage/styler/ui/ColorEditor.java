@@ -146,7 +146,7 @@ public class ColorEditor extends AbstractCellEditor
     /**
      * Handles events from the editor button and from
      * the jDialog_ColorPicker's OK button.
-     * @param e
+     * @param e the ActionEvent
      */
     @Override
     public void actionPerformed(ActionEvent e) {

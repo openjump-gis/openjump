@@ -26,10 +26,12 @@ public class ScatterPlotOJ extends ScatterPlot {
     
     /**
      * [sstein] constructor for use in O-JUMP
-     * @param n
-     * @param c
-     * @param _XY
-     * @param featureID
+     * @param n a name for the Plot
+     * @param c Color of the Plot
+     * @param _XY data to plot as a 2-dimensional double array
+     * @param featureID array of feature ids
+     * @param context the PlugInContext
+     * @param layer the Layer to Plot
      */
     public ScatterPlotOJ(String n, Color c, double[][] _XY, int[] featureID, PlugInContext context, Layer layer) {
         super(n, c, AbstractDrawer.ROUND_DOT, AbstractDrawer.DEFAULT_DOT_RADIUS, _XY);

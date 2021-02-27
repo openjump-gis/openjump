@@ -34,9 +34,9 @@ public class CategoryMover {
     }
     
     /**
-     * Gets category with spcified name, if exists.
-     *@param name
-     *@return category or null
+     * Gets category with specified name, if exists.
+     * @param name the name of the Category to return
+     * @return category or null
      */
     protected Category getCategory(String name){
         return this.context.getLayerManager().getCategory(name);

@@ -37,7 +37,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -157,11 +157,11 @@ public class Triangle {
         //is not robust (see TriangulatorTestCase#testContains2) [Jon Aquino]
         
         //Can't simply use != because if one is 1 and the other is 0 that's OK. [Jon Aquino]
-        if (CGAlgorithms.computeOrientation(p1, p2, p) == - CGAlgorithms.computeOrientation(p2, p3, p)) {
+        if (Orientation.index(p1, p2, p) == - Orientation.index(p2, p3, p)) {
             return false;
         }
         
-        if (CGAlgorithms.computeOrientation(p1, p2, p) == - CGAlgorithms.computeOrientation(p3, p1, p)) {
+        if (Orientation.index(p1, p2, p) == - Orientation.index(p3, p1, p)) {
             return false;
         }        
         

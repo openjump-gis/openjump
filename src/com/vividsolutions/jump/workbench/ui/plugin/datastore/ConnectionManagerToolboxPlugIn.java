@@ -31,7 +31,7 @@ public class ConnectionManagerToolboxPlugIn extends ToolboxPlugIn {
         return I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerToolboxPlugIn.Connection-Manager");
     }
 
-    public static final ConnectionManagerToolboxPlugIn instance(
+    public static ConnectionManagerToolboxPlugIn instance(
             Blackboard blackboard) {
         if (blackboard.get(INSTANCE_KEY) == null) {
             blackboard.put(INSTANCE_KEY, new ConnectionManagerToolboxPlugIn());
@@ -44,7 +44,7 @@ public class ConnectionManagerToolboxPlugIn extends ToolboxPlugIn {
             throw new UnsupportedOperationException(
                     "To do: fix: ConnectionManagerToolbox does not stay in sync with ConnectionManager object. Implement eventing. [Jon Aquino 2005-03-24]");
         }
-        new FeatureInstaller(context.getWorkbenchContext()).addMainMenuItem(
+        new FeatureInstaller(context.getWorkbenchContext()).addMainMenuPlugin(
                 this, (new String[] { MenuNames.VIEW }), getName() + "...{pos:1}",
                 true, null, new EnableCheck() {
                     public String check(JComponent component) {

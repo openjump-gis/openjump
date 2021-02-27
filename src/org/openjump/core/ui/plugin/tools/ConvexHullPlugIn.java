@@ -61,22 +61,23 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ConvexHullPlugIn extends AbstractPlugIn {
-    private WorkbenchContext workbenchContext;
+    //private WorkbenchContext workbenchContext;
     private String TOLERANCE = I18N.get("org.openjump.core.ui.plugin.tools.ConvexHullPlugIn.Tolerance");
     private MultiInputDialog dialog;
-    private double blendTolerance = 0.1;
-    private boolean exceptionThrown = false;
+    private final double blendTolerance = 0.1;
+    private final boolean exceptionThrown = false;
     private String sConvexHull = I18N.get("org.openjump.core.ui.plugin.tools.ConvexHullPlugIn.Convex-Hull");
 
     public void initialize(PlugInContext context) throws Exception
-    {     
-    	 workbenchContext = context.getWorkbenchContext();
-         context.getFeatureInstaller().addMainMenuItem(this,
- 			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
- 			getName() /*+ "{pos:3}"*/,
- 			false, 
- 			IconLoader.icon("convex_hull2.png"), 
- 			this.createEnableCheck(workbenchContext));
+    {
+      context.getFeatureInstaller().addMainMenuPlugin(
+              this,
+              new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
+              getName() /*+ "{pos:3}"*/,
+ 			false,
+              IconLoader.icon("convex_hull2.png"),
+              this.createEnableCheck(context.getWorkbenchContext())
+      );
     }
     
     public String getName() {

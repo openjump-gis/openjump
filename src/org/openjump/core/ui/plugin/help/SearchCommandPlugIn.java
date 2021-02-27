@@ -45,7 +45,7 @@ public class SearchCommandPlugIn extends AbstractPlugIn {
         getMenus(context.getWorkbenchFrame().getJMenuBar(), new ArrayList(), commands);
 
         // Gather popup menu items from LayerNamePanel
-        Map<Class,JPopupMenu> map = context.getWorkbenchFrame().getNodeClassToPopupMenuMap();
+        Map<Class<?>,JPopupMenu> map = context.getWorkbenchFrame().getNodeClassToPopupMenuMap();
         getMenus(map.get(Category.class), Arrays.asList(new String[]{CATEGORY_POPUP}), commands);
         getMenus(map.get(Layer.class), Arrays.asList(new String[]{LAYER_POPUP}), commands);
         getMenus(map.get(WMSLayer.class), Arrays.asList(new String[]{LAYER_POPUP}), commands);

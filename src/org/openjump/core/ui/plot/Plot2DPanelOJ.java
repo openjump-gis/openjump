@@ -96,11 +96,11 @@ public class Plot2DPanelOJ extends PlotPanel {
     /**
      * [sstein] method for OpenJUMP
      * 
-     * @param name
-     * @param XY
-     * @param fID
-     * @param context
-     * @param layer
+     * @param name name of the plot
+     * @param XY data as a 2-dimensional array of double
+     * @param fID feature identifiers as an array of integers
+     * @param context the PlugInContext
+     * @param layer layer
      */
     public int addScatterPlotOJ(String name, double[][] XY, int[] fID,
             PlugInContext context, Layer layer) {
@@ -134,9 +134,9 @@ public class Plot2DPanelOJ extends PlotPanel {
      * @return the index of the plot in the panel (int).
      * @see #addScatterPlot(String,Color,double[]...)
      * @see #addBarPlot(String, Color, double[]...)
-     * @see #addBoxPlot(String, Color, double[][]...)
-     * @see #addHistogramPlot(String, Color, double[][]...)
-     * @see #addStaircasePlot(String, Color, double[]...)
+     * @see #addBoxPlot(String, Color, double[][])
+     * @see #addHistogramPlot(String, Color, double[][])
+     * @see #addStaircasePlot(String, Color, double[])
      */
     public int addLinePlot(String name, Color color, double[][] XY) {
         return ((Plot2DCanvasOJ) plotCanvas).addLinePlot(name, color, XY);
@@ -180,8 +180,8 @@ public class Plot2DPanelOJ extends PlotPanel {
      * @return the index of the plot in the panel (int).
      * @see #addScatterPlot(String,Color,double[]...)
      * @see #addLinePlot(String, Color, double[]...)
-     * @see #addBoxPlot(String, Color, double[][]...)
-     * @see #addHistogramPlot(String, Color, double[][]...)
+     * @see #addBoxPlot(String, Color, double[][])
+     * @see #addHistogramPlot(String, Color, double[][])
      * @see #addStaircasePlot(String, Color, double[]...)
      */
     public int addBarPlot(String name, Color color, double[][] XY) {
@@ -400,12 +400,12 @@ public class Plot2DPanelOJ extends PlotPanel {
     /**
      * [sstein] method for OJUMP
      * 
-     * @param name
-     * @param X
-     * @param n
-     * @param context
-     * @param layer
-     * @param attrName
+     * @param name name of the plot
+     * @param X data as a double array
+     * @param n number of classes
+     * @param context the PlugInContext
+     * @param layer the Layer
+     * @param attrName name of the attribute to plot
      */
     public int addHistogramPlotOJ(String name, double[] X, int n,
             PlugInContext context, Layer layer, String attrName) {
@@ -616,8 +616,8 @@ public class Plot2DPanelOJ extends PlotPanel {
      * gets the limit values of each interval of X data. maxvalue true= the
      * upper value, maxvalue false= the lower value
      * 
-     * @param maxvalue
-     * @return
+     * @param maxvalue whether the method return max values (true) or min values (false)
+     * @return max or min values of each class
      */
     public Object[] getXData_limits(boolean maxvalue) {
         double[][] dataTableDouble = null;

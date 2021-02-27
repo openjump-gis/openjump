@@ -125,7 +125,7 @@ public class ShowViewCenterRenderer extends SimpleRenderer {
 
     /**
      * 
-     * @param panel
+     * @param panel the LayerViewPanel
      * @return true if the scale is enabled in the LayerViewPanel
      */
     public static boolean isEnabled(LayerViewPanel panel) {

@@ -91,7 +91,7 @@ public abstract class StandardPirolTableModel extends AbstractTableModel {
     /**
      * simple method to add a row to the table.
      * (It better matches the given column nummer and column types!!)
-     *@param newRow
+     *@param newRow row of objects to add to the TableModel
      */
     public void addRow(Object[] newRow){
         this.rows.add(newRow);

@@ -224,12 +224,12 @@ public class ValidatingTextField extends JTextField {
         return Integer.parseInt(getText().trim());
     }
 
-    public static interface Validator {
-        public boolean isValid(String text);
+    public interface Validator {
+        boolean isValid(String text);
     }
 
-    public static interface Cleaner {
-        public String clean(String text);
+    public interface Cleaner {
+        String clean(String text);
     }
 
     /**

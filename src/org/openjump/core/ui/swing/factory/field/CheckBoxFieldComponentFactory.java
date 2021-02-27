@@ -69,10 +69,10 @@ public class CheckBoxFieldComponentFactory implements FieldComponentFactory {
     public void setValue(JComponent component, Object value) {
         if (component instanceof CheckBoxComponentPanel) {
             CheckBoxComponentPanel checkBoxComponentPanel = (CheckBoxComponentPanel)component;
-            if (value != null && value == Boolean.TRUE) {
+            if (value == Boolean.TRUE) {
                 checkBoxComponentPanel.getCheckBox().setSelected(true);
             }
-            else if (value != null && value == Boolean.FALSE) {
+            else if (value == Boolean.FALSE) {
                 checkBoxComponentPanel.getCheckBox().setSelected(false);
             }
         }
@@ -91,7 +91,7 @@ public class CheckBoxFieldComponentFactory implements FieldComponentFactory {
             workbenchContext.getErrorHandler());
         checkBoxComponentPanel.getCheckBox().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Object value = new Boolean(checkBoxComponentPanel.isSelected());
+                Object value = checkBoxComponentPanel.isSelected();
                 listener.valueChanged(new ValueChangeEvent(checkBoxComponentPanel, value));
             }
         });

@@ -25,9 +25,9 @@ public class H2ServerDataStoreDriver extends
   /**
    * returns the right type of DataStoreConnection
    * 
-   * @param params
-   * @return
-   * @throws Exception
+   * @param params list of parameters needed for the connection
+   * @return a DataStoreConnection
+   * @throws Exception if an Exception occurs while establishing the Connection
    */
   @Override
   public DataStoreConnection createConnection(ParameterList params)

@@ -221,10 +221,10 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
     return description.toString();
   }
 
-  public static interface VerticesInFence {
-    public List getCoordinates();
+  public interface VerticesInFence {
+    List getCoordinates();
 
-    public int getIndex(int i);
+    int getIndex(int i);
   }
 
   private static class IntWrapper {

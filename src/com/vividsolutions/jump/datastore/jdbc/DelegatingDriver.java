@@ -62,7 +62,7 @@ public class DelegatingDriver implements Driver {
 
   /**
    * get wrappee
-   * @return
+   * @return the Driver
    */
   public Driver getDriver(){
     return driver;

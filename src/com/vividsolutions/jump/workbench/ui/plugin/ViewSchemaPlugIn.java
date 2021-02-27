@@ -218,10 +218,11 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
     /**
      * Version of applyChanges used when the plugin is executed as a macro
      * @TODO ideally, the same code should be executed in both cases (DRY)
-     * @param layer
-     * @param schemaMapping
-     * @param isForcingInvalidConversionsToNull
-     * @throws Exception
+     * @param layer a Layer
+     * @param schemaMapping a map defining new attribute types
+     * @param isForcingInvalidConversionsToNull true if invalid conversion must be set to null
+     *                                          instead of throwing Exception
+     * @throws Exception if an Exception occurs
      */
     private void applyChanges(final Layer layer, final Map<String,Attribute> schemaMapping,
                               final boolean isForcingInvalidConversionsToNull) throws Exception {
@@ -305,11 +306,11 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
     /**
      * Conversion tool used by macro (no dependence to SchemaPanel).
-     * @param oldFeature
-     * @param schemaMapping
-     * @param newSchema
-     * @return
-     * @throws ConversionException
+     * @param oldFeature old Feature
+     * @param schemaMapping mapper from old to new attributes
+     * @param newSchema the new FeatureSchema
+     * @return a new Feature
+     * @throws ConversionException if a ConversionException occurs
      */
     private Feature convert(Feature oldFeature, Map<String,Attribute> schemaMapping, FeatureSchema newSchema,
                             boolean isForcingInvalidConversionsToNull) throws ConversionException {

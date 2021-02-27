@@ -37,5 +37,5 @@ import org.locationtech.jts.geom.Envelope;
 
 
 public interface ViewportListener {
-    public void zoomChanged(Envelope modelEnvelope);
+  void zoomChanged(Envelope modelEnvelope);
 }

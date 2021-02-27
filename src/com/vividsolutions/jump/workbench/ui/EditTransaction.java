@@ -197,7 +197,7 @@ public class EditTransaction {
         return featureToNewGeometryMap;
     }
 
-    public static interface SelectionEditor {
+    public interface SelectionEditor {
         /**
          * selectedItems may have the whole geometry, parts (collection elements),
          * or linestrings, or a mix of all three. But there will be no duplicate data
@@ -214,7 +214,7 @@ public class EditTransaction {
          * @return a new Geometry for the Feature (typically geometryWithSelectedItems, but can
          * be a completely different Geometry), or an empty geometry to (undoably) remove the Feature from the Layer
          */
-        public Geometry edit(Geometry geometryWithSelectedItems, Collection selectedItems);
+        Geometry edit(Geometry geometryWithSelectedItems, Collection selectedItems);
     }
 
     /**
@@ -257,8 +257,8 @@ public class EditTransaction {
 
     private boolean allowAddingAndRemovingFeatures;
 
-    public static interface SuccessAction {
-        public void run();
+    public interface SuccessAction {
+        void run();
     }
 
     public boolean commit() {

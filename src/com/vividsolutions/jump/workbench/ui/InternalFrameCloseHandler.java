@@ -5,5 +5,5 @@ import javax.swing.JInternalFrame;
 
 
 public interface InternalFrameCloseHandler {
-    public void close( JInternalFrame internalFrame );
+    void close( JInternalFrame internalFrame );
 }

@@ -63,7 +63,7 @@ public final class TestTools {
     /**
      * Builds a new Workbench with WorkbenchFrame and WorkbenchContext.
      * 
-     * @see JUMPWorkbench#main
+     * @see JUMPWorkbench#main(String[])
      * @return JUMPWorkbench
      */
     public static JUMPWorkbench buildWorkbench(String[] args) throws Exception {

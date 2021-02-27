@@ -155,7 +155,7 @@ public class AttributeInfo implements Comparable {
     /**
      * In order for this to work, the attribute indices of this AttributeInfo object and of the other
      * one has to be set, correctly!
-     *@param theOtherObject
+     *@param theOtherObject the other Object
      *@return see <code>Comparable</code> for
      */
     public int compareTo(Object theOtherObject) {
@@ -164,8 +164,8 @@ public class AttributeInfo implements Comparable {
         
         if (Math.min(iThisIndex, iTheOtherIndex) > -1){
             // since both indices may be -1 --> not set...
-            Integer theOtherIndex = new Integer(iTheOtherIndex);
-            Integer thisIndex = new Integer(iThisIndex);
+            Integer theOtherIndex = iTheOtherIndex;
+            Integer thisIndex = iThisIndex;
             return thisIndex.compareTo(theOtherIndex);
         }
         // ... we may want to throw an exception...

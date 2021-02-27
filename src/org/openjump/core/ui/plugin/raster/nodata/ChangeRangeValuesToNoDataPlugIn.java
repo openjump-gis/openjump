@@ -46,19 +46,19 @@ import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
+/**
+ *
+ * @author Giuseppe Aruta
+ * date 2015_3_25 (Giuseppe Aruta) This class allows to change a range
+ *       allows values to nodata Reverse operation extracts the input range
+ *       of value and set the others to nodata The output is a ESRI float
+ *       file
+ * date 2015_19_5 (Giuseppe Aruta) Correct bug introduced with new
+ *       RasterImageLayer.cellvalue Substitute export to .flt file to .asc
+ *       file
+ * date 2015_15_11 (Giuseppe Aruta) Improved GUI
+ */
 public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
-    /**
-     * 
-     * @author Giuseppe Aruta
-     * @date 2015_3_25 (Giuseppe Aruta) This class allows to change a range
-     *       allows values to nodata Reverse operation extracts the input range
-     *       of value and set the others to nodata The output is a ESRI float
-     *       file
-     * @date 2015_19_5 (Giuseppe Aruta) Correct bug introduced with new
-     *       RasterImageLayer.cellvalue Substitute export to .flt file to .asc
-     *       file
-     * @date 2015_15_11 (Giuseppe Aruta) Improved GUI
-     */
 
     private Properties properties = null;
     private String byteOrder = "LSBFIRST";
@@ -316,8 +316,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
 
             o.println("yllcorner " + rLayer.getActualImageEnvelope().getMinY());
 
-            o.println("cellsize "
-                    + Double.toString(rstLayer.getLayerCellSize().x));
+            o.println("cellsize " + rstLayer.getLayerCellSize().x);
             o.println("NODATA_value " + nodata);
             GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(
                     rstLayer, rstLayer.getLayerGridExtent());
@@ -394,8 +393,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
 
             o.println("yllcorner " + rLayer.getActualImageEnvelope().getMinY());
 
-            o.println("cellsize "
-                    + Double.toString(rstLayer.getLayerCellSize().x));
+            o.println("cellsize " + rstLayer.getLayerCellSize().x);
 
             o.println("NODATA_value " + nodata);
             GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(

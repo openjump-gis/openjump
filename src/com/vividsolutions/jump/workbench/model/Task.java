@@ -192,9 +192,9 @@ public class Task implements LayerManagerProxy {
    * convenience method for {@link #getProperty(QName)} that returns a default
    * value in case the named property is not defined
    * 
-   * @param name
-   * @param defaultValue
-   * @return
+   * @param name qualified name of the Task property
+   * @param defaultValue default value of the Task property
+   * @return the property of type T having this name
    */
   @SuppressWarnings("unchecked")
   public <T> T getProperty(QName name, Object defaultValue) {

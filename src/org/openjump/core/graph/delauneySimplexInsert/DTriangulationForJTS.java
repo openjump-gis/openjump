@@ -78,7 +78,7 @@ public class DTriangulationForJTS {
  
     /**
      * 
-     * @param pointList
+     * @param pointList a list of Points
      * @param envelope the envelope my extend the initial point cloud and result in a larger initial simplex 
      */
     public DTriangulationForJTS(ArrayList pointList, Envelope envelope){  

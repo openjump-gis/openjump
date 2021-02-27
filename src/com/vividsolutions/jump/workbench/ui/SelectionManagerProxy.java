@@ -36,5 +36,5 @@ package com.vividsolutions.jump.workbench.ui;
  * A party with an associated {@link SelectionManager}.
  */
 public interface SelectionManagerProxy {
-    public SelectionManager getSelectionManager();
+    SelectionManager getSelectionManager();
 }

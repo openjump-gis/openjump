@@ -240,9 +240,9 @@ public class LabelStyle implements Style {
      * Gets the appropriate attribute value, if one exists. If for some reason
      * the attribute column does not exist, return null
      *
-     * @param f
-     * @return the value of the attribute
-     * @return null if the attribute column does not exist
+     * @param f a Feature
+     * @return  the value of the attribute
+     *          null if the attribute column does not exist
      */
     private Object getAttributeValue(Feature f) {
         if (getAttribute().equals(LabelStyle.FID_COLUMN)) {
@@ -329,22 +329,21 @@ public class LabelStyle implements Style {
      * or lower-right of the geometry envelope. Find right distance to symbol
      * size in order to write the label outside the symbol
      * 
-     * @param geometry
-     * @param int value
-     * @return
+     * @param geometry a Geometry to symbolize
+     * @param value a symbol size
+     * @return the position of the symbol according to the Geometry Envelope
+     *      the symbol size and the horizontal and vertical alignment
      */
     public Coordinate findPointForVertexSymbology(Geometry geometry, int value) {
         if (geometry.isEmpty()) {
             return new Coordinate(0, 0);
         }
         // [Giuseppe Aruta 2018-10-29] set right label distance according to the
-        // scale
-        // of view
+        // scale of view
         final Viewport viewport = JUMPWorkbench.getInstance().getFrame()
                 .getContext().getLayerViewPanel().getViewport();
-        Double viewScale = 1.0;
-        final Double viewBaseScale = 1.0;
-        viewScale = viewport.getScale();
+        final double viewBaseScale = 1.0;
+        final double viewScale = viewport.getScale();
         final double scaleFactor = viewScale * viewBaseScale;
         value = (int) (value / scaleFactor) / 2;
 
@@ -352,6 +351,7 @@ public class LabelStyle implements Style {
                 - value, geometry.getCoordinate().x + value,
                 geometry.getCoordinate().y - value, geometry.getCoordinate().y
                         + value);
+        // center of the envelope
         double x = (envelope.getMinX() + envelope.getMaxX()) / 2d;
         double y = (envelope.getMinY() + envelope.getMaxY()) / 2d;
         if (verticalAlignment.equals(DEFAULT) && geometry.getDimension() != 2) {

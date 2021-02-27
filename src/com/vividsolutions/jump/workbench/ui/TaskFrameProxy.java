@@ -36,5 +36,5 @@ package com.vividsolutions.jump.workbench.ui;
  * A party with an associated TaskFrame.
  */
 public interface TaskFrameProxy {
-    public TaskFrame getTaskFrame();
+  TaskFrame getTaskFrame();
 }

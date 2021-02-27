@@ -195,9 +195,9 @@ public class StatisticIndices {
     }
 
     /**
-     * Create a lis with all the indices availabe
+     * Create a lis with all the indices available
      * 
-     * @return
+     * @return a list of indices
      */
     public static List<String> getIndices() {
 
@@ -473,8 +473,7 @@ public class StatisticIndices {
     }
 
     /**
-     * Returns the map of each class/number of elements
-     * @return
+     * @return the map of each class/number of elements
      */
     public Map<Double, Integer> getCounts() {
         return counts;

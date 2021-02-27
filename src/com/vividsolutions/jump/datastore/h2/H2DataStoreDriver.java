@@ -38,9 +38,9 @@ public class H2DataStoreDriver extends AbstractSpatialDatabasesDSDriver {
   /**
    * returns the right type of DataStoreConnection
    * 
-   * @param params
-   * @return
-   * @throws Exception
+   * @param params database connection parameters
+   * @return a DataStoreConnection
+   * @throws Exception if an Exception occurs while establishing the connection
    */
   @Override
   public DataStoreConnection createConnection(ParameterList params)

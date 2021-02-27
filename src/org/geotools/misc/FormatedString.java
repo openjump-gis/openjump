@@ -8,19 +8,19 @@ package org.geotools.misc;
  
 public class FormatedString {
 	static boolean leadingzeros = false;
-  public static final String format(double d){
+  public static String format(double d){
     return format(""+d,2);
   }
-  public final static String format(int i){
+  public static String format(int i){
     return format(""+i,0);
   }
-  public final static String format(int i,int len){
+  public static String format(int i, int len){
     return format(""+i,0,len);
   }
-	public static final String format(String in){
+	public static String format(String in){
 		return format(in,2);
 	}
-  public final static String format(String in, int dp ,int len){
+  public static String format(String in, int dp , int len){
     StringBuffer sb = new StringBuffer();
     String s = format(in,dp).trim();
     int diff = len - s.length();
@@ -29,7 +29,7 @@ public class FormatedString {
     sb.append(s);
     return sb.toString();
   }
-	public final static String format(String in,int dp){
+	public static String format(String in, int dp){
 	  int e1 = in.indexOf('e');
 	  int e2 = in.indexOf('E');
 	  int e = Math.max(e1,e2);
@@ -77,7 +77,7 @@ public class FormatedString {
       return(in+dec);
     }
 	}
-	private final static String expand(String s, int e){
+	private static String expand(String s, int e){
 	  String last = s.substring(e+1);
 	  String start = s.substring(0,e);
 

@@ -124,8 +124,8 @@ public class IconLoader {
    * utility method to automagically resolve images that moved into their
    * appropriate iconset subfolders for legacy code
    * 
-   * @param filename
-   * @return
+   * @param filename name of the file containing the Icon
+   * @return the path of the Icon File
    */
   protected static String resolveFile(String filename) {
     // iterate over each location, return on first hit

@@ -52,5 +52,5 @@ public interface EnableCheck {
 	 * @return an error message if the check failed, or null if the check
 	 *              passed
 	 */
-    public String check(JComponent component);
+    String check(JComponent component);
 }

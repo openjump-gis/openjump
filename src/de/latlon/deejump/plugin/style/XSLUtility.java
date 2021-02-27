@@ -70,7 +70,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.WKTFillPattern;
 public class XSLUtility {
 
     /**
-     * @param colorNode
+     * @param colorNode an XML Node containing an hexadecimal color
      * @return the hex color
      */
     public static String toHexColor(Node colorNode) {
@@ -103,18 +103,18 @@ public class XSLUtility {
     }
 
     /**
-     * @param colorNode
+     * @param node an XML Node containing a Color alpha value
      * @return the alpha value
      */
-    public static String toAlphaValue(Node colorNode) {
+    public static String toAlphaValue(Node node) {
         String value = "1";
 
-        if (colorNode == null || colorNode.getFirstChild() == null) {
+        if (node == null || node.getFirstChild() == null) {
             return value;
         }
 
         try {// FIXME no good to grab 1st child than node val
-            String nodeVal = colorNode.getFirstChild().getNodeValue();
+            String nodeVal = node.getFirstChild().getNodeValue();
 
             value = String.valueOf(Double.parseDouble(nodeVal) / 255d);
         } catch (Exception e) {
@@ -128,14 +128,14 @@ public class XSLUtility {
     }
 
     /**
-     * @param colorNode
+     * @param node an XML Node containing a font family name
      * @return the family name
      */
-    public static String toFontFamily(Node colorNode) {
+    public static String toFontFamily(Node node) {
         String value = "Dialog";
 
         try {// FIXME no good to grab 1st child than node val
-            String nodeVal = colorNode.getFirstChild().getNodeValue();
+            String nodeVal = node.getFirstChild().getNodeValue();
             String[] components = nodeVal.split(", ");
             value = components[0];
         } catch (Exception e) {
@@ -145,8 +145,8 @@ public class XSLUtility {
     }
 
     /**
-     * @param fontNode
-     * @return the style
+     * @param fontNode an XML Node containing a font style
+     * @return the font style
      */
     public static String toFontStyle(Node fontNode) {
         // bold not supported in SLD?
@@ -166,8 +166,8 @@ public class XSLUtility {
     }
 
     /**
-     * @param vertexStyleNode
-     * @return the WKN
+     * @param vertexStyleNode a vertex style XML Node
+     * @return the vertex style name
      */
     public static String toWellKnowName(Node vertexStyleNode) {
         if (vertexStyleNode == null) {
@@ -199,13 +199,13 @@ public class XSLUtility {
     }
 
     /**
-     * @param filename
-     * @param fill
-     * @param stroke
-     * @param size
+     * @param filename file containing the image
+     * @param fill node containing the fill property (svg case)
+     * @param stroke node containing the stroke property (svg case)
+     * @param size size of the image
      * @return a URL to the image (svg images will be colored and saved as
      *         image)
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
     public static String getImageURL(String filename, Node fill, Node stroke, int size) throws IOException {
         if (filename.toLowerCase().endsWith(".svg")) {
@@ -220,7 +220,7 @@ public class XSLUtility {
     }
 
     /**
-     * @param filename
+     * @param filename file name
      * @return the url
      */
     public static String fileToURL(String filename) {
@@ -234,8 +234,9 @@ public class XSLUtility {
     }
 
     /**
-     * @param node
+     * @param node XML Node to format
      * @return the new string
+     * TODO : what is it for ? why ss[0] is doubled when there is no comma, what happens if there are several commas
      */
     public static String replaceComma(Node node) {
         if (node.getFirstChild().getTextContent() == null) {
@@ -252,20 +253,20 @@ public class XSLUtility {
     }
 
     /**
-     * @param icon
-     * @return the url
+     * @param icon icon name
+     * @return the url string
      */
     public static String getIconURL(String icon) {
         return IconLoader.class.getResource(icon).toExternalForm();
     }
 
     /**
-     * @param width
-     * @param extent
-     * @param pattern
-     * @param color
+     * @param width width of the WKTFillPattern
+     * @param extent extent of the WKTFillPattern
+     * @param pattern name of the pattern
+     * @param color color code
      * @return the image url
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
     public static String createPatternImage(int width, int extent, String pattern, String color) throws IOException {
         File file = File.createTempFile("ojp", "pti.png");

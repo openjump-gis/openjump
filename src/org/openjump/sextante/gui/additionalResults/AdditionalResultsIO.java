@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -378,7 +379,7 @@ public class AdditionalResultsIO {
 		SVGGraphics2D svgGenerator = drawSvgGraphics(component);
 		try {
 			FileOutputStream fos = new FileOutputStream(selFile, false);
-			OutputStreamWriter out = new OutputStreamWriter(fos, "UTF-8");
+			OutputStreamWriter out = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
 			svgGenerator.stream(out, true);
 			out.close();
 		}
@@ -393,8 +394,7 @@ public class AdditionalResultsIO {
 	 * Draws the selected component (assumed to be a Component) into the
 	 * provided SVGGraphics2D object.
 	 *
-	 * @param component
-	 * @param bounds
+	 * @param component the component to draw the svg graphic on
 	 */
 	private static SVGGraphics2D drawSvgGraphics(Component component) {
 
@@ -654,10 +654,10 @@ public class AdditionalResultsIO {
 					// profile
 					alPt1x = minX;
 					alPt1y = interPointsDists[ip] + baseElev;
-					final double alPt2x = minX - (txtHight / 2);
+					final double alPt2x = minX - (txtHight / 2.0);
 					dxfExp.writeLine(baseSectionLayer, alPt1x, alPt1y, alPt2x,
 							alPt1y);
-					final double alPt2x2 = maxX + (txtHight / 2);
+					final double alPt2x2 = maxX + (txtHight / 2.0);
 					dxfExp.writeLine(baseSectionLayer, maxX, alPt1y, alPt2x2,
 							alPt1y);
 
@@ -683,7 +683,7 @@ public class AdditionalResultsIO {
 				// Widths (X axe) - small tracks above the texts
 				alPt1x = interPointsDists[ip];
 				alPt1y = baseElev;
-				alPt2y = baseElev - (txtHight / 2);
+				alPt2y = baseElev - (txtHight / 2.0);
 				dxfExp.writeLine(baseSectionLayer, alPt1x, alPt1y, alPt1x,
 						alPt2y);
 
@@ -696,7 +696,7 @@ public class AdditionalResultsIO {
 
 				// Partial heights - small tracks
 				alPt1y = sep3Y;
-				alPt2y = sep3Y + (txtHight / 2);
+				alPt2y = sep3Y + (txtHight / 2.0);
 				dxfExp.writeLine(partialValuesLayer, alPt1x, alPt1y, alPt1x,
 						alPt2y);
 

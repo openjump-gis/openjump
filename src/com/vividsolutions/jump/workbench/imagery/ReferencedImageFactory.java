@@ -37,18 +37,18 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
  * A factory for {@link ReferencedImage}s.
  */
 public interface ReferencedImageFactory {
-  public static final Object REGISTRY_CLASSIFICATION = ReferencedImageFactory.class
-      .getName();
+
+  String REGISTRY_CLASSIFICATION = ReferencedImageFactory.class.getName();
 
   String getTypeName();
 
   ReferencedImage createImage(String uri_string) throws Exception;
 
-  public String getDescription();
+  String getDescription();
 
-  public String[] getExtensions();
+  String[] getExtensions();
 
-  public boolean isEditableImage(String location);
+  boolean isEditableImage(String location);
 
   /**
    * 

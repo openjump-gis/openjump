@@ -104,7 +104,7 @@ public class PlugInClassLoader extends URLClassLoader {
   /**
    * allow adding urls, any time
    * 
-   * @param urls
+   * @param urls array of URLs to add
    */
   public void addUrls(URL[] urls) {
     for (URL url : urls) {

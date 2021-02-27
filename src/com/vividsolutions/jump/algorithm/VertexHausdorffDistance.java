@@ -72,8 +72,8 @@ public class VertexHausdorffDistance
    * Computes Hausdorff distance between two segments
    * Hausdorff distance with LineSegment arguments is not implemented in JTS
    * (used by UniqueSegmentsWithToleranceFinder)
-   * @param seg0
-   * @param seg1
+   * @param seg0 first LineSegment
+   * @param seg1 second LineSegment
      */
   public VertexHausdorffDistance(LineSegment seg0, LineSegment seg1)
   {

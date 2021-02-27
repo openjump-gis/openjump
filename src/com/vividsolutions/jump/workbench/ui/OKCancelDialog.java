@@ -21,12 +21,12 @@ public class OKCancelDialog extends JDialog
 
   /**
    *
-   * @param owner
-   * @param title
-   * @param modal
-   * @param customComponent
+   * @param owner Dialog owner of this OKCancelDialog
+   * @param title title
+   * @param modal whether this OKCancelDialog is modal or not
+   * @param customComponent custom Component to include in this OKCancelDialog
    * @param validator the {@link Validator} to use, or <code>null</code> if none required
-   * @throws HeadlessException
+   * @throws HeadlessException if the environment is headless
    */
     public OKCancelDialog(Dialog owner, String title, boolean modal,
             Component customComponent, Validator validator)
@@ -81,11 +81,11 @@ public class OKCancelDialog extends JDialog
         GUIUtil.centreOnWindow(this);
     }
 
-    public static interface Validator {
+    public interface Validator {
         /**
          * @return an error message, or null if the input is valid
          */
-        public String validateInput(Component component);
+        String validateInput(Component component);
     }
 
     public boolean wasOKPressed() {

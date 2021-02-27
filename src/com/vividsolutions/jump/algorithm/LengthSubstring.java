@@ -60,9 +60,11 @@ public class LengthSubstring
   /**
    * Assumes input is strictly valid (e.g. startDist < endDistance)
    *
-   * @param startDistance
-   * @param endDistance
-   * @return
+   * @param startDistance distance between the start of the source LineString
+   *                      and the start of the substring
+   * @param endDistance distance between the start of the source LineString
+   *    *               and the end of the substring
+   * @return a new Linestring, substring of the source one
    */
   private LineString computeSubstring(double startDistance, double endDistance)
   {

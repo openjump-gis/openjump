@@ -46,8 +46,6 @@ public abstract class OptionsPanelV2 extends JPanel implements OptionsPanel {
 
     /**
      * Get the name for this options panel. It will be visible in its tab.
-     * 
-     * @return
      */
     public abstract String getName();
 
@@ -56,8 +54,6 @@ public abstract class OptionsPanelV2 extends JPanel implements OptionsPanel {
      * <p>
      * Return null if there is no icon associated to it
      * </p>
-     * 
-     * @return
      */
     public abstract Icon getIcon();
 

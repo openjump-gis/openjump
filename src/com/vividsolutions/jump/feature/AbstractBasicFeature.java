@@ -231,7 +231,7 @@ public abstract class AbstractBasicFeature implements Feature, Serializable {
         BasicFeature clone = new BasicFeature(feature.getSchema());
         for (int i = 0; i < feature.getSchema().getAttributeCount(); i++) {
             if (feature.getSchema().getAttributeType(i) == AttributeType.GEOMETRY) {
-                clone.setAttribute(i, deep ? feature.getGeometry().clone() : feature.getGeometry());
+                clone.setAttribute(i, deep ? feature.getGeometry().copy() : feature.getGeometry());
             } else if (feature.getSchema().getExternalPrimaryKeyIndex() == i) {
                 if (copyPK) clone.setAttribute(i, feature.getAttribute(i));
             } else {

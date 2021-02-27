@@ -194,7 +194,7 @@ public class LayerTreeModel extends SimpleTreeModel {
         
         @Override
         public String toString() {
-            return String.valueOf(bottomValue) + "-" + String.valueOf(topValue);
+            return bottomValue + "-" + topValue;
         }
         
         public Double getTopValue() {

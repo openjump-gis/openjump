@@ -80,7 +80,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
   private Map<String,Object> parameters;
 
   public void addParameter(String name, Object value) {
-      if (parameters == null) parameters = new HashMap<String, Object>();
+      if (parameters == null) parameters = new HashMap<>();
       parameters.put(name, value);
   }
 
@@ -307,7 +307,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
     return getName();
   }
   
-  public static String createName(Class plugInClass) {
+  public static String createName(Class<? extends PlugIn> plugInClass) {
     try {
       return I18N.get(plugInClass.getName());
     } catch (java.util.MissingResourceException e) {

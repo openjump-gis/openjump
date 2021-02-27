@@ -279,21 +279,21 @@ public class DxfExport {
     }
 
     /**
-     * @param layName
+     * @param layerName the layer name
      * @param lineType
      *            ( DASHED - DOTTED -DOTTINY etc)
-     * @param p1x
-     * @param p1y
-     * @param p2x
-     * @param p2y
+     * @param p1x x value of the first point
+     * @param p1y y value of the first point
+     * @param p2x x value of the second point
+     * @param p2y y value of the second point
      */
-    public void writeLineType(String layName, String lineType, double p1x,
+    public void writeLineType(String layerName, String lineType, double p1x,
             double p1y, double p2x, double p2y) {
 
         appString("0");
         appString("LINE");
         appString(8);
-        appString(layName);
+        appString(layerName);
         appString(6);
         appString(lineType);
         appString("10");
@@ -419,11 +419,11 @@ public class DxfExport {
     }
 
     private void appString(int appEnd) {
-        dxfOut = dxfOut + lineFeed + Integer.toString(appEnd);
+        dxfOut = dxfOut + lineFeed + appEnd;
     }
 
     private void appString(double appEnd) {
-        dxfOut = dxfOut + lineFeed + Double.toString(appEnd);
+        dxfOut = dxfOut + lineFeed + appEnd;
     }
 
     public int exportDxf(String dxfFullFileName) {

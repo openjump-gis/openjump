@@ -196,8 +196,8 @@ public class WorkbenchPropertiesFile implements WorkbenchProperties {
    * key={menus={main-menu={menupath=MenuNames.LAYER, install=true},
    * category-popup={install=true}}}
    * 
-   * @param map1
-   * @param map2
+   * @param map1 first Map
+   * @param map2 second Map
    * @return merged map1
    */
   private Map mergeMapsRecursively(Map map1, Map map2) {

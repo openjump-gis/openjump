@@ -318,8 +318,8 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
      * context. It can be called from other plugins that aquire SLD from
      * elsewhere.
      * 
-     * @param doc
-     * @param context
+     * @param doc XML document containing symbology information
+     * @param context the PlugInContext
      */
     public static void importSLD(Document doc, PlugInContext context) {
         Layer l = context.getSelectedLayer(0);
@@ -394,7 +394,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
     }
     
     /**
-     * @param workbenchContext
+     * @param workbenchContext the WorkbenchContext
      * @return the enable check
      */
     public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {

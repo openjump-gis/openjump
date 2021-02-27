@@ -118,11 +118,11 @@ public class BeanshellAttributeOperation implements Operation {
             }
             else if (type == AttributeType.DOUBLE) {
                 if (obj instanceof Double) return obj;
-                else return new Double(obj.toString());
+                else return Double.valueOf(obj.toString());
             }
             else if (type == AttributeType.INTEGER) {
                 if (obj instanceof Integer) return obj;
-                else return new Integer(obj.toString());
+                else return Integer.valueOf(obj.toString());
             }
             else if (type == AttributeType.DATE) {
                 if (obj instanceof Date) return obj;

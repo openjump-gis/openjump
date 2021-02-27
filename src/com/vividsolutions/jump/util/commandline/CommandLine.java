@@ -88,8 +88,8 @@ public class CommandLine {
    * get all values of all parameters(options) with the given name
    * see {@link OptionSpec#getAllArguments()}
    * 
-   * @param name
-   * @return iterator
+   * @param name name of the arguments
+   * @return an iterator to iterate through arguments with this name
    */
   public Iterator<String> getAllArguments(String name) {
     OptionSpec spec = getOptionSpec(name);

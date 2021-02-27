@@ -255,7 +255,7 @@ public class TreeUtil {
         return nodes;
     }
 
-    public static interface Visitor {
-        public void visit(Stack path);
+    public interface Visitor {
+        void visit(Stack path);
     }
 }

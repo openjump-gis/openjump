@@ -46,7 +46,7 @@ public class BooleanPropertyEnableCheck implements EnableCheck {
    *          value.
    * @param expectedValue The expected value to be returned for the check to be
    *          enabled.
-   * @param disabledMessage
+   * @param disabledMessage error message if the condition is not fulfilled
    */
   public BooleanPropertyEnableCheck(final Object object,
     final String checkMethodName, final boolean expectedValue,

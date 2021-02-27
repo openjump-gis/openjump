@@ -43,7 +43,7 @@ public class NumberPrecisionReducer {
    * A negative value for decimalPlaces indicates the scale factor
    * should be divided rather than multiplied. The negative sign
    * is carried through to the computed scale factor.
-   * @param decimalPlaces
+   * @param decimalPlaces number of decimal places
    * @return the scale factor
    */
   public static double scaleFactorForDecimalPlaces(int decimalPlaces)
@@ -72,7 +72,7 @@ public class NumberPrecisionReducer {
    * A zero value for scaleFactor will result in no precision reduction being performed.
    * A scale factor is normally an integer value.
    *
-   * @param scaleFactor
+   * @param scaleFactor scale factor
    */
   public NumberPrecisionReducer(double scaleFactor)
   {

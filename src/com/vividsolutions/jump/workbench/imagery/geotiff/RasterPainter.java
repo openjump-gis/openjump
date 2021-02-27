@@ -52,7 +52,7 @@ public class RasterPainter
    * @param image the image to rescale
    * @param constant multiplication factor
    * @param offset offset
-   * @return
+   * @return the RenderedOp after rescaling and offset
    */
   private RenderedOp rescale(RenderedOp image, double constant, double offset)
   {
@@ -80,8 +80,8 @@ public class RasterPainter
   }
 
   /**
-   * @param image
-   * @return
+   * @param image input RenderedOp
+   * @return a rescaled RenderedOp
    */
   private RenderedOp rescale(RenderedOp image)
   {
@@ -89,9 +89,9 @@ public class RasterPainter
   }
 
   /**
-   * @param viewport
-   * @return @throws
-   *         Exception
+   * @param viewport the Viewport
+   * @return a RenderedOp corresponding to the viewport Image
+   * @throws Exception if an Exception occurs
    */
   private RenderedOp getWindow(Viewport viewport) throws Exception
   {

@@ -7,15 +7,15 @@ import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
+/**
+ * This frame is a refactoring of Sextante
+ * es.unex.sextante.gui.additionalResults.AdditionalResultsTreeCellRenderer
+ *
+ * @author Giuseppe Aruta [2017-12-12]
+ */
 public class AdditionalResultsTreeCellRenderer extends JLabel implements
         TreeCellRenderer {
 
-    /**
-     * This frame is a refactoring of Sextante
-     * es.unex.sextante.gui.additionalResults.AdditionalResultsTreeCellRenderer
-     * 
-     * @author Giuseppe Aruta [2017-12-12]
-     */
     private static final long serialVersionUID = 1L;
 
     @Override

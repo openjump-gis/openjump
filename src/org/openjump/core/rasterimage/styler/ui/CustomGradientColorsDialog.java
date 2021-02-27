@@ -7,6 +7,8 @@ import org.openjump.core.rasterimage.styler.RasterStylesExtension;
 
 import com.vividsolutions.jump.workbench.Logger;
 
+import java.awt.*;
+
 /**
  *
  * @author GeomaticaEAmbiente
@@ -15,12 +17,12 @@ public class CustomGradientColorsDialog extends javax.swing.JDialog {
 
     /**
      * Creates new form CustomGradientColors
-     * @param parent
-     * @param modal
-     * @param colorMapEntries
+     * @param parent the parent Frame
+     * @param modal true if the Dialog must be modal
+     * @param colorMapEntries an array of ColorMapEntries
      */
    
-    public CustomGradientColorsDialog(java.awt.Frame parent, boolean modal, ColorMapEntry[] colorMapEntries) {
+    public CustomGradientColorsDialog(Frame parent, boolean modal, ColorMapEntry[] colorMapEntries) {
         super(parent, modal);
         
         this.colorMapEntries = colorMapEntries;
@@ -224,7 +226,7 @@ public class CustomGradientColorsDialog extends javax.swing.JDialog {
     
     /**
      * Method to memorize the colors in the table in ColorMapEntry object.
-     * @throws Exception 
+     * @throws Exception if an Exception occurred
      */
     private void okButton() throws Exception{
         

@@ -120,10 +120,10 @@ public class SpatialJoinExecuter
   /**
    * Computes geomSrc.func(geomMask)
    *
-   * @param monitor
-   * @param func
-   * @param params
-   * @param resultFC
+   * @param monitor a TaskMonitor
+   * @param func function containing the GeometryPredicate
+   * @param params double array containing parameters of the GeometryPredicate
+   * @param resultFC the resulting FeatureCollection
    */
   public void execute(TaskMonitor monitor,
                                      GeometryPredicate func,

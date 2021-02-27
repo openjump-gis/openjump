@@ -178,10 +178,10 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
           boolean layer_changed = false;
           if (dataset != null) {
               Layer layer = null;
-              for (Feature f : (List<Feature>)dataset.getFeatures()) {
+              for (Feature f : dataset.getFeatures()) {
 
                   // restore referenced image feature, if one
-                  Feature img_f = null;
+                  Feature img_f;
                   FeatureCollection img_fs = new FeatureDataset(ImageryLayerDataset.SCHEMA);
                   if ( ImageryLayerDataset.isImageFeature(f)) {
                       // create an image layer

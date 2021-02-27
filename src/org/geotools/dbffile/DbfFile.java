@@ -229,7 +229,7 @@ public class DbfFile implements DbfConsts, AutoCloseable {
      * @param rec the byte array representing the record
      * @param wantedCol the wanted column
      * @return an object representing the field
-     * @throws Exception
+     * @throws Exception if an Exception occurred
      */
     public Object ParseRecordColumn(byte[] rec, int wantedCol) throws Exception {
         int start;

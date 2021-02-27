@@ -117,9 +117,10 @@ public class Logger {
    * log msg, throwable with log level from one stack before the given
    * StackTraceElement code location
    * 
-   * @param msg
-   * @param t
-   * @param logLevel
+   * @param msg message to log
+   * @param t throwable to log
+   * @param logLevel log level of the message
+   * @param calledFrom Exception stacktracle
    */
   public static void log(String msg, Throwable t, Level logLevel,
       StackTraceElement calledFrom) {
@@ -215,9 +216,10 @@ public class Logger {
   }
 
   /**
-   * setting current log level for the root logger
-   * 
-   * @param levelString
+   * setting current log level for the root logger (internally use
+   * org.apache.log4j.Level.toLevel)
+   *
+   * @param levelString a string representing the LogLevel
    */
   public static void setLevel(String levelString) {
     Level level = org.apache.log4j.Level.toLevel(levelString);

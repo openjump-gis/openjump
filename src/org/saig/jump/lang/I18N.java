@@ -40,7 +40,10 @@ import java.util.Locale;
 
 /**
  * kosmo i18n support patched over to use OJ i18n class
+ * TODO replace by OpenJUMP I18N and remove to simplify
+ * @deprecated use com.vividsolutions.jump.18N instead
  */
+@Deprecated
 public class I18N {
 
     /**
@@ -117,8 +120,7 @@ public class I18N {
 
     /**
      * Devuelve el locale asignado a las propiedades
-     * 
-     * @return
+     *
      */
     public static Locale getLocale() {
         return new Locale(getLocaleString());

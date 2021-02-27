@@ -57,7 +57,7 @@ public class BitmapVertexStyle extends VertexStyle {
     }
 
     /**
-     * @param fileName
+     * @param fileName the name of the file describing this BitmapVertexStyle
      */
     public BitmapVertexStyle(String fileName) {
         // init with a this.shape = poly with 1 point (?)
@@ -70,10 +70,6 @@ public class BitmapVertexStyle extends VertexStyle {
 
     @Override
     public void paint(Graphics2D g, Point2D p) {
-        // don't use this, use this.shape
-        // this.polygon.xpoints = new int [] { (int) p.getX()};
-        // this.polygon.ypoints = new int [] { (int) p.getY() };
-        // this.polygon.npoints=1;
         this.point = p;
         render(g);
     }
@@ -124,14 +120,14 @@ public class BitmapVertexStyle extends VertexStyle {
     }
 
     /**
-     * @param col
+     * @param color the color to encode
      * @return a #rrggbb string
      */
-    public static String toHexColor(Color col) {
-        if (col == null) {
-            col = Color.black;
+    public static String toHexColor(Color color) {
+        if (color == null) {
+            color = Color.black;
         }
-        String scol = Integer.toHexString(col.getRGB() & 0xffffff);
+        String scol = Integer.toHexString(color.getRGB() & 0xffffff);
         while (scol.length() < 6) {
             scol = "0" + scol;
         }
@@ -141,11 +137,11 @@ public class BitmapVertexStyle extends VertexStyle {
 
     // due to the lack of xpaths, this is VERY crude
     /**
-     * @param file
-     * @param stroke
-     * @param fill
+     * @param file the svg file
+     * @param stroke hex value of the stroke color to use
+     * @param fill hex value of the fill color to use
      * @return the new svg code
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
     public static StringBuffer updateSVGColors(File file, String stroke, String fill) throws IOException {
         BufferedReader in = new BufferedReader(new FileReader(file));
@@ -168,10 +164,10 @@ public class BitmapVertexStyle extends VertexStyle {
     }
 
     /**
-     * @param fileName
-     * @param stroke
-     * @param fill
-     * @param size
+     * @param fileName svg file name
+     * @param stroke hex value of the stroke color to use
+     * @param fill hex value of the fill color to use
+     * @param size image size
      * @return a SVG image with black colors overwritten with the given colors
      */
     public static BufferedImage getUpdatedSVGImage(String fileName, String stroke, String fill, int size) {
@@ -183,8 +179,8 @@ public class BitmapVertexStyle extends VertexStyle {
             Reader in = new StringReader(updateSVGColors(new File(fileName), stroke, fill).toString());
             TranscoderInput input = new TranscoderInput(in);
             if (size > 0) {
-                trc.addTranscodingHint(KEY_HEIGHT, new Float(size));
-                trc.addTranscodingHint(KEY_WIDTH, new Float(size));
+                trc.addTranscodingHint(KEY_HEIGHT, (float) size);
+                trc.addTranscodingHint(KEY_WIDTH, (float) size);
             }
             trc.transcode(input, output);
             bos.close();
@@ -207,7 +203,7 @@ public class BitmapVertexStyle extends VertexStyle {
     }
 
     /**
-     * @param fileName
+     * @param fileName file name to use
      */
     public void setFileName(String fileName) {
         this.fileName = fileName;

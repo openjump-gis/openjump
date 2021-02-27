@@ -212,7 +212,7 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
 
 	/**
 	 *
-	 * @return
+	 * @return the Panel containing the ToolTip
 	 */
 	private JPanel getTooltipPanel() {
 		if (layerToolTipPanel == null) {

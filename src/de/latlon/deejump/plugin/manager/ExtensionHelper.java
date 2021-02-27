@@ -38,8 +38,8 @@ public class ExtensionHelper {
         // no, no, never instantiate
     }
 
-    public static final void install( ExtensionManagerDialog extensionManager, WorkbenchContext workbenchContext,
-            ExtensionWrapper ext, TaskMonitor monitor) throws Exception {
+    public static void install(ExtensionManagerDialog extensionManager, WorkbenchContext workbenchContext,
+                               ExtensionWrapper ext, TaskMonitor monitor) throws Exception {
         
         PlugInManager manager = workbenchContext.getWorkbench().getPlugInManager();
         
@@ -80,8 +80,8 @@ public class ExtensionHelper {
         
     }
 
-    public static final void remove( List fileList,
-            ExtensionWrapper ext, TaskMonitor monitor)
+    public static void remove(List fileList,
+                              ExtensionWrapper ext, TaskMonitor monitor)
     
      throws Exception {
         List resourceList = ext.getResourceList();

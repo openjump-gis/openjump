@@ -221,7 +221,7 @@ public class ConnectionManager {
 
     /**
      * run by Exit handler, close all 
-     * @throws DataStoreException
+     * @throws DataStoreException if a DataStoreException occurs during connections closing
      */
     public void closeConnections() {
       for (ConnectionDescriptor connectionDescriptor : getConnectionDescriptors()) {

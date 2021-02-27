@@ -37,7 +37,7 @@ public class MultiplicationOperation extends GenericOperation {
     
     /**
      * Returns the multiplied values of the sub-values or sub-operations of this operation
-     *@param feature
+     *@param feature a Feature
      *@return multiplied values of the sub-values or sub-operations
      */
     public double getValue(Feature feature) {

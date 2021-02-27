@@ -42,7 +42,7 @@ public class SpatialiteDSConnection extends SpatialDatabasesDSConnection {
      *
      * @param query the query to execute
      * @return the results of the query
-     * @throws SQLException
+     * @throws SQLException if an SQLException occurs
      */
     @Override
     public FeatureInputStream executeFilterQuery(FilterQuery query) throws SQLException {
@@ -67,7 +67,7 @@ public class SpatialiteDSConnection extends SpatialDatabasesDSConnection {
      *
      * @param query the query to execute
      * @return the results of the query
-     * @throws SQLException
+     * @throws SQLException if an SQLException occurs
      */
     @Override
     public FeatureInputStream executeAdhocQuery(AdhocQuery query) throws Exception {

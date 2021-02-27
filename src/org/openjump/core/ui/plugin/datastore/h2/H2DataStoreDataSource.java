@@ -171,7 +171,7 @@ public class H2DataStoreDataSource extends WritableDataStoreDataSource {
      * @param geometryType geometry type
      * @param dim geometry dimension
      * @param normalizedColumnNames whether columns names have to be normalized or not
-     * @throws SQLException
+     * @throws SQLException if an Exception occurs while accessing database
      */
     protected void createAndPopulateTable(
             SpatialDatabasesDSConnection conn,

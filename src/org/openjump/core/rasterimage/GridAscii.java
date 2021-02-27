@@ -253,10 +253,10 @@ public class GridAscii {
     public void writeHeader(BufferedWriter bufferedWriter) throws Exception {
         
         String line;
-        line = "ncols " + Integer.toString(nCols);
+        line = "ncols " + nCols;
         bufferedWriter.write(line + lineFeed);
 
-        line = "nrows " + Integer.toString(nRows);
+        line = "nrows " + nRows;
         bufferedWriter.write(line + lineFeed);
 
         if(origCorner){
@@ -276,7 +276,7 @@ public class GridAscii {
         line = "cellsize " + cellSize;
         bufferedWriter.write(line + lineFeed);
 
-        line = "nodata_value " + Double.toString(noData);
+        line = "nodata_value " + noData;
         bufferedWriter.write(line + lineFeed);
 
     }

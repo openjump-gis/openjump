@@ -46,17 +46,17 @@ import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
+/**
+ *
+ * @author Giuseppe Aruta
+ * date 2015_3_25 (Giuseppe Aruta) This class allows to change nodata value
+ *       of a single band file The output is a ESRI float file
+ * date 2015_19_5 (Giuseppe Aruta) Correct bug introduced with new
+ *       RasterImageLayer.cellvalue Substitute export to .flt file to .asc
+ *       file
+ * date 2015_15_11 (Giuseppe Aruta) Improved GUI
+ */
 public class ChangeNoDataValuePlugIn extends ThreadedBasePlugIn {
-    /**
-     * 
-     * @author Giuseppe Aruta
-     * @date 2015_3_25 (Giuseppe Aruta) This class allows to change nodata value
-     *       of a single band file The output is a ESRI float file
-     * @date 2015_19_5 (Giuseppe Aruta) Correct bug introduced with new
-     *       RasterImageLayer.cellvalue Substitute export to .flt file to .asc
-     *       file
-     * @date 2015_15_11 (Giuseppe Aruta) Improved GUI
-     */
 
     public static final String PLUGINNAME = I18N
             .get("org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn.name");
@@ -135,7 +135,7 @@ public class ChangeNoDataValuePlugIn extends ThreadedBasePlugIn {
         JTextField source_nodata = new JTextField(String.valueOf(rLayer
                 .getNoDataValue()));
         source_nodata.setEditable(false);
-        JTextField target_nodata = new JTextField(String.valueOf("-99999"));
+        JTextField target_nodata = new JTextField("-99999");
         source_nodata.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -251,8 +251,7 @@ public class ChangeNoDataValuePlugIn extends ThreadedBasePlugIn {
 
             o.println("yllcorner " + rLayer.getActualImageEnvelope().getMinY());
 
-            o.println("cellsize "
-                    + Double.toString(rstLayer.getLayerCellSize().x));
+            o.println("cellsize " + rstLayer.getLayerCellSize().x);
 
             o.println("NODATA_value " + newnodata);
             GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(

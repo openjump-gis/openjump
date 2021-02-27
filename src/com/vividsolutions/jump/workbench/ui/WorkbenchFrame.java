@@ -69,29 +69,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultDesktopManager;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
-import javax.swing.MenuElement;
-import javax.swing.MenuSelectionManager;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import javax.swing.ToolTipManager;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -410,10 +388,12 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     
     private ArrayList<ApplicationExitHandler> applicationExitHandlers = new ArrayList<>();
 
-    private Map nodeClassToLayerNamePopupMenuMap = CollectionUtil
-            .createMap(new Object[] { Layer.class, layerNamePopupMenu,
-                    WMSLayer.class, wmsLayerNamePopupMenu, Category.class,
-                    categoryPopupMenu });
+    private Map<Class<?>,JPopupMenu> nodeClassToLayerNamePopupMenuMap =
+            CollectionUtil.createMap(new Object[] {
+                    Layer.class, layerNamePopupMenu,
+                    WMSLayer.class, wmsLayerNamePopupMenu,
+                    Category.class, categoryPopupMenu
+            });
 
     private int positionIndex = -1;
 
@@ -819,7 +799,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         return layerViewPanelListener;
     }
 
-    public Map getNodeClassToPopupMenuMap() {
+    public Map<Class<?>,JPopupMenu> getNodeClassToPopupMenuMap() {
         return nodeClassToLayerNamePopupMenuMap;
     }
 
@@ -1838,10 +1818,10 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      * attaching to keyCode 'a', modifiers =1 will detect shift-A events. It
      * will *not* detect caps-lock-'a'. This is due to inconsistencies in
      * java.awt.event.KeyEvent. In the unlikely event you actually do want to
-     * also also attach to caps-lock-'a', then make two shortcuts - one to
+     * also attach to caps-lock-'a', then make two shortcuts - one to
      * keyCode 'a' and modifiers =1 (shift-A) and one to keyCode 'A' and
      * modifiers=0 (caps-lock A). For more details, see the
-     * java.awt.event.KeyEvent class - it has a full explaination.
+     * java.awt.event.KeyEvent class - it has a full explanation.
      * 
      * @param keyCode
      *            What key to attach to (See java.awt.event.KeyEvent)
@@ -1901,34 +1881,6 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         internalFrameCloseHandler = value;
     }
 
-    /**
-     * You should use the new addApplicationExitHandler(),
-     * removeApplicationExitHandler(), getApplicationExitHandlers() methods.
-     * 
-     * @return
-     * @deprecated
-     */
-    @Deprecated
-    public ApplicationExitHandler getApplicationExitHandler() {
-        // return just a stub, functionality is replaced by addApplicationExitHandler()
-        return new ApplicationExitHandler() {
-          @Override
-          public void exitApplication(JFrame mainFrame) {
-          }
-        };
-    }
-
-    /**
-     * You should use the new addApplicationExitHandler(),
-     * removeApplicationExitHandler(), getApplicationExitHandlers() methods.
-     * 
-     * @return
-     * @deprecated
-     */
-    @Deprecated
-    public void setApplicationExitHandler(ApplicationExitHandler value) {
-        addApplicationExitHandler(value);
-    }
 
     /**
      * Gets the ApplicationExitHandlers.
@@ -1969,8 +1921,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     // activeTaskFrame = null;
                     closeTaskFrame((TaskFrame) internalFrame);
                 JInternalFrame activeInternalFrame = getActiveInternalFrame();
-                if (activeInternalFrame == null
-                        || !(activeInternalFrame instanceof TaskFrameProxy)) {
+                if (!(activeInternalFrame instanceof TaskFrameProxy)) {
                     activeTaskFrame = null;
                 } else
                     activeTaskFrame = ((TaskFrameProxy) activeInternalFrame)

@@ -4,5 +4,5 @@ import javax.swing.JFrame;
 
 
 public interface ApplicationExitHandler {
-    public void exitApplication( JFrame mainFrame );
+    void exitApplication( JFrame mainFrame );
 }

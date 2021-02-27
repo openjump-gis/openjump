@@ -41,6 +41,7 @@ import com.vividsolutions.jump.io.datasource.DataSource;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -142,7 +143,7 @@ public class FMEGMLReader extends AbstractJUMPReader {
 
         GMLInputTemplate result;
         LineNumberReader reader = new LineNumberReader(
-                new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+                new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         int lineNo = 0;
         boolean foundStartTag = false;
         boolean foundEndTag = false;
@@ -270,7 +271,7 @@ public class FMEGMLReader extends AbstractJUMPReader {
 
         // System.out.println(templateText);
         //java.io.StringReader sr = new java.io.StringReader(templateText);
-        InputStream is = new ByteArrayInputStream(templateText.getBytes("UTF-8"));
+        InputStream is = new ByteArrayInputStream(templateText.getBytes(StandardCharsets.UTF_8));
         result = new GMLInputTemplate();
         result.load(is, "Auto created FME GML input template");
         is.close();

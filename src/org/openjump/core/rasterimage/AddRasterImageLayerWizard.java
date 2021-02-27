@@ -49,9 +49,9 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     protected PropertiesHandler properties = null;
     protected WorldFileHandler worldFileHandler = null;
     protected static String propertiesFile = "RasterImage.properties";
-    protected String KEY_ALLWAYSACCEPT_TWF_EXT = "allwaysCheckForTWFExtension";
+    protected String KEY_ALWAYS_ACCEPT_TWF_EXT = "alwaysCheckForTWFExtension";
     protected String KEY_ZOOM_TO_INSERTED_IMAGE = "zoomToImage";
-    protected boolean allwaysLookForTFWExtension = true;
+    protected boolean alwaysLookForTFWExtension = true;
     protected boolean zoomToInsertedImage = false;
     private String imageFileName = "";
     private String cachedLayer = "default-layer-name";
@@ -96,8 +96,9 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
      * Load the files selected in the wizard.
      * 
      * @param dialog
+     *          The WizardDialog
      * @param monitor
-     *            The task monitor.
+     *          The task monitor.
      */
     @Override
     public void run(WizardDialog dialog, TaskMonitor monitor) {
@@ -139,7 +140,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
                 properties.store(" " + KEY_ZOOM_TO_INSERTED_IMAGE
                         + I18N.get("RasterImagePlugIn.28")
-                        + KEY_ALLWAYSACCEPT_TWF_EXT
+                        + KEY_ALWAYS_ACCEPT_TWF_EXT
                         + I18N.get("RasterImagePlugIn.29")
                         + "path"
                         + I18N.get("RasterImagePlugIn.30"));
@@ -155,7 +156,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 final Point imageDimensions = RasterImageIO
                         .getImageDimensions(selectedFilename);
                 final Envelope env = getGeoReferencing(selectedFilename,
-                        allwaysLookForTFWExtension, imageDimensions,
+                        alwaysLookForTFWExtension, imageDimensions,
                         workbenchContext);
 
                 if (env != null) {
@@ -255,8 +256,8 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
      * first pixel and not the center. I have corrected this in
      * WorldFileHandler.readWorldFile()
      * 
-     * @param fileName
-     * @param allwaysLookForTFWExtension
+     * @param fileName the file name
+     * @param alwaysLookForTFWExtension
      * @param imageDimensions
      * @param context
      * @return the RasterImage Envelope
@@ -264,14 +265,14 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
      * @throws NoninvertibleTransformException
      */
     protected Envelope getGeoReferencing(String fileName,
-            boolean allwaysLookForTFWExtension, Point imageDimensions,
+            boolean alwaysLookForTFWExtension, Point imageDimensions,
             WorkbenchContext context) throws IOException,
             NoninvertibleTransformException {
         double minx, maxx, miny, maxy;
         Envelope env = null;
 
         worldFileHandler = new WorldFileHandler(fileName,
-                allwaysLookForTFWExtension);
+                alwaysLookForTFWExtension);
 
         if (imageDimensions == null) {
             // logger.printError("can not determine image dimensions");
@@ -300,100 +301,6 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 // If env = image size, image is not considered as georeferenced
                 isGeoTiff = env.getWidth() != imageDimensions.getX() ||
                     env.getHeight() != imageDimensions.getY();
-
-//                Coordinate tiePoint = null, pixelOffset = null, pixelScale = null;
-//                double[] doubles = null;
-//
-//                final FileSeekableStream fileSeekableStream = new FileSeekableStream(
-//                        fileName);
-//                final TIFFDirectory tiffDirectory = new TIFFDirectory(
-//                        fileSeekableStream, 0);
-//
-//                final TIFFField[] availTags = tiffDirectory.getFields();
-//
-//                for (final TIFFField availTag : availTags) {
-//                    if (availTag.getTag() == GeoTiffConstants.ModelTiepointTag) {
-//                        doubles = availTag.getAsDoubles();
-//
-//                        if (doubles.length != 6) {
-//                            // logger.printError("unsupported value for ModelTiepointTag ("
-//                            // + GeoTiffConstants.ModelTiepointTag + ")");
-//                            context.getWorkbench()
-//                                    .getFrame()
-//                                    .warnUser(
-//                                            "unsupported value for ModelTiepointTag ("
-//                                                    + GeoTiffConstants.ModelTiepointTag
-//                                                    + ")");
-//                            break;
-//                        }
-//
-//                        if (doubles[0] != 0 || doubles[1] != 0
-//                                || doubles[2] != 0) {
-//                            if (doubles[2] == 0) {
-//                                pixelOffset = new Coordinate(doubles[0],
-//                                        doubles[1]);
-//                            } else {
-//                                pixelOffset = new Coordinate(doubles[0],
-//                                        doubles[1], doubles[2]);
-//                            }
-//                        }
-//
-//                        if (doubles[5] == 0) {
-//                            tiePoint = new Coordinate(doubles[3], doubles[4]);
-//                        } else {
-//                            tiePoint = new Coordinate(doubles[3], doubles[4],
-//                                    doubles[5]);
-//                        }
-//
-//                        // logger.printDebug("ModelTiepointTag (po): " +
-//                        // pixelOffset);
-//                        // logger.printDebug("ModelTiepointTag (tp): " +
-//                        // tiePoint);
-//                    } else if (availTag.getTag() == GeoTiffConstants.ModelPixelScaleTag) {
-//                        // Karteneinheiten pro pixel x bzw. y
-//
-//                        doubles = availTag.getAsDoubles();
-//
-//                        if (doubles.length == 2 || doubles[2] == 0) {
-//                            pixelScale = new Coordinate(doubles[0], doubles[1]);
-//                        } else {
-//                            pixelScale = new Coordinate(doubles[0], doubles[1],
-//                                    doubles[2]);
-//                        }
-//                        // logger.printDebug("ModelPixelScaleTag (ps): " +
-//                        // pixelScale);
-//                    } else {
-//                        // logger.printDebug("tiff field: " +
-//                        // availTags[i].getType() + ", "+ availTags[i].getTag()
-//                        // + ", "+ availTags[i].getCount());
-//                    }
-//
-//                }
-//
-//                fileSeekableStream.close();
-//
-//                if (tiePoint != null && pixelScale != null) {
-//                    isGeoTiff = true;
-//                    Coordinate upperLeft = null, lowerRight = null;
-//
-//                    if (pixelOffset == null) {
-//                        upperLeft = tiePoint;
-//                    } else {
-//                        upperLeft = new Coordinate(tiePoint.x
-//                                - (pixelOffset.x * pixelScale.x), tiePoint.y
-//                                - (pixelOffset.y * pixelScale.y));
-//                    }
-//
-//                    lowerRight = new Coordinate(upperLeft.x
-//                            + (imageDimensions.x * pixelScale.x), upperLeft.y
-//                            - (imageDimensions.y * pixelScale.y));
-//
-//                    // logger.printDebug("upperLeft: " + upperLeft);
-//                    // logger.printDebug("lowerRight: " + lowerRight);
-//
-//                    env = new Envelope(upperLeft, lowerRight);
-//                }
-
             } else if (fileName.toLowerCase().endsWith(".flt")) {
                 isGeoTiff = true;
                 final GridFloat gf = new GridFloat(fileName);
@@ -514,7 +421,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
             // creating world file
             worldFileHandler = new WorldFileHandler(fileName,
-                    this.allwaysLookForTFWExtension);
+                    this.alwaysLookForTFWExtension);
             worldFileHandler.writeWorldFile(env, imageDimensions.x,
                     imageDimensions.y);
             final File fil = new File(fileName);

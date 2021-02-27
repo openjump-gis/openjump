@@ -334,7 +334,7 @@ public class Classifier1D {
         double GVF = Classifier1D.calcGVF(sortedData, tempLimits, SDAM);
         //========== optimize ==============
         ArrayList<Double> gdfVals = new ArrayList<Double>();
-        gdfVals.add(new Double(GVF));
+        gdfVals.add(GVF);
         boolean moveOn = true; int runs = 0;
         while(moveOn){
             runs++;

@@ -539,7 +539,7 @@ public abstract class AbstractCursorTool implements CursorTool {
   /**
    * Clears an previously painted image from screen.
    * 
-   * @param graphics
+   * @param graphics the Graphics2D to clear
    */
   private void clearImage(Graphics2D graphics) {
     if (!shapeOnScreen) {
@@ -606,10 +606,10 @@ public abstract class AbstractCursorTool implements CursorTool {
       WorkbenchFrame workbenchFrame = (WorkbenchFrame) SwingUtilities
           .getAncestorOfClass(WorkbenchFrame.class, getTaskFrame());
       if (workbenchFrame != null) {
-        workbenchFrame.log(I18N
-            .get("ui.cursortool.AbstractCursorTool.gesture-finished")
-            + ": "
-            + getName());
+        Logger.info(I18N
+                .get("ui.cursortool.AbstractCursorTool.gesture-finished")
+                + ": "
+                + getName());
       }
     }
 
@@ -657,7 +657,7 @@ public abstract class AbstractCursorTool implements CursorTool {
     return name(this);
   }
 
-  public static final LayerViewPanel getPanel(CursorTool ct) {
+  public static LayerViewPanel getPanel(CursorTool ct) {
     if (ct instanceof AbstractCursorTool)
       return ((AbstractCursorTool) ct).getPanel();
     return null;
@@ -709,9 +709,9 @@ public abstract class AbstractCursorTool implements CursorTool {
     return color;
   }
 
-  public static interface Listener {
+  public interface Listener {
 
-    public void gestureFinished();
+    void gestureFinished();
   }
 
   // memorize modifier key states (Shift/Ctrl etc.)

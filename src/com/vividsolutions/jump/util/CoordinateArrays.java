@@ -35,7 +35,7 @@ package com.vividsolutions.jump.util;
 
 import java.util.*;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.util.Assert;
 
@@ -117,7 +117,7 @@ public class CoordinateArrays {
             Coordinate[] shell = poly.getExteriorRing().getCoordinates();
 
             if (orientPolygons) {
-                shell = ensureOrientation(shell, CGAlgorithms.CLOCKWISE);
+                shell = ensureOrientation(shell, Orientation.CLOCKWISE);
             }
 
             coordArrayList.add(shell);
@@ -126,7 +126,7 @@ public class CoordinateArrays {
                 Coordinate[] hole = poly.getInteriorRingN(i).getCoordinates();
 
                 if (orientPolygons) {
-                    hole = ensureOrientation(hole, CGAlgorithms.COUNTERCLOCKWISE);
+                    hole = ensureOrientation(hole, Orientation.COUNTERCLOCKWISE);
                 }
 
                 coordArrayList.add(hole);
@@ -156,8 +156,8 @@ public class CoordinateArrays {
             return coord;
         }
 
-        int orientation = CGAlgorithms.isCCW(coord) ?
-                CGAlgorithms.COUNTERCLOCKWISE : CGAlgorithms.CLOCKWISE;
+        int orientation = Orientation.isCCW(coord) ?
+                Orientation.COUNTERCLOCKWISE : Orientation.CLOCKWISE;
 
         if (orientation != desiredOrientation) {
             Coordinate[] reverse = coord.clone();

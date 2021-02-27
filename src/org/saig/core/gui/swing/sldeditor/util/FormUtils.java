@@ -444,11 +444,11 @@ public class FormUtils {
     /**
      * Add a vertical space with defined height
      * 
-     * @param parent
-     * @param row
-     * @param startCol
-     * @param height
-     * @param color
+     * @param parent the parent Component
+     * @param row row at which we want to add a space
+     * @param startCol first column at which we want to add a space
+     * @param height height of the space
+     * @param color color of the background in the space
      */
     public static void addSpacerInGBL(JComponent parent, int row, int startCol,
             int height, Color color) {

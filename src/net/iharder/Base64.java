@@ -1,4 +1,7 @@
 package net.iharder;
+
+import java.nio.charset.StandardCharsets;
+
 /**
  * <p>Encodes and decodes to and from Base64 notation.</p>
  * <p>Homepage: <a href="http://iharder.net/base64">http://iharder.net/base64</a>.</p>
@@ -408,7 +411,7 @@ public class Base64
      * in which case one of them will be picked, though there is
      * no guarantee as to which one will be picked.
      */
-    private final static byte[] getAlphabet( int options ) {
+    private static byte[] getAlphabet(int options ) {
         if ((options & URL_SAFE) == URL_SAFE) {
             return _URL_SAFE_ALPHABET;
         } else if ((options & ORDERED) == ORDERED) {
@@ -426,7 +429,7 @@ public class Base64
      * in which case one of them will be picked, though there is
      * no guarantee as to which one will be picked.
      */
-    private final static byte[] getDecodabet( int options ) {
+    private static byte[] getDecodabet(int options ) {
         if( (options & URL_SAFE) == URL_SAFE) {
             return _URL_SAFE_DECODABET;
         } else if ((options & ORDERED) == ORDERED) {
@@ -1585,7 +1588,7 @@ public class Base64
         try{
             out = new java.io.BufferedOutputStream(
                   new java.io.FileOutputStream( outfile ) );
-            out.write( encoded.getBytes("US-ASCII") ); // Strict, 7-bit output.
+            out.write( encoded.getBytes(StandardCharsets.US_ASCII) ); // Strict, 7-bit output.
         }   // end try
         catch( java.io.IOException e ) {
             throw e; // Catch and release to execute finally{}

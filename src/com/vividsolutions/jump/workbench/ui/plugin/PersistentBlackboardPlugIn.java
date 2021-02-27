@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.java2xml.Java2XML;
@@ -109,7 +110,7 @@ public class PersistentBlackboardPlugIn extends AbstractPlugIn {
             Logger.info("Save state to "+curPath);
             
             FileOutputStream fos = new FileOutputStream(newPath, false);
-            OutputStreamWriter osw = new OutputStreamWriter(fos , Charset.forName("UTF-8"));
+            OutputStreamWriter osw = new OutputStreamWriter(fos , StandardCharsets.UTF_8);
             try {
                 BufferedWriter bufferedWriter = new BufferedWriter(osw);
 
@@ -153,7 +154,7 @@ public class PersistentBlackboardPlugIn extends AbstractPlugIn {
 
     FileInputStream fis;
     fis = new FileInputStream(file);
-    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+    InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
     try {
       BufferedReader bufferedReader = new BufferedReader(isr);
       try {

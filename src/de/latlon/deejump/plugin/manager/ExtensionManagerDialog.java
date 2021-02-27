@@ -420,7 +420,8 @@ public class ExtensionManagerDialog extends JDialog {
      * Reads an extensions catalog from the XML at catalog, and builds list of
      * remotely available extensions
      * 
-     * @param catalog
+     * @param catalog URL of a catalog describing extensions
+     * @return the List of extensions described by the catalog
      */
     private List readCatalog(URL catalog) {
         

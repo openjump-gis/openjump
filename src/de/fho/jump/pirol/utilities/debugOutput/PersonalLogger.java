@@ -21,7 +21,10 @@ import java.io.PrintStream;
  * Subproject: Daten- und Wissensmanagement
  * @see GenericDebugLogger
  * @see DebugUserIds
+ * TODO replace PersonalLogger usage by com.vividsolutions.jump.workbench.Logger
+ * @deprecated see com.vividsolutions.jump.workbench.Logger
  */
+@Deprecated
 public class PersonalLogger {
     
     protected String userId = null;
@@ -141,14 +144,14 @@ public class PersonalLogger {
     }
     /**
      * 
-     * @param logLevel
+     * @param logLevel log level
      */
     public final void setLogLevel(int logLevel) {
         genericLogger.setLogLevel(logLevel);
     }
     /**
      * 
-     * @param out
+     * @param out output print stream
      */
     public final void setOutputStream(PrintStream out) {
         genericLogger.setOutputStream(out);

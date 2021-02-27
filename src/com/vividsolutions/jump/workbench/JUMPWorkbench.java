@@ -105,7 +105,7 @@ public class JUMPWorkbench {
     return splashImage;
   }
 
-  private static final ArrayList<Image> appIcons() {
+  private static ArrayList<Image> appIcons() {
     ArrayList<Image> iconlist = new ArrayList<Image>();
 
     // let's get festive
@@ -446,7 +446,7 @@ public class JUMPWorkbench {
    *          a component to open until the workbench frame is displayed
    * @param taskMonitor
    *          notified of progress of plug-in loading
-   * @throws Exception
+   * @throws Exception if an Exception occurs
    */
   static void main(String[] args, String title, JComponent splashComponent,
       TaskMonitor taskMonitor) throws Exception {
@@ -620,14 +620,14 @@ public class JUMPWorkbench {
     return context;
   }
 
-  public static final CommandLine getCommandLine() {
+  public static CommandLine getCommandLine() {
     return commandLine;
   }
 
   /**
    * @return JUMPWorkbench instance
    */
-  public static final JUMPWorkbench getInstance() {
+  public static JUMPWorkbench getInstance() {
     return workbench;
   }
 

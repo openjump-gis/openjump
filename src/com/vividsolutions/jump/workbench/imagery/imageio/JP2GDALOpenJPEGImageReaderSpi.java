@@ -1,7 +1,6 @@
 package com.vividsolutions.jump.workbench.imagery.imageio;
 
 import it.geosolutions.imageio.gdalframework.GDALImageReaderSpi;
-import it.geosolutions.imageio.gdalframework.GDALUtilities;
 import it.geosolutions.imageio.stream.input.FileImageInputStreamExt;
 
 import java.io.File;
@@ -12,9 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageReader;
-import javax.imageio.spi.IIORegistry;
-
-import org.gdal.gdal.gdal;
 
 /**
  * Service provider interface for the openjpeg jp2k image

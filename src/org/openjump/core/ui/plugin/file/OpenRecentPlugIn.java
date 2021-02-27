@@ -86,7 +86,7 @@ public class OpenRecentPlugIn extends AbstractUiPlugIn {
     recentProjects = getFileNames(RECENT_PROJECTS_KEY);
     FeatureInstaller featureInstaller = context.getFeatureInstaller();
     recentMenu = FeatureInstaller.addMainMenu(featureInstaller,
-        new String[] { MenuNames.FILE }, getName(), -1);
+        new String[] { MenuNames.FILE }, getName());
     InvokeMethodPropertyChangeListener listener = new InvokeMethodPropertyChangeListener(
         this, "updateFileAndProjectMenu", new Object[] { recentMenu }, true);
     addPropertyChangeListener(listener);

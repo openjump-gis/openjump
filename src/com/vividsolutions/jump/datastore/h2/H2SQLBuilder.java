@@ -19,7 +19,7 @@ public class H2SQLBuilder  extends SpatialDatabasesSQLBuilder {
 
     /**
      * Builds a valid SQL spatial query with the given spatial filter.
-     * @param query
+     * @param query a FilterQuery
      * @return a SQL query to get column names
      * //TODO: refactor like Oracle code: queries as variable placeholders: put it in base class.
      */
@@ -47,10 +47,9 @@ public class H2SQLBuilder  extends SpatialDatabasesSQLBuilder {
         return qs.toString();
     };
 
-  /**
+    /**
      * Returns the query allowing to test a DataStoreLayer: builds a query with where
      * clause and limit 0 to check where clause.
-     * @return 
      */
     @Override
     public String getCheckSQL(DataStoreLayer dsLayer) {
@@ -68,9 +67,9 @@ public class H2SQLBuilder  extends SpatialDatabasesSQLBuilder {
     /**
      * Returns the string representing a SQL column definition.
      * Implementors should take care of column names (case, quotes)
-     * @param colNames
-     * @param geomColName
-     * @return column list
+     * @param colNames list of columns to get
+     * @param geomColName name of the geometry column
+     * @return column list as a String
      */
     @Override
     protected String getColumnListSpecifier(String[] colNames, String geomColName) {

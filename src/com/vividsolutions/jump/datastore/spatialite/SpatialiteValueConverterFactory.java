@@ -126,9 +126,9 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
     /**
      * From DB Query plugin: TODO: factorize code
      *
-     * @param blobAsBytes
-     * @return
-     * @throws Exception
+     * @param blobAsBytes a byteArray containing the geometry
+     * @return the Geometry
+     * @throws Exception if an Exception occurs
      */
     private Geometry getGeopackageGeometryFromBlob(byte[] blobAsBytes) throws IOException, ParseException {
       Geometry returnGeometry;
@@ -191,9 +191,9 @@ public class SpatialiteValueConverterFactory extends SpatialDatabasesValueConver
     /**
      * From DB Query plugin: TODO: factorize code
      *
-     * @param flags
-     * @return
-     * @throws Exception
+     * @param flags flag indicating endianess and envelope code
+     * @return the envelope size code
+     * @throws Exception if an Exception occurs
      */
     private int getEnvelopeSize(byte flags) throws IOException {
       //0b0000001 == 0x01

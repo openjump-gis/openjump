@@ -34,9 +34,9 @@
 package com.vividsolutions.jump.workbench.ui;
 
 public interface RecordPanelModel {
-    public int getRecordCount();
+    int getRecordCount();
 
-    public void setCurrentIndex(int index);
+    void setCurrentIndex(int index);
 
-    public int getCurrentIndex();
+    int getCurrentIndex();
 }

@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -178,7 +179,7 @@ public class GMLWriter implements JUMPWriter, TaskMonitorSupport {
         // TODO: we should probably add a parser here to find out the
         //       charset hardcoded in the template's header section
         FileOutputStream fileStream = new FileOutputStream(new File(outputFname));
-        w = new OutputStreamWriter(fileStream, "UTF-8");
+        w = new OutputStreamWriter(fileStream, StandardCharsets.UTF_8);
         this.write(featureCollection, w);
         w.close();
     }
@@ -273,8 +274,8 @@ public class GMLWriter implements JUMPWriter, TaskMonitorSupport {
     /**
      * utility function to retrieve srid from a feature collection or -1 if none
      * 
-     * @param featureCollection
-     * @return srid
+     * @param featureCollection FeatureCollection to get the SRID from
+     * @return the srid defined in this FeatureCollection schema
      */
     private static int getSrid( FeatureCollection featureCollection ){
       Integer srid = -1;

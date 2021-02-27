@@ -26,8 +26,8 @@ public class Utils {
 
     /**
      * Zoom to the raster layer
-     * @param rLayer
-     * @throws NoninvertibleTransformException
+     * @param rLayer a RasterImageLayer
+     * @throws NoninvertibleTransformException if a NoninvertibleTransformException occurs
      */
     public static void zoom(RasterImageLayer rLayer)
             throws NoninvertibleTransformException {
@@ -42,7 +42,7 @@ public class Utils {
      * Apply a random generated color set style according to an attribute
      * @param layer to apply the style
      * @param attribute to use for the color classification
-     * @throws Exception
+     * @throws Exception if an Exception occurs
      */
 
     public static void applyRandomGradualStyle(Layer layer, String attribute)
@@ -71,11 +71,11 @@ public class Utils {
 
     /**
     * Apply a random generated color set style according to an attribute, defining a start color (lower value) and an end color (upper value)
-     * @param layer
-     * @param attribute
-     * @param startColor
-     * @param endColor
-     * @throws Exception
+     * @param layer a Layer
+     * @param attribute an attribute
+     * @param startColor the start Color
+     * @param endColor the end Color
+     * @throws Exception if an Exception occurs
      */
     public static void applyGradualStyle(Layer layer, String attribute,
             Color startColor, Color endColor) throws Exception {

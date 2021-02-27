@@ -69,8 +69,8 @@ public class FeatureSchema implements Cloneable, Serializable {
    * a deepcopy routine to copy one FeatureSchema values into another,
    * preferrable freshly created
    * 
-   * @param fsIn
-   * @param fsOut
+   * @param fsIn input FeatureSchema
+   * @param fsOut output FeatureSchema
    */
     public static void cloneFromTo( FeatureSchema fsIn, FeatureSchema fsOut ) {
       for (int i = 0; i < fsIn.attributeCount; i++) {
@@ -164,7 +164,7 @@ public class FeatureSchema implements Cloneable, Serializable {
     /**
      * Returns an unmodifiable list containing all attribute names.
      * Method added to facilitate foreach iteration over attributes
-     * @return
+     * @return an unmodifiable list of attribute names
      */
     public List<String> getAttributeNames() {
        return Collections.unmodifiableList(attributeNames);
@@ -220,7 +220,7 @@ public class FeatureSchema implements Cloneable, Serializable {
      * with the same types and in the same order.
      */
     public boolean equals(Object other) {
-        return other != null && other instanceof FeatureSchema && this.equals(other, false);
+        return other instanceof FeatureSchema && this.equals(other, false);
     }
 
     /**
@@ -343,7 +343,7 @@ public class FeatureSchema implements Cloneable, Serializable {
 
     /**
      * Sets the primary key to be the attribute at position index.
-     * @param index
+     * @param index index of the external primary key
      */
     public void setExternalPrimaryKeyIndex(int index) {
         assert index < getAttributeCount();

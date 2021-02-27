@@ -128,10 +128,10 @@ public class GridExtent {
 	/**
 	 * Method to build a GridExtent with a defined Raster
 	 * 
-	 * @param double cellSize along X
-	 * @param double cellSize along Y
-	 * @param Envelope envelope
-	 * @param double nodata value
+	 * @param cellSizeX cell size along X
+	 * @param cellSizeY cell size along Y
+	 * @param envelope envelope of this GridExtent
+	 * @param nodata nodata value
 	 */
 
 	   public void setValuesAndRaster(double cellSizeX, double cellSizeY, Envelope envelope, double nodata) {
@@ -286,7 +286,7 @@ public class GridExtent {
 	/**
 	 * Returns true if the given extents matches the grid defined by this
 	 * grid extent (has same size and cell boundaries match)
-	 * @param extent
+	 * @param extent another gridExtent to compare this gridExtent to
 	 * @return whether the passed extent matches fits into this extent
 	 */
 	public boolean fitsIn(GridExtent extent){
@@ -317,7 +317,7 @@ public class GridExtent {
 
 	/**
 	 * Returns true if this extent has them same characteristics as a given one
-	 * @param extent
+	 * @param extent another gridExtent to compare this gridExtent to
 	 * @return whether this extent equals the given extent
 	 */
 	public boolean equals(GridExtent extent){
@@ -416,7 +416,7 @@ public class GridExtent {
 
 	/**
 	 * Convert World coordinates to grid coordinates
-	 * @param coordinate
+	 * @param coordinate the model Coordinate to convert to image Coordinate
 	 * @return java.awt.Point
 	 */
 	 public  java.awt.Point getGridCoordsFromWorldCoords(Coordinate coordinate){
@@ -432,12 +432,9 @@ public class GridExtent {
         @Override
 	public String toString(){
 
-		String s = Double.toString(m_dXMin) + ", "
-					+ Double.toString(m_dYMin) + ", "
-					+ Double.toString(m_dXMax) + ", "
-					+ Double.toString(m_dYMax) + ", "
-					+ Double.toString(m_dCellSizeX) + ", "
-                                        + Double.toString(m_dCellSizeY);
+		String s = "" + m_dXMin + ", " + m_dYMin + ", "
+									+ m_dXMax + ", " + m_dYMax + ", "
+									+ m_dCellSizeX + ", " + m_dCellSizeY;
 
 		return s;
 

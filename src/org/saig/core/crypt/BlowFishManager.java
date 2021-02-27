@@ -43,6 +43,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.vividsolutions.jump.workbench.Logger;
 
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -83,7 +84,7 @@ public class BlowFishManager extends CryptManager {
     public String encrypt( String str ) throws Exception {
         
         blowFishCipher.init(Cipher.ENCRYPT_MODE, skeySpec);        
-        byte[] encrypted = blowFishCipher.doFinal(str.getBytes("UTF-8")); //$NON-NLS-1$
+        byte[] encrypted = blowFishCipher.doFinal(str.getBytes(StandardCharsets.UTF_8)); //$NON-NLS-1$
         
         return new String(encrypted);  
     }
@@ -92,7 +93,7 @@ public class BlowFishManager extends CryptManager {
     public String decrypt( String str ) throws Exception {
         
         blowFishCipher.init(Cipher.DECRYPT_MODE, skeySpec);        
-        byte[] decrypted = blowFishCipher.doFinal(str.getBytes("UTF-8")); //$NON-NLS-1$
+        byte[] decrypted = blowFishCipher.doFinal(str.getBytes(StandardCharsets.UTF_8)); //$NON-NLS-1$
         
         return new String(decrypted);        
     }

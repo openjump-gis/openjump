@@ -88,7 +88,7 @@ public abstract class ConstrainedMultiClickTool extends AbstractCursorTool
     */
     /**
      * Will return an empty List once the shape is cleared.
-     * @see MultiClickTool#clearShape
+     * @see AbstractCursorTool#clearShape()
      */
     public List getCoordinates()
     {

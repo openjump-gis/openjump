@@ -453,11 +453,11 @@ public final class I18N {
   }
   
   /**
-   * find values for keys,
+   * Find value for the key,
    * - respect validity and use next rb order being 'lang_Country', 'lang', '' default
    * - eventually return missing resource exception
-   * @param key
-   * @return
+   * @param key key to retrieve
+   * @return the value for the key
    */
   private String getValue(final String key) {
       String text;

@@ -29,16 +29,16 @@ public interface ShapeHandler {
     * <li>31 MultiPatch</li>
     * </ul>
     */
-    public int getShapeType();
+   int getShapeType();
     
-    public Geometry read(EndianDataInputStream file, GeometryFactory geometryFactory, int contentLength) throws IOException, InvalidShapefileException;
+   Geometry read(EndianDataInputStream file, GeometryFactory geometryFactory, int contentLength) throws IOException, InvalidShapefileException;
     
-    public void write(Geometry geometry, EndianDataOutputStream file) throws IOException;
+   void write(Geometry geometry, EndianDataOutputStream file) throws IOException;
     
-    public int getLength(Geometry geometry); //length in 16bit words
+   int getLength(Geometry geometry); //length in 16bit words
     
     /**
      * Return a empty geometry.
      */
-    public Geometry getEmptyGeometry(GeometryFactory factory);
+    Geometry getEmptyGeometry(GeometryFactory factory);
 }

@@ -34,6 +34,7 @@
 package com.vividsolutions.jump.util.io;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -86,7 +87,7 @@ public class SimpleGMLReader {
 
         GMLInputTemplate template = new GMLInputTemplate();
 
-        try (InputStream is = new ByteArrayInputStream(s.getBytes("UTF-8"))) {
+        try (InputStream is = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8))) {
             template.load(is);
         }
 
@@ -100,7 +101,7 @@ public class SimpleGMLReader {
     public List toGeometries(String gml, String collectionElement,
         String featureElement, String geometryElement)
         throws Exception {
-        try (InputStream is = new ByteArrayInputStream(gml.getBytes("UTF-8"))) {
+        try (InputStream is = new ByteArrayInputStream(gml.getBytes(StandardCharsets.UTF_8))) {
             return toGeometries(is, collectionElement, featureElement,
                 geometryElement);
         }

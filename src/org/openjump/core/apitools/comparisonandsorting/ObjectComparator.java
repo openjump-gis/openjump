@@ -29,10 +29,10 @@ public class ObjectComparator {
 		
 		Double value1, value2;
 		
-		value1 = new Double(ObjectComparator.getDoubleValue(o1));
-		value2 = new Double(ObjectComparator.getDoubleValue(o2));
+		value1 = ObjectComparator.getDoubleValue(o1);
+		value2 = ObjectComparator.getDoubleValue(o2);
 		
-		if (value1.doubleValue() ==Double.NaN || value2.doubleValue()==Double.NaN){
+		if (Double.isNaN(value1) || Double.isNaN(value2)){
 		    //logger.printError("got NAN");
 		}
 		return value1.compareTo(value2);		

@@ -48,7 +48,7 @@ public class CryptManagerException extends Exception {
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param message
+     * @param message message thrown by this CryptManagerException
      */
     public CryptManagerException( String message ) {
         super(message);

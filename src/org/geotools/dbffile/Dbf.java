@@ -194,9 +194,6 @@ public class Dbf implements DbfConsts{
             if(DEBUG)System.out.println(last_rec);
             
             data_offset=file.readShortLE();
-            //data_offset=0;
-            //System.out.println("x = "+file.readUnsignedByte()+" " +
-            //file.readUnsignedByte());
             if(DEBUG)System.out.print(DBC+"data offset ");
             if(DEBUG)System.out.println(data_offset);
             
@@ -477,8 +474,6 @@ public class Dbf implements DbfConsts{
         int k=0,i=0;
         if(col>=numfields)
             throw new DbfFileException("Dbf->No Such Column in file: "+col);
-        //if(fielddef[col].fieldtype!='C')
-        //throw new DbfFileException("Column "+col+" is not a String");
         if(start<0)
             throw new DbfFileException("Dbf->Start must be >= 0");
         if(end>last_rec)

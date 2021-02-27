@@ -114,11 +114,11 @@ public class WorldFileHandler implements HandlerToMakeYourLifeEasier{
             CoordX = CoordX + px05x;
             CoordY = CoordY - px05y;
             //-- [sstein] end
-            worldfileWriter.write(Double.toString(faktorA) + "\n");
-            worldfileWriter.write(Double.toString(faktorB) + "\n");
-            worldfileWriter.write(Double.toString(faktorC) + "\n");
-            worldfileWriter.write(Double.toString(faktorD) + "\n");
-            worldfileWriter.write(Double.toString(CoordX) + "\n");
+            worldfileWriter.write(faktorA + "\n");
+            worldfileWriter.write(faktorB + "\n");
+            worldfileWriter.write(faktorC + "\n");
+            worldfileWriter.write(faktorD + "\n");
+            worldfileWriter.write(CoordX + "\n");
             worldfileWriter.write(Double.toString(CoordY));
             worldfileWriter.close();
         } catch (IOException e) {

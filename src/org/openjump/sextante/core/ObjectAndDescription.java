@@ -1,7 +1,7 @@
 package org.openjump.sextante.core;
 
 /**
- * Refractor of Sextante class es.unex.sextante.core.ObjectAndDescription from
+ * Refactor of Sextante class es.unex.sextante.core.ObjectAndDescription from
  * lib Sextante.jar. This class creates an object defined by the component
  * description and the component . Ex: ObjectAndDescription oa = new
  * ObjectAndDescription(name, component); where name=String and component could
@@ -9,7 +9,8 @@ package org.openjump.sextante.core;
  * 
  * 
  * @author Giuseppe Aruta [2017-12-12]
- *
+ * TODO should we constrain the Object attribute to be a JComponent or
+ * do we really need to have it opened to any Object ?
  */
 public class ObjectAndDescription implements Comparable<Object> {
 
@@ -30,7 +31,7 @@ public class ObjectAndDescription implements Comparable<Object> {
      * gets the component (JPanel, JTextArea, JTextPane, JLabel, JTable,
      * HTMLPanel , PlotPanel)
      * 
-     * @return
+     * @return the Object
      */
     public Object getObject() {
 
@@ -41,8 +42,7 @@ public class ObjectAndDescription implements Comparable<Object> {
     /**
      * sets the component (JPanel, JTextArea, JTextPane, JLabel, JTable,
      * HTMLPanel , PlotPanel)
-     * 
-     * @return
+     *
      */
     public void setObject(final Object object) {
 
@@ -53,7 +53,7 @@ public class ObjectAndDescription implements Comparable<Object> {
     /**
      * gets the description
      * 
-     * @return
+     * @return the description
      */
     public String getDescription() {
 
@@ -63,8 +63,6 @@ public class ObjectAndDescription implements Comparable<Object> {
 
     /**
      * sets the description
-     * 
-     * @return
      */
     public void setDescription(final String sDescription) {
 
@@ -75,7 +73,7 @@ public class ObjectAndDescription implements Comparable<Object> {
     /**
      * gets the description
      * 
-     * @return
+     * @return the description
      */
 
     @Override

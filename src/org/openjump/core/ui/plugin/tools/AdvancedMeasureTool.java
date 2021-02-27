@@ -75,7 +75,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	/**
 	 * Build a new AdvancedMeasureTool instance.
 	 *
-	 * @param context
+	 * @param context the workbench context
 	 */
 	public AdvancedMeasureTool(WorkbenchContext context) {
 		this.context = context;
@@ -138,7 +138,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	/**
 	 * Handle mouse location changes.
 	 *
-	 * @param e
+	 * @param e a MouseEvent
 	 */
 	@Override
 	public void mouseLocationChanged(MouseEvent e) {
@@ -169,7 +169,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	 * Second is the overridden method MultiClickTool.isFinishingRelease()
 	 * important.
 	 *
-	 * @param e
+	 * @param e a MouseEvent
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -208,7 +208,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	 * only finish, if we have more then one click previously done
 	 * (coordinates > 1). See mouseClicked() method.
 	 *
-	 * @param e
+	 * @param e a MouseEvent
 	 * @return true if double clicked and more the one click
 	 */
 	@Override
@@ -220,7 +220,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	/**
 	 * Check if the user has a double click at the first.
 	 *
-	 * @return
+	 * @return true if a double click occurred
 	 */
 	private boolean doubleClicked() {
         return getCoordinates().size() == 1;
@@ -294,7 +294,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	 * Second the tool will be activated through a JMenuItem ActionEvent.
 	 * So you do not need a second click ;-)
 	 *
-	 * @param e
+	 * @param e an ActionEvent
 	 */
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == distanceMenuItem) { // Distance
