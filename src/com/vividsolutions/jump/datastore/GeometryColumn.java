@@ -70,7 +70,7 @@ public class GeometryColumn {
     
     /**
      * Sets the type of this GeometryColumn
-     * @param type 
+     * @param type the database type of the Geometry Column (default = "Geometry")
      */
     public void setType(String type) {
         this.type = type;

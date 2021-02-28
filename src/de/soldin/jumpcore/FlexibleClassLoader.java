@@ -148,8 +148,6 @@ public class FlexibleClassLoader extends URLClassLoader {
           this.prepend(file.getAbsolutePath());
         else
           this.append(file.getAbsolutePath());
-        // System.out.println(this.getClass().getName()+" added lib: "+
-        // file.getAbsolutePath());
       }
     }
     return true;

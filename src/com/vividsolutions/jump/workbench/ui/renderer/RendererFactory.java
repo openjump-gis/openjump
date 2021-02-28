@@ -15,7 +15,7 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
  * @author Paul Austin
  * @param <T> The type of object to create the renderer for
  */
-public interface RendererFactory<T extends Object> {
+public interface RendererFactory<T> {
   /**
    * Create a renderer for the content.
    * 
@@ -24,5 +24,5 @@ public interface RendererFactory<T extends Object> {
    * @param maxFeatures The maximum number of features to render.
    * @return The renderer.
    */
-  public Renderer create(T content, LayerViewPanel panel, int maxFeatures);
+  Renderer create(T content, LayerViewPanel panel, int maxFeatures);
 }

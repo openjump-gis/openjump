@@ -42,5 +42,5 @@ import javax.swing.JMenuItem;
 //TODO - Refactoring: Move into FeatureInstaller, which is the only class that
 //refers to this interface [Jon Aquino 10/22/2003]
 public interface MenuItemShownListener {
-    public void menuItemShown(JMenuItem menuItem);
+    void menuItemShown(JMenuItem menuItem);
 }

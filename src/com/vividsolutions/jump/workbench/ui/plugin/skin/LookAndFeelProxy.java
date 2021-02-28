@@ -42,5 +42,5 @@ import javax.swing.LookAndFeel;
 
 
 public interface LookAndFeelProxy {
-    public LookAndFeel getLookAndFeel();
+    LookAndFeel getLookAndFeel();
 }

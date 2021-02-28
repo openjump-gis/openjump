@@ -66,9 +66,9 @@ public class MathUtil {
     /**
      * round a double to <places> number
      * for instance round(123.4567 , 2) -> 123.45
-     * @param value
-     * @param places
-     * @return
+     * @param value the value to round
+     * @param places number of decimal places
+     * @return a double rounded to "places" decimals
      */
 
     public static double round(double value, int places) {

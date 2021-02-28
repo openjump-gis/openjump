@@ -36,55 +36,54 @@ import java.util.List;
 import java.util.Map;
 
 public interface WorkbenchProperties {
-  public static final String KEY_PLUGIN = "plug-in";
-  public static final String KEY_CONFIGURATION = "extension";
-  public static final String KEY_INPUT_DRIVER = "input-driver";
-  public static final String KEY_OUTPUT_DRIVER = "output-driver";
-  public static final String KEY_SEPARATOR = "separator";
-  public static final String KEY_LAYOUT = "layout";
+  String KEY_PLUGIN = "plug-in";
+  String KEY_CONFIGURATION = "extension";
+  String KEY_INPUT_DRIVER = "input-driver";
+  String KEY_OUTPUT_DRIVER = "output-driver";
+  String KEY_SEPARATOR = "separator";
+  String KEY_LAYOUT = "layout";
 
-  public static final String KEY_MENUS = "menus";
-  public static final String KEY_MAINMENU = "main-menu";
-  public static final String KEY_CATEGORYPOPUP = "category-popup";
-  public static final String KEY_LAYERNAMEPOPUP = "layername-popup";
-  public static final String KEY_LAYERVIEWPOPUP = "layerview-popup";
-  public static final String KEY_LAYERNAMEPOPUP_WMS = "layername-popup-wms";
-  public static final String KEY_LAYERNAMEPOPUP_RASTER = "layername-popup-raster";
-  public static final String KEY_ATTRIBUTETABPOPUP = "attributetab-popup";
-  public static final String KEY_MAINTOOLBAR = "main-toolbar";
+  String KEY_MENUS = "menus";
+  String KEY_MAINMENU = "main-menu";
+  String KEY_CATEGORYPOPUP = "category-popup";
+  String KEY_LAYERNAMEPOPUP = "layername-popup";
+  String KEY_LAYERVIEWPOPUP = "layerview-popup";
+  String KEY_LAYERNAMEPOPUP_WMS = "layername-popup-wms";
+  String KEY_LAYERNAMEPOPUP_RASTER = "layername-popup-raster";
+  String KEY_ATTRIBUTETABPOPUP = "attributetab-popup";
+  String KEY_MAINTOOLBAR = "main-toolbar";
 
-  public static final String ATTR_CHECKBOX = "checkbox";
-  public static final String ATTR_MENUTYPE = "menutype";
-  public static final String ATTR_INITIALIZE = "initialize";
-  public static final String ATTR_INSTALL = "install";
-  public static final String ATTR_NAME = "name";
-  public static final String ATTR_ICON = "icon";
-  public static final String ATTR_MENUPATH = "menupath";
-  public static final String ATTR_TYPE = "type";
-  public static final String ATTR_TYPE_VALUE_LIST = "list";
-  public static final String ATTR_POSITION = "position";
-  public static final String ATTR_ORDERID = "order_id";
+  String ATTR_CHECKBOX = "checkbox";
+  String ATTR_MENUTYPE = "menutype";
+  String ATTR_INITIALIZE = "initialize";
+  String ATTR_INSTALL = "install";
+  String ATTR_NAME = "name";
+  String ATTR_ICON = "icon";
+  String ATTR_MENUPATH = "menupath";
+  String ATTR_TYPE = "type";
+  String ATTR_TYPE_VALUE_LIST = "list";
+  String ATTR_POSITION = "position";
+  String ATTR_ORDERID = "order_id";
 
-  public static final String ATTR_VALUE_TRUE = "true";
-  public static final String ATTR_VALUE_FALSE = "false";
+  String ATTR_VALUE_FALSE = "false";
+  String ATTR_VALUE_TRUE = "true";
 
-  public List getSettingsList(String[] strings);
-  public Map getSettings(String[] keys);
+  List getSettingsList(String[] strings);
+  Map getSettings(String[] keys);
 
-  public String getSetting(String[] keys);
+  String getSetting(String[] keys);
 
-  public List<String> getPlugInClassNames();
+  List<String> getPlugInClassNames();
 
-  public List<String> getConfigurationClassNames();
-
-  @Deprecated
-  public List getInputDriverClasses() throws ClassNotFoundException;
+  List<String> getConfigurationClassNames();
 
   @Deprecated
-  public List getOutputDriverClasses() throws ClassNotFoundException;
+  List getInputDriverClasses() throws ClassNotFoundException;
 
   @Deprecated
-  public List getConfigurationClasses() throws ClassNotFoundException;
+  List getOutputDriverClasses() throws ClassNotFoundException;
 
+  @Deprecated
+  List getConfigurationClasses() throws ClassNotFoundException;
 
 }

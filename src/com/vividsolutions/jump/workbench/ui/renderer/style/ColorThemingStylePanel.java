@@ -1316,32 +1316,32 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         return table;
     }
 
-    public static interface State {
-        public String getAllOtherValuesDescription();
+    public interface State {
+        String getAllOtherValuesDescription();
 
-        public ColorScheme filterColorScheme(ColorScheme colorScheme);
+        ColorScheme filterColorScheme(ColorScheme colorScheme);
 
-        public void activate();
+        void activate();
 
-        public void deactivate();
+        void deactivate();
 
-        public Collection<String> getColorSchemeNames();
+        Collection<String> getColorSchemeNames();
 
-        public void applyColorScheme(ColorScheme scheme);
+        void applyColorScheme(ColorScheme scheme);
 
-        public Collection<Object> filterAttributeValues(SortedSet<Object> attributeValues);
+        Collection<Object> filterAttributeValues(SortedSet<Object> attributeValues);
 
-        public String getAttributeValueColumnTitle();
+        String getAttributeValueColumnTitle();
 
-        public JComponent getPanel();
+        JComponent getPanel();
 
         /**
          * Performs any necessary modifications to the map before applying
          * it to the layer.
          */
-        public Map toExternalFormat(Map attributeValueToObjectMap);
+        Map toExternalFormat(Map attributeValueToObjectMap);
 
-        public Map fromExternalFormat(Map attributeValueToObjectMap);
+        Map fromExternalFormat(Map attributeValueToObjectMap);
     }
 
     private abstract class MyPlugIn extends AbstractPlugIn {
@@ -1391,9 +1391,9 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                 Object key = ColorThemingStyle.trimIfString(feature.getAttribute(getAttributeName()));
             	Integer count = values.get(key);
                 if (count == null)
-                	values.put(key, new Integer(1));
+                	values.put(key, 1);
                 else
-                	values.put(key, new Integer(count.intValue()+1));
+                	values.put(key, count.intValue()+1);
             }
         }
         return values;

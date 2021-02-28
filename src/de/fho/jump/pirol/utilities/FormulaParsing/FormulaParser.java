@@ -78,7 +78,7 @@ public class FormulaParser {
     /**
      * Recursively parses a given (sub-) formula into a FormulaValue, which can be an operation with
      * sub-FormularValues or a value. 
-     *@param formula
+     *@param formula the formula passed as a String
      *@param featSchema The feature schema to check attribute names, if neccessary
      *@return the given formula parsed into a FormulaValue or null if the given String did not contain formula information
      */

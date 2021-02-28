@@ -38,9 +38,6 @@
 
 package com.vividsolutions.jump.io;
 
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.io.datasource.DataSource;
-
 
 /**
  * JMLWriter is a {@link JUMPWriter} specialized to write JML.
@@ -65,35 +62,4 @@ import com.vividsolutions.jump.io.datasource.DataSource;
  *   </tr>
  * </table><br>
  */
-public class JMLWriter extends GMLWriter /*implements JUMPWriter */ {
-
-//    /** Creates new JMLWriter */
-//    public JMLWriter() {
-//    }
-//
-//    /**
-//     * Writes the feature collection to the specified file in JML format.
-//     * @param featureCollection features to write
-//     * @param dp 'OutputFile' or 'DefaultValue' to specify what file to write.
-//     */
-//    public void write(FeatureCollection featureCollection, DriverProperties dp)
-//        throws Exception {
-//        GMLWriter gmlWriter;
-//        String outputFname;
-//
-//        outputFname = dp.getProperty(DataSource.FILE_KEY);
-//
-//        if (outputFname == null) {
-//            outputFname = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
-//        }
-//
-//        if (outputFname == null) {
-//            throw new IllegalParametersException(
-//                "call to JMLWriter.write() has DataProperties w/o a OutputFile specified");
-//        }
-//
-//        gmlWriter = new GMLWriter();
-//
-//        gmlWriter.write(featureCollection, dp);
-//    }
-}
+public class JMLWriter extends GMLWriter { }

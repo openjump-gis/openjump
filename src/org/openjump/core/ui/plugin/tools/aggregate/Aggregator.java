@@ -53,7 +53,7 @@ public interface Aggregator<T> {
     String getName();
 
     /**
-     * @Return the AttributeType of the aggregated value.
+     * @return the AttributeType of the aggregated value.
      */
     AttributeType getOutputAttributeType();
 

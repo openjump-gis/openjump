@@ -55,7 +55,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 /**
- * <code>SelectFromListPanel</code>
+ * <code>SelectFromListPanel</code> is a Panel to choose a component
+ * in a scrollable list of components (used for style chooser)
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -74,7 +75,7 @@ public class SelectFromListPanel extends JPanel {
     public JList list;
 
     /**
-     * @param description
+     * @param description description of the UI component
      * 
      */
     public SelectFromListPanel(String description) {

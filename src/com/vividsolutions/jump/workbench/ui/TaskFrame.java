@@ -45,6 +45,7 @@ import javax.swing.JSplitPane;
 import javax.swing.Timer;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+import javax.swing.tree.TreeCellRenderer;
 import javax.xml.namespace.QName;
 
 import org.openjump.core.ccordsys.utils.SRSInfo;
@@ -67,7 +68,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         return this;
     }
 
-    /** @deprecated */
+    // cloneIndex = 0 by default, maybe one or more for cloned frames
     private int cloneIndex;
 
     private InfoFrame infoFrame = null;
@@ -81,7 +82,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
     private WorkbenchContext workbenchContext;
 
     //private LayerManager layerManager;
-    private JSplitPane splitPane = new JSplitPane();
+    final private JSplitPane splitPane = new JSplitPane();
 
     private Timer timer;
 
@@ -178,14 +179,13 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
     protected LayerableNamePanel createLayerNamePanel() {
         TreeLayerNamePanel treeLayerNamePanel = new TreeLayerNamePanel(this,
                 new LayerTreeModel(this), this.layerViewPanel
-                        .getRenderingManager(), new HashMap());
-        Map nodeClassToPopupMenuMap = this.workbenchContext.getWorkbench()
+                        .getRenderingManager(), new HashMap<>());
+        Map<Class<?>,JPopupMenu> nodeClassToPopupMenuMap = this.workbenchContext.getWorkbench()
                 .getFrame().getNodeClassToPopupMenuMap();
-        for (Iterator i = nodeClassToPopupMenuMap.keySet().iterator(); i
-                .hasNext();) {
-            Class nodeClass = (Class) i.next();
-            treeLayerNamePanel.addPopupMenu(nodeClass,
-                    (JPopupMenu) nodeClassToPopupMenuMap.get(nodeClass));
+        for (Class<?> nodeClass : nodeClassToPopupMenuMap.keySet()) {
+            treeLayerNamePanel.addPopupMenu(
+                    nodeClass, nodeClassToPopupMenuMap.get(nodeClass)
+            );
         }
         return treeLayerNamePanel;
     }
@@ -289,7 +289,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
 
     //The border around the tree layer panel looks a bit thick under JDK 1.4.
     //Remedied by removing the split pane's border. [Jon Aquino]
-    private void jbInit() throws Exception {
+    private void jbInit() {
         this.setResizable(true);
         this.setClosable(true);
         this.setMaximizable(true);
@@ -315,7 +315,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
      * Gets the real title of the task frame excluding the SRS. Adapted from
      * Kosmo 3.0 [Giuseppe Aruta 20/05/2017]
      * 
-     * @return
+     * @return the frame title (without srs)
      */
     public String getRealTitle() {
         return realTitle;
@@ -356,9 +356,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
             }
 
             private boolean clockedRenderingInProgress() {
-                for (Iterator i = getLayerManager().getLayerables(
-                        Layerable.class).iterator(); i.hasNext();) {
-                    Layerable layerable = (Layerable) i.next();
+                for (Layerable layerable : getLayerManager().getLayerables(Layerable.class)) {
                     if (!layerable.getBlackboard().get(
                             LayerNameRenderer.USE_CLOCK_ANIMATION_KEY, false)) {
                         continue;
@@ -380,9 +378,7 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
             // we do a more thorough check for whether any clocks are
             // displayed. [Jon Aquino 2005-03-14]
             private boolean clocksShown() {
-                for (Iterator i = getLayerManager().getLayerables(
-                        Layerable.class).iterator(); i.hasNext();) {
-                    Layerable layerable = (Layerable) i.next();
+                for (Layerable layerable : getLayerManager().getLayerables(Layerable.class)) {
                     if (layerable.getBlackboard().get(
                             LayerNameRenderer.PROGRESS_ICON_KEY) != null) {
                         return true;

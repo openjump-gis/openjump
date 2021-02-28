@@ -23,26 +23,24 @@ import org.openjump.core.graph.pirolProject.ScaleChanger;
  */
 public class CorrelationDataPair extends PirolPoint {
 
-    //protected PersonalLogger logger = new PersonalLogger(DebugUserIds.OLE);
-
     /**
-     *@param coords
+     *@param coords coordinates as a double array
      */
     public CorrelationDataPair(double[] coords) {
         super(coords);
     }
 
     /**
-     *@param coords
-     *@param index
+     *@param coords coordinates as a double array
+     *@param index index of the CorrelationDataPair
      */
     public CorrelationDataPair(double[] coords, int index) {
         super(coords, index);
     }
 
     /**
-     *@param coords
-     *@param index
+     *@param coords coordinates as a double array
+     *@param index index of the CorrelationDataPair
      *@param scaler
      *@param prescaled
      */
@@ -52,8 +50,8 @@ public class CorrelationDataPair extends PirolPoint {
     }
 
     /**
-     *@param coords
-     *@param index
+     *@param coords coordinates as a double array
+     *@param index index of the CorrelationDataPair
      *@param scaler
      */
     public CorrelationDataPair(double[] coords, int index, ScaleChanger scaler) {
@@ -62,10 +60,10 @@ public class CorrelationDataPair extends PirolPoint {
     
     /**
      * function to compare value of a (scaled) data pair
-     *@param valIndex1 index of first value to compare
-     *@param valIndex2 index of first value to compare
-     *@return 1 if first value > second value, 0 if equal, else -1  
-     * @throws Exception
+     * @param valIndex1 index of first value to compare
+     * @param valIndex2 index of first value to compare
+     * @return 1 if first value > second value, 0 if equal, else -1
+     * @throws Exception if an Exception occured
      */
     public int compareValues(int valIndex1, int valIndex2) throws Exception{
         double value1, value2;

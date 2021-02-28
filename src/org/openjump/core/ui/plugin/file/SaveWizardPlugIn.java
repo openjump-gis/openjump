@@ -43,7 +43,7 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
   private Blackboard blackboard;
 
   public SaveWizardPlugIn() {
-    super(I18N.get(KEY) + " (experimental)");
+    super(KEY + " (experimental)");
   }
 
   public static void addWizard(final WorkbenchContext workbenchContext,

@@ -36,7 +36,10 @@ import de.fho.jump.pirol.utilities.settings.PirolPlugInSettings;
  * 
  * @see de.fho.jump.pirol.utilities.settings.PirolPlugInSettings
  * @see PersonalLogger
+ * TODO replace GenericDebugLogger usage by com.vividsolutions.jump.workbench.Logger
+ * @deprecated see com.vividsolutions.jump.workbench.Logger
  */
+@Deprecated
 public final class GenericDebugLogger {
 
     private static GenericDebugLogger logger = null;
@@ -223,7 +226,7 @@ public final class GenericDebugLogger {
      * THE method to get an instance of this class
      *@return the logger
      */
-    static final GenericDebugLogger getInstance(){
+    static GenericDebugLogger getInstance(){
         if (GenericDebugLogger.logger == null)
             GenericDebugLogger.logger = new GenericDebugLogger();
         
@@ -334,7 +337,7 @@ public final class GenericDebugLogger {
     }
     /**
      * 
-     * @param logLevel
+     * @param logLevel the minimum log level to keep
      */
     public final void setLogLevel(int logLevel) {
         this.logLevel = logLevel;

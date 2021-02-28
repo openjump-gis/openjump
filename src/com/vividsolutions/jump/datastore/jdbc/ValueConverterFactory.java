@@ -33,7 +33,7 @@ public class ValueConverterFactory {
      * Clients should handle custom types themselves.
      *
      * @return null if no converter could be found
-     * @throws SQLException
+     * @throws SQLException if an SQLException occurs
      */
     public static ValueConverter getConverter(ResultSetMetaData rsm, int columnIndex) throws SQLException {
 

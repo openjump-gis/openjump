@@ -48,7 +48,7 @@ public class StatisticOverViewDialog extends JDialog implements ActionListener {
      *@param parentFrame the parent frame of this dialog box
      *@param title title of this dialog box
      *@param modal whether the dialog box is modal or not
-     *@throws java.awt.HeadlessException
+     *@throws java.awt.HeadlessException if the environment is Headless
      */
     public StatisticOverViewDialog(Frame parentFrame, String title, boolean modal, Feature[] features)
             throws HeadlessException {

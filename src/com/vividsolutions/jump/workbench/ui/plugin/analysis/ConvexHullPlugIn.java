@@ -72,7 +72,7 @@ public class ConvexHullPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     public void initialize(PlugInContext context) throws Exception {
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
         
-        featureInstaller.addMainMenuItem(this,
+        featureInstaller.addMainMenuPlugin(this,
      			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
      			getName(),
      			false, 

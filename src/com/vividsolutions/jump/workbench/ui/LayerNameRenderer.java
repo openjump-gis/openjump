@@ -259,8 +259,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     private Component formatLayerEntry(JList list, Object value, int index,
             boolean isSelected, boolean cellHasFocus) {
         // only treat layers & strings
-        if (value == null
-                || !(value instanceof Layerable || value instanceof String))
+        if (!(value instanceof Layerable || value instanceof String))
             return defaultListCellRenderer.getListCellRendererComponent(list,
                     value, index, isSelected, cellHasFocus);
 

@@ -37,5 +37,5 @@ package com.vividsolutions.jump.workbench.ui;
  */
 
 public interface InputChangedListener {
-    public void inputChanged();
+    void inputChanged();
 }

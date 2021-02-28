@@ -54,7 +54,7 @@ public class AbstractGeometryProcessor {
      * @param list the list accumulating all processed simple component.
      */
     public void process(Point point, List<Geometry> list) {
-        Point clone = (Point)point.clone();
+        Point clone = (Point)point.copy();
         process(clone.getCoordinateSequence());
         list.add(clone);
     }
@@ -65,7 +65,7 @@ public class AbstractGeometryProcessor {
      * @param list the list accumulating all processed simple component.
      */
     public void process(LineString lineString, List<Geometry> list) {
-        LineString clone = (LineString)lineString.clone();
+        LineString clone = (LineString)lineString.copy();
         process(clone.getCoordinateSequence());
         list.add(clone);
     }
@@ -76,7 +76,7 @@ public class AbstractGeometryProcessor {
      * @return a new processed LinearRing
      */
     public LinearRing process(LinearRing linearRing) {
-        LinearRing clone = (LinearRing)linearRing.clone();
+        LinearRing clone = (LinearRing)linearRing.copy();
         process(clone.getCoordinateSequence());
         return clone;
     }

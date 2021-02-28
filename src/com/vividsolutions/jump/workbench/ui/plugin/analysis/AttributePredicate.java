@@ -149,13 +149,13 @@ public abstract class AttributePredicate {
   public static Object coerce(String constantValue, Object attrVal) {
     try {
       if (attrVal instanceof Boolean) {
-        return new Boolean(getBooleanLoose(constantValue));
+        return getBooleanLoose(constantValue);
       }
       if (attrVal instanceof Double) {
-        return new Double(constantValue);
+        return Double.valueOf(constantValue);
       }
       if (attrVal instanceof Integer) {
-        return new Integer(constantValue);
+        return Integer.valueOf(constantValue);
       }
       if (attrVal instanceof String) {
         return constantValue;
@@ -163,9 +163,7 @@ public abstract class AttributePredicate {
       if (attrVal instanceof Date) {
         return dateParser.parse(constantValue, true);
       }
-    } catch (ParseException ex) {
-      // eat it
-    } catch (NumberFormatException ex) {
+    } catch (ParseException|NumberFormatException ex) {
       // eat it
     }
     // just return it as a String

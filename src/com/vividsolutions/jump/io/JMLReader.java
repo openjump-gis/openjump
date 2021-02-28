@@ -38,9 +38,6 @@
 
 package com.vividsolutions.jump.io;
 
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.io.datasource.DataSource;
-
 
 /**
  * JMLReader is a {@link JUMPReader} specialized to read JML.
@@ -81,36 +78,4 @@ import com.vividsolutions.jump.io.datasource.DataSource;
  * </table>
  * <br>
  */
-public class JMLReader extends GMLReader {
-
-//    /** Creates new JMLReader */
-//    public JMLReader() {
-//    }
-//
-//    /**
-//     * Read a JML file - passes the work off to {@link GMLReader}.
-//     *
-//     *@param dp 'InputFile' or 'DefaultValue' for the input JML file
-//     */
-//    public FeatureCollection read(DriverProperties dp)
-//            throws Exception {
-//        GMLReader gmlReader;
-//        String inputFname;
-//
-//        inputFname = dp.getProperty(DataSource.FILE_KEY);
-//
-//        if (inputFname == null) {
-//            inputFname = dp.getProperty(DriverProperties.DEFAULT_VALUE_KEY);
-//        }
-//
-//        if (inputFname == null) {
-//            throw new IllegalParametersException(
-//                "call to JMLReader.read() has DataProperties w/o a InputFile specified");
-//        }
-//
-//        gmlReader = new GMLReader();
-//        gmlReader.setTaskMonitor(getTaskMonitor());
-//
-//        return gmlReader.read(dp);
-//    }
-}
+public class JMLReader extends GMLReader { }

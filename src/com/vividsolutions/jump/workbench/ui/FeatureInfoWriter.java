@@ -40,8 +40,8 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
 public class FeatureInfoWriter {
-    public static interface Writer {
-        public String toHTML(Feature feature);
+    public interface Writer {
+        String toHTML(Feature feature);
     }
     public static Writer ATTRIBUTE_WRITER = new Writer() {
         public String toHTML(Feature feature) {

@@ -131,9 +131,9 @@ public class FeatureCollectionUtil {
    * Merge features and their geometries in the FeatureCollection given when the
    * given attribute name contains identical values
    * 
-   * @param FeatureCollection fc
-   * @param String            attributeName
-   * @throws Exception
+   * @param featureCollection feature collection
+   * @param attributeName attribute name
+   * @throws Exception if an Exception occurred
    */
   public static void unionByAttributeValue(FeatureCollection featureCollection, String attributeName) throws Exception {
     FeatureSchema schema = featureCollection.getFeatureSchema();

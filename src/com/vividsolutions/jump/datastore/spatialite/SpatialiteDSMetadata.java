@@ -69,7 +69,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
   
   /**
    *
-   * @param con
+   * @param con a DataStoreConnection
    */
   public SpatialiteDSMetadata(DataStoreConnection con) {
     conn = con;
@@ -187,12 +187,12 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
   }
   
   /**
-   * Overriden to deal with indexed geo columns, as queries to get features are different
-   * if spatial index is detected on the column.
-   * Buids a GeometryColumn object with 5 params ctor.
-   * @param sql
-   * @param datasetName
-   * @return 
+   * Overridden to deal with indexed geometry columns, as queries to get features
+   * are different if spatial index is detected on the column.
+   * Builds a GeometryColumn object with 5 params constructor.
+   * @param sql SQL string to retrieve geometry columns
+   * @param datasetName name of the dataset
+   * @return a List of GeometryColumn
    */
   @Override
   protected List<GeometryColumn> getGeometryAttributes(String sql, String datasetName) {
@@ -268,8 +268,8 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
   /**
    * No schema in SQLite
    *
-   * @param datasetName
-   * @return
+   * @param datasetName name of the Dataset
+   * @return the SQL string to retrieve the geometry columns
    */
   @Override
   public String getGeoColumnsQuery(String datasetName) {
@@ -495,7 +495,7 @@ public class SpatialiteDSMetadata extends SpatialDatabasesDSMetadata {
    * Convenience method to get a geometryColumn object from this metadata
    * @param datasetName the name of the dataset
    * @param geoCol the name of the geo column
-   * @return 
+   * @return a GeometryColumn object
    */
   public GeometryColumn getGeometryColumn(String datasetName, String geoCol) {
     List<GeometryColumn> l = this.geometryColumnListMap.get(datasetName);

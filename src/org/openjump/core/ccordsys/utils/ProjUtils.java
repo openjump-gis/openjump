@@ -69,8 +69,8 @@ public class ProjUtils {
      * @param fileSourcePath
      *            . eg. "c\documents\folder\image.tif"
      * @return the projection srid as a string. eg "32632"
-     * @throws IOException
-     * @throws URISyntaxException
+     * @throws IOException if an IOException occurs
+     * @throws URISyntaxException if an URISyntaxException occurs
      */
     @SuppressWarnings("static-access")
     public static SRSInfo getSRSInfoFromGeoTiff(String fileSourcePath)
@@ -92,8 +92,8 @@ public class ProjUtils {
      * @param fileSourcePath
      *            auxiliary file path
      * @return SRSInfo and Projection definition
-     * @throws URISyntaxException
-     * @throws IOException
+     * @throws IOException if an IOException occurs
+     * @throws URISyntaxException if an URISyntaxException occurs
      */
 
     public static SRSInfo getSRSInfoFromAuxiliaryFile(String fileSourcePath)
@@ -261,9 +261,9 @@ public class ProjUtils {
      * auxiliary file b) SRID is recorded from data source c) No SRID is
      * available d) Layer SRID doesn't match auxilary file/datasource SRID
      * 
-     * @param layer
-     * @return SRID
-     * @throws Exception
+     * @param layer a Layer
+     * @return the SRID srid associated to the Layer
+     * @throws Exception if an Exception occurs
      */
 
     public static SRSInfo getSRSInfoFromLayerStyleOrSource(Layer layer)
@@ -296,9 +296,9 @@ public class ProjUtils {
      * scans SRIDStyle, than auxiliary file or GeoTIFF tag. If SRID does not
      * exist, it returns 0.
      *
-     * @param layer
-     * @return SRID
-     * @throws Exception
+     * @param layer a Layer
+     * @return the SRID associated to the Layer
+     * @throws Exception if an Exception occurs
      */
     public static SRSInfo getSRSInfoFromLayerStyleOrSource_old(Layer layer)
             throws Exception {
@@ -326,9 +326,9 @@ public class ProjUtils {
      * or GeoTIFFed tag. If the auxiliary file SRID does not exist, it returns
      * 0.
      *
-     * @param layer
-     * @return SRID
-     * @throws Exception
+     * @param layer a Layer
+     * @return the SRID associated to this Layer
+     * @throws Exception if an Exception occurs
      */
     public static SRSInfo getSRSInfoFromLayerSource(Layer layer)
             throws Exception {

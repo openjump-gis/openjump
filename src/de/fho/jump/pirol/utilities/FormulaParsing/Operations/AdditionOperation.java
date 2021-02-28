@@ -37,8 +37,8 @@ public class AdditionOperation extends GenericOperation {
 
     /**
      * Returns the summarized values of the sub-values or sub-operations of this operation
-     *@param feature
-     *@return summarized values of the sub-values or sub-operations
+     * @param feature the Feature to get the value from
+     * @return summarized values of the sub-values or sub-operations
      */
     public double getValue(Feature feature) {
         return this.value1.getValue(feature) + this.value2.getValue(feature);

@@ -16,14 +16,14 @@ public interface TaskListener extends EventListener {
 	 *
 	 * @param taskEvent - The TaskEvent.
 	 */
-	public void taskAdded(TaskEvent taskEvent);
+	void taskAdded(TaskEvent taskEvent);
 
 	/**
 	 * This method will be called after a Task (the project file) was loaded.
 	 *
 	 * @param taskEvent - The TaskEvent.
 	 */
-	public void taskLoaded(TaskEvent taskEvent);
+	void taskLoaded(TaskEvent taskEvent);
 
 
 }

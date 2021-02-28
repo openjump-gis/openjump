@@ -476,7 +476,7 @@ public class EnableCheckFactory {
                 final JInternalFrame f = workbenchContext.getWorkbench()
                         .getFrame().getActiveInternalFrame();
 
-                return (f != null && f instanceof SelectionManagerProxy && n > ((SelectionManagerProxy) f)
+                return (f instanceof SelectionManagerProxy && n > ((SelectionManagerProxy) f)
                         .getSelectionManager()
                         .getFeaturesWithSelectedItemsCount()) ? msg : null;
             }
@@ -815,8 +815,8 @@ public class EnableCheckFactory {
      * Check that at least n layerables of a type (Layer.class,
      * RasterImageLayer.class, WMSLayer.class, etc) have been loaded
      * 
-     * @param number
-     *          of needed layerables
+     * @param n
+     *          number of needed layerables
      * @param type
      *          implementation of {@link Layerable} (RasterImageLayer.class, Layer.class,
      *          WMSLayer.class, etc)

@@ -179,8 +179,10 @@ public class ReferencedImageFactoryFileLayerLoader extends
 
   /**
    * try to create an image feature from the given basic feature
-   * @param f_orig
-   * @return
+   * @param f_orig basic Feature to add as an ReferencedImageFeature
+   *               to the ImageryLayerDataset
+   * @param imageryLayerDataset an ImageryLayerDataset
+   * @return the ReferencedImageFeature
    */
   public static Feature createImageFeature(Feature f_orig,
       ImageryLayerDataset imageryLayerDataset) {

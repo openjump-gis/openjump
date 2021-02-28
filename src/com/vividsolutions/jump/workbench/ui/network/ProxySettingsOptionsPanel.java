@@ -212,7 +212,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   /**
    * Builds the test connection panel
    * 
-   * @return
+   * @return the JPanel containing UI elements to test the connection
    */
   private JPanel getTestConnectionPanel() {
     if (testConnectionPanel == null) {
@@ -333,7 +333,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   /**
    * Builds the proxy settings panel
    * 
-   * @return
+   * @return the JPanel containing UI elements to set the proxy
    */
   private JPanel getProxySettingsPanel() {
     if (proxySettingsPanel == null) {
@@ -608,15 +608,13 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   /**
    * Check if the user is connected to internet using the current configuration
    * 
-   * @return
-   * @throws Exception
+   * @return header returned by a URL to test the connection
+   * @throws Exception if an Exception occurs while testing connection
    */
   private String isConnected() throws Exception {
 
     Properties systemProperties = System.getProperties();
 
-    //printProps("vorher");
-    
     // Backup current properties
     List<String> backupVars = new ArrayList(Arrays.asList(new String[] {
         "http.proxyHost", "https.proxyHost", "http.proxyPort",
@@ -625,7 +623,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     // we double username/password here as both seem to be used by different packages
     // java standard is http.proxyUser/http.proxyPass
     // deegree2 uses http.proxyUser/http.proxyPassword via the deprecated commons httpclient
-    List<String> authVars = new ArrayList<String>(Arrays.asList(uservars));
+    List<String> authVars = new ArrayList<>(Arrays.asList(uservars));
     authVars.addAll(Arrays.asList(passvars));
     for (String string : authVars) {
       backupVars.add("http.proxy"+string);
@@ -633,20 +631,18 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
     }
     
     // now backup defined settings
-    Map backupSettings = new HashMap<String, Object>();
+    Map<String, Object> backupSettings = new HashMap<>();
     for (String key : backupVars) {
       Object value = systemProperties.get(key);
       if (value!=null)
         backupSettings.put(key, value);
     }
 
-    URLConnection con = null;
+    URLConnection con;
     try {
       HTTPProxySettings settings = buildSettingsFromUserParameters();
       applySettingsToSystem(settings);
 
-      //printProps("während");
-      
       String testUrl = testUrlTextField.getText().trim();
 
       URL url = new URL(testUrl);
@@ -682,7 +678,6 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
           systemProperties.remove(key);
       }
 
-      //printProps("danach");
     }
     
   }

@@ -56,11 +56,11 @@ public class CryptManagerFactory {
      * Build the encryption manager for the given algorithm
      * 
      * @param algorithm Encryption algorithm to apply
-     * @return CryptManager
-     * @throws CryptManagerException
+     * @return a CryptManager
+     * @throws CryptManagerException if a CryptManagerException occurred
      */
     public static CryptManager getManager( String algorithm ) throws CryptManagerException {
-        CryptManager manager = null;
+        CryptManager manager;
 
         if (algorithm.equalsIgnoreCase(PASSWORD_BASED_ENCRYPTION)) {
             manager = new PBEManager();

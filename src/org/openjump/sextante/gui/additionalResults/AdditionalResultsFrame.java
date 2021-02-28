@@ -64,17 +64,16 @@ import com.vividsolutions.jump.workbench.ui.FeatureCollectionPanel;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.HTMLPanel;
 
+/**
+ * Flexible generic frame for prompting the results in several objects. This
+ * frame is a refactoring of Sextante
+ * es.unex.sextante.gui.additionalResults.AdditionalResultsDialog from
+ * library SextanteGUI.jar. Methods to promping AdditionalResultsFrame are
+ * located to the class AdditionalResults
+ *
+ * @author Giuseppe Aruta [2017-12-12]
+ */
 public class AdditionalResultsFrame extends DetachableInternalFrame {
-
-    /**
-     * Flexible generic frame for prompting the results in several objects. This
-     * frame is a refactoring of Sextante
-     * es.unex.sextante.gui.additionalResults.AdditionalResultsDialog from
-     * library SextanteGUI.jar. Methods to promping AdditionalResultsFrame are
-     * located to the class AdditionalResults
-     * 
-     * @author Giuseppe Aruta [2017-12-12]
-     */
 
     // Main components of a AdditionalResultsFrame
 
@@ -255,7 +254,6 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         } catch (final Exception e) {
                         }
                     }
-                    ;
                 }
             });
             popupMenu.add(menuItemRemove);
@@ -273,7 +271,6 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                         } catch (final Exception e) {
                         }
                     }
-                    ;
                 }
 
             });
@@ -966,10 +963,10 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     // profile
                     alPt1x = minX;
                     alPt1y = interPointsDists[ip] + baseElev;
-                    final double alPt2x = minX - (txtHight / 2);
+                    final double alPt2x = minX - (txtHight / 2.0);
                     dxfExp.writeLine(baseSectionLayer, alPt1x, alPt1y, alPt2x,
                             alPt1y);
-                    final double alPt2x2 = maxX + (txtHight / 2);
+                    final double alPt2x2 = maxX + (txtHight / 2.0);
                     dxfExp.writeLine(baseSectionLayer, maxX, alPt1y, alPt2x2,
                             alPt1y);
 
@@ -995,7 +992,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                 // Widths (X axe) - small tracks above the texts
                 alPt1x = interPointsDists[ip];
                 alPt1y = baseElev;
-                alPt2y = baseElev - (txtHight / 2);
+                alPt2y = baseElev - (txtHight / 2.0);
                 dxfExp.writeLine(baseSectionLayer, alPt1x, alPt1y, alPt1x,
                         alPt2y);
 
@@ -1008,7 +1005,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
                 // Partial heights - small tracks
                 alPt1y = sep3Y;
-                alPt2y = sep3Y + (txtHight / 2);
+                alPt2y = sep3Y + (txtHight / 2.0);
                 dxfExp.writeLine(partialValuesLayer, alPt1x, alPt1y, alPt1x,
                         alPt2y);
 

@@ -111,7 +111,7 @@ public class PropertiesHandler implements org.openjump.core.apitools.HandlerToMa
 
     /**
      * load the properties from the file
-     *@throws IOException
+     * @throws IOException if an IOException occurs
      */
     public void load() throws IOException {
         if (!this.properties.isEmpty()){
@@ -177,7 +177,7 @@ public class PropertiesHandler implements org.openjump.core.apitools.HandlerToMa
     /**
      * Stores the current properties map to the file.
      *@param comments comments that will appear in the first lines of the file
-     *@throws IOException
+     *@throws IOException if an IOException occurs
      */
     public void store(String comments) throws IOException {
         File propFile = new File(this.propertiesFile);
@@ -200,7 +200,7 @@ public class PropertiesHandler implements org.openjump.core.apitools.HandlerToMa
     
     /**
      * Stores the current properties map to the file.
-     *@throws IOException
+     *@throws IOException if an IOException occurs
      */
     public void store() throws IOException {
         this.store(null);

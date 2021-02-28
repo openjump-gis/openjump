@@ -21,10 +21,10 @@ public class ColorsLabelLegendComponent extends JComponent {
     /**
      * Constructor to create the new component formed by a JButton and a JLabel.
      *
-     * @param colorMapEntries
-     * @param noDataValue
-     * @param rasterName
-     * @throws Exception
+     * @param colorMapEntries a TreeMap apping double values to Colors
+     * @param noDataValue a double value meaning nodata
+     * @param rasterName name of the RasterImageLayer
+     * @throws Exception if an Exception occurred
      */
     public ColorsLabelLegendComponent(TreeMap<Double, Color> colorMapEntries,
             double noDataValue, String rasterName) throws Exception {

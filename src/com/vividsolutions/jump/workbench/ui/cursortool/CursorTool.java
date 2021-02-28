@@ -43,34 +43,34 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 
 
 public interface CursorTool extends MouseListener, MouseMotionListener {
-    public Cursor getCursor();
+    Cursor getCursor();
 
     /**
      * @return null to use a default icon
      */
-    public Icon getIcon();
+    Icon getIcon();
 
-    public void activate(LayerViewPanel layerViewPanel);
+    void activate(LayerViewPanel layerViewPanel);
 
-    public void deactivate();
+    void deactivate();
 
     /**
      * @return true if this CursorTool uses the right mouse button; false
      * to allow the panel to show a popup-menu on right-clicks
      */
-    public boolean isRightMouseButtonUsed();
+    boolean isRightMouseButtonUsed();
 
-    public boolean isGestureInProgress();
+    boolean isGestureInProgress();
 
     /**
      * Notifies the CursorTool that a party is requesting that the gesture
      * currently in progress be aborted.
      */
-    public void cancelGesture();
+    void cancelGesture();
 
     /**
      * Returns a very brief description of this CursorTool.
      * @return the name of this CursorTool
      */
-    public String getName();
+    String getName();
 }

@@ -47,13 +47,6 @@ public class DialogTools extends ToolToMakeYourLifeEasier{
      * displayed in the middle of the screen. 
      */
     public static void centerOnScreen(Window window){
-//        Dimension screenDim = window.getToolkit().getScreenSize();
-//        Dimension windowDim = window.getSize();
-//        int x = (screenDim.width / 2) - (windowDim.width / 2);
-//        int y = (screenDim.height / 2) - (windowDim.height / 2);
-//        
-//        window.setLocation(x,y);
-        
         GUIUtil.centreOnScreen(window);
     }
     

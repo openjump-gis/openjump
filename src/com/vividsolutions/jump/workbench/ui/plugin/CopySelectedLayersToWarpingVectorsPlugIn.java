@@ -63,7 +63,7 @@ public class CopySelectedLayersToWarpingVectorsPlugIn extends AbstractPlugIn {
             .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1))
             .add(new EnableCheck() {
                 public String check(JComponent component) {
-                    return workbenchContext.getLayerNamePanel().getSelectedLayers().length == 1
+                    return workbenchContext.getLayerableNamePanel().getSelectedLayers().length == 1
                     && workbenchContext.getLayerNamePanel().getSelectedLayers()[0] == new WarpingVectorLayerFinder(workbenchContext).getLayer()
                     ? I18N.get("ui.plugin.CopySelectedLayersToWarpingVectorsPlugIn.a-layer-other-than")+"'" + new WarpingVectorLayerFinder(workbenchContext).getLayerName() + "' "+I18N.get("ui.plugin.CopySelectedLayersToWarpingVectorsPlugIn.must-be-selected") : null;
                 }

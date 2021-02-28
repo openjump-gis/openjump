@@ -152,7 +152,7 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
 
     /**
      * overloaded from SpatialDatabasesDS to cope with special oracle columns types
-     * @return
+     * @return dataset names as an array of strings
      */
     @Override
     public String[] getDatasetNames() {

@@ -41,5 +41,5 @@ public interface LayerableNamePanelProxy {
     /**
      * @return null if the LayerableViewPanelProxy currently has no associated LayerViewPanel
      */
-    public LayerableNamePanel getLayerableNamePanel();
+    LayerableNamePanel getLayerableNamePanel();
 }

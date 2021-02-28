@@ -429,8 +429,7 @@ public class ConnectionManagerPanel extends JPanel {
     /**
      * Gets the first selected connection, or null if none.
      *
-     * @return the first selected connection
-     * @return null if none selected
+     * @return the first selected connection, and null if none is selected
      */
     private ConnectionDescriptor getSelectedConnection()
     {

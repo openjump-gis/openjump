@@ -31,7 +31,7 @@
  */
 package com.vividsolutions.jump.io;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
@@ -721,7 +721,7 @@ public class ShapefileWriter implements JUMPWriter {
             else if (count > 1) {
                 name = removeCount(name, count-1);
             }
-            name = name + Integer.toString(count);
+            name = name + count;
             count++;
         }
         set.add(name);
@@ -918,7 +918,7 @@ public class ShapefileWriter implements JUMPWriter {
 
         coords = p.getExteriorRing().getCoordinates();
 
-        if (CGAlgorithms.isCCW(coords)) {
+        if (Orientation.isCCW(coords)) {
             outer = reverseRing((LinearRing) p.getExteriorRing());
         } else {
             outer = (LinearRing) p.getExteriorRing();
@@ -926,7 +926,7 @@ public class ShapefileWriter implements JUMPWriter {
 
         for (int t = 0; t < p.getNumInteriorRing(); t++) {
             coords = p.getInteriorRingN(t).getCoordinates();
-            if (!(CGAlgorithms.isCCW(coords))) {
+            if (!(Orientation.isCCW(coords))) {
                 holes[t] = reverseRing((LinearRing) p.getInteriorRingN(t));
             } else {
                 holes[t] = (LinearRing) p.getInteriorRingN(t);

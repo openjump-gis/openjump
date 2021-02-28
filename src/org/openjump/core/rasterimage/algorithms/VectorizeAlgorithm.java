@@ -57,7 +57,7 @@ public class VectorizeAlgorithm {
      * @param gwrapper GridWrapperNotInterpolated
      * @param explodeMultipolygons Explode MultiPolygons in Polygons
      * @param band Number of band (0,1,2,etc)
-     * @return
+     * @return a FeatureCollection containing vectorized polygons
      */
     public static FeatureCollection toPolygonsAdbToolBox(
             GridWrapperNotInterpolated gwrapper, boolean explodeMultipolygons,
@@ -197,10 +197,10 @@ public class VectorizeAlgorithm {
 
     /** Create a FeatureCollection of polygons defining a GridWrapperNotInterpolated and number of band
       * Sextante algorithm
-      * @param gwrapper
-      * @param attributeName
-      * @param band
-      * @return
+      * @param gwrapper a GridWrapperNotInterpolated
+      * @param attributeName an attribute name
+      * @param band the image band to use
+      * @return a FeatureCollection containing vectorized polygons
       */
     public static FeatureCollection toPolygonsSextante(
             GridWrapperNotInterpolated gwrapper, String attributeName, int band) {
@@ -438,13 +438,13 @@ public class VectorizeAlgorithm {
      * Convert a DTM raster to a feature collection of contours (linestrings) defining
      * a GridWrapperNotInterpolated, a minimum and maximun elevations, a vertical distance
      * between each contour, an attribute name and the band of the raster
-     * @param gwrapper
-     * @param zMin
-     * @param zMax
-     * @param dDistance
-     * @param attributeName
-     * @param band
-     * @return
+     * @param gwrapper a GridWrapperNotInterpolated
+     * @param zMin minimum elevation
+     * @param zMax maximum elevation
+     * @param dDistance vertical distance between contour lines
+     * @param attributeName attribute name
+     * @param band the band containing elevation data
+     * @return a FeatureCollection containing vectorized contour lines
      */
     public static FeatureCollection toContours(
             GridWrapperNotInterpolated gwrapper, final double zMin,
@@ -524,8 +524,8 @@ public class VectorizeAlgorithm {
      * a GridWrapperNotInterpolated and an attribute.
      * [Currently not working possibly due to a bug of OpenJUMPSextanteRasterLayer.create method]
      * 
-     * param gwrapper
-     * @param attributeName
+     * @param gwrapper a GridWrapperNotInterpolated
+     * @param attributeName attribute name
      * @return
      */
     public static FeatureCollection toLines(
@@ -1043,11 +1043,11 @@ public class VectorizeAlgorithm {
 
     /** Create a FeatureCollection of polygons defining a GridWrapperNotInterpolated and number of band
      * Sextante algorithm - compatible with OpenKLEM methods
-     * @param gwrapper
-     * @param explodeMultipolygons
-     * @param attributeName
-     * @param band
-     * @return
+     * @param gwrapper a GridWrapperNotInterpolated
+     * @param explodeMultipolygons true to separate disjointed polygons
+     * @param attributeName an attribute name
+     * @param band the image band to use
+     * @return a FeatureCollection containing vectorized polygons
      */
    public static FeatureCollection toPolygons(
            GridWrapperNotInterpolated gwrapper,  boolean explodeMultipolygons,String attributeName,int band) {

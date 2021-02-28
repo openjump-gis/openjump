@@ -56,8 +56,6 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
    * query to get list of spatial tables from the connection. Must return
    * following columns: distinct table_schema, table_name (if several geo
    * columns exist, only one entry should be returned)
-   *
-   * @param conn
    */
   protected String datasetNameQuery = null;
 

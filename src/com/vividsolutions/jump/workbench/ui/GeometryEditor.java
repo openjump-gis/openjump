@@ -315,7 +315,7 @@ public class GeometryEditor {
          * "Modifies" a Geometry by returning a new Geometry with a modification.
          * The returned Geometry might be the same as the Geometry passed in.
          */
-        public Geometry edit(Geometry geometry);
+        Geometry edit(Geometry geometry);
     }
     private Coordinate[] atLeastNCoordinatesOrNothing(int n, Coordinate[] c) {
         return c.length >= n ? c : new Coordinate[] {};

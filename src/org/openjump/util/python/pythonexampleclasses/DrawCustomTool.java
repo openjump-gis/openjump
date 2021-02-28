@@ -144,22 +144,22 @@ public class DrawCustomTool extends ConstrainedNClickTool {
     
 	public interface FinalDrawListener extends EventListener
 	{
-	    public void finalDraw(CustomToolEvent event);
+		void finalDraw(CustomToolEvent event);
 	}
 
 	public interface FeedbackListener extends EventListener
 	{
-	    public void feedbackDraw(CustomToolEvent event);
+		void feedbackDraw(CustomToolEvent event);
 	}
 
 	public interface ActivationListener extends EventListener
 	{
-	    public void handleActivation(CustomToolEvent event);
+		void handleActivation(CustomToolEvent event);
 	}
     
 	public interface DeActivationListener extends EventListener
 	{
-	    public void handleDeActivation(CustomToolEvent event);
+		void handleDeActivation(CustomToolEvent event);
 	}
 	
 	public void setFeedbackListener(FeedbackListener listener)

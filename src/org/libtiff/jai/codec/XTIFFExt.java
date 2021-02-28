@@ -12,9 +12,9 @@ public class XTIFFExt extends XTIFF {
     /**
      * Name GDAL_NODATA
      * 
-     * @Type ASCII
-     * @Count N
-     * @Description Used by the GDAL library, contains an ASCII encoded nodata
+     * Type ASCII
+     * Count N
+     * Description Used by the GDAL library, contains an ASCII encoded nodata
      *              or background pixel value.
      * 
      *              In the geospatial image processing field especially (and in
@@ -44,9 +44,9 @@ public class XTIFFExt extends XTIFF {
     /**
      * Name GDAL_METADATA
      * 
-     * @Type ASCII
-     * @Count N
-     * @Description Used by the GDAL library, holds an XML list of name=value
+     * Type ASCII
+     * Count N
+     * Description Used by the GDAL library, holds an XML list of name=value
      *              'metadata' values about the image as a whole, and about
      *              specific samples.
      * 
@@ -86,9 +86,9 @@ public class XTIFFExt extends XTIFF {
     /**
      * Name ModelPixelScaleTag
      * 
-     * @Type DOUBLE
-     * @Count 3
-     * @Description Used in interchangeable GeoTIFF files. This tag is
+     * Type DOUBLE
+     * Count 3
+     * Description Used in interchangeable GeoTIFF files. This tag is
      *              optionally provided for defining exact affine
      *              transformations between raster and model space. Baseline
      *              GeoTIFF files may use this tag or ModelTransformationTag,
@@ -111,9 +111,9 @@ public class XTIFFExt extends XTIFF {
     /**
      * Name ModelTiepointTag
      * 
-     * @Type DOUBLE
-     * @Count N = 6*K, with K = number of tiepoints
-     * @Description Originally part of Intergraph's GeoTIFF tags, but now used
+     * Type DOUBLE
+     * Count N = 6*K, with K = number of tiepoints
+     * Description Originally part of Intergraph's GeoTIFF tags, but now used
      *              in interchangeable GeoTIFF files. This tag is also known as
      *              'GeoreferenceTag'. This tag stores raster->model tiepoint
      *              pairs in the order ModelTiepointTag = (...,I,J,K, X,Y,Z...)
@@ -128,9 +128,9 @@ public class XTIFFExt extends XTIFF {
     /**
      * Name ModelTransformationTag
      * 
-     * @Type DOUBLE
-     * @Count N = 16
-     * @Description Used in interchangeable GeoTIFF files.
+     * Type DOUBLE
+     * Count N = 16
+     * Description Used in interchangeable GeoTIFF files.
      * 
      *              This tag is optionally provided for defining exact affine
      *              transformations between raster and model space. Baseline
@@ -146,9 +146,9 @@ public class XTIFFExt extends XTIFF {
     /**
      * Name GeoKeyDirectoryTag
      * 
-     * @Type SHORT
-     * @Count N >= 4
-     * @Description Used in interchangeable GeoTIFF files.
+     * Type SHORT
+     * Count N >= 4
+     * Description Used in interchangeable GeoTIFF files.
      * 
      *              This tag is also know as 'ProjectionInfoTag' and
      *              'CoordSystemInfoTag'
@@ -160,9 +160,9 @@ public class XTIFFExt extends XTIFF {
     /**
      * Name GeoDoubleParamsTag
      * 
-     * @Type DOUBLE
-     * @Count N
-     * @Description Used in interchangeable GeoTIFF files.
+     * Type DOUBLE
+     * Count N
+     * Description Used in interchangeable GeoTIFF files.
      * 
      *              This tag is used to store all of the DOUBLE valued GeoKeys,
      *              referenced by the GeoKeyDirectoryTag. The meaning of any
@@ -174,9 +174,9 @@ public class XTIFFExt extends XTIFF {
     /**
      * Name GeoAsciiParamsTag
      * 
-     * @Type ASCII
-     * @Count N
-     * @Description Used in interchangeable GeoTIFF files.
+     * Type ASCII
+     * Count N
+     * Description Used in interchangeable GeoTIFF files.
      * 
      *              This tag is used to store all of the ASCII valued GeoKeys,
      *              referenced by the GeoKeyDirectoryTag. Since keys use offsets

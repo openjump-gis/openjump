@@ -54,8 +54,8 @@ public class RasterImageIOUtils {
      *            file to save es D:/Openjump/test.tif
      * @param rLayer
      *            Selected Raster Image Layer (RasterImageLayer.class)
-     * @param Envelope
-     *            envelope
+     * @param envWanted
+     *            envelope wanted
      * @throws NoninvertibleTransformException
      *             , TiffReadingException, Exception
      */
@@ -124,17 +124,17 @@ public class RasterImageIOUtils {
     /**
      * Export selected raster to various image file formats using ImageIO
      * 
-     * @param File
+     * @param file
      *            destination file (absolute or relative path)
      * @param format
      *            Image I/O built-in support for both Oracle Java and OpenJDK is
      *            "gif", "png" and "tif". Oracle Java support also "jpg". Other
      *            formats might be work depending on installed codecs
-     * @param BufferedImag
-     *            bufferedimage
-     * @param Envelope
-     *            envelope
-     * @throws IOException
+     * @param bufferedimage
+     *            BufferedImage
+     * @param envelope
+     *            Envelope
+     * @throws IOException if an IOException occurs
      */
 
     public static void saveImage(File file, String format,
@@ -152,11 +152,11 @@ public class RasterImageIOUtils {
      * 
      * @param file
      *            file to save es D:/Openjump/test.tif
-     * @param Envelope
+     * @param envelope
      *            envelope of selected Image Layer (RasterImageLayer.class)
-     * @param PlanarImage
+     * @param planarimage
      *            PlanarImage of selected Image Layer (RasterImageLayer.class)
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
 
     public static void saveTIF_ImageIO(File file, Envelope envelope,
@@ -171,13 +171,13 @@ public class RasterImageIOUtils {
     /**
      * Export selected monoband raster to ArcView Gridded Ascii (ASC)
      * 
-     * @param file
+     * @param outfile
      *            file to save es D:/Openjump/test.asc
      * @param context
      *            Plugin Context
      * @param rLayer
      *            Selected Raster Image Layer (RasterImageLayer.class)
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
 
     public static void saveASC(File outfile, PlugInContext context,
@@ -197,7 +197,7 @@ public class RasterImageIOUtils {
      *            Selected Raster Image Layer (RasterImageLayer.class)
      * @param band
      *            Number of band to save (O=red, 1=green, 2=blue)
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
 
     public static void saveASC(File file, PlugInContext context,
@@ -230,8 +230,7 @@ public class RasterImageIOUtils {
 
             o.println("yllcorner " + rLayer.getActualImageEnvelope().getMinY());
 
-            o.println("cellsize "
-                    + Double.toString(rstLayer.getLayerCellSize().x));
+            o.println("cellsize " + rstLayer.getLayerCellSize().x);
 
             String sNoDataVal = Double.toString(rstLayer.getNoDataValue());
             /*
@@ -279,13 +278,13 @@ public class RasterImageIOUtils {
     /**
      * Export selected raster to ArcView Gridded Binary header (HDR)
      * 
-     * @param file
+     * @param outFile
      *            file to save es D:/Openjump/test.hdr
      * @param context
      *            . Plugin Context
      * @param rLayer
      *            . Selected Raster Image Layer (RasterImageLayer.class)
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
 
     public static void saveHDR(File outFile, PlugInContext context,
@@ -318,8 +317,7 @@ public class RasterImageIOUtils {
 
             o.println("yllcorner " + rLayer.getWholeImageEnvelope().getMinY());
 
-            o.println("cellsize "
-                    + Double.toString(rstLayer.getLayerCellSize().x));
+            o.println("cellsize " + rstLayer.getLayerCellSize().x);
 
             String sNoDataVal = Double.toString(rstLayer.getNoDataValue());
             // Uncomment this code. It seems to rewrite original nodata value
@@ -351,13 +349,13 @@ public class RasterImageIOUtils {
     /**
      * Export selected monoband raster to ArcView Gridded Binary data (FLT)
      * 
-     * @param file
+     * @param outfile
      *            file to save es D:/Openjump/test.flt
      * @param context
      *            Plugin Context
      * @param rLayer
      *            Selected Raster Image Layer (RasterImageLayer.class)
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
     public static void saveFLT(File outfile, PlugInContext context,
             RasterImageLayer rLayer) throws IOException {
@@ -368,7 +366,7 @@ public class RasterImageIOUtils {
     /**
      * Export selected raster to ArcView Gridded Binary data (FLT)
      * 
-     * @param file
+     * @param outFile
      *            file to save es D:/Openjump/test.flt
      * @param context
      *            Plugin Context
@@ -377,7 +375,7 @@ public class RasterImageIOUtils {
      * @param band
      *            Number of the band to save (O=1st band (red), 1=2nd band
      *            (green), 2=3rd band (blue), etc)
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
 
     public static void saveFLT(File outFile, PlugInContext context,
@@ -445,14 +443,13 @@ public class RasterImageIOUtils {
     /**
      * Export selected monoband raster to Surfer ASCII Grid (GRD)
      * 
-     * @param file
+     * @param outfile
      *            file to save es D:/Openjump/test.grd
      * @param context
-     *            . Plugin Context
+     *            Plugin Context
      * @param rLayer
-     *            . Selected Raster Image Layer (RasterImageLayer.class)
-     * @param band
-     * @throws IOException
+     *            Selected Raster Image Layer (RasterImageLayer.class)
+     * @throws IOException if an IOException occurs
      */
     public static void saveSurferGRD(File outfile, PlugInContext context,
             RasterImageLayer rLayer) throws IOException {
@@ -463,7 +460,7 @@ public class RasterImageIOUtils {
     /**
      * Export selected raster to Surfer ASCII Grid (GRD)
      * 
-     * @param file
+     * @param outfile
      *            file to save es D:/Openjump/test.grd
      * @param context
      *            . Plugin Context
@@ -472,9 +469,8 @@ public class RasterImageIOUtils {
      * @param band
      *            . Number of band to save (O=1st band (red), 1=2nd band
      *            (green), 2=3rd band (blue), etc)
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
-
     public static void saveSurferGRD(File outfile, PlugInContext context,
             RasterImageLayer rLayer, int band) throws IOException {
         OutputStream out = null;
@@ -559,13 +555,13 @@ public class RasterImageIOUtils {
      * Export selected raster to XYZ table. If the file is a multi banded raster
      * each band is extracted to a proper band named "band1", "band2", etc
      * 
-     * @param file
+     * @param outfile
      *            file to save es D:/Openjump/test.xyz
      * @param context
      *            . Plugin Context
      * @param rLayer
      *            . Selected Raster Image Layer (RasterImageLayer.class)
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
 
     public static void saveXYZ(File outfile, PlugInContext context,
@@ -658,9 +654,8 @@ public class RasterImageIOUtils {
      *            . Plugin Context
      * @param rLayer
      *            . Selected Raster Image Layer (RasterImageLayer.class)
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
-
     public static void saveGrass(File file, PlugInContext context,
             RasterImageLayer rLayer, int band) throws IOException {
         OutputStream out = null;
@@ -731,12 +726,12 @@ public class RasterImageIOUtils {
     /**
      * Load TIF/ASC/FLT file into OpenJUMP workbench
      * 
-     * @param File
+     * @param file
      *            file to load es D:/Openjump/test.tif
-     * @param PlugInContext
+     * @param context
      *            Plugin Context
-     * @param Category
-     *            . Name of the category to load the file
+     * @param category
+     *            Name of the category to load the file
      * @throws NoninvertibleTransformException
      *             , TiffReadingException, Exception
      */
@@ -758,12 +753,12 @@ public class RasterImageIOUtils {
     /**
      * Load TIF file into OpenJUMP workbench
      * 
-     * @param File
+     * @param file
      *            file to load es D:/Openjump/test.tif
-     * @param PlugInContext
+     * @param context
      *            Plugin Context
-     * @param Category
-     *            . Name of the category to load the file
+     * @param category
+     *            Name of the category to load the file
      * @throws NoninvertibleTransformException
      *             , TiffReadingException, Exception
      */
@@ -802,9 +797,9 @@ public class RasterImageIOUtils {
      * 
      * @param file
      *            file to load
-     * @param PlugInContext
-     * @param Category
-     *            . Name of the category to load the file
+     * @param context PlugInContext
+     * @param category
+     *            Name of the category to load the file
      * @throws NoninvertibleTransformException
      *             , TiffReadingException, Exception
      */
@@ -846,18 +841,13 @@ public class RasterImageIOUtils {
     /**
      * Load ArcView Gridded Ascii (ASC) file into OpenJUMP workbench
      * 
-     * @param File
-     *            file to load
-     * @param PlugInContext
-     * @param Category
-     *            . Name of the category to load the file
-     * @throws NoninvertibleTransformException
-     *             , TiffReadingException, Exception
+     * @param file file to load
+     * @param context the PlugInContext
+     * @param category name of the category to load the file
+     * @throws Exception if an Exception occurs
      */
-
     public static void loadASC(File file, PlugInContext context, String category)
-            throws NoninvertibleTransformException, TiffReadingException,
-            Exception {
+            throws Exception {
 
         RasterImageIO rasterImageIO = new RasterImageIO();
         Viewport viewport = context.getWorkbenchContext().getLayerViewPanel()
@@ -894,17 +884,17 @@ public class RasterImageIOUtils {
      * be substituted by nodata value. The output file is a Arcview Gridded
      * Binary file (HDR/FLT)
      * 
-     * @param file
+     * @param outFile
      *            file to save es D:/Openjump/test.flt
      * @param context
      *            Plugin Context
      * @param rLayer
      *            Selected Raster Image Layer (RasterImageLayer.class)
-     * @param int band Number of the band to save (O=1st band (red), 1=2nd band
+     * @param band band Number of the band to save (O=1st band (red), 1=2nd band
      *        (green), 2=3rd band (blue), etc)
-     * @param float mindata lower value of the mask range
-     * @param float maxata upper value of the mask range
-     * @param float nodata nodata value
+     * @param mindata lower value of the mask range
+     * @param maxdata upper value of the mask range
+     * @param nodata nodata value
      */
 
     public static void saveFLT_mask(File outFile, PlugInContext context,
@@ -979,17 +969,17 @@ public class RasterImageIOUtils {
      * outside this range of values will be substituted by nodata value.The
      * output file is a Arcview Gridded Binary file (HDR/FLT)
      * 
-     * @param file
+     * @param outFile
      *            file to save es D:/Openjump/test.flt
      * @param context
      *            Plugin Context
      * @param rLayer
      *            Selected Raster Image Layer (RasterImageLayer.class)
-     * @param int band Number of the band to save (O=1st band (red), 1=2nd band
+     * @param band band Number of the band to save (O=1st band (red), 1=2nd band
      *        (green), 2=3rd band (blue), etc)
-     * @param float mindata lower value of the extract range
-     * @param float maxata upper value of the e range
-     * @param float nodata nodata value
+     * @param mindata lower value of the extract range
+     * @param maxdata upper value of the e range
+     * @param nodata nodata value
      */
 
     public static void saveFLT_extract(File outFile, PlugInContext context,

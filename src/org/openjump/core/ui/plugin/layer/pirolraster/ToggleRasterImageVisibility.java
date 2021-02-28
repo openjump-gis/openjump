@@ -79,19 +79,19 @@ public class ToggleRasterImageVisibility extends AbstractPlugIn implements Popup
     }
 
     /**
-     *@param arg0
+     *@param arg0 an event on the PopupMenu
      */
     public void popupMenuCanceled(PopupMenuEvent arg0) {
     }
 
     /**
-     *@param arg0
+     *@param arg0 an event on the PopupMenu
      */
     public void popupMenuWillBecomeInvisible(PopupMenuEvent arg0) {
     }
 
     /**
-     *@param arg0
+     *@param arg0 an event on the PopupMenu
      */
     public void popupMenuWillBecomeVisible(PopupMenuEvent arg0) {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(this.wbContext.createPlugInContext(), RasterImageLayer.class);

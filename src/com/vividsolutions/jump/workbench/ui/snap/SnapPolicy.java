@@ -33,6 +33,7 @@
 package com.vividsolutions.jump.workbench.ui.snap;
 import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+
 public interface SnapPolicy {
-    public Coordinate snap(LayerViewPanel panel, Coordinate originalCoordinate);
+  Coordinate snap(LayerViewPanel panel, Coordinate originalCoordinate);
 }

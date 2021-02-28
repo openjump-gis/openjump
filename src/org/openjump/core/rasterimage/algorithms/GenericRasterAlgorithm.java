@@ -50,15 +50,13 @@ public class GenericRasterAlgorithm {
      *        file to save. Eg "C:/folder/filename.tif" (always add extension)
      * @param rasterImageLayer
      *        input RasterImageLayer
-     * @param envelope
-     *        input envelope to crop RasterImageLayer
      * @param band
      *        input band
      * @param oldnodata
      *        original nodata value
       * @param newnodata
      *        new nodata value
-     * @throws IOException
+     * @throws IOException if an IOException occurs during getRasterData or writeImage operations
      */
 
     public void save_ChangeNoData(File outputFile,
@@ -90,8 +88,8 @@ public class GenericRasterAlgorithm {
 
     /**
      * 
-     * @param file
-     * @param rLayer
+     * @param outputFile output file
+     * @param rasterImageLayer raster image layer
      * @param band
      * @param nodata
      * @throws IOException
@@ -151,12 +149,11 @@ public class GenericRasterAlgorithm {
 
     /**
      * Extract a raster defining limits of output
-     * @param file
-     * @param rLayer
+     * @param outputFile output file
+     * @param rasterImageLayer raster image layer
      * @param band
      * @param mindata
      * @param maxdata
-     * @param nodata
      * @throws IOException
      */
     public void save_ExtractValidData(File outputFile,
@@ -189,10 +186,10 @@ public class GenericRasterAlgorithm {
 
     /**
      * Reset the values to a defined number of decimals
-     * @param file
-     * @param rLayer
+     * @param outputFile output file
+     * @param rLayer raster image layer
      * @param band
-     * @param n. Number of decimal to set the values
+     * @param n Number of decimal to set the values
      * @throws IOException
      */
     public void save_ChangeDecimalValues(File outputFile,

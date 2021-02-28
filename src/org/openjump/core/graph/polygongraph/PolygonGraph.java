@@ -39,7 +39,7 @@ public class PolygonGraph{
 	
 	/**
 	 * creates a new polygon graph objects and populates it with the feature delivered 
-	 * @param polygonFeatures
+	 * @param polygonFeatures a collection of polygonal features
 	 */
 	public PolygonGraph(Collection<Feature> polygonFeatures){
 		this.createPolygonGraphFrom(polygonFeatures, null);
@@ -47,7 +47,7 @@ public class PolygonGraph{
 	
 	/**
 	 * creates a new polygon graph objects and populates it with the feature delivered 
-	 * @param polygonFeatures
+	 * @param polygonFeatures a collection of polygonal features
 	 * @param monitor can be null, used to cancel operation
 	 */
 	public PolygonGraph(Collection<Feature> polygonFeatures, TaskMonitor monitor){
@@ -60,7 +60,7 @@ public class PolygonGraph{
 	
 	/**
 	 * 
-	 * @param fc
+	 * @param fc a collection of polygonal features
 	 * @param monitor can be null, used to cancel operation
 	 */
 	public void createPolygonGraphFrom(Collection<Feature> fc, TaskMonitor monitor){

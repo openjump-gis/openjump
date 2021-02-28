@@ -380,6 +380,7 @@ public class FeatureDrawingUtil {
 	 * @param newLineString
 	 *            LineString to create or add to selected
 	 * @param rollingBackInvalidEdits
+	 * 						true to rollback invalid edits
 	 * @param tool
 	 *            AbstractCursorTool - the current cursor tool
 	 * @param panel

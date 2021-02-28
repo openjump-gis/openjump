@@ -74,7 +74,6 @@ public abstract class SwingWorker {
 
     /** 
      * Compute the value to be returned by the <code>get</code> method. 
-     * @throws Exception 
      */
     public abstract Object construct();
 

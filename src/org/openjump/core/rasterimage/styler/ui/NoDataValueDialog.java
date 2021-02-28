@@ -13,8 +13,8 @@ public class NoDataValueDialog extends javax.swing.JDialog {
 
     /**
      * Creates new form NoDataValueDialog
-     * @param parent
-     * @param modal
+     * @param parent parent Frame
+     * @param modal whether the Dialog is modal or not
      */
     public NoDataValueDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);

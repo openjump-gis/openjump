@@ -13,10 +13,10 @@ public class TaskMonitorV2Util extends TaskMonitorUtil{
   /**
    * support more than int max items for {@link TaskMonitorV2}
    * 
-   * @param monitor
-   * @param itemsDone
-   * @param totalItems
-   * @param itemDescription
+   * @param monitor a TaskMonitor
+   * @param itemsDone number of processed items
+   * @param totalItems total number of items to process
+   * @param itemDescription description of what an item is
    */
   public static void report(TaskMonitor monitor, long itemsDone, long totalItems,
       String itemDescription) {

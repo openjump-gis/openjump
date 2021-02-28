@@ -49,16 +49,15 @@ public class Utils {
     /**
      * Get a list of all layerables names
      * 
-     * @param context
-     * @return
+     * @param context the PlugInContext
+     * @return a list of Layerable names
      */
     public static List<String> getNamesOfLayerableList(PlugInContext context) {
-        ArrayList<String> ListImageLayerNames = new ArrayList<String>();
+        ArrayList<String> ListImageLayerNames = new ArrayList<>();
         Collection<Layerable> layerables = context.getTask().getLayerManager()
                 .getLayerables(Layerable.class);
-        for (Iterator<Layerable> i = layerables.iterator(); i.hasNext();) {
-            Layerable currentLayer = i.next();
-            ListImageLayerNames.add(currentLayer.getName());
+        for (Layerable layerable : layerables) {
+            ListImageLayerNames.add(layerable.getName());
         }
         return ListImageLayerNames;
     }
@@ -66,8 +65,8 @@ public class Utils {
     /**
      * Get layerable type (Shapefile, RasterImageLayer, WMSLayer, etc)
      * 
-     * @param layer
-     * @return
+     * @param layer a Layerable
+     * @return the simple name of this Layerable Class
      */
     public static String getLayerableType(Layerable layer) {
         String sclass = "";
@@ -92,8 +91,8 @@ public class Utils {
     /**
      * Get Layerable Spatial reference system
      * 
-     * @param layer
-     * @return
+     * @param layer a Layerable
+     * @return a String representation of the SRS of this Layerable
      */
     public static String getLayerableSRS(Layerable layer) {
         String name = "";
@@ -177,30 +176,28 @@ public class Utils {
     /**
      * Check temporary Layer or RasterImageLayer
      * 
-     * @param context
-     * @return
+     * @param context the PlugInContext
+     * @return true if a Layerable has a temporary Layer associated
      */
     public static boolean checkTemporaryLayerables(PlugInContext context) {
-        List<String> temporalLayerables = new ArrayList<String>();
+        // TODO we can break as soon as a tmp layer is found and avoid creating temporalLayerables list
+
+        List<String> temporalLayerables = new ArrayList<>();
         Collection<RasterImageLayer> rlayers = context.getLayerManager()
                 .getLayerables(RasterImageLayer.class);
-        for (Iterator<RasterImageLayer> iterator = rlayers.iterator(); iterator
-                .hasNext();) {
-            RasterImageLayer currentLayer = iterator.next();
-
-            if (currentLayer.getImageFileName().contains(
+        for (RasterImageLayer rLayer : rlayers) {
+            if (rLayer.getImageFileName().contains(
                     System.getProperty("java.io.tmpdir"))) {
-                temporalLayerables.add(currentLayer.getName());
+                temporalLayerables.add(rLayer.getName());
             }
         }
         Collection<Layer> layers = context.getLayerManager().getLayers();
-        for (Iterator<Layer> iterator = layers.iterator(); iterator.hasNext();) {
-            Layer currentLayer = iterator.next();
-            if (!currentLayer.hasReadableDataSource()
-                    || getLayerablePath(currentLayer).contains(
+        for (Layer layer : layers) {
+            if (!layer.hasReadableDataSource()
+                    || getLayerablePath(layer).contains(
                             System.getProperty("java.io.tmpdir"))
-                    || currentLayer.getDataSourceQuery() == null) {
-                temporalLayerables.add(currentLayer.getName());
+                    || layer.getDataSourceQuery() == null) {
+                temporalLayerables.add(layer.getName());
             }
         }
         if (!temporalLayerables.isEmpty()) {
@@ -212,21 +209,20 @@ public class Utils {
     /**
      * Check modified layers
      * 
-     * @param context
-     * @return
+     * @param context the PlugInContext
+     * @return true if a Modified Layer exists
      */
     public static boolean checkModifiedLayers(PlugInContext context) {
-        List<String> modifiedLayers = new ArrayList<String>();
+        // TODO we can break as soon as a modified layer is found and avoid creating modifiedLayers list
+        List<String> modifiedLayers = new ArrayList<>();
 
         Collection<Layer> layers = context.getLayerManager().getLayers();
-        for (Iterator<Layer> iterator = layers.iterator(); iterator.hasNext();) {
-            Layer currentLayer = iterator.next();
-
-            if (currentLayer.hasReadableDataSource()
-                    & !getLayerablePath(currentLayer).contains(
+        for (Layer layer : layers) {
+            if (layer.hasReadableDataSource()
+                    & !getLayerablePath(layer).contains(
                             System.getProperty("java.io.tmpdir"))
-                    & currentLayer.isFeatureCollectionModified()) {
-                modifiedLayers.add(currentLayer.getName());
+                    & layer.isFeatureCollectionModified()) {
+                modifiedLayers.add(layer.getName());
             }
         }
         if (!modifiedLayers.isEmpty()) {
@@ -282,8 +278,8 @@ public class Utils {
      * Return layerable name. (*) if vector is modified, (**) if raster or
      * vector are temporary
      * 
-     * @param layer
-     * @return
+     * @param layer a Layerable
+     * @return the enriched name of the Layerable
      */
     public static String getLayerableName(Layerable layer) {
         String name = "";
@@ -466,12 +462,12 @@ public class Utils {
      * Restore Task properties from file
      * 
      * @param task
-     *            - current task
+     *            current task
      * @param file
-     *            - file task
-     * @param workbenchFrame
-     *            - current workbench
-     * @throws Exception
+     *            file task
+     * @param context
+     *            current workbench context
+     * @throws Exception if an Exception occurs
      */
 
     public static void restorePropertiesFromFile(Task task, File file,

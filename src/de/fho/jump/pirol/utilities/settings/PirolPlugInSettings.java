@@ -124,7 +124,7 @@ public class PirolPlugInSettings {
 	    return dir;
 	}
     
-    private final static String getUsersHomeDir(){
+    private static String getUsersHomeDir(){
         while (USERSHOMEDIR == null){
             try {
             	if (USERSHOMEDIR==null){

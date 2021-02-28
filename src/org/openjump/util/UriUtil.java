@@ -201,13 +201,6 @@ public final class UriUtil {
   public static boolean isURL(String in) {
     Pattern p = Pattern.compile(regexp);
     Matcher m = p.matcher(in != null ? in : "");
-
-    // while (m.find()) {
-    // System.out.println("g in:"+in);
-    // for (int i = 1; i <= m.groupCount(); i++) {
-    // System.out.println("g"+i+":"+m.group(i));
-    // }
-    // }
     return m.matches();
   }
 
@@ -231,8 +224,8 @@ public final class UriUtil {
   /**
    * userinfo is the prepared urlencoded string before the @ eg. user:pass
    * 
-   * @param url
-   * @return
+   * @param url URL string to get the user info from
+   * @return a String representing user info of the URL
    */
   public static String urlGetUserInfo(String url) {
     if (isURL(url))
@@ -284,9 +277,9 @@ public final class UriUtil {
   /**
    * userinfo is the prepared urlencoded string before the @ eg. user:pass
    * 
-   * @param url
-   * @param userinfo
-   * @return
+   * @param url url String to add user info to
+   * @param userinfo user info to add
+   * @return url with added user info
    */
   public static String urlAddUserInfo(String url, String userinfo) {
     if (!isURL(url))

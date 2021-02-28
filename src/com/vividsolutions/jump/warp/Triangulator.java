@@ -85,7 +85,7 @@ public class Triangulator {
      * @param datasetEnvelope the region to triangulate
      * @param vectorLineStrings vectors (2-point LineStrings) whose tails and tips split
      * the "source quadrilateral" and "destination quadrilateral" into triangles
-     * @param monitor
+     * @param monitor a TaskMonitor
      * @return    a map of source Triangles to destination Triangles
      */
     public Map triangleMap(
@@ -291,8 +291,8 @@ public class Triangulator {
     }
 
     /**
-     *@return    a rectangle 5% larger along each margin
-     *@see       White and Griffin's paper
+     * @return    a rectangle 5% larger along each margin
+     * @see       "White and Griffin's paper"
      */
     private Quadrilateral sourceQuad(Envelope datasetEnvelope) {
         double dx = datasetEnvelope.getWidth() * 0.05;
@@ -367,9 +367,9 @@ public class Triangulator {
     }
 
     /**
-     *@return    sourceQuad, with each vertex shifted according to the vector with
+     * @return    sourceQuad, with each vertex shifted according to the vector with
      *      the nearest tail
-     *@see       White and Griffin's paper
+     * @see       "White and Griffin's paper"
      */
     private Quadrilateral destQuad(Quadrilateral sourceQuad, List vectors) {
         if (vectors.isEmpty()) { return (Quadrilateral) sourceQuad.clone(); }

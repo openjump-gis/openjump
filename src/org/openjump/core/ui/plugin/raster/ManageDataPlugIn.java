@@ -75,12 +75,13 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 import it.betastudio.adbtoolbox.libs.FileOperations;
 
+/**
+ * A comprensive class/plugin to manage data of a single raster layer
+ *
+ * @author Giuseppe Aruta 2019_25_03
+ */
 public class ManageDataPlugIn extends ThreadedBasePlugIn {
-    /**
-     * 
-     * @author Giuseppe Aruta 2019_25_03
-     * A comprensive class/plugin to manage data of a single raster layer
-     */
+
     public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
 
     private final String CHANGE_NODATA = I18N
@@ -528,7 +529,7 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
         target_NoData_label = new JLabel(TO);
         source_nodata = new JTextField(String.valueOf(rLayer.getNoDataValue()));
         source_nodata.setEditable(false);
-        target_nodata = new JTextField(String.valueOf("-99999"));
+        target_nodata = new JTextField("-99999");
         source_nodata.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {

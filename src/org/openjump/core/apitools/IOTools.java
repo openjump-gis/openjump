@@ -360,9 +360,9 @@ public class IOTools {
     /**
      * Export jtable to csv file using commas as separators
      * 
-     * @param table
-     * @param filename
-     * @throws Exception
+     * @param table the JTable containing the data to save to CSV file
+     * @param filename the target file name
+     * @throws Exception if an Exception occurs
      */
     public static void saveCSV(JTable table, String filename) throws Exception {
         saveCSV(table, filename, ",");
@@ -377,7 +377,7 @@ public class IOTools {
      *            output file name: C:\folder\file.csv
      * @param cellseparator
      *            cell break to separate values: "," ";" tab etc
-     * @throws Exception
+     * @throws Exception if an Exception occurs
      */
     public static void saveCSV(JTable table, String filename,
             String cellseparator) throws Exception {
@@ -385,7 +385,7 @@ public class IOTools {
             final File file = new File(filename);
             final BufferedWriter bw = new BufferedWriter(
                     new OutputStreamWriter(new FileOutputStream(
-                            file.getAbsoluteFile()), "UTF-8"));
+                            file.getAbsoluteFile()), StandardCharsets.UTF_8));
 
             for (int j = 0; j < table.getColumnCount(); j++) {
                 bw.write(table.getModel().getColumnName(j) + cellseparator);
@@ -541,11 +541,11 @@ public class IOTools {
      * Method to save Openjump symbology of a layer  to  a XML file
      * 
      * 
-     * @param style
+     * @param file
      *            file to save (ex. file.style.xml)
      * @param layer
      *            source layer
-     * @throws Exception
+     * @throws Exception if an Exception occurs
      */
 
     public static void saveSimbology_Jump(File file, Layer layer)
@@ -616,9 +616,9 @@ public class IOTools {
 
     /**
      * Simple method to copy a file to a folder 
-     * @param inputFile
-     * @param outputDir
-     * @throws IOException
+     * @param inputFile input File
+     * @param outputDir output directory
+     * @throws IOException if an IOException occurs
      */
     public static void copyFileToFolder(File inputFile, String outputDir)
             throws IOException {
@@ -643,8 +643,8 @@ public class IOTools {
     /**
      * Converts a system-dependent path into an independent one
      * 
-     * @param oldPath
-     * @return newPath
+     * @param oldPath the old path
+     * @return the new path
      */
     public static String convertPathToSystemIndependentPath(String oldPath) {
         final String path = Paths.get(oldPath).toUri().getPath();
@@ -692,8 +692,8 @@ public class IOTools {
      * get a list of urls of pictures used as vertex symbols
      * search into <style> and <vertex-style> elements
      * used by Save To JUMP Symbology method
-     * @param parent
-     * @return List
+     * @param parent the parent Node
+     * @return child elements named "style" and containing an "imageURL" attribute
      */
     private static List<String> getListOfElements(Node parent) {
         final NodeList children = ((Document) parent).getDocumentElement()
@@ -728,17 +728,12 @@ public class IOTools {
     /**
      * check if in the XML file there are nodes with attributes as "imageURL"
      * used by Load JUMP Symbology method
-     * @param file
-     * @return
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     * @throws TransformerException
+     * @param file a XML File containing a style
+     * @return true if the xml file contains a style element with a imageURL attribute
      */
 
     private static boolean imageURLExist(File file)
-            throws ParserConfigurationException, SAXException, IOException,
-            TransformerException {
+            throws ParserConfigurationException, SAXException, IOException {
 
         final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
                 .newInstance();
@@ -785,15 +780,11 @@ public class IOTools {
 
      * This method will recompile the XML file according to location (folder) of the image symbology files
      * used by Load JUMP Symbology method     
-     * @param xml.
+     * @param file
      *            XML file
-     * @param directory. 
-     *                  Folder where the images are stored
+     * @param directory
+     *            Folder where the images are stored
      * @return File
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     * @throws TransformerException
      */
     public static File recompileXMLFile(File file, String directory)
             throws ParserConfigurationException, SAXException, IOException,
@@ -846,11 +837,11 @@ public class IOTools {
     /**
          * Method to load an OpenJUMP symbology file (xml jump) into a layer
          * 
-         * @param style
+         * @param file
          *            file to load (ex. file.style.xml)
          * @param layer
          *            target layer
-         * @throws Exception
+         * @throws Exception if an Exception occurs
          */
     public static void loadSimbology_Jump(File file, Layer layer)
             throws Exception {
@@ -931,11 +922,11 @@ public class IOTools {
      * Method to load a style file ( SLD - Spatial layer descriptor) into a
      * layer
      * 
-     * @param style
+     * @param file
      *            file to load (ex. file.sld)
-     * @param layer
-     *            target layer
-     * @throws Exception
+     * @param context
+     *            plugin context
+     * @throws Exception if an Exception occurs
      */
 
     public static void loadSimbology_SLD(File file, PlugInContext context)
@@ -959,11 +950,11 @@ public class IOTools {
      * Method to save the style of a layer as SLD (Spatial layer
      * descriptor) file
      * 
-     * @param style
+     * @param file
      *            file to save (ex. file.style.sld)
      * @param layer
      *            source layer
-     * @throws Exception
+     * @throws Exception if an Exception occurs
      */
     public static void saveSimbology_SLD(File file, Layer layer)
             throws Exception {
@@ -1139,7 +1130,7 @@ public class IOTools {
         final FileInputStream input = new FileInputStream(inputXML);
         // FileWriter fw = new FileWriter( outputXML );
         final OutputStreamWriter fw = new OutputStreamWriter(
-                new FileOutputStream(file), "UTF-8");// Charset.defaultCharset());
+                new FileOutputStream(file), StandardCharsets.UTF_8);// Charset.defaultCharset());
         // "UTF-8");
         final HashMap<String, String> map = new HashMap<String, String>(9);
         map.put("wmsLayerName", wmsLayerName);
@@ -1174,10 +1165,10 @@ public class IOTools {
 
     /**
      * Load an image file as ReferenceImageLayer.class defining its extension
-     * @param  File. File to load
-     * @param wcontext. WorkbenchContext
-     * @param extension. extension of the file, eg. "tif"
-     * @throws Exception
+     * @param file File to load
+     * @param wcontext WorkbenchContext
+     * @param extension extension of the file, eg. "tif"
+     * @throws Exception if an Exception occurs
      */
     public static void loadImageAsLayer(File file, WorkbenchContext wcontext,
             String extension) throws Exception {
@@ -1206,10 +1197,10 @@ public class IOTools {
      * cellsize is calculate from parameters (raster and envelope)
      * nodata is set to SAGA standard value (-99999.00)
      * compression is set to packbits
-     * @param java.awt.image.BufferedImage
-     * @param org.locationtech.jts.geom.Envelope
-     * @param outFile
-     * @throws IOException
+     * @param image BufferedImage to save
+     * @param envelope an Envelope
+     * @param file output file
+     * @throws IOException if an IOException occurs
      */
     public static void saveGeoTIFF(BufferedImage image, Envelope envelope,
             File file) throws IOException {
@@ -1225,14 +1216,14 @@ public class IOTools {
     /**
      * Save a given BufferedImage and envelope to GeoTIFF file, giving nodata value, x and y values of 
      * cell size and compsession
-     * @param java.awt.image.BufferedImage
-     * @param org.locationtech.jts.geom.Envelope
-     * @param cellsizex. Double cell size in x direction
-     * @param cellsizey. Double cell size in y direction
-     * @param nodata. Double nodata value
-     * @param compsession. Integer, see  com.sun.media.jai.codec.TIFFEncodeParam
-     * @param file. Output file
-     * @throws IOException
+     * @param image BufferedImage to save
+     * @param envelope an Envelope
+     * @param cellsizex Double cell size in x direction
+     * @param cellsizey Double cell size in y direction
+     * @param nodata Double nodata value
+     * @param compression Integer, see  com.sun.media.jai.codec.TIFFEncodeParam
+     * @param file output file
+     * @throws IOException if an IOException occurs
      */
     public static void saveGeoTIFF(BufferedImage image, Envelope envelope,
             double cellsizex, double cellsizey, int compression, double nodata,

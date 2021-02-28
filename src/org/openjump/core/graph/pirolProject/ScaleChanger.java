@@ -8,6 +8,6 @@ package org.openjump.core.graph.pirolProject;
 
 
 public interface ScaleChanger {
-	public double scale( double value, int dimension );
-	public double unScale( double value, int dimension );
+	double scale( double value, int dimension );
+	double unScale( double value, int dimension );
 }

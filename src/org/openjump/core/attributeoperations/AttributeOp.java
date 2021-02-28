@@ -204,7 +204,7 @@ public class AttributeOp {
                 double val = values[i];
                 if(i==0){
                     //-- add first value
-                    vals.add(new Double(val));
+                    vals.add(val);
                 }
                 else{
 	                boolean stop = false; int count =0;
@@ -222,7 +222,7 @@ public class AttributeOp {
 	                    }
 	                }
 	                if(found == false){
-	                    vals.add(new Double(val));
+	                    vals.add(val);
 	                }	                
                 }                
         }
@@ -275,7 +275,7 @@ public class AttributeOp {
                  double val = values[i];
                 if(i==0){
                     //-- add first value
-                    vals.add(new Double(val));
+                    vals.add(val);
                 }
                 else{
 	                boolean stop = false; int count =0;
@@ -293,7 +293,7 @@ public class AttributeOp {
 	                    }
 	                }
 	                if(found == false){
-	                    vals.add(new Double(val));
+	                    vals.add(val);
 	                }
                 }                
         }

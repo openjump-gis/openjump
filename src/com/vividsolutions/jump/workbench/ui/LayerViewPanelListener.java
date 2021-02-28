@@ -42,18 +42,18 @@ import java.awt.Graphics;
 
 
 public interface LayerViewPanelListener {
-    public void selectionChanged();
+    void selectionChanged();
 
     /**
      * Notifies this listener that the cursor position has changed to the given
      * point, in model coordinates.
      */
-    public void cursorPositionChanged(String x, String y);
+    void cursorPositionChanged(String x, String y);
 
     /**
      * Notifies this listener that the LayerViewPanel has been repainted.
      * graphics may not be the same as the result of LayerViewPanel#getGraphics;
      * it may be an off-screen buffer. [Jon Aquino]
      */
-    public void painted(Graphics graphics);
+    void painted(Graphics graphics);
 }

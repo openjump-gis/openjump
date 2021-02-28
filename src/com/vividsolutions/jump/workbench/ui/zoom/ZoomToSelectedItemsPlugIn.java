@@ -45,7 +45,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.util.Assert;
-import com.vividsolutions.jump.geom.CoordUtil;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -55,7 +54,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.renderer.ThreadQueue;
 
 /**

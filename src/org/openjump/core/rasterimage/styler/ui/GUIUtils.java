@@ -23,9 +23,9 @@ public class GUIUtils {
     /**
      * Method to return the min value of a RasterImageLayer
      *
-     * @param rasterData
-     * @param rasterImageLayer
-     * @return
+     * @param rasterData raster data as a 1-dimension double array
+     * @param rasterImageLayer source RasterImageLayer
+     * @return the min-max range of values in the Raster
      */
     public static Range getMinMaxRasterValue(double[] rasterData, RasterImageLayer rasterImageLayer) {
 
@@ -48,13 +48,13 @@ public class GUIUtils {
     }
 
     /**
-     * Method to convert the trasparency value from 0-100 range (0 means that
+     * Method to convert the transparency value from 0-100 range (0 means that
      * the color is completely opaque and 100 the color is completely
-     * trasparent) to 0-255 range (0 menas that the color is completely
-     * trasparent and 255 that the color is completely opaque)
+     * transparent) to 0-255 range (0 menas that the color is completely
+     * transparent and 255 that the color is completely opaque)
      *
-     * @param range_0_100_Value
-     * @return
+     * @param range_0_100_Value transparency value in a 0-100 range
+     * @return an opacity value in a 0-255 range
      */
     public static int getAlpha_0_255Range(int range_0_100_Value) {
 
@@ -137,7 +137,7 @@ public class GUIUtils {
      * Method to delete the RasterStylesDialog about a raster from the BlackBoard.
      * The method checks and deletes the properties about RasterStylesDialog for rasters that
      * are no more loaded on the TOC. 
-     * @param context
+     * @param context the WorkbenchContext
      */
     public static void clearRasterStylerFromBlackBoard(WorkbenchContext context) {
 

@@ -37,7 +37,7 @@ public class H2DSConnection extends SpatialDatabasesDSConnection {
      *
      * @param query the query to execute
      * @return the results of the query
-     * @throws SQLException
+     * @throws SQLException if an Exception occurs while accessing database
      */
     @Override
     public FeatureInputStream executeFilterQuery(FilterQuery query) throws SQLException {
@@ -59,7 +59,7 @@ public class H2DSConnection extends SpatialDatabasesDSConnection {
      *
      * @param query the query to execute
      * @return the results of the query
-     * @throws SQLException
+     * @throws SQLException if an Exception occurs while accessing database
      */
     @Override
     public FeatureInputStream executeAdhocQuery(AdhocQuery query) throws Exception {

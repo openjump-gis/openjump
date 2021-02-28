@@ -24,11 +24,11 @@ public class GradientTablePanel extends ColorsTablePanel implements TableModelLi
 
     /**
      * Constructor for creating the panel that contains the table with the gradient's colors.
-     * @param parent
-     * @param tableType INTERVALS
+     * @param parent parent Component of this GradientTablePanel
+     * @param tableType tableType is INTERVALS or VALUES
      * @param colorMapEntries The colors that form the gradient
-     * @param noDataValue
-     * @param integerValues
+     * @param noDataValue value used for nodata cells
+     * @param integerValues true if values are integers
      * @param panel Panel in which to add the table.
      */
     public GradientTablePanel(Component parent, TableType tableType,

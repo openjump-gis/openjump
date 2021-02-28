@@ -37,7 +37,7 @@ public class SubtractionOperation extends GenericOperation {
 
     /**
      * Returns the subtracted values of the sub-values or sub-operations of this operation
-     *@param feature
+     *@param feature the Feature to compute the value from
      *@return subtracted values of the sub-values or sub-operations
      */
     public double getValue(Feature feature) {

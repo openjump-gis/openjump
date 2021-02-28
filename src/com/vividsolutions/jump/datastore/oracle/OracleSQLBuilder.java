@@ -26,8 +26,9 @@ public class OracleSQLBuilder extends SpatialDatabasesSQLBuilder {
   /**
    * Builds a valid SQL spatial query with the given spatial filter.
    *
-   * @param query
-   * @return a SQL query to get column names
+   * @param query a FilterQuery containing a spatial filter
+   * @return a SQL query containing column names and a spatial filter
+   *    in its where clause
    */
   @Override
   public String getSQL(FilterQuery query) {
@@ -67,7 +68,7 @@ public class OracleSQLBuilder extends SpatialDatabasesSQLBuilder {
    * Returns the query allowing to test a DataStoreLayer: builds a query with
    * where clause and limit 0 to check where clause.
    *
-   * @return
+   * @return a SQL query forced to limit 0 to test the layer source
    */
   @Override
   public String getCheckSQL(DataStoreLayer dsLayer) {
@@ -86,9 +87,9 @@ public class OracleSQLBuilder extends SpatialDatabasesSQLBuilder {
    * Returns the string representing a SQL column definition. Implementors
    * should take care of column names (case, quotes)
    *
-   * @param colNames
-   * @param geomColName
-   * @return column list
+   * @param colNames column names
+   * @param geomColName name of the geometry column
+   * @return column list formatted to be included in a SQL query
    */
   @Override
   protected String getColumnListSpecifier(String[] colNames, String geomColName) {

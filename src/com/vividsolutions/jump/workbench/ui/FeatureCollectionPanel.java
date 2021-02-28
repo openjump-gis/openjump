@@ -37,14 +37,14 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
+/**
+ * [Giuseppe Aruta 2017-14-12] A panel to show a collection of features To
+ * create a panel with a table showing a FeatureCollection:
+ * "FeatureCollectionPanel pan = new FeatureCollectionPanel(FeatureCollection)"
+ * The style (Renderer) of the table reminds AttributePanel renderer
+ */
 public class FeatureCollectionPanel extends JPanel {
 
-    /**
-     * [Giuseppe Aruta 2017-14-12] A panel to show a collection of features To
-     * create a panel with a table showing a FeatureCollection:
-     * "FeatureCollectionPanel pan = new FeatureCollectionPanel(FeatureCollection)"
-     * The style (Renderer) of the table reminds AttributePanel renderer
-     */
     private static final long serialVersionUID = 1L;
     private final FeatureCollection featureCollection;
 
@@ -86,7 +86,7 @@ public class FeatureCollectionPanel extends JPanel {
                 + " - (" + featureCollection.size() + " "
                 + I18N.get("ui.AttributeTablePanel.features") + ")");
         jLabel.setFont(jLabel.getFont().deriveFont(Font.BOLD));
-        setFeatureCollection(featureCollection);
+        //setFeatureCollection(featureCollection);
         jTable = new JTable();
         jTable.setGridColor(Color.WHITE);
         jTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
@@ -128,9 +128,8 @@ public class FeatureCollectionPanel extends JPanel {
     /**
      * Save panel
      * 
-     * @return
+     * @return the JPanel containing UI components to save the FeatureCollection to a file
      */
-
     private JPanel savePanel() {
         final JPanel save = new JPanel();
         save.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -251,17 +250,16 @@ public class FeatureCollectionPanel extends JPanel {
         return filterPanel;
     }
 
-    /**
-     * Set a FeatureCollection to add to the panel
-     * 
-     * @param featurecollection
-     * @return
-     */
-
-    public FeatureCollection setFeatureCollection(
-            FeatureCollection featurecollection) {
-        return featureCollection;
-    }
+    ///**
+    // * Set a FeatureCollection to add to the panel
+    // *
+    // * @param featurecollection a FeatureCollection
+    // * @return
+    // */
+    //public FeatureCollection setFeatureCollection(
+    //        FeatureCollection featurecollection) {
+    //    return featureCollection;
+    //}
 
     /**
      * Gets the FeatureCollection added to this panel. Useful if user want to
@@ -317,7 +315,7 @@ public class FeatureCollectionPanel extends JPanel {
     /**
      * Gets the lower panel where locating save button
      * 
-     * @return
+     * @return the JPanel used to save the FeatureCollection
      */
     public JPanel getSavePanel() {
         return savePanel();

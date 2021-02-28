@@ -49,7 +49,7 @@ public class MariadbSQLBuilder extends SpatialDatabasesSQLBuilder {
    * Returns the query allowing to test a DataStoreLayer: builds a query with where
    * clause and limit 0 to check where clause.
    * @param dsLayer a DataStoreLayer
-   * @return a SQL String querying dsLayer with an optional where clause and a limit of 0
+   * @return a SQL query forced to limit 0 to test the layer source
    */
   @Override
   public String getCheckSQL(DataStoreLayer dsLayer) {

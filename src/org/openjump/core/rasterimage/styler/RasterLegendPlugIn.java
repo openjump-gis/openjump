@@ -393,14 +393,11 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
     /**
      * Export an image to GeoTIFF file
      * 
-     * @param outFileName
+     * @param sFilename
      *            output file name, ex C:/folder/filename.tif
-     * @param layer
-     *            input raster layer. Needed to calculate cell size, envelope
-     *            and no data
      * @param image
      *            BufferedImage to save
-     * @return
+     * @return true if the export succeeded
      */
     private boolean exportToGeoTIFFFile(String sFilename, double cellsizeX,
             double cellsizeY, double nodata, Envelope envelope,

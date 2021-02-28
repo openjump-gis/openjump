@@ -321,8 +321,8 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 	private ArrayList attCollDest = new ArrayList();
 	
 	/**
-	 * @param selectTypeDialog2
-	 * @param context
+	 * @param selectTypeDialog2 the MultiInputDialog box
+	 * @param context the PlugInContext
 	 */
 	private void setDialogValues(MultiInputDialog selectTypeDialog2, PlugInContext context) {
 		this.dialog.setSideBarDescription(sidebartext);

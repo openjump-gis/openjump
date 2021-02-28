@@ -69,7 +69,7 @@ public class VertexStylesFactory {
 	    //prevents init
 	}
 
-	public static final VertexStyle createVertexStyle( String wellKnowName ){
+	public static VertexStyle createVertexStyle(String wellKnowName ){
 	    
 	    VertexStyle vStyle = null;
 	    

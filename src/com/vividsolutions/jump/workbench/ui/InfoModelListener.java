@@ -40,7 +40,7 @@
 package com.vividsolutions.jump.workbench.ui;
 
 public interface InfoModelListener {
-    public void layerAdded(LayerTableModel layerTableModel);
+    void layerAdded(LayerTableModel layerTableModel);
 
-    public void layerRemoved(LayerTableModel layerTableModel);
+    void layerRemoved(LayerTableModel layerTableModel);
 }

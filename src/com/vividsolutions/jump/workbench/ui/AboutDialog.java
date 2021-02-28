@@ -146,12 +146,7 @@ public class AboutDialog extends JDialog {
                 new SplashPanelV2(splash, I18N.get("ui.AboutDialog.version")+" " + JUMPVersion.CURRENT_VERSION);
         aboutPanel.add(splashPanel,new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH,GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
-/*
-        // print classpath for debugging
-        URL[] urls = ((java.net.URLClassLoader)ClassLoader.getSystemClassLoader()).getURLs();
-        for(int i=0; i< urls.length; i++)
-            System.out.println(urls[i]);
-*/
+
         String result;
         String urlstring = "";
         try {
@@ -231,11 +226,7 @@ public class AboutDialog extends JDialog {
         
         JLabel lbl_memcom = createLabel(I18N.get("ui.AboutDialog.comitted-memory"));
         lbl_memcom.setFont(lbl_java.getFont());
-        panelAdd( lbl_memcom, infoPanel, 1, 4, GridBagConstraints.WEST); 
-        
-        //JLabel lbl_memfree = createLabel(I18N.get("ui.AboutDialog.free-memory"));
-        //lbl_memfree.setFont(lbl_java.getFont());
-        //panelAdd( lbl_memfree, infoPanel, 1, 5, GridBagConstraints.WEST); 
+        panelAdd( lbl_memcom, infoPanel, 1, 4, GridBagConstraints.WEST);
         
         panelAdd(Box.createRigidArea(new Dimension(10, 10)), infoPanel, 1, 6,
             GridBagConstraints.WEST);
@@ -262,10 +253,6 @@ public class AboutDialog extends JDialog {
 
         lblCommittedMemory.setText("x");
         panelAdd( lblCommittedMemory, infoPanel, 2, 4, GridBagConstraints.WEST);
-
-        //lblFreeMemory.setToolTipText("");
-        //lblFreeMemory.setText("x");
-        //panelAdd( lblFreeMemory, infoPanel, 2, 5, GridBagConstraints.WEST);
         
         lblUserDir.setText("x");
         panelAdd( lblUserDir, infoPanel, 2, 7, GridBagConstraints.WEST);
@@ -403,8 +390,6 @@ public class AboutDialog extends JDialog {
             + humanReadableByteCount(totalMem, false) + ")");
         lblCommittedMemory.setText(format.format(totalMem - freeMem) + " bytes ("
             + humanReadableByteCount(totalMem - freeMem, false) + ")");
-        //lblFreeMemory.setText(format.format(freeMem) + " bytes ("
-        //    + humanReadableByteCount(freeMem, false) + ")");
         lblUserDir.setText(formatDirNameForHtml(System.getProperty("user.dir"), 40));
       }
   

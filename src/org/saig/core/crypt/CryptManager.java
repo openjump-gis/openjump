@@ -53,7 +53,7 @@ public abstract class CryptManager {
      * Permite encriptar la cadena aplicando el algoritmo pertinente
      * 
      * @param str Cadena que se quiere encriptar
-     * @throws Exception
+     * @throws Exception if an Exception occurred
      */
     public abstract String encrypt( String str ) throws Exception;
 
@@ -68,7 +68,7 @@ public abstract class CryptManager {
     /**
      * Permite probar el encriptador
      * 
-     * @param args
+     * @param args main arguments
      */
     public static void main( String[] args ) {
 

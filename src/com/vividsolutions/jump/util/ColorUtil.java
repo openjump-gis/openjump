@@ -53,13 +53,13 @@ public class ColorUtil {
             "#fff5f0", "#ffffff" };
 
     /**
-     * Giving an interval, this method creates a random colorschema that fills the entire interval,
+     * Giving an interval, this method creates a random {@link ColorScheme} that fills the entire interval,
      * eg. a feature collection, with a random color set (ColorBrewer).
      * This method extends color range to more that maximum defined in the ColorScheme.txt 
      * (12 intervals) [Giuseppe Aruta 2019-1-12]
-     * @param intervals
+     * @param intervals number of intervals to create
      * @return com.vividsolutions.jump.workbench.ui.renderer.style.ColorScheme class
-     * @throws Exception
+     * @throws Exception if an Exception occurs
      */
     public static ColorScheme createRandomColorSchema(int intervals)
             throws Exception {
@@ -91,11 +91,11 @@ public class ColorUtil {
      * two ones 
      * This method extends color range to more that maximum defined in the ColorScheme.txt 
      * (12 intervals) [Giuseppe Aruta 2019-1-12]
-     * @param int intervals
-     * @param Color startColor
-     * @param Color endColor
+     * @param intervals intervals
+     * @param startColor start Color
+     * @param endColor end Color
      * @return com.vividsolutions.jump.workbench.ui.renderer.style.ColorScheme class
-     * @throws Exception
+     * @throws Exception if an Exception occurs
      */
 
     public static ColorScheme createColorSchema(int intervals,

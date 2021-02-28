@@ -35,39 +35,38 @@ public interface XTIFFTileCodec {
 	 * @param param the encoding parameter. It is the responsibility
 	 * of the codec to initialize itself from this parameter. 
 	 */
-    public XTIFFTileCodec create(XTIFFEncodeParam param) throws IOException;
+	XTIFFTileCodec create(XTIFFEncodeParam param) throws IOException;
 
 	/**
 	 * Create a codec for decoding
 	 * @param param the decoding parameter. It is the responsibility
 	 * of the codec to initialize itself from this parameter. 
 	 */
-    public XTIFFTileCodec create(XTIFFDecodeParam param) throws IOException;
+	XTIFFTileCodec create(XTIFFDecodeParam param) throws IOException;
 
 	/**
 	 * Encode some data from RenderedImage, and return the
-         * actual number of bytes stored in output buffer.
+	 * actual number of bytes stored in output buffer.
 	 */
-    public int encode(RenderedImage im, Rectangle rect, byte[] output); 
+	int encode(RenderedImage im, Rectangle rect, byte[] output);
 
 	/**
 	 * Decode input byte data into a new WritableRaster, using
 	 * information from underlying RenderedImage
 	 */
-    public WritableRaster decode(RenderedImage im, 
-		Rectangle rect, byte[] input); 
+	WritableRaster decode(RenderedImage im, Rectangle rect, byte[] input);
 
 	/**
 	 * Return the associated TIFF compression code
 	 */
-    public int getCompression();
+	int getCompression();
 
 	/**
 	 * Return the largest possible compressed buffer size 
 	 * for this image in bytes. This is used by the XTIFFImage
 	 * constructor to allocate a decoding buffer.
 	 */
-    public int getCompressedTileSize(RenderedImage im);
+	int getCompressedTileSize(RenderedImage im);
 
 	/**
 	 * Register this codec with the XTIFFDirectory.
@@ -76,5 +75,5 @@ public interface XTIFFTileCodec {
 	 * one.
 	 * @see XTIFFDirectory
 	 */
-    public void register();
+	void register();
 }

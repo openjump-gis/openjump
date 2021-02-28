@@ -96,7 +96,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
      * Appends non-HTML text to the frame. Text is assumed to be non-HTML, and
      * is HTML-escaped to avoid control-char conflict.
      * 
-     * @param text
+     * @param text line of text to add to this HTMLPanel
      */
     public void addText(String text) {
         append(GUIUtil.escapeHTML(text, false, true) + " <BR>\n");

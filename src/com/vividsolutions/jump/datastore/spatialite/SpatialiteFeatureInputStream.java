@@ -32,8 +32,9 @@ public class SpatialiteFeatureInputStream extends SpatialDatabasesFeatureInputSt
     /**
      * Returns a SpatialiteResultSetConverter
      *
-     * @param rs
-     * @return
+     * @param rs ResultSet to convert
+     * @return a converter to convert data from a ResultSet to objects compatible
+     *      with OpenJUMP type system.
      */
     @Override
     protected SpatialDatabasesResultSetConverter getResultSetConverter(ResultSet rs) {

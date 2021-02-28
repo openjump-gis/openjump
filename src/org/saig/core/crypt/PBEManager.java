@@ -46,6 +46,7 @@ import net.iharder.Base64;
 
 import com.vividsolutions.jump.workbench.Logger;
 
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -103,7 +104,7 @@ public class PBEManager extends CryptManager {
      * 
      * @param str String to encrypt
      * @return String
-     * @throws Exception
+     * @throws Exception if an Exception is thrown by the Cipher
      */
     public String encrypt( String str ) throws Exception {
 
@@ -121,7 +122,7 @@ public class PBEManager extends CryptManager {
      * 
      * @param str String to decrypt
      * @return byte[]
-     * @throws Exception
+     * @throws Exception if an Exception is thrown by the Cipher
      */
     public String decrypt( String str ) throws Exception {
 
@@ -130,7 +131,7 @@ public class PBEManager extends CryptManager {
 
         byte decodedStr[] = Base64.decode(str);
         byte raw[] = pbeCipher.doFinal(decodedStr);
-        String decrypted = new String(raw, "UTF-8"); //$NON-NLS-1$
+        String decrypted = new String(raw, StandardCharsets.UTF_8); //$NON-NLS-1$
 
         return decrypted;
     }

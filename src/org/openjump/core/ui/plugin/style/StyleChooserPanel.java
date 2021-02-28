@@ -81,7 +81,7 @@ public class StyleChooserPanel extends JPanel implements ListSelectionListener {
     private static final String THEMING = get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Color-Theming-Styles");
 
     /**
-     * @param doc
+     *
      */
     public StyleChooserPanel(Document doc) {
         this.doc = doc;
@@ -112,10 +112,10 @@ public class StyleChooserPanel extends JPanel implements ListSelectionListener {
             select.list.setListData(new Vector<String>(getRuleNamesWithTextSymbolizers(doc)));
         }
         if (type.list.getSelectedValue().equals(BASIC)) {
-            select.list.setListData(new Vector<String>(getRuleNamesWithGeometrySymbolizers(doc)));
+            select.list.setListData(new Vector<>(getRuleNamesWithGeometrySymbolizers(doc)));
         }
         if (type.list.getSelectedValue().equals(THEMING)) {
-            select.list.setListData(new Vector<String>(getPossibleColorThemingStyleNames(doc)));
+            select.list.setListData(new Vector<>(getPossibleColorThemingStyleNames(doc)));
         }
     }
 

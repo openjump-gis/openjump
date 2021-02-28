@@ -284,14 +284,15 @@ public class VertexStylePanel extends JPanel implements ListCellRenderer {
 	 * items are String arrays. So we need an own renderer, that displays
 	 * the first index of the array.
 	 *
-	 * @param list
-	 * @param value
+	 * @param list a list of component showing vertex styles
+	 * @param value values as a String array
 	 * @param index
-	 * @param isSelected
-	 * @param cellHasFocus
+	 * @param isSelected whether the component is selected or not
+	 * @param cellHasFocus whether the component has focus or not
 	 * @return the label representing the first vertex style of the list
 	 */
-	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+	public Component getListCellRendererComponent(JList list, Object value,
+							int index, boolean isSelected, boolean cellHasFocus) {
 		JLabel label = new JLabel(((String[]) value)[0]);
 		label.setOpaque(true);
 		if (isSelected) {

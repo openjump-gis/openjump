@@ -65,8 +65,8 @@ public abstract class AbstractWaitDialog extends JDialog {
     protected String errorMessage = ""; //$NON-NLS-1$
 
     /**
-     * @param parent
-     * @param title
+     * @param parent the parent JFrame
+     * @param title the JFrame title
      */
     public AbstractWaitDialog( JFrame parent, String title ) {
         super(parent, true);

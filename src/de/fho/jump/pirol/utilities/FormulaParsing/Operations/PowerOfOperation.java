@@ -29,15 +29,15 @@ import de.fho.jump.pirol.utilities.FormulaParsing.FormulaValue;
 public class PowerOfOperation extends GenericOperation {
 
     /**
-     *@param value1
-     *@param value2
+     *@param value1 first FormulaValue of the power operation
+     *@param value2 second FormulaValue of the power operation
      */
     public PowerOfOperation(FormulaValue value1, FormulaValue value2) {
         super(value1, value2);
     }
 
     /**
-     *@param feature
+     *@param feature feature to process
      *@return Math.pow(value1, value2)
      */
     public double getValue(Feature feature) {

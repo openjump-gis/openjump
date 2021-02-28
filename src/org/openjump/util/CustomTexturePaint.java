@@ -98,7 +98,7 @@ public class CustomTexturePaint implements Paint {
     }
 
     /**
-     * @param url
+     * @param url URL containing the texture description
      */
     public CustomTexturePaint(URL url) {
         try {
@@ -116,8 +116,8 @@ public class CustomTexturePaint implements Paint {
     }
 
     /**
-     * @param url
-     * @throws IOException
+     * @param url URL containing the texture description
+     * @throws IOException if an IOException occurred
      */
     public void setUrl(String url) throws IOException {
         this.url = new URL(url);

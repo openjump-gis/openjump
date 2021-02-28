@@ -159,13 +159,13 @@ public class Plot2DCanvasOJ extends PlotCanvas {
 
     /**
      * [sstein] - method for connection with OpenJUMP
-     * @param name
-     * @param c
-     * @param X
-     * @param n
-     * @param context
-     * @param layer
-     * @param attrName
+     * @param name name of the plot
+     * @param c color of the plot
+     * @param X data as a double array
+     * @param n number of classes
+     * @param context plugInContext
+     * @param layer Layer
+     * @param attrName name of the attribute to Plot
      */
     public int addHistogramPlotOJ(String name, Color c, double[] X, int n, PlugInContext context, Layer layer, String attrName) {
         double[][] XY = histogram_classes(X, n);

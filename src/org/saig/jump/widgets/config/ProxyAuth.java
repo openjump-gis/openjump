@@ -53,8 +53,8 @@ public class ProxyAuth extends Authenticator {
     /**
      * 
      * 
-     * @param user
-     * @param pass
+     * @param user user
+     * @param pass password
      */
     public ProxyAuth( String user, String pass ) {
         auth = new PasswordAuthentication(user, pass.toCharArray());

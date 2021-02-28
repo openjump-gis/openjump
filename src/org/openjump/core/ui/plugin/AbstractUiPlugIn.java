@@ -7,6 +7,7 @@ import javax.swing.Icon;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.UndoableEditReceiver;
@@ -113,10 +114,11 @@ public abstract class AbstractUiPlugIn extends AbstractPlugIn implements ActionL
   public void actionPerformed(final ActionEvent e) {
     try {
       JUMPWorkbench workbench = workbenchContext.getWorkbench();
-      WorkbenchFrame frame = workbench.getFrame();
+
       if (workbench != null) {
+        WorkbenchFrame frame = workbench.getFrame();
         frame.setStatusMessage("");
-        frame.log(I18N.get("plugin.AbstractPlugIn.executing") + " " + getName());
+        Logger.info(I18N.get("plugin.AbstractPlugIn.executing") + " " + getName());
       }
 
       PlugInContext plugInContext = workbenchContext.createPlugInContext();
@@ -142,8 +144,9 @@ public abstract class AbstractUiPlugIn extends AbstractPlugIn implements ActionL
       }
 
       if (workbench != null) {
-        frame.log(I18N.get("plugin.AbstractPlugIn.done-current-committed-memory")
-          + frame.getMBCommittedMemory() + " MB");
+        WorkbenchFrame frame = workbench.getFrame();
+        Logger.info(I18N.get("plugin.AbstractPlugIn.done-current-committed-memory") +
+                frame.getMBCommittedMemory() + " MB");
       }
     } catch (Throwable t) {
       ErrorHandler errorHandler = workbenchContext.getErrorHandler();
@@ -182,21 +185,6 @@ public abstract class AbstractUiPlugIn extends AbstractPlugIn implements ActionL
     return toolTip;
   }
 
-//  /**
-//   * Create a name using the I18N String using the class name or by adding
-//   * spaces between the words in the class name without the PlugIn suffix.
-//   * 
-//   * @param plugInClass The plug-in's class.
-//   * @return The plug-in's name.
-//   */
-//  public static String createName(final Class plugInClass) {
-//    try {
-//      return I18N.get(plugInClass.getName());
-//    } catch (java.util.MissingResourceException e) {
-//      return StringUtil.toFriendlyName(plugInClass.getName(), "PlugIn");
-//    }
-//  }
-
   /**
    * @param workbenchContext the workbenchContext to set
    */
@@ -204,12 +192,4 @@ public abstract class AbstractUiPlugIn extends AbstractPlugIn implements ActionL
     this.workbenchContext = workbenchContext;
   }
 
-//  /**
-//   * Get the String representation of the plug-in.
-//   * 
-//   * @return The string.
-//   */
-//  public String toString() {
-//    return getName();
-//  }
 }

@@ -49,7 +49,6 @@ import javax.swing.ImageIcon;
 
 import org.openjump.core.CheckOS;
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -102,8 +101,7 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
         
         // WMS
         List<WMSLayer> wmsLay_l = getWorkbench().getContext().getLayerManager().getLayerables(WMSLayer.class);
-        //Iterator iter = getWorkbench().getContext().getLayerNamePanel().selectedNodes(WMSLayer.class).iterator();
-        
+
         String response = "";
         String newLine = System.getProperty("line.separator");
         for(WMSLayer wmsLayer : wmsLay_l) {
@@ -116,75 +114,6 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
             String wmsResponse;
             Point2D point = getPanel().getViewport().toViewPoint(coord);
             Envelope bbox = getPanel().getViewport().getEnvelopeInModelCoordinates();
-            
-//            String featInfoUrl = wmsLayer.getService().getCapabilities().getFeatureInfoURL();
-//            String userInfo = wmsLayer.createRequest(getWorkbench().getContext().getLayerViewPanel()).getURL().getUserInfo();
-//            
-//            if(userInfo != null) {
-//                featInfoUrl = featInfoUrl.concat(userInfo);
-//            }
-//            
-//            String names = getWmsLayeNames(wmsLayer);
-//            
-//            
-//            if (featInfoUrl.contains("?")) {
-//                featInfoUrl += "&";
-//            } else {
-//                featInfoUrl += "?";
-//            }
-//            
-//            String version = wmsLayer.getWmsVersion();
-//            if (WMService.WMS_1_0_0.equals(version)) {
-//                featInfoUrl += "REQUEST=feature_info&WMTVER=1.0.0";
-//            } else if (WMService.WMS_1_1_0.equals(version) ||
-//                    WMService.WMS_1_1_1.equals(version) ||
-//                    WMService.WMS_1_3_0.equals(version)) {
-//                featInfoUrl += "REQUEST=GetFeatureInfo&SERVICE=WMS&VERSION=" + version;
-//            }            
-//            
-//            featInfoUrl += "&QUERY_LAYERS=" + names + "&LAYERS=" + names;
-//            if (WMService.WMS_1_3_0.equals(version)) {
-//                featInfoUrl += "&CRS=" + wmsLayer.getSRS() +
-//                        "&I=" + (int) point.getX() +
-//                        "&J=" + (int) point.getY();
-//            } else {
-//                featInfoUrl += "&SRS=" + wmsLayer.getSRS() +
-//                        "&X=" + (int) point.getX() +
-//                        "&Y=" + (int) point.getY();
-//            }
-//            
-//            featInfoUrl += "&WIDTH=" + getPanel().getWidth() +
-//                    "&HEIGHT=" + getPanel().getHeight() +
-//                    "&BBOX=" + bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY() +
-//                    "&STYLES=" +
-//                    "&FORMAT=" + wmsLayer.getFormat();
-//            
-//            if (!WMService.WMS_1_0_0.equals(version)) {
-//                try {
-//                    featInfoUrl += "&INFO_FORMAT=" + wmsLayer.getService().getCapabilities().getInfoFormat();
-//                } catch (IOException e) {
-//                    featInfoUrl += "&INFO_FORMAT=text/plain";
-//                }
-//            }
-//            
-//            featInfoUrl = featInfoUrl.concat("&FEATURE_COUNT=10 ");
-//            
-//            URL url = stripXhtmlTags(featInfoUrl);
-//            
-//            response = response.concat("+ ").concat(wmsLayer.getName()).concat(newLine);
-//            
-//            try {
-//                wmsResponse = IOUtils.toString(url.openStream());
-//                wmsResponse = cleanWmsResponse(wmsResponse);
-//            } catch(Exception ex) {
-//                wmsResponse = ex.toString();
-//                wmsResponse = wmsResponse.concat(newLine);
-//            }
-//            response = response.concat(wmsResponse);
-//            response = response.concat(newLine);
-            
-            
-//            response = response.concat("-----------------NEW-----------------------\n");
             
             FeatureInfoRequest request = new FeatureInfoRequest(wmsLayer);
             request.setBbox(bbox);

@@ -36,5 +36,5 @@ package com.vividsolutions.jump.workbench.ui;
  * A party with an associated LayerViewFrame.
  */
 public interface LayerViewFrameProxy {
-    public LayerViewFrame getLayerViewFrame();
+    LayerViewFrame getLayerViewFrame();
 }

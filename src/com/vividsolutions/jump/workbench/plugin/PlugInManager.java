@@ -337,12 +337,11 @@ public class PlugInManager {
 
     /**
      * filter all Configurations from a list of class names
-     * @param classNames
-     * @return
-     * @throws Exception
+     * @param classNames name of Configuration classes
+     * @return a collection of Configurations
      */
-    private Collection findConfigurations(List<String> classNames) throws Exception {
-      ArrayList configurations = new ArrayList();
+    private Collection<Configuration> findConfigurations(List<String> classNames) {
+      List<Configuration> configurations = new ArrayList<>();
       for (Iterator i = classNames.iterator(); i.hasNext();) {
         String name = (String) i.next();
         

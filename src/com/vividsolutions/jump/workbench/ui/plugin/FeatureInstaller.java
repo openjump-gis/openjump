@@ -101,6 +101,7 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 // TODO - Refactoring: Rename this class to PlugInMenuInstaller [Jon Aquino
 // 10/22/2003]
 public class FeatureInstaller {
+
   // generic interface to treat implementation differences of JMenu/JPopUpMenu
   public interface Menu {
 
@@ -133,16 +134,12 @@ public class FeatureInstaller {
 
   private static HashMap<JMenuItem, PlugIn> menuItemRegistry = new HashMap();
 
-  // private static Map repeatMenuItemMap = new HashMap();
-  // private static RepeatableMenuItem[] RepeatableMenuItemArray = { null, null,
-  // null };
-
   public FeatureInstaller(WorkbenchContext workbenchContext) {
     this.workbenchContext = workbenchContext;
     checkFactory = new EnableCheckFactory(workbenchContext);
   }
 
-  public static final FeatureInstaller getInstance() {
+  public static FeatureInstaller getInstance() {
     if (instance == null)
       instance = new FeatureInstaller(JUMPWorkbench.getInstance().getContext());
     return instance;
@@ -258,19 +255,19 @@ public class FeatureInstaller {
   /**
    * Create and add a sub menu entry. index < 0 adds it to the end.
    * 
-   * @param featureInstaller
-   * @param menuPath
-   * @param menuName
-   * @param pos
-   * @return
+   * @param featureInstaller the FeatureInstaller
+   * @param menuPath path of the Menu
+   * @param menuName name of the Menu
+   * @return a JMenu
    */
   public static JMenu addMainMenu(FeatureInstaller featureInstaller,
-      final String[] menuPath, String menuName, int pos) {
+      final String[] menuPath, String menuName) {
     if (menuPath == null)
       throw new IllegalArgumentException("menuPath must be a string array");
 
-    JMenu menu = new JMenu(menuName);
-    JMenuBar parent = FeatureInstaller.getInstance().menuBar();
+    //JMenu menu = new JMenu(menuName);
+    //JMenuBar parent = FeatureInstaller.getInstance().menuBar();
+    JMenuBar parent =featureInstaller.menuBar();
 
     List fullPathList = new ArrayList(Arrays.asList(menuPath));
     fullPathList.add(menuName);
@@ -310,6 +307,7 @@ public class FeatureInstaller {
    * anyway.
    * 
    * @param executable
+   *          the executable plugin
    * @param menuPath
    *          string array of sub menu entries to place the entry in
    * @param menuItemName
@@ -348,12 +346,12 @@ public class FeatureInstaller {
   /**
    * The catch all for all methods. It tries to add icon and shortcut.
    * 
-   * @param executable
-   * @param menuPath
-   * @param menuItem
-   * @param icon
-   * @param enableCheck
-   * @param pos
+   * @param executable the executable PlugIn
+   * @param menuPath menu path of the PlugIn
+   * @param menuItem JMenuItem to execute the PlugIn
+   * @param icon icon representing the PlugIn
+   * @param enableCheck EnableCheck to (de/)activate the PlugIn
+   * @param pos a silently ignored legacy parameter
    * @return menu item
    */
   private JMenuItem addMainMenuPluginItemWithPostProcessing(PlugIn executable,
@@ -377,9 +375,9 @@ public class FeatureInstaller {
    * a generic addMenu method, fetching all settings from workbench properties
    * and the plugin object. used in PluginManager
    * 
-   * @param menuKey
-   * @param plugin
-   * @return menuItem
+   * @param menuKey the key of the Menu to add this PlugIn to
+   * @param plugin a PlugIn
+   * @return a new JMenuItem
    */
   public JMenuItem addMenuPlugin(String menuKey, PlugIn plugin) {
     Menu menu = fetchMenuForKey(menuKey);
@@ -469,9 +467,6 @@ public class FeatureInstaller {
       menuItem.setText(plugin.getName());
     }
 
-//    if (plugin.getClass().getName().contains("Printer"))
-//      System.out.println(plugin.getClass().getName());
-
     // strip pospattern from menuitem name e.g. foo{pos:3}
     // we ignore them, positions are determined by position in *.xml config
     // anything not listed in there will be appended.
@@ -502,10 +497,6 @@ public class FeatureInstaller {
       }
     }
 
-//    if (plugin.getClass().getName().contains("PasteSchema"))
-//      System.out.println(fetchKeyForMenu(menu.getWrappee()));
-
-//    System.out.println(plugin.getName()+"-> "+Arrays.toString(menuPath));
     List<String> posListFromProps = calculateNewPosition(menu,
         new ArrayList<String>(Arrays.asList(menuPath)), menu, plugin);
 
@@ -527,13 +518,6 @@ public class FeatureInstaller {
     // recalculate item position in item root
     List posList = calculateNewPosition(menu, new ArrayList(), itemRoot, plugin);
     int pos = posList.isEmpty() ? -1 : Integer.parseInt(posList.get(0).toString());
-    
-//    // we got a forced position?
-//    if (menuPathPositions != null && menuPathPositions.length > menuPath.length
-//        && menuPathPositions[menuPathPositions.length - 1] != null) {
-//      pos = Integer.parseInt(menuPathPositions[menuPathPositions.length - 1]
-//          .toString());
-//    }
 
     installMnemonic(menuItem, (MenuElement) itemRoot.getWrappee());
 
@@ -796,7 +780,6 @@ public class FeatureInstaller {
   public void addMenuItemShownListener(final JMenuItem menuItem,
       final MenuItemShownListener menuItemShownListener) {
     JMenu menu = (JMenu) ((JPopupMenu) menuItem.getParent()).getInvoker();
-//    System.out.println("--> " + menu);
     // wraps MenuListener in the JumpMenuListener wrapper class so that
     // EasyPanel can determine which menu items had EnableChecks [Larry Becker]
     menu.addMenuListener(new JumpMenuListener(menuItemShownListener, menuItem));
@@ -805,9 +788,9 @@ public class FeatureInstaller {
   /**
    * Ultimate convenience method for attaching a plugin to a popupmenu.
    * 
-   * @param popupMenu
-   * @param executable
-   * @return menu item
+   * @param popupMenu a JPopupMenu
+   * @param executable a PlugIn
+   * @return a JMenuItem to add in a PopupMenu
    */
   public JMenuItem addPopupMenuPlugin(JPopupMenu popupMenu, PlugIn executable) {
     return addPopupMenuPlugin(popupMenu, executable, new String[] {}, null,
@@ -843,14 +826,14 @@ public class FeatureInstaller {
   /**
    * Analogue to addMainMenuPlugin(). Adds a plugin to a popup menu.
    * 
-   * @param popupMenu
-   * @param executable
-   * @param menuPath
-   * @param menuItemName
-   * @param checkBox
-   * @param icon
-   * @param enableCheck
-   * @return menu item
+   * @param popupMenu the PopupMenu to add the PlugIn to
+   * @param executable the executable PlugIn
+   * @param menuPath menu path of the PlugIn
+   * @param menuItemName name of the menu item
+   * @param checkBox true if this plugin must be marked with a CheckBox
+   * @param icon icon for this PlugIn
+   * @param enableCheck EnableCheck to (de/)activate the PlugIn
+   * @return a new JMenuItem
    */
   public JMenuItem addPopupMenuPlugin(JPopupMenu popupMenu, PlugIn executable,
       String[] menuPath, String menuItemName, boolean checkBox, Icon icon,
@@ -881,109 +864,6 @@ public class FeatureInstaller {
     addPopupMenuPlugin(popupMenu, executable, menuPath, menuItemName, checkBox,
         icon, enableCheck);
   }
-
-//  private void stripAllSeparatorsRecursively(Menu menu) {
-//    // if (menu.getWrappee() instanceof JMenu &&
-//    // ((JMenu)menu.getWrappee()).getText().equals("File"))
-//    // System.out.println("FILE MENU");;
-//
-//    // strip all separators
-//    int start = 0;
-//    int end_offset = 0;
-//    // protect title of titled popup menu
-//    if (menu.getWrappee() instanceof TitledPopupMenu)
-//      start = 2;
-//    else if (menu.getWrappee() == menuBarMenu(MenuNames.FILE))
-//      end_offset = 2;
-//    for (int i = start; i < menu.getComponentCount() - end_offset; i++) {
-//      Component c = menu.getComponent(i);
-//      // System.out.println(c);
-//      if (c instanceof JMenu) {
-//        stripAllSeparatorsRecursively(wrapMenu((JMenu) c));
-//      }
-//      else if (c instanceof Separator) {
-//        menu.remove(i);
-//        i--;
-//      }
-//    }
-//  }
-
-//  private void updateSeparatorsFromProps(Menu menuRoot, Menu menuWrap) {
-//    List<String> list = getMenuListFromSettings(menuRoot.getWrappee());
-//    // unconfigured menu
-//    if (list.size() < 1)
-//      return;
-//
-//    // stripAllSeparatorsRecursively(menuRoot);
-//
-//    // add per setting
-//    int count = menuWrap.getComponentCount();
-//    for (int i = 0; i < count; i++) {
-//      Component c1 = menuWrap.getComponent(i);
-//      System.out.println(fetchKeyForMenu(menuWrap.getWrappee()) + "/"
-//          + c1.getClass().getName() + "/" + i + "/" + count + "/"
-//          + menuWrap.getComponentCount());
-//
-//      int item1Pos = -1;
-//      if (c1 instanceof JMenu) {
-//        // get pos value
-//        item1Pos = getHighestMenuItemPositionRecursive(list,
-//            wrapMenu((JMenu) c1));
-//        // update separators in submenu
-//        updateSeparatorsFromProps(menuRoot, wrapMenu((JMenu) c1));
-//      }
-//      else if (c1 instanceof JMenuItem) {
-//        PlugIn p1 = pluginFromMenuItem((JMenuItem) c1);
-//        // non plugin component
-//        if (p1 == null)
-//          continue;
-//        item1Pos = getPositionFromList(list, p1.getClass().getName());
-//      }
-//      else {
-//        continue;
-//      }
-//
-//      // unconfigured item
-//      if (item1Pos < 0)
-//        continue;
-//
-//      // search next positioned item
-//      int item2Pos = -1;
-//      int j = i + 1;
-//      for (; j < menuWrap.getComponentCount(); j++) {
-//        Component c2 = menuWrap.getComponent(j);
-//        if (c2 instanceof JMenu)
-//          item2Pos = getHighestMenuItemPositionRecursive(list,
-//              wrapMenu((JMenu) c2));
-//        else if (c2 instanceof JMenuItem) {
-//          PlugIn p2 = pluginFromMenuItem((JMenuItem) c2);
-//          // non plugin component
-//          if (p2 == null)
-//            continue;
-//          item2Pos = getPositionFromList(list, p2.getClass().getName());
-//        }
-//        else if (c2 instanceof Separator) {
-//          // ups! already separated here? continue with next item alltogether
-//          break;
-//        }
-//
-//        // j item is configured, found our 2nd pos
-//        if (item2Pos >= 0)
-//          break;
-//      }
-//
-//      // find a separator between those two & insert it
-//      for (int k = item1Pos + 1; k < item2Pos; k++) {
-//        String key = list.get(k);
-//        if (key.equals(WorkbenchProperties.KEY_SEPARATOR)) {
-//          menuWrap.insertSeparator(i + 1);
-//          count++;
-//          break;
-//        }
-//      }
-//
-//    }
-//  }
   
   // disabled by default, autoseparating is enabled via PluginMgr during startup
   private static boolean separatingEnabled = false;
@@ -1012,9 +892,6 @@ public class FeatureInstaller {
     int count = menuWrap.getComponentCount();
     for (int i = 0; i < count; i++) {
       Component c1 = menuWrap.getComponent(i);
-//      System.out.println(fetchKeyForMenu(menuWrap.getWrappee()) + "/"
-//          + c1.getClass().getName() + "/" + i + "/" + count + "/"
-//          + menuWrap.getComponentCount());
 
       int item1Pos = -1;
       if (c1 instanceof JMenu) {
@@ -1072,8 +949,6 @@ public class FeatureInstaller {
       if (item2Pos < 0)
         continue;
 
-//      System.out.println("FI updSep2: "+item1Pos+"/"+item2Pos);
-      
       // search for defined separator inbetween both configured items
       Map sepList = wbProps
           .getSettings(new String[]{WorkbenchProperties.KEY_SEPARATOR});
@@ -1082,7 +957,6 @@ public class FeatureInstaller {
         Object sepPosSetting = attribs.get(WorkbenchProperties.ATTR_ORDERID);
         int sepPos = sepPosSetting == null ? -1 : Integer
             .parseInt(sepPosSetting.toString());
-//        System.out.println("FI updSep2 sep: "+sepPos);
         // plugin and next item are separated via at least one separator
         // protect JMenuBars not supporting separators
         if (sepPos > item1Pos && sepPos < item2Pos
@@ -1146,90 +1020,6 @@ public class FeatureInstaller {
     return pos;
   }
 
-//  private List getPositionListFromProps(Menu menu, PlugIn executable) {
-//    String menuKey = fetchKeyForMenu(menu.getWrappee());
-//    // unconfigured menu ?
-//    if (menuKey.isEmpty())
-//      return new ArrayList();
-//
-//    WorkbenchProperties wbProps = workbenchContext.getWorkbench()
-//        .getProperties();
-//    List<String> list = getMenuListFromSettings(menu.getWrappee());
-//
-//    List posList = getPositionListRecursive(list, menu, executable);
-//
-//    return posList;
-//  }
-  
-//  /**
-//   * calculates a list of ints signalling where to insert a given plugin
-//   */
-//  private List<Object> getPositionListRecursive(List configPosList, Menu menu,
-//      PlugIn p) {
-//
-//    int pluginPos = getPositionFromList(configPosList, p.getClass().getName());
-//    // this plugin's pos is unconfigured
-//    if (pluginPos < 0)
-//      return new ArrayList();
-//
-////    if (p.getClass().getName().contains("MoveCat"))
-////      System.out.println("check " + p.getName());
-//
-//    // look for components with bigger position values than us
-//    // return the bigger position list to insert us in
-//    List computedPosList = new ArrayList();
-//    int lastPos = -1;
-//    for (int i = 0; i < menu.getComponentCount(); i++) {
-//      Component c = menu.getComponent(i);
-//      if (c instanceof JMenu) {
-//        List computedPosSubList = getPositionListRecursive(configPosList,
-//            wrapMenu((JMenu) c), p);
-//        if (computedPosSubList.size() > 0) {
-//          computedPosList.add(i);
-//          computedPosList.addAll(computedPosSubList);
-//          break;
-//        }
-//      }
-//
-//      PlugIn p2 = pluginFromMenuItem(c);
-//      // pluginless item e.g. separator
-//      if (p2 == null)
-//        continue;
-//
-//      int itemPos = getPositionFromList(configPosList, p2.getClass().getName());
-//      // unconfigured item
-//      if (itemPos < 0)
-//        continue;
-//
-//      // actually add the item
-//      if (itemPos > pluginPos) {
-//        // search for defined separator inbetween both configured items
-//        boolean isConfigSeparated = configPosList.subList(pluginPos, itemPos)
-//            .contains(WorkbenchProperties.KEY_SEPARATOR);
-//        // search for actual separators inbetween menu candidate positions
-//        boolean foundSeparators = false;
-//        for (int j = lastPos; lastPos >= 0 && j < i; j++) {
-//          if (menu.getComponent(j) instanceof Separator) {
-//            foundSeparators = true;
-//            break;
-//          }
-//        }
-//        // add either here or there
-//        int pos = foundSeparators && isConfigSeparated ? lastPos + 1 : i;
-//        computedPosList.add(pos);
-//        break;
-//      }
-//      else {
-//        // when did we last see a configured item, we might want to be inserted
-//        // after
-//        // it but before any separators, unconfgd. items between the two items
-//        lastPos = i;
-//      }
-//    }
-//
-//    return computedPosList;
-//  }
-
   /**
    * calculates the plugin's position and return a position list as follows
    * assuming the plugin would go under File->Print->PrinterPlugin it could
@@ -1258,8 +1048,6 @@ public class FeatureInstaller {
     if (pluginPos < 0)
       return new ArrayList();
 
-//    if (p.getClass().getName().contains("Printer"))
-//      System.out.println("check " + p.getName());
 
     // look for components with bigger position values than us
     // return the bigger position list to insert us in
@@ -1642,35 +1430,8 @@ public class FeatureInstaller {
         return (JMenu) menuItem;
       }
     }
-    // // the main menu entry might not be created yet
-    // JMenu menu = (JMenu) installMnemonic(new JMenu(childName), menuBar());
-    // addToMenuBar(menu);
     return null;
   }
-
-  // private void addToMenuBar(JMenu menu) {
-  // menuBar().add(menu);
-  // // Ensure Window and Help are placed at the end. Remove #windowMenu and
-  // // #helpMenu
-  // // *after* adding #menu, because #menu might be the Window or Help menu!
-  // // [Jon Aquino]
-  // JMenu windowMenu = menuBarMenu(MenuNames.WINDOW);
-  // JMenu helpMenu = menuBarMenu(MenuNames.HELP);
-  // // Customized workbenches may not have Window or Help menus [Jon Aquino]
-  // if (windowMenu != null) {
-  // menuBar().remove(windowMenu);
-  // }
-  // if (helpMenu != null) {
-  // menuBar().remove(helpMenu);
-  // }
-  // // and (re)add them again at the end
-  // if (windowMenu != null) {
-  // menuBar().add(windowMenu);
-  // }
-  // if (helpMenu != null) {
-  // menuBar().add(helpMenu);
-  // }
-  // }
 
   public static Menu createMenusIfNecessary(Menu parent, String[] menuPath) {
     return createMenusIfNecessary(parent, menuPath, new String[menuPath.length]);
@@ -1707,10 +1468,6 @@ public class FeatureInstaller {
       // protect the last two FILE menu entries, separator + exit item's
       // position
       int count = parent.getComponentCount();
-
-//      String name2 = FeatureInstaller.getInstance().fetchKeyForMenu(
-//          parent.getWrappee());
-//      System.out.println("FI cMin parent count: " + name2 + "=" + count);
 
       if (parent.getWrappee() == FeatureInstaller.getInstance().menuBarMenu(
           MenuNames.FILE)
@@ -1750,22 +1507,15 @@ public class FeatureInstaller {
   /**
    * Find the first occurrence of a menu item with the given name and return it.
    * 
-   * @param childName
-   * @param menu
-   * @return JMenuItem
+   * @param childName name of the child MenuItem
+   * @param menu Menu to add the child MenuItem to
+   * @return a new JMenuItem
    */
   public static JMenuItem childMenuItem(String childName, Menu menu) {
     if (menu.getWrappee() instanceof JMenu) {
       Menu popup = wrapMenu(((JMenu) menu.getWrappee()).getPopupMenu());
       return childMenuItem(childName, popup);
     }
-    // MenuElement[] childMenuItems = menu.getSubElements();
-    // for (int i = 0; i < childMenuItems.length; i++) {
-    // if (childMenuItems[i] instanceof JMenuItem
-    // && ((JMenuItem) childMenuItems[i]).getText().equals(childName)) {
-    // return ((JMenuItem) childMenuItems[i]);
-    // }
-    // }
 
     for (int i = 0; i < menu.getComponentCount(); i++) {
       Component c = menu.getComponent(i);
@@ -1811,37 +1561,6 @@ public class FeatureInstaller {
     return name;
   }
 
-  // OJ is java 1.5 since a while now, commented this [ede 1. April 2012]
-
-  // /**
-  // * Workaround for Java Bug 4809393: "Menus disappear prematurely after
-  // * displaying modal dialog" Evidently fixed in Java 1.5. The workaround is
-  // to
-  // * wrap #actionPerformed with SwingUtilities#invokeLater.
-  // */
-  // public void addMainMenuItemWithJava14Fix(PlugIn executable,
-  // String[] menuPath, String menuItemName, boolean checkBox, Icon icon,
-  // EnableCheck enableCheck) {
-  // addMainMenuItem(executable, menuPath, menuItemName, checkBox, icon,
-  // enableCheck);
-  // JMenuItem menuItem = FeatureInstaller.childMenuItem(
-  // FeatureInstaller.removeProperties(menuItemName),
-  // ((JMenu)createMenusIfNecessary(menuBarMenu(menuPath[0]),
-  // behead(menuPath))));
-  // final ActionListener listener =
-  // abstractPlugInActionListener(menuItem.getActionListeners());
-  // menuItem.removeActionListener(listener);
-  // menuItem.addActionListener(new ActionListener() {
-  // public void actionPerformed(final ActionEvent e) {
-  // SwingUtilities.invokeLater(new Runnable() {
-  // public void run() {
-  // listener.actionPerformed(e);
-  // }
-  // });
-  // }
-  // });
-  // }
-
   private ActionListener abstractPlugInActionListener(
       ActionListener[] actionListeners) {
     for (int i = 0; i < actionListeners.length; i++) {
@@ -1858,8 +1577,8 @@ public class FeatureInstaller {
    * this is merely decorative. the keys are intercepted in WorkbenchFrame and
    * handled by an global key listener which also consumes them thereafter.
    * 
-   * @param menuItem
-   * @param executable
+   * @param menuItem the JMenuItem to assign a shortcut to
+   * @param executable an executable PlugIn
    */
   private void assignShortcut(JMenuItem menuItem, PlugIn executable) {
     if (executable instanceof ShortcutEnabled) {

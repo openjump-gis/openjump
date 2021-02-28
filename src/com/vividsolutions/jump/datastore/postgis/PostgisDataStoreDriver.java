@@ -25,9 +25,9 @@ public class PostgisDataStoreDriver
     
     /**
      * returns the right type of DataStoreConnection
-     * @param params
-     * @return
-     * @throws Exception 
+     * @param params list of parameters for this Connection
+     * @return a DataStoreConnection
+     * @throws Exception if an Exception occurs
      */
     @Override
     public DataStoreConnection createConnection(ParameterList params)

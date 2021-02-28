@@ -90,7 +90,8 @@ import org.openjump.core.rasterimage.RasterSymbology;
 
 public class TreeLayerNamePanel extends JPanel implements LayerListener,
     LayerableNamePanel, LayerNamePanelProxy, PopupNodeProxy {
-  private Map nodeClassToPopupMenuMap = new HashMap();
+
+  final private Map<Class<?>,JPopupMenu> nodeClassToPopupMenuMap = new HashMap<>();
 
   BorderLayout borderLayout1 = new BorderLayout();
 
@@ -123,8 +124,8 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     // e.g. CTRL+A clashed with the SelectAllLayerItems shortcut as it selected
     // all layers in tree although the shortcut is meant to select all items in
     // all _selected_ layers only
-    List allowedKeys = Arrays.asList(new Integer[] { KeyEvent.VK_LEFT,
-        KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN });
+    List<Integer> allowedKeys = Arrays.asList(KeyEvent.VK_LEFT,
+            KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN);
     @Override
     protected void processComponentKeyEvent(KeyEvent e) {
       // filter accepted key events
@@ -149,19 +150,19 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
 
   };
 
-  private LayerTreeCellRenderer layerTreeCellRenderer;
+  final private LayerTreeCellRenderer layerTreeCellRenderer;
 
   private TreeCellEditor cellEditor = new LayerTreeCellEditor(tree);
 
   private Object popupNode;
 
-  private ArrayList<LayerNamePanelListener> listeners = new ArrayList();
+  final private ArrayList<LayerNamePanelListener> listeners = new ArrayList<>();
 
-  private LayerManagerProxy layerManagerProxy;
+  final private LayerManagerProxy layerManagerProxy;
 
   JScrollPane scrollPane = new JScrollPane();
 
-  private FirableTreeModelWrapper firableTreeModelWrapper;
+  final private FirableTreeModelWrapper firableTreeModelWrapper;
 
   // used to drag Layerables among Categories
   private TreePath movingTreePath = null;
@@ -172,14 +173,15 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   private int lastHoveringRow = -1;
 
   /**
-     * @param layerManagerProxy
-     * @param treeModel
-     * @param renderingManager
-     * @param additionalNodeClassToTreeCellRendererMap
+     * @param layerManagerProxy a LayerManager proxy
+     * @param treeModel the TreeModel
+     * @param renderingManager rendering manager
+     * @param additionalNodeClassToTreeCellRendererMap map associating
+     *        Tree node classes to TreeCellRenderer
      */
   public TreeLayerNamePanel(LayerManagerProxy layerManagerProxy,
       TreeModel treeModel, RenderingManager renderingManager,
-      Map additionalNodeClassToTreeCellRendererMap) {
+      Map<Class<?>,TreeCellRenderer> additionalNodeClassToTreeCellRendererMap) {
     layerManagerProxy.getLayerManager().addLayerListener(this);
     this.layerManagerProxy = layerManagerProxy;
 
@@ -423,12 +425,12 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     TreeUtil.expandAll(tree, new TreePath(tree.getModel().getRoot()));
   }
 
-  public void addPopupMenu(Class nodeClass, JPopupMenu popupMenu) {
+  public void addPopupMenu(Class<?> nodeClass, JPopupMenu popupMenu) {
     nodeClassToPopupMenuMap.put(nodeClass, popupMenu);
   }
 
-  private void setCellRenderer(Map additionalNodeClassToTreeCellRendererMap) {
-    final Map map = createNodeClassToTreeCellRendererMap();
+  private void setCellRenderer(Map<Class<?>,TreeCellRenderer> additionalNodeClassToTreeCellRendererMap) {
+    final Map<Class<?>,TreeCellRenderer> map = createNodeClassToTreeCellRendererMap();
     map.putAll(additionalNodeClassToTreeCellRendererMap);
     tree.setCellRenderer(new TreeCellRenderer() {
       private DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer() {
@@ -451,8 +453,8 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     });
   }
 
-  private Map createNodeClassToTreeCellRendererMap() {
-    HashMap map = new HashMap();
+  private Map<Class<?>,TreeCellRenderer> createNodeClassToTreeCellRendererMap() {
+    Map<Class<?>,TreeCellRenderer> map = new HashMap<>();
     map.put(Layer.class, layerTreeCellRenderer);
     map.put(WMSLayer.class, layerTreeCellRenderer);
     map.put(Category.class, layerTreeCellRenderer);
@@ -527,8 +529,8 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
             
             if(rasterStyleValue.getColorMapType().equals(RasterSymbology.TYPE_INTERVALS)) {
                 label.setText(
-                        String.valueOf(rasterStyleValue.getValue().floatValue() + "-" +
-                        String.valueOf(rasterStyleValue.getNextValue().floatValue())));
+                        rasterStyleValue.getValue().floatValue() + "-" +
+                        rasterStyleValue.getNextValue().floatValue());
             } else if(rasterStyleValue.getColorMapType().equals(RasterSymbology.TYPE_SINGLE)) {
                 label.setText(String.valueOf(rasterStyleValue.getValue().intValue()));
             }
@@ -669,7 +671,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     }
   }
 
-  private JPopupMenu getPopupMenu(Class nodeClass) {
+  private JPopupMenu getPopupMenu(Class<?> nodeClass) {
     return (JPopupMenu) CollectionUtil.get(nodeClass, nodeClassToPopupMenuMap);
   }
 

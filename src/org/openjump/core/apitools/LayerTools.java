@@ -139,7 +139,7 @@ public class LayerTools extends ToolToMakeYourLifeEasier {
         return LayerTools.getLayer2FeatureMap(features, this.context);
     }
     
-    public final static Layer putGeometryArrayIntoMap(Geometry[] geometryArray, PlugInContext context){
+    public static Layer putGeometryArrayIntoMap(Geometry[] geometryArray, PlugInContext context){
         FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("geometry", AttributeType.GEOMETRY);
         FeatureCollection fc = new FeatureDataset(fs);

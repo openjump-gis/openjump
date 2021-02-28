@@ -287,8 +287,8 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      * Objects for combo boxes - Boolean states for buttons and checkboxes -
      * List of files for file choosers
      * 
-     * @param component
-     * @return object
+     * @param component the Component to get the value from
+     * @return an Object containing the value wrapped in the Component
      */
     public Object getValue(Component component) {
         // textfield, textarea
@@ -308,12 +308,12 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         // button
         if (component instanceof JButton) {
             final boolean state = ((JButton) component).isEnabled();
-            return new Boolean(state);
+            return state;
         }
         // radiobutton, checkbox
         if (component instanceof JToggleButton) {
             final boolean state = ((JToggleButton) component).isSelected();
-            return new Boolean(state);
+            return state;
         }
         // filechooser
         if (component instanceof JFileChooser) {
@@ -335,8 +335,8 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     /**
      * Convenience method for {@link #getValue(Component)}
      * 
-     * @param fieldName
-     * @return object
+     * @param fieldName the field name
+     * @return an Object containing the value for this field name
      */
     public Object getValue(String fieldName) {
         final Component component = fieldNameToComponentMap.get(fieldName);

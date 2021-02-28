@@ -361,9 +361,6 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         else
             name = I18N.get("ui.MenuNames.SELECTION");
         name = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn") + "-" + name;
-        //if (endCapStyleCode != BufferParameters.CAP_ROUND) {
-        //    name = name + "-" + endCapStyle(endCapStyleCode);
-        //}
         context.addLayer(StandardCategoryNames.RESULT, name, resultFC);
     }
 

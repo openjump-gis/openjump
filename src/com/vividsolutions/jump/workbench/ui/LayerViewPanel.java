@@ -376,7 +376,7 @@ public class LayerViewPanel extends JPanel
   /**
    * set a cursortool to associate with the layer view. will return immediatly
    * if the old cursor tools is identical to the new one.
-   * @param newct
+   * @param newct the new CursorTool
    */
   public void setCurrentCursorTool(CursorTool newct) {
     setCurrentCursorTool( newct, false );

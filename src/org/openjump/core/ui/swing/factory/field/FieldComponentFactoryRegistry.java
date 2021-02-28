@@ -55,7 +55,7 @@ public class FieldComponentFactoryRegistry {
     Blackboard blackboard) {
     Map<String, FieldComponentFactory> fields = (Map<String, FieldComponentFactory>)blackboard.get(KEY);
     if (fields == null) {
-      fields = new HashMap<String, FieldComponentFactory>();
+      fields = new HashMap<>();
       blackboard.put(KEY, fields);
     }
     return fields;

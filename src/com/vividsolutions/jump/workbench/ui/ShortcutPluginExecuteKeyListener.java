@@ -29,10 +29,10 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
 
   /**
    * Legacy method. Use add(KeyStroke key, final PlugIn plugin) instead.
-   * @param keyCode
-   * @param modifiers
-   * @param plugin
-   * @param enableCheck
+   * @param keyCode code of the shortcut key
+   * @param modifiers modifier to use with the key
+   * @param plugin PlugIn associated with the shortcut
+   * @param enableCheck enableCheck defining whether the PlugIn is active or not
    * @deprecated
    */
   public void add(final int keyCode, final int modifiers, final PlugIn plugin,
@@ -129,8 +129,9 @@ public class ShortcutPluginExecuteKeyListener implements KeyListener {
    * create a proper keystroke per platform. used to decorate menus with
    * accelerators.
    * 
-   * @param stroke
-   * @return stroke
+   * @param stroke keyStroke to modify
+   * @return a KeyStroke which modifier has been modified according to the
+   *    platform
    */
   public static KeyStroke getPlatformKeyStroke(KeyStroke stroke) {
     return KeyStroke.getKeyStroke(stroke.getKeyCode(),

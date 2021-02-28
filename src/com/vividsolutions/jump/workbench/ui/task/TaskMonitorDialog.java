@@ -256,8 +256,8 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2, Refresh
 
     /**
      * a wrapping label workaround
-     * @param text
-     * @return
+     * @param text the text to be wrapped in a Label
+     * @return a JTextComponent wrapping the text
      */
     protected JTextComponent createWrapLabel(String text) {
       // set a default col width to break at

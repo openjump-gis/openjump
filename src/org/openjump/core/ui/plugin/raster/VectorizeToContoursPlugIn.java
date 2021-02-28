@@ -313,9 +313,9 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
      *          eg. "new File(C:/folder/fileName.tif)"
      * @param category
      *          eg. "Working"
-     * @throws NoninvertibleTransformException
-     * @throws TiffReadingException
-     * @throws Exception
+     * @throws NoninvertibleTransformException if a NoninvertibleTransformException occurs
+     * @throws TiffReadingException if a TiffReadingException occurs
+     * @throws Exception if a Exception occurs
      */
     public void load(File inputFile, String category, PlugInContext context)
             throws NoninvertibleTransformException, TiffReadingException,

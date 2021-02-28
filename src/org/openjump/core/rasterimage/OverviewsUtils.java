@@ -82,12 +82,9 @@ public class OverviewsUtils {
     
     /**
      * Modified from GeoTools' OverviewsEmbedder.java
-     * @param tiffFile
-     * @param compressionType
-     * @param compressionRatio
-     * @param overviewsCount
-     * @param scaleAlgorithm
-     * @throws IOException 
+     * @param tiffFile file containing the tiff image
+     * @param overviewsCount number of overviews
+     * @throws IOException if an IOException occurs
      */
     public static void createOverviews(File tiffFile, int overviewsCount) throws IOException {
         

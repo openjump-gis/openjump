@@ -6,6 +6,8 @@ import javax.swing.ImageIcon;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
+import com.vividsolutions.jump.workbench.ui.EnableableToolBar;
+import com.vividsolutions.jump.workbench.ui.WorkbenchToolBar;
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
 import org.openjump.core.ui.plugin.datastore.WritableDataStoreDataSource;
@@ -55,7 +57,9 @@ public class DataStoreTransactionManagerPlugIn extends ToolboxPlugIn implements 
 
     public void initialize(final PlugInContext context) throws Exception {
         ImageIcon icon = GUIUtil.resize(IconLoader.icon("database_writable_add.png"), 20);
-        context.getWorkbenchFrame().getToolBar().addPlugIn(30, this,
+        WorkbenchToolBar toolbar = context.getWorkbenchFrame().getToolBar();
+        int endIndex = toolbar.getComponents().length;
+        toolbar.addPlugIn(endIndex, this,
                 icon, null, context.getWorkbenchContext());
 
         setWorkbenchContext(context.getWorkbenchContext());

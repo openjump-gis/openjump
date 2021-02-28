@@ -432,21 +432,20 @@ public class RasterImageIO {
 	
 	/**
 	 * Substituted by method getGeoReferencing(String fileName)
-	 * @param fileName
-	 * @param allwaysLookForTFWExtension
+	 * @param fileName file name
+	 * @param alwaysLookForTFWExtension whether the method should read georeferencing
+	 *                                  in an associated world file (tfw)
 	 * @param imageDimensions
-	 * @return Envelope
-	 * @throws Exception
+	 * @return Envelope envelope of the image in model coordinates
+	 * @throws Exception if an Exception occurs
 	 */
-	
- 	 
 	public static Envelope getGeoReferencing(String fileName,
-			boolean allwaysLookForTFWExtension, Point imageDimensions) throws Exception {
+			boolean alwaysLookForTFWExtension, Point imageDimensions) throws Exception {
 
 		Envelope env = null;
 
 		WorldFileHandler worldFileHandler = new WorldFileHandler(fileName,
-				allwaysLookForTFWExtension);
+				alwaysLookForTFWExtension);
 
 		if (imageDimensions == null) {
 			throw new Exception(
@@ -869,18 +868,18 @@ public class RasterImageIO {
 	 * Worldfile is not saved as geographic position  is already stored 
 	 * into the TIF file.
 	 * Statistics are calculated from raster
-	 * @param outFile
-	 * @param raster
-	 * @param envelope
-	 * @param cellSizeX
-	 * @param cellSizeY
-	 * @param noData
-	 * @param srsInfo
-	 * @throws IOException
-	 * @throws TransformerConfigurationException
-	 * @throws ParserConfigurationException
-	 * @throws TransformerException
-	 * @throws SAXException
+	 * @param outFile output file
+	 * @param raster a Raster
+	 * @param envelope Envelope of the image to write
+	 * @param cellSizeX cell width in model coordinates
+	 * @param cellSizeY cell height in model coordinates
+	 * @param noData value to use for nodata
+	 * @param srsInfo SRSInfo associated to this Raster
+	 * @throws IOException if an IOException occurs
+	 * @throws TransformerConfigurationException if a TransformerConfigurationException occurs
+	 * @throws ParserConfigurationException if a ParserConfigurationException occurs
+	 * @throws TransformerException if a TransformerException occurs
+	 * @throws SAXException if a SAXException occurs
 	 */
 	
 	public void writeImage(File outFile, Raster raster, Envelope envelope,

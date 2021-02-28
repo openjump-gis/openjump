@@ -37,11 +37,11 @@ import java.util.List;
 
 
 public interface AddRemoveListModel {
-    public void add(Object item);
+    void add(Object item);
 
-    public void setItems(Collection items);
+    void setItems(Collection items);
 
-    public List getItems();
+    List getItems();
 
-    public void remove(Object item);
+    void remove(Object item);
 }
