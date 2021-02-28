@@ -36,7 +36,6 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -52,14 +51,13 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
  * Extends JToolBar to create an {@link JToolBar} with
  * certain buttons enabled (for saving state).
  */
-
 public class EnableableToolBar extends JToolBar {
-    protected HashMap buttonToEnableCheckMap = new HashMap();
-    protected HashMap buttonToNameMap = new HashMap();
-    private InvokeMethodActionListener updateStateListener = new InvokeMethodActionListener(this, "updateEnabledState");
+    protected HashMap<JComponent,EnableCheck> buttonToEnableCheckMap = new HashMap<>();
+    protected HashMap<JComponent,String> buttonToNameMap = new HashMap<>();
+    private final InvokeMethodActionListener updateStateListener = new InvokeMethodActionListener(this, "updateEnabledState");
 
     public EnableCheck getEnableCheck(AbstractButton button) {
-        return (EnableCheck) buttonToEnableCheckMap.get(button);
+        return buttonToEnableCheckMap.get(button);
     }
 
     public void setEnableCheck(AbstractButton button, EnableCheck check) {
@@ -75,13 +73,9 @@ public class EnableableToolBar extends JToolBar {
     }
 
     public void updateEnabledState() {
-        for (Iterator i = buttonToEnableCheckMap.keySet().iterator();
-            i.hasNext();
-            ) {
-            JComponent component = (JComponent) i.next();
-            EnableCheck enableCheck =
-                (EnableCheck) buttonToEnableCheckMap.get(component);
-            String name = (String) buttonToNameMap.get(component);
+        for (JComponent component : buttonToEnableCheckMap.keySet()) {
+            EnableCheck enableCheck = buttonToEnableCheckMap.get(component);
+            String name = buttonToNameMap.get(component);
             
             String check = enableCheck.check(component);
             if (check!=null){

@@ -50,12 +50,12 @@ public class OptionSpec {
   private final static int NARGS_ONE_OR_MORE = -2;
   private final static int NARGS_ZERO_OR_ONE = -3;
 
-  private Vector<String> names = new Vector<>();
+  private final Vector<String> names = new Vector<>();
   // number of arguments needed, will be checked
-  private int nNeededArgs = 0;
+  private final int nNeededArgs;
   private String syntaxPattern;
-  private String doc = ""; // option description
-  private Vector<Option> options = new Vector<>();
+  private String doc; // option description
+  private final Vector<Option> options = new Vector<>();
 
   public OptionSpec(String[] optNames, int numberOfNeededArgs, String desc) {
     for (String name : optNames) {
@@ -107,7 +107,7 @@ public class OptionSpec {
    * -param value1 -param value2
    */
   public Iterator<String> getAllArguments() {
-    Vector<String> all = new Vector<String>();
+    Vector<String> all = new Vector<>();
     for (Option option : options) {
       all.addAll(Arrays.asList(option.getArgs()));
     }
@@ -131,9 +131,10 @@ public class OptionSpec {
   }
 
   private void checkNumArgs(String[] args) throws ParseException {
-    if (nNeededArgs == NARGS_ZERO_OR_MORE) {
+    //if (nNeededArgs == NARGS_ZERO_OR_MORE) {
       // this is senseless as it allows everything
-    } else if (nNeededArgs == NARGS_ONE_OR_MORE) {
+    //} else
+    if (nNeededArgs == NARGS_ONE_OR_MORE) {
       if (args.length <= 0) {
         throw new ParseException("option " + names
             + ": expected one or more args, found " + args.length);

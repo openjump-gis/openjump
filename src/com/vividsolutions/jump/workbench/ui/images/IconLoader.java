@@ -48,10 +48,13 @@ import com.vividsolutions.jump.workbench.Logger;
  * Gets an icon from this class' package.
  */
 public class IconLoader {
+
   // cache icons, in case they are requested more than once to speedup OJ start
-  private static HashMap<String, ImageIcon> iconCache = new HashMap<>();
-  //default icon if the choosen one doesn't exist from Kosmo SAIG
-  private static ImageIcon DEFAULT_UNKNOWN_ICON = new ImageIcon(IconLoader.class.getResource("saig/default_icon.png"));
+  private static final HashMap<String, ImageIcon> iconCache = new HashMap<>();
+
+  // default icon if the chosen one doesn't exist from Kosmo SAIG
+  private static final ImageIcon DEFAULT_UNKNOWN_ICON =
+          new ImageIcon(IconLoader.class.getResource("saig/default_icon.png"));
 
   public static ImageIcon icon(String filename) {
     return getIcon(filename);
@@ -81,12 +84,13 @@ public class IconLoader {
 
   // utility method for the icon loaders based on this 
   // like below but protected against null URLs because of non existing files/paths
-  protected static ImageIcon getIcon(Class clazz, String filename) {
+  protected static ImageIcon getIcon(Class<?> clazz, String filename) {
     URL url = clazz.getResource(filename);
 
     // didn't find the file via resource loading 
     if (url == null) {
-      Logger.error("Couldn't find '"+filename+"' via resource loading. Returning dummy default icon for now.");
+      Logger.error("Couldn't find '" + filename +
+              "' via resource loading. Returning dummy default icon for now.");
       return DEFAULT_UNKNOWN_ICON;
     }
 
@@ -94,13 +98,13 @@ public class IconLoader {
   }
 
   protected static ImageIcon getIcon(URL url) {
-    ImageIcon icon = null;
     // check for null
     if (url == null)
       throw new InvalidParameterException("parameter url must not be null.");
 
     String key = url.toExternalForm();
     // try loading the image
+    ImageIcon icon;
     try {
       // check cache
       icon = iconCache.get(key);
@@ -114,15 +118,16 @@ public class IconLoader {
       iconCache.put(key, icon);
     } catch (Exception e) {
       icon = DEFAULT_UNKNOWN_ICON;
-      Logger.error("Error loading '"+key+"'. Using dummy default icon for now.", e);
+      Logger.error("Error loading '" + key +
+              "'. Using dummy default icon for now.", e);
     }
 
     return icon;
   }
 
   /**
-   * utility method to automagically resolve images that moved into their
-   * appropriate iconset subfolders for legacy code
+   * Utility method to automagically resolve images that moved into their
+   * appropriate icon set subfolders for legacy code
    * 
    * @param filename name of the file containing the Icon
    * @return the path of the Icon File

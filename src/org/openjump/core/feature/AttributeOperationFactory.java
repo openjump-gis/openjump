@@ -30,7 +30,6 @@ package org.openjump.core.feature;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Operation;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.model.Layer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,8 +48,7 @@ public abstract class AttributeOperationFactory {
     // Static part (Registry containing OperationFactories)
     // /////////////////////////////////////////////////////////////////////////
     
-    private static Map<String,AttributeOperationFactory> registry = 
-                   new HashMap<String,AttributeOperationFactory>();
+    private static final Map<String,AttributeOperationFactory> registry = new HashMap<>();
     
     /** Add an OperationFactory in the Registry*/
     private static void addOperationFactory(AttributeOperationFactory factory) {
@@ -75,6 +73,6 @@ public abstract class AttributeOperationFactory {
     
     abstract public Operation createOperation(AttributeType type, String expression) throws Error;
     
-    abstract public Class getOperationClass();
+    abstract public Class<?> getOperationClass();
     
 }

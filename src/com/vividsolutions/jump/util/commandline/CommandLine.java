@@ -47,12 +47,12 @@ import com.vividsolutions.jump.I18N;
 public class CommandLine {
 
   // store options defs
-  private Vector<OptionSpec> optSpecs = new Vector<>();
+  private final Vector<OptionSpec> optSpecs = new Vector<>();
 
   // store optionless file parameters
-  private Vector<String> parVec = new Vector<>(); // store plain params (e.g. projects/files to open)
+  private final Vector<String> parVec = new Vector<>(); // store plain params (e.g. projects/files to open)
 
-  private char optionChar; // the char that indicates an option. Default is '/', which is
+  private final char optionChar; // the char that indicates an option. Default is '/', which is
                    // NT Standard, but this causes problems on Unix systems, so
                    // '-' is used by JUMPWorkbench (better for cross-platform apps)
 
@@ -93,7 +93,7 @@ public class CommandLine {
    */
   public Iterator<String> getAllArguments(String name) {
     OptionSpec spec = getOptionSpec(name);
-    return spec != null ? spec.getAllArguments() : Collections.<String>emptyList().iterator();
+    return spec != null ? spec.getAllArguments() : Collections.emptyIterator();
   }
 
   public Iterator<String> getParams() {
@@ -111,22 +111,22 @@ public class CommandLine {
   
   public String printDoc(Exception e) {
 
-    String out = "";
+    StringBuilder out = new StringBuilder();
         
-    if (e instanceof Exception )
-      out += "Error:\n  " + e.getMessage() + "\n\n";
+    if (e != null)
+      out.append("Error:\n  ").append(e.getMessage()).append("\n\n");
 
-    out += "Syntax:\n  oj_starter [-option [<parameter>]]... [<project_file>]... [<data_file>]...\n\nOptions:\n";
+    out.append("Syntax:\n  oj_starter [-option [<parameter>]]... [<project_file>]... [<data_file>]...\n\nOptions:\n");
 
     for (OptionSpec optionSpec : optSpecs) {
       String names = "";
       for (String name : optionSpec.getNames()) {
         names = names.isEmpty() ? optionChar + name : names + ", " + optionChar + name;
       }
-      out += "  " + names + "\n    " + optionSpec.getDesc() + "\n";
+      out.append("  ").append(names).append("\n    ").append(optionSpec.getDesc()).append("\n");
     }
 
-    return out;
+    return out.toString();
   }
 
   public void parse(String[] args) throws ParseException {

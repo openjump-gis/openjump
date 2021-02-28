@@ -194,6 +194,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
   public final int getShortcutKeys() {
     return shortcutKeys;
   }
+
   /*
    * ShortCutEnabled implementation.
    */
@@ -219,7 +220,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
     // find old method
     try {
       Method m = null;
-      Class c = this.getClass();
+      Class<?> c = this.getClass();
       do {
         try {
           //System.out.println("ap check "+c);
@@ -456,7 +457,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
         plugins.addAll(Arrays.asList(shortys));
     }
 
-    return (PlugIn[]) plugins.toArray(new PlugIn[]{});
+    return plugins.toArray(new PlugIn[]{});
   }
 
   /**

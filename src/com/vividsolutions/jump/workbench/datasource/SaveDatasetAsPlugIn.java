@@ -54,7 +54,7 @@ public class SaveDatasetAsPlugIn extends AbstractSaveDatasetAsPlugIn {
     public SaveDatasetAsPlugIn() {
       super();
       this.setShortcutKeys(KeyEvent.VK_S);
-      this.setShortcutModifiers(KeyEvent.ALT_MASK+KeyEvent.SHIFT_MASK);
+      this.setShortcutModifiers(KeyEvent.ALT_MASK + KeyEvent.SHIFT_MASK);
     }
     
     protected Collection<DataSourceQuery> showDialog(WorkbenchContext context) {

@@ -201,13 +201,6 @@ public final class UriUtil {
   public static boolean isURL(String in) {
     Pattern p = Pattern.compile(regexp);
     Matcher m = p.matcher(in != null ? in : "");
-
-    // while (m.find()) {
-    // System.out.println("g in:"+in);
-    // for (int i = 1; i <= m.groupCount(); i++) {
-    // System.out.println("g"+i+":"+m.group(i));
-    // }
-    // }
     return m.matches();
   }
 

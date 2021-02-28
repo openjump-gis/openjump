@@ -79,12 +79,12 @@ public final class TestTools {
 
         privateStaticField(JUMPWorkbench.class, "commandLine", new CommandLine());
         //JUMPWorkbench.main(args, title, setup, splashPanel, monitor);
-        JUMPWorkbench workbench = new JUMPWorkbench(title, args, splashWindow, monitor);
-        Setup setup = new JUMPConfiguration();
+        JUMPWorkbench workbench = new JUMPWorkbench(title, splashWindow, monitor);
+        JUMPConfiguration setup = new JUMPConfiguration();
         
         // Setup Workbench.
         setup.setup(workbench.getContext());
-        OpenJumpConfiguration.postExtensionInitialization(workbench.getContext());
+        setup.postExtensionInitialization(workbench.getContext());
         return workbench;
     }
     
