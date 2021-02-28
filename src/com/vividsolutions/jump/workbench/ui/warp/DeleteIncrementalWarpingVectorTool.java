@@ -76,8 +76,8 @@ public class DeleteIncrementalWarpingVectorTool extends AbstractDeleteVectorTool
     /**
      * The command returned uses super.createCommand to delete the feature in VectorLayer
      * and add the deletion of the feature from IncrementalVectorLayer
-     * @return
-     * @throws NoninvertibleTransformException
+     * @return an UndoableCommand
+     * @throws NoninvertibleTransformException if an Exception occurred in layerToSpecifiedFeaturesMap
      */
     protected UndoableCommand createBaseCommand() throws NoninvertibleTransformException {
         final UndoableCommand superCommand = super.createCommand();

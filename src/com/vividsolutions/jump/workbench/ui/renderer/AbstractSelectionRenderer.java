@@ -253,7 +253,7 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
 	/**
 	 * Sets the Color for the Selection rendering.
 	 *
-	 * @param color
+	 * @param color the Color to be used for selected features
 	 */
 	public void setSelectionLineColor(Color color) {
 		lineColor = color;
@@ -264,7 +264,7 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
 	/**
 	 * Sets the pointsize for selected features.
 	 *
-	 * @param selectionPointSize
+	 * @param selectionPointSize the point size for selected features
 	 */
 	public void setSelectionPointSize(int selectionPointSize) {
 		this.selectionPointSize = selectionPointSize;
@@ -291,7 +291,7 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
 	 * {@linkplain de.latlon.deejump.plugin.style.VertexStylesFactory VertexStylesFactory}
 	 * constants.
 	 *
-	 * @param selectionPointForm
+	 * @param selectionPointForm the form to use for selected features
 	 */
 	public void setSelectionPointForm(String selectionPointForm) {
 		this.selectionPointForm = selectionPointForm;

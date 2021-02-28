@@ -35,11 +35,12 @@ package com.vividsolutions.jump.util;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
 /**
-* String-to-Object map that anyone can use.
-* For example, the Options dialog has a single instance, and
-* it's stored on the Workbench Blackboard.
-*/
+ * String-to-Object map that anyone can use.
+ * For example, the Options dialog has a single instance, and
+ * it's stored on the Workbench Blackboard.
+ */
 public class Blackboard implements Cloneable, Serializable {
 
     private static final long serialVersionUID = 6504993615735124204L;
@@ -89,7 +90,7 @@ public class Blackboard implements Cloneable, Serializable {
      */
     public boolean get(String key, boolean defaultValue) {
         if (get(key) == null) {
-            put(key, defaultValue);
+            properties.put(key, defaultValue);
         }
         return getBoolean(key);
     }
@@ -104,12 +105,12 @@ public class Blackboard implements Cloneable, Serializable {
     }
 
     public Blackboard put(String key, int value) {
-        put(key, new Integer(value));
+        properties.put(key, value);
         return this;
     }
 
     public Blackboard put(String key, double value) {
-        put(key, new Double(value));
+        properties.put(key, value);
         return this;
     }
 
@@ -127,7 +128,7 @@ public class Blackboard implements Cloneable, Serializable {
      */
     public double get(String key, double defaultValue) {
         if (get(key) == null) {
-            put(key, defaultValue);
+            properties.put(key, defaultValue);
         }
         return getDouble(key);
     }
@@ -142,7 +143,7 @@ public class Blackboard implements Cloneable, Serializable {
      */
     public int get(String key, int defaultValue) {
         if (get(key) == null) {
-            put(key, defaultValue);
+            properties.put(key, defaultValue);
         }
         return getInt(key);
     }
@@ -167,7 +168,7 @@ public class Blackboard implements Cloneable, Serializable {
 
     public Object get(String key, Object defaultValue) {
         if (get(key) == null) {
-            put(key, defaultValue);
+            properties.put(key, defaultValue);
         }
         return get(key);
     }

@@ -16,6 +16,6 @@ import javax.swing.Icon;
  *
  */
 public interface Iconified {
-  public Icon getIcon(Dimension dim);
-  public Icon getIcon(int height);
+  Icon getIcon(Dimension dim);
+  Icon getIcon(int height);
 }

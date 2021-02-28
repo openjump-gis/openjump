@@ -127,9 +127,9 @@ public class StyleUtil {
      * Clipping a geometry using JTS produces higher quality results than
      * letting Java2D do it. It may also be faster!
      *
-     * @param geom
-     * @param env
-     * @return
+     * @param geom Geometry to clip
+     * @param env envelope to clip to
+     * @return a clipped Geometry
      */
     private static Geometry clipGeometry(Geometry geom, Envelope env) {
         try {
@@ -170,9 +170,9 @@ public class StyleUtil {
      * [Giuseppe Aruta 2018_10-30] Gets available values of styles from feature
      * collection
      * 
-     * @param ColorThemingStyle
-     * @param FeatureCollection
-     * @return
+     * @param style a ColorTheming style
+     * @param fc a FeatureCollection
+     * @return a list of style values actually used in the FeatureCollection
      */
 
     public static Set<String> getAvailableValues(ColorThemingStyle style,
@@ -182,9 +182,9 @@ public class StyleUtil {
         final Iterator<Feature> it = fc.iterator();
         while (it.hasNext()) {
             final Feature f = it.next();
-
+            // TODO test of style availability inside the loop : can be optimized
             if (style.isEnabled()) {
-
+                // TODO style.getAttributeName inside the loop : can be optimized
                 set.add(f.getAttribute(style.getAttributeName()).toString());
 
             }

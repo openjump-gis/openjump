@@ -36,13 +36,13 @@ public interface OptionsPanel {
     /**
      * @return an error message if a field is not valid; otherwise, null
      */
-    public String validateInput();
+    String validateInput();
     /**
      * Notifies this panel that it should commit its entries to the system
      */
-    public void okPressed();
+    void okPressed();
     /**
      * Notifies this panel that the OptionsDialog has been (re-)opened
      */
-    public void init();
+    void init();
 }

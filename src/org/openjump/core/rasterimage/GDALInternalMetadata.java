@@ -7,6 +7,7 @@ package org.openjump.core.rasterimage;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,7 +37,7 @@ public class GDALInternalMetadata extends DefaultHandler {
         SAXParser parser = factory.newSAXParser();
         //XMLReader reader = parser.getXMLReader();
 
-        parser.parse(new ByteArrayInputStream(statsTag.getBytes("UTF-8")), this);
+        parser.parse(new ByteArrayInputStream(statsTag.getBytes(StandardCharsets.UTF_8)), this);
         
         sampleNr++;
         Stats stats = new Stats(sampleNr);

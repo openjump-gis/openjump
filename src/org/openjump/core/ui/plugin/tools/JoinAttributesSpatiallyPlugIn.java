@@ -45,6 +45,7 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
+import com.vividsolutions.jump.feature.Feature;
 import org.openjump.core.attributeoperations.*;
 
 import com.vividsolutions.jump.I18N;
@@ -73,7 +74,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	
 
-    private String sidebartext = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Joins-attributes-of-source-layer-according-to-a-spatial-and-a-statistic-criterion");
+  private String sidebartext = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Joins-attributes-of-source-layer-according-to-a-spatial-and-a-statistic-criterion");
 	private String SRC_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.source-layer");
 	private String TGT_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.target-layer");	
 	private String SRC_ATTRIB = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-attribute");
@@ -91,15 +92,14 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	private double bradius = 0.0; 
 	    
 	private MultiInputDialog dialog;	
-	private PlugInContext pc = null;
-	
-	ArrayList attrOpList = new ArrayList();
-	ArrayList spatialOpList = new ArrayList();
+
+	List<String> attrOpList = new ArrayList<>();
+	List<String> spatialOpList = new ArrayList<>();
 	
 	public void initialize(PlugInContext context) throws Exception {
 	    
 		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-		featureInstaller.addMainMenuItem(
+		featureInstaller.addMainMenuPlugin(
 				this,				
 				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
 				this.getName() + "...",
@@ -140,7 +140,7 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	    	
 			this.dialog = new MultiInputDialog(
 					context.getWorkbenchFrame(), getName(), true);
-			setDialogValues(dialog, context);
+			setDialogValues(context);
 			GUIUtil.centreOnWindow(dialog);
 			dialog.setVisible(true);
 			if (! dialog.wasOKPressed()) { return false; }
@@ -151,10 +151,9 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	public void run(TaskMonitor monitor, PlugInContext context) throws Exception {  
 		
 		monitor.allowCancellationRequests();
-		this.pc = context;
-		
-		List srcFeatures = this.srcLayer.getFeatureCollectionWrapper().getFeatures();
-		List targetFeatures = this.targetLayer.getFeatureCollectionWrapper().getFeatures();	
+
+		List<Feature> srcFeatures = this.srcLayer.getFeatureCollectionWrapper().getFeatures();
+		List<Feature> targetFeatures = this.targetLayer.getFeatureCollectionWrapper().getFeatures();
 				
 		FeatureDataset results = JoinAttributes.joinAttributes(srcFeatures, targetFeatures,
 		        						this.attrName, this.attributeOperation, 
@@ -165,8 +164,7 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 		else{
 			context.getWorkbenchFrame().warnUser(notimplemented);			
 		}
-		//context.getWorkbenchContext().getLayerViewPanel().getSelectionManager().clear();
-	}	
+	}
 	
 	
 	//============================================================
@@ -187,10 +185,9 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	private ArrayList SpatialOpColl = new ArrayList();
 	
 	/**
-	 * @param selectTypeDialog2
-	 * @param context
+	 * @param context the PlugInContext
 	 */
-	private void setDialogValues(MultiInputDialog selectTypeDialog2, PlugInContext context) {
+	private void setDialogValues(PlugInContext context) {
 		this.dialog.setSideBarDescription(sidebartext);
 		//-- target layer
 		if (targetLayer == null) targetLayer = context.getCandidateLayer(0);
@@ -253,21 +250,21 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	}
 	
 	private void generateOpLists(){
-	    //-- note the order and position is important 
-	    //   since it will be used to obtain directly the values
+	    // note the order and position is important
+	    // since it will be used to obtain directly the values
 	    
 	    // the available operations are defined in AttributeOp.java
-	    /** copy from AttributeOp
-	    public final static int MAJORITY = 0;
-	    public final static int MINORITY = 1;
-	    public final static int MEAN = 2;
-	    public final static int MEDIAN = 3;
-	    public final static int MIN = 4;
-	    public final static int MAX = 5;
-	    public final static int STD = 6;
-	    public final static int SUM = 7;
-	    public final static int COUNT = 8;
-	    **/
+	    // copy from AttributeOp
+	    // public final static int MAJORITY = 0;
+	    // public final static int MINORITY = 1;
+	    // public final static int MEAN = 2;
+	    // public final static int MEDIAN = 3;
+	    // public final static int MIN = 4;
+	    // public final static int MAX = 5;
+	    // public final static int STD = 6;
+	    // public final static int SUM = 7;
+	    // public final static int COUNT = 8;
+
 	    this.attrOpList.clear(); //because function may be called several times
 	    this.attrOpList.add(AttributeOp.MAJORITY,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.majority"));
 	    this.attrOpList.add(AttributeOp.MINORITY,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minority"));

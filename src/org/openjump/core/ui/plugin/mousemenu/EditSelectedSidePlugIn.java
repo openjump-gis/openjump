@@ -110,7 +110,8 @@ public class EditSelectedSidePlugIn extends AbstractPlugIn {
 
                 return (((selectedGeo instanceof MultiPoint)
                         || (selectedGeo instanceof MultiLineString)
-                        || (selectedGeo instanceof MultiPolygon) || (selectedGeo instanceof GeometryCollection))) ? (sSelectOnlyOnePart)
+                        || (selectedGeo instanceof MultiPolygon)
+                        || (selectedGeo instanceof GeometryCollection))) ? (sSelectOnlyOnePart)
                         : null;
             }
         };

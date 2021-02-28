@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -46,16 +47,16 @@ abstract public class AbstractWMSRequest implements WMSRequest {
   /**
    * reset WMS version for requests to the underlying wms service
    * 
-   * @param ver
+   * @param version the WMS version to be used
    */
-  public void setWMSVersion(String ver) {
-    this.version = ver;
+  public void setWMSVersion(String version) {
+    this.version = version;
   }
 
   /**
    * must be implemented according to the specific needs
    * 
-   * @return URL
+   * @return the URL of the WMS request
    * @throws MalformedURLException
    */
   abstract public URL getURL() throws MalformedURLException;
@@ -63,22 +64,22 @@ abstract public class AbstractWMSRequest implements WMSRequest {
   /**
    * unified way to create a url connection, may be overwritten and modified
    * 
-   * @return
+   * @return the HttpURLConnection to use for the request
    * @throws IOException
    */
   protected HttpURLConnection prepareConnection() throws IOException {
     URL requestUrl = getURL();
     // by default we follow redirections
-    con = (HttpURLConnection) URLConnectionProvider.getInstance().getHttpConnection(requestUrl, true);
+    con = URLConnectionProvider.getInstance().getHttpConnection(requestUrl, true);
 
     return con;
   }
 
   /**
    * for implementations seeking to work with the connection to retrieve headers
-   * or such
+   * or such.
    * 
-   * @Override
+   * {@inheritDoc}
    */
   public HttpURLConnection getConnection() throws IOException {
     if (con == null)
@@ -125,7 +126,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
   /**
    * connect and retrieve response as inputStream
    *
-   * @return
+   * @return the request response as an InputStream
    * @throws IOException
    */
   public InputStream getInputStream() throws IOException {
@@ -140,7 +141,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
   /**
    * connect and retrieve response as text
    * 
-   * @return
+   * @return the request response as text
    * @throws IOException
    */
   public String getText() throws IOException {
@@ -170,7 +171,7 @@ abstract public class AbstractWMSRequest implements WMSRequest {
     //Logger.trace(con.getURL().toString());
 
     String contentType = con.getContentType();
-    Charset charset = Charset.forName("UTF-8");
+    Charset charset = StandardCharsets.UTF_8;
     try {
       if (contentType != null) {
         // avoid recompiling regex pattern

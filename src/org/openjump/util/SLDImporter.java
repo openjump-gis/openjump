@@ -174,7 +174,7 @@ public class SLDImporter {
     };
 
     /**
-     * @param doc
+     * @param doc the XML (SLD) document containing the style definition
      * @return a list of SLD rule names
      */
     public static LinkedList<String> getRuleNames(Document doc) {
@@ -195,7 +195,7 @@ public class SLDImporter {
     }
 
     /**
-     * @param doc
+     * @param doc the XML (SLD) document containing the style definition
      * @return a list of SLD rule names
      */
     public static LinkedList<String> getRuleNamesWithGeometrySymbolizers(Document doc) {
@@ -217,7 +217,7 @@ public class SLDImporter {
     }
 
     /**
-     * @param doc
+     * @param doc the XML (SLD) document containing the style definition
      * @return a list of SLD FeatureTypeStyle names
      */
     public static LinkedList<String> getPossibleColorThemingStyleNames(Document doc) {
@@ -239,7 +239,7 @@ public class SLDImporter {
     }
 
     /**
-     * @param doc
+     * @param doc the XML (SLD) document containing the style definition
      * @return a list of SLD rule names
      */
     public static LinkedList<String> getRuleNamesWithTextSymbolizers(Document doc) {
@@ -261,8 +261,8 @@ public class SLDImporter {
     }
 
     /**
-     * @param name
-     * @param doc
+     * @param name name of the style to retrieve
+     * @param doc the XML (SLD) document containing the style definition
      * @return a corresponding BasicStyle
      * @see #getBasicStyle(Element)
      */
@@ -280,8 +280,8 @@ public class SLDImporter {
      * Ignores any filters, and uses the information from Point-, Line- and
      * PolygonSymbolizers.
      * 
-     * @param rule
-     * @return a corresponding BasicStyle
+     * @param rule rule element describing a symbolizer
+     * @return a corresponding XBasicStyle
      */
     public static XBasicStyle getBasicStyle(Element rule) {
         if (rule == null) {
@@ -328,8 +328,8 @@ public class SLDImporter {
     }
 
     /**
-     * @param name
-     * @param doc
+     * @param name style name
+     * @param doc the XML (SLD) document containing the style definition
      * @return a vertex style, if a special one was found (use the basic style
      *         from #getBasicStyle if this is null)
      */
@@ -548,8 +548,8 @@ public class SLDImporter {
     /**
      * Converts a TextSymbolizer.
      * 
-     * @param name
-     * @param doc
+     * @param name style name
+     * @param doc the XML (SLD) document containing the style definition
      * @return the label style or null, if none was found
      */
     public static LabelStyle getLabelStyle(String name, Document doc) {
@@ -706,9 +706,8 @@ public class SLDImporter {
     }
 
     /**
-     * @param name
-     *            the name of the feature type style
-     * @param doc
+     * @param name style name
+     * @param doc the XML (SLD) document containing the style definition
      * @return the color theming style
      */
     public static ColorThemingStyle getColorThemingStyle(String name, Document doc) {
@@ -758,17 +757,17 @@ public class SLDImporter {
      * 
      * @version $Revision:$, $Date:$
      */
-    public static interface FillStyle {
+    public interface FillStyle {
 
         /**
-         * @param c
+         * @param c a Color
          */
-        public void setFillColor(Color c);
+        void setFillColor(Color c);
 
         /**
-         * @param a
+         * @param a alpha channel
          */
-        public void setAlpha(int a);
+        void setAlpha(int a);
 
     }
 
@@ -780,34 +779,34 @@ public class SLDImporter {
      * 
      * @version $Revision:$, $Date:$
      */
-    public static interface StrokeStyle {
+    public interface StrokeStyle {
 
         /**
-         * @param c
+         * @param c line Color
          */
-        public void setLineColor(Color c);
+        void setLineColor(Color c);
 
         /**
-         * @param w
+         * @param w line width
          */
-        public void setLineWidth(int w);
+        void setLineWidth(int w);
 
         /**
-         * @param a
+         * @param a alpha channel
          */
-        public void setAlpha(int a);
+        void setAlpha(int a);
 
         /**
-         * @param b
+         * @param b whether to use a LinePattern or not
          * @return a basic style
          */
-        public BasicStyle setRenderingLinePattern(boolean b);
+        BasicStyle setRenderingLinePattern(boolean b);
 
         /**
-         * @param p
+         * @param p a Line Pattern
          * @return a basic style
          */
-        public BasicStyle setLinePattern(String p);
+        BasicStyle setLinePattern(String p);
 
     }
 
@@ -819,12 +818,12 @@ public class SLDImporter {
      * 
      * @version $Revision:$, $Date:$
      */
-    public static interface SizedStyle {
+    public interface SizedStyle {
 
         /**
-         * @param s
+         * @param s size
          */
-        public void setSize(int s);
+        void setSize(int s);
 
     }
 
@@ -836,7 +835,7 @@ public class SLDImporter {
      * 
      * @version $Revision:$, $Date:$
      */
-    public static interface StrokeFillStyle extends StrokeStyle, FillStyle, Style {
+    public interface StrokeFillStyle extends StrokeStyle, FillStyle, Style {
 
         // no methods, they're combined by the stroke and fill interfaces
 
@@ -850,7 +849,7 @@ public class SLDImporter {
      * 
      * @version $Revision:$, $Date:$
      */
-    public static interface SizedStrokeFillStyle extends StrokeFillStyle, SizedStyle {
+    public interface SizedStrokeFillStyle extends StrokeFillStyle, SizedStyle {
         // no methods, they're combined
     }
 

@@ -63,7 +63,7 @@ public class FileUtil {
    *
    * @param filename name of the input file
    * @return a list of strings representing the file's lines
-   * @throws IOException
+   * @throws IOException if an IOException occurred
    */
   public static List<String> getContents(String filename) throws IOException {
     return getContents(new FileInputStream(filename));
@@ -75,7 +75,7 @@ public class FileUtil {
    * @param filename name of the input file
    * @param encoding charset to use to decode filename
    * @return a list of strings representing the file's lines
-   * @throws IOException
+   * @throws IOException if an Exception occurred
    */
   public static List<String> getContents(String filename, String encoding)
       throws IOException {
@@ -87,7 +87,7 @@ public class FileUtil {
    *
    * @param uri uri of the input resource
    * @return a list of strings representing the compressed file's lines
-   * @throws IOException
+   * @throws IOException if an Exception occurred
    */
   public static List<String> getContents(URI uri) throws IOException {
     return getContents(CompressedFile.openFile(uri));
@@ -98,7 +98,7 @@ public class FileUtil {
    * 
    * @param inputStream inputStream to read from
    * @return a list of lines
-   * @throws IOException
+   * @throws IOException if an Exception occurred
    */
   public static List<String> getContents(InputStream inputStream) throws IOException {
     return getContents(inputStream, Charset.defaultCharset().name());
@@ -111,7 +111,7 @@ public class FileUtil {
    * @param inputStream inputStream to read from
    * @param encoding encoding of the inputStream
    * @return a list of lines
-   * @throws IOException
+   * @throws IOException if an Exception occurred
    */
   public static List<String> getContents(InputStream inputStream, String encoding)
       throws IOException {
@@ -268,7 +268,7 @@ public class FileUtil {
    * @param suffix file name suffix - default ".tmp"
    * @param monitor to get feedback during the stream reading
    * @return the temp file
-   * @throws IOException
+   * @throws IOException if an Exception occurred
    */
   public static File copyInputStreamToTempFile(InputStream in, String prefix,
       String suffix, TaskMonitor monitor) throws IOException {

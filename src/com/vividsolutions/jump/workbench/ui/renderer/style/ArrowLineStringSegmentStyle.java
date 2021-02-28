@@ -92,8 +92,8 @@ public class ArrowLineStringSegmentStyle extends LineStringSegmentStyle {
     }
 
     /**
-     * @param tail the tail of the whole arrow; just used to determine angle
      * @param finLength required distance from the tip to each fin's tip
+     * @param finAngle semi-angle of the arrow head
      */
     private GeneralPath arrowhead(Point2D p0, Point2D p1,
         double finLength, double finAngle)

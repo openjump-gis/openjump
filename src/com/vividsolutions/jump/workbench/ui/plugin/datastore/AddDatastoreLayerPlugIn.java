@@ -1,18 +1,11 @@
 package com.vividsolutions.jump.workbench.ui.plugin.datastore;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.coordsys.CoordinateSystemRegistry;
-import com.vividsolutions.jump.io.datasource.DataSourceQuery;
-import com.vividsolutions.jump.task.DummyTaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.OpenProjectPlugIn;
-
-import org.openjump.core.ccordsys.srid.SRIDStyle;
 
 import javax.swing.ImageIcon;
 

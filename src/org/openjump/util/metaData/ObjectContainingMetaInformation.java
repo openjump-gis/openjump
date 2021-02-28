@@ -23,8 +23,8 @@ package org.openjump.util.metaData;
  */
 public interface ObjectContainingMetaInformation {
     
-    public MetaDataMap getMetaInformation();
+    MetaDataMap getMetaInformation();
 
-    public void setMetaInformation(MetaDataMap metaInformation);
+    void setMetaInformation(MetaDataMap metaInformation);
 
 }

@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -772,7 +773,7 @@ public abstract class LayerableUtil {
         final FileInputStream input = new FileInputStream(inputXML);
         // FileWriter fw = new FileWriter( outputXML );
         final OutputStreamWriter fw = new OutputStreamWriter(
-                new FileOutputStream(sld_outFile), "UTF-8");
+                new FileOutputStream(sld_outFile), StandardCharsets.UTF_8);
         final HashMap<String, String> map = new HashMap<String, String>(9);
         map.put("wmsLayerName", name);
         map.put("featureTypeStyle", name);
@@ -951,8 +952,8 @@ public abstract class LayerableUtil {
      * Returns the area of feature collection (only Polygons or MultiPolygons)
      * in the selected Vector Layer.class.
      * This method exclude area of the layer which are not covered by feature
-     * @param com.vividsolutions.jump.workbench.model.Layer
-     * @return area ad double
+     * @param layer a Layer
+     * @return area as a double
      */
     public static double getValidArea(Layer layer) {
     	double area=0;
@@ -968,8 +969,8 @@ public abstract class LayerableUtil {
     /**
      * Returns the area of selected RasterImageLayer.class.
      * This method excludes cells with no data value
-     * @param org.openjump.core.rasterimage.RasterImageLayer
-     * @return area as double
+     * @param layer RasterImageLayer
+     * @return area as a double
      */
     public static double getValidArea(RasterImageLayer layer) throws IOException {
     	Raster ras=layer.getRasterData(null);

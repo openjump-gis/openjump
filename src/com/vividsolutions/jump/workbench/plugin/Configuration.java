@@ -42,5 +42,5 @@ package com.vividsolutions.jump.workbench.plugin;
  * @see Extension
  */
 public interface Configuration {
-    public void configure(PlugInContext context) throws Exception;
+    void configure(PlugInContext context) throws Exception;
 }

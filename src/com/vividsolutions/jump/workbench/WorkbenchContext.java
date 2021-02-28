@@ -64,7 +64,7 @@ public abstract class WorkbenchContext implements LayerViewPanelProxy,
     abstract public Blackboard getBlackboard();
 
     /**
-     * @Deprecated in favor of getLayerableNamePanel()
+     * @deprecated in favor of getLayerableNamePanel()
      */
     @Deprecated
     abstract public LayerNamePanel getLayerNamePanel();

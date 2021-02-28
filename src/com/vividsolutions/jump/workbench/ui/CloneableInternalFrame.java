@@ -37,5 +37,5 @@ import javax.swing.JInternalFrame;
 
 
 public interface CloneableInternalFrame {
-    public JInternalFrame internalFrameClone();
+    JInternalFrame internalFrameClone();
 }

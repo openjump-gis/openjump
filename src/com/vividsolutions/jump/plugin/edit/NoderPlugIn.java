@@ -35,7 +35,7 @@ import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.noding.*;
-import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
+import org.locationtech.jts.noding.snapround.SnapRoundingNoder;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.locationtech.jts.precision.CoordinatePrecisionReducerFilter;
 import com.vividsolutions.jump.I18N;
@@ -341,7 +341,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     
     private Noder getScaledNoder() {
         PrecisionModel pm = gf.getPrecisionModel();
-        return new ScaledNoder(new MCIndexSnapRounder(pm), pm.getScale());
+        return new ScaledNoder(new SnapRoundingNoder(pm), pm.getScale());
     }
     
     private Noder getMCIndexNoder(SegmentIntersector intersector) {

@@ -78,7 +78,7 @@ public class ConfigTooltipPanel extends OptionsPanelV2 {
     /**
      * Constructor del panel
      * 
-     * @param blackboard
+     * @param blackboard a Blackboard
      */
     public ConfigTooltipPanel(Blackboard blackboard) {
         super();
@@ -92,7 +92,7 @@ public class ConfigTooltipPanel extends OptionsPanelV2 {
 
     /**
      * 
-     * @return
+     * @return a Panel containing the Tooltip
      */
     private JPanel getTooltipPanel() {
         if (tooltipPanel == null) {

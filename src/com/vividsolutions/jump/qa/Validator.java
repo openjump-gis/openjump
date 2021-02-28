@@ -35,7 +35,7 @@ package com.vividsolutions.jump.qa;
 
 import java.util.*;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.IsSimpleOp;
 import org.locationtech.jts.operation.valid.*;
@@ -320,14 +320,14 @@ public class Validator {
                 public ValidationError validate(Geometry g, Feature f) {
                     Polygon polygon = (Polygon) g;
 
-                    if (CGAlgorithms.isCCW(polygon.getExteriorRing()
+                    if (Orientation.isCCW(polygon.getExteriorRing()
                                                       .getCoordinates())) {
                         return new ValidationError(ValidationErrorType.EXTERIOR_RING_CCW,
                             f, polygon);
                     }
 
                     for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-                        if (!CGAlgorithms.isCCW(polygon.getInteriorRingN(i)
+                        if (!Orientation.isCCW(polygon.getInteriorRingN(i)
                                                            .getCoordinates())) {
                             return new ValidationError(ValidationErrorType.INTERIOR_RING_CW,
                                 f, polygon);

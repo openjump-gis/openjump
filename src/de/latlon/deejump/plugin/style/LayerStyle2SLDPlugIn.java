@@ -56,6 +56,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -113,8 +114,6 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
      */
     protected static Transformer transformer = null;
 
-    private static final String UTF_8 = "UTF-8";
-
     static {
         initTransformer();
     }
@@ -141,8 +140,8 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
     /**
      * Use this method to install the LayerStyle2SLD plugin in the toolbar
      * 
-     * @param context
-     * @throws Exception
+     * @param context PlugInContext
+     * @throws Exception if an Exception occurs
      */
     public void install(PlugInContext context) throws Exception {
         context.getWorkbenchContext().getWorkbench().getFrame().getToolBar()
@@ -320,7 +319,7 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
 
         // FileWriter fw = new FileWriter( outputXML );
         OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(
-                outputXML), UTF_8);
+                outputXML), StandardCharsets.UTF_8);
 
         HashMap<String, String> map = new HashMap<String, String>(9);
         map.put("wmsLayerName", wmsLayerName);
@@ -336,9 +335,10 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
         // ATENTION : note that min and max are swapped in JUMP!!!
         // will swap later, in transformContext
         Double d = layer.getMinScale();
-        d = d != null ? d : new Double(0);
+        // set 0.0 if null and avoid NPE
+        d = d != null ? d : 0.0;
 
-        map.put("minScale", "" + toRealWorldScale(scaleFactor, d.doubleValue()));
+        map.put("minScale", "" + toRealWorldScale(scaleFactor, d));
 
         // using Double.MAX_VALUE is creating a large number - too many 0's
         // make it simple and hardcde a large number
@@ -361,26 +361,24 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
     }
 
     /**
-     * @param layerXML
-     * @param parMap
+     * @param layerXML xml InputStream defining the symbolization
+     * @param parameters Map of parameters for XML transformation
      * @return the transformed XML (?)
-     * @throws TransformerException
-     * @throws UnsupportedEncodingException
+     * @throws TransformerException if an Exception occurs during XML transformation
      */
     public static String transformContext(InputStream layerXML,
-            Map<String, String> parMap) throws TransformerException,
-            UnsupportedEncodingException {
-        return transformContext(new InputStreamReader(layerXML, UTF_8), parMap);
+            Map<String, String> parameters) throws TransformerException {
+        return transformContext(new InputStreamReader(layerXML, StandardCharsets.UTF_8), parameters);
     }
 
     /**
-     * @param layerXML
-     * @param parMap
+     * @param layerXML Reader reading symbology definition in XML
+     * @param parameters a Map of parameters
      * @return the transformed XML (?)
-     * @throws TransformerException
+     * @throws TransformerException if an Exception occurs during XML transformation
      */
     public static String transformContext(Reader layerXML,
-            Map<String, String> parMap) throws TransformerException {
+            Map<String, String> parameters) throws TransformerException {
 
         StringWriter sw = new StringWriter();
         StreamResult sr = new StreamResult(sw);
@@ -390,8 +388,8 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
         // if you don't clear the pars, xalan throws a nasty NPE
         transformer.clearParameters();
 
-        for (String key : parMap.keySet()) {
-            transformer.setParameter(key, parMap.get(key));
+        for (String key : parameters.keySet()) {
+            transformer.setParameter(key, parameters.get(key));
         }
 
         transformer.transform(streamSource, sr);
@@ -411,7 +409,7 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
         try {
             URL xslUrl = LayerStyle2SLDPlugIn.class.getResource("layerstyle2sld.xsl");
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            InputStreamReader isr = new InputStreamReader(xslUrl.openStream(), UTF_8);
+            InputStreamReader isr = new InputStreamReader(xslUrl.openStream(), StandardCharsets.UTF_8);
             StreamSource streamSrc = new StreamSource(isr);
             transformer = transformerFactory.newTransformer(streamSrc);
         } catch (TransformerConfigurationException e) {
@@ -424,8 +422,8 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
     }
 
     /**
-     * @param workbenchContext
-     * @return the enable check
+     * @param workbenchContext the WorkbenchContext
+     * @return the EnableCheck object to enable/disable the PlugIn
      */
     public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
         EnableCheckFactory ecf = new EnableCheckFactory(workbenchContext);
@@ -437,14 +435,18 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
     }
 
     /**
-     * @param scaleFactor
-     * @param jumpScale
+     * @param scaleFactor scale factor between internalScale (screen pixels to model units)
+     *                    and realScale (image and model in homogeneous coordinates)
+     * @param jumpScale map scale as defined in the min/max scale style interface
      * @return the scale
+     * TODO seems that we do a lot of redundant work to compute this scale
      */
-    public static final Double toRealWorldScale(double scaleFactor, double jumpScale) {
-        return new Double(jumpScale / scaleFactor);
+    public static double toRealWorldScale(double scaleFactor, double jumpScale) {
+        return jumpScale / scaleFactor;
     }
 
+    // ratio between internalScale (image unit in pixels to model units) and realScale
+    // (scale between screen picture and model with homogeneous coordinates)
     private double calcScaleFactor(LayerViewPanel panel) {
         double internalScale = 1d / panel.getViewport().getScale();
         double realScale = ScreenScale.getHorizontalMapScale(panel.getViewport());

@@ -46,6 +46,7 @@ import java.awt.geom.Point2D;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -172,7 +173,7 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
 	    	redrawShape();
     	}
     	catch(Exception e){
-    		System.out.println(e);
+				Logger.warn(e.getMessage(), e);
     	}
     }
 

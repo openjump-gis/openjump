@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
@@ -83,9 +84,9 @@ public class URLConnectionProvider {
 
   /**
    * @deprecated use getHttpConnection(url,followRedirects) instead
-   * @param url
-   * @return
-   * @throws IOException
+   * @param url URL
+   * @return a URLConnection
+   * @throws IOException if an IOException occurs
    */
   @Deprecated
   public URLConnection getConnection(URL url) throws IOException {
@@ -133,7 +134,7 @@ public class URLConnectionProvider {
     // add auth info if any
     String userInfo = connection.getURL().getUserInfo();
     if (userInfo != null) {
-      String auth = Base64.encodeBytes(UriUtil.urlDecode(userInfo).getBytes(Charset.forName("UTF-8")));
+      String auth = Base64.encodeBytes(UriUtil.urlDecode(userInfo).getBytes(StandardCharsets.UTF_8));
       connection.setRequestProperty("Authorization", "Basic " + auth);
       Logger.trace("Added auth header 'Authorization: Basic "+auth+"'");
     }
@@ -209,9 +210,9 @@ public class URLConnectionProvider {
    * setDefaultSSLSocketFactory of HttpsURLConnection to a dummy trust managed
    * in case user requested to do so, remember this choice during runtime
    * 
-   * @param trust
-   * @param url
-   * @throws GeneralSecurityException
+   * @param trust true if the client must be trust
+   * @param url the URL to connect to
+   * @throws GeneralSecurityException if a GeneralSecurityException occurs
    */
   private void setTrustOption(boolean trust, URL url) throws GeneralSecurityException {
     SSLContext sc = SSLContext.getInstance("SSL");

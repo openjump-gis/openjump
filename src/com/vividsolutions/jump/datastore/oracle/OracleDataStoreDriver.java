@@ -28,9 +28,9 @@ public class OracleDataStoreDriver
 
     /**
      * returns the right type of DataStoreConnection
-     * @param params
-     * @return
-     * @throws Exception 
+     * @param params parameters of this DataStoreConnection
+     * @return a DataStoreConnection
+     * @throws Exception if an Exception occurs
      */
     @Override
     public DataStoreConnection createConnection(ParameterList params)

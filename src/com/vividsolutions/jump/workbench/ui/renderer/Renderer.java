@@ -12,29 +12,35 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
  * #isRendering returns false.
  */
 public interface Renderer {
-	public abstract void clearImageCache();
-	public abstract boolean isRendering();
-    /**
-     *@return contentID which identifies this Renderer by what it draws
-     */    
-	public abstract Object getContentID();
-	public abstract void copyTo(Graphics2D graphics);
-    /**
-     * @return null if no rendering work needs to be done
-     */
-	public abstract Runnable createRunnable();
-	public abstract void cancel();
+
+	void clearImageCache();
+
+	boolean isRendering();
+
+	/**
+   *@return contentID which identifies this Renderer by what it draws
+   */
+	Object getContentID();
+
+	void copyTo(Graphics2D graphics);
+
+	/**
+   * @return null if no rendering work needs to be done
+   */
+	Runnable createRunnable();
+
+	void cancel();
     
-    public static interface Factory {
-        public Renderer create();
-    }    
+  interface Factory {
+    Renderer create();
+  }
     
-    //[sstein: 20.01.2006] from Ole for RenderingManager changes
-    // for not hardwired renderers and to including pirol image layers
-    /**
-     * @deprecated Replaced by {@link RendererFactory}
-     */
-    public static interface ContentDependendFactory {
-        public Renderer create(Object contentID);
-    } 
+  //[sstein: 20.01.2006] from Ole for RenderingManager changes
+  // for not hardwired renderers and to including pirol image layers
+  /**
+   * @deprecated Replaced by {@link RendererFactory}
+   */
+  interface ContentDependendFactory {
+    Renderer create(Object contentID);
+  }
 }

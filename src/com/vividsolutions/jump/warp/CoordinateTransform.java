@@ -77,7 +77,7 @@ public abstract class CoordinateTransform {
     }
 
     public Geometry transform(Geometry oldGeometry) {
-        Geometry newGeometry = (Geometry) oldGeometry.clone();
+        Geometry newGeometry = (Geometry) oldGeometry.copy();
         newGeometry.apply(coordinateFilter);
         newGeometry.geometryChanged();
 

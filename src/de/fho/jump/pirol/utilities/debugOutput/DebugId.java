@@ -12,6 +12,6 @@ package de.fho.jump.pirol.utilities.debugOutput;
 
 public interface DebugId {
 
-	public abstract String getUserName();
+	String getUserName();
 
 }

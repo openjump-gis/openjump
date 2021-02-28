@@ -10,7 +10,6 @@
 *****************************************************/
 package org.openjump.core.ui.util;
 
-import java.awt.Toolkit;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
 /**
@@ -21,9 +20,9 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  **/
 public class ScreenScale {
     
-    // Some refactoring needed here, resolution should not be static
+  // Some refactoring needed here, resolution should not be static
     
-    // [mmichaud 2013-03-27] Toolkit.getDefaultToolkit().getScreenResolution()
+  // [mmichaud 2013-03-27] Toolkit.getDefaultToolkit().getScreenResolution()
 	// does not return the correct value as it does not know the physical 
 	// screen size.
 	// On modern computers, 96 ppi is a good approximation when screen is 
@@ -52,10 +51,8 @@ public class ScreenScale {
 	 */
 	public static double getHorizontalMapScale(Viewport port){	
 	
-		double horizontalScale = 0;
-		
+		double horizontalScale;
 
-	    
 	    double INCHTOCM = 2.54; //cm
 	    
 	    double panelWidth = port.getPanel().getWidth(); //pixel

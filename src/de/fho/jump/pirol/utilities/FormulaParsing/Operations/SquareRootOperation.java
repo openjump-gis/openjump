@@ -34,7 +34,7 @@ public class SquareRootOperation extends FormulaValue {
         this.value = value;
     }
     /**
-     *@param feature
+     *@param feature the Feature to get the value from
      *@return the square root of the given value
      */
     public double getValue(Feature feature) {

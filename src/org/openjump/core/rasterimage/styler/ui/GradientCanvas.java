@@ -6,6 +6,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LinearGradientPaint;
 import java.awt.Paint;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.TreeMap;
 import javax.swing.JComponent;
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
 
@@ -70,13 +73,23 @@ public class GradientCanvas extends JComponent{
 
         Graphics2D g2d = (Graphics2D) g;
         LinearGradientPaint paint = null;
-        float[] fractions = new float[colorMapEntries.length];
-        Color[] colors = new Color[colorMapEntries.length];
-        for(int c=0; c<colors.length; c++) {
-            colors[c] = colorMapEntries[c].getColor();
-            fractions[c] = (float) (colorMapEntries[c].getUpperValue()/ colorMapEntries[colorMapEntries.length-1].getUpperValue());
+        // put values of the colorMapEntries in a TreeMap to filter possible duplicates
+        // in fraction values (makes LinearGradientPaint component throws Exception)
+        Map<Float,Color> map = new TreeMap<>();
+        for (ColorMapEntry colorMapEntry : colorMapEntries) {
+            float fraction = (float) (colorMapEntry.getUpperValue() /
+                    colorMapEntries[colorMapEntries.length - 1].getUpperValue());
+            map.put(fraction, colorMapEntry.getColor());
         }
-        
+        float[] fractions = new float[map.size()];
+        Color[] colors = new Color[map.size()];
+        int index = 0;
+        for (Map.Entry<Float,Color> entry : map.entrySet()) {
+            fractions[index] = entry.getKey();
+            colors[index] = entry.getValue();
+            index++;
+        }
+        System.out.println(Arrays.toString(fractions));
         if(type == GradientType.HORIZONTAL) {
             if (orientation == GradientOrientation.DIRECT) {
                 paint = new LinearGradientPaint(0, 0, width, height, fractions, colors);

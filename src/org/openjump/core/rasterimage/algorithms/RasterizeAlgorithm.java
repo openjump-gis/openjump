@@ -96,8 +96,8 @@ public class RasterizeAlgorithm {
     
     /**
      * Method to save results to a TIFF file
-     * @param file
-     * @throws IOException
+     * @param file destination File
+     * @throws IOException if an IOException occurs
      */
     
     public void saveToFile(File file) throws IOException {
@@ -109,7 +109,7 @@ public class RasterizeAlgorithm {
     
     /**
      * Rasterize a FeatureCollection using AdBToolboxframework
-     * @throws Exception
+     * @throws Exception if an Exception occurs
      */
 	   
 	  
@@ -130,10 +130,9 @@ public class RasterizeAlgorithm {
    
 	   /**
 	    * Method Rasterize a FeatureCollection using Sextante framework
-	    * @throws Exception 
-	    * @throws OutOfMemoryError 
+	    * @throws OutOfMemoryError if an OutOfMemoryError occurs
 	    */
-	   private static void RasterizeSextante(FeatureCollection fCollection ) throws OutOfMemoryError, Exception  {
+	   private static void RasterizeSextante(FeatureCollection fCollection ) throws OutOfMemoryError {
 		   
 		 final Coordinate[] coords = new Coordinate[5];
 	      coords[0] = new Coordinate(m_Extent.getXMin(), m_Extent.getYMin());

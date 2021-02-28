@@ -137,7 +137,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
         checkFactory.createExactlyNLayersMustBeSelectedCheck(1));
   }
 
-  public static ImageIcon getIcon() {
+  public ImageIcon getIcon() {
     // return IconLoaderFamFam.icon("table.png");
     return IconLoader.icon("Row.gif");
   }
@@ -145,10 +145,10 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
   public static class ViewAttributesFrame extends DetachableInternalFrame
       implements LayerManagerProxy, SelectionManagerProxy, LayerNamePanelProxy,
       TaskFrameProxy, LayerViewPanelProxy {
-    private LayerManager layerManager;
-    private OneLayerAttributeTab attributeTab;
-    private static ImageIcon ICON12 = IconLoader.icon("Row_14.gif");
-    private static ImageIcon ICON16 = IconLoader.icon("Row_16.gif");
+    private final LayerManager layerManager;
+    private final OneLayerAttributeTab attributeTab;
+    private static final ImageIcon ICON12 = IconLoader.icon("Row_14.gif");
+    private static final ImageIcon ICON16 = IconLoader.icon("Row_16.gif");
 
     public ViewAttributesFrame(final Layer layer, final PlugInContext context) {
       this.layerManager = context.getLayerManager();

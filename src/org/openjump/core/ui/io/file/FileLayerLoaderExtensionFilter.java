@@ -40,24 +40,6 @@ public class FileLayerLoaderExtensionFilter extends FileNameExtensionFilter {
     return fileLayerLoader;
   }
 
-/*
-  private static String createDescription(final String description,
-    Collection fileExtensions) {
-    StringBuffer fullDescription = new StringBuffer(description);
-    fullDescription.append(" (");
-    for (Iterator extensions = fileExtensions.iterator(); extensions.hasNext();) {
-      String extension = (String)extensions.next();
-      fullDescription.append("*.");
-      fullDescription.append(extension);
-      if (extensions.hasNext()) {
-        fullDescription.append(",");
-      }
-    }
-    fullDescription.append(")");
-    return fullDescription.toString();
-  }
-*/
-
   private static String getDescription(FileLayerLoader fileLayerLoader) {
     return fileLayerLoader.getDescription();
   }

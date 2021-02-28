@@ -24,11 +24,11 @@ public class ColorsTablePanel extends JPanel {
     
     /**
      * 
-     * @param parent
-     * @param tableType
-     * @param colorMapEntries
-     * @param noDataValue 
-     * @param integerValues 
+     * @param parent the parent component
+     * @param tableType the table type is Intervals or Values
+     * @param colorMapEntries the ColorMapEntry array
+     * @param noDataValue a double value meaning nodata
+     * @param integerValues true if entries are precise integer values
      */
     public ColorsTablePanel(Component parent, TableType tableType,
             ColorMapEntry[] colorMapEntries, Double noDataValue,

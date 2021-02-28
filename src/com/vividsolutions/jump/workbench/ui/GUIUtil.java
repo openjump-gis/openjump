@@ -800,8 +800,8 @@ public class GUIUtil {
   /**
    * convert Icon to Image
    * 
-   * @param icon
-   * @return
+   * @param icon Icon to transform to an Image
+   * @return an Image containing this icon
    */
   public static Image toImage(Icon icon) {
     if (icon instanceof ImageIcon) {
@@ -831,10 +831,10 @@ public class GUIUtil {
   /**
    * Create an ImageIcon from given color and dimensions
    * 
-   * @param color
-   * @param width
-   * @param height
-   * @return
+   * @param color Color of the ImageIcon to create
+   * @param width integer width of the ImageIcon to create
+   * @param height integer height of the ImageIcon to create
+   * @return a new ImageIcon
    */
   public static ImageIcon fromColor(Color color, int width, int height) {
     BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -901,12 +901,12 @@ public class GUIUtil {
   /**
    * Enlarge icon by padding it by given number of pixels
    * 
-   * @param icon
-   * @param top
-   * @param left
-   * @param bottom
-   * @param right
-   * @return
+   * @param icon Icon to be padded
+   * @param top number of pixels to add to the top
+   * @param left number of pixels to add to the left
+   * @param bottom number of pixels to add to the bottom
+   * @param right number of pixels to add to the right
+   * @return the new Padded ImageIcon
    */
   public static ImageIcon pad(ImageIcon icon, int top, int left, int bottom, int right) {
     BufferedImage padded = new BufferedImage(icon.getIconWidth() + left + right,
@@ -942,9 +942,9 @@ public class GUIUtil {
    * 
    * @param icon ImageIcon to be overlayed
    * @param overlay overlay ImageIcon
-   * @param x
-   * @param y
-   * @return ImageIcon
+   * @param x x position of the overlay in the source
+   * @param y y position of the overlay in the source
+   * @return an ImageIcon combining source image and overlaid image
    */
   public static ImageIcon overlay(ImageIcon icon, ImageIcon overlay, int x,
       int y) {
@@ -954,13 +954,13 @@ public class GUIUtil {
   /**
    * overlay an icon over another icon respecting mask (b/w image)
    * 
-   * @param image
-   * @param overlay
-   * @param x
-   * @param y
-   * @param alpha
-   * @param mask
-   * @return
+   * @param image source ImageIcon to be overlaid
+   * @param overlay overlay ImageIcon
+   * @param x x position of the overlay in the source
+   * @param y y position of the overlay in the source
+   * @param alpha alpha coefficient used to combine ovelay to source image
+   * @param mask source image will only be overlaid within this mask
+   * @return an ImageIcon combining source image and overlaid image within the mask
    */
   public static ImageIcon overlay(ImageIcon image, ImageIcon overlay, int x,
       int y, float alpha, Image mask) {

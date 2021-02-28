@@ -342,10 +342,10 @@ public class CompressedFile {
    *   second level extension for compressed files eg. "tif" for "file.tif.gz"
    *   all others the first extension eg. "tif" for "file.tif"
    * 
-   * @param path
-   * @return
+   * @param path a file path
+   * @return the extension for this file
    */
-  public static String getExtension( String path ){
+  public static String getExtension( String path ) {
     // strip compressed ext eg. .gz
     if (CompressedFile.isCompressed(path)) {
       path = UriUtil.removeExtension(path);

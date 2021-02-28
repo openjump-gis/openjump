@@ -62,7 +62,7 @@ public class DelegatingCompressedFileHandler extends AbstractJUMPReader {
      * @param endings strings found at the ends of filenames, used to identify
      * the file to extract from a .zip; does not apply to .gz files
      * 
-     * @Deprecated use CompressedFile instead [07.2016]
+     * @deprecated use CompressedFile instead [07.2016]
      */
     @Deprecated
     public DelegatingCompressedFileHandler(JUMPReader reader, Collection<String> endings) {

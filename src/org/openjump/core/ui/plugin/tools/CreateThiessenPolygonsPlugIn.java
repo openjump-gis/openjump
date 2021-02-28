@@ -127,7 +127,7 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
     		this.pcontext = context;
     	    
 	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-	    	featureInstaller.addMainMenuItem(
+	    	featureInstaller.addMainMenuPlugin(
 	    	        this,								//exe
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS}, 	//menu path
 	                this.sName + "..." /*+ "{pos:2}"*/, //name methode .getName received by AbstractPlugIn

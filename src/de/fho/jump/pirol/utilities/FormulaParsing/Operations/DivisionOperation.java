@@ -37,8 +37,8 @@ public class DivisionOperation extends GenericOperation {
     
     /**
      * Returns the divided values of the sub-values or sub-operations of this operation
-     *@param feature
-     *@return divided values of the sub-values or sub-operations
+     * @param feature the Feature to get the value from
+     * @return divided values of the sub-values or sub-operations
      */
     public double getValue(Feature feature) {
         return this.value1.getValue(feature) / this.value2.getValue(feature);

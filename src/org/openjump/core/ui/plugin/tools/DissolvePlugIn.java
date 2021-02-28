@@ -261,8 +261,6 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
             if (!g.isValid()) {
                 context.getWorkbenchFrame().warnUser(
                         I18N.get("ui.plugin.analysis.DissolvePlugIn.invalid-geometry-excluded"));
-                //context.getOutputFrame().addText(
-                //        I18N.getMessage("ui.plugin.analysis.UnionByAttributePlugIn.exclusion", new Object[]{f.getID()}));
                 continue;
             }
             else {

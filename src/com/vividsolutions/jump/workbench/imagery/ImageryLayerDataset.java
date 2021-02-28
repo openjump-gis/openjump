@@ -149,9 +149,9 @@ public class ImageryLayerDataset {
   /**
    * set a features attributes saving the assigned ReferencedImageFactory
    * 
-   * @param feature
-   * @param imageFactory
-   * @return
+   * @param feature feature wrapping the Image
+   * @param imageFactory the ReferencedImageFactory
+   * @return the feature with ATTR_LOADER attributes set to the image loader name
    */
   public static Feature saveFeatureImgAttribs(Feature feature,
       ReferencedImageFactory imageFactory) {
@@ -169,7 +169,7 @@ public class ImageryLayerDataset {
   
   /**
    * copy img attributes from an imprint feature
-   * @param feature
+   * @param feature feature wrapping the Image
    * @param imprint
    * @return
    */
@@ -201,10 +201,7 @@ public class ImageryLayerDataset {
    * create a ReferencedImageFactory from the attributes of the given feature
    * 
    * @param feature
-   * @return
-   * @throws ClassNotFoundException
-   * @throws InstantiationException
-   * @throws IllegalAccessException
+   * @return a ReferencedImageFactory from the attributes of the given feature
    */
   public static ReferencedImageFactory createFeatureFactory(Feature feature)
       throws ClassNotFoundException, InstantiationException,

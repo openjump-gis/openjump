@@ -108,7 +108,7 @@ public abstract class BasicFillPattern implements Paint, Cloneable {
     }
     public Object clone() {
         try {
-            return ((BasicFillPattern)getClass().newInstance()).setProperties((Blackboard)(properties.clone()));
+            return (getClass().newInstance()).setProperties(properties.clone());
         } catch (InstantiationException e) {
             Assert.shouldNeverReachHere();
         } catch (IllegalAccessException e) {

@@ -51,12 +51,13 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 
+/**
+ * Plugin to display the legend of correct symbology used into a view
+ *
+ * @author Giuseppe Aruta
+ */
 public class LegendPlugIn extends AbstractPlugIn {
-    /**
-     * Plugin to display the legend of correct symbology used into a view
-     * 
-     * @author Giuseppe Aruta
-     */
+
     private JScrollPane scrollPane = new JScrollPane();
 
     String taskString = I18N.get("ui.WorkbenchFrame.task");

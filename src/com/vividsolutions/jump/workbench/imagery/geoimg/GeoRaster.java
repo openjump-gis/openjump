@@ -138,10 +138,9 @@ public class GeoRaster implements Disposable {
   /**
    * Basic fetchRasters retrieves a raster from a file. To get a raster from
    * somewhere else, override this method in subclasses.
-   * 
-   * @throws URISyntaxException
-   * @throws IOException
-   * @throws ReferencedImageException
+   *
+   * @throws ReferencedImageException if an Exception occurs in File#canRead, in
+   *    createJAIRenderedOP or if no reader wants to decode the Raster
    */
   protected void fetchRaster() throws ReferencedImageException {
     // we accept either URI strings or string file paths
@@ -274,7 +273,7 @@ public class GeoRaster implements Disposable {
    * modelspace. It should be transformed to make it a square image in
    * modelspace.
    * 
-   * @param image
+   * @param image image to be normalized (squared)
    */
   protected void normalize(RenderedOp image) {
   }

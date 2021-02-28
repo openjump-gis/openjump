@@ -383,8 +383,8 @@ public class StringUtil {
      * the minimum number of decimals is one, hinting the decimal nature of this number
      * the maximimum number of decimal is hardcoded 12 and will be rounded
      * eg. 1234.000 -> "1234.0", 1234.5600 -> "1234.56"
-     * @param d
-     * @return string
+     * @param d double value to format
+     * @return a formatted (rounded) string representation of the double
      */
     public static String toString(double d) {
         if (Double.isNaN(d) || d == Double.POSITIVE_INFINITY || d == Double.NEGATIVE_INFINITY) {

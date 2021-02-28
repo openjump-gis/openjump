@@ -43,8 +43,10 @@ public abstract class SegmentDownhillArrowStyle extends LineStringSegmentStyle {
   }
 
   /**
-   * @param tail the tail of the whole arrow; just used to determine angle
+   * @param shaftTip the tip of the whole arrow; just used to determine angle
+   * @param shaftTail the tail of the whole arrow; just used to determine angle
    * @param finLength required distance from the tip to each fin's tip
+   * @param finAngle semi-angle of the arrow head
    */
   private GeneralPath arrowhead(Point2D shaftTip, Point2D shaftTail,
     double finLength, double finAngle) {

@@ -30,8 +30,8 @@ public abstract class GenericOperation extends FormulaValue {
 
     /**
      * Sets the value, that will be operated on.
-     *@param value1
-     *@param value2
+     * @param value1 first value that will be operated on
+     * @param value2 second value that will be operated on
      */
     public GenericOperation(FormulaValue value1, FormulaValue value2) {
         super();

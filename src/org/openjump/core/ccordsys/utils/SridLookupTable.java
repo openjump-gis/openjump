@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -37,14 +38,10 @@ public class SridLookupTable {
 
     private static Scanner getScanner() {
         Scanner scanner = null;
-        try {
-            InputStream is = ProjUtils.class.getResourceAsStream("srid.txt");
-            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-            scanner = new Scanner(isr);
-            scanner.useDelimiter("\\n");
-        } catch(UnsupportedEncodingException e) {
-            // It is safe to use UTF-8
-        }
+        InputStream is = ProjUtils.class.getResourceAsStream("srid.txt");
+        InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+        scanner = new Scanner(isr);
+        scanner.useDelimiter("\\n");
         return scanner;
     }
 

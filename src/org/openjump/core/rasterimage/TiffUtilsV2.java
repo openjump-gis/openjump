@@ -102,17 +102,17 @@ public class TiffUtilsV2 {
    * Method to build an ImageAndMetadata file
    * An ImageAndMetadata groups the Envelope, the Image, the Statistics and 
    * NoData value of a TIF file
-   * @param tiffFile
-   * @param viewportEnvelope
-   * @param requestedRes
-   * @param overviews
-   * @param stats
-   * @return ImageAndMetadata
-   * @throws NoninvertibleTransformException
-   * @throws IOException
-   * @throws FileNotFoundException
-   * @throws TiffTags.TiffReadingException
-   * @throws Exception
+   * @param tiffFile file containing the tiff image
+   * @param viewportEnvelope envelope of the viewport
+   * @param requestedRes requested resolution
+   * @param overviews overviews
+   * @param stats statistics about image data
+   * @return an ImageAndMetadata
+   * @throws NoninvertibleTransformException if a NoninvertibleTransformException occurs
+   * @throws IOException if a IOException occurs
+   * @throws FileNotFoundException if a FileNotFoundException occurs
+   * @throws TiffTags.TiffReadingException if a TiffTags.TiffReadingException occurs
+   * @throws Exception if a Exception occurs
    */
   public static ImageAndMetadata readImage(File tiffFile, Envelope viewportEnvelope, Resolution requestedRes,
 	      Overviews overviews, Stats stats) throws NoninvertibleTransformException, IOException, FileNotFoundException,
@@ -218,16 +218,16 @@ public class TiffUtilsV2 {
    * An ImageAndMetadata groups the Envelope, the Image, the Statistics and 
    * NoData value of a TIF file
    * Removed reading overviews and dependency to commons imaging library
-   * @param tiffFile
-   * @param viewportEnvelope
-   * @param requestedRes
-   * @param stats
+	 * @param tiffFile file containing the tiff image
+	 * @param viewportEnvelope envelope of the viewport
+	 * @param requestedRes requested resolution
+	 * @param stats statistics about image data
    * @return ImageAndMetadata
-   * @throws NoninvertibleTransformException
-   * @throws IOException
-   * @throws FileNotFoundException
-   * @throws TiffTags.TiffReadingException
-   * @throws Exception
+	 * @throws NoninvertibleTransformException if a NoninvertibleTransformException occurs
+	 * @throws IOException if a IOException occurs
+	 * @throws FileNotFoundException if a FileNotFoundException occurs
+	 * @throws TiffTags.TiffReadingException if a TiffTags.TiffReadingException occurs
+	 * @throws Exception if a Exception occurs
    */
   public static ImageAndMetadata readImageAndMetadata(File tiffFile, Envelope viewportEnvelope, Resolution requestedRes,
 	     Stats stats) throws NoninvertibleTransformException, IOException, FileNotFoundException, Exception {
@@ -368,18 +368,18 @@ public class TiffUtilsV2 {
 
   /**
    * Method to read overviews of a TIF from the file metadata or from an external .ovr file
-   * @param tiffFile
-   * @param overviewIndex
-   * @param indexStart
-   * @param originalSize
-   * @param originalCellSize
-   * @param wholeImageEnvelope
-   * @param viewportEnvelope
-   * @param noDataValue
-   * @param stats
-   * @return
-   * @throws IOException
-   * @throws NoninvertibleTransformException
+   * @param tiffFile file containing the tiff image
+   * @param overviewIndex index of the overview to read
+   * @param indexStart index of the first overview
+   * @param originalSize original image size
+   * @param originalCellSize  original cell size
+   * @param wholeImageEnvelope the whole image envelope
+   * @param viewportEnvelope envelope of the viewport
+   * @param noDataValue value representing nodata
+   * @param stats statistics about Image data
+   * @return an ImageAndMetadata
+   * @throws IOException if an IOException occurs
+   * @throws NoninvertibleTransformException if a NoninvertibleTransformException occurs
    */
   private static ImageAndMetadata readImage(File tiffFile, int overviewIndex, int indexStart, Point originalSize,
 	      Resolution originalCellSize, Envelope wholeImageEnvelope, Envelope viewportEnvelope, double noDataValue,
@@ -450,15 +450,15 @@ public class TiffUtilsV2 {
 	  /**
 	   * Method to read Statistics of TIF file (if available) from  file metadata or
 	   * from an external aux.xml file
-	   * @param tiffFile
-	   * @param noDataValue
-	   * @param imageFile
-	   * @return
-	   * @throws ParserConfigurationException
-	   * @throws TransformerException
-	   * @throws ImageReadException
-	   * @throws IOException
-	   * @throws SAXException
+	   * @param tiffFile file containing the tiff image
+	   * @param noDataValue value representing "nodata"
+	   * @param imageFile file to export statistics to
+	   * @return a Stats object containing statistics about image data
+	   * @throws ParserConfigurationException if a ParserConfigurationException occurs
+	   * @throws TransformerException if a TransformerException occurs
+	   * @throws ImageReadException if a ImageReadException occurs
+	   * @throws IOException if a IOException occurs
+	   * @throws SAXException if a SAXException occurs
 	   */
 	  private static Stats calculateStats(File tiffFile, double noDataValue, File imageFile)
 	      throws ParserConfigurationException, TransformerException, ImageReadException, IOException, SAXException {
@@ -502,16 +502,16 @@ public class TiffUtilsV2 {
 	  }
 
       /**
-       * Method to compute statistic of a TIF file and write as aux.xml file
-       * @param tiffFile
-       * @param noDataValue
-       * @param auxXmlFile
-       * @return
-       * @throws ParserConfigurationException
-       * @throws TransformerException
-       * @throws TransformerConfigurationException
-       * @throws SAXException
-       * @throws IOException
+       * Method to compute statistics of a TIF file and write it as aux.xml file
+       * @param tiffFile file containing the tiff image
+       * @param noDataValue value representing "nodata"
+       * @param auxXmlFile file containing auxiliary statistics data (aux.xml file)
+       * @return a Stats objet containing statistics about the image
+       * @throws ParserConfigurationException if a ParserConfigurationException occurs
+       * @throws TransformerException if a TransformerException occurs
+       * @throws TransformerConfigurationException if a TransformerConfigurationException occurs
+       * @throws SAXException if a SAXException occurs
+       * @throws IOException if a IOException occurs
        */
 	  private static Stats createStatsXml(File tiffFile, double noDataValue, File auxXmlFile)
 	      throws ParserConfigurationException, TransformerException, TransformerConfigurationException, SAXException,
@@ -591,12 +591,12 @@ public class TiffUtilsV2 {
 
 	  /**
 	   * Method to read the value of a cell at defined position on the raster
-	   * @param tiffFile
-	   * @param col
-	   * @param row
-	   * @param band
-	   * @return
-	   * @throws Exception
+	   * @param tiffFile file containing a tiff image
+	   * @param col column index
+	   * @param row row index
+	   * @param band numero of band
+	   * @return the double value of the celle at coordinates col, row
+	   * @throws Exception if an Exception occurs
 	   */
 	  public static Double readCellValue(File tiffFile, int col, int row, int band)  throws Exception {
 	    Rectangle rectangle = new Rectangle(col, row, 1, 1);

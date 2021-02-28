@@ -8,5 +8,5 @@ package com.vividsolutions.jump.workbench.plugin;
  * 
  */
 public interface EnableChecked {
-  public EnableCheck getEnableCheck();
+  EnableCheck getEnableCheck();
 }

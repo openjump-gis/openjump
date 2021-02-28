@@ -145,6 +145,6 @@ public class ThreadSafeImage implements Cloneable {
     }
 
     public interface Drawer {
-        public void draw(Graphics2D g) throws Exception;
+        void draw(Graphics2D g) throws Exception;
     }
 }

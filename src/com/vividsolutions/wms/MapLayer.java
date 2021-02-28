@@ -302,10 +302,10 @@ public class MapLayer {
         return fullSRSList;
     }
     
-      /**
+    /**
      * Sets the selected WMS layer style
      * 
-     * @param selectedStyle
+     * @param selectedStyle set the WMS Style for this MapLayer
      */
     public void setSelectedStyle( MapStyle selectedStyle ) {
         for( Iterator<MapStyle> iter = styles.iterator(); iter.hasNext(); ) {
@@ -318,8 +318,8 @@ public class MapLayer {
     /**
      * Gets the WMS layer style by name
      * 
-     * @param styleName
-     * @return
+     * @param styleName name of the WMS layer style
+     * @return a MapStyle associated with this Layer
      */
     public MapStyle getStyle( String styleName ) {
         for( Iterator<MapStyle> iter = styles.iterator(); iter.hasNext(); ) {
@@ -335,14 +335,14 @@ public class MapLayer {
     }
   
     /** 
-     * @param sublayer
+     * @param sublayer WMS subLayers contained in this MapLayer
      */
     public void setSublayer(ArrayList sublayer) {
         this.subLayers = sublayer;
     }
     
     /**
-     * @param newStyles
+     * @param newStyles WMS MapStyles to be associated to this MapLayer
      */
     public void setStyles( List<MapStyle> newStyles ) {
         this.styles = newStyles;

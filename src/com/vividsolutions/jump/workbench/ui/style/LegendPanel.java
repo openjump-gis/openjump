@@ -34,15 +34,15 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.LineStringStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 
+/**
+ * Panel that uses LayerView.class capability to show applied style
+ * according to feature type. See also
+ * com.vividsolutions.jump.workbench.ui.style.LegendPlugIn class
+ *
+ * @author Giuseppe Aruta
+ */
 public class LegendPanel extends JPanel {
 
-    /**
-     * Panel that uses LayerView.class capability to show applied style
-     * according to feature type. See also
-     * com.vividsolutions.jump.workbench.ui.style.LegendPlugIn class
-     * 
-     * @author Giuseppe Aruta
-     */
     private final Layer layer;
     private final BasicStyle style;
     private final FeatureCollection featureCollection;

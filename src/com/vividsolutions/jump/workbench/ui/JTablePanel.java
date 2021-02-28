@@ -57,7 +57,7 @@ public class JTablePanel extends JPanel {
      * defaultTableModel.addColumn(...); 3) JTablePanel pan = new
      * JTablePanel(defaultTableModel).
      * 
-     * @param defaultTableModel
+     * @param defaultTableModel the model to be used in the JTablePanel
      */
     public JTablePanel(DefaultTableModel defaultTableModel) {
         super();
@@ -228,10 +228,10 @@ public class JTablePanel extends JPanel {
     /**
      * Set a FeatureCollection to add to the panel
      * 
-     * @param featurecollection
+     * @param table table model
      * @return
+     * TODO this method does nothing : remove ot set the table parameter
      */
-
     public DefaultTableModel setTableModel(DefaultTableModel table) {
         return model;
     }
@@ -260,7 +260,7 @@ public class JTablePanel extends JPanel {
     /**
      * Gets the lower panel where locating table tools
      * 
-     * @return
+     * @return the JPanel containing table tools
      */
     public JPanel getCommandPanel() {
         return commandPanel();
@@ -269,7 +269,7 @@ public class JTablePanel extends JPanel {
     /**
      * Gets the lower panel where locating save button
      * 
-     * @return
+     * @return the JPanel containing the save command
      */
     public JPanel getSavePanel() {
         return savePanel();

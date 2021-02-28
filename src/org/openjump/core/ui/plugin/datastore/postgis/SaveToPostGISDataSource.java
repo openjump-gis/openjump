@@ -25,6 +25,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataS
 import javax.swing.*;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -318,8 +319,9 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     /** 
      * Execute a query against this connection to delete the reference to this
      * table in the PostGIS's geometry_columns table.
-     * @schemaName unquoted schema name or null to use default schema
-     * @tableName unquoted table name
+     * @param conn a SpatialDatabasesDSConnection
+     * @param schemaName unquoted schema name or null to use default schema
+     * @param tableName unquoted table name
      */
     private void deleteTableQuery(SpatialDatabasesDSConnection conn,
                           String schemaName, String tableName) throws SQLException {
@@ -503,8 +505,10 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     
     /**
      * Delete table rows not found in fc FeatureCollection.
-     * @schemaName unquoted schema name or null to use default schema
-     * @tableName unquoted table name
+     *
+     * @param conn a SpatialDatabasesDSConnection
+     * @param schemaName unquoted schema name or null to use default schema
+     * @param tableName unquoted table name
      */
     private void deleteNotExistingFeaturesFromTable(SpatialDatabasesDSConnection conn,
             FeatureCollection fc, String schemaName, String tableName, String primaryKey) throws SQLException {
@@ -587,30 +591,27 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
                 Feature feature, String primaryKey, int srid, int dim) throws SQLException {
         FeatureSchema schema = feature.getSchema();
         int shift = 1;
-        try {
-            for (int i = 0; i < schema.getAttributeCount(); i++) {
-                if (schema.getExternalPrimaryKeyIndex() == i || schema.isAttributeReadOnly(i)) {
-                    shift--;
-                    continue;
-                }
-                AttributeType type = schema.getAttributeType(i);
-                if (feature.getAttribute(i) == null) pstmt.setObject(i + shift, null);
-                else if (type == AttributeType.STRING) pstmt.setString(i + shift, feature.getString(i));
-                else if (type == AttributeType.GEOMETRY)
-                    pstmt.setBytes(i + shift, SQLUtil.getByteArrayFromGeometry((Geometry) feature.getAttribute(i), srid, dim));
-                else if (type == AttributeType.INTEGER) pstmt.setInt(i + shift, feature.getInteger(i));
-                else if (type == AttributeType.LONG) pstmt.setLong(i + shift, (Long) feature.getAttribute(i));
-                else if (type == AttributeType.DOUBLE) pstmt.setDouble(i + shift, feature.getDouble(i));
-                else if (type == AttributeType.BOOLEAN) pstmt.setBoolean(i + shift, (Boolean) feature.getAttribute(i));
-                else if (type == AttributeType.DATE)
-                    pstmt.setTimestamp(i + shift, new Timestamp(((Date) feature.getAttribute(i)).getTime()));
-                else if (type == AttributeType.OBJECT)
-                    pstmt.setBytes(i + shift, feature.getAttribute(i).toString().getBytes("UTF-8"));
-                else throw new IllegalArgumentException("" + type + " is an unknown AttributeType !");
+        for (int i = 0; i < schema.getAttributeCount(); i++) {
+            if (schema.getExternalPrimaryKeyIndex() == i || schema.isAttributeReadOnly(i)) {
+                shift--;
+                continue;
             }
-        } catch(UnsupportedEncodingException e) {
-            throw new SQLException(e);
+            AttributeType type = schema.getAttributeType(i);
+            if (feature.getAttribute(i) == null) pstmt.setObject(i + shift, null);
+            else if (type == AttributeType.STRING) pstmt.setString(i + shift, feature.getString(i));
+            else if (type == AttributeType.GEOMETRY)
+                pstmt.setBytes(i + shift, SQLUtil.getByteArrayFromGeometry((Geometry) feature.getAttribute(i), srid, dim));
+            else if (type == AttributeType.INTEGER) pstmt.setInt(i + shift, feature.getInteger(i));
+            else if (type == AttributeType.LONG) pstmt.setLong(i + shift, (Long) feature.getAttribute(i));
+            else if (type == AttributeType.DOUBLE) pstmt.setDouble(i + shift, feature.getDouble(i));
+            else if (type == AttributeType.BOOLEAN) pstmt.setBoolean(i + shift, (Boolean) feature.getAttribute(i));
+            else if (type == AttributeType.DATE)
+                pstmt.setTimestamp(i + shift, new Timestamp(((Date) feature.getAttribute(i)).getTime()));
+            else if (type == AttributeType.OBJECT)
+                pstmt.setBytes(i + shift, feature.getAttribute(i).toString().getBytes(StandardCharsets.UTF_8));
+            else throw new IllegalArgumentException("" + type + " is an unknown AttributeType !");
         }
+
         return pstmt;
     }
 

@@ -34,6 +34,7 @@ package com.vividsolutions.jump.workbench.imagery.ecw;
 import java.io.File;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
@@ -71,7 +72,7 @@ public class ECWImageFactory implements ReferencedImageFactory {
     String filepath = new File(uri).getCanonicalPath();
     // prevent a weird bug of the ecw libs not being able to handle accented
     // and extended chars in general
-    if (!Charset.forName("US-ASCII").newEncoder().canEncode(filepath)) {
+    if (!StandardCharsets.US_ASCII.newEncoder().canEncode(filepath)) {
       String hint = filepath.replaceAll("[^\\u0000-\\u007F]", "?");
       throw new ECWLoadException(
           I18N.getMessage(

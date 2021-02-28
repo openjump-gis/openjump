@@ -57,7 +57,7 @@ public class MetaDataMap {
     }
     /**
      * Sets (overwrites) the stored meta information
-     *@param metaData
+     *@param metaData metadata as a HashMap mapping Objects to Objects
      */
     public void setMetaData(HashMap<Object,Object> metaData) {
         this.metaData = metaData;

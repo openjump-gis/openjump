@@ -74,11 +74,11 @@ import de.fho.jump.pirol.utilities.debugOutput.DebugUserIds;
 import de.fho.jump.pirol.utilities.debugOutput.PersonalLogger;
 
 /**
- 
  * Class taken from the RasterImage-i18N PlugIn of Jan Ruzicka (jan.ruzicka@vsb.cz) and modified for PIROL.
- 
+ * TODO replace by OpenJUMP I18N and remove to simplify
+ * @deprecated use com.vividsolutions.jump.18N instead
  */
-
+@Deprecated
 public final class I18NPlug {
 	
 	protected static PersonalLogger logger = new de.fho.jump.pirol.utilities.debugOutput.PersonalLogger(

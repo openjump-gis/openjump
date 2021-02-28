@@ -172,37 +172,6 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 					} else {
 						nextJoinFeatures.add(joinCandidateFeature);
 						context.getWorkbenchFrame().warnUser(sMultiMatchesMsg + " : " + baseFeature.getID());
-						/*
-						if (!foundSecond) {
-							//we got i>=2 matches
-							//write the original
-							Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
-							mapping.transferAttributes(baseFeature, null, newFeature);
-							newFeature.setGeometry((Geometry) baseFeature.getGeometry().clone());
-							featuresFound.add(newFeature);
-							//and inform the user
-							context.getWorkbenchFrame().warnUser(sMultiMatchesMsg + " : " + baseFeature.getID());
-							//add the first and the second to the multiple list
-							//add first
-							Feature newFeature1 = new BasicFeature(featuresWithManyMatches.getFeatureSchema());
-							mapping.transferAttributes(baseFeature, firstJoinFeature, newFeature1);
-							newFeature1.setGeometry((Geometry) baseFeature.getGeometry().clone());
-							featuresWithManyMatches.add(newFeature1);
-							//add second
-							Feature newFeature2 = new BasicFeature(featuresWithManyMatches.getFeatureSchema());
-							mapping.transferAttributes(baseFeature, tmpTableItem, newFeature2);
-							newFeature2.setGeometry((Geometry) baseFeature.getGeometry().clone());
-							featuresWithManyMatches.add(newFeature2);
-
-							foundSecond = true;
-						} else {//this should be the third match
-							//just add it to the list
-							Feature newFeature3 = new BasicFeature(featuresWithManyMatches.getFeatureSchema());
-							mapping.transferAttributes(baseFeature, tmpTableItem, newFeature3);
-							newFeature3.setGeometry((Geometry) baseFeature.getGeometry().clone());
-							featuresWithManyMatches.add(newFeature3);
-						}
-						*/
 					}
 					countMatches++;
 				}
@@ -227,29 +196,6 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 			} else {
 				featuresMissing.add(baseFeature.clone(true));
 			}
-			//-- save if not saved yet
-			/*
-			if(!foundFirst){
-				//so we have no matching
-				//transfer it anyway
-				Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
-				mapping.transferAttributes(baseFeature, null, newFeature);
-				newFeature.setGeometry((Geometry)baseFeature.getGeometry().clone());
-				featuresFound.add(newFeature);
-				//and also put into this list
-				featuresMissing.add(baseFeature.clone(true));
-				//stop the loop
-			}
-			else{//foundFirst == true
-				if(!foundSecond){
-					//we have only one match
-					Feature newFeature = new BasicFeature(featuresFound.getFeatureSchema());
-					mapping.transferAttributes(baseFeature, firstJoinFeature, newFeature);
-					newFeature.setGeometry((Geometry)baseFeature.getGeometry().clone());
-					featuresFound.add(newFeature);
-				}
-			}
-			*/
 		}
 
 		// show results

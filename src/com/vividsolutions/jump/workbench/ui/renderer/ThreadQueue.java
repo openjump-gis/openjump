@@ -125,7 +125,7 @@ public class ThreadQueue
 	protected int waitingThreads;
 
 	/** The queue of Runnables jobs waiting to be run */
-	protected LinkedList queuedRunnables;
+	protected final LinkedList queuedRunnables;
 
 	/** Singals that the ThreadQueue is going to quit */
 	protected boolean disposed;

@@ -128,7 +128,7 @@ public abstract class StandardPirolPlugIn extends AbstractPlugIn implements Erro
 	 * This method is called to execute the PlugIn.
 	 * @return always <code>true</code> ?
 	 * @param context the snapshot of the current workbench.
-	 * @throws Exception
+	 * @throws Exception if an Exception occurs
 	 * @see com.vividsolutions.jump.workbench.plugin.AbstractPlugIn#execute(com.vividsolutions.jump.workbench.plugin.PlugInContext)
 	 */
     public abstract boolean execute(PlugInContext context) throws Exception;
@@ -150,9 +150,9 @@ public abstract class StandardPirolPlugIn extends AbstractPlugIn implements Erro
     
 	/**
      * The PlugIn will be added to the <code>PIROL Tools/<b>[return value of getCategoryName()]</b></code> menu and a standard {@link com.vividsolutions.jump.workbench.plugin.EnableCheck} is applied.
-     *@param context PlugInContext
-     *@throws Exception
-     *@see StandardPirolPlugIn#getCategoryName()
+     * @param context PlugInContext
+     * @throws Exception if an Exception occurs
+     * @see StandardPirolPlugIn#getCategoryName()
 	 */
 	public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addMainMenuItem( this, new String[]{PirolPlugInSettings.getName_PirolMenu(), getCategoryName() }, this.getName(), false, null, StandardPirolPlugIn.createEnableCheck(context.getWorkbenchContext(),false));

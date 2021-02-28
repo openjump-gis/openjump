@@ -61,7 +61,7 @@ public class JNCSRendererProxy
         }
     }
 
-    public static final void throwAsException(InvocationTargetException ite) 
+    public static void throwAsException(InvocationTargetException ite)
     throws Exception 
     {
         Throwable t = ite.getTargetException();
@@ -70,7 +70,7 @@ public class JNCSRendererProxy
             : (t != null ? new Exception(t.getMessage()) : ite);
     }
 
-    public static final int getInt(Object object, String fieldname) {
+    public static int getInt(Object object, String fieldname) {
         try {
             Field field = object.getClass().getField(fieldname);
             return field.getInt(object);
@@ -84,7 +84,7 @@ public class JNCSRendererProxy
         return getInt(renderer, fieldname);
     }
 
-    public static final double getDouble(Object object, String fieldname) {
+    public static double getDouble(Object object, String fieldname) {
         try {
             Field field = object.getClass().getField(fieldname);
             return field.getDouble(object);

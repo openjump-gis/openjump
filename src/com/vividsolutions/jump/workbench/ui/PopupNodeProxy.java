@@ -36,5 +36,5 @@ package com.vividsolutions.jump.workbench.ui;
  */
 
 public interface PopupNodeProxy {
-    public Object getPopupNode();
+    Object getPopupNode();
 }

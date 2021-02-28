@@ -82,7 +82,7 @@ public class MetaInformationHandler implements HandlerToMakeYourLifeEasier {
      *@param fc regular FeatureCollection
      *@return PirolFeatureCollection
      */
-    public static final PirolFeatureCollection createPirolFeatureCollection(FeatureCollection fc){
+    public static PirolFeatureCollection createPirolFeatureCollection(FeatureCollection fc){
         return MetaInformationHandler.createPirolFeatureCollection(fc, new RoleStandardFeatureCollection());
     }
     
@@ -91,7 +91,7 @@ public class MetaInformationHandler implements HandlerToMakeYourLifeEasier {
      *@param fc regular FeatureCollection
      *@return PirolFeatureCollection
      */
-    public static final PirolFeatureCollection createPirolFeatureCollection(FeatureCollection fc, FeatureCollectionRole role){
+    public static PirolFeatureCollection createPirolFeatureCollection(FeatureCollection fc, FeatureCollectionRole role){
         PirolFeatureCollection pfc = null;
         
         if (!PirolFeatureCollection.class.isInstance(fc)){
@@ -152,8 +152,8 @@ public class MetaInformationHandler implements HandlerToMakeYourLifeEasier {
     /**
      * Adds a new meta information key-value-pair to the meta information map, replaces
      * an existing pair with the same key.
-     *@param key
-     *@param value
+     *@param key key of the metadata to add
+     *@param value value of the metadata to add
      */
     public void addMetaInformation(String key, Object value) {
         MetaDataMap metaMap = this.getMetaInformationMap();

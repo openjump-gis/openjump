@@ -365,7 +365,7 @@ public final class RasterImageLayer extends AbstractLayerable
                 clearImageAndRaster(true);
                 // Check that there is enough free memory for the image + 1% of available memory + 10Mb
                 if (getAvailRAM()-getCommittedMemory() <
-                        origImageWidth*origImageHeight*bitsPerPixel/8 + getAvailRAM()*0.01 + 10*1024*1024) {
+                        origImageWidth*origImageHeight*bitsPerPixel/8.0 + getAvailRAM()*0.01 + 10*1024*1024) {
                     layerViewPanel.getContext().warnUser("Low Memory : image " +
                             imageFileName + " will not be displayed");
                     System.out.println("" + (getAvailRAM()-getCommittedMemory())/1024 + "kb < " +

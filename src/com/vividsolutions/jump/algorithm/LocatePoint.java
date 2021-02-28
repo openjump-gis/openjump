@@ -77,8 +77,8 @@ public class LocatePoint {
    * Computes the {@link Coordinate} of the point a given length
    * along a {@link LineString}.
    *
-   * @param line
-   * @param length
+   * @param line source LineString
+   * @param length distance of the point from the start of the source LineString
    * @return the {@link Coordinate} of the desired point
    */
   public static Coordinate pointAlongLine(LineString line, double length)

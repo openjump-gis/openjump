@@ -36,7 +36,7 @@ public class SpatialDatabasesSQLBuilder {
   /**
    * Builds a check SQL query for the given DataStoreLayer.
    * @param dsLayer the @link DataStoreLayer to test
-   * @return a SQL query forced to limit 0 to test the layer
+   * @return a SQL query forced to limit 0 to test the layer source
    */
   public String getCheckSQL(DataStoreLayer dsLayer) {
     return null;

@@ -245,9 +245,9 @@ public class PirolPoint extends Sortable {
 	/**
 	 * get the <code>nr</code>-th coordinate. This method is used within getX(), getY(), getZ().
 	 *@return the <code>nr</code>-th coordinate
-	 *@throws RuntimeException if the point has less coordniates than <code>nr</code> or if <code>nr</code> is less than zero
+	 *@throws RuntimeException if the point has less coordinates than <code>nr</code> or if <code>nr</code> is less than zero
 	 */
-	public double getCoordinate( int nr ) throws RuntimeException {
+	public double getCoordinate( int nr ) {
 		if (dimension > nr){
 			return this.coordinates[nr];
 		} 
@@ -267,46 +267,43 @@ public class PirolPoint extends Sortable {
 	
 	/**
 	 * get 0-th coordinate
-	 *@return 0-th coordinate
-	 *@throws RuntimeException
+	 * @return 0-th coordinate
 	 */
-	public double getX() throws RuntimeException{
+	public double getX() {
 		return this.getCoordinate(0);			
 	}
 	/**
 	 * get 1-st coordinate
-	 *@return 1-st coordinate
-	 *@throws RuntimeException
+	 * @return 1-st coordinate
 	 */
-	public double getY() throws RuntimeException{
+	public double getY() {
 		return this.getCoordinate(1);			
 	}
 	/**
 	 * get 2-nd coordinate
-	 *@return 2-nd coordinate
-	 *@throws RuntimeException
+	 * @return 2-nd coordinate
 	 */
-	public double getZ() throws RuntimeException{
+	public double getZ() {
 		return this.getCoordinate(2);			
 	}
 
 	/**
 	 * set the 0-th coordinate
-	 *@param val 0-th coordinate
+	 * @param val 0-th coordinate
 	 */
 	public void setX(double val){
 	    this.setCoordinate(val, 0);
 	}
 	/**
 	 * set the 1-st coordinate
-	 *@param val 1-st coordinate
+	 * @param val 1-st coordinate
 	 */
 	public void setY(double val){
 	    this.setCoordinate(val, 1);
 	}
 	/**
 	 * set the 2-nd coordinate
-	 *@param val 2-nd coordinate
+	 * @param val 2-nd coordinate
 	 */
 	public void setZ(double val){
 	    this.setCoordinate(val, 2);
@@ -316,11 +313,10 @@ public class PirolPoint extends Sortable {
 	 * calculates the distance of <code>this</code> point to the other point.
 	 * The distance will be calculated in as many dimensions as both points have.
 	 * If the two points have a different amount of coordinates, this will happen: <code>int checkDim = Math.min(this.dimension, p.getDimension());</code> 
-	 *@param p the other point
-	 *@return distance between the two points
-	 *@throws RuntimeException
+	 * @param p the other point
+	 * @return distance between the two points
 	 */
-	public double distanceTo(PirolPoint p) throws RuntimeException{
+	public double distanceTo(PirolPoint p) {
 		return PirolPoint.distanceBetween(this, p);
 	}
 	
@@ -328,12 +324,11 @@ public class PirolPoint extends Sortable {
 	 * calculates the distance of point <b>p1</b> to the other point <b>p2</b>.
 	 * The distance will be calculated in as many dimensions as both points have.
 	 * If the two points have a different amount of coordinates, this will happen: <code>int checkDim = Math.min(this.dimension, p.getDimension());</code> 
-	 *@param p1 one point
-	 *@param p2 the other point
-	 *@return distance between the two points
-	 *@throws RuntimeException
+	 * @param p1 one point
+	 * @param p2 the other point
+	 * @return distance between the two points
 	 */
-	public static double distanceBetween(PirolPoint p1, PirolPoint p2) throws RuntimeException{
+	public static double distanceBetween(PirolPoint p1, PirolPoint p2) {
 		int checkDim = Math.min(p2.dimension, p1.getDimension());
 
 		double checkSum = 0;

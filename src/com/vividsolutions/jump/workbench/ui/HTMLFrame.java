@@ -183,7 +183,7 @@ public class HTMLFrame extends JInternalFrame{
     /**
      * Appends a line of non-HTML text to the frame.  Text is assumed to be non-HTML, and is
      * HTML-escaped to avoid control-char conflict.
-     * @param text
+     * @param text line of text to add to this HTMLFrame
      */
     public void addText(String text) {
         panel.addText(text);

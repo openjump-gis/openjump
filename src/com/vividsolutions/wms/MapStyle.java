@@ -15,8 +15,7 @@ import com.vividsolutions.jump.workbench.Logger;
 
 
 /*
- * Estilo asociado a una capa. Se caracteriza por tener asociado un
- * nombre, un estilo y una leyenda
+ * Style of a WMSLayer. It is made of a name, a title and a legend URL.
  * @author Marco Antonio Fuentelsaz P?rez
  * 
  */
@@ -50,10 +49,10 @@ public class MapStyle {
     private int height;
 
     /**
-     * @param name
-     * @param title
-     * @param urlLegend
-     * @param formatLegend
+     * @param name name of this MapStyle
+     * @param title title of this MapStyle
+     * @param urlLegend url String of the legend for this MapStyle
+     * @param formatLegend image format of the legend
      */
     public MapStyle( String name, String title, String urlLegend, String formatLegend ) {
         this.name = name;
@@ -62,7 +61,15 @@ public class MapStyle {
         this.formatLegend = formatLegend;
         this.selected = false;
     }
-    
+
+   /**
+    * @param name name of this MapStyle
+    * @param title title of this MapStyle
+    * @param urlLegend url String of the legend for this MapStyle
+    * @param formatLegend image format of the legend
+    * @param w width of the image containing the legend
+    * @param h height of the image containing the legend
+    */
     public MapStyle( String name, String title, String urlLegend, String formatLegend, int w, int h  ) {
         this.name = name;
         this.title = title;
@@ -74,69 +81,69 @@ public class MapStyle {
     }
 
     /**
-     * @return
+     * @return the width of the legend image
      */
     public int getWidth() {
         return width;
     }
    /**
-     * @return
+     * @return the height of the image legend
      */
     public int getHeight() {
         return height;
     }
     
     /**
-     * @return
+     * @return the name of the style
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @param name
+     * @param name name of the style
      */
     public void setName( String name ) {
         this.name = name;
     }
 
     /**
-     * @return
+     * @return the legend title
      */
     public String getTitle() {
         return title;
     }
 
     /**
-     * @param title
+     * @param title the legend title
      */
     public void setTitle( String title ) {
         this.title = title;
     }
 
     /**
-     * @return
+     * @return url legend as a String
      */
     public String getUrlLegend() {
         return urlLegend;
     }
 
     /**
-     * @param newURLLegend
+     * @param newURLLegend the URL of the legend
      */
     public void setUrlLegend( String newURLLegend ) {
         this.urlLegend = newURLLegend;
     }
 
     /**
-     * @return
+     * @return the image format of the legend
      */
     public String getFormatLegend() {
         return formatLegend;
     }
 
     /**
-     * @param formatLegend
+     * @param formatLegend image format of the legend
      */
     public void setFormatLegend( String formatLegend ) {
         this.formatLegend = formatLegend;
@@ -150,7 +157,7 @@ public class MapStyle {
     /**
      * Load the legend icon at first request, not before
      * 
-     * @return
+     * @return an Icon containing the legend
      */
     public Icon getLegendIcon() {
         if (!loadedIcon) {
@@ -186,14 +193,15 @@ public class MapStyle {
     }
 
     /**
-     * @return
+     * @return true if this MapStyle is selected
      */
     public boolean isSelected() {
         return selected;
     }
 
     /**
-     * @param selected
+     * TODO what is the check parameter for ?
+     * @param selected whether this MapStyle is selected or not
      * @param check
      */
     public void setSelected( boolean selected, boolean check ) {
@@ -230,7 +238,7 @@ public class MapStyle {
     }
 
     /**
-     * @param layer
+     * @param layer MapLayer associated to this MapStyle
      */
     public void setLayer( MapLayer layer ) {
         this.layer = layer;

@@ -140,7 +140,7 @@ public class HTTPProxySettings {
 
     /**
      *
-     * @return
+     * @return the encrypted password
      */
     public String getEncryptedPassword() {
         String encryptedPassword = password;
@@ -155,10 +155,6 @@ public class HTTPProxySettings {
         return encryptedPassword;
     }
 
-    /**
-     *
-     * @param encryptedPassword
-     */
     public void setEncryptedPassword( String encryptedPassword ) {
         try {
             password = manager.decrypt(encryptedPassword);

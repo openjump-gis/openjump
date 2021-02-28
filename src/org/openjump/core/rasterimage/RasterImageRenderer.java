@@ -39,14 +39,12 @@ import com.vividsolutions.jump.workbench.ui.renderer.ThreadSafeImage.Drawer;
  * modified: [sstein]: 16.Feb.2009 changed logger-entries to comments
  */
 public class RasterImageRenderer extends ImageCachingRenderer {
-    
-    //protected static PersonalLogger logger = new PersonalLogger(DebugUserIds.OLE);
-    
+
     protected boolean doneRendering = true;
 
     /**
      *@param contentID
-     *@param panel
+     *@param panel the LayerViewPanel
      */
     public RasterImageRenderer(Object contentID, LayerViewPanel panel) {
         super(contentID, panel);
@@ -55,8 +53,7 @@ public class RasterImageRenderer extends ImageCachingRenderer {
     protected RasterImageLayer getRasterImageLayer(){
         return (RasterImageLayer) this.getContentID();
     }
-    
-    // ############
+
     public ThreadSafeImage getImage() {
         if (!getLayer().isVisible()) {
             return null;
@@ -82,30 +79,21 @@ public class RasterImageRenderer extends ImageCachingRenderer {
     private RasterImageLayer getLayer() {
         return (RasterImageLayer) getContentID();
     }
-    // ############
 
     /**
-     *@param image
-     *@throws Exception
+     * @param image a ThreadSafeImage
+     * @throws Exception if an Exception occurs
      */
     @Override
     protected void renderHook(ThreadSafeImage image) throws Exception {
         if (!getRasterImageLayer().isVisible()) {
             return;
         }
-
-//        if (last_scale == panel.getViewport().getScale() && last_env == panel.getViewport().fullExtent()) {
-//          return;
-//        }
-
-//        while(!this.doneRendering)
-//            Thread.sleep(50);
         
         doneRendering = false;
 
         //Create the image outside the synchronized call to #draw, because it
-        // takes
-        //a few seconds, and we don't want to block repaints. [Jon Aquino]
+        //takes a few seconds, and we don't want to block repaints. [Jon Aquino]
         
         RasterImageLayer rLayer = getRasterImageLayer();
         
@@ -117,42 +105,20 @@ public class RasterImageRenderer extends ImageCachingRenderer {
         }
         
         final Envelope realWorldCoordinates = new Envelope(rLayer.getActualImageEnvelope());
-        final Point2D upperLeftCorner = panel.getViewport().toViewPoint(new Coordinate(realWorldCoordinates.getMinX(), realWorldCoordinates.getMaxY()));
-        
-//        // Draw a grey rect where the image is about to show up...
-//        if (false && rLayer.getOrigImageWidth() * rLayer.getOrigImageHeight() > RasterImageLayer.getMaxPixelsForFastDisplayMode()){
-//            final Rectangle drawingRect = rLayer.getDrawingRectangle(10, 10, rLayer.getEnvelope(), panel.getViewport());
-//            
-//            if (drawingRect!=null){
-//                //logger.printDebug(drawingRect.toString());
-//                Drawer defaultDrawer = new ThreadSafeImage.Drawer() {
-//                    public void draw(Graphics2D g) throws Exception {
-//                        g.translate( upperLeftCorner.getX() , upperLeftCorner.getY() );
-//                        g.setComposite(AlphaComposite.getInstance( AlphaComposite.SRC_OVER, .5f));
-//                        g.setColor(Color.lightGray);
-//                        g.fillRect(drawingRect.x, drawingRect.y, drawingRect.width, -drawingRect.height);
-//                    }
-//                };
-//                
-//                image.draw(defaultDrawer);
-//            }
-//        }
-        
-        
-        
+        final Point2D upperLeftCorner = panel.getViewport().toViewPoint(
+                new Coordinate(realWorldCoordinates.getMinX(), realWorldCoordinates.getMaxY())
+        );
+
         final int xOffset = rLayer.getXOffset();
         final int yOffset = rLayer.getYOffset();
         
         if (sourceImage==null){
             doneRendering = true;
             return;
-        }        
-        
-        
+        }
         
         //Drawing can take a long time. If the renderer is cancelled during
-        // this
-        //time, don't draw when the request returns. [Jon Aquino]
+        //this time, don't draw when the request returns. [Jon Aquino]
         if (cancelled) {
             doneRendering = true;
             return;

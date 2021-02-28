@@ -155,7 +155,7 @@ public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
 
   public void initialize(PlugInContext context) throws Exception {
     FeatureInstaller.addMainMenu(context.getFeatureInstaller(),
-        new String[] { MenuNames.EDIT }, MenuNames.EXTRACT, -1);
+        new String[] { MenuNames.EDIT }, MenuNames.EXTRACT);
     context.getFeatureInstaller().addMainMenuPlugin(this,
         new String[] { MenuNames.EDIT, MenuNames.EXTRACT }, getName(), false,
         ICON, createEnableCheck(context.getWorkbenchContext()));

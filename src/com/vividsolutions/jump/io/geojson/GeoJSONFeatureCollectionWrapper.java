@@ -31,9 +31,9 @@ import com.vividsolutions.jump.util.Timer;
  */
 public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
   MapGeoJsonGeometryReader geomReader = null;
-  FlexibleFeatureSchema featureSchema = null;
-  FeatureCollection featureCollection = null;
-  List<String> columnsWithMixedValues = new LinkedList<String>();
+  FlexibleFeatureSchema featureSchema;
+  FeatureCollection featureCollection;
+  List<String> columnsWithMixedValues = new LinkedList<>();
 
   /**
    * create a new empty FeatureCollection wrapper
@@ -150,10 +150,9 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
     }
 
     // parse attributes
-    Map<String, Object> attribsMap = null;
     if (featureMap.containsKey(GeoJSONConstants.PROPERTIES)
         && featureMap.get(GeoJSONConstants.PROPERTIES) instanceof Map) {
-      attribsMap = (Map) featureMap.get(GeoJSONConstants.PROPERTIES);
+      Map<String, Object> attribsMap = (Map) featureMap.get(GeoJSONConstants.PROPERTIES);
       // iterate over this feature's attribs
       for (String key : attribsMap.keySet()) {
         Object value = attribsMap.get(key);
@@ -216,11 +215,11 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
    * we need to fixup the feature schema before the collection is ready to be
    * used
    * 
-   * @return
+   * @return the FeatureCollection after the FeatureSchema has been fixed
    */
   public FeatureCollection getFeatureCollection() {
     // set type to String for mixed columns
-    for (String key : new LinkedList<String>(columnsWithMixedValues)) {
+    for (String key : new LinkedList<>(columnsWithMixedValues)) {
       featureSchema.setAttributeType(featureSchema.getAttributeIndex(key),
           AttributeType.STRING);
       columnsWithMixedValues.remove(key);

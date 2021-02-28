@@ -27,7 +27,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
 /**
  * Installs the {@link de.soldin.jumpcore.geomconv.GCPlugin}
- *
+ * TODO Is this class useless now that GeometryConverted has been included into the CORE ?
  * @see com.vividsolutions.jump.workbench.plugin.Extension
  */
 public class GCExtension
@@ -35,12 +35,8 @@ public class GCExtension
 	{
 	public static final String NAME = "Geometry Converter (de.soldin.jumpcore.geomconv)";
 	public static final String VERSION = "0.3core";
-	//private static ExtClassLoader ecl;
-	
+
 	public void configure(PlugInContext context) throws Exception {
-		//ExtClassLoader ecl = getClassLoader();
-		//Class clazz = ecl.loadClass("de.soldin.jumpcore.GCPlugin");
-		//PlugIn plugin = (PlugIn) clazz.newInstance();
 		GCPlugin plugin = new GCPlugin();
 		plugin.initialize(context);
 	}
@@ -48,27 +44,5 @@ public class GCExtension
 	public String getVersion(){ return VERSION; }
 	
 	public String getName(){ return NAME; }
-	
-	/*public static ExtClassLoader getClassLoader() throws Exception{
-		if (ecl instanceof ExtClassLoader)
-			return ecl;
-		
-		Class clazz = GCExtension.class;
-		ecl = new ExtClassLoader( clazz.getClassLoader(), false );
-		// keep interfaces in parent loader
-		ecl.blacklist("^(?i:de.soldin.jumpcore.IExtExtension)$");
-		
-		String base = ExtClassLoader.getBase( clazz );
-		// add extension.jar
-		ecl.add( base );
-		//System.out.println(clazz.getName()+" base is: "+base);
-		// add <extension>/ folder
-		String libFolder = ExtClassLoader.getLibFolder( clazz, "geomconv" );
-		ecl.add( libFolder );
-		System.out.println(clazz.getName()+" libs are in: "+libFolder);
-		// add <extension>/*.jar
-		ecl.addAllFiles( libFolder, "jar", true );
-		
-		return ecl;
-	}*/
+
 }

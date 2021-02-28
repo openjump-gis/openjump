@@ -135,7 +135,7 @@ public class RenderingManager {
 	}
 	/**
 	 * Set the rendering mode
-	 * @parem notify : Runnable that will be executed after rendering completes
+	 * @param notify : Runnable that will be executed after rendering completes
 	 * depending on the mode
 	 * @param mode : INTERACTIVE, SINGLE_THREAD_QUEUE, or EXECUTE_ON_EVENT_THREAD
 	 */
@@ -306,14 +306,14 @@ public class RenderingManager {
   }
 
   /**
-   * @param clss
-   * @param rendererFactory
+   * @param clazz Class of the Layer
+   * @param rendererFactory a Renderer.ContentDependendFactory
    * @deprecated see {@link #setRendererFactory(Class, RendererFactory)}
    */
-  public static void putRendererForLayerable(Class clss,
+  public static void putRendererForLayerable(Class clazz,
     Renderer.ContentDependendFactory rendererFactory) {
-    if (!layerableClassToRendererFactoryMap.containsKey(clss)) {
-      layerableClassToRendererFactoryMap.put(clss, rendererFactory);
+    if (!layerableClassToRendererFactoryMap.containsKey(clazz)) {
+      layerableClassToRendererFactoryMap.put(clazz, rendererFactory);
     }
   }
 
@@ -322,7 +322,7 @@ public class RenderingManager {
     /**
      * Creates a Renderer suitable for this contentID.
      * this method is called by method render().
-     * @param contentID
+     * @param contentID the contentID, generally a Layerable
      * @return a Renderer to render this content
      */
   public Renderer createRenderer(Object contentID) {

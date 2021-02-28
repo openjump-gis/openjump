@@ -30,13 +30,13 @@ public class HistogramPlot2DOJ extends HistogramPlot2D {
 
     /**
      * 
-     * @param n
-     * @param c
-     * @param _XY
-     * @param w
-     * @param context
-     * @param layer
-     * @param attrName
+     * @param n name of the Plot
+     * @param c color of the Plot
+     * @param _XY XY values
+     * @param w width of the plot
+     * @param context plugin context
+     * @param layer Layer
+     * @param attrName attribute name
      */
 	public HistogramPlot2DOJ(String n, Color c, double[][] _XY, double w, PlugInContext context, Layer layer, String attrName) {
 		super(n, c, _XY, w, 0.5, 1);

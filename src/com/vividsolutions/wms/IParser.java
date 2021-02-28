@@ -47,7 +47,7 @@ import java.io.InputStream;
  */
 public interface IParser {
 
-  public Capabilities parseCapabilities(WMService service, InputStream inStream)
+  Capabilities parseCapabilities(WMService service, InputStream inStream)
       throws IOException;
 
 }

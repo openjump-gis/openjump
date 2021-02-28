@@ -177,7 +177,7 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
       FeatureSchema targetFeatureSchema, String layerName) {
     // Transfer as many attributes as possible, matching on name. [Jon Aquino]
     Feature copy = new BasicFeature(targetFeatureSchema);
-    copy.setGeometry((Geometry) original.getGeometry().clone());
+    copy.setGeometry((Geometry) original.getGeometry().copy());
 
     for (int i = 0; i < original.getSchema().getAttributeCount(); i++) {
       if (i == original.getSchema().getGeometryIndex()) {

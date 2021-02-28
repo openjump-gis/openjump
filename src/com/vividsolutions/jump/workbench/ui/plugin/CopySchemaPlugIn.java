@@ -85,7 +85,8 @@ public class CopySchemaPlugIn extends AbstractPlugIn {
     
     public boolean execute(PlugInContext context) throws Exception {
     	String schemaString = "";
-    	Collection layerCollection = (Collection) context.getWorkbenchContext().getLayerNamePanel().selectedNodes(Layer.class);
+    	Collection layerCollection = context.getWorkbenchContext()
+              .getLayerableNamePanel().selectedNodes(Layer.class);
     	Layer layer = (Layer) layerCollection.iterator().next();
     	FeatureSchema featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
     	int numAttributes = featureSchema.getAttributeCount();

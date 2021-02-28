@@ -177,7 +177,7 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn {
       }
       break;
     case 4:
-      int row = new Long(Math.round(Math.sqrt(frameCounter))).intValue();
+      int row = Long.valueOf(Math.round(Math.sqrt(frameCounter))).intValue();
       if (row == 0)
         break;
       int col = frameCounter / row;

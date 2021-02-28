@@ -120,8 +120,8 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 	 * otherwise the attributes are transferred. The later step assumes that a new created
 	 * intersection polygon has at max only one correspondent polygon per layer.
 	 * 
-	 * @param fcA
-	 * @param transfer Attributes should attributes be transfered?
+	 * @param fcA feature collection A
+	 * @param transferAttributes should attributes be transfered?
 	 * @param monitor can be null
 	 * @param context can be null
 	 * @return a FeatureCollection that contains the result of the intersection
@@ -246,7 +246,7 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 	
 	/**
 	 * All values are set to NaN.
-	 * @param f
+	 * @param f the Feature whose attributes must be set to NaN
 	 * @return a clone of f where all numeric and string attributes are set to NaN
 	 */
 	public static Feature resetFeatureValuesToNaN(Feature f){

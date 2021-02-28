@@ -228,7 +228,7 @@ public class DetachableInternalFrame extends JInternalFrame {
 	/**
 	 * Sets the text of the detach popup menu. Default is "detach window".
 	 *
-	 * @param text
+	 * @param text text of the detach popup menu
 	 */
 	public void setDetachMenuItemText(String text) {
 		detachMenuItem.setText(text);

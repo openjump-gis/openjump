@@ -44,9 +44,9 @@ public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDSDriver 
    * returns a spatialite JDBC connection with spatialite extension loaded if
    * possible if not, a property will tell so
    * 
-   * @param params
-   * @return
-   * @throws Exception
+   * @param params list of Connection parameters
+   * @return a DataStoreConnection
+   * @throws Exception if an Exception occurs
    */
   @Override
   public DataStoreConnection createConnection(ParameterList params)

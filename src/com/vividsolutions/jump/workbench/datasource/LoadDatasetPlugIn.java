@@ -90,7 +90,7 @@ public class LoadDatasetPlugIn extends ThreadedBasePlugIn {
             // hence this "if" stuff.
             //
             Object obj = blackboard.get(LoadFileDataSourceQueryChooser.FILE_CHOOSER_KEY);
-            if ( obj != null && obj instanceof JFileChooser ) {
+            if (obj instanceof JFileChooser) {
                 JFileChooser chooser = (JFileChooser) obj;
                 chooser.addActionListener(new DoubleClickActionListener(dlg));
             }

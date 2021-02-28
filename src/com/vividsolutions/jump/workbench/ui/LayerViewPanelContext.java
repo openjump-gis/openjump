@@ -38,11 +38,11 @@ public interface LayerViewPanelContext extends ErrorHandler {
      * Displays a message indicating the status of current operations, typically
      * in a status bar.
      */
-    public void setStatusMessage(String message);
+    void setStatusMessage(String message);
 
     /**
      * Notifies the user about a minor issue. Subclasses may wish to simply
      * forward the warning to #setStatusMessage.
      */
-    public void warnUser(String warning);
+    void warnUser(String warning);
 }

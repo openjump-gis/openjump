@@ -85,12 +85,12 @@ public class PirolEdge {
      * creates a new {@link PirolEdge} object, that has a length
      * equal to <code>lineToShift</code>'s length and is parallel to
      * <code>lineToShift</code>.
-     *@param lineToShift the line to be shifted
-     *@param shiftingVector x,y,z component for the shifting (will be added to <code>lineToShift</code>'s starting and end point).
-     *@return a new, shifted {@link PirolEdge} object
-     * @throws Exception 
+     * @param lineToShift the line to be shifted
+     * @param shiftingVector x,y,z component for the shifting (will be added to <code>lineToShift</code>'s starting and end point).
+     * @return a new, shifted {@link PirolEdge} object
+     * @throws Exception if an Exception occurs
      */
-    public final static PirolEdge shiftLine(PirolEdge lineToShift, PirolPoint shiftingVector) throws Exception{
+    public static PirolEdge shiftLine(PirolEdge lineToShift, PirolPoint shiftingVector) throws Exception{
         PirolPoint spkt = null, epkt = null;
         PirolPoint currPkt = null;
         

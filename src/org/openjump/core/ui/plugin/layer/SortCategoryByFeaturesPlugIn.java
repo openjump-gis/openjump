@@ -78,7 +78,7 @@ public class SortCategoryByFeaturesPlugIn extends SortCategoryAbstractPlugIn {
         .get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Most-Number-of-Features");
 
     FeatureInstaller.addMainMenu(context.getFeatureInstaller(),
-        new String[] { MenuNames.LAYER }, menuLabelOnLayer, 7);
+        new String[] { MenuNames.LAYER }, menuLabelOnLayer);
 
     context.getFeatureInstaller().addMainMenuItem(this,
         new String[] { MenuNames.LAYER, menuLabelOnLayer, subMenuLabel },

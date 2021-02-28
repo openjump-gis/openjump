@@ -12,6 +12,7 @@ package org.openjump.core.ui.plugin.file;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -210,7 +211,7 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
       // FileWriter out = new FileWriter(selFile);
       try {
         FileOutputStream fos = new FileOutputStream(selFile, false);
-        OutputStreamWriter out = new OutputStreamWriter(fos, "UTF-8");
+        OutputStreamWriter out = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
         svgGenerator.stream(out, true);
         out.close();
       }

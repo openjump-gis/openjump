@@ -13,7 +13,7 @@ public interface ISextanteLayer extends ISextanteDataObject{
 	 * Returns the extent covered by the layer
 	 * @return the extent of the layer
 	 */
-	public Rectangle2D getFullExtent();
+	Rectangle2D getFullExtent();
 
 	/**
 	 * Returns an object with information about the CRS
@@ -22,6 +22,6 @@ public interface ISextanteLayer extends ISextanteDataObject{
 	 * @return An object with information about the CRS
 	 * used for this layer (i.e. a string with a EPSG code)
 	 */
-	public Object getCRS();
+	Object getCRS();
 
 }

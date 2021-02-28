@@ -156,7 +156,7 @@ public class ColorThemingStyle implements Style, AlphaSetting {
 	}
 
 	public static Object trimIfString(Object object) {
-		return (object != null && object instanceof String) ?
+		return (object instanceof String) ?
                 ((String) object).trim() : object;
 	}
 

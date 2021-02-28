@@ -201,29 +201,6 @@ public class Java2DConverter {
 		}
 		
 	}
-
-	// Method rewritten by mmichaud on 2011-03-05
-	// to avoid drawing out of the viewport
-	/*
-	private GeneralPath toShape_(LineString lineString)
-		throws NoninvertibleTransformException {
-        int numPoints = lineString.getNumPoints();
-		GeneralPath shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, numPoints);
-        PathIterator pi = new LineStringPath(lineString, this);
-		shape.append(pi,false);
-		//Point2D viewPoint = toViewPoint(lineString.getCoordinateN(0));
-		//shape.moveTo((float) viewPoint.getX(), (float) viewPoint.getY());
-        //
-		//for (int i = 1; i < lineString.getNumPoints(); i++) {
-		//	viewPoint = toViewPoint(lineString.getCoordinateN(i));
-		//	shape.lineTo((float) viewPoint.getX(), (float) viewPoint.getY());
-		//}
-
-		//BasicFeatureRenderer expects LineStrings and MultiLineStrings to be
-		//converted to GeneralPaths. [Jon Aquino]
-		return shape;
-	}
-	*/
 	
 	// New toShape method for LineString [mmichaud 2011-03-05]
 	// This new method exclude all segments entirely out of the viewPort from
@@ -288,11 +265,11 @@ public class Java2DConverter {
         return viewPoint;
     }
 
-	public static interface PointConverter {
-		public Point2D toViewPoint(Coordinate modelCoordinate)
+	public interface PointConverter {
+		Point2D toViewPoint(Coordinate modelCoordinate)
 			throws NoninvertibleTransformException;
-        public double getScale() throws NoninvertibleTransformException;
-        public Envelope getEnvelopeInModelCoordinates();
+		double getScale() throws NoninvertibleTransformException;
+		Envelope getEnvelopeInModelCoordinates();
 	}
 
 	/**

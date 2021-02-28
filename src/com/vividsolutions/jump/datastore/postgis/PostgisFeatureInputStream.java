@@ -21,8 +21,9 @@ public class PostgisFeatureInputStream extends SpatialDatabasesFeatureInputStrea
     
     /**
      * Returns a PostgisResultSetConverter
-     * @param rs
-     * @return 
+     * @param rs a ResultSet
+     * @return a SpatialDatabasesResultSetConverter containing converters
+     *      to convert data get from a PostgisDatabase
      */
     @Override
     protected SpatialDatabasesResultSetConverter getResultSetConverter(ResultSet rs) {

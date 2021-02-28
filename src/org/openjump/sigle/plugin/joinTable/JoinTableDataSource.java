@@ -20,10 +20,10 @@ import java.util.Hashtable;
  */
 public interface JoinTableDataSource {
 	
-	public ArrayList getFieldNames();
+	ArrayList getFieldNames();
 	
-	public ArrayList getFieldTypes();
+	ArrayList getFieldTypes();
 	
-	public Hashtable buildTable (int keyIndex);
+	Hashtable buildTable (int keyIndex);
 	
 }

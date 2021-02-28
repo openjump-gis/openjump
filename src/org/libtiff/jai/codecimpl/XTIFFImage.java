@@ -91,7 +91,7 @@ public class XTIFFImage extends SimpleRenderedImage
   {
 
     this.stream = stream;
-    if (param == null || !(param instanceof XTIFFDecodeParam))
+    if (!(param instanceof XTIFFDecodeParam))
     {
       param = new XTIFFDecodeParam(param);
     }

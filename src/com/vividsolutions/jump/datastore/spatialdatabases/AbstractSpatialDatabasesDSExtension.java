@@ -56,8 +56,9 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
    * convenience method for
    * {@link #AbstractSpatialDatabasesDSExtension(Class[], Map)}
    * 
-   * @param dsDriverClass
-   * @param classesToJar
+   * @param dsDriverClass the Dadabase Driver Class
+   * @param classesToJar a map containing driver class names as keys
+   *                     and the jar containing the class as values
    */
   public AbstractSpatialDatabasesDSExtension(Class dsDriverClass,
       Map<String, String> classesToJar) {

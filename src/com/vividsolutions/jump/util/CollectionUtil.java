@@ -300,8 +300,8 @@ public class CollectionUtil {
         return result;
     }
 
-    public static Object get(Class c, Map<Class,Object> map) {
-        if (map.keySet().contains(c)) {
+    public static Object get(Class<?> c, Map<Class<?>,? extends Object> map) {
+        if (map.containsKey(c)) {
             return map.get(c);
         }
         for (Class<?> clazz : map.keySet()) {

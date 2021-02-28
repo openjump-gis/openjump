@@ -159,14 +159,14 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn {
   private boolean styleChanged = false;
 
   public interface PropertyPanel {
-    public String getTitle();
+    String getTitle();
 
-    public void updateStyles();
+    void updateStyles();
 
     /**
      * @return an error message, or null if the input is valid
      */
-    public String validateInput();
+    String validateInput();
   }
 
   public LayerPropertiesPlugIn() {
@@ -180,18 +180,6 @@ public class LayerPropertiesPlugIn extends AbstractPlugIn {
   public String getName() {
     return LAYER_PROPERTIES;
   }
-
-  // public void initialize(PlugInContext context) throws Exception {
-  // this.workbenchContext = context.getWorkbenchContext();
-  // FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
-  // JPopupMenu layerNamePopupMenu = workbenchContext.getWorkbench()
-  // .getFrame()
-  // .getLayerNamePopupMenu();
-  // featureInstaller.addPopupMenuItem(layerNamePopupMenu,
-  // this, LAYER_PROPERTIES + "..." + "{pos:7}",
-  // false, getIcon(),
-  // createEnableCheck(workbenchContext));
-  // }
 
   public boolean execute(PlugInContext context) throws Exception {
     styleChanged = false;

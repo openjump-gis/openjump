@@ -101,8 +101,6 @@ public class GeoReferencedRaster extends GeoRaster {
 
   /**
    * Called by Java2XML
-   * 
-   * @throws ReferencedImageException
    */
   public GeoReferencedRaster(String location) throws ReferencedImageException {
     this(location, null);

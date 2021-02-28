@@ -36,5 +36,5 @@ package com.vividsolutions.jump.workbench.ui;
 * Defines a listener for changes to layer selection.
 */
 public interface LayerNamePanelListener {
-    public void layerSelectionChanged();
+    void layerSelectionChanged();
 }

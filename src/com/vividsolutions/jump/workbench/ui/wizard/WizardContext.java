@@ -33,9 +33,10 @@
 package com.vividsolutions.jump.workbench.ui.wizard;
 
 public interface WizardContext {
-    public void setData(String name, Object value);
 
-    public Object getData(String name);
+  void setData(String name, Object value);
 
-    public void inputChanged();
+  Object getData(String name);
+
+  void inputChanged();
 }

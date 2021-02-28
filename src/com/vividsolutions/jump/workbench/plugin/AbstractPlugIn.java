@@ -80,7 +80,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
   private Map<String,Object> parameters;
 
   public void addParameter(String name, Object value) {
-      if (parameters == null) parameters = new HashMap<String, Object>();
+      if (parameters == null) parameters = new HashMap<>();
       parameters.put(name, value);
   }
 
@@ -194,6 +194,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
   public final int getShortcutKeys() {
     return shortcutKeys;
   }
+
   /*
    * ShortCutEnabled implementation.
    */
@@ -219,7 +220,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
     // find old method
     try {
       Method m = null;
-      Class c = this.getClass();
+      Class<?> c = this.getClass();
       do {
         try {
           //System.out.println("ap check "+c);
@@ -307,7 +308,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
     return getName();
   }
   
-  public static String createName(Class plugInClass) {
+  public static String createName(Class<? extends PlugIn> plugInClass) {
     try {
       return I18N.get(plugInClass.getName());
     } catch (java.util.MissingResourceException e) {
@@ -456,7 +457,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
         plugins.addAll(Arrays.asList(shortys));
     }
 
-    return (PlugIn[]) plugins.toArray(new PlugIn[]{});
+    return plugins.toArray(new PlugIn[]{});
   }
 
   /**

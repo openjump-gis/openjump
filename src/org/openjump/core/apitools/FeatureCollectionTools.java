@@ -128,7 +128,7 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
      * @param fc the FeatureCollection to copy
      * @return the new copied FeatureCollection
      */
-    public final static PirolFeatureCollection cloneFeatureCollection(FeatureCollection fc){
+    public static PirolFeatureCollection cloneFeatureCollection(FeatureCollection fc){
     	FeatureSchema clonedSchema = (FeatureSchema)fc.getFeatureSchema().clone();
     	FeatureDataset newFc = new FeatureDataset(clonedSchema);
     	
@@ -459,7 +459,7 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
      * @param attrs array of attribute indices of attributes to count value appearances for
      * @return Array of mappings of values to number of appearances 
      */
-    public final static HashMap<Object,Integer>[] getValueAppearancesCount( Feature[] features, int[] attrs ){
+    public static HashMap<Object,Integer>[] getValueAppearancesCount(Feature[] features, int[] attrs ){
         HashMap<Object,Integer>[] value2NumAppearanceMaps = new HashMap[attrs.length];
         
         for (int i=0; i<attrs.length; i++){
@@ -940,7 +940,7 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
      * Extracts all points from an input feature and returns them as list of point features.
      * Note: for closed Geometry objects the start and end point are extracted - 
      * i.e. the points may be overlap.   
-     * @param f
+     * @param f the Feature to convert
      * @param accountForRings doesn't add a point for the last coordinate if the geometry is a ring (i.e. first point equals last point) 
      * @return list of point features
      */
@@ -966,7 +966,7 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
 	/**
      * Sorts features according to unique attribute values into different lists (on list for each unique attribute). 
      * TODO: enable sorting for String values
-     * @param features
+     * @param features the Features to sort
      * @param idAttribute (must be Double or Integer)
      * @return Object[0]: an Array of ArrayLists containing features, Object[1]: an Array of int values containing the unique values 
      * 			used for sorting. Can return null if wrong AttributeType. E.g. use<br>
@@ -1044,8 +1044,8 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
 	
 	/**
 	 * gets the value of an attribute; it checks if the attribute is of double or int type, otherwise NaN is returned. 
-	 * @param f
-	 * @param attributeName
+	 * @param f the Feature from which to extract the numeric attribute
+	 * @param attributeName name of the attribute to extract
 	 * @return value as double
 	 */
 	public static double getNumericalAttributeValue(Feature f, String attributeName){
@@ -1071,7 +1071,7 @@ public class FeatureCollectionTools extends ToolToMakeYourLifeEasier {
      * Sorts a list of features according to the values of a attribute. If values are similar the feature
      * are ordered the same way as in the input list.
      * TODO: this method has been tested only briefly (not exhaustively)
-     * @param features
+     * @param features the features to sort
      * @param attributeNameForSorting attribute needs to be either Integer or Double 
      * @return list of sorted features; the smallest value will be first in the list.
      */

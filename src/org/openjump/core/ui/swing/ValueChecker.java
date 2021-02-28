@@ -23,5 +23,5 @@ package org.openjump.core.ui.swing;
  * 
  */
 public interface ValueChecker {
-    public boolean areValuesOk();
+    boolean areValuesOk();
 }

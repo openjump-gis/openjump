@@ -22,14 +22,14 @@ public class PlugInClassLoader extends URLClassLoader {
     }
     // that changed in java9, now we build it from the java property
     else {
-      List ucp = new ArrayList<URL>();
+      List<URL> ucp = new ArrayList<>();
 //      System.out.println(parent.getClass());
-      String cp =System.getProperty ("java.class.path","");
+      String cp = System.getProperty ("java.class.path","");
 //      System.out.println(cp);
       addClassPathToUCP(cp, ucp);
 //      System.out.println(ucp);
       
-      addUrls((URL[])ucp.toArray(new URL[] {}));
+      addUrls(ucp.toArray(new URL[] {}));
     }
   }
 
@@ -44,15 +44,16 @@ public class PlugInClassLoader extends URLClassLoader {
    * lib/ext/<extension_subfolder>/
    */
   @Override
-  public Class loadClass(String name) throws ClassNotFoundException {
+  public Class<?> loadClass(String name) throws ClassNotFoundException {
     // if (name.matches("(?i).*PlugInClassLoader"))
     // System.out.println("foo");
-    Class c = findLoadedClass(name);
+    Class<?> c = findLoadedClass(name);
 
     // skip the default classloader which we replace and
     // try it's parent to load java system jars and such
     if (c == null) {
       try {
+        //TODO why do we load grand-parent and not parent ?
         c = getParent().getParent().loadClass(name);
       } catch (ClassNotFoundException e) {
       }
@@ -104,7 +105,7 @@ public class PlugInClassLoader extends URLClassLoader {
   /**
    * allow adding urls, any time
    * 
-   * @param urls
+   * @param urls array of URLs to add
    */
   public void addUrls(URL[] urls) {
     for (URL url : urls) {
@@ -149,7 +150,8 @@ public class PlugInClassLoader extends URLClassLoader {
       String stack = sw.toString();
       // print first line of stack only containing Exception class name and message
       int index = stack.indexOf("\n");
-      System.err.println("Problem adding classpath entry '"+s+"': "+stack.substring(0, index>0?index:stack.length()));
+      System.err.println("Problem adding classpath entry '" + s + "': " +
+              stack.substring(0, index>0?index:stack.length()));
       return null;
     }
   }

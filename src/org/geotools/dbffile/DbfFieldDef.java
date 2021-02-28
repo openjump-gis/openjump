@@ -40,9 +40,9 @@ public class DbfFieldDef implements DbfConsts{
    *
    * @see #setup(int pos, EndianDataInputStream dFile, Charset charset)
    * 
-   * @param pos
-   * @param dFile
-   * @throws IOException
+   * @param pos position of the field in the row
+   * @param dFile the Dbf File as an EndianDataInputStream
+   * @throws IOException if an IOException occurred
    */
     public void setup(int pos, EndianDataInputStream dFile) throws IOException {
 	    setup(pos, dFile, Charset.defaultCharset());
@@ -51,10 +51,10 @@ public class DbfFieldDef implements DbfConsts{
   /**
    * Sets up the Dbf field definition with a specified Charset for the fieldnames.
    *
-   * @param pos
-   * @param dFile
-   * @param charset
-   * @throws IOException
+   * @param pos position of the field in the row
+   * @param dFile the Dbf File as an EndianDataInputStream
+   * @param charset the Charset to use to read the DbfFile
+   * @throws IOException if an IOException occurred
    */
     public void setup(int pos, EndianDataInputStream dFile, Charset charset) throws IOException {
 

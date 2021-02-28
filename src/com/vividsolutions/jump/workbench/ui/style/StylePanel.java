@@ -32,10 +32,10 @@
 package com.vividsolutions.jump.workbench.ui.style;
 
 public interface StylePanel {
-	public String getTitle();
-	public void updateStyles();
+	String getTitle();
+	void updateStyles();
 	/**
 	 * @return an error message, or null if the input is valid
 	 */
-	public String validateInput();
+	String validateInput();
 }

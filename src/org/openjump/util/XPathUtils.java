@@ -68,11 +68,11 @@ public class XPathUtils {
     private static final XPath XPATH = XPathFactory.newInstance().newXPath();
 
     /**
-     * @param xpath
-     * @param e
-     * @param nscontext
+     * @param xpath an XPath string
+     * @param e an XML element
+     * @param nscontext namespace context of the element
      * @return an int, possibly parsed from a double value
-     * @throws XPathExpressionException
+     * @throws XPathExpressionException if an XPathException occurs
      */
     public static int getInt(String xpath, Element e, NamespaceContext nscontext) throws XPathExpressionException {
         // sick casts
@@ -81,11 +81,11 @@ public class XPathUtils {
     }
 
     /**
-     * @param xpath
-     * @param e
-     * @param nscontext
+     * @param xpath an XPath string
+     * @param e an XML element
+     * @param nscontext namespace context of the element
      * @return a double, possibly converted from an integer value
-     * @throws XPathExpressionException
+     * @throws XPathExpressionException if an XPathException occurs
      */
     public static double getDouble(String xpath, Element e, NamespaceContext nscontext) throws XPathExpressionException {
         XPATH.setNamespaceContext(nscontext);
@@ -103,11 +103,11 @@ public class XPathUtils {
     }
 
     /**
-     * @param xpath
-     * @param e
-     * @param nscontext
+     * @param xpath an XPath string
+     * @param e an XML element
+     * @param nscontext namespace context of the element
      * @return a list of matching nodes, or an empty list if none match
-     * @throws XPathExpressionException
+     * @throws XPathExpressionException if an XPathException occurs
      */
     public static LinkedList<Node> getNodes(String xpath, Element e, NamespaceContext nscontext)
             throws XPathExpressionException {
@@ -127,11 +127,11 @@ public class XPathUtils {
     }
 
     /**
-     * @param xpath
-     * @param e
-     * @param nscontext
+     * @param xpath an XPath string
+     * @param e an XML element
+     * @param nscontext namespace context of the element
      * @return a list of matching elements, or an empty list if none match
-     * @throws XPathExpressionException
+     * @throws XPathExpressionException if an XPathException occurs
      */
     public static LinkedList<Element> getElements(String xpath, Element e, NamespaceContext nscontext)
             throws XPathExpressionException {
@@ -146,11 +146,11 @@ public class XPathUtils {
     }
 
     /**
-     * @param xpath
-     * @param e
-     * @param nscontext
+     * @param xpath an XPath string
+     * @param e an XML element
+     * @param nscontext namespace context of the element
      * @return a matching node, or null if none match
-     * @throws XPathExpressionException
+     * @throws XPathExpressionException if an XPathException occurs
      */
     public static Node getNode(String xpath, Element e, NamespaceContext nscontext) throws XPathExpressionException {
         XPATH.setNamespaceContext(nscontext);
@@ -163,11 +163,11 @@ public class XPathUtils {
     }
 
     /**
-     * @param xpath
-     * @param e
-     * @param nscontext
+     * @param xpath an XPath string
+     * @param e an XML element
+     * @param nscontext namespace context of the element
      * @return a matching element, or null if none matches
-     * @throws XPathExpressionException
+     * @throws XPathExpressionException if an XPathException occurs
      */
     public static Element getElement(String xpath, Element e, NamespaceContext nscontext)
             throws XPathExpressionException {

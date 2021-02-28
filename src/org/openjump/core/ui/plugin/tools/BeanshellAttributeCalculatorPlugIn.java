@@ -151,7 +151,7 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
     }
     
     public void initialize(final PlugInContext context) throws Exception {
-        context.getFeatureInstaller().addMainMenuItem(
+        context.getFeatureInstaller().addMainMenuPlugin(
           this, new String[]{MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},
           getName(),
           false, null, new MultiEnableCheck()
@@ -234,8 +234,6 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
             new_attribute_type = (AttributeType)dialog.getComboBox(NEW_ATTRIBUTE_TYPE).getSelectedItem();
             dynamic = dialog.getBoolean(DYNAMIC);
             bsh_expression = dialog.getText(BSH_EXPRESSION);
-            //try {initInterpreter(context, dialog.getLayer(SOURCE_LAYER));}
-            //catch(EvalError e) {context.getWorkbenchFrame().warnUser(e.toString());}
             return true;
         }
         else return false;
@@ -365,7 +363,7 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
         okDialog.getContentPane().add(new JLabel(), BorderLayout.EAST);
         okDialog.getContentPane().add(new JLabel(), BorderLayout.WEST);
         GUIUtil.centreOnWindow(okDialog);
-        okDialog.show();
+        okDialog.setVisible(true);
     }
     
     // Creates a fake feature from a FeatureSchema for script evaluation

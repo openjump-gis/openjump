@@ -170,7 +170,7 @@ public abstract class GeoReferencedRaster
    * modelspace. It should be transformed to make it a square image in
    * modelspace.
    *
-   * @param image
+   * @param image image to be normalized (squared)
    */
   protected void normalize(RenderedOp image)
   {
@@ -237,7 +237,7 @@ public abstract class GeoReferencedRaster
   }
 
   /**
-   * @param coordinate
+   * @param coordinate coordinate of a TiePoint to be set in the GeoTiff ModelTiepointTag
    */
   public void setCoorModel_tiepointLT(Coordinate coordinate)
   {
@@ -246,7 +246,7 @@ public abstract class GeoReferencedRaster
   }
 
   /**
-   * @param coordinate
+   * @param coordinate coordinate of a TiePoint to be set in the GeoTiff ModelTiepointTag
    */
   public void setCoorRasterTiff_tiepointLT(Coordinate coordinate)
   {
@@ -255,7 +255,7 @@ public abstract class GeoReferencedRaster
   }
 
   /**
-   * @param d
+   * @param d x scale value (model unit / raster unit)
    */
   public void setDblModelUnitsPerRasterUnit_X(double d)
   {
@@ -264,7 +264,7 @@ public abstract class GeoReferencedRaster
   }
 
   /**
-   * @param d
+   * @param d y scale value (model unit / raster unit)
    */
   public void setDblModelUnitsPerRasterUnit_Y(double d)
   {

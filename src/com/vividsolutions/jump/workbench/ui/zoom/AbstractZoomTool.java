@@ -184,8 +184,8 @@ public abstract class AbstractZoomTool extends DragTool {
 
 	protected Point2D getCentre()
 	throws NoninvertibleTransformException { //zoom while keeping cursor over same model point                         
-		double x = getPanel().getWidth() / 2;
-		double y = getPanel().getHeight() / 2;
+		double x = getPanel().getWidth() / 2.0;
+		double y = getPanel().getHeight() / 2.0;
 		return new Point2D.Double(x,y);
 	}
         

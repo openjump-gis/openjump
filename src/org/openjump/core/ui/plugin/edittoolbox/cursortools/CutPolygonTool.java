@@ -74,7 +74,7 @@ public class CutPolygonTool extends PolygonTool {
 	    //Ici on va chercher la couche
 	    WorkbenchContext context = getWorkbench().getContext();
 	    this.reportNothingToUndoYet();
-	    LayerNamePanel layernamepanel = context.getLayerNamePanel();
+	    LayerNamePanel layernamepanel = context.getLayerableNamePanel();
 		
 	    Layer[] selectedLayers = layernamepanel.getSelectedLayers();
 	    

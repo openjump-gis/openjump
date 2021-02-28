@@ -286,7 +286,10 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
      * @param label label of the control
      * @param component the control itself (may also be a label or a separator)
      * @param enableChecks checks to validate inputs
-     * @param toolTipText
+     * @param toolTipText a ToolTipText associated to the field
+     * @param labelPos position of the label in the row (see
+     *      {@link com.vividsolutions.jump.workbench.ui.AbstractMultiInputDialog})
+     * @param fillMode fillMode of the label (see {@link java.awt.GridBagConstraints})
      */
     public void addRow(String fieldName,
                           JComponent label,

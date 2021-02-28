@@ -161,7 +161,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
    * or <code>VerticalFlowLayout.CENTER</code>,
    * 
    * @return the alignment value for this layout
-   * @see java.awt.VerticalFlowLayout#setAlignment
+   * @see java.awt.FlowLayout#setAlignment
    */
   public int getAlignment() {
     return align;
@@ -199,7 +199,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
    * <li><code>VerticalFlowLayout.HEIGHT</code>
    * </ul>
    * 
-   * @param wrapMode
+   * @param wrapMode wrap mode to use : WIDTH (default) or HEIGHT
    */
   public void setWrapMode(int wrapMode) {
     this.wrapMode = wrapMode;
@@ -212,7 +212,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
   /**
    * Set a default layout ratio. See {@link #defRatio} comment above.
    * 
-   * @param defRatio
+   * @param defRatio default ratio (width/height)
    */
   public void setDefaultRatio(double defRatio) {
     this.defRatio = defRatio;
@@ -224,7 +224,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
    * 
    * @return the horizontal gap between components and between the components
    *         and the borders of the <code>Container</code>
-   * @see java.awt.VerticalFlowLayout#setHgap
+   * @see java.awt.FlowLayout#setHgap
    * @since JDK1.1
    */
   public int getHgap() {
@@ -238,7 +238,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
    * @param hgap
    *          the horizontal gap between components and between the components
    *          and the borders of the <code>Container</code>
-   * @see java.awt.VerticalFlowLayout#getHgap
+   * @see java.awt.FlowLayout#getHgap
    * @since JDK1.1
    */
   public void setHgap(int hgap) {
@@ -251,7 +251,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
    * 
    * @return the vertical gap between components and between the components and
    *         the borders of the <code>Container</code>
-   * @see java.awt.VerticalFlowLayout#setVgap
+   * @see java.awt.FlowLayout#setVgap
    * @since JDK1.1
    */
   public int getVgap() {
@@ -265,7 +265,7 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
    * @param vgap
    *          the vertical gap between components and between the components and
    *          the borders of the <code>Container</code>
-   * @see java.awt.VerticalFlowLayout#getVgap
+   * @see java.awt.FlowLayout#getVgap
    */
   public void setVgap(int vgap) {
     this.vgap = vgap;
@@ -562,9 +562,9 @@ public class VerticalFlowLayout implements LayoutManager, java.io.Serializable {
 
   /**
    * Postprocess a preferred dimension.
-   * @param target
-   * @param in
-   * @return dim
+   * @param target target Container
+   * @param in dimension
+   * @return a Dimension made of in Dimension plus insets
    */
   private Dimension padSize(Container target, Dimension in) {
     Dimension dim = new Dimension(in);

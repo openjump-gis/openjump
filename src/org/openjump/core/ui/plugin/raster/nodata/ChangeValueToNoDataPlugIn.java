@@ -47,22 +47,23 @@ import com.vividsolutions.jump.workbench.ui.GenericNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
+/**
+ *
+ * @author Giuseppe Aruta
+ * description This class allows to change an input value to nodata,
+ *              inverse operation set nodata cells to the input value
+ * version 01 (Giuseppe Aruta) [2015_02_27] first version
+ * version 02 (Giuseppe Aruta) [2015_03_22] Add output file selection
+ * version 03 (Giuseppe Aruta) [2015_03_25] Add Inverse operation to set
+ *          nodata cells to the input value
+ * date 2015_19_5 (Giuseppe Aruta) Correct bug introduced with new
+ *       RasterImageLayer.cellvalue Substitute export to .flt file to .asc
+ *       file
+ * date 2015_15_11 (Giuseppe Aruta) Improved GUI
+ */
 public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
 
-    /**
-     * 
-     * @author Giuseppe Aruta
-     * @description This class allows to change an input value to nodata,
-     *              inverse operation set nodata cells to the input value
-     * @version 01 (Giuseppe Aruta) [2015_02_27] first version
-     * @version 02 (Giuseppe Aruta) [2015_03_22] Add output file selection
-     * @version 03 (Giuseppe Aruta) [2015_03_25] Add Inverse operation to set
-     *          nodata cells to the input value
-     * @date 2015_19_5 (Giuseppe Aruta) Correct bug introduced with new
-     *       RasterImageLayer.cellvalue Substitute export to .flt file to .asc
-     *       file
-     * @date 2015_15_11 (Giuseppe Aruta) Improved GUI
-     */
+
 
     // Language codes: 11
     public static final String PLUGINNAME = I18N
@@ -254,8 +255,7 @@ public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
 
             o.println("yllcorner " + rLayer.getActualImageEnvelope().getMinY());
 
-            o.println("cellsize "
-                    + Double.toString(rstLayer.getLayerCellSize().x));
+            o.println("cellsize " + rstLayer.getLayerCellSize().x);
 
             o.println("NODATA_value " + oldnodata);
             GridWrapperNotInterpolated gwrapper = new GridWrapperNotInterpolated(

@@ -301,7 +301,7 @@ public class ColorGenerator {
     
     /**For java2xml
      * 
-     * @param color
+     * @param color the color to add
      */
     public void addXMLInputColor(Color color) {
     	this.inputColors.add(color);
@@ -318,7 +318,7 @@ public class ColorGenerator {
 	
 	/**For java2xml
 	 * 
-	 * @param steps
+	 * @param steps number of steps
 	 */
 	public void setStepsXML(int steps) {
 		this.steps = steps;

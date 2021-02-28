@@ -129,7 +129,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         if (maxFeaturesTextField.getText() == null) return Integer.MAX_VALUE;
         if (maxFeaturesTextField.getText().trim().length() == 0) return Integer.MAX_VALUE;
         if (maxFeaturesTextField.getText().trim().equals("-")) return Integer.MAX_VALUE;
-        return new Integer(maxFeaturesTextField.getText().trim());
+        return Integer.valueOf(maxFeaturesTextField.getText().trim());
     }
 
     public String getWhereClause() {
@@ -234,13 +234,6 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
             geometryAttributeComboBox.setPreferredSize( new Dimension(
                     MAIN_COLUMN_WIDTH, ( int ) geometryAttributeComboBox.getPreferredSize().getHeight() ) );
             geometryAttributeComboBox.setEditable( true );
-            //addSafePopupListener( geometryAttributeComboBox,
-            //    new Block() {
-            //        public Object yield() throws Exception {
-            //            populateGeometryAttributeComboBox();
-            //            return null;
-            //        }
-            //    } );
         }
         return geometryAttributeComboBox;
     }
@@ -251,13 +244,6 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
             identifierAttributeComboBox.setPreferredSize( new Dimension(
                     MAIN_COLUMN_WIDTH, ( int ) identifierAttributeComboBox.getPreferredSize().getHeight() ) );
             identifierAttributeComboBox.setEditable( true );
-            //addSafePopupListener( identifierAttributeComboBox,
-            //    new Block() {
-            //        public Object yield() throws Exception {
-            //            populateIdentifierAttributeComboBox();
-            //            return null;
-            //        }
-            //    } );
         }
         return identifierAttributeComboBox;
     }

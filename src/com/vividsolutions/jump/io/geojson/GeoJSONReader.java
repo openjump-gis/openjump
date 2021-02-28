@@ -306,7 +306,7 @@ class MapGeoJsonGeometryReader extends
  * cloning the whole schema first
  */
 class FlexibleFeatureSchema extends FeatureSchema {
-  Class geometryClass = null;
+  Class<? extends Geometry> geometryClass = null;
   GeometryFactory geometryFactory = new GeometryFactory();
 
   public FlexibleFeatureSchema() {
@@ -324,11 +324,11 @@ class FlexibleFeatureSchema extends FeatureSchema {
     setAttributeType(super.getAttributeIndex(name), type);
   }
 
-  public void setGeometryType(Class clazz) {
+  public void setGeometryType(Class<? extends Geometry> clazz) {
     geometryClass = clazz;
   }
 
-  public Class getGeometryType() {
+  public Class<? extends Geometry> getGeometryType() {
     return geometryClass;
   }
 

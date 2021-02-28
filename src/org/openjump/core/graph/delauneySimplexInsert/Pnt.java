@@ -46,8 +46,8 @@ public class Pnt {
     
     /**
      * Constructor.
-     * @param coordA
-     * @param coordB
+     * @param coordA first ordinate of the point
+     * @param coordB second ordinate of the point
      */
     public Pnt (double coordA, double coordB) {
         this(new double[] {coordA, coordB});
@@ -55,9 +55,9 @@ public class Pnt {
     
     /**
      * Constructor.
-     * @param coordA
-     * @param coordB
-     * @param coordC
+     * @param coordA first ordinate of the point
+     * @param coordB second ordinate of the point
+     * @param coordC third ordinate of the point
      */
     public Pnt (double coordA, double coordB, double coordC) {
         this(new double[] {coordA, coordB, coordC});
@@ -330,7 +330,6 @@ public class Pnt {
      *   +1 means Pnt is on opposite side of facet</pre>
      * @param simplex an array of Pnts representing a simplex
      * @return an array of signs showing relation between this Pnt and the simplex
-     * @throws IllegalArgumentExcpetion if the simplex is degenerate
      */
     public int[] relation (Pnt[] simplex) {
         /* In 2D, we compute the cross of this matrix:

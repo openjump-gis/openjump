@@ -42,5 +42,5 @@ public interface LayerViewPanelProxy {
     /**
      * @return null if the LayerViewPanelProxy currently has no associated LayerViewPanel
      */
-    public LayerViewPanel getLayerViewPanel();
+    LayerViewPanel getLayerViewPanel();
 }

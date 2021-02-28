@@ -5,10 +5,10 @@ public interface RefreshRated {
    * retrieve the interval for updating the ui components
    * @return interval in milliseconds
    */
-  public int getRefreshRate();
+  int getRefreshRate();
   
   /**
    * set the interval for updating the ui components
    */
-  public void setRefreshRate(int millisecondDelay);
+  void setRefreshRate(int millisecondDelay);
 }
