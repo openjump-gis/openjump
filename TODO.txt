@@ -4,7 +4,8 @@
 
 2021-feb-16 mmichaud <m.michael.michaud@orange.fr>
 
-    build system : migrate automatic build system
+    build system : migrate automatic build system to github action (started)
+        - possibility set automatic build on several platforms : windows, linux, macos
 
     documentation : do we
         - keep/update our wiki documentation on ojwiki.soldin.de
@@ -52,10 +53,10 @@
             - wfsplugin : edso
             - horae : mantaer
 
-        refactoring : e should reorganize layerable interface and subclasses a bit
+        refactoring : we should reorganize layerable interface and subclasses a bit
             so that we have less code smell like if layerable instance of ...
 
-        redundancy : clean code, remove redundancy
+        redundancy : clean code, remove redundancy (started)
 
 
 2020-may- 26 Giuseppe Aruta (Peppe)
