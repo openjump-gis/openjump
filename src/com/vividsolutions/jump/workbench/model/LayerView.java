@@ -81,12 +81,12 @@ public class LayerView extends Layer {
 
     observableFeatureCollection.add(new ObservableFeatureCollection.Listener() {
 
-      public void featuresAdded(Collection features) {
+      public void featuresAdded(Collection<Feature> features) {
         getLayerManager().fireFeaturesChanged(features, FeatureEventType.ADDED,
                 LayerView.this);
       }
 
-      public void featuresRemoved(Collection features) {
+      public void featuresRemoved(Collection<Feature> features) {
         getLayerManager().fireFeaturesChanged(features,
                 FeatureEventType.DELETED, LayerView.this);
       }
