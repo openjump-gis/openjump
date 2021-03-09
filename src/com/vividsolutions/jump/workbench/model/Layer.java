@@ -48,7 +48,6 @@ import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.feature.Operation;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
-import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
@@ -65,7 +64,7 @@ import org.openjump.core.ccordsys.srid.SRIDStyle;
  * prefer #addAll and #removeAll to #add and #remove -- fewer events will be
  * fired.
  */
-public class Layer extends AbstractLayerable implements LayerManagerProxy, Disposable {
+public class Layer extends GeoReferencedLayerable implements Disposable {
 
   private static final String FIRING_APPEARANCE_CHANGED_ON_ATTRIBUTE_CHANGE = Layer.class
       .getName() + " - FIRING APPEARANCE CHANGED ON ATTRIBUTE CHANGE";
@@ -76,18 +75,18 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
 
   private FeatureCollectionWrapper featureCollectionWrapper;
 
-  private ArrayList<Style> styles = new ArrayList<>();
+  private final List<Style> styles = new ArrayList<>();
 
   private boolean synchronizingLineColor = true;
 
   private LayerListener layerListener = null;
 
-  private Blackboard blackboard = new Blackboard() {
-    private static final long serialVersionUID = 6504993615735124204L;
-    {
-      put(FIRING_APPEARANCE_CHANGED_ON_ATTRIBUTE_CHANGE, true);
-    }
-  };
+  //private Blackboard blackboard = new Blackboard() {
+  //  private static final long serialVersionUID = 6504993615735124204L;
+  //  {
+  //    put(FIRING_APPEARANCE_CHANGED_ON_ATTRIBUTE_CHANGE, true);
+  //  }
+  //};
 
   private boolean featureCollectionModified = false;
 
@@ -97,11 +96,13 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
    * Called by Java2XML
    */
   public Layer() {
+    getBlackboard().put(FIRING_APPEARANCE_CHANGED_ON_ATTRIBUTE_CHANGE, true);
   }
 
   public Layer(String name, Color fillColor,
       FeatureCollection featureCollection, LayerManager layerManager) {
     super(name, layerManager);
+    getBlackboard().put(FIRING_APPEARANCE_CHANGED_ON_ATTRIBUTE_CHANGE, true);
     Assert.isTrue(featureCollection != null);
     setLayerManager(layerManager);
     // Can't fire events because this Layerable hasn't been added to the
@@ -162,12 +163,12 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
         featureCollection);
     observableFeatureCollection.checkNotWrappingSameClass();
     observableFeatureCollection.add(new ObservableFeatureCollection.Listener() {
-      public void featuresAdded(Collection features) {
+      public void featuresAdded(Collection<Feature> features) {
         getLayerManager().fireFeaturesChanged(features, FeatureEventType.ADDED,
             Layer.this);
       }
 
-      public void featuresRemoved(Collection features) {
+      public void featuresRemoved(Collection<Feature> features) {
         getLayerManager().fireFeaturesChanged(features,
             FeatureEventType.DELETED, Layer.this);
       }
@@ -275,8 +276,8 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
    *          Can even be the desired Style's superclass or interface
    * @return The style value
    */
-  public Style getStyle(Class c) {
-    for (Style style : styles) {
+  public Style getStyle(Class<?> c) {
+    for (Style style : getStyles()) {
       if (c.isInstance(style)) {
         return style;
       }
@@ -289,7 +290,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
    * @param filter superclass of the requested styles
    * @return a list containing enabled styles implementing the requested class
    */
-  public List<Style> getStylesIfEnabled(Class filter) {
+  public List<Style> getStylesIfEnabled(Class<?> filter) {
     List<Style> enabledStyles = new ArrayList<>();
     final List<Style> someStyles = getStyles(filter);
     for (Style style : someStyles) {
@@ -309,14 +310,14 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
 
   /**
    * get a list of all styles matching the parameter class
-   * @param filter superclass of the requested styles
+   * @param filter superclass or interface of the requested styles
    * @return a list containing all styles implementing the requested class
    */
-  public List<Style> getStyles(Class filter) {
+  public List<Style> getStyles(Class<?> filter) {
     List<Style> someStyles = new ArrayList<>();
-    final Collection<Style> currentStyles = getStyles();
-    for (Style style : currentStyles) {
-      if (style != null && filter.isInstance(style)) {
+    final Collection<Style> allStyles = getStyles();
+    for (Style style : allStyles) {
+      if (filter.isInstance(style)) {
         someStyles.add(style);
       }
     }
@@ -396,6 +397,7 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
     fireAppearanceChanged();
   }
 
+  @Override
   public void setLayerManager(LayerManager layerManager) {
     if (layerManager != null) {
       layerManager.removeLayerListener(getLayerListener());
@@ -456,9 +458,9 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
     return layerListener;
   }
 
-  public Blackboard getBlackboard() {
-    return blackboard;
-  }
+  //public Blackboard getBlackboard() {
+    //return blackboard;
+  //}
 
   /**
    * Enables a layer to be changed undoably. Since the layer's features are
@@ -570,12 +572,14 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
   // Used for Operation deserialization
   private Collection<String> expressions;
 
+  // TODO Why not on FeatureCollection or FeatureSchema ?
   public void addFeatureSchemaOperation(String expression) {
     if (expressions == null)
       expressions = new ArrayList<>();
     expressions.add(expression);
   }
 
+  // TODO Why not on FeatureCollection or FeatureSchema ?
   private void setFeatureSchemaOperations() {
     FeatureCollection fc = getFeatureCollectionWrapper();
     if (expressions != null && fc != null
@@ -601,4 +605,5 @@ public class Layer extends AbstractLayerable implements LayerManagerProxy, Dispo
     }
     expressions = null;
   }
+
 }

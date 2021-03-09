@@ -44,6 +44,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 
+import com.vividsolutions.wms.*;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.util.Blackboard;
@@ -51,15 +52,14 @@ import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
-import com.vividsolutions.wms.BoundingBox;
-import com.vividsolutions.wms.MapLayer;
-import com.vividsolutions.wms.MapRequest;
-import com.vividsolutions.wms.WMService;
+import org.openjump.core.ccordsys.utils.SRSInfo;
 
 /**
  * A Layerable that retrieves images from a Web Map Server.
  */
-public class WMSLayer extends AbstractLayerable implements Cloneable {
+public class WMSLayer
+        extends GeoReferencedLayerable
+        implements Cloneable {
 
   private String format;
 
@@ -73,7 +73,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 
   private String wmsVersion = WMService.WMS_1_1_1;
 
-  private Reference oldImage;
+  private Reference<Image> oldImage;
   private URL oldURL;
 
   /**
@@ -216,6 +216,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 
   public void setSRS(String srs) {
     this.srs = srs;
+    setSrsInfo(new SRSInfo().setCode(srs).complete());
   }
 
   public String getSRS() {
