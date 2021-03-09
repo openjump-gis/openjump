@@ -39,7 +39,8 @@ import com.vividsolutions.jump.util.LangUtil;
  * 
  * @see Layerable
  */
-public abstract class AbstractLayerable implements Layerable {
+public abstract class AbstractLayerable implements Layerable, LayerManagerProxy {
+
   private LayerManager layerManager;
 
   private String name;
@@ -154,8 +155,8 @@ public abstract class AbstractLayerable implements Layerable {
   }
 
   // <<TODO:REFACTORING>> Move Visible to LayerSelection, since it should be a
-  // property
-  // of the view, not the model [Jon Aquino]
+  // property of the view, not the model [Jon Aquino]
+  // isVisible has been there from the beginning and I can't see a better place [mmichaud]
   public boolean isVisible() {
     return visible;
   }
@@ -239,4 +240,5 @@ public abstract class AbstractLayerable implements Layerable {
     fireAppearanceChanged();
     return this;
   }
+
 }
