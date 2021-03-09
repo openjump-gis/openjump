@@ -106,7 +106,7 @@ public class MapRequest extends AbstractWMSRequest{
      * list should be a String which is the name of a layer.
      * @return the list of layer names to be requested
      */
-    public List getLayerNames() {
+    public List<String> getLayerNames() {
         return Collections.unmodifiableList(layerNames);
     }
 
