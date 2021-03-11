@@ -182,7 +182,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         Resolution requestedRes = RasterImageIO
                 .calcRequestedResolution(viewport);
         ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
-                context.getWorkbenchContext(), outFile.getAbsolutePath(), null,
+                /*context.getWorkbenchContext(),*/ outFile.getAbsolutePath(), null,
                 viewport.getEnvelopeInModelCoordinates(), requestedRes);
         RasterImageLayer ril = new RasterImageLayer(outFile.getName(), context
                 .getWorkbenchContext().getLayerManager(),

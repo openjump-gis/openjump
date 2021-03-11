@@ -17,7 +17,6 @@ import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.NoninvertibleTransformException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,6 @@ import org.openjump.core.rasterimage.ImageAndMetadata;
 import org.openjump.core.rasterimage.RasterImageIO;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.Resolution;
-import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 import org.openjump.core.rasterimage.algorithms.RasterizeAlgorithm;
 import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
@@ -320,7 +318,7 @@ public class RasterizePlugIn extends AbstractPlugIn
         jButton_Dir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                File outputPathFile = null;
+                File outputPathFile;
                 final JFileChooser chooser = new GUIUtil.FileChooserWithOverwritePrompting();
                 chooser.setDialogTitle(getName());
                 chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -348,8 +346,7 @@ public class RasterizePlugIn extends AbstractPlugIn
     }
     
 	 public static void load(File file, PlugInContext context, String category)
-	            throws NoninvertibleTransformException, TiffReadingException,
-	            Exception {
+	            throws Exception {
 
 	        RasterImageIO rasterImageIO = new RasterImageIO();
 	        Viewport viewport = context.getWorkbenchContext().getLayerViewPanel()
@@ -357,7 +354,7 @@ public class RasterizePlugIn extends AbstractPlugIn
 	        Resolution requestedRes = RasterImageIO
 	                .calcRequestedResolution(viewport);
 	        ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
-	                context.getWorkbenchContext(), file.getAbsolutePath(), null,
+	                /*context.getWorkbenchContext(),*/ file.getAbsolutePath(), null,
 	                viewport.getEnvelopeInModelCoordinates(), requestedRes);
 	         Point point = RasterImageIO.getImageDimensions(file.getAbsolutePath());
 	       Envelope env = RasterImageIO.getGeoReferencing(file.getAbsolutePath(),
