@@ -13,7 +13,7 @@
   </fileSets-->
   <files>
     <file>
-      <source>${project.build.directory}/nolang/${artifactId}-${version.number}-r${version.revision}-nolang.jar</source>
+      <source>${project.build.directory}/nolang/${project.artifactId}-${version.string}-nolang.jar</source>
       <outputDirectory>/lib</outputDirectory>
     </file>
   </files>

@@ -65,7 +65,7 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${project.artifactId}-${version.number}-r${version.revision}-CORE</finalName>
+                                    <finalName>${project.artifactId}-${version.number}-${version.revision}-CORE</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
                                     </descriptors>
@@ -96,7 +96,7 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${project.artifactId}-${version.number}-r${version.revision}-PLUS</finalName>
+                                    <finalName>${project.artifactId}-${version.number}-${version.revision}-PLUS</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
                                     </descriptors>
@@ -116,7 +116,7 @@
                 <!-- has to be set on maven run with -D version.number=X.X.X -->
                 <version.number>${version.datestamp}</version.number>
                 <version.release>snapshot</version.release>
-                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
+                <version.string>${version.number}-${version.revision}</version.string>
             </properties>
             <build>
                 <plugins>
@@ -132,7 +132,7 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${version.string}-CORE</finalName>
+                                    <finalName>${project.artifactId}-${version.string}-CORE</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
                                     </descriptors>
@@ -146,7 +146,7 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${version.string}-PLUS</finalName>
+                                    <finalName>${project.artifactId}-${version.string}-PLUS</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
                                     </descriptors>
@@ -213,7 +213,7 @@
         <profile>
             <id>portable</id>
             <properties>
-                <portable.filename>${project.artifactId}-Portable-${version.number}-r${version.revision}</portable.filename>
+                <portable.filename>${project.artifactId}-Portable-${version.number}-${version.revision}</portable.filename>
                 <portable.filepath>${project.build.directory}/recompress</portable.filepath>
             </properties>
             <build>
@@ -261,13 +261,13 @@
                                         <!-- Using an ant task to deflate *.zip -->
                                         <echo>Unzip CORE</echo>
                                         <unzip
-                                            src="${project.build.directory}/${version.string}-CORE.zip"
+                                            src="${project.build.directory}/${project.artifactId}-${version.string}-CORE.zip"
                                             dest="${portable.filepath}/core">
                                             <cutdirsmapper dirs="1" />
                                         </unzip>
                                         <echo>Unzip PLUS</echo>
                                         <unzip
-                                            src="${project.build.directory}/${version.string}-PLUS.zip"
+                                            src="${project.build.directory}/${project.artifactId}-${version.string}-PLUS.zip"
                                             dest="${portable.filepath}/plus">
                                             <cutdirsmapper dirs="1" />
                                         </unzip>
@@ -342,8 +342,8 @@
         <profile>
             <id>installer</id>
             <properties>
-                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
-                <installer.filename>${project.artifactId}-Installer-${version.number}-r${version.revision}</installer.filename>
+                <!-- >version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string -->
+                <installer.filename>${project.artifactId}-Installer-${version.string}</installer.filename>
             </properties>
             <build>
                 <plugins>
@@ -592,7 +592,7 @@
         </profile>
     </profiles>
     <build>
-        <finalName>${project.artifactId}-${version.number}-r${version.revision}</finalName>
+        <finalName>${project.artifactId}-${version.number}-${version.revision}</finalName>
         <sourceDirectory>src/</sourceDirectory>
         <outputDirectory>target/classes</outputDirectory>
         <resources>
@@ -654,10 +654,11 @@
                 <!-- use os independent maven java svn provider, no need for svn binary in PATH anymore -->
                 <configuration>
                   <doCheck>false</doCheck>
-                  <doUpdate>false</doUpdate>
-                  <providerImplementations>
+		  <doUpdate>false</doUpdate>
+		  <shortRevisionLength>7</shortRevisionLength>
+                  <!--providerImplementations>
                     <svn>javasvn</svn>
-                  </providerImplementations>
+                  </providerImplementations-->
                 </configuration>
                 <executions>
                     <execution>
