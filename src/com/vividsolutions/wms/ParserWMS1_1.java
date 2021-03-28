@@ -37,26 +37,13 @@
 package com.vividsolutions.wms;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
-import org.apache.xerces.parsers.DOMParser;
-import org.w3c.dom.CharacterData;
+import com.vividsolutions.jump.workbench.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.wms.util.XMLTools;
 
 
@@ -66,7 +53,6 @@ import com.vividsolutions.wms.util.XMLTools;
  * @author Michael Michaud michael.michaud@free.fr
  */
 public class ParserWMS1_1 extends AbstractParser {
-    
     
    /** 
     * Creates a Parser for dealing with WMS XML.
@@ -81,11 +67,17 @@ public class ParserWMS1_1 extends AbstractParser {
     
     protected Capabilities parseCapabilities(WMService service, Document doc) throws IOException {
         String title = getTitle(doc);
-        MapLayer topLayer = wmsLayerFromNode(XMLTools.simpleXPath(doc, "WMT_MS_Capabilities/Capability/Layer"));
-        LinkedList<String> formatList = getFormatList(doc);
-        String getMapURL = getMapURL(doc);
-        String featureInfoURL = getFeatureInfoURL(doc);
-        return new Capabilities(service, title, topLayer, formatList, getInfoFormats(doc), getMapURL, featureInfoURL );
+        Node rootlayerNode = XMLTools.simpleXPath(doc, "WMT_MS_Capabilities/Capability/Layer");
+        if (rootlayerNode != null) {
+          MapLayer topLayer = wmsLayerFromNode(rootlayerNode);
+          LinkedList<String> formatList = getFormatList(doc);
+          String getMapURL = getMapURL(doc);
+          String featureInfoURL = getFeatureInfoURL(doc);
+          return new Capabilities(service, title, topLayer, formatList, getInfoFormats(doc), getMapURL, featureInfoURL);
+        } else {
+          throw new IOException(service.getServerUrl() +
+              ":\n Element 'WMT_MS_Capabilities/Capability/Layer' has not been found !");
+        }
     }
     
     
@@ -95,7 +87,12 @@ public class ParserWMS1_1 extends AbstractParser {
         String xp = "DCPType/HTTP/Get/OnlineResource";
         String xlink = "http://www.w3.org/1999/xlink";
         Element e = (Element) XMLTools.simpleXPath(getMapNode, xp);
-        return e.getAttributeNS(xlink, "href");
+        if (e != null) {
+          return e.getAttributeNS(xlink, "href");
+        } else {
+          Logger.warn(doc.getBaseURI() + "\nElement 'DCPType/HTTP/Get/OnlineResource' has not been found");
+          return null;
+        }
     }
     
     

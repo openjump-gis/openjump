@@ -38,7 +38,6 @@ package com.vividsolutions.wms;
 
 import java.util.*;
 
-import com.vividsolutions.jump.util.CollectionUtil;
 import org.locationtech.jts.geom.Envelope;
 
 /**
@@ -46,51 +45,51 @@ import org.locationtech.jts.geom.Envelope;
  *
  * @author Chris Hodgson chodgson@refractions.net
  * @author Uwe Dalluege, uwe.dalluege@rzcn.haw-hamburg.de
- * @author Michael Michaud michael.michaud@free.fr
+ * @author Michael Michaud m.michael.michaud@orange.fr
  */
 public class MapLayer {
 
     // immutable members
     private MapLayer parent;
-    private String name;
-    private String title;
-    private ArrayList srsList;  
-    private ArrayList<MapLayer> subLayers;
+    private final String name;
+    private final String title;
+    private final List<String> srsList;
     // Default bounding box in geographic coordinates
-    private BoundingBox bbox;  
-    private ArrayList<BoundingBox> boundingBoxList;
+    private final BoundingBox bbox;
+    private final List<BoundingBox> boundingBoxList;
   
     // user modifiable members
-    private boolean enabled = false;
-  
+    private List<MapLayer> subLayers;
     private List<MapStyle> styles;
+    //private boolean enabled = false; // what is it for ? currently unused
+
     
     /**
      * Creates a new instance of MapLayer 
      */
-    public MapLayer(String name, String title, Collection srsList,
-            Collection subLayers, BoundingBox bbox, List<MapStyle> styles) {
+    public MapLayer(String name, String title, Collection<String> srsList,
+            Collection<MapLayer> subLayers, BoundingBox bbox, List<MapStyle> styles) {
         this.parent = null;
         this.name = name;
         this.title = title;
-        this.srsList = new ArrayList( srsList );
-        this.subLayers = new ArrayList<MapLayer>( subLayers );
-        Iterator<MapLayer> it = subLayers.iterator();
-        while( it.hasNext() ) { 
-          (it.next()).parent = this;
+        this.srsList = new ArrayList<>( srsList );
+        setStyles(styles); // includes some kind of initialization
+        this.subLayers = new ArrayList<>( subLayers );
+        for (MapLayer subLayer : subLayers) {
+            subLayer.parent = this;
         }
         this.bbox = bbox;
-        setStyles(styles);
+        this.boundingBoxList = new ArrayList<>();
     }
 
     /**
      * Creates a new instance of MapLayer with boundingBoxList [uwe dalluege]
      */
-    public MapLayer
-  	( String name, String title, Collection srsList, Collection subLayers, 
-  		BoundingBox bbox, ArrayList boundingBoxList,List<MapStyle> styles ) {
-  	this ( name, title, srsList, subLayers, bbox,styles );
-  	this.boundingBoxList = boundingBoxList;
+    public MapLayer( String name, String title, Collection<String> srsList,
+                     Collection<MapLayer> subLayers, BoundingBox bbox,
+                     List<BoundingBox> boundingBoxList,List<MapStyle> styles ) {
+  	    this ( name, title, srsList, subLayers, bbox, styles );
+  	    this.boundingBoxList.addAll(boundingBoxList);
     }
   
   
@@ -101,27 +100,22 @@ public class MapLayer {
      * [uwe dalluege]
      */  
     public List<BoundingBox> getAllBoundingBoxList ( ) {
-    	List<BoundingBox> allBoundingBoxList;
-    	MapLayer mapLayer = this;
-    	allBoundingBoxList = this.getBoundingBoxList ( );
-    	if ( allBoundingBoxList.size ( ) > 0 ) return allBoundingBoxList; 
-  		while ( mapLayer != null ) {
-  			mapLayer = mapLayer.getParent ( );
-  			if ( mapLayer == null ) return allBoundingBoxList;
-  			allBoundingBoxList = mapLayer.getBoundingBoxList ( );
-  			if ( allBoundingBoxList.size ( ) > 0 ) return allBoundingBoxList;
-  		}  	
-        return allBoundingBoxList;
+        List<BoundingBox> boundingBoxes = getBoundingBoxList();
+    	if ((boundingBoxes == null || boundingBoxes.size() == 0) && getParent() != null) {
+    	    return getParent().getAllBoundingBoxList();
+        } else {
+    	    return boundingBoxes == null ? new ArrayList<>() : boundingBoxes;
+        }
     }
 
   
-    /**
-     * Returns the number of sub-layers that this MapLayer has.
-     * @return the number of sub-layers that this MapLayer has
-     */
-    public int numSubLayers() {
-        return subLayers.size();
-    }
+    ///**
+    // * Returns the number of direct sub-layers in this MapLayer.
+    // * @return the number of direct sub-layers in this MapLayer
+    // */
+    //public int numSubLayers() {
+    //    return subLayers.size();
+    //}
   
     /**
      * Returns the sub-layer at the specified index.
@@ -129,15 +123,15 @@ public class MapLayer {
      * @return the MapLayer sub-layer at the specified index
      */
     public MapLayer getSubLayer( int n ) {
-        return (MapLayer)subLayers.get( n );
+        return subLayers.get( n );
     }
 
     /**
      * Gets a copy of the list of the sublayers of this layer.
      * @return a copy of the Arraylist containing all the sub-layers of this layer
      */
-    public ArrayList<MapLayer> getSubLayerList() {
-        return (ArrayList<MapLayer>)subLayers.clone();
+    public List<MapLayer> getSubLayerList() {
+        return new ArrayList<>(subLayers);
     }
 
     /**
@@ -209,7 +203,7 @@ public class MapLayer {
     /**
      * Return the bounding box defined for this MapLayer in this SRS.
      * If not found, the bounding box is searched in this Layer's children,
-     * then in its the parents.
+     * then in its parents.
      * If not found, return the whole earth in LonLat SRS.
      */
     public BoundingBox getBoundingBox(String srs) {
@@ -275,8 +269,8 @@ public class MapLayer {
      * Gets the BoundingBoxList for this Layer
      * @return the BoundingBoxList containing the BoundingBoxes
      */
-    public ArrayList<BoundingBox> getBoundingBoxList ( ) {// [uwe dalluege]
-  	    return ( ArrayList<BoundingBox> ) boundingBoxList.clone ( ); 
+    public List<BoundingBox> getBoundingBoxList ( ) {// [uwe dalluege]
+  	    return new ArrayList<>(boundingBoxList);
     }
 
   
@@ -285,20 +279,30 @@ public class MapLayer {
      * format described by the WMS specification, such as "EPSG:1234".
      * @return a copy of the list of supported SRS's
      */
-    public ArrayList getSRSList() {
-      return (ArrayList)srsList.clone();
+    public List<String> getSRSList() {
+      return new ArrayList<>(srsList);
     }
     
-    //<<TODO>>I'd like to return generic Lists, rather than concrete ArrayLists.
-    //Or even better, Collections, since order is not significant (I think) [Jon Aquino]
+
     /**
      * @return a list of the SRS list of this MapLayer and its ancestors
      */
-    public Collection getFullSRSList() {
+    public Collection<String> getFullSRSList() {
         // Change TreeSet to LinkedHashSet in order to preserve the natural order
         // with layer SRS first ans parent SRS second
-        Set fullSRSList  = new LinkedHashSet(getSRSList());
-        if (parent != null) fullSRSList.addAll(parent.getFullSRSList());
+        Set<String> fullSRSSet  = new LinkedHashSet<>(getSRSList());
+        if (parent != null) fullSRSSet.addAll(parent.getFullSRSList());
+
+        // refinement : if the layer has a non empty boundingBoxList use the srs
+        // of the first bbox as it maybe the native one
+        List<String> fullSRSList = new LinkedList<>(fullSRSSet);
+        if (!boundingBoxList.isEmpty()) {
+            String firstBBoxSrs = boundingBoxList.get(0).getSRS();
+            if (fullSRSList.contains(firstBBoxSrs)) {
+                fullSRSList.remove(firstBBoxSrs);
+                fullSRSList.add(0, firstBBoxSrs);
+            }
+        }
         return fullSRSList;
     }
     
@@ -308,9 +312,8 @@ public class MapLayer {
      * @param selectedStyle set the WMS Style for this MapLayer
      */
     public void setSelectedStyle( MapStyle selectedStyle ) {
-        for( Iterator<MapStyle> iter = styles.iterator(); iter.hasNext(); ) {
-            MapStyle element = iter.next();
-            element.setSelected(false, false);
+        for (MapStyle style : styles) {
+            style.setSelected(false, false);
         }
         selectedStyle.setSelected(true, false);
     }
@@ -322,10 +325,9 @@ public class MapLayer {
      * @return a MapStyle associated with this Layer
      */
     public MapStyle getStyle( String styleName ) {
-        for( Iterator<MapStyle> iter = styles.iterator(); iter.hasNext(); ) {
-            MapStyle element = iter.next();
-            if (element.getName().equals(styleName))
-                return element;
+        for (MapStyle style : styles) {
+            if (style.getName().equals(styleName))
+                return style;
         }
         return null;
     }
@@ -337,7 +339,7 @@ public class MapLayer {
     /** 
      * @param sublayer WMS subLayers contained in this MapLayer
      */
-    public void setSublayer(ArrayList sublayer) {
+    public void setSublayer(ArrayList<MapLayer> sublayer) {
         this.subLayers = sublayer;
     }
     
@@ -346,15 +348,14 @@ public class MapLayer {
      */
     public void setStyles( List<MapStyle> newStyles ) {
         this.styles = newStyles;
-        for( Iterator<MapStyle> iter = styles.iterator(); iter.hasNext(); ) {
-            MapStyle element = iter.next();
-            element.setLayer(this);
+        for( MapStyle style : styles ) {
+            style.setLayer(this);
         }
 
         if (!styles.isEmpty()) {
             styles.get(0).setSelected(true, true);
         }
-    }    
+    }
     
     /**
      * Returns a somewhat nicely-formatted string representing all of the details of
@@ -363,13 +364,13 @@ public class MapLayer {
      * this layer and its sub-layers (recursively).
      */
     public String toString() {
-        StringBuffer s = new StringBuffer( "WMSLayer {\n"
+        StringBuilder s = new StringBuilder( "WMSLayer {\n"
             + "  name: \"" + name + "\"\n"
             + "  title: \"" + title + "\"\n"
             + "  srsList: " + srsList.toString() + "\n"
             + "  subLayers: [\n" );
-        for( int i = 0; i < subLayers.size(); i++ ) {
-            s.append( subLayers.get( i ).toString() + ", " );
+        for (MapLayer subLayer : subLayers) {
+            s.append(subLayer.toString()).append(", ");
         }
         s.append( "  ]\n  bbox: " );
         if( bbox != null ) {

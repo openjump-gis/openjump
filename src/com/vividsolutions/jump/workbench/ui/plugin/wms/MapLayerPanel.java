@@ -36,13 +36,10 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +57,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
+import com.vividsolutions.wms.MapStyle;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
@@ -76,13 +74,15 @@ import com.vividsolutions.wms.WMService;
 
 
 public class MapLayerPanel extends JPanel {
+
     public final static ImageIcon ICON = IconLoader.icon("globe3_13.png");
-    private InputChangedFirer inputChangedFirer = new InputChangedFirer();
-    private GridBagLayout gridBagLayout1 = new GridBagLayout();
+    private final InputChangedFirer inputChangedFirer = new InputChangedFirer();
+    private final GridBagLayout gridBagLayout1 = new GridBagLayout();
     private AddRemovePanel addRemovePanel;
-    private JCheckBox checkBox = new JCheckBox(I18N.get("ui.plugin.wms.MapLayerPanel.sort"), true);
+    private final JCheckBox checkBox = new JCheckBox(I18N.get("ui.plugin.wms.MapLayerPanel.sort"), true);
     // [mmichaud 2012-05-08] cache the fullSrs list associated to each MapLayer
-    private Map<String,String> fullSrsMap = new HashMap<String,String>();
+    private final Map<String,String> fullSrsMap = new HashMap<>();
+
     private WMService service = null;
 
     public MapLayerPanel() {
@@ -91,16 +91,14 @@ public class MapLayerPanel extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         initAddRemovePanel();
     }
 
     public List<MapLayer> getChosenMapLayers() {
-        ArrayList<MapLayer> mapLayers = new ArrayList<MapLayer>();
+        ArrayList<MapLayer> mapLayers = new ArrayList<>();
 
-        for (Iterator i = addRemovePanel.getRightItems().iterator();
-                i.hasNext();) {
-            MapLayerTreeModel.LayerNode node = (MapLayerTreeModel.LayerNode) i.next();
+        for (Object object : addRemovePanel.getRightItems()) {
+            MapLayerTreeModel.LayerNode node = (MapLayerTreeModel.LayerNode) object;
             Assert.isTrue(node.getLayer().getName() != null);
             mapLayers.add(node.getLayer());
         }
@@ -113,6 +111,7 @@ public class MapLayerPanel extends JPanel {
       return service;
     }
 
+    /** Set the text of the label used to identify the Map.*/
     private void setRendererText(JLabel renderer, MapLayer layer) {
         String label = fullSrsMap.get(layer.getTitle());
         if (label == null) {
@@ -123,7 +122,7 @@ public class MapLayerPanel extends JPanel {
         renderer.setText(label);
     }
 
-    void jbInit() throws Exception {
+    void jbInit() {
         addRemovePanel = new AddRemovePanel(true);
         addRemovePanel.setRightText(I18N.get("ui.plugin.wms.MapLayerPanel.chosen-layers"));
         this.setLayout(gridBagLayout1);
@@ -142,49 +141,55 @@ public class MapLayerPanel extends JPanel {
     }
 
     private void addIfOnList(MapLayer layer, AddRemoveListModel model,
-        Collection names) {
+        Collection<String> names) {
         if (names.contains(layer.getName())) {
             //Just leave the second argument as null, because it's only needed for sorting the left list, and
             //here we're dealing with the right list. [Jon Aquino]
             model.add(new MapLayerTreeModel.LayerNode(layer, null));
         }
 
-        for (Iterator i = layer.getSubLayerList().iterator(); i.hasNext();) {
-            MapLayer child = (MapLayer) i.next();
+        for (MapLayer child : layer.getSubLayerList()) {
             addIfOnList(child, model, names);
         }
     }
 
-    public List commonSRSList() {
-        List mapLayers = getChosenMapLayers();
+    public List<String> commonSRSList() {
+        List<MapLayer> mapLayers = getChosenMapLayers();
 
-        if (mapLayers.isEmpty()) {
-            return new ArrayList();
-        }
-
-        ArrayList commonSRSList = new ArrayList(((MapLayer) mapLayers.get(0)).getFullSRSList());
-
-        for (Iterator i = mapLayers.iterator(); i.hasNext();) {
-            MapLayer layer = (MapLayer) i.next();
-            commonSRSList.retainAll(layer.getFullSRSList());
+        List<String> commonSRSList = new ArrayList<>();
+        for (MapLayer mapLayer : mapLayers) {
+            if (commonSRSList.isEmpty()) commonSRSList.addAll(mapLayer.getFullSRSList());
+            else commonSRSList.retainAll(mapLayer.getFullSRSList());
         }
 
         return commonSRSList;
     }
 
+    public List<MapStyle> commonStyleList() {
+        List<MapLayer> mapLayers = getChosenMapLayers();
+
+        if (mapLayers.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<MapStyle> commonStyleList =
+                new ArrayList<>((mapLayers.get(0)).getStyles());
+
+        for (MapLayer mapLayer : mapLayers) {
+            commonStyleList.retainAll(mapLayer.getStyles());
+        }
+
+        return commonStyleList;
+    }
+
     private void initAddRemovePanel() {
         TreeAddRemoveList leftList = new TreeAddRemoveList() {
-                public List getSelectedItems() {
-                    List selectedItems = new ArrayList(super.getSelectedItems());
+                public List<?> getSelectedItems() {
+                    List<MapLayerTreeModel.LayerNode> selectedItems =
+                            new ArrayList<MapLayerTreeModel.LayerNode>(super.getSelectedItems());
 
-                    for (Iterator i = selectedItems.iterator(); i.hasNext();) {
-                        MapLayerTreeModel.LayerNode node = (MapLayerTreeModel.LayerNode) i.next();
-
-                        //Don't want to add containers to the right-hand list. [Jon Aquino]
-                        if (node.isContainer()) {
-                            i.remove();
-                        }
-                    }
+                    //Don't want to add containers to the right-hand list. [Jon Aquino]
+                    selectedItems.removeIf(MapLayerTreeModel.LayerNode::isContainer);
 
                     return selectedItems;
                 }
@@ -222,8 +227,9 @@ public class MapLayerPanel extends JPanel {
                 }
             });
 
-        DefaultAddRemoveList rightList = new DefaultAddRemoveList(new DefaultListModel() {
-                    public void addElement(Object obj) {
+        DefaultAddRemoveList rightList = new DefaultAddRemoveList(
+                new DefaultListModel<MapLayerTreeModel.LayerNode>() {
+                    public void addElement(MapLayerTreeModel.LayerNode obj) {
                         if (contains(obj)) {
                             //Possible because items are never removed from the tree on the left. [Jon Aquino]
                             return;
@@ -232,7 +238,9 @@ public class MapLayerPanel extends JPanel {
                         super.addElement(obj);
                     }
                 });
+
         addRemovePanel.setRightList(rightList);
+
         rightList.getList().setCellRenderer(new DefaultListCellRenderer() {
                 public Component getListCellRendererComponent(JList list,
                     Object value, int index, boolean isSelected,
@@ -246,16 +254,11 @@ public class MapLayerPanel extends JPanel {
                     return component;
                 }
             });
-        leftList.add(new InputChangedListener() {
-                public void inputChanged() {
-                    inputChangedFirer.fire();
-                }
-            });
-        rightList.add(new InputChangedListener() {
-                public void inputChanged() {
-                    inputChangedFirer.fire();
-                }
-            });
+
+        leftList.add(inputChangedFirer::fire);
+
+        rightList.add(inputChangedFirer::fire);
+
         rightList.getList().getModel().addListDataListener(new ListDataListener() {
                 public void intervalAdded(ListDataEvent e) {
                     inputChangedFirer.fire();
@@ -279,11 +282,8 @@ public class MapLayerPanel extends JPanel {
             new GridBagConstraints(1, 0, 1, 1, 1, 0, GridBagConstraints.WEST,
                 GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
-        checkBox.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    setSorted( checkBox.isSelected() );
-                }
-            });
+        checkBox.addActionListener(e -> setSorted( checkBox.isSelected() ));
+
         leftLabelPanel.add(checkBox,
             new GridBagConstraints(2, 0, 1, 1, 0, 0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
@@ -303,25 +303,20 @@ public class MapLayerPanel extends JPanel {
     /**
      * @param initialChosenMapLayers null to leave unspecified
      */
-    public void init(WMService service, Collection initialChosenMapLayers) {
+    public void init(WMService service, Collection<String> initialChosenMapLayers) {
         this.service = service;
-        final MapLayerTreeModel treeModel = new MapLayerTreeModel(service.getCapabilities()
-                                                                         .getTopLayer());
+        final MapLayerTreeModel treeModel =
+                new MapLayerTreeModel(service.getCapabilities().getTopLayer());
 
         treeModel.setSorted( checkBox.isSelected() );
 
         TreeAddRemoveListModel treeAddRemoveListModel = new TreeAddRemoveListModel(treeModel) {
-                public List getItems() {
-                    ArrayList items = new ArrayList(items((MapLayerTreeModel.LayerNode) treeModel.getRoot()));
+                public List<MapLayerTreeModel.LayerNode> getItems() {
+                    List<MapLayerTreeModel.LayerNode> items =
+                            new ArrayList<>(items((MapLayerTreeModel.LayerNode) treeModel.getRoot()));
 
-                    for (Iterator i = items.iterator(); i.hasNext();) {
-                        MapLayerTreeModel.LayerNode node = (MapLayerTreeModel.LayerNode) i.next();
-
-                        //Don't want to add containers to the right-hand list. [Jon Aquino]
-                        if (node.isContainer()) {
-                            i.remove();
-                        }
-                    }
+                    //Don't want to add containers to the right-hand list. [Jon Aquino]
+                    items.removeIf(MapLayerTreeModel.LayerNode::isContainer);
 
                     return items;
                 }
@@ -329,7 +324,7 @@ public class MapLayerPanel extends JPanel {
 
         ((TreeAddRemoveList) addRemovePanel.getLeftList()).setModel(treeAddRemoveListModel);
 
-        addRemovePanel.getRightList().getModel().setItems(new ArrayList());
+        addRemovePanel.getRightList().getModel().setItems(new ArrayList<String>());
         if (initialChosenMapLayers != null) {
             addIfOnList(service.getCapabilities().getTopLayer(),
                 addRemovePanel.getRightList().getModel(), initialChosenMapLayers);
@@ -341,16 +336,16 @@ public class MapLayerPanel extends JPanel {
     public void reset() {
       //this.service = null;
       ((TreeAddRemoveList) addRemovePanel.getLeftList()).setModel(new TreeAddRemoveListModel(new DefaultTreeModel(null)));
-      addRemovePanel.getRightList().getModel().setItems(new ArrayList());
+      addRemovePanel.getRightList().getModel().setItems(new ArrayList<>());
       addRemovePanel.updateEnabled();
     }
     
-    private List items(MapLayerTreeModel.LayerNode node) {
-        ArrayList items = new ArrayList();
+    private List<MapLayerTreeModel.LayerNode> items(MapLayerTreeModel.LayerNode node) {
+        List<MapLayerTreeModel.LayerNode> items = new ArrayList<>();
         items.add(node);
 
-        for (Enumeration e = node.children(); e.hasMoreElements();) {
-            MapLayerTreeModel.LayerNode child = (MapLayerTreeModel.LayerNode) e.nextElement();
+        for (Enumeration<MapLayerTreeModel.LayerNode> e = node.children(); e.hasMoreElements();) {
+            MapLayerTreeModel.LayerNode child = e.nextElement();
             items.addAll(items(child));
         }
 

@@ -133,18 +133,18 @@ public class ParserWMS1_3 extends AbstractParser {
             AxisOrder order = AxisOrder.getAxisOrder(srs.toUpperCase());
             if (order == AxisOrder.LATLON) {
                 double miny = getCoord("minx", nm);
-			    double minx = getCoord("miny", nm);
-			    double maxy = getCoord("maxx", nm);
-			    double maxx = getCoord("maxy", nm);
-			    return new BoundingBox(srs, minx, miny, maxx, maxy);
-			}
-			else {
+			          double minx = getCoord("miny", nm);
+			          double maxy = getCoord("maxx", nm);
+			          double maxx = getCoord("maxy", nm);
+			          return new BoundingBox(srs, minx, miny, maxx, maxy);
+			      }
+			      else {
                 double minx = getCoord("minx", nm);
-			    double miny = getCoord("miny", nm);
-			    double maxx = getCoord("maxx", nm);
-			    double maxy = getCoord("maxy", nm);
-			    return new BoundingBox(srs, minx, miny, maxx, maxy);
-			}
+			          double miny = getCoord("miny", nm);
+			          double maxx = getCoord("maxx", nm);
+			          double maxy = getCoord("maxy", nm);
+			          return new BoundingBox(srs, minx, miny, maxx, maxy);
+			      }
         } catch( Exception e ) {
             // possible NullPointerException from getNamedItem returning a null
             // also possible NumberFormatException

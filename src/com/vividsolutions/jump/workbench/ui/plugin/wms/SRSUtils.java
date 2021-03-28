@@ -15,7 +15,7 @@ public class SRSUtils {
         String stringToShow = srsCode;
 
         if ( srsCode.startsWith( epsg ) ) {
-            String intPart = srsCode.substring( 5, srsCode.length() );
+            String intPart = srsCode.substring( 5 );
 
             try {
                 int epsgCode = Integer.parseInt( intPart );

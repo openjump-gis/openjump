@@ -49,12 +49,15 @@ import com.vividsolutions.jump.workbench.Logger;
  * @author Chris Hodgson chodgson@refractions.net
  */
 public class MapRequest extends AbstractWMSRequest{
+
     private int imgWidth;
     private int imgHeight;
     private List<String> layerNames;
     private BoundingBox bbox;
     private boolean transparent;
     private String format;
+    private MapStyle style;
+    private String moreParameters;
     
     /**
      * Creates a new MapRequest.
@@ -64,12 +67,11 @@ public class MapRequest extends AbstractWMSRequest{
         super(service);
         imgWidth = 100;
         imgHeight = 100;
-        layerNames = new ArrayList<String>();
+        layerNames = new ArrayList<>();
         bbox = service.getCapabilities().getTopLayer().getBoundingBox();
         transparent = false;
         format = null;
     }
-
 
 
     /**
@@ -106,7 +108,7 @@ public class MapRequest extends AbstractWMSRequest{
      * list should be a String which is the name of a layer.
      * @return the list of layer names to be requested
      */
-    public List getLayerNames() {
+    public List<String> getLayerNames() {
         return Collections.unmodifiableList(layerNames);
     }
 
@@ -147,10 +149,18 @@ public class MapRequest extends AbstractWMSRequest{
         // String[] formats = service.getCapabilities().getMapFormats();
         // for( int i = 0; i < formats.length; i++ ) {
         //     if( formats[i].equals( format ) ) {
-          this.format = format;
-          return;
+        this.format = format;
+        return;
         // }
         //throw new IllegalArgumentException();
+    }
+
+    public void setStyle(MapStyle style) {
+        this.style = style;
+    }
+
+    public void setMoreParameters(String moreParameters) {
+        this.moreParameters = moreParameters;
     }
 
     /**
@@ -217,7 +227,7 @@ public class MapRequest extends AbstractWMSRequest{
     //[UT] 02.05.2005 made static and public
     public static String listToString( List<String> list ) {
         Iterator<String> it = list.iterator();
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         while( it.hasNext() ) {
             String layer = it.next();
             buf.append( layer );
@@ -235,7 +245,7 @@ public class MapRequest extends AbstractWMSRequest{
     //[UT] changed to accept WMS 1.1.1
     //[MM] changed to accept WMS 1.3.0
     public URL getURL() throws MalformedURLException {
-        StringBuffer urlBuf = new StringBuffer();
+        StringBuilder urlBuf = new StringBuilder();
         String ver = "REQUEST=map&WMTVER=1.0";
         if ( WMService.WMS_1_1_0.equals( version )){
             ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.0";
@@ -244,8 +254,8 @@ public class MapRequest extends AbstractWMSRequest{
         } else if ( WMService.WMS_1_3_0.equals( version ) ){
             ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.3.0";
         }
-        urlBuf.append(WMService.legalize(service.getCapabilities().getGetMapURL()) + ver + "&WIDTH=" + imgWidth + "&HEIGHT="
-            + imgHeight);
+        urlBuf.append(WMService.legalize(service.getCapabilities().getGetMapURL()) +
+            ver + "&WIDTH=" + imgWidth + "&HEIGHT=" + imgHeight);
         try {
             urlBuf.append( "&LAYERS=" + encode(listToString( layerNames ), "UTF-8") );
         } catch (UnsupportedEncodingException e1) {
@@ -272,8 +282,14 @@ public class MapRequest extends AbstractWMSRequest{
             }
         }
         // [UT] some style info is *required*, so add this to be spec conform
-        urlBuf.append( "&STYLES=" );
-
+        //urlBuf.append( "&STYLES=" );
+        if (style == null) urlBuf.append("&STYLES=");
+        else urlBuf.append("&STYLES=").append(style.getName());
+        if (moreParameters != null && moreParameters.length()>0) {
+            if (moreParameters.startsWith("&")) urlBuf.append(moreParameters);
+            else urlBuf.append("&").append(moreParameters);
+        }
+        System.out.println(urlBuf.toString());
         Logger.trace(urlBuf.toString());
         return new URL( urlBuf.toString() );
     }
