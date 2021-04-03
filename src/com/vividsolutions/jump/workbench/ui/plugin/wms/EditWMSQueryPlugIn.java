@@ -34,13 +34,13 @@ package com.vividsolutions.jump.workbench.ui.plugin.wms;
 
 import java.awt.GridBagConstraints;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
 
+import com.vividsolutions.jump.workbench.ui.AbstractMultiInputDialog;
 import org.apache.commons.lang3.StringUtils;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 
@@ -59,6 +59,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.wms.MapLayer;
 
 public class EditWMSQueryPlugIn extends AbstractPlugIn {
+
     public MultiEnableCheck createEnableCheck(
             final WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = new EnableCheckFactory(
@@ -95,7 +96,7 @@ public class EditWMSQueryPlugIn extends AbstractPlugIn {
         dialog.addRow(
                 I18N.get("ui.plugin.wms.EditWMSQueryPlugIn.chosen-layers"),
                 new JLabel(""), panel, panel.getEnableChecks(), "",
-                dialog.NO_LABEL, GridBagConstraints.BOTH);
+                AbstractMultiInputDialog.NO_LABEL, GridBagConstraints.BOTH);
         dialog.pack();
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
@@ -103,24 +104,23 @@ public class EditWMSQueryPlugIn extends AbstractPlugIn {
         if (dialog.wasOKPressed()) {
             layer.removeAllLayerNames();
 
-            for (Iterator i = panel.getChosenMapLayers().iterator(); i
-                    .hasNext();) {
-                MapLayer mapLayer = (MapLayer) i.next();
+            for (MapLayer mapLayer : panel.getChosenMapLayers()) {
                 layer.addLayerName(mapLayer.getName());
             }
 
             // update layer
             layer.setService(panel.getService());
             layer.setSRS(panel.getSRS());
-            layer.setAlpha(panel.getAlpha());
             layer.setFormat(panel.getFormat());
+            layer.setStyle(panel.getStyle());
+            layer.setAlpha(panel.getAlpha());
             layer.setWmsVersion(panel.getService().getVersion());
             layer.setName(panel.getChosenMapLayers().get(0).getTitle());
 
             layer.fireAppearanceChanged();
             
             // memorize new url
-            Set<String> list = new LinkedHashSet<String>();
+            Set<String> list = new LinkedHashSet<>();
             // insert latest on top 
             list.add(panel.getService().getServerUrl());
             // add the rest

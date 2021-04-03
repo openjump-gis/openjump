@@ -37,24 +37,13 @@
 package com.vividsolutions.wms;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
-import org.apache.xerces.parsers.DOMParser;
-import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.wms.util.XMLTools;
@@ -92,7 +81,7 @@ public class ParserWMS1_3 extends AbstractParser {
     // get the supported file formats
     protected LinkedList<String> getFormatList(Document doc) throws IOException {
         
-        LinkedList<String> formatList = new LinkedList<String>();
+        LinkedList<String> formatList = new LinkedList<>();
         final Node formatNode = XMLTools.simpleXPath(doc, "WMS_Capabilities/Capability/Request/GetMap");
         NodeList nl = formatNode.getChildNodes();
         for( int i=0; i < nl.getLength(); i++ ) {
@@ -128,23 +117,23 @@ public class ParserWMS1_3 extends AbstractParser {
     protected BoundingBox boundingBoxFromNode(Node n) throws Exception {
         try {
             NamedNodeMap nm = n.getAttributes();           
-            String srs = "";
+            String srs;
             srs = nm.getNamedItem(getSRSName()).getNodeValue();
             AxisOrder order = AxisOrder.getAxisOrder(srs.toUpperCase());
             if (order == AxisOrder.LATLON) {
                 double miny = getCoord("minx", nm);
-			    double minx = getCoord("miny", nm);
-			    double maxy = getCoord("maxx", nm);
-			    double maxx = getCoord("maxy", nm);
-			    return new BoundingBox(srs, minx, miny, maxx, maxy);
-			}
-			else {
+                double minx = getCoord("miny", nm);
+                double maxy = getCoord("maxx", nm);
+                double maxx = getCoord("maxy", nm);
+                return new BoundingBox(srs, minx, miny, maxx, maxy);
+            }
+            else {
                 double minx = getCoord("minx", nm);
-			    double miny = getCoord("miny", nm);
-			    double maxx = getCoord("maxx", nm);
-			    double maxy = getCoord("maxy", nm);
-			    return new BoundingBox(srs, minx, miny, maxx, maxy);
-			}
+                double miny = getCoord("miny", nm);
+                double maxx = getCoord("maxx", nm);
+                double maxy = getCoord("maxy", nm);
+                return new BoundingBox(srs, minx, miny, maxx, maxy);
+            }
         } catch( Exception e ) {
             // possible NullPointerException from getNamedItem returning a null
             // also possible NumberFormatException

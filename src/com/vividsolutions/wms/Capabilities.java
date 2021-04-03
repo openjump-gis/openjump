@@ -1,8 +1,3 @@
-
-
-
-
-
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -40,6 +35,7 @@ package com.vividsolutions.wms;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.openjump.util.UriUtil;
 
@@ -49,13 +45,15 @@ import org.openjump.util.UriUtil;
  */
 public class Capabilities {
 
-  private MapLayer topLayer;
-  private String title;
-  private ArrayList mapFormats;
-  private WMService service;
-  private String getMapURL, featureInfoURL;
-  private ArrayList infoFormats;
-  
+  private final MapLayer topLayer;
+  private final String title;
+  private final List<String> mapFormats;
+  private final WMService service;
+  private final List<String> infoFormats;
+
+  private String getMapURL;
+  private String featureInfoURL;
+
   /** 
    * Creates a new WMS Capabilities object. Should generally only be used by the Parser.
    * @param service the WMService to which these Capabilites belong
@@ -64,18 +62,19 @@ public class Capabilities {
    * @param mapFormats the Collection of supported formats 
    */  
   public Capabilities(WMService service, String title, MapLayer topLayer,
-          Collection mapFormats, Collection infoFormats) {
+          Collection<String> mapFormats, Collection<String> infoFormats) {
     this.service = service;
     this.title = title;
     this.topLayer = topLayer;
-    this.mapFormats = new ArrayList( mapFormats );
-    this.infoFormats = new ArrayList(infoFormats);
+    this.mapFormats = new ArrayList<>( mapFormats );
+    this.infoFormats = new ArrayList<>(infoFormats);
     this.getMapURL = service.getServerUrl();
     this.featureInfoURL = service.getServerUrl();
   }
   
   public Capabilities(WMService service, String title, MapLayer topLayer,
-          Collection mapFormats, Collection infoFormats, String getMapURL, String featureInfoURL) {
+          Collection<String> mapFormats, Collection<String> infoFormats,
+                      String getMapURL, String featureInfoURL) {
       this(service, title, topLayer, mapFormats, infoFormats);
       this.getMapURL = getMapURL;
       this.featureInfoURL = featureInfoURL;
@@ -151,23 +150,23 @@ public class Capabilities {
    */
   public String[] getMapFormats() {
     String[] formats = new String[mapFormats.size()];
-    Iterator it = mapFormats.iterator();
+    Iterator<String> it = mapFormats.iterator();
     int i = 0;
     while( it.hasNext() ) {
-      formats[i++] = (String)it.next();
+      formats[i++] = it.next();
     }
     return formats;
   }
   
-    public String getInfoFormat() {
-        String format = "text/plain";
-        if (!infoFormats.contains(format)) {
-            Iterator it = infoFormats.iterator();
-            if (it.hasNext()) {
-                format = (String) it.next();
-            }
-        }
-        return format;
+  public String getInfoFormat() {
+    String format = "text/plain";
+    if (!infoFormats.contains(format)) {
+      Iterator<String> it = infoFormats.iterator();
+      if (it.hasNext()) {
+        format = it.next();
+      }
     }
+    return format;
+  }
 
 }

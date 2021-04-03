@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -21,16 +20,16 @@ import com.vividsolutions.jump.workbench.Logger;
  */
 public class MapStyle {
 
-    /** Nombre asociado al estilo */
+    /** Style name */
     private String name;
 
-    /** Titulo asociado al estilo */
+    /** Style title */
     private String title;
 
-    /** URL asociado a la leyenda */
+    /** URL associated to th estyle legend */
     private String urlLegend;
 
-    /** Formato asociado a la leyenda */
+    /** Format associated to th elegend */
     private String formatLegend;
 
     /** */
@@ -42,7 +41,7 @@ public class MapStyle {
     /** */
     private MapLayer layer;
 
-    /** Flag to indicate if the legend icon have been loaded or not */
+    /** Flag to indicate if the legend icon has been loaded or not */
     private boolean loadedIcon;
     
     private int width;
@@ -70,7 +69,7 @@ public class MapStyle {
     * @param w width of the image containing the legend
     * @param h height of the image containing the legend
     */
-    public MapStyle( String name, String title, String urlLegend, String formatLegend, int w, int h  ) {
+    public MapStyle( String name, String title, String urlLegend, String formatLegend, int w, int h ) {
         this.name = name;
         this.title = title;
         setUrlLegend(urlLegend);
@@ -86,6 +85,7 @@ public class MapStyle {
     public int getWidth() {
         return width;
     }
+
    /**
      * @return the height of the image legend
      */
@@ -200,20 +200,18 @@ public class MapStyle {
     }
 
     /**
-     * TODO what is the check parameter for ?
      * @param selected whether this MapStyle is selected or not
-     * @param check
+     * @param check if check, don't unselect the style if the layer has only one style
      */
     public void setSelected( boolean selected, boolean check ) {
         if (check) {
             if (this.selected && !selected && layer.getStyles().size() == 1)
                 return;
             if (this.selected && !selected) {
-                for( Iterator<MapStyle> iter = layer.getStyles().iterator(); iter.hasNext(); ) {
-                    MapStyle element = iter.next();
-                    if (!element.equals(this))
-                        element.setSelected(true, false);
-
+                for( MapStyle style : layer.getStyles()) {
+                    if (!style.equals(this)) {
+                        style.setSelected(true, false);
+                    }
                 }
             }
         }

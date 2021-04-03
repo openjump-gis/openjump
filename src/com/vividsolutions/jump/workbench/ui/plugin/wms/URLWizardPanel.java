@@ -36,7 +36,6 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
@@ -77,9 +76,9 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
   
   public static final String I18N_PREFIX = "ui.plugin.wms.URLWizardPanel.";
 
-  private InputChangedFirer inputChangedFirer = new InputChangedFirer();
+  private final InputChangedFirer inputChangedFirer = new InputChangedFirer();
 
-  private Map dataMap;
+  private Map<String,Object> dataMap;
 
   private String[] urlList;
   private SelectUrlWithAuthPanel urlPanel;
@@ -89,7 +88,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
   public static final String TITLE = I18N.get(I18N_PREFIX + "select-uniform-resource-locator-url");
 
   // this is a hack, guess why
-  public static String wmsVersion = WMService.WMS_1_1_1;
+  public static String wmsVersion = WMService.WMS_1_3_0;
   public static final String[] wmsVersions = new String[] { WMService.WMS_1_0_0,
       WMService.WMS_1_1_0, WMService.WMS_1_1_1, WMService.WMS_1_3_0 };
   private String[] initialUrls = new String[0];
@@ -102,7 +101,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
           .get(AddWmsLayerWizard.CACHED_URL_KEY);
           this.initialUrls = (urlString != null) ? urlString.split(",") : AddWmsLayerWizard.DEFAULT_URLS;
       
-      this.dataMap = new LinkedHashMap<String,Object>();
+      this.dataMap = new LinkedHashMap<>();
       
       jbInit();
     } catch (Exception ex) {
@@ -118,7 +117,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
     inputChangedFirer.remove(listener);
   }
 
-  void jbInit() throws Exception {
+  void jbInit() {
 
     // [UT] 20.10.2005 not added yet; need more testing
     /*
@@ -171,15 +170,14 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
 
       service.initialize(true);
       
-      Set<String> list = new LinkedHashSet<String>();
+      Set<String> list = new LinkedHashSet<>();
       // insert latest on top 
       list.add(url);
       // add the rest
       list.addAll(Arrays.asList(urlList));
       
       dataMap.put(URL_KEY, list.toArray(new String[0]));
-      //PersistentBlackboardPlugIn.get
-      
+
       dataMap.put(SERVICE_KEY, service);
       // [UT] 20.04.2005 added version
       MapImageFormatChooser formatChooser = new MapImageFormatChooser(wmsVersion);
@@ -206,7 +204,6 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
 
   public void enteredFromLeft(Map dataMap) {
     this.dataMap = dataMap;
-//    urls.getEditor().selectAll();
   }
 
   public void enteredFromRight() throws Exception {
@@ -241,11 +238,9 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
   public JPanel createVersionPanel() {
     JPanel p = new JPanel(new GridBagLayout());
 
-    ActionListener al = new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        JRadioButton jb = (JRadioButton)e.getSource();
-        URLWizardPanel.wmsVersion = jb.getText();
-      }
+    ActionListener al = e -> {
+      JRadioButton jb = (JRadioButton)e.getSource();
+      URLWizardPanel.wmsVersion = jb.getText();
     };
 
     String[] versions  = URLWizardPanel.wmsVersions;
@@ -271,14 +266,11 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
   private Component createLossyCheckBox() {
     JPanel p = new JPanel();
     JCheckBox checkBox = new JCheckBox(I18N.get(I18N_PREFIX + "prefer-lossy-images"), true);
-    // );
+
     checkBox.setToolTipText("This will try to load JPEG images, if the WMS allows it.");
-    checkBox.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        lossyPreferred = ((JCheckBox)e.getSource()).isSelected();
-      }
-    });
+    checkBox.addActionListener(e -> lossyPreferred = ((JCheckBox)e.getSource()).isSelected());
     p.add(checkBox);
+
     return p;
   }
   

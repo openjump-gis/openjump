@@ -37,27 +37,12 @@
 package com.vividsolutions.wms;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
-import org.apache.xerces.parsers.DOMParser;
-import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import com.vividsolutions.jump.I18N;
 import com.vividsolutions.wms.util.XMLTools;
+import org.w3c.dom.Node;
 
 
 /**
@@ -81,10 +66,15 @@ public class ParserWMS1_0 extends AbstractParser {
     @Override
     protected Capabilities parseCapabilities(WMService service, Document doc) throws IOException {
         String title = getTitle(doc);
-        MapLayer topLayer = wmsLayerFromNode(XMLTools.simpleXPath(doc, "WMT_MS_Capabilities/Capability/Layer"));
-        LinkedList<String> formatList = getFormatList(doc);
-        
-        return new Capabilities(service, title, topLayer, formatList, getInfoFormats(doc));
+        Node rootlayerNode = XMLTools.simpleXPath(doc, "WMT_MS_Capabilities/Capability/Layer");
+        if (rootlayerNode != null) {
+          MapLayer topLayer = wmsLayerFromNode(rootlayerNode);
+          LinkedList<String> formatList = getFormatList(doc);
+          return new Capabilities(service, title, topLayer, formatList, getInfoFormats(doc));
+        } else {
+          throw new IOException(service.getServerUrl() +
+              ":\n Element 'WMT_MS_Capabilities/Capability/Layer' has not been found !");
+        }
     }
 
     

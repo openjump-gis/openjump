@@ -810,6 +810,7 @@
             <!--url>https://mvnrepository.com/artifact/</url-->
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
+        <!-- Used for jmatharray, jmathplot and jama -->
         <repository>
             <id>openjump</id>
             <name>OpenJUMP Maven 2 Repository</name>

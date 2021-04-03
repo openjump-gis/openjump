@@ -31,18 +31,18 @@
  */
 package com.vividsolutions.jump.workbench.ui.plugin.wms;
 
-import org.openjump.core.ui.plugin.AbstractWizardPlugin;
-import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
+//import org.openjump.core.ui.plugin.AbstractWizardPlugin;
+//import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
+//import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
-/**
- * This plugin has been deactivated in favor of AddWmsLayerWizard
- */
-public class AddWMSQueryPlugIn extends AbstractWizardPlugin {
-    public void initialize(PlugInContext context) throws Exception {
-      super.initialize(context);
-      AddWmsLayerWizard wizard = new AddWmsLayerWizard(context.getWorkbenchContext());
-      setWizard(wizard);
-    }
-}
+///**
+// * This plugin has been deactivated in favor of AddWmsLayerWizard
+// */
+//public class AddWMSQueryPlugIn extends AbstractWizardPlugin {
+//    public void initialize(PlugInContext context) throws Exception {
+//      super.initialize(context);
+//      AddWmsLayerWizard wizard = new AddWmsLayerWizard(context.getWorkbenchContext());
+//      setWizard(wizard);
+//    }
+//}

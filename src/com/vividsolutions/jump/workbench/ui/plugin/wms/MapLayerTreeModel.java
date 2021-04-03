@@ -35,8 +35,6 @@ package com.vividsolutions.jump.workbench.ui.plugin.wms;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.tree.DefaultTreeModel;
@@ -44,8 +42,9 @@ import javax.swing.tree.TreeNode;
 
 import com.vividsolutions.wms.MapLayer;
 
-
+/** Hierarchical collection of MapLayers */
 public class MapLayerTreeModel extends DefaultTreeModel {
+
     private boolean sorted = false;
 
     public MapLayerTreeModel(MapLayer topLayer) {
@@ -58,8 +57,8 @@ public class MapLayerTreeModel extends DefaultTreeModel {
         reload();
     }
 
-    public static class LayerNode implements TreeNode, Comparable {
-        private MapLayer layer;
+    public static class LayerNode implements TreeNode, Comparable<LayerNode> {
+        private final MapLayer layer;
         private MapLayerTreeModel mapLayerTreeModel;
 
         public LayerNode(MapLayer layer, MapLayerTreeModel mapLayerTreeModel) {
@@ -75,40 +74,47 @@ public class MapLayerTreeModel extends DefaultTreeModel {
             return layer;
         }
 
+        @Override
         public TreeNode getChildAt(int childIndex) {
-            return (TreeNode) childList().get(childIndex);
+            return childList().get(childIndex);
         }
 
+        @Override
         public int getChildCount() {
             return childList().size();
         }
 
+        @Override
         public TreeNode getParent() {
             return new LayerNode(layer.getParent(), mapLayerTreeModel);
         }
 
+        @Override
         public int getIndex(TreeNode node) {
-            return childList().indexOf(node);
+            LayerNode layer = (LayerNode)node;
+            return childList().indexOf(layer);
         }
 
+        @Override
         public boolean getAllowsChildren() {
             return true;
         }
 
+        @Override
         public boolean isLeaf() {
             return getChildCount() == 0;
         }
 
-        public Enumeration children() {
-            return new Vector(childList()).elements();
+        @Override
+        public Enumeration<LayerNode> children() {
+            return new Vector<>(childList()).elements();
         }
 
-        private List childList() {
-            ArrayList children = new ArrayList();
+        private ArrayList<LayerNode> childList() {
+            ArrayList<LayerNode> children = new ArrayList<>();
 
-            for (Iterator i = layer.getSubLayerList().iterator(); i.hasNext();) {
-                MapLayer layer = (MapLayer) i.next();
-                children.add(new LayerNode(layer, mapLayerTreeModel));
+            for (MapLayer mapLayer : layer.getSubLayerList()) {
+                children.add(new LayerNode(mapLayer, mapLayerTreeModel));
             }
 
             if (mapLayerTreeModel.sorted) {
@@ -118,15 +124,16 @@ public class MapLayerTreeModel extends DefaultTreeModel {
             return children;
         }
 
+        @Override
         public boolean equals(Object o) {
             //Needed for the #contains check in MapLayerPanel, as well as #getIndex. [Jon Aquino]
-            LayerNode other = (LayerNode) o;
-
-            return layer == other.layer;
+            return (o instanceof LayerNode
+                    && layer == ((LayerNode) o).layer);
         }
 
-        public int compareTo(Object o) {
-            LayerNode other = (LayerNode) o;
+        @Override
+        public int compareTo(LayerNode other) {
+            //LayerNode other = (LayerNode) o;
             // [mmichaud 2013-01-15] avoid NPE in case layer has no title
             if (layer.getTitle() != null) {
                 return layer.getTitle().compareTo(other.layer.getTitle());

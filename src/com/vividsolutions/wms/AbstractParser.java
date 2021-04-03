@@ -40,6 +40,7 @@ package com.vividsolutions.wms;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,18 +60,14 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.wms.util.XMLTools;
 
-import javax.swing.*;
-
-import static javax.swing.JOptionPane.showMessageDialog;
-
 
 /**
  * Pulls WMS objects out of the XML
  * @author Chris Hodgson chodgson@refractions.net
- * @author Michael Michaud michael.michaud@free.fr
+ * @author Uwe Dalluege uwe.dalluege@rzcn.haw-hamburg.de
+ * @author Michael Michaud m.michael.michaud@orange.fr
  */
 public abstract class AbstractParser implements IParser {
-    
 
    
    /** 
@@ -130,11 +127,19 @@ public abstract class AbstractParser implements IParser {
     
     protected String getTitle(Document doc) throws IOException {
         String title = "";
-        try {
-            title = ((CharacterData)XMLTools.simpleXPath(doc, getTitlePath()).getFirstChild()).getData();
-        } catch (Exception e) {
-          // [ede 2020/08] disabled to allow empty service  title tags as requested in bug #491
-          Logger.warn("service <Title/> unset or empty.", e);
+        Node titleNode = XMLTools.simpleXPath(doc, getTitlePath());
+        if (titleNode != null) {
+            // TODO check why we have to get titleNode child
+            Node firstTitle = titleNode.getFirstChild();
+            if (firstTitle != null) {
+                title = ((CharacterData)firstTitle).getData();
+            } else {
+                // [ede 2020/08] disabled to allow empty service title tags as requested in bug #491
+                Logger.warn("service <Title/> unset or empty.");
+            }
+        } else {
+            // [ede 2020/08] disabled to allow empty service title tags as requested in bug #491
+            Logger.warn("service <Title/> unset or empty.");
         }
         return title;
     }
@@ -143,17 +148,22 @@ public abstract class AbstractParser implements IParser {
     // a different path
     protected LinkedList<String> getFormatList(Document doc) throws IOException {
         
-        LinkedList<String> formatList = new LinkedList<String>();
-        final Node formatNode = XMLTools.simpleXPath(doc, getRootPath() + "/Capability/Request/GetMap");
-        NodeList nl = formatNode.getChildNodes();
-        for( int i=0; i < nl.getLength(); i++ ) {
-            Node n = nl.item( i );
-            if(n.getNodeType() == Node.ELEMENT_NODE && "Format".equals(n.getNodeName())) {
-                String format = n.getFirstChild().getNodeValue();
-                if (format.matches("^image/(png|jpeg|gif).*")) {
-                    formatList.add(format);
+        final LinkedList<String> formatList = new LinkedList<>();
+        final Node formatNode = XMLTools.simpleXPath(doc,
+                getRootPath() + "/Capability/Request/GetMap");
+        if (formatNode != null) {
+            final NodeList nl = formatNode.getChildNodes();
+            for (int i = 0; i < nl.getLength(); i++) {
+                Node n = nl.item(i);
+                if (n.getNodeType() == Node.ELEMENT_NODE && "Format".equals(n.getNodeName())) {
+                    String format = n.getFirstChild().getNodeValue();
+                    if (format.matches("^image/(png|jpeg|gif).*")) {
+                        formatList.add(format);
+                    }
                 }
             }
+        } else {
+            Logger.warn("Element '/Capability/Request/GetMap' not found");
         }
         
         return formatList;
@@ -162,13 +172,12 @@ public abstract class AbstractParser implements IParser {
     protected LinkedList<String> getInfoFormats(Document doc) {
         
         // get the supported infoFormats
-        final Node formatNode = XMLTools.simpleXPath(doc, getRootPath() + "/Capability/Request/GetMap");
-        NodeList nl = formatNode.getChildNodes();
-        
+        //final Node formatNode = XMLTools.simpleXPath(doc, getRootPath() + "/Capability/Request/GetMap");
+
         final Node infoFormatNode = XMLTools.simpleXPath(doc, "WMT_MS_Capabilities/Capability/Request/GetFeatureInfo");
-        LinkedList<String> infoFormatList = new LinkedList<String>();
+        LinkedList<String> infoFormatList = new LinkedList<>();
         if (infoFormatNode != null) {
-            nl = infoFormatNode.getChildNodes();
+            NodeList nl = infoFormatNode.getChildNodes();
             for (int i = 0; i < nl.getLength(); i++) {
                 Node n = nl.item(i);
                 if (n.getNodeType() == Node.ELEMENT_NODE && "Format".equals(n.getNodeName())) {
@@ -192,11 +201,12 @@ public abstract class AbstractParser implements IParser {
     public MapLayer wmsLayerFromNode( Node layerNode ) {
         String name = null;
         String title = null;
-        LinkedList<String> srsList = new LinkedList<String>();
-        LinkedList<MapLayer> subLayers = new LinkedList<MapLayer>();
+        LinkedList<String> srsList = new LinkedList<>();
+        LinkedList<MapLayer> subLayers = new LinkedList<>();
         BoundingBox geographicBBox = null;
-        ArrayList<BoundingBox> boundingBoxList = new ArrayList<BoundingBox> ( );
-        List<MapStyle> styles = new ArrayList<MapStyle>();
+        ArrayList<BoundingBox> boundingBoxList = new ArrayList<> ( );
+        List<MapStyle> styles = new ArrayList<>();
+        boolean firstBoundingBox = true;
     
         NodeList nl = layerNode.getChildNodes();
 
@@ -204,6 +214,7 @@ public abstract class AbstractParser implements IParser {
             Node n = nl.item( i );
             try {
                 if( n.getNodeType() == Node.ELEMENT_NODE ) {
+
                     if( n.getNodeName().equals( "Name" ) ) {
                         name = ((CharacterData)n.getFirstChild()).getData();
                     } else if( n.getNodeName().equals( "Title" ) ) {
@@ -215,7 +226,11 @@ public abstract class AbstractParser implements IParser {
                         boundingBoxList.add ( geographicBBox );
                         boundingBoxList.add ( new BoundingBox("Geographics", geographicBBox.getEnvelope()) );
                     } else if( n.getNodeName().equals( "BoundingBox" ) ) {
-                        boundingBoxList.add ( boundingBoxFromNode( n ) );
+                        // first boundingBox comes first in the list
+                        if (firstBoundingBox) {
+                            boundingBoxList.add(0, boundingBoxFromNode(n));
+                            firstBoundingBox = false;
+                        } else boundingBoxList.add(boundingBoxFromNode(n));
                     } else if( n.getNodeName().equals( "EX_GeographicBoundingBox" ) ) {
                         geographicBBox = exGeographicBoundingBoxFromNode( n );
                         boundingBoxList.add ( geographicBBox );
@@ -272,24 +287,21 @@ public abstract class AbstractParser implements IParser {
         return new MapLayer(name, title, srsList, subLayers, geographicBBox, boundingBoxList, styles);
     }
     
-    protected void addSRSNode(Node n, List<String> srsList) throws Exception {
+    protected void addSRSNode(Node n, List<String> srsList) {
         String srsString = ((CharacterData)n.getFirstChild()).getData();
         String[] tokens = srsString.split("\\s+");
-        for (String token : tokens) {
-            srsList.add(token);
-        }
+        srsList.addAll(Arrays.asList(tokens));
     }
     
     protected BoundingBox boundingBoxFromNode(Node n) throws Exception {
         try {
             NamedNodeMap nm = n.getAttributes();           
-            String srs = "";
-            srs = nm.getNamedItem(getSRSName()).getNodeValue();
+            String srs = nm.getNamedItem(getSRSName()).getNodeValue();
             double minx = getCoord("minx", nm);
-			double miny = getCoord("miny", nm);
-			double maxx = getCoord("maxx", nm);
-			double maxy = getCoord("maxy", nm);
-			return new BoundingBox(srs, minx, miny, maxx, maxy);
+			      double miny = getCoord("miny", nm);
+			      double maxx = getCoord("maxx", nm);
+			      double maxy = getCoord("maxy", nm);
+			      return new BoundingBox(srs, minx, miny, maxx, maxy);
         } catch( Exception e ) {
             // possible NullPointerException from getNamedItem returning a null
             // also possible NumberFormatException
@@ -303,10 +315,10 @@ public abstract class AbstractParser implements IParser {
             NamedNodeMap nm = n.getAttributes();
             String srs = "EPSG:4326";
             double minx = getCoord("minx", nm);
-			double miny = getCoord("miny", nm);
-			double maxx = getCoord("maxx", nm);
-			double maxy = getCoord("maxy", nm);
-			return new BoundingBox(srs, minx, miny, maxx, maxy);
+			      double miny = getCoord("miny", nm);
+			      double maxx = getCoord("maxx", nm);
+			      double maxy = getCoord("maxy", nm);
+			      return new BoundingBox(srs, minx, miny, maxx, maxy);
         } catch( Exception e ) {
             e.printStackTrace();
             throw new Exception( I18N.get("com.vividsolutions.wms.Parser.invalid-bounding-box-element-node")+": " + e.toString() );
@@ -324,31 +336,40 @@ public abstract class AbstractParser implements IParser {
             for( int i = 0; i < childNodes.getLength(); i++ ) {
                 Node childNode = childNodes.item( i );
                 if( childNode.getNodeType() == Node.ELEMENT_NODE ) {
-                    if( childNode.getNodeName().equals( "westBoundLongitude" ) ) {
-                        minx = getCoord(childNode.getTextContent().trim());
-                    } else if( childNode.getNodeName().equals( "eastBoundLongitude" ) ) {
-                        maxx = getCoord(childNode.getTextContent().trim());
-                    } else if( childNode.getNodeName().equals( "southBoundLatitude" ) ) {
-                        miny = getCoord(childNode.getTextContent().trim());
-                    } else if( childNode.getNodeName().equals( "northBoundLatitude" ) ) {
-                        maxy = getCoord(childNode.getTextContent().trim());
-                    } else {
+                    switch (childNode.getNodeName()) {
+                        case "westBoundLongitude":
+                            minx = getCoord(childNode.getTextContent().trim());
+                            break;
+                        case "eastBoundLongitude":
+                            maxx = getCoord(childNode.getTextContent().trim());
+                            break;
+                        case "southBoundLatitude":
+                            miny = getCoord(childNode.getTextContent().trim());
+                            break;
+                        case "northBoundLatitude":
+                            maxy = getCoord(childNode.getTextContent().trim());
+                            break;
+                        default:
                     }
                 }
             }
-			return new BoundingBox(srs, minx, miny, maxx, maxy);
+			      return new BoundingBox(srs, minx, miny, maxx, maxy);
         } catch( Exception e ) {
             e.printStackTrace();
             throw new Exception( I18N.get("com.vividsolutions.wms.Parser.invalid-bounding-box-element-node")+": " + e.toString() );
         }
     }
-    
-    // Coordinates in attributes minx, miny, maxx, maxy
+
+    /**
+     * Coordinates in attributes minx, miny, maxx, maxy
+     */
     public double getCoord(String name, NamedNodeMap nm) throws Exception {
         return getCoord(nm.getNamedItem(name).getNodeValue());
     }
-    
-    // Coordinates in subelements westBoundLongitude, southBoundLongitude...
+
+    /**
+     * Coordinates in subelements westBoundLongitude, southBoundLongitude...
+     */
     public double getCoord(String text) throws Exception {
         if (text.equals("inf")) {
             return Double.POSITIVE_INFINITY;
@@ -356,8 +377,7 @@ public abstract class AbstractParser implements IParser {
             return Double.parseDouble(text);
         }
     }
-    
-    
+
     abstract protected String getSRSName();
   
 }

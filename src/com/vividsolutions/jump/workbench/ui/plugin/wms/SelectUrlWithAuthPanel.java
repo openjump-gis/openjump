@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +22,7 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentEvent.ElementChange;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.Element;
-import javax.swing.text.ElementIterator;
 import javax.swing.text.JTextComponent;
 
 import org.openjump.util.UriUtil;
@@ -35,47 +31,38 @@ import com.vividsolutions.jump.I18N;
 
 public class SelectUrlWithAuthPanel extends JPanel {
 
-  private JLabel urlLabel, userLabel, passLabel;
-
-  private JComboBox urls;
+  private JComboBox<String> urls;
   private JTextField user;
   private JPasswordField pass;
   private JTextComponent url;
 
-  private String[] initialUrls;
+  private final String[] initialUrls;
 
   public SelectUrlWithAuthPanel(String[] initialUrls) {
     super();
     this.initialUrls = initialUrls;
-    createUrlPanel();
+    initUrlPanel();
   }
 
-  public JPanel createUrlPanel() {
-    urlLabel = new JLabel();
-    urlLabel.setText(I18N.get("ui.GenericNames.url"));
-    userLabel = new JLabel();
-    userLabel.setText(I18N.get("ui.GenericNames.user"));
-    passLabel = new JLabel();
-    passLabel.setText(I18N.get("ui.GenericNames.password"));
-    JLabel showLabel = new JLabel();
-    showLabel.setText(I18N.get("ui.GenericNames.show"));
+  private void initUrlPanel() {
+    JLabel urlLabel = new JLabel(I18N.get("ui.GenericNames.url"));
+    JLabel userLabel = new JLabel(I18N.get("ui.GenericNames.user"));
+    JLabel passLabel = new JLabel(I18N.get("ui.GenericNames.password"));
+    JLabel showLabel = new JLabel(I18N.get("ui.GenericNames.show"));
 
     user = new JTextField();
     pass = new JPasswordField();
     final char echoChar = pass.getEchoChar();
     final JCheckBox show = new JCheckBox();
     show.setBorder(null);
-    show.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        char c = show.isSelected() ? 0 : echoChar;
-        pass.setEchoChar(c);
-      }
+    show.addActionListener(e -> {
+      char c = show.isSelected() ? 0 : echoChar;
+      pass.setEchoChar(c);
     });
 
     this.setLayout(new GridBagLayout());
 
-    urls = new JComboBox(initialUrls) {
+    urls = new JComboBox<String>(initialUrls) {
 
       // height seems to be miscalculated in very narrow spaces
       private int limitH(int h) {
@@ -86,16 +73,14 @@ public class SelectUrlWithAuthPanel extends JPanel {
       public Dimension getMinimumSize() {
         int w = super.getMinimumSize().width;
         int h = this.getEditor().getEditorComponent().getMinimumSize().height;
-        Dimension dim = new Dimension(w, limitH(h));
-        return dim;
+        return new Dimension(w, limitH(h));
       }
 
       @Override
       public Dimension getPreferredSize() {
         int w = super.getPreferredSize().width;
         int h = this.getEditor().getEditorComponent().getPreferredSize().height;
-        Dimension pref = new Dimension(w, limitH(h));
-        return pref;
+        return new Dimension(w, limitH(h));
       }
 
     };
@@ -103,18 +88,15 @@ public class SelectUrlWithAuthPanel extends JPanel {
     urls.getEditor().selectAll();
 
     // do not show password in dropdown list
-    final ListCellRenderer rendi = urls.getRenderer();
-    urls.setRenderer(new ListCellRenderer() {
-      public Component getListCellRendererComponent(JList list, Object value,
-          int index, boolean isSelected, boolean cellHasFocus) {
-        Component c = rendi.getListCellRendererComponent(list, value, index,
-            isSelected, cellHasFocus);
-        if (c instanceof JLabel) {
-          String url = ((JLabel) c).getText();
-          ((JLabel) c).setText(UriUtil.urlStripPassword(url));
-        }
-        return c;
+    final ListCellRenderer<? super String> rendi = urls.getRenderer();
+    urls.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+      Component c = rendi.getListCellRendererComponent(list, value, index,
+          isSelected, cellHasFocus);
+      if (c instanceof JLabel) {
+        String url = ((JLabel) c).getText();
+        ((JLabel) c).setText(UriUtil.urlStripPassword(url));
       }
+      return c;
     });
 
     URLComboBoxEditor ed = new URLComboBoxEditor(user, pass);
@@ -143,7 +125,6 @@ public class SelectUrlWithAuthPanel extends JPanel {
     add(urls, new GridBagConstraints(1, 2, 4, 1, 0, 0,
         GridBagConstraints.CENTER, GridBagConstraints.BOTH, insets, 0, 0));
 
-    return this;
   }
 
   public String getUser() {
@@ -151,7 +132,7 @@ public class SelectUrlWithAuthPanel extends JPanel {
   }
 
   public String getPass() {
-    return pass.getText();
+    return new String(pass.getPassword());
   }
 
   public void setUrl(final String url) {
@@ -163,22 +144,23 @@ public class SelectUrlWithAuthPanel extends JPanel {
   }
 
   public List<String> getUrlsList() {
-    List list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     for (int i = 0; i < urls.getItemCount(); ++i) {
       if (i != urls.getSelectedIndex()) {
-        list.add(urls.getItemAt(i).toString());
+        list.add(urls.getItemAt(i));
       }
     }
     return list;
   }
 
   public void setUrlsList(String[] urls) {
-    this.urls.setModel(new JComboBox(urls).getModel());
+    this.urls.setModel(new JComboBox<>(urls).getModel());
   }
 
   // we keep the full url internally but show only the cleaned out info
-  class FilteredURLString {
-    private String url = "";
+  static class FilteredURLString {
+
+    private final String url;
 
     public FilteredURLString(String url) {
       this.url = url;
@@ -197,11 +179,13 @@ public class SelectUrlWithAuthPanel extends JPanel {
     }
 
     public boolean equals(Object obj) {
-      return url.equals(obj);
+      return obj instanceof FilteredURLString &&
+              url.equals(((FilteredURLString)obj).url);
     }
   }
 
-  class TextAreaComboBoxEditor implements ComboBoxEditor {
+  static class TextAreaComboBoxEditor implements ComboBoxEditor {
+
     final protected JTextArea editor;
     protected Object item = null;
 
@@ -223,39 +207,47 @@ public class SelectUrlWithAuthPanel extends JPanel {
       this.editor = area;
     }
 
+    @Override
     public void addActionListener(ActionListener l) {
     }
 
+    @Override
     public Component getEditorComponent() {
       return editor;
     }
 
+    @Override
     public Object getItem() {
       return item;
     }
 
+    @Override
     public void removeActionListener(ActionListener l) {
     }
 
+    @Override
     public void selectAll() {
     }
 
+    @Override
     public void setItem(Object newValue) {
       item = newValue;
       this.editor.setText(item.toString());
     }
+
   }
 
-  class URLComboBoxEditor extends TextAreaComboBoxEditor {
+  static class URLComboBoxEditor extends TextAreaComboBoxEditor {
 
-    private JTextField user;
-    private JTextField pass;
-    private FilteredURLString item;
+    private final JTextField user;
+    private final JTextField pass;
+    //private FilteredURLString item;
 
     public URLComboBoxEditor(final JTextField user, final JTextField pass) {
       super();
       this.user = user;
       this.pass = pass;
+
       final JTextComponent editor = ((JTextComponent) this.getEditorComponent());
       editor.getDocument().addDocumentListener(new DocumentListener() {
         @Override
@@ -315,10 +307,11 @@ public class SelectUrlWithAuthPanel extends JPanel {
 
     @Override
     public void setItem(Object anObject) {
-      final FilteredURLString url = (anObject instanceof FilteredURLString) ? (FilteredURLString) anObject
-          : new FilteredURLString(anObject.toString());
+      final FilteredURLString url = (anObject instanceof FilteredURLString) ?
+              (FilteredURLString) anObject
+            : new FilteredURLString(anObject.toString());
 
-      this.item = url;
+      //this.item = url;
       final JTextComponent editor = ((JTextComponent) this.getEditorComponent());
       // reset auth fields, content will be set from url pasted into editor
       user.setText("");
@@ -328,9 +321,8 @@ public class SelectUrlWithAuthPanel extends JPanel {
 
     @Override
     public Object getItem() {
-      FilteredURLString item = new FilteredURLString(UriUtil.urlAddCredentials(
+      return new FilteredURLString(UriUtil.urlAddCredentials(
           editor.getText(), user.getText(), pass.getText()));
-      return item;
     }
   }
 }

@@ -44,6 +44,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 
+import com.vividsolutions.wms.*;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.util.Blackboard;
@@ -51,27 +52,21 @@ import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
-import com.vividsolutions.wms.BoundingBox;
-import com.vividsolutions.wms.MapLayer;
-import com.vividsolutions.wms.MapRequest;
-import com.vividsolutions.wms.WMService;
 
 /**
  * A Layerable that retrieves images from a Web Map Server.
  */
 public class WMSLayer extends AbstractLayerable implements Cloneable {
 
-  private String format;
+  private WMService service;
+  private String wmsVersion = WMService.WMS_1_3_0;
 
   private List<String> layerNames = new ArrayList<>();
-
   private String srs;
-
+  private String format;
+  private MapStyle style;
+  private String moreParameters;
   private int alpha = 255;
-
-  private WMService service;
-
-  private String wmsVersion = WMService.WMS_1_1_1;
 
   private Reference oldImage;
   private URL oldURL;
@@ -159,7 +154,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 
     // look if last request equals new one.
     // if it does, take the image from the cache.
-    if (oldURL == null || !newURL.equals(oldURL) || oldImage == null
+    if (!newURL.equals(oldURL) || oldImage == null
         || (image = (Image) oldImage.get()) == null) {
       image = request.getImage();
       MediaTracker mt = new MediaTracker(new JButton());
@@ -183,9 +178,11 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 
   public MapRequest createRequest(LayerViewPanel panel) throws IOException {
     MapRequest request = getService().createMapRequest();
-    request.setBoundingBox(toBoundingBox(srs, panel.getViewport()
-        .getEnvelopeInModelCoordinates()));
+    request.setBoundingBox(toBoundingBox(srs,
+        panel.getViewport().getEnvelopeInModelCoordinates()));
     request.setFormat(format);
+    request.setStyle(style);
+    request.setMoreParameters(moreParameters);
     request.setImageWidth(panel.getWidth());
     request.setImageHeight(panel.getHeight());
     request.setLayerNames(layerNames);
@@ -222,6 +219,22 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
     return srs;
   }
 
+  public MapStyle getStyle() {
+    return style;
+  }
+
+  public void setStyle(MapStyle style) {
+    this.style = style;
+  }
+
+  public String getMoreParameters() {
+    return moreParameters;
+  }
+
+  public void setMoreParameters(String moreParameters) {
+    this.moreParameters = moreParameters;
+  }
+
   public Object clone() throws java.lang.CloneNotSupportedException {
     WMSLayer clone = (WMSLayer) super.clone();
     clone.layerNames = new ArrayList<>(this.layerNames);
@@ -233,7 +246,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
     layerNames.clear();
   }
 
-  private Blackboard blackboard = new Blackboard();
+  private final Blackboard blackboard = new Blackboard();
 
   private String serverURL;
 

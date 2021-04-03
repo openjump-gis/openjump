@@ -36,11 +36,12 @@ import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
 public class AddDataStoreLayerWizard extends AbstractWizardGroup {
 
   private static final String KEY = AddDataStoreLayerWizard.class.getName();
-  private AddDataStoreLayerWizardPanel dataStoreWizardPanel;
 
-  private WorkbenchContext workbenchContext;
+  private final AddDataStoreLayerWizardPanel dataStoreWizardPanel;
 
-  private ChooseProjectPanel chooseProjectPanel;
+  private final WorkbenchContext workbenchContext;
+
+  private final ChooseProjectPanel chooseProjectPanel;
 
   public AddDataStoreLayerWizard(WorkbenchContext workbenchContext) {
     super(I18N.get(KEY), IconLoader.icon("database_add.png"),

@@ -47,13 +47,11 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.InputChangedFirer;
 import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
-import com.vividsolutions.jump.coordsys.CoordinateSystem;
-import com.vividsolutions.jump.coordsys.impl.PredefinedCoordinateSystems;
 
 import static com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerWizardPanel.FORMAT_LIST_KEY;
 import static java.awt.GridBagConstraints.WEST;
 
-
+//TODO can we eliminate this class : much redundant code with SRSWizardPanel
 public class OneSRSWizardPanel extends JPanel implements WizardPanel {
     private InputChangedFirer inputChangedFirer = new InputChangedFirer();
     private Map dataMap;
@@ -137,7 +135,7 @@ public class OneSRSWizardPanel extends JPanel implements WizardPanel {
     public void enteredFromLeft(Map dataMap) {
         this.dataMap = dataMap;
 
-        List commonSRSList = (List) dataMap.get(MapLayerWizardPanel.COMMON_SRS_LIST_KEY);
+        List commonSRSList = (List) dataMap.get(MapLayerWizardPanel.SRS_LIST_KEY);
         Assert.isTrue(commonSRSList.size() == 1);
         String srs = (String) commonSRSList.get(0);
         dataMap.put( SRSWizardPanel.SRS_KEY, srs );

@@ -65,6 +65,7 @@ public class WMService {
   private URL serverUrl;
   private String wmsVersion = WMS_1_1_1;
   private Capabilities cap;
+  private String additionalParameters;
   // true if the user just confirm that he accepts or not untrusted connexion
 
   /**
@@ -77,7 +78,10 @@ public class WMService {
    */
   public WMService(String serverUrl, String wmsVersion) {
     try {
-      this.serverUrl = new URL(serverUrl);
+      String[] tokens = serverUrl.split("\\?");
+      this.serverUrl = new URL(tokens[0]+"?");
+      if (tokens.length > 1)
+        this.additionalParameters = tokens[1];
     } catch (MalformedURLException e) {
       throw new IllegalArgumentException(e);
     }
@@ -215,7 +219,7 @@ public class WMService {
   //}
 
   /**
-   * Gets the url stringof the map service.
+   * Gets the url string of the map service.
    * 
    * @return the url of the WMService
    */
@@ -269,6 +273,10 @@ public class WMService {
 
   public String getVersion() {
     return wmsVersion;
+  }
+
+  public String getAdditionalParameters() {
+    return additionalParameters;
   }
 
   //

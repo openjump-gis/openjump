@@ -49,13 +49,13 @@ import org.locationtech.jts.geom.Envelope;
  */
 public class BoundingBox {
    
-  private String srs;
+  private final String srs;
   // by default, use longitude, latitude order, as per WMS 1.0.x and 1.1.x
-  private AxisOrder axisOrder = AxisOrder.LONLAT;
-  private double westBound;
-  private double southBound;
-  private double eastBound;
-  private double northBound;
+  private final AxisOrder axisOrder;
+  private final double westBound;
+  private final double southBound;
+  private final double eastBound;
+  private final double northBound;
   
   public BoundingBox( String srs, Envelope envelope ) {
     this.srs = srs;
