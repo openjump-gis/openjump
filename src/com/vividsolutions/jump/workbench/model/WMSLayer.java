@@ -61,19 +61,17 @@ public class WMSLayer
         extends GeoReferencedLayerable
         implements Cloneable {
 
-  private String format;
+  private WMService service;
+  private String wmsVersion = WMService.WMS_1_3_0;
 
   private List<String> layerNames = new ArrayList<>();
-
   private String srs;
-
+  private String format;
+  private MapStyle style;
+  private String moreParameters;
   private int alpha = 255;
 
-  private WMService service;
-
-  private String wmsVersion = WMService.WMS_1_1_1;
-
-  private Reference<Image> oldImage;
+  private Reference oldImage;
   private URL oldURL;
 
   /**
@@ -159,7 +157,7 @@ public class WMSLayer
 
     // look if last request equals new one.
     // if it does, take the image from the cache.
-    if (oldURL == null || !newURL.equals(oldURL) || oldImage == null
+    if (!newURL.equals(oldURL) || oldImage == null
         || (image = (Image) oldImage.get()) == null) {
       image = request.getImage();
       MediaTracker mt = new MediaTracker(new JButton());
@@ -183,8 +181,8 @@ public class WMSLayer
 
   public MapRequest createRequest(LayerViewPanel panel) throws IOException {
     MapRequest request = getService().createMapRequest();
-    request.setBoundingBox(toBoundingBox(srs, panel.getViewport()
-        .getEnvelopeInModelCoordinates()));
+    request.setBoundingBox(toBoundingBox(srs,
+        panel.getViewport().getEnvelopeInModelCoordinates()));
     request.setFormat(format);
     request.setImageWidth(panel.getWidth());
     request.setImageHeight(panel.getHeight());
@@ -234,7 +232,7 @@ public class WMSLayer
     layerNames.clear();
   }
 
-  private Blackboard blackboard = new Blackboard();
+  private final Blackboard blackboard = new Blackboard();
 
   private String serverURL;
 
