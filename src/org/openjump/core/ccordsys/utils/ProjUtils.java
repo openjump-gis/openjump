@@ -10,10 +10,6 @@ import java.util.Scanner;
 
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.io.FilenameUtils;
-import org.cts.CRSFactory;
-import org.cts.crs.CRSException;
-import org.cts.crs.CoordinateReferenceSystem;
-import org.openjump.core.ccordsys.Unit;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.TiffTags;

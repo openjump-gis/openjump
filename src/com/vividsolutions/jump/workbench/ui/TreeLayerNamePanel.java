@@ -587,7 +587,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
             
             labelTop.setText(String.valueOf(rasterStyleValue.getTopValue().floatValue()));
             labelMiddle.setText(String.valueOf(
-                    (rasterStyleValue.getTopValue().floatValue() - rasterStyleValue.getBottomValue().floatValue())/2));
+                    (rasterStyleValue.getTopValue().floatValue() + rasterStyleValue.getBottomValue().floatValue())/2));
             labelBottom.setText(String.valueOf(rasterStyleValue.getBottomValue().floatValue()));  
             
             labelImg.setIcon(new RasterRampIcon(rasterStyleValue.getColors()));
