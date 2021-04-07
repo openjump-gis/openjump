@@ -17,11 +17,11 @@ but the project is now developed under the umbrella of
 [Apache Foundation](https://projects.eclipse.org/projects/locationtech) and its
 whole namespace changed, breaking the compatibility between JTS and OpenJUMP.
 
-In 2021, OpenJUMP also changes host, moving to Github and resynchronizing with 
-its core, moving directly from JTS 1.14 to JTS 1.18.1.
+In 2021, OpenJUMP also moves to Github and in order to re-synchronize it with JTS 
+a major refactoring is undertaken.
 
 The migration of OpenJUMP and all its extensions may take some time and this page 
-will be updated regularly until the first OpenJUMP2 release.
+will be updated regularly until the first OpenJUMP2 official release.
 
 ## Documentation
 
