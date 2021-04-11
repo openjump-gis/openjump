@@ -58,7 +58,7 @@ discover automatically while loading the jar file.
 xxx-driver (ex. dxf-driver).
 
 ### Extension migration status
-- [ ] Beanshell Editor
+- [x] Beanshell Editor
 - [ ] CADExtension
 - [ ] CadPlan JumpChart
 - [ ] CadPlan JumpFillPattern
@@ -67,12 +67,12 @@ xxx-driver (ex. dxf-driver).
 - [ ] CadPlan VertexSymbols
 - [ ] Color_chooser
 - [ ] ConcaveHullPlugin
-- [ ] CsvDriver
-- [ ] CTSPlugin
+- [x] CsvDriver
+- [x] CTSPlugin
 - [ ] de.soldin.jump
-- [ ] DxfDriver
+- [x] DxfDriver
 - [ ] ExtensionManagerPlugin
-- [ ] GraphToolboxPlugin
+- [x] GraphToolboxPlugin
 - [ ] Horae
 - [x] JumpJGraphT
 - [ ] KmlDriver
@@ -81,7 +81,7 @@ xxx-driver (ex. dxf-driver).
 - [x] MatchingPlugIn
 - [ ] ojmapcoloring
 - [ ] OjWorldWind
-- [ ] OpenKLEM
+- [x] OpenKLEM
 - [ ] OsmFileReaderPlugin
 - [ ] PgRoutingPlugin
 - [ ] PostGISPlugin
