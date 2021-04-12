@@ -52,6 +52,7 @@ import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
+import org.openjump.core.ccordsys.utils.SRSInfo;
 
 /**
  * A Layerable that retrieves images from a Web Map Server.
