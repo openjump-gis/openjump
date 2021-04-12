@@ -966,7 +966,7 @@
         <dependency>
             <groupId>jama</groupId>
             <artifactId>jama</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -975,10 +975,13 @@
             <version>4.13.2</version>
             <scope>compile</scope>
         </dependency>
+        <!--Version 2.2.1 is the last of the unmaintained 2.2 series
+        There is a 2.5.x anda 2.7 version but they both are much bigger
+        don't know if we need them as only few people use jython-->
         <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython</artifactId>
-            <version>2.7.2</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.tukaani</groupId>
