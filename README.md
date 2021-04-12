@@ -88,14 +88,14 @@ xxx-driver (ex. dxf-driver).
 - [ ] PrintLayoutPlugin
 - [ ] RasterLayerExport
 - [ ] RoadMatcher
-- [ ] SetAttributesPlugin
+- [x] SetAttributesPlugin
 - [x] SextantePlugIn
 - [ ] SISJUMP
 - [x] SkyPrinterPlugIn
 - [ ] SpatialDatabasesPlugin
 - [ ] SpatialitePlugin
 - [x] TopologyPlugin
-- [ ] ViewManagerPlugin
+- [x] ViewManagerPlugin
 
 
 
