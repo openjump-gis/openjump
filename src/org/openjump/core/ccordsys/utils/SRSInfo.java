@@ -11,7 +11,8 @@ import org.openjump.core.ccordsys.Unit;
 /**
  * Small container for SRS information. This class does not contain all
  * information to perform coordinate transformation, but enough to return
- * metadata about SRS code or map unit
+ * metadata about SRS code or map unit.
+ * Example : new SRSInfo().setCode("2154").complete();
  */
 public class SRSInfo {
 
@@ -28,8 +29,8 @@ public class SRSInfo {
                                 // path)
     private Registry registry = EPSG; // The registry in which this SRS is
                                       // referenced
-    private String code = UNDEFINED; // The code of the SRS
-    private String description = ""; // The name or description of the SRS
+    private String code = UNDEFINED;  // The code of the SRS
+    private String description = "";  // The name or description of the SRS
     private Unit unit = Unit.UNKNOWN; // The unit used by this SRS
 
     public SRSInfo() {
@@ -105,7 +106,7 @@ public class SRSInfo {
         return this;
     }
 
-    public void complete() throws UnsupportedEncodingException {
+    public SRSInfo complete() {
         SRSInfo sridTableInfo = SridLookupTable.getSrsAndUnitFromCode(code);
         if (sridTableInfo.getCode().equals(UNDEFINED)) {
             sridTableInfo = SridLookupTable.getSrsAndUnitFromName(description);
@@ -116,6 +117,8 @@ public class SRSInfo {
             unit = sridTableInfo.getUnit();
         }
         registry = guessRegistry(code);
+
+        return this;
     }
 
     @Override

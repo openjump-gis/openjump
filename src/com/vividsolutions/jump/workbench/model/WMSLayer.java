@@ -56,7 +56,9 @@ import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 /**
  * A Layerable that retrieves images from a Web Map Server.
  */
-public class WMSLayer extends AbstractLayerable implements Cloneable {
+public class WMSLayer
+        extends GeoReferencedLayerable
+        implements Cloneable {
 
   private WMService service;
   private String wmsVersion = WMService.WMS_1_3_0;
@@ -213,6 +215,7 @@ public class WMSLayer extends AbstractLayerable implements Cloneable {
 
   public void setSRS(String srs) {
     this.srs = srs;
+    setSrsInfo(new SRSInfo().setCode(srs).complete());
   }
 
   public String getSRS() {

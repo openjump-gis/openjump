@@ -9,11 +9,10 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
-import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
-//import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
 import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
 import org.openjump.io.PropertiesHandler;
@@ -26,7 +25,6 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.task.TaskMonitorV2Util;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
-import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -40,7 +38,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     public static final String KEY = AddRasterImageLayerWizard.class.getName();
 
     private final WorkbenchContext workbenchContext;
-    private ChooseProjectPanel chooseProjectPanel;
+    //private ChooseProjectPanel chooseProjectPanel;
     private SelectRasterImageFilesPanel selectFilesPanel;
 
     private File[] files;
@@ -55,7 +53,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     protected boolean zoomToInsertedImage = false;
     private String imageFileName = "";
     private String cachedLayer = "default-layer-name";
-    public static String KEY_PATH = "path";
+    //public static String KEY_PATH = "path";
 
     // ------
 
@@ -65,7 +63,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 IconLoader.icon("mapSv2_13.png"),
                 SelectRasterImageFilesPanel.KEY);
         this.workbenchContext = workbenchContext;
-        RasterImageLayer.setWorkbenchContext(workbenchContext);
+        //RasterImageLayer.setWorkbenchContext(workbenchContext);
     }
 
     public AddRasterImageLayerWizard(final WorkbenchContext workbenchContext,
@@ -115,7 +113,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
     private void open(File[] files, TaskMonitor monitor) {
       monitor.allowCancellationRequests();
-      LayerManager layerManager = workbenchContext.getLayerManager();
+      //LayerManager layerManager = workbenchContext.getLayerManager();
 
         for (int i = 0; i < files.length; i++) {
           if (TaskMonitorV2Util.isCancelRequested(monitor))
@@ -174,7 +172,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     }
 
     private void addImage(WorkbenchContext context, Envelope envelope,
-            Point imageDimensions) throws NoninvertibleTransformException {
+            Point imageDimensions) {
 
         if (context.getTask() == null) {
             context.getWorkbench().getFrame().addTaskFrame();
@@ -190,7 +188,8 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                     .getLayerNamePanel().getSelectedCategories().toArray()[0])
                     .getName();
         } catch (final RuntimeException e1) {
-            // logger.printDebug(e1.getMessage());
+            Logger.warn("AddRasterImageLayerWizard.addImage: " +
+                    "error trying to get the name of the currently selected category", e1);
         }
 
         final int layersAsideImage = context.getLayerManager()
@@ -208,7 +207,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             // rLayer.setSRSInfo(ProjUtils.getSRSInfoFromLayerSource(rLayer));
             final SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerSource(rLayer);
             srsInfo.complete();
-            rLayer.setSRSInfo(srsInfo);
+            rLayer.setSrsInfo(srsInfo);
         } catch (final Exception e1) {
             e1.printStackTrace();
         }
@@ -229,8 +228,8 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         // metadata. Those datas are saved into OJ project file and can be
         // reused
         // by the plugins
-        mih.addMetaInformation("srid", rLayer.getSRSInfo().getCode());
-        mih.addMetaInformation("srid-location", rLayer.getSRSInfo().getSource());
+        mih.addMetaInformation("srid", rLayer.getSrsInfo().getCode());
+        mih.addMetaInformation("srid-location", rLayer.getSrsInfo().getSource());
 
         // ###################################
         context.getLayerManager().addLayerable(catName, rLayer);
@@ -325,7 +324,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 env = new Envelope(upperLeft, lowerRight);
             }
 
-            if (!isGeoTiff || env == null) {
+            if (!isGeoTiff) {
                 // logger.printDebug(PirolPlugInMessages.getString("no-worldfile-found"));
 
                 final Viewport viewport = context.getLayerViewPanel()
@@ -360,7 +359,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                         context.getWorkbench().getFrame(),
                         I18N.getMessage(
                                 "org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found-message",
-                                new Object[] { fil.getName() })
+                                fil.getName())
                         /*
                          * I18N.get("RasterImagePlugIn.34") +
                          * this.worldFileHandler.getWorldFileName() +
@@ -428,7 +427,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             final String MSG = I18N
                     .getMessage(
                             "org.openjump.core.rasterimage.AddRasterImageLayerWizard.message",
-                            new Object[] { fil.getName() });
+                            fil.getName());
             context.getWorkbench().getFrame().setStatusMessage(MSG);
 
         }
