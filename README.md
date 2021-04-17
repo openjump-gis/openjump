@@ -60,11 +60,11 @@ xxx-driver (ex. dxf-driver).
 ### Extension migration status
 - [x] Beanshell Editor
 - [ ] CADExtension
-- [ ] CadPlan JumpChart
-- [ ] CadPlan JumpFillPattern
-- [ ] CadPlan JumpPrinter
+- [x] CadPlan JumpChart
+- [x] CadPlan JumpFillPattern
+- [x] CadPlan JumpPrinter
 - [ ] CadPlan UpdateProject
-- [ ] CadPlan VertexSymbols
+- [x] CadPlan VertexSymbols
 - [ ] Color_chooser
 - [ ] ConcaveHullPlugin
 - [x] CsvDriver
