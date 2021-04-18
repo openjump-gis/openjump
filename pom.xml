@@ -811,11 +811,11 @@
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <!-- Used for jmatharray, jmathplot and jama -->
-        <repository>
+        <!--repository>
             <id>openjump</id>
             <name>OpenJUMP Maven 2 Repository</name>
             <url>http://jump-pilot.sourceforge.net/repository/</url>
-        </repository>
+        </repository-->
         <repository>
             <id>mvn-adamgent</id>
             <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
@@ -849,14 +849,14 @@
             <url>http://maven.geo-solutions.it/</url>
         </repository>
         <!-- we got our custommade jts 1.14 snapshot from here, thx Michael Bedward -->
-        <repository>
+        <!--repository>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
             <id>sonatype-snapshots</id>
             <name>sonatype-snapshots</name>
             <url>http://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
+        </repository-->
     </repositories>
     <dependencies>
         <dependency>
