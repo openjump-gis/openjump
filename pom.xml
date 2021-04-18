@@ -810,12 +810,12 @@
             <!--url>https://mvnrepository.com/artifact/</url-->
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
-        <!-- Used for jmatharray, jmathplot and jama -->
-        <!--repository>
+        <!-- Used for buoy and JAI core, codec and imageio -->
+        <repository>
             <id>openjump</id>
             <name>OpenJUMP Maven 2 Repository</name>
             <url>http://jump-pilot.sourceforge.net/repository/</url>
-        </repository-->
+        </repository>
         <repository>
             <id>mvn-adamgent</id>
             <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
@@ -827,6 +827,8 @@
             <name>Apache Snapshots</name>
         </repository>
         <!-- osgeo keeps recent JAI codec, core, imageio jars -->
+        <!-- not sure what is this repository for. Not enough to
+        find JAI codec, core, imageio jars -->
         <repository>
             <id>osgeo</id>
             <name>Open Source Geospatial Foundation Repository</name>
