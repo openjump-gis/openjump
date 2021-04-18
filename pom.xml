@@ -833,11 +833,11 @@
             <url>http://download.osgeo.org/webdav/geotools/</url>
         </repository>
         <!-- deegree2 libs needed for WFS -->
-        <repository>
+        <!--repository>
             <id>deegree-snapshots</id>
             <name>Deegree Snaphots</name>
             <url>http://repo.deegree.org/content/repositories/snapshots/</url>
-        </repository>
+        </repository-->
         <!-- below the home of imageio-ext, needed for local compilation only
         for distribution jars are added manually in etc/mvn/*.cmp files -->
         <repository>
