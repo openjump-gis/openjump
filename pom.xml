@@ -952,15 +952,15 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.math.array</groupId>
+            <groupId>com.github.yannrichet</groupId>
             <artifactId>jmatharray</artifactId>
-            <version>20070905</version>
+            <version>1.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.math.plot</groupId>
-            <artifactId>jmathplot</artifactId>
-            <version>20070905</version>
+            <groupId>com.github.yannrichet</groupId>
+            <artifactId>JMathPlot</artifactId>
+            <version>1.0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
