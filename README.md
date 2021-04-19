@@ -66,7 +66,7 @@ xxx-driver (ex. dxf-driver).
 - [ ] CadPlan UpdateProject
 - [x] CadPlan VertexSymbols
 - [x] Color_chooser
-- [ ] ConcaveHullPlugin
+- [x] ConcaveHullPlugin
 - [x] CsvDriver
 - [x] CTSPlugin
 - [ ] de.soldin.jump
