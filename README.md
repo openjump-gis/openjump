@@ -65,7 +65,7 @@ xxx-driver (ex. dxf-driver).
 - [x] CadPlan JumpPrinter
 - [ ] CadPlan UpdateProject
 - [x] CadPlan VertexSymbols
-- [ ] Color_chooser
+- [x] Color_chooser
 - [ ] ConcaveHullPlugin
 - [x] CsvDriver
 - [x] CTSPlugin
