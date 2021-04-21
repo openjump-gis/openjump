@@ -31,21 +31,10 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Frame;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 import javax.swing.*;
-
-import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.model.LayerManager;
 
 
 /**
@@ -88,7 +77,6 @@ public class MultiTabInputDialog extends MultiInputDialog {
     
     public static void main(String[] args) {
         MultiTabInputDialog d = new MultiTabInputDialog(null, "Title!", "1st pane", true);
-        //d.addPane("1er panneau");
         d.addSubTitle("Sous-titre 1");
         d.addLabel("This is just a label");
         d.addTextField("Nom", "", 24, null, "");
@@ -99,9 +87,7 @@ public class MultiTabInputDialog extends MultiInputDialog {
         d.addPane("2nd pane");
         d.addLabel("Yay!");
         d.setTabEnabled("1st pane", false);
-        //d.addLayerComboBox("LayerField", null, "ToolTip", new LayerManager());
         d.setVisible(true);
-        //System.out.println(d.getLayer("LayerField"));
         System.exit(0);
     }
 }

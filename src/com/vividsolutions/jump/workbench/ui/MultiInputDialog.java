@@ -39,22 +39,13 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
-import javax.swing.text.JTextComponent;
 
-import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.CollectionMap;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
-import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
-import com.vividsolutions.jump.workbench.ui.OKCancelApplyPanel;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
@@ -150,11 +141,7 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
     public MultiInputDialog(final Frame frame, String title, boolean modal) {
         super(frame, title, modal);
         
-        okCancelApplyPanel.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            okCancelApplyPanel_actionPerformed(e);
-          }
-        });
+        okCancelApplyPanel.addActionListener(e -> okCancelApplyPanel_actionPerformed(e));
         
         try {
             jbInit();
@@ -395,10 +382,10 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
         reportValidationError(firstValidationErrorMessage());
     }
     
-    void this_componentShown(ComponentEvent e) {
-        okCancelApplyPanel.setOKPressed(false);
-        okCancelApplyPanel.setApplyPressed(false);
-    }
+    //void this_componentShown(ComponentEvent e) {
+    //    okCancelApplyPanel.setOKPressed(false);
+    //    okCancelApplyPanel.setApplyPressed(false);
+    //}
     
     /**
      * Indent the label of a field with a MatteBorder having the width of
@@ -475,15 +462,14 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
         AttributeTypeFilter NUMERIC_FILTER = AttributeTypeFilter.NUMERIC_FILTER;
         AttributeTypeFilter NOGEOM_FILTER = AttributeTypeFilter.NO_GEOMETRY_FILTER;
         AttributeTypeFilter ALL_FILTER = AttributeTypeFilter.ALL_FILTER;
-        final JComboBox typeChooser = d.addComboBox("Choose Attribute Type", "ALL",
+        final JComboBox<AttributeTypeFilter> typeChooser =
+            d.addComboBox("Choose Attribute Type", ALL_FILTER,
                 Arrays.asList(STRING_FILTER,NUMERIC_FILTER,ALL_FILTER,NOGEOM_FILTER), "");
-        final JComboBox layerChooser = d.addLayerComboBox("LayerField", null, "ToolTip", lm);
-        final JComboBox attributeChooser = d.addAttributeComboBox("Attribute field", "LayerField", NUMERIC_FILTER, "");
-        typeChooser.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                AttributeTypeFilter atf = (AttributeTypeFilter)typeChooser.getSelectedItem();
-                layerChooser.setModel(new DefaultComboBoxModel(atf.filter(lm).toArray(new Layer[0])));
-            }
+        final JComboBox<Layer> layerChooser = d.addLayerComboBox("LayerField", null, "ToolTip", lm);
+        final JComboBox<String> attributeChooser = d.addAttributeComboBox("Attribute field", "LayerField", NUMERIC_FILTER, "");
+        typeChooser.addActionListener(e -> {
+            AttributeTypeFilter atf = (AttributeTypeFilter)typeChooser.getSelectedItem();
+            layerChooser.setModel(new DefaultComboBoxModel(atf.filter(lm).toArray(new Layer[0])));
         });
         
         d.addSeparator();
@@ -505,7 +491,11 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
         jcb.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (jcb.isSelected()) {
-                    d.infoPanel.setIcon(new ImageIcon(com.vividsolutions.jump.workbench.ui.images.IconLoader.class.getResource("Butt.gif")));
+                    d.infoPanel.setIcon(
+                        new ImageIcon(
+                            com.vividsolutions.jump.workbench.ui.images.IconLoader.class.getResource("Butt.gif")
+                        )
+                    );
                     d.getConsole().flashMessage("Add image");
                 }
                 else {
@@ -515,10 +505,9 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
                 d.pack();
             }
         });
-        JButton button2 = d.addButton("Second button", "OK", "");
+        d.addButton("Second button", "OK", "");
         GUIUtil.centreOnScreen(d);
         d.setVisible(true);
-//        System.out.println(d.getLayer("LayerField"));
         System.exit(0);
     }
 }
