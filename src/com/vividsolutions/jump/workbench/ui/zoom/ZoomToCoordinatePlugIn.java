@@ -62,18 +62,17 @@ public class ZoomToCoordinatePlugIn extends AbstractPlugIn {
     return true;
   }
 
+  // Creates an envelope with a reasonable size according to coordinate dispersion
+  // in the layers of the layerManager
   private Envelope toEnvelope(Coordinate coordinate, LayerManager layerManager) {
     int segments = 0;
     int segmentSum = 0;
-    outer: for (Iterator i = layerManager.iterator(); i.hasNext();) {
-      Layer layer = (Layer) i.next();
-      for (Iterator j = layer.getFeatureCollectionWrapper().iterator(); j
-          .hasNext();) {
-        Feature feature = (Feature) j.next();
-        Collection coordinateArrays = CoordinateArrays.toCoordinateArrays(
+    outer: for (Iterator<Layer> i = layerManager.iterator(Layer.class); i.hasNext();) {
+      Layer layer = i.next();
+      for (Feature feature : layer.getFeatureCollectionWrapper().getFeatures()) {
+        Collection<Coordinate[]> coordinateArrays = CoordinateArrays.toCoordinateArrays(
             feature.getGeometry(), false);
-        for (Iterator k = coordinateArrays.iterator(); k.hasNext();) {
-          Coordinate[] coordinates = (Coordinate[]) k.next();
+        for (Coordinate[] coordinates : coordinateArrays) {
           for (int a = 1; a < coordinates.length; a++) {
             segments++;
             segmentSum += coordinates[a].distance(coordinates[a - 1]);
