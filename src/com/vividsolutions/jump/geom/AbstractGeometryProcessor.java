@@ -87,10 +87,10 @@ public class AbstractGeometryProcessor {
      * @param list the list accumulating all processed simple component.
      */
     public void process(Polygon polygon, List<Geometry> list) {
-        LinearRing ext = process((LinearRing)polygon.getExteriorRing());
+        LinearRing ext = process(polygon.getExteriorRing());
         LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
         for (int i = 0 ; i < polygon.getNumInteriorRing() ; i++) {
-            holes[i] = process((LinearRing)polygon.getInteriorRingN(i));
+            holes[i] = process(polygon.getInteriorRingN(i));
         }
         list.add(polygon.getFactory().createPolygon(ext, holes));
     }

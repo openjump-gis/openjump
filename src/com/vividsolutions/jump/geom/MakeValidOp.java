@@ -436,7 +436,7 @@ public class MakeValidOp {
                 // seq.size == 0
             }
             Polygon poly = factory.createPolygon(factory.createLinearRing(outerRingSeq),
-                    innerRings.toArray(new LinearRing[innerRings.size()]));
+                    innerRings.toArray(new LinearRing[0]));
             if (degeneratedRings.isEmpty()) {
                 return poly;
             }
@@ -457,7 +457,7 @@ public class MakeValidOp {
      * </ul>
      */
     private Geometry nodePolygon(Polygon polygon) {
-        LinearRing exteriorRing = (LinearRing)polygon.getExteriorRing();
+        LinearRing exteriorRing = polygon.getExteriorRing();
         Geometry geom = getArealGeometryFromLinearRing(exteriorRing);
         // geom can be a GeometryCollection
         // extract polygonal areas because symDifference cannot process GeometryCollections
@@ -507,7 +507,7 @@ public class MakeValidOp {
             polygonizer.add(lines);
 
             // Computes intersections to determine the status of each polygon
-            Collection<Geometry> geoms = new ArrayList();
+            Collection<Geometry> geoms = new ArrayList<>();
             for (Object object : polygonizer.getPolygons()) {
                 Polygon polygon = (Polygon)object;
                 Coordinate p = polygon.getInteriorPoint().getCoordinate();

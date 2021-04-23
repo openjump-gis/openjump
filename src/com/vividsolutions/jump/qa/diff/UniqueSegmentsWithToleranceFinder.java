@@ -60,10 +60,10 @@ public class UniqueSegmentsWithToleranceFinder {
     return maxDist;
   }
 
-  private FeatureCollection queryFC;
-  private SegmentIndex segIndex;
-  private List<LineSegment> resultSegs = new ArrayList<>();
-  private Envelope queryEnv = new Envelope();
+  private final FeatureCollection queryFC;
+  private final SegmentIndex segIndex;
+  private final List<LineSegment> resultSegs = new ArrayList<>();
+  private final Envelope queryEnv = new Envelope();
 
   public UniqueSegmentsWithToleranceFinder(FeatureCollection fc0, FeatureCollection fc1) {
     queryFC = fc0;
@@ -71,8 +71,7 @@ public class UniqueSegmentsWithToleranceFinder {
   }
 
   public List<LineSegment> findUniqueSegments(double tolerance) {
-    for (Iterator it = queryFC.iterator(); it.hasNext(); ) {
-      Feature f = (Feature) it.next();
+    for (Feature f : queryFC.getFeatures()) {
       Geometry geom = f.getGeometry();
       findUniqueSegments(geom, tolerance);
     }

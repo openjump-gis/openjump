@@ -97,10 +97,6 @@ public class LineSegmentEnvelopeIntersector {
 
         lineInt.computeIntersection(p0, p1, env3, env0);
 
-        if (lineInt.hasIntersection()) {
-            return true;
-        }
-
-        return false;
+        return lineInt.hasIntersection();
     }
 }
