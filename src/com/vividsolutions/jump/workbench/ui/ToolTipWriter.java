@@ -1,4 +1,5 @@
 package com.vividsolutions.jump.workbench.ui;
+
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -9,6 +10,7 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.cursortool.SpecifyFeaturesTool;
+
 /**
  * To customize the LayerViewPanel's tooltips, call LayerViewPanel#setToolTipText.
  * You can specify attribute names in curly brackets e.g. {fid}.
@@ -34,7 +36,7 @@ public class ToolTipWriter {
         try {
             layerToSpecifiedFeaturesMap =
                 SpecifyFeaturesTool.layerToSpecifiedFeaturesMap(
-                    panel.getLayerManager().iterator(),
+                    panel.getLayerManager().iterator(Layer.class),
                     EnvelopeUtil.expand(
                         new Envelope(
                             panel.getViewport().toModelCoordinate(mouseLocation)),

@@ -91,8 +91,8 @@ public class VisiblePointsAndLinesCache {
             Envelope viewportEnvelope = panel.getViewport()
                                              .getEnvelopeInModelCoordinates();
             tree = new STRtree();
-            for (Iterator i = panel.getLayerManager().iterator(); i.hasNext();) {
-                Layer layer = (Layer) i.next();
+            for (Iterator<Layer> i = panel.getLayerManager().iterator(Layer.class); i.hasNext();) {
+                Layer layer = i.next();
                 if (!layer.isVisible()) {
                     continue;
                 }

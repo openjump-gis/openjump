@@ -158,16 +158,15 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
             g.setStroke(handleStroke);
         	Rectangle2D viewRectangle = viewport.toViewRectangle( 
     				viewport.getEnvelopeInModelCoordinates());
-           for (int i = 0; i < viewCoordinates.length; i++) {
-            	Coordinate p = viewCoordinates[i];
-            	double x = p.x;
-            	double y = p.y;
-                if (!viewRectangle.contains(x,y)) {  //<<JOKE:handle with care>>
-                    //Otherwise get "sun.dc.pr.PRException: endPath: bad path" exception [Jon Aquino 10/22/2003]
-                    continue;
-                }
-				vertexStyle.paint(g, new Point2D.Double(x, y)); // [Matthias Scholz 3. Sept. 2010]
-            }
+        	for (Coordinate p : viewCoordinates) {
+        	  double x = p.x;
+        	  double y = p.y;
+        	  if (!viewRectangle.contains(x,y)) {  //<<JOKE:handle with care>>
+        	    //Otherwise get "sun.dc.pr.PRException: endPath: bad path" exception [Jon Aquino 10/22/2003]
+              continue;
+        	  }
+				    vertexStyle.paint(g, new Point2D.Double(x, y)); // [Matthias Scholz 3. Sept. 2010]
+        	}
         }
     }
 
@@ -176,29 +175,24 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
 	}
     
     protected Map layerToFeaturesMap() {
-        featureToSelectedItemsMap = new HashMap<Feature,Collection<Geometry>>();
-		Map<Layer,List<Feature>> layerToFeaturesMap = new HashMap();
-        for (Iterator i = panel.getLayerManager().iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
+        featureToSelectedItemsMap = new HashMap<>();
+		    Map<Layer,List<Feature>> layerToFeaturesMap = new HashMap();
+        for (Iterator<Layer> i = panel.getLayerManager().iterator(Layer.class); i.hasNext();) {
+            Layer layer = i.next();
             if (layer instanceof LayerView) continue;
             Map<Feature,List<Geometry>> featureToSelectedItemsMapForLayer = featureToSelectedItemsMap(layer);
             // For each feature of layer, put selected items into a general
             // featureToSelectedItemsMap
             for (Feature feature : featureToSelectedItemsMapForLayer.keySet()) {
-                List<Geometry> list = new ArrayList(1);
+                List<Geometry> list = new ArrayList<>(1);
                 List<Geometry> selectedItems = featureToSelectedItemsMapForLayer.get(feature);
                 if (selectedItems != null) {
-                    for (Geometry g : selectedItems) {
-                        list.add(g);
-                    }
+                  list.addAll(selectedItems);
                 }
                 featureToSelectedItemsMap.put(feature, list);
             }
-            List list = new ArrayList();
             // put each feature with selected items in a layerToFeaturesMap
-            for (Feature feature : featureToSelectedItemsMapForLayer.keySet()) {
-                list.add(feature);
-            }
+            List<Feature> list = new ArrayList<>(featureToSelectedItemsMapForLayer.keySet());
             layerToFeaturesMap.put(layer, list);
         }        
         return layerToFeaturesMap;
