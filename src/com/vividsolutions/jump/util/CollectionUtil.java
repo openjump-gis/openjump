@@ -300,6 +300,14 @@ public class CollectionUtil {
         return result;
     }
 
+    /**
+     * Search an object associated to the class c or one of its parent in the
+     * associative map
+     * @param c the class used as a key
+     * @param map the associative map in which the research is made
+     * @return an object or null if no object is associated to class c or one
+     * of its parent
+     */
     public static Object get(Class<?> c, Map<Class<?>,? extends Object> map) {
         if (map.containsKey(c)) {
             return map.get(c);

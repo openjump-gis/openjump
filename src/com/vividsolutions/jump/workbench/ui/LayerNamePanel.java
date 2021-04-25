@@ -42,13 +42,13 @@ public interface LayerNamePanel extends LayerManagerProxy {
 
     Collection<Category> getSelectedCategories();
 
-    Collection selectedNodes(Class c);
+    <T> Collection<T> selectedNodes(Class<T> c);
 
     /**
-     * @deprecated implement LayerableNamePanel.getSelectedLayerables() instead
+     * Return an array of selected {@link Layer}s.
+     * Note that layerables which are not Layers like WMSLayer or RasterImageLayer
+     * are not returned.
      */
-    @SuppressWarnings( "deprecation" )
-    @Deprecated
     Layer[] getSelectedLayers();
 
     /**
