@@ -292,7 +292,7 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
         final FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("geometry", AttributeType.GEOMETRY);
         fs.addAttribute(sValue, AttributeType.DOUBLE);
-        FeatureCollection featDataset = VectorizeAlgorithm
+        FeatureCollection featDataset = new VectorizeAlgorithm()
                 .toContours(gwrapper, contMin, contMax, contIntv, sValue, 0);
 
         final Layer vlayer = context.addLayer(StandardCategoryNames.WORKING,
