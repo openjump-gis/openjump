@@ -42,15 +42,6 @@ public class VectorizeAlgorithm {
 
     public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
 
-    //private static int arrPos(double valIn, double[] arrayIn) {
-    //    for (int i = 0; i < arrayIn.length; i++) {
-    //        if (arrayIn[i] == valIn) {
-    //            return i;
-    //        }
-    //    }
-    //    return -1;
-    //}
-
     /**
      * Create a FeatureCollection of polygons defining a GridWrapperNotInterpolated and number of band
      * AdbToolbox algorithm
@@ -94,7 +85,8 @@ public class VectorizeAlgorithm {
                 if (val != oldVal) {
                     cEnd = c - 1;
                     // Get polygon vertices
-                    if (oldVal != noData) {
+                    // != does not work well with NaN : add a specific test
+                    if (oldVal != noData && !Double.isNaN(oldVal)) {
                         coords[0] = new Coordinate(xllCorner
                                 + (cStart * cellSize) - cellSize, yurCorner
                                 - (r * cellSize));
@@ -107,7 +99,6 @@ public class VectorizeAlgorithm {
                         final CoordinateSequence cs = pcsf.create(coords);
                         lr = new LinearRing(cs, geomFactory);
                         polygon = new Polygon(lr, null, geomFactory);
-                        //arrAll[arrPos((int) oldVal, uniqueVals)].add(polygon);
                         arrAll[index.get(oldVal)].add(polygon);
                     }
                     oldVal = val;
@@ -126,7 +117,7 @@ public class VectorizeAlgorithm {
         for (int i = 0; i < uniqueValsCount; i++) {
             Geometry geom = CascadedPolygonUnion.union(arrAll[i]);
             geom = DouglasPeuckerSimplifier.simplify(geom, 0);
-            geom = TopologyPreservingSimplifier.simplify(geom, 00);
+            geom = TopologyPreservingSimplifier.simplify(geom, 0);
             if (explodeMultipolygons) {
                 // From multipolygons to single polygons
                 for (int g = 0; g < geom.getNumGeometries(); g++) {
@@ -153,21 +144,21 @@ public class VectorizeAlgorithm {
     private static double[] findUniqueVals(GridWrapperNotInterpolated gwrapper,
             double nodata, int band) {
         // Pass values to 1D array
-        final ArrayList<Double> vals = new ArrayList<Double>();
+        final ArrayList<Double> vals = new ArrayList<>();
         final int nx = gwrapper.getNX();//rstLayer.getLayerGridExtent().getNX();
         final int ny = gwrapper.getNY();// rstLayer.getLayerGridExtent().getNY();
-        vals.add(nodata);
         for (int x = 0; x < nx; x++) {//cols
             for (int y = 0; y < ny; y++) {//rows
                 final double value = gwrapper.getCellValueAsDouble(x, y, band);
-                if (value != nodata) {
+                // != does not work well with NaN : add an explicit test
+                if (value != nodata && !Double.isNaN(value)) {
                     vals.add(gwrapper.getCellValueAsDouble(x, y, band));
                 }
             }
         }
         // Find unique values
         Collections.sort(vals);
-        final ArrayList<Double> uniqueValsArr = new ArrayList<Double>();
+        final ArrayList<Double> uniqueValsArr = new ArrayList<>();
         uniqueValsArr.add(vals.get(0));
 
         for (int i = 1; i < vals.size(); i++) {
@@ -233,8 +224,9 @@ public class VectorizeAlgorithm {
 
     private static void Discrete_Lock(GridWrapperNotInterpolated gwrapper,
             int x, int y, final int ID, int band) {
-        final int xTo[] = { 0, 1, 0, -1 }, yTo[] = { 1, 0, -1, 0 };
-        final char goDir[] = { 1, 2, 4, 8 };
+        final int[] xTo = { 0, 1, 0, -1 };
+        final int[] yTo = { 1, 0, -1, 0 };
+        final char[] goDir = { 1, 2, 4, 8 };
         boolean isBorder, doRecurse;
         char goTemp = 0;
         char[] goStack = new char[50];
@@ -326,8 +318,9 @@ public class VectorizeAlgorithm {
     private static Feature Discrete_Area(GridWrapperNotInterpolated gwrapper,
             FeatureSchema featSchema, String attributeName, int x, int y,
             final int ID, int band) {
-        final int xTo[] = { 0, 1, 0, -1 }, yTo[] = { 1, 0, -1, 0 };
-        final int xLock[] = { 0, 0, -1, -1 }, yLock[] = { 0, -1, -1, 0 };
+        final int[] xTo = { 0, 1, 0, -1 };
+        final int[] yTo = { 1, 0, -1, 0 };
+        final int[] xLock = { 0, 0, -1, -1 }, yLock = { 0, -1, -1, 0 };
         boolean bContinue, bStart;
         int i, ix, iy, ix1, iy1, dir, iStart;
         final double xMin = gwrapper.getGridExtent().getXMin();
@@ -338,7 +331,7 @@ public class VectorizeAlgorithm {
         final ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
         Feature feature;
         feature = new BasicFeature(featSchema);
-        feature.setAttribute(1, new Integer(ID));
+        feature.setAttribute(1, ID);
         feature.setAttribute(2, gwrapper.getCellValueAsDouble(x, y, band));
         xFirst = xMin + (x) * dCellSizeX;
         yFirst = yMax - (y) * dCellSizeY;
@@ -426,13 +419,13 @@ public class VectorizeAlgorithm {
 
     }
 
-    private static char[][] m_Row;
-    private static char[][] m_Col;
+    private char[][] m_Row;
+    private char[][] m_Col;
 
-    private static OpenJUMPSextanteRasterLayer m_Visited = new OpenJUMPSextanteRasterLayer();
-    private static OpenJUMPSextanteRasterLayer m_Visited2 = new OpenJUMPSextanteRasterLayer();
-    private final static GeometryFactory m_GF = new GeometryFactory();
-    private static boolean removeZeroCells = false;
+    private final OpenJUMPSextanteRasterLayer m_Visited = new OpenJUMPSextanteRasterLayer();
+    private final OpenJUMPSextanteRasterLayer m_Visited2 = new OpenJUMPSextanteRasterLayer();
+    private final GeometryFactory m_GF = new GeometryFactory();
+    private boolean removeZeroCells = false;
 
     /**
      * Convert a DTM raster to a feature collection of contours (linestrings) defining
@@ -446,7 +439,7 @@ public class VectorizeAlgorithm {
      * @param band the band containing elevation data
      * @return a FeatureCollection containing vectorized contour lines
      */
-    public static FeatureCollection toContours(
+    public FeatureCollection toContours(
             GridWrapperNotInterpolated gwrapper, final double zMin,
             final double zMax, double dDistance, String attributeName, int band) {
         final FeatureCollection featColl = new FeatureDataset(
@@ -457,7 +450,7 @@ public class VectorizeAlgorithm {
         int ID;
         int iNX, iNY;
         double dZ;
-        double dValue = 0;
+        double dValue;
         iNX = gwrapper.getGridExtent().getNX();
         iNY = gwrapper.getGridExtent().getNY();
         m_Row = new char[iNY][iNX];
@@ -528,7 +521,7 @@ public class VectorizeAlgorithm {
      * @param attributeName attribute name
      * @return
      */
-    public static FeatureCollection toLines(
+    public FeatureCollection toLines(
             GridWrapperNotInterpolated gwrapper, String attributeName) {
         final FeatureSchema featSchema = new FeatureSchema();
         featSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
@@ -582,16 +575,16 @@ public class VectorizeAlgorithm {
     static int iNY;
     private static int m_iLine = 1;
 
-    private static Feature createLine(int x, int y, Point2D pt2d2,
+    private Feature createLine(int x, int y, Point2D pt2d2,
             GridWrapperNotInterpolated gwrapper, FeatureSchema featSchema) {
         final GeometryFactory m_GeometryFactory = new GeometryFactory();
         boolean bContinue = false;
         boolean bIsNotNull = false;
         Point pt;
-        final Object values[] = new Object[1];
+        final Object[] values = new Object[1];
 
         final Feature feature = new BasicFeature(featSchema);
-        final ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+        final ArrayList<Coordinate> coordinates = new ArrayList<>();
         coordinates.add(new Coordinate(pt2d2.getX(), pt2d2.getY()));
 
         pt2d2 = m_Visited.getWindowGridExtent().getWorldCoordsFromGridCoords(x,
@@ -614,7 +607,7 @@ public class VectorizeAlgorithm {
                 }
                 final Geometry line = m_GeometryFactory
                         .createLineString(coords);
-                values[0] = new Integer(m_iLine++);
+                values[0] = m_iLine++;
                 feature.setGeometry(line);
                 feature.setAttribute(1, values[0]);
                 // m_Lines.addFeature(line, values);
@@ -638,7 +631,7 @@ public class VectorizeAlgorithm {
 
                     final Geometry line = m_GeometryFactory
                             .createLineString(coords);
-                    values[0] = new Integer(m_iLine++);
+                    values[0] = m_iLine++;
                     feature.setGeometry(line);
                     feature.setAttribute(1, values[0]);
                 }
@@ -660,18 +653,18 @@ public class VectorizeAlgorithm {
 
     }
 
-    private final static int m_iOffsetX[] = { 0, 1, 0, -1 };
-    private final static int m_iOffsetY[] = { -1, 0, 1, 0 };
-    private final static int m_iOffsetXDiag[] = { -1, 1, 1, -1 };
-    private final static int m_iOffsetYDiag[] = { -1, -1, 1, 1 };
+    private final int[] m_iOffsetX = { 0, 1, 0, -1 };
+    private final int[] m_iOffsetY = { -1, 0, 1, 0 };
+    private final int[] m_iOffsetXDiag = { -1, 1, 1, -1 };
+    private final int[] m_iOffsetYDiag = { -1, -1, 1, 1 };
 
-    private static ArrayList<Point> getSurroundingLineCells(final int x,
+    private ArrayList<Point> getSurroundingLineCells(final int x,
             final int y, GridWrapperNotInterpolated gwrapper) {
 
         int i;
         //   final int j;
-        final ArrayList<Point> cells = new ArrayList<Point>();
-        final boolean bBlocked[] = new boolean[4];
+        final ArrayList<Point> cells = new ArrayList<>();
+        final boolean[] bBlocked = new boolean[4];
 
         for (i = 0; i < 4; i++) {
 
@@ -698,7 +691,7 @@ public class VectorizeAlgorithm {
 
     }
 
-    private static Feature findContour(GridWrapperNotInterpolated gwrapper,
+    private Feature findContour(GridWrapperNotInterpolated gwrapper,
             final int x, final int y, final double z, final boolean doRow,
             final int ID, String attribueName, int band) {
         final Feature feature = new BasicFeature(schema(attribueName));
@@ -710,9 +703,9 @@ public class VectorizeAlgorithm {
         final double xMin = gwrapper.getGridExtent().getXMin();
         final double yMax = gwrapper.getGridExtent().getYMax();
         Geometry line;
-        final Object values[] = new Object[1];
+        final Object[] values = new Object[1];
         final NextContourInfo info = new NextContourInfo();
-        final ArrayList<Coordinate> coords = new ArrayList<Coordinate>();
+        final ArrayList<Coordinate> coords = new ArrayList<>();
         info.x = x;
         info.y = y;
         info.iDir = 0;
@@ -740,8 +733,7 @@ public class VectorizeAlgorithm {
                 zy = info.y + 1;
             }
         } while (doContinue);
-        //  values[0] = new Integer(ID);
-        values[0] = new Double(z);
+        values[0] = z;
         final Coordinate[] coordinates = new Coordinate[coords.size()];
         for (int i = 0; i < coordinates.length; i++) {
             coordinates[i] = coords.get(i);
@@ -773,7 +765,7 @@ public class VectorizeAlgorithm {
         return featSchema;
     }
 
-    private static boolean findNextContour(final NextContourInfo info) {
+    private boolean findNextContour(final NextContourInfo info) {
         boolean doContinue;
         if (info.doRow) {
             switch (info.iDir) {
@@ -906,7 +898,7 @@ public class VectorizeAlgorithm {
         public boolean doRow;
     }
 
-    public static FeatureCollection toGridPoint(
+    public FeatureCollection toGridPoint(
             GridWrapperNotInterpolated gwrapper, int numBands) {
         final FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("geometry", AttributeType.GEOMETRY);
@@ -945,7 +937,7 @@ public class VectorizeAlgorithm {
 
     }
 
-    public static FeatureCollection toPoint(
+    public FeatureCollection toPoint(
             GridWrapperNotInterpolated gwrapper, int band) {
         final FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("geometry", AttributeType.GEOMETRY);
@@ -980,7 +972,7 @@ public class VectorizeAlgorithm {
 
     }
 
-    public static FeatureCollection toGridPolygon(
+    public FeatureCollection toGridPolygon(
             GridWrapperNotInterpolated gwrapper, int maxCells, int numBands) {
         final FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("geometry", AttributeType.GEOMETRY);
@@ -998,7 +990,7 @@ public class VectorizeAlgorithm {
                 .getCellSize().x;
         final double halfCellDimY = 0.5 * gwrapper.getGridExtent()
                 .getCellSize().y;
-        final int numPoints = nx * ny;
+        //final int numPoints = nx * ny;
 
         for (int x = 0; x < nx; x++) {//cols
             for (int y = 0; y < ny; y++) {//rows
@@ -1028,7 +1020,7 @@ public class VectorizeAlgorithm {
                     sumvalue = sumvalue + value;
                 }
                 //-- add the feature
-                if (removeZeroCells == true) {
+                if (removeZeroCells) {
                     if (sumvalue > 0) {
                         fd.add(ftemp);
                     }
@@ -1056,14 +1048,9 @@ public class VectorizeAlgorithm {
        featSchema.addAttribute("ID", AttributeType.INTEGER);
        featSchema.addAttribute(attributeName, AttributeType.DOUBLE);
        // Create feature collection
-        FeatureCollection featColl = new FeatureDataset(featSchema);
-     
-       
-       featColl = toPolygonsAdbToolBox(
+
+       return toPolygonsAdbToolBox(
                gwrapper, explodeMultipolygons,attributeName, band);
-       
-      
-       return featColl;
    }    
     
 }
