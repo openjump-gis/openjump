@@ -35,14 +35,11 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -56,11 +53,9 @@ import com.vividsolutions.jump.workbench.model.LayerView;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.StringUtil;
@@ -77,9 +72,11 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource
 import com.vividsolutions.jump.workbench.ui.plugin.wms.MapLayerPanel;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 
-//import de.latlon.deejump.wfs.jump.WFSLayer;
-
-public class LayerNameRenderer extends JPanel implements ListCellRenderer,
+/**
+ * LayerNameRenderer is mainly used in the TreeLayerNamePanel to display layerable
+ * names and tooltips, but it is also used in other UI components like MultiInputDialog
+ */
+public class LayerNameRenderer extends JPanel implements ListCellRenderer<Object>,
         TreeCellRenderer {
     // <<TODO>> See how the colour looks with other L&F's. [Jon Aquino]
 
@@ -91,7 +88,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     private final static Color LAYER_VIEW_COLOR               = Color.gray;
     protected JCheckBox checkBox = new JCheckBox();
 
-    private LayerColorPanel colorPanel = new LayerColorPanel(13);
+    private final LayerColorPanel colorPanel = new LayerColorPanel(13);
 
     GridBagLayout gridBagLayout = new GridBagLayout();
 
@@ -99,9 +96,9 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
 
     private boolean indicatingEditability = false;
     private boolean indicatingProgress = false;
-    private int progressIconSize = 13;
+    private final int progressIconSize = 13;
     private Icon[] progressIcons = null;
-    private Icon clearProgressIcon = GUIUtil.resize(
+    private final Icon clearProgressIcon = GUIUtil.resize(
             IconLoader.icon("Clear.gif"), progressIconSize);
 
     public static String PROGRESS_ICON_KEY = "PROGRESS_ICON";
@@ -109,22 +106,23 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     public static String FEATURE_COUNT = I18N
             .get("ui.LayerNameRenderer.feature-count");
 
-    private DefaultListCellRenderer defaultListCellRenderer = new DefaultListCellRenderer();
+    private final DefaultListCellRenderer defaultListCellRenderer = new DefaultListCellRenderer();
     private RenderingManager renderingManager;
-    private JLabel progressIconLabel = new JLabel();
-    private Font font = new JLabel().getFont();
-    private Font editableFont = font.deriveFont(Font.BOLD);
-    private Font unselectableFont = font.deriveFont(Font.ITALIC);
-    private Font editableUnselectableFont = font.deriveFont(Font.BOLD
-            + Font.ITALIC);
+    private final JLabel progressIconLabel = new JLabel();
 
-    private JLabel imageLabel = new JLabel();
-    private ImageIcon wmsIcon = MapLayerPanel.ICON;
-    private ImageIcon multiRasterIcon = IconLoader.icon("maps_13.png");
-    private ImageIcon rasterIcon = IconLoader.icon("map_13.png");
-    private ImageIcon sextante_rasterIcon = IconLoader.icon("mapSv2_13.png");
-    private ImageIcon sextante_rasterIcon2 = IconLoader.icon("mapSv2_13bw.png");
+    private final Font font = new JLabel().getFont();
+    private final Font editableFont = font.deriveFont(Font.BOLD);
+    private final Font unselectableFont = font.deriveFont(Font.ITALIC);
+    private final Font editableUnselectableFont = font.deriveFont(Font.BOLD + Font.ITALIC);
+
+    private final JLabel imageLabel = new JLabel();
+    private final ImageIcon wmsIcon = MapLayerPanel.ICON;
+    private final ImageIcon multiRasterIcon = IconLoader.icon("maps_13.png");
+    private final ImageIcon rasterIcon = IconLoader.icon("map_13.png");
+    private final ImageIcon sextante_rasterIcon = IconLoader.icon("mapSv2_13.png");
+    private final ImageIcon sextante_rasterIcon2 = IconLoader.icon("mapSv2_13bw.png");
     private ImageIcon table_Icon = IconLoader.icon("Table.gif");
+
     private final static String LAYER_NAME = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Name");
     private final static String FILE_NAME = I18N.get("ui.MenuNames.FILE");
@@ -135,8 +133,6 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     private final static String URL = "Url";
     private final static String NODATASOURCELAYER = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.nodatasourcelayer.message");
-    // I18N
-    // .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not-Saved");
     private final static String SOURCE_PATH = I18N
             .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path");
     private final static String SEXTANTE = I18N
@@ -241,7 +237,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
      * "All Layers" or "Selected Layers" (used in QueryDialog). [mmichaud
      * 2011-09-27]
      */
-    public Component getListCellRendererComponent(JList list, String value,
+    public Component getListCellRendererComponent(JList<? extends Object> list, String value,
             int index, boolean isSelected, boolean cellHasFocus) {
         label.setText(value);
         imageLabel.setVisible(false);
@@ -256,9 +252,9 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         return this;
     }
 
-    private Component formatLayerEntry(JList list, Object value, int index,
+    private Component formatLayerEntry(JList<? extends Object> list, Object value, int index,
             boolean isSelected, boolean cellHasFocus) {
-        // only treat layers & strings
+        // Use default renderer for values which are neither Layerable nor String
         if (!(value instanceof Layerable || value instanceof String))
             return defaultListCellRenderer.getListCellRendererComponent(list,
                     value, index, isSelected, cellHasFocus);
@@ -275,8 +271,6 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         Layerable layerable = (Layerable) value;
         if (layerable instanceof LayerView) {
           LayerView view = (LayerView)layerable;
-          //label.setText("-> " + view.getLayerName() + " - " +
-          //        view.getName().replaceAll(view.getLayerName(), ""));
           label.setText(view.getFullName());
         } else {
           label.setText(layerable.getName());
@@ -319,10 +313,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
          * } else { tooltip = layerable.getName(); } setToolTipText(tooltip);
          */
 
-        /**
-         * Giuseppe Aruta [2015-01-04] Generated tooltip text [2015-03-29] Made
-         * tooltip optional (original/enhanced)
-         */
+        // Giuseppe Aruta [2015-01-04] Generated tooltip text [2015-03-29] Made
+        // tooltip optional (original/enhanced)
         boolean layerTooltipsOn = PersistentBlackboardPlugIn
                 .get(JUMPWorkbench.getInstance().getContext())
                 .get(EditOptionsPanel.LAYER_TOOLTIPS_KEY, false);
@@ -361,8 +353,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         // indicate editablility (if enabled) via text formatting
         // (regular,italic ...)
         if (indicatingEditability && layerable instanceof Layer) {
-            if (((Layer) layerable).isEditable()) {
-                if (!((Layer) layerable).isSelectable()) {
+            if (layerable.isEditable()) {
+                if (!layerable.isSelectable()) {
                     label.setFont(editableUnselectableFont); // LDB [2007-09-18]
                                                              // italic
                                                              // feedback
@@ -370,7 +362,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                     label.setFont(editableFont);
                 }
             } else {
-                if (!((Layer) layerable).isSelectable()) {
+                if (!layerable.isSelectable()) {
                     label.setFont(unselectableFont);
                 } else {
                     label.setFont(font);
@@ -442,8 +434,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         return this;
     }
 
-    private JList list(JTree tree) {
-        JList list = new JList();
+    private JList<?> list(JTree tree) {
+        JList<?> list = new JList<>();
         list.setForeground(tree.getForeground());
         list.setBackground(tree.getBackground());
         list.setSelectionForeground(UIManager
@@ -453,8 +445,9 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         return list;
     }
 
-    public Component getListCellRendererComponent(JList list, Object value,
-            int index, boolean isSelected, boolean cellHasFocus) {
+    @Override
+    public Component getListCellRendererComponent(JList<?> list, Object value,
+                                                  int index, boolean isSelected, boolean cellHasFocus) {
         // generally format layer
         formatLayerEntry(list, value, index, isSelected, cellHasFocus);
 
@@ -464,14 +457,14 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         return this;
     }
 
-    // calculate the optimum width for listcells to show complete content
+    // calculate the optimum width for the list to show complete content
     private Dimension getPreferredListCellSize() {
         int width = 0, height = 0;
         for (Component comp : getComponents()) {
             if (!comp.isVisible())
                 continue;
             int cheight = comp.getPreferredSize().height;
-            height = cheight > height ? cheight : height;
+            height = Math.max(cheight, height);
             width += comp.getPreferredSize().width;
         }
         // add some padding
@@ -500,6 +493,11 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
         _setComponentsFBGColor(c, false);
     }
 
+    /**
+     * Format the layerable name with formatLayerEntry method then adjust the font,
+     * background and foreground according to the layerable's status.
+     */
+    @Override
     public Component getTreeCellRendererComponent(JTree tree, Object value,
             boolean selected, boolean expanded, boolean leaf, int row,
             boolean hasFocus) {
@@ -587,57 +585,26 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     }
 
     /*
-     * This method takes a String of text and simulates word wrapping by
-     * applying HTML code <BR> after n characters per line. It will check to
-     * make sure that we are not in the middle of a word before breaking the
-     * line.
-     */
-    public static String SplitString(String string, int n) {
-
-        StringBuffer buf = new StringBuffer();
-        String tempString = string;
-
-        if (string != null) {
-
-            while (tempString.length() > n) {
-                String block = tempString.substring(0, n);
-                int index = block.lastIndexOf(File.separator);
-                if (index < 0) {
-                    index = tempString.indexOf(File.separator);
-                }
-                if (index >= 0) {
-                    buf.append(tempString.substring(0, index) + "<BR>");
-                }
-                tempString = tempString.substring(index + 1);
-            }
-        } else {
-            tempString = File.separator;
-        }
-        buf.append(tempString);
-        return buf.toString();
-
-    }
-
-    /*
      * Associate Byte, Megabytes, etc to file
      */
-    private static final String[] Q = new String[] { "", "KB", "MB", "GB",
-            "TB", "PB", "EB" };
+    private static final String[] Q =
+        new String[] { "", "KB", "MB", "GB", "TB", "PB", "EB" };
 
-    /*
-     * Return bytres as string
-     */
-    public String getAsString(long bytes) {
-        for (int i = 6; i > 0; i--) {
-            double step = Math.pow(1024, i);
-            if (bytes > step)
-                return String.format("%3.1f %s", bytes / step, Q[i]);
-        }
-        return Long.toString(bytes);
-    }
+    ///*
+    // * Return bytes as string
+    // */
+    //public String getAsString(long bytes) {
+    //    for (int i = 6; i > 0; i--) {
+    //        double step = Math.pow(1024, i);
+    //        if (bytes > step)
+    //            return String.format("%3.1f %s", bytes / step, Q[i]);
+    //    }
+    //    return Long.toString(bytes);
+    //}
 
     /*
      * Return type of the Sextante Raster Layer as String
+     * TODO should be moved in a util class
      */
     public String filetype(File file) {
         String ext = CompressedFile.getExtension(file.getName());
@@ -707,7 +674,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
      */
     private String generateMinimalToolTipText(Layerable layerable) {
 
-        String tooltip = "";
+        String tooltip;
         if (layerable instanceof Layer) {
             if (((Layer) layerable).getDescription() == null
                     || ((Layer) layerable).getDescription().trim().length() == 0
@@ -727,29 +694,21 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     }
 
     private String generateToolTipText(Layerable layerable) {
-        // String tooltip = layerable.getName();
 
         String tooltip = "";
-
-        String sourceClass = "";
-        new JEditorPane();
-
+        String sourceClass;
         String sourcePath = NODATASOURCELAYER.toUpperCase();
 
-        /*
-         * WMSLayer.class
-         */
+        // WMSLayer.class
         if (layerable instanceof WMSLayer) {
             WMSLayer layer = (WMSLayer) layerable;
             String url = layer.getServerURL();// Url server of WMF layer
             String srs = layer.getSRS();// SRS of WMS layer
             Envelope env = layer.getEnvelope();// Get Envelope of WMS layer
-            tooltip = "<HTML><BODY>";
-            tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
+            tooltip = "<HTML><BODY><DIV style=\"width: 400px; text-justification: justify;\">";
             tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName() + "<br>";
             tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + "WMS" + "<br>";
-            tooltip += "<b>" + URL + ": </b>" + StringUtil.split(url, 350)
-                    + "<br>";
+            tooltip += "<b>" + URL + ": </b>" + StringUtil.split(url, 350) + "<br>";
             tooltip += "<b>" + SRS + ": </b>" + srs + "<br>";
             tooltip += "<b>" + EXTENT + ": </b>" + env.toString() + "<br>";
             tooltip += "</DIV></BODY></HTML>";
@@ -791,32 +750,24 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                	File image = new File(layer.getImageFileName());
                 String type = filetype(image);
                 String path = StringUtil.split(image.toString(), 350);
-                String temporallayer =I18N
-                        .get("ui.GenericNames.Temporal-layer");
-                tooltip = "<HTML><BODY>";
-                tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
+                //String temporallayer =I18N.get("ui.GenericNames.Temporal-layer");
+                tooltip = "<HTML><BODY><DIV style=\"width: 400px; text-justification: justify;\">";
                 tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()+ "<br>";
                 tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + ":  " + type + " (" + SEXTANTE + ")<br>";
-                // tooltip += "<b>" + FILE_NAME + ": </b>" + nameFile + "<br>";
-                          
                 tooltip += "<b>" + SOURCE_PATH + ": </b>" + path + "<br>";
                 tooltip += "<b>" + FEATURE_COUNT + ": </b>" + "1" + "<br>";
                 tooltip += "</DIV></BODY></HTML>";
             }
+
             // If RasterImageLayer.class has no datasource or if it is stored into a TEMP folder
             //tooltip show it as it has no datasource
             else {
-            	sourcePath = NODATASOURCELAYER;
-                tooltip = "<HTML><BODY>";
-                tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
-                tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()
-                        + "<br>";
-                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>";
-                tooltip += SEXTANTE + "<br>";
-
-                tooltip += "<b>" + SOURCE_PATH + ": </b>"
-                        + "<b><font color='red'>" + NODATASOURCELAYER
-                        + "</font></b><br>";
+            	  //sourcePath = NODATASOURCELAYER;
+                tooltip = "<HTML><BODY><DIV style=\"width: 400px; text-justification: justify;\">";
+                tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName() + "<br>";
+                tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + SEXTANTE + "<br>";
+                tooltip += "<b>" + SOURCE_PATH + ": </b>";
+                tooltip += "<b><font color='red'>" + NODATASOURCELAYER + "</font></b><br>";
                 tooltip += "<b>" + FEATURE_COUNT + ": </b>" + "1" + "<br>";
                 tooltip += "</DIV></BODY></HTML>";
             }
@@ -825,31 +776,22 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
          * Layer.class
          */
         else if (layerable instanceof Layer) {
+
             Layer layer = (Layer) layerable;
-
-            int size = -1;// Layer size
             String layerName = layerable.getName();
-            size = layer.getFeatureCollectionWrapper().size();// Get number
-                                                              // layers
+            int size = layer.getFeatureCollectionWrapper().size();
 
-            /*
-             * Layer.class - NOT an Image Layer
-             */
+            // Layer.class - NOT an Image Layer
             if (layer.getStyle(ReferencedImageStyle.class) == null
                     && ((Layer) layerable).getDescription() != null) {
-                /*
-                 * Code from LayerPropertyPlugin that gets back the file mame of
-                 * a Non-Image Layer.class
-                 */
+
+                // Code from LayerPropertyPlugin that gets back the file mame of
+                // a Non-Image Layer.class
                 DataSourceQuery dsq = layer.getDataSourceQuery();
 
                 if (dsq != null) {
-                    String dsqSourceClass = dsq.getDataSource().getClass()
-                            .getName();
-                    if (sourceClass.equals(""))
-                        sourceClass = dsqSourceClass;
-                    Object fnameObj = dsq.getDataSource().getProperties()
-                            .get("File");
+                    sourceClass = dsq.getDataSource().getClass().getName();
+                    Object fnameObj = dsq.getDataSource().getProperties().get("File");
                     if (fnameObj == null) {
                         fnameObj = dsq
                                 .getDataSource()
@@ -865,134 +807,88 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
                     dotPos = sourceClass.lastIndexOf("$");
                     if (dotPos > 0)
                         sourceClass = sourceClass.substring(dotPos + 1);
-                    File f = new File(sourcePath);
-                    f.getName();
                     String path = StringUtil.split(sourcePath, 350);
 
                     // Layer.class with datasource that has been modified
                     if (layer.isFeatureCollectionModified()) {
-                        tooltip = "<HTML><BODY>"; //$NON-NLS-1$
-                        tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
+                        tooltip = "<HTML><BODY><DIV style=\"width: 400px; text-justification: justify;\">";
                         tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
                                 + " - <b><font color='blue'>" + MODIFIED
                                 + "</font></b><br>";
-                        tooltip += "<b>" + DATASOURCE_CLASS + ": </b>"
-                                + sourceClass + "<br>";
-                        tooltip += "<b>" + SOURCE_PATH + ": </b>" + path
-                                + "<br>";
-                        tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size
-                                + "<br>";
+                        tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + sourceClass + "<br>";
+                        tooltip += "<b>" + SOURCE_PATH + ": </b>" + path + "<br>";
+                        tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
                         tooltip += "</DIV></BODY></HTML>";
 
                     } else
                         // Layer.class with datasource not modified
-                        tooltip = "<HTML><BODY>"; //$NON-NLS-1$
-                    tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
-                    tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
-                            + "<br>";
-                    tooltip += "<b>" + DATASOURCE_CLASS + ": </b>"
-                            + sourceClass + "<br>";
-                    tooltip += "<b>" + SOURCE_PATH + ": </b>"
-                            + StringUtil.split(sourcePath, 350) + "<br>";
-                    tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
-                    tooltip += "</DIV></BODY></HTML>";
+                        tooltip = "<HTML><BODY><DIV style=\"width: 400px; text-justification: justify;\">";
+                        tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName + "<br>";
+                        tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + sourceClass + "<br>";
+                        tooltip += "<b>" + SOURCE_PATH + ": </b>" + StringUtil.split(sourcePath, 350) + "<br>";
+                        tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
+                        tooltip += "</DIV></BODY></HTML>";
 
                 } else {
-
                     sourcePath = NODATASOURCELAYER;
                     tooltip = "<HTML><BODY>"; //$NON-NLS-1$
-                    // tooltip +=
-                    // "<DIV style=\"width: 300px; text-justification: justify;\">";
-                    tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
-                            + "<br>";
-                    tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + ""
-                            + "<br>";
-                    tooltip += "<b>" + FILE_NAME + ": </b>"
-                            + "<b><font color='red'>" + sourcePath
-                            + "</font></b><br>";
+                    tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName + "<br>";
+                    tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + "" + "<br>";
+                    tooltip += "<b>" + FILE_NAME + ": </b>" + "<b><font color='red'>" + sourcePath + "</font></b><br>";
                     tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
                     tooltip += "</BODY></HTML>";
                 }
 
             }
 
-            /*
-             * Check if the selected Layer.class is a Image Layer
-             */
+            // Check if the selected Layer.class is a Image Layer
             else if (layer.getStyle(ReferencedImageStyle.class) != null
                     && ((Layer) layerable).getDescription() != null) {
-                /*
-                 * Code from ImageLayerManagerPlugin to find Path and extension
-                 * of a selected Image Layer.class
-                 */
-                String sourcePathImage = null;
-                String sourceClassImage = null;
+
+                // Code from ImageLayerManagerPlugin to find Path and extension
+                // of a selected Image Layer.class
+                String sourcePathImage;
                 FeatureCollection featureCollection = layer
                         .getFeatureCollectionWrapper();
-                for (Iterator i = featureCollection.iterator(); i.hasNext();) {
-                    Feature feature = (Feature) i.next();
+                for (Feature feature : featureCollection.getFeatures()) {
                     sourcePathImage = feature.getString(ImageryLayerDataset.ATTR_URI);
                     if (sourcePathImage == null || sourcePathImage.length() < 5) {
                         sourcePathImage = "";
                     } else {
                         sourcePathImage = sourcePathImage.substring(5);
                     }
-                    sourceClassImage = feature.getString(ImageryLayerDataset.ATTR_TYPE);
-                    if (sourceClassImage == null) {
-                        sourceClassImage = "";
-                    } else {
-                        sourceClassImage.replace("%20", " ");
-                    }
-                    /*
-                     * Check if the Image Layer.class has only one file loaded
-                     */
+
+                    // Check if the Image Layer.class has only one file loaded
                     if (size == 1) {
                         File f = new File(sourcePathImage);
                         String filePath = f.getAbsolutePath();
                         String filePath1 = filePath.replace("%20", " ");
                         String type = filetype(f);
-                        f.getName();
-                        tooltip = "<HTML><BODY>"; //$NON-NLS-1$
-                        tooltip += "<DIV style=\"width: 400px; text-justification: justify;\">";
-                        tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
-                                + "<br>";
-
-                        tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + type
-                                + "<br>";
-
-                        tooltip += "<b>" + SOURCE_PATH + ": </b>"
-                                + StringUtil.split(filePath1, 350) + "<br>";
-                        tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size
-                                + "<br>";
+                        tooltip = "<HTML><BODY><DIV style=\"width: 400px; text-justification: justify;\">";
+                        tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName + "<br>";
+                        tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + type + "<br>";
+                        tooltip += "<b>" + SOURCE_PATH + ": </b>" + StringUtil.split(filePath1, 350) + "<br>";
+                        tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
                         tooltip += "</DIV></BODY></HTML>";
                     }
-                    /*
-                     * In this case ImageLayerManagerPlugin has loaded more than
-                     * one file as Image Layer.class
-                     */
-                    else {
 
+                    // In this case ImageLayerManagerPlugin has loaded more than
+                    // one file as Image Layer.class
+                    else {
                         tooltip = "<HTML><BODY>";
-                        // tooltip +=
-                        // "<DIV style=\"width: 300px; text-justification: justify;\">";
-                        tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName
-                                + "<br>";
-                        tooltip += "<b>" + SOURCE_PATH + ": </b>"
-                                + MULTIPLESOURCE + "<br>";
-                        tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size
-                                + "<br>";
+                        tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName + "<br>";
+                        tooltip += "<b>" + SOURCE_PATH + ": </b>" + MULTIPLESOURCE + "<br>";
+                        tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
                         tooltip += "</BODY></HTML>";
                     }
                 }
             }
-            /*
-             * Check other Layer.class layer with no datasource
-             */
+
+            // Check other Layer.class layer with no datasource
             else {
                 tooltip = "<HTML><BODY>";
                 tooltip += "<b>" + LAYER_NAME + ": </b>" + layerName + "<br>";
-                tooltip += "<b>" + FILE_NAME + ": </b>" + NODATASOURCELAYER
-                        + "<br>";
+                tooltip += "<b>" + FILE_NAME + ": </b>" + NODATASOURCELAYER + "<br>";
                 tooltip += "<b>" + FEATURE_COUNT + ": </b>" + size + "<br>";
                 tooltip += "</BODY></HTML>";
             }
@@ -1022,23 +918,13 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer,
     /* 
      * [Giuseppe Aruta 11.2016] . True if all the layer geometries are empty
      * (Geometrycollection empty). Workaround to decode table files (like .csv or .dbf)
-     *  so that they are loaded in Sextante as table
-      */
+     * so that they are loaded in Sextante as table
+     */
     public static boolean isTable(Layer layer) {
-        FeatureCollectionWrapper featureCollection = layer
-                .getFeatureCollectionWrapper();
-        List featureList = featureCollection.getFeatures();
-        Geometry nextGeo = null;
-        for (@SuppressWarnings("unchecked")
-        Iterator<FeatureCollectionWrapper> i = featureList.iterator(); i
-                .hasNext();) {
-            Feature feature = (Feature) i.next();
-            nextGeo = feature.getGeometry();
+        for (Feature feature : layer.getFeatureCollectionWrapper().getFeatures()) {
+            if (!feature.getGeometry().isEmpty()) return false;
         }
-        if (!featureCollection.isEmpty() && nextGeo.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return true;
     }
+
 }

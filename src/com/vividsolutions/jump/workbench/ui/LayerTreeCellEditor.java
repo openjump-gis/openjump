@@ -48,15 +48,12 @@ import javax.swing.tree.TreeCellEditor;
 /**
  * Implements a tree cell editor for the Layer tree.
  */
-
 public class LayerTreeCellEditor implements TreeCellEditor {
-    private JTextField textField = new JTextField();
-    private DefaultCellEditor editor = new DefaultCellEditor(textField);
-    private JTree tree;
 
-    public LayerTreeCellEditor(JTree tree) {
-        this.tree = tree;
+    private final JTextField textField = new JTextField();
+    private final DefaultCellEditor editor = new DefaultCellEditor(textField);
 
+    public LayerTreeCellEditor() {
         //A font that is reasonable for both categories and layers. [Jon Aquino]
         textField.setFont(new JLabel().getFont());
     }
