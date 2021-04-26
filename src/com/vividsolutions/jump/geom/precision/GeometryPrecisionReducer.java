@@ -41,8 +41,8 @@ import org.locationtech.jts.geom.util.*;
  */
 public class GeometryPrecisionReducer
 {
-  private CoordinatePrecisionReducer coordPrecReducer;
-  private GeometryEditor geomEdit = new GeometryEditor();
+  private final CoordinatePrecisionReducer coordPrecReducer;
+  private final GeometryEditor geomEdit = new GeometryEditor();
 
   public GeometryPrecisionReducer(NumberPrecisionReducer numberPrecReducer)
   {
@@ -59,24 +59,22 @@ public class GeometryPrecisionReducer
   {
     public Coordinate[] edit(Coordinate[] coordinates, Geometry geom)
     {
-      for (int i = 0; i < coordinates.length; i++) {
-        coordPrecReducer.reducePrecision(coordinates[i]);
+      for (Coordinate coordinate : coordinates) {
+        coordPrecReducer.reducePrecision(coordinate);
       }
       // remove repeated points
       CoordinateList noRepeatedCoordList = new CoordinateList(coordinates, false);
       Coordinate[] noRepeatedCoord = noRepeatedCoordList.toCoordinateArray();
 
-      /**
-       * Check to see if the removal of repeated points
-       * collapsed the coordinate List to an invalid length
-       * for the type of the parent geometry.
-       * If this is the case, return the orginal coordinate list.
-       * Note that the returned geometry will still be invalid, since it
-       * has fewer unique coordinates than required. This check simply
-       * ensures that the Geometry constructors won't fail.
-       * It is not necessary to check for Point collapses, since the coordinate list can
-       * never collapse to less than one point
-       */
+      // Check to see if the removal of repeated points
+      // collapsed the coordinate List to an invalid length
+      // for the type of the parent geometry.
+      // If this is the case, return the orginal coordinate list.
+      // Note that the returned geometry will still be invalid, since it
+      // has fewer unique coordinates than required. This check simply
+      // ensures that the Geometry constructors won't fail.
+      // It is not necessary to check for Point collapses, since the coordinate list can
+      // never collapse to less than one point
       if (geom instanceof LinearRing && noRepeatedCoord.length <= 3) return coordinates;
       if (geom instanceof LineString && noRepeatedCoord.length <= 1) return coordinates;
 

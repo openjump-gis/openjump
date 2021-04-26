@@ -36,7 +36,6 @@ package com.vividsolutions.jump.qa.diff;
 import com.vividsolutions.jump.feature.*;
 import java.util.*;
 import org.locationtech.jts.geom.*;
-import com.vividsolutions.jump.geom.LineSegmentUtil;
 
 /**
  * <code>DiffEdges</code> find all line segments in two
@@ -74,7 +73,7 @@ public class DiffSegmentsWithTolerance {
     UniqueSegmentsWithToleranceFinder finder = new UniqueSegmentsWithToleranceFinder(fc0, fc1);
     List<LineSegment> segs = finder.findUniqueSegments(tolerance);
     for (LineSegment lineSegment : segs) {
-      segGeomList.add(LineSegmentUtil.asGeometry(geomFactory, lineSegment));
+      segGeomList.add(lineSegment.toGeometry(geomFactory));
     }
     return segGeomList;
   }

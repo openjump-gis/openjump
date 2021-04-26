@@ -90,9 +90,8 @@ public class SnapVerticesOp {
     public Coordinate pickTarget(
         Geometry targetGeometry,
         Geometry fence,
-        Coordinate suggestedTarget)
-        throws Exception {
-        Collection verticesInFence =
+        Coordinate suggestedTarget) {
+        Collection<Coordinate> verticesInFence =
             VerticesInFencePlugIn.verticesInFence(targetGeometry, fence, true).getCoordinates();
 
         if (verticesInFence.isEmpty()) {

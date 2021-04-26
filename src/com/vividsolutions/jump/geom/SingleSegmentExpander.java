@@ -33,7 +33,6 @@
 
 package com.vividsolutions.jump.geom;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.geom.*;
@@ -44,7 +43,8 @@ import org.locationtech.jts.geom.*;
  * while maintaining its orientation.
  */
 public class SingleSegmentExpander {
-    private Coordinate[] adjPt = new Coordinate[2];
+
+    private final Coordinate[] adjPt = new Coordinate[2];
 
     public SingleSegmentExpander() {
     }
@@ -62,41 +62,34 @@ public class SingleSegmentExpander {
             env.getMinY() + inset, env.getMaxY() - inset);
     }
 
-    public boolean isApplicable(List segList, List ptList) {
+    public boolean isApplicable(List<LineSegment> segList, List<Coordinate> ptList) {
         if (segList.size() < 1) {
             return false;
         }
 
-        LineSegment seg = (LineSegment) segList.get(0);
+        LineSegment seg = segList.get(0);
 
         return allSegsEqual(seg, segList) && allPtsInSeg(seg, ptList);
     }
 
-    private boolean allSegsEqual(LineSegment seg, List segList) {
-        for (Iterator i = segList.iterator(); i.hasNext();) {
-            LineSegment seg2 = (LineSegment) i.next();
-
+    private boolean allSegsEqual(LineSegment seg, List<LineSegment> segList) {
+        for (LineSegment seg2 : segList) {
             if (!seg.equalsTopo(seg2)) {
                 return false;
             }
         }
-
         return true;
     }
 
-    private boolean allPtsInSeg(LineSegment seg, List ptList) {
-        for (Iterator i = ptList.iterator(); i.hasNext();) {
-            Coordinate pt = (Coordinate) i.next();
-
+    private boolean allPtsInSeg(LineSegment seg, List<Coordinate> ptList) {
+        for (Coordinate pt : ptList) {
             if (seg.p0.equals(pt)) {
                 return true;
             }
-
             if (seg.p1.equals(pt)) {
                 return true;
             }
         }
-
         return false;
     }
 
