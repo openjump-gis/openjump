@@ -39,7 +39,7 @@ import org.locationtech.jts.geom.*;
 
 
 public class EnvelopeIntersector {
-    private static LineSegmentEnvelopeIntersector lineSegmentEnvelopeIntersector =
+    private static final LineSegmentEnvelopeIntersector lineSegmentEnvelopeIntersector =
         new LineSegmentEnvelopeIntersector();
 
     public EnvelopeIntersector() {

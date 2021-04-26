@@ -51,7 +51,7 @@ public abstract class SpecifyFeaturesTool extends DragTool {
 	}
 
 	protected Iterator<Layer> candidateLayersIterator() {
-		return getPanel().getLayerManager().iterator();
+		return getPanel().getLayerManager().iterator(Layer.class);
 	}
 
 	/**

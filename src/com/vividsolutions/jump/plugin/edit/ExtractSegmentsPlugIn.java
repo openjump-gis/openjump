@@ -60,7 +60,7 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     GeometryFactory fact = new GeometryFactory();
     FeatureDataset dataset = new FeatureDataset(schema);
     for (LineSegment segment : segments) {
-      LineString ls = LineSegmentUtil.asGeometry(fact, segment);
+      LineString ls = segment.toGeometry(fact);
       BasicFeature f = new BasicFeature(schema);
       f.setGeometry(ls);
       dataset.add(f);
@@ -78,7 +78,7 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     FeatureDataset dataset = new FeatureDataset(schema);
     for (LineSegment segment : segments) {
       List<Feature> features = map.get(segment);
-      LineString ls = LineSegmentUtil.asGeometry(fact, segment);
+      LineString ls = segment.toGeometry(fact);
       for (Feature f : features) {
           Feature bf = f.clone(false);
           bf.setGeometry(ls);
@@ -94,7 +94,7 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     GeometryFactory fact = new GeometryFactory();
     LineMerger lineMerger = new LineMerger(); 
     for (LineSegment segment : segments) {
-      lineMerger.add(LineSegmentUtil.asGeometry(fact, segment));
+      lineMerger.add(segment.toGeometry(fact));
     }
     FeatureDataset dataset = new FeatureDataset(schema);
     for (Object o : lineMerger.getMergedLineStrings()) {

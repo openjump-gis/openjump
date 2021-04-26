@@ -41,7 +41,8 @@ import com.vividsolutions.jump.util.MathUtil;
  * Utility functions for {@link Envelope}s.
  */
 public class EnvelopeUtil {
-    private static GeometryFactory factory = new GeometryFactory();
+
+    private static final GeometryFactory factory = new GeometryFactory();
 
     /**
      * Expands an Envelope by a given distance.
@@ -51,9 +52,8 @@ public class EnvelopeUtil {
      * @return the expanded envelope
      */
     public static Envelope expand(Envelope env, double distance) {
-        /**
-         *  If creating a negative buffer, check if Envelope becomes null (0-size)
-         */
+
+        // If creating a negative buffer, check if Envelope becomes null (0-size)
         if (distance < 0) {
             double minSize = 2.0 * -distance;
 

@@ -263,7 +263,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements
         final List<String> listNumAttributes = FeatureSchemaTools
                 .getFieldsFromLayerWithoutGeometryAndString(context
                         .getCandidateLayer(0));
-        final Object valAttribute = listNumAttributes.size() > 0 ? listNumAttributes
+        final String valAttribute = listNumAttributes.size() > 0 ? listNumAttributes
                 .iterator().next() : null;
         final JComboBox<String> jcb_attribute = dialog.addComboBox(ATTRIBUTE,
                 valAttribute, listNumAttributes, ATTRIBUTE);
