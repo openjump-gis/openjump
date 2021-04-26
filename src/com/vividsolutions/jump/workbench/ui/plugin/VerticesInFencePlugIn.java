@@ -85,8 +85,8 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
     FenceLayerFinder fenceLayerFinder = new FenceLayerFinder(context);
     StringBuffer description = new StringBuffer();
     description.append("<html><body>");
-    for (Iterator i = context.getLayerManager().iterator(); i.hasNext();) {
-      Layer layer = (Layer) i.next();
+    for (Iterator<Layer> i = context.getLayerManager().iterator(Layer.class); i.hasNext();) {
+      Layer layer = i.next();
       if (!layer.isVisible()) {
         continue;
       }
