@@ -27,6 +27,9 @@
         com.vividsolutions.jump.datastore.oracle.OracleDataStoreExtension
     </extension>
     <extension>
+        com.vividsolutions.jump.datastore.ocient.OcientDSExtension
+    </extension>
+    <extension>
         com.vividsolutions.jump.datastore.mariadb.MariadbDataStoreExtension
     </extension>
     <extension>
