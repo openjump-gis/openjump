@@ -191,8 +191,8 @@ public class GridExtent {
 	
 	private void recalculateNXAndNY(){
 
-		m_iNY = (int) Math.floor((m_dYMax - m_dYMin) / m_dCellSizeY);
-		m_iNX = (int) Math.floor((m_dXMax - m_dXMin) / m_dCellSizeX);
+		m_iNY = (int) Math.round((m_dYMax - m_dYMin) / m_dCellSizeY);
+		m_iNX = (int) Math.round((m_dXMax - m_dXMin) / m_dCellSizeX);
 		m_dXMax = m_dXMin + m_dCellSizeX * m_iNX;
 		m_dYMax = m_dYMin + m_dCellSizeY * m_iNY;
 		//Recalculating we get the Envelope, useful when a raster is saved as

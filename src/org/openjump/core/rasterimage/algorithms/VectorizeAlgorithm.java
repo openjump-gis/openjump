@@ -5,19 +5,12 @@ import java.awt.geom.Point2D;
 import java.awt.image.DataBuffer;
 import java.util.*;
 
+import org.locationtech.jts.geom.*;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
-import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
@@ -53,78 +46,63 @@ public class VectorizeAlgorithm {
     public static FeatureCollection toPolygonsAdbToolBox(
             GridWrapperNotInterpolated gwrapper, boolean explodeMultipolygons,
             String attributeName, int band) {
-        int ID = 1;
-        final double cellSize = gwrapper.getGridExtent().getCellSize().x;
-        final double xllCorner = gwrapper.getGridExtent().getXMin() + cellSize;
-        final double yllCorner = gwrapper.getGridExtent().getYMin() - cellSize;
+
+        final double xCellSize = gwrapper.getGridExtent().getCellSize().x;
+        final double yCellSize = gwrapper.getGridExtent().getCellSize().y;
+        final double xllCorner = gwrapper.getGridExtent().getXMin();
+        final double yllCorner = gwrapper.getGridExtent().getYMin();
         final double noData = gwrapper.getNoDataValue();
-        // Find unique values
-        final double[] uniqueVals = findUniqueVals(gwrapper, noData, band);
-        final int uniqueValsCount = uniqueVals.length;
-        final Map<Double,Integer> index = index(uniqueVals);
-        // Scan lines
-        @SuppressWarnings("unchecked")
-        final ArrayList<Polygon>[] arrAll = new ArrayList[uniqueValsCount];
-        for (int i = 0; i < arrAll.length; i++) {
-            arrAll[i] = new ArrayList<>();
-        }
-        final Coordinate[] coords = new Coordinate[5];
-        final PackedCoordinateSequenceFactory pcsf = new PackedCoordinateSequenceFactory();
+
+        // Find unique values and associate an empty list of polygons to each
+        final Map<Double,List<Polygon>> uniqueVals = findUniqueVals(gwrapper, noData, band);
+
         final GeometryFactory geomFactory = new GeometryFactory();
-        LinearRing lr;
         Polygon polygon;
+
         final int nCols = gwrapper.getGridExtent().getNX();
         final int nRows = gwrapper.getGridExtent().getNY();
-        final double yurCorner = yllCorner + (nRows * cellSize);
         for (int r = 0; r <= nRows + 1; r++) {
             double oldVal = noData;
             int cStart = 0;
-            int cEnd;
             for (int c = 0; c <= nCols + 1; c++) {
                 final double val = gwrapper.getCellValueAsDouble(c, r, band);
-                if (val != oldVal) {
-                    cEnd = c - 1;
-                    // Get polygon vertices
+                if (!sameAs(val, oldVal, noData)) {
+                    // Get the polygon made of all contiguous pixels with the same value
                     // != does not work well with NaN : add a specific test
-                    if (oldVal != noData && !Double.isNaN(oldVal)) {
-                        coords[0] = new Coordinate(xllCorner
-                                + (cStart * cellSize) - cellSize, yurCorner
-                                - (r * cellSize));
-                        coords[1] = new Coordinate(coords[0].x, coords[0].y
-                                + cellSize);
-                        coords[2] = new Coordinate(xllCorner
-                                + (cEnd * cellSize), coords[1].y);
-                        coords[3] = new Coordinate(coords[2].x, coords[0].y);
-                        coords[4] = coords[0];
-                        final CoordinateSequence cs = pcsf.create(coords);
-                        lr = new LinearRing(cs, geomFactory);
-                        polygon = new Polygon(lr, null, geomFactory);
-                        arrAll[index.get(oldVal)].add(polygon);
+                    if (!isNoData(oldVal, noData)) {
+                        polygon = (Polygon)geomFactory.toGeometry(new Envelope(
+                            xllCorner + cStart * xCellSize,
+                            xllCorner + c * xCellSize,
+                            yllCorner + (nRows-r-1) * yCellSize,
+                            yllCorner + (nRows-r) * yCellSize
+                            ));
+                        uniqueVals.get(oldVal).add(polygon);
                     }
                     oldVal = val;
                     cStart = c;
                 }
             }
         }
-        // Collapse polygons
+
         final FeatureSchema featSchema = new FeatureSchema();
         featSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
         featSchema.addAttribute("ID", AttributeType.INTEGER);
         featSchema.addAttribute(attributeName, AttributeType.DOUBLE);
         Feature feature;
+        int ID = 1;
         // Create feature collection
         final FeatureCollection featColl = new FeatureDataset(featSchema);
-        for (int i = 0; i < uniqueValsCount; i++) {
-            Geometry geom = CascadedPolygonUnion.union(arrAll[i]);
+        for (Map.Entry<Double,List<Polygon>> entry : uniqueVals.entrySet()) {
+            // Collapse polygons
+            Geometry geom = CascadedPolygonUnion.union(entry.getValue());
             geom = DouglasPeuckerSimplifier.simplify(geom, 0);
-            geom = TopologyPreservingSimplifier.simplify(geom, 0);
             if (explodeMultipolygons) {
                 // From multipolygons to single polygons
                 for (int g = 0; g < geom.getNumGeometries(); g++) {
                     feature = new BasicFeature(featSchema);
                     feature.setGeometry(geom.getGeometryN(g));
                     feature.setAttribute(1, ID);
-                    feature.setAttribute(2, uniqueVals[i]);
+                    feature.setAttribute(2, entry.getKey());
                     featColl.add(feature);
                     ID++;
                 }
@@ -132,54 +110,50 @@ public class VectorizeAlgorithm {
                 feature = new BasicFeature(featSchema);
                 feature.setAttribute(1, ID);
                 feature.setGeometry(geom);
-                feature.setAttribute(2, uniqueVals[i]);
+                feature.setAttribute(2, entry.getKey());
                 featColl.add(feature);
                 ID++;
             }
         }
-        System.gc();
         return featColl;
     }
 
-    private static double[] findUniqueVals(GridWrapperNotInterpolated gwrapper,
-            double nodata, int band) {
-        // Pass values to 1D array
-        final ArrayList<Double> vals = new ArrayList<>();
-        final int nx = gwrapper.getNX();//rstLayer.getLayerGridExtent().getNX();
-        final int ny = gwrapper.getNY();// rstLayer.getLayerGridExtent().getNY();
-        for (int x = 0; x < nx; x++) {//cols
-            for (int y = 0; y < ny; y++) {//rows
+    /**
+     * Return true if a == b or if both a and b are nodata or NaN
+     * @param a first value
+     * @param b second value
+     * @param noData double representing noData (maybe NaN or any double value)
+     * @return true if both a and b are noData value or both a and b represent
+     * same data value
+     */
+    private static boolean sameAs(double a, double b, double noData) {
+        boolean aIsNaN = isNoData(a, noData);
+        boolean bIsNaN = isNoData(b, noData);
+        return (aIsNaN && bIsNaN) || (!aIsNaN && !bIsNaN && a == b);
+    }
+
+    private static boolean isNoData(double a, double noData) {
+        return Double.isNaN(a) || (!Double.isNaN(noData) && a == noData);
+    }
+
+    private static Map<Double,List<Polygon>> findUniqueVals(GridWrapperNotInterpolated gwrapper,
+            double noData, int band) {
+        // Creates a map associating an empty list of polygons to each unique value
+        Map<Double,List<Polygon>> map = new TreeMap<>();
+        final int nx = gwrapper.getNX();
+        final int ny = gwrapper.getNY();
+        for (int x = 0; x < nx; x++) {
+            for (int y = 0; y < ny; y++) {
                 final double value = gwrapper.getCellValueAsDouble(x, y, band);
                 // != does not work well with NaN : add an explicit test
-                if (value != nodata && !Double.isNaN(value)) {
-                    vals.add(gwrapper.getCellValueAsDouble(x, y, band));
+                if (!isNoData(value, noData)) {
+                    map.computeIfAbsent(value, a -> new ArrayList<>());
                 }
             }
         }
-        // Find unique values
-        Collections.sort(vals);
-        final ArrayList<Double> uniqueValsArr = new ArrayList<>();
-        uniqueValsArr.add(vals.get(0));
-
-        for (int i = 1; i < vals.size(); i++) {
-            if (!vals.get(i).equals(vals.get(i - 1))) {
-                uniqueValsArr.add(vals.get(i));
-            }
-        }
-        final double[] uniqueVals = new double[uniqueValsArr.size()];
-        for (int i = 0; i < uniqueValsArr.size(); i++) {
-            uniqueVals[i] = uniqueValsArr.get(i);
-        }
-        return uniqueVals;
-    }
-
-    private static Map<Double,Integer> index(double[] values) {
-        Map<Double,Integer> map = new HashMap<>(values.length);
-        for (int i = 0 ; i < values.length ; i++) {
-            map.put(values[i],i);
-        }
         return map;
     }
+
 
     private static int[][] m_Lock;
     private static char[][] m_Area;
@@ -328,7 +302,7 @@ public class VectorizeAlgorithm {
         final double dCellSizeX = gwrapper.getCellSize().x;
         final double dCellSizeY = gwrapper.getCellSize().y;
         double xFirst = 0, yFirst = 0;
-        final ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+        final ArrayList<Coordinate> coordinates = new ArrayList<>();
         Feature feature;
         feature = new BasicFeature(featSchema);
         feature.setAttribute(1, ID);
