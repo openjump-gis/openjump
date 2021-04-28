@@ -390,7 +390,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
                             getAvailRAM()*0.01/1024 + "kb + 10240");
                     return null;
                 } else {
-                    System.out.println("Reload image");
+                    Logger.debug("Reload image");
                 }
                 // Load the part of the image intersecting the viewport and setting this.image
                 reLoadImage(layerViewPanel);
