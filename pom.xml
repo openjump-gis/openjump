@@ -15,6 +15,7 @@
     <properties>
         <version.number>0.0.0</version.number>
         <version.release>git build</version.release>
+        <version.buildDateLong>${build.datelong}</version.buildDateLong>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
         <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
@@ -113,10 +114,13 @@
         <profile>
             <id>snapshot</id>
             <properties>
-                <!-- has to be set on maven run with -D version.number=X.X.X -->
-                <version.number>${version.datestamp}</version.number>
+                <!-- essential props used in etc/readme.txt and Version.java -->
+                <version.number>${build.datestamp}</version.number>
                 <version.release>snapshot</version.release>
+                <version.revision>${git.total.commit.count}(${git.commit.id.abbrev})</version.revision>
+                <!-- props used by jar and assembly naming -->
                 <version.string>${version.number}-${version.revision}</version.string>
+                <build.name>${project.artifactId}-${version.string}</build.name>
             </properties>
             <build>
                 <plugins>
@@ -132,7 +136,7 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${project.artifactId}-${version.string}-CORE</finalName>
+                                    <finalName>${build.name}-CORE</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
                                     </descriptors>
@@ -146,7 +150,7 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${project.artifactId}-${version.string}-PLUS</finalName>
+                                    <finalName>${build.name}-PLUS</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
                                     </descriptors>
@@ -644,91 +648,102 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <!-- execute buildnumber plugin two times because it can't get date 
-            AND rev in one go -->
-            <plugin>
-                <inherited>true</inherited>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.4</version>
-                <!-- use os independent maven java svn provider, no need for svn binary in PATH anymore -->
-                <configuration>
-                  <doCheck>false</doCheck>
-		  <doUpdate>false</doUpdate>
-		  <shortRevisionLength>7</shortRevisionLength>
-                  <!--providerImplementations>
-                    <svn>javasvn</svn>
-                  </providerImplementations-->
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generate-buildnumber</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                        <configuration>
-                            <useLastCommittedRevision>true</useLastCommittedRevision>
-                            <buildNumberPropertyName>version.revision</buildNumberPropertyName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-datestamp</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                        <configuration>
-                            <format>{0,date,yyyyMMdd}</format>
-                            <items>
-                                <item>timestamp</item>
-                            </items>
-                            <buildNumberPropertyName>version.datestamp</buildNumberPropertyName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-dateLong</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                        <configuration>
-                            <format>{0,date,dd. MMMM yyyy}</format>
-                            <items>
-                                <item>timestamp</item>
-                            </items>
-                            <locale>en_US</locale>
-                            <buildNumberPropertyName>version.buildDateLong</buildNumberPropertyName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-dateShort</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                        <configuration>
-                            <format>{0,date,dd.MM.yyyy}</format>
-                            <items>
-                                <item>timestamp</item>
-                            </items>
-                            <locale>en_US</locale>
-                            <buildNumberPropertyName>version.buildDate</buildNumberPropertyName>
-                        </configuration>
-                    </execution>
-                </executions>
+
+           <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>build-helper-maven-plugin</artifactId>
+              <executions>
+                <!-- build several build date stamp formattings used all over -->
+                <execution>
+                  <id>build-datestamp-property</id>
+                  <phase>validate</phase>
+                  <goals>
+                    <goal>timestamp-property</goal>
+                  </goals>
+                  <configuration>
+                    <name>build.datestamp</name>
+                    <pattern>yyyyMMdd</pattern>
+                    <!-- >timeZone>Europe/Amsterdam</timeZone -->
+                    <timeSource>build</timeSource>
+                    <locale>en_US</locale>
+                  </configuration>
+                </execution>
+                <execution>
+                  <id>build-datelong-property</id>
+                  <phase>validate</phase>
+                  <goals>
+                    <goal>timestamp-property</goal>
+                  </goals>
+                  <configuration>
+                    <name>build.datelong</name>
+                    <pattern>dd. MMMM yyyy</pattern>
+                    <timeSource>build</timeSource>
+                    <locale>en_US</locale>
+                  </configuration>
+                </execution>
+                <execution>
+                  <id>build-date-property</id>
+                  <phase>validate</phase>
+                  <goals>
+                    <goal>timestamp-property</goal>
+                  </goals>
+                  <configuration>
+                    <name>build.date</name>
+                    <pattern>dd.MM.yyyy</pattern>
+                    <timeSource>build</timeSource>
+                    <locale>en_US</locale>
+                  </configuration>
+                </execution>
+      
+                <execution>
+                  <id>add-junit-test-source</id>
+                  <phase>generate-test-sources</phase>
+                  <goals>
+                    <goal>add-test-source</goal>
+                  </goals>
+                  <configuration>
+                    <sources>
+                      <source>src/</source>
+                    </sources>
+                  </configuration>
+                </execution>
+              </executions>
             </plugin>
-            <!--plugin> <groupId>com.google.code.maven-replacer-plugin</groupId> 
-            <artifactId>maven-replacer-plugin</artifactId> <version>1.3.9</version> <executions> 
-            <execution> <phase>process-resources</phase> <goals> <goal>replace</goal> 
-            </goals> </execution> </executions> <configuration> <file>target/classes/language/jump.properties</file> 
-            <replacements> <replacement> <token>JUMPWorkbench.version.release.*</token> 
-            <value>JUMPWorkbench.version.release = ${version}</value> </replacement> 
-            </replacements> </configuration> </plugin -->
+
+            <plugin>
+              <groupId>pl.project13.maven</groupId>
+              <artifactId>git-commit-id-plugin</artifactId>
+              <version>4.0.4</version>
+              <executions>
+                <!-- retrieve git revision information from local repo -->
+                <execution>
+                  <id>get-the-git-infos</id>
+                  <goals>
+                    <goal>revision</goal>
+                  </goals>
+                  <phase>initialize</phase>
+                </execution>
+              </executions>
+              <configuration>
+                <verbose>false</verbose>
+                <generateGitPropertiesFile>false</generateGitPropertiesFile>
+                <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                <!-->includeOnlyProperties>
+                  <includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>
+                  <includeOnlyProperty>^git.commit.id.(abbrev|full)$</includeOnlyProperty>
+                  <includeOnlyProperty>^git.total.commit.count$</includeOnlyProperty>
+                </includeOnlyProperties-->
+                <commitIdGenerationMode>full</commitIdGenerationMode>
+              </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.2.0</version>
+                <configuration>
+                  <finalName>${build.name}</finalName>
+                </configuration>
                 <executions>
                     <execution>
                         <id>nolang</id>
@@ -767,25 +782,7 @@
                 <!--configuration> <archive> <manifest> <mainClass>com.vividsolutions.jump.workbench.JUMPWorkbench</mainClass> 
                 <addClasspath>true</addClasspath> </manifest> </archive> </configuration -->
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.12</version>
-                <executions>
-                    <execution>
-                        <id>add-junit-test-source</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
             <!-- remove redundant copy command <plugin> <groupId>org.codehaus.mojo</groupId> 
             <artifactId>build-helper-maven-plugin</artifactId> <version>1.5</version> 
             <executions> <execution> <id>attach-artifacts</id> <phase>package</phase> 
@@ -802,6 +799,7 @@
               </configuration>
             </plugin>
         </plugins>
+
     </build>
     <repositories>
         <repository>
