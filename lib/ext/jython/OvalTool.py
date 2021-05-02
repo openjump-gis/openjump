@@ -1,13 +1,10 @@
 # Copyright (C) 2005 Integrated Systems Analysts, Inc.
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
-#import com.vividsolutions.jts.geom.Coordinate as Coordinate
 import org.openjump.util.python.pythonexampleclasses.DrawCustomTool.FinalDrawListener as FinalDrawListener
-import com.vividsolutions.jts.geom.GeometryFactory as GeometryFactory
-import com.vividsolutions.jts.operation.buffer.BufferOp as BufferOp
-import com.vividsolutions.jts.operation.valid.IsValidOp as IsValidOp
-import com.vividsolutions.jts.util.GeometricShapeFactory as GeometricShapeFactory
-import com.vividsolutions.jts.geom.Coordinate as Coordinate
+import org.locationtech.jts.geom.GeometryFactory as GeometryFactory
+import org.locationtech.jts.util.GeometricShapeFactory as GeometricShapeFactory
+import org.locationtech.jts.geom.Coordinate as Coordinate
 
 class ToolListener(FinalDrawListener):
     def finalDraw(self, event):

@@ -10,7 +10,7 @@ featureDrawingUtil = FeatureDrawingUtil(toolbox.getContext())
 toolMenu = toolbox.JMenuBar.getMenu(0)
 sep = File.separator # / for linux and \ for windows
 
-toolbox.centerPanel.components[0].hide() #comment out to initially show
+#toolbox.centerPanel.components[0].hide() #comment out to initially show
 #install menu items
 def showConsole(event): toolbox.centerPanel.components[0].show(); toolbox.pack()
 toolMenu.add(swing.JMenuItem("Show Console", actionPerformed=showConsole, icon = swing.ImageIcon(startuppath + "images" + sep + "console_show.png")))

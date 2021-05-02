@@ -4,12 +4,10 @@
 # if you are going to use execfile("thisFile") from startup.py
 # use _ prefix for local scope to avoid conflict with other modules
 
-import com.vividsolutions.jts.geom.Coordinate as Coordinate
-import com.vividsolutions.jts.geom.CoordinateFilter as CoordinateFilter
+import org.locationtech.jts.geom.Coordinate as Coordinate
+import org.locationtech.jts.geom.CoordinateFilter as CoordinateFilter
 import com.vividsolutions.jump.geom.CoordUtil as CoordUtil
-import com.vividsolutions.jump.feature.Feature as Feature
-import com.vividsolutions.jts.geom.Geometry as Geometry
-import com.vividsolutions.jts.geom.Envelope as Envelope
+import org.locationtech.jts.geom.Envelope as Envelope
 import org.openjump.util.python.ModifyGeometry as ModifyGeometry
 from org.openjump.util.python.JUMP_GIS_Framework import *
 

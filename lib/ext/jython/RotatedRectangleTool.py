@@ -1,9 +1,9 @@
 # Copyright (C) 2005 Integrated Systems Analysts, Inc.
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
-import com.vividsolutions.jts.geom.Coordinate as Coordinate
+import org.locationtech.jts.geom.Coordinate as Coordinate
 import org.openjump.util.python.pythonexampleclasses.DrawCustomTool.FinalDrawListener as FinalDrawListener
-from com.vividsolutions.jts.algorithm.CGAlgorithms import * 
+from org.locationtech.jts.algorithm.CGAlgorithms import *
 import org.openjump.core.geomutils.GeoUtils as GeoUtils
 
 

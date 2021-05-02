@@ -5,7 +5,6 @@
 # use _ prefix for local scope to avoid conflict with other modules
 from org.openjump.util.python.JUMP_GIS_Framework import *
 import org.openjump.util.python.ModifyGeometry as ModifyGeometry
-import com.vividsolutions.jump.workbench.ui.GeometryEditor as GeometryEditor
 
 def unionSelected(event):  #TODO: support undo better
     layers = getLayersWithSelectedItems()

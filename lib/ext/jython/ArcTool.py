@@ -6,7 +6,7 @@
 # that is different from the final shape
 import org.openjump.util.python.pythonexampleclasses.DrawCustomTool.FinalDrawListener as FinalDrawListener
 import org.openjump.util.python.pythonexampleclasses.DrawCustomTool.FeedbackListener as FeedbackListener
-from com.vividsolutions.jts.algorithm.CGAlgorithms import * 
+from org.locationtech.jts.algorithm.CGAlgorithms import *
 import com.vividsolutions.jump.geom.Angle as Angle
 import org.openjump.core.geomutils.Arc as Arc
 

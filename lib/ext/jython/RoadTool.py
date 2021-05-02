@@ -2,16 +2,13 @@
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 import org.openjump.util.python.pythonexampleclasses.DrawCustomTool as DrawCustomTool
-from com.vividsolutions.jts.algorithm.CGAlgorithms import * 
-import com.vividsolutions.jts.geom.Coordinate as Coordinate
+from org.locationtech.jts.algorithm.CGAlgorithms import *
 import com.vividsolutions.jump.geom.CoordUtil as CU
 import org.openjump.core.geomutils.GeoUtils as GeoUtils
 import javax.swing as swing
 import java.util.ArrayList as ArrayList
 import com.vividsolutions.jump.geom.Angle as Angle
 import org.openjump.core.geomutils.Arc as Arc
-#from org.openjump.util.python.JUMP_GIS_Framework import showMessage
-#from org.openjump.util.python.JUMP_GIS_Framework import warnUser
 
 _label1 = None
 _edit1 = None
