@@ -59,7 +59,7 @@ xxx-driver (ex. dxf-driver).
 
 ### Extension migration status
 - [x] Beanshell Editor
-- [ ] CADExtension
+- [x] CADTools ****Extension
 - [x] CadPlan JumpChart
 - [x] CadPlan JumpFillPattern
 - [x] CadPlan JumpPrinter
