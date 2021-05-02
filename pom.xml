@@ -4,22 +4,23 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.openjump</groupId>
     <artifactId>OpenJUMP</artifactId>
-    <version>${version.release}</version>
-    <name>OpenJUMP</name>
+    <version>${version.string}</version>
     <scm>
         <connection>scm:git:https://github.com/openjump-gis/openjump.git</connection>
         <developerConnection>scm:git:https://github.com/openjump-gis/openjump.git</developerConnection>
-        <tag>master</tag>
-        <url>https://github.com/openjump-gis/openjump/tree/master</url>
+        <tag>main</tag>
+        <url>https://github.com/openjump-gis/openjump/tree/main</url>
     </scm>
     <properties>
         <version.number>0.0.0</version.number>
-        <version.release>git build</version.release>
+        <version.release>mvn build</version.release>
+        <version.revision>${git.total.commit.count}(${git.commit.id.abbrev})</version.revision>
         <version.buildDateLong>${build.datelong}</version.buildDateLong>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
-        <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
-        <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+        <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <jts.version>1.18.1</jts.version>
         <imageio-ext.version>1.3.2</imageio-ext.version>
     </properties>
@@ -47,134 +48,114 @@
             </properties>
         </profile>
         <profile>
-            <!-- DEPRECATED: replaced by profile snapshot below -->
-            <id>core</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <version.number>${version.datestamp}</version.number>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>${maven-assembly-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>make-core</id>
-                                <phase>package</phase>
-                                <configuration>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${project.artifactId}-${version.number}-${version.revision}-CORE</finalName>
-                                    <descriptors>
-                                        <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
-                                    </descriptors>
-                                </configuration>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!-- DEPRECATED: replaced by profile snapshot below -->
-            <id>plus</id>
-            <properties>
-                <version.number>${version.datestamp}</version.number>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>${maven-assembly-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>make-plus</id>
-                                <phase>package</phase>
-                                <configuration>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${project.artifactId}-${version.number}-${version.revision}-PLUS</finalName>
-                                    <descriptors>
-                                        <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
-                                    </descriptors>
-                                </configuration>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>snapshot</id>
-            <properties>
-                <!-- essential props used in etc/readme.txt and Version.java -->
-                <version.number>${build.datestamp}</version.number>
-                <version.release>snapshot</version.release>
-                <version.revision>${git.total.commit.count}(${git.commit.id.abbrev})</version.revision>
-                <!-- props used by jar and assembly naming -->
-                <version.string>${version.number}-${version.revision}</version.string>
-                <build.name>${project.artifactId}-${version.string}</build.name>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>${maven-assembly-plugin.version}</version>
-                        <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>snap-core</id>
-                                <phase>package</phase>
-                                <configuration>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${build.name}-CORE</finalName>
-                                    <descriptors>
-                                        <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
-                                    </descriptors>
-                                </configuration>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>snap-plus</id>
-                                <phase>package</phase>
-                                <configuration>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${build.name}-PLUS</finalName>
-                                    <descriptors>
-                                        <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
-                                    </descriptors>
-                                </configuration>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
+          <id>snapshot</id>
+          <properties>
+            <!-- essential props used in etc/readme.txt and Version.java -->
+            <version.number>${build.datestamp}</version.number>
+            <version.release>snapshot</version.release>
+            <!-- props used by jar and assembly naming -->
+            <version.string>${version.number}-r${version.revision}</version.string>
+            <build.name>${project.artifactId}-${version.string}</build.name>
+          </properties>
+          <build>
+            <plugins>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <executions>
+                  <execution>
+                    <id>nolang</id>
+                    <phase>package</phase>
+                    <goals>
+                      <goal>jar</goal>
+                    </goals>
+                    <configuration>
+                      <classifier>nolang</classifier>
+                      <excludes>
+                        <exclude>language/**</exclude>
+                      </excludes>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>
+              <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly-plugin.version}</version>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                  <execution>
+                    <id>snap-core</id>
+                    <phase>package</phase>
+                    <configuration>
+                      <appendAssemblyId>false</appendAssemblyId>
+                      <finalName>${build.name}-CORE</finalName>
+                      <descriptors>
+                        <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
+                      </descriptors>
+                    </configuration>
+                    <goals>
+                      <goal>single</goal>
+                    </goals>
+                  </execution>
+                  <execution>
+                    <id>snap-plus</id>
+                    <phase>package</phase>
+                    <configuration>
+                      <appendAssemblyId>false</appendAssemblyId>
+                      <finalName>${build.name}-PLUS</finalName>
+                      <descriptors>
+                        <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
+                      </descriptors>
+                    </configuration>
+                    <goals>
+                      <goal>single</goal>
+                    </goals>
+                  </execution>
+                </executions>
+              </plugin>
+            </plugins>
+          </build>
         </profile>
         <profile>
             <id>release</id>
             <properties>
-                <!-- has to be set on maven run with -D version.number=X.X.X -->
-                <version.number>0.0.0</version.number>
-                <version.release>release</version.release>
-                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
-                <recompress.jars>true</recompress.jars>
+              <!-- should be be set on maven run with -D version.number=X.X.X -->
+              <version.release>release</version.release>
+              <recompress.jars>false</recompress.jars>
+              <!-- props used by jar and assembly naming -->
+              <version.string>${version.number}-r${version.revision}</version.string>
+              <build.name>${project.artifactId}-${version.string}</build.name>
             </properties>
             <build>
                 <plugins>
+                    <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-jar-plugin</artifactId>
+                      <version>${maven-jar-plugin.version}</version>
+                      <executions>
+                        <execution>
+                          <id>nosrc</id>
+                          <phase>package</phase>
+                          <goals>
+                            <goal>jar</goal>
+                          </goals>
+                          <configuration>
+                            <classifier>nosrc</classifier>
+                            <excludes>
+                              <exclude>**/*.java</exclude>
+                              <!-- excluding unit-test and doc resources -->
+                              <exclude>**/*Test.class</exclude>
+                              <exclude>fixtures/**</exclude>
+                              <exclude>jumptest/**</exclude>
+                              <exclude>versiondoc/**</exclude>
+                            </excludes>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <version>${maven-assembly-plugin.version}</version>
@@ -186,7 +167,7 @@
                                 <id>release core</id>
                                 <phase>package</phase>
                                 <configuration>
-                                    <finalName>${version.string}-CORE</finalName>
+                                    <finalName>${build.name}-CORE</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-core_stable.xml</descriptor>
                                     </descriptors>
@@ -200,7 +181,7 @@
                                 <id>release plus</id>
                                 <phase>package</phase>
                                 <configuration>
-                                    <finalName>${version.string}-PLUS</finalName>
+                                    <finalName>${build.name}-PLUS</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-plus_stable.xml</descriptor>
                                     </descriptors>
@@ -217,7 +198,7 @@
         <profile>
             <id>portable</id>
             <properties>
-                <portable.filename>${project.artifactId}-Portable-${version.number}-${version.revision}</portable.filename>
+                <portable.filename>${project.artifactId}-Portable-${version.string}</portable.filename>
                 <portable.filepath>${project.build.directory}/recompress</portable.filepath>
             </properties>
             <build>
@@ -265,13 +246,13 @@
                                         <!-- Using an ant task to deflate *.zip -->
                                         <echo>Unzip CORE</echo>
                                         <unzip
-                                            src="${project.build.directory}/${project.artifactId}-${version.string}-CORE.zip"
+                                            src="${project.build.directory}/${build.name}-CORE.zip"
                                             dest="${portable.filepath}/core">
                                             <cutdirsmapper dirs="1" />
                                         </unzip>
                                         <echo>Unzip PLUS</echo>
                                         <unzip
-                                            src="${project.build.directory}/${project.artifactId}-${version.string}-PLUS.zip"
+                                            src="${project.build.directory}/${build.name}-PLUS.zip"
                                             dest="${portable.filepath}/plus">
                                             <cutdirsmapper dirs="1" />
                                         </unzip>
@@ -346,8 +327,7 @@
         <profile>
             <id>installer</id>
             <properties>
-                <!-- >version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string -->
-                <installer.filename>${project.artifactId}-Installer-${version.string}</installer.filename>
+              <installer.filename>${project.artifactId}-Installer-${version.string}</installer.filename>
             </properties>
             <build>
                 <plugins>
@@ -495,42 +475,46 @@
             </build>
         </profile>
         <profile>
-            <id>javadoc8 fix</id>
+            <id>javadoc8+ fix</id>
             <activation>
-                <jdk>1.8</jdk>
+                <jdk>[1.8,)</jdk>
             </activation>
             <properties>
-                <!--
-                  java8+ enforces some strict checking, which we do not abide (yet?)
-                  also see http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
-                -->
-                <additionalparam>-Xdoclint:none</additionalparam>
+
+                <javadoc.opts>-Xdoclint:none</javadoc.opts>
             </properties>
         </profile>
         <profile>
             <id>javadoc</id>
             <properties>
-                <!-- by default datestamp, can be overwritten with -D version.number=X.X.X -->
-                <version.number>${version.datestamp}</version.number>
-                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
+              <!-- props used for zip naming naming -->
+              <version.string>${version.number}-r${version.revision}</version.string>
+              <build.name>${project.artifactId}-${version.string}</build.name>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
                         <configuration>
                             <outputDirectory>${project.build.directory}/apidocs/</outputDirectory>
                             <reportOutputDirectory>${project.build.directory}/apidocs/</reportOutputDirectory>
-                            <!-- destDir>${version.string}</destDir -->
                             <source>8</source>
                             <quiet>true</quiet>
+                            <!-- 
+                            java8+ enforces some strict checking, which we do not abide (yet?) 
+                            also see https://stackoverflow.com/questions/39616344/how-to-disable-javadoc-warnings-in-maven-javadoc-plugin
+                            -->
+                            <doclint>none</doclint>
                         </configuration>
                         <executions>
                             <execution>
+                                <id>generate javadocs</id>
                                 <phase>compile</phase>
                                 <goals>
-                                    <goal>javadoc</goal>
+                                    <!-- don't reinvoke 'generate-sources' -->
+                                    <goal>javadoc-no-fork</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -545,7 +529,7 @@
                                 <configuration>
                                     <target>
                                         <zip
-                                            destfile="${project.build.directory}/${version.string}-apidocs.zip"
+                                            destfile="${project.build.directory}/${build.name}-apidocs.zip"
                                             level="9">
                                             <zipfileset dir="${project.build.directory}/apidocs" prefix="apidocs"/>
                                         </zip>
@@ -563,12 +547,26 @@
         <profile>
             <id>srczip</id>
             <properties>
-                <!-- by default datestamp, can be overwritten with -D version.number=X.X.X -->
-                <version.number>${version.datestamp}</version.number>
-                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
+              <!-- props used for zip naming naming -->
+              <version.string>${version.number}-r${version.revision}</version.string>
+              <build.name>${project.artifactId}-${version.string}</build.name>
             </properties>
             <build>
                 <plugins>
+                    <!-- for testing speedup disable compilation --> <!--
+                    <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-compiler-plugin</artifactId>
+                      <executions>
+                        <execution>
+                          <id>default-compile</id>
+                          <configuration>
+                            <skipMain>true</skipMain>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
+                    -->
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>${maven-antrun-plugin.version}</version>
@@ -579,7 +577,7 @@
                                 <configuration>
                                     <target>
                                         <zip
-                                            destfile="${project.build.directory}/${version.string}-src.zip"
+                                            destfile="${project.build.directory}/${build.name}-src.zip"
                                             level="9">
                                             <zipfileset dir="${project.build.directory}/classes" prefix="src" excludes="**/*.class"/>
                                         </zip>
@@ -642,7 +640,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -694,7 +692,7 @@
                     <locale>en_US</locale>
                   </configuration>
                 </execution>
-      
+
                 <execution>
                   <id>add-junit-test-source</id>
                   <phase>generate-test-sources</phase>
@@ -738,58 +736,21 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                  <finalName>${build.name}</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>nolang</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/nolang/</outputDirectory>
-                            <classifier>nolang</classifier>
-                            <excludes>
-                                <exclude>language/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>nosrc</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/nolang/</outputDirectory>
-                            <classifier>nosrc</classifier>
-                            <excludes>
-                                <exclude>**/*.java</exclude>
-                                <!-- excluding unit-test and doc resources -->
-                                <exclude>**/*Test.class</exclude>
-                                <exclude>fixtures/**</exclude>
-                                <exclude>jumptest/**</exclude>
-                                <exclude>versiondoc/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                </executions>
-                <!--configuration> <archive> <manifest> <mainClass>com.vividsolutions.jump.workbench.JUMPWorkbench</mainClass> 
-                <addClasspath>true</addClasspath> </manifest> </archive> </configuration -->
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-jar-plugin</artifactId>
+              <version>3.2.0</version>
+              <configuration>
+                <finalName>${build.name}</finalName>
+              </configuration>
+              <executions>
+                <execution>
+                  <!-- disable unused default jar -->
+                  <id>default-jar</id>
+                  <phase>none</phase>
+                </execution>
+              </executions>
             </plugin>
 
-            <!-- remove redundant copy command <plugin> <groupId>org.codehaus.mojo</groupId> 
-            <artifactId>build-helper-maven-plugin</artifactId> <version>1.5</version> 
-            <executions> <execution> <id>attach-artifacts</id> <phase>package</phase> 
-            <goals> <goal>attach-artifact</goal> </goals> <configuration> <artifacts> 
-            <artifact> <file>target/openjump-core-1.4.3-SNAPSHOT-bin.zip</file> <type>zip</type> 
-            <classifier>bin</classifier> </artifact> </artifacts> </configuration> </execution> 
-            </executions> </plugin> -->
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-surefire-plugin</artifactId>
