@@ -687,12 +687,16 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <compilerArgs>
+                      <arg>-Xlint:deprecation</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 
            <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>build-helper-maven-plugin</artifactId>
+              <version>3.2.0</version>
               <executions>
                 <!-- build several build date stamp formattings used all over -->
                 <execution>
@@ -889,35 +893,23 @@
 
     </build>
     <repositories>
+        <!-- Used for buoy and JAI core, codec and imageio
+             which are not avail on maven central -->
+        <repository>
+            <id>ojrepo</id>
+            <name>OpenJUMP Snapshot Repository</name>
+            <url>https://ojrepo.soldin.de/</url>
+        </repository>
         <repository>
             <id>Maven Central group</id>
             <name>Maven Central group Repository</name>
             <!--url>https://mvnrepository.com/artifact/</url-->
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
-        <!-- Used for buoy and JAI core, codec and imageio -->
-        <repository>
-            <id>openjump</id>
-            <name>OpenJUMP Maven 2 Repository</name>
-            <url>http://jump-pilot.sourceforge.net/repository/</url>
-        </repository>
-        <repository>
-            <id>mvn-adamgent</id>
-            <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
-            <name>Adam Gent Maven Repository</name>
-        </repository>
         <repository>
             <id>apache.snapshots</id>
-            <url>http://repository.apache.org/snapshots</url>
+            <url>https://repository.apache.org/snapshots</url>
             <name>Apache Snapshots</name>
-        </repository>
-        <!-- osgeo keeps recent JAI codec, core, imageio jars -->
-        <!-- not sure what is this repository for. Not enough to
-        find JAI codec, core, imageio jars -->
-        <repository>
-            <id>osgeo</id>
-            <name>Open Source Geospatial Foundation Repository</name>
-            <url>http://download.osgeo.org/webdav/geotools/</url>
         </repository>
         <!-- deegree2 libs needed for WFS -->
         <!--repository>
@@ -933,17 +925,8 @@
             </snapshots>
             <id>imageio-ext-repository</id>
             <name>imageio-ext Repository</name>
-            <url>http://maven.geo-solutions.it/</url>
+            <url>https://maven.geo-solutions.it/</url>
         </repository>
-        <!-- we got our custommade jts 1.14 snapshot from here, thx Michael Bedward -->
-        <!--repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>sonatype-snapshots</id>
-            <name>sonatype-snapshots</name>
-            <url>http://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository-->
     </repositories>
     <dependencies>
         <dependency>
