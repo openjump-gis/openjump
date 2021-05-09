@@ -79,6 +79,7 @@ xxx-driver (ex. dxf-driver).
 - [ ] LandscapeAnalysis
 - [ ] MapGenToolboxPlugin
 - [x] MatchingPlugIn
+- [x] Measure Toolbox 
 - [ ] ojmapcoloring
 - [ ] OjWorldWind
 - [x] OpenKLEM
