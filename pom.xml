@@ -708,8 +708,6 @@
                   <configuration>
                     <name>build.datestamp</name>
                     <pattern>yyyyMMdd</pattern>
-                    <!-- >timeZone>Europe/Amsterdam</timeZone -->
-                    <timeSource>build</timeSource>
                     <locale>en_US</locale>
                   </configuration>
                 </execution>
@@ -722,7 +720,6 @@
                   <configuration>
                     <name>build.datelong</name>
                     <pattern>dd. MMMM yyyy</pattern>
-                    <timeSource>build</timeSource>
                     <locale>en_US</locale>
                   </configuration>
                 </execution>
@@ -735,7 +732,6 @@
                   <configuration>
                     <name>build.date</name>
                     <pattern>dd.MM.yyyy</pattern>
-                    <timeSource>build</timeSource>
                     <locale>en_US</locale>
                   </configuration>
                 </execution>
@@ -770,14 +766,16 @@
                 </execution>
               </executions>
               <configuration>
-                <verbose>false</verbose>
+                <verbose>true</verbose>
                 <generateGitPropertiesFile>false</generateGitPropertiesFile>
                 <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-                <!-->includeOnlyProperties>
-                  <includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>
+                <includeOnlyProperties>
+                  <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+                  <includeOnlyProperty>^git.build.(time|version|(number(|.unique)))$</includeOnlyProperty>
                   <includeOnlyProperty>^git.commit.id.(abbrev|full)$</includeOnlyProperty>
+                  <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
                   <includeOnlyProperty>^git.total.commit.count$</includeOnlyProperty>
-                </includeOnlyProperties-->
+                </includeOnlyProperties>
                 <commitIdGenerationMode>full</commitIdGenerationMode>
               </configuration>
             </plugin>
@@ -786,6 +784,9 @@
               <groupId>com.github.ekryd.echo-maven-plugin</groupId>
               <artifactId>echo-maven-plugin</artifactId>
               <version>1.3.2</version>
+              <!-- fixup some weird Eclipse m2e issue "Plugin execution not covered by lifecycle configuration"
+                   https://www.eclipse.org/m2e/documentation/release-notes-17.html#new-syntax-for-specifying-lifecycle-mapping-metadata -->
+              <?m2e execute onConfiguration,onIncremental?>
               <executions>
                 <execution>
                   <id>echo-version-info</id>
@@ -900,11 +901,17 @@
             <name>OpenJUMP Snapshot Repository</name>
             <url>https://ojrepo.soldin.de/</url>
         </repository>
+        <!-- MvnRepository holds a list of recent repos
+             https://mvnrepository.com/repos -->
         <repository>
             <id>Maven Central group</id>
             <name>Maven Central group Repository</name>
-            <!--url>https://mvnrepository.com/artifact/</url-->
             <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>apache.repo</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
+            <name>Apache Repo</name>
         </repository>
         <repository>
             <id>apache.snapshots</id>
