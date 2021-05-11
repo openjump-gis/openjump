@@ -1,4 +1,4 @@
-package workbench.model;
+package jumptest.workbench.model;
 
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
