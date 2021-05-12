@@ -229,7 +229,7 @@ public abstract class LayerableUtil {
      *         Layers
      */
     public static boolean isSystem(Layer layer) {
-        return layer.equals(SystemLayerFinder.class);
+        return SystemLayerFinder.class.isInstance(layer);
     }
 
     /**
@@ -478,91 +478,69 @@ public abstract class LayerableUtil {
      * @return the type of the file as string
      */
     public static String getFileType(File file) {
-        final TypeFile extension = TypeFile
-                .valueOf(FileUtil.getExtension(file));
-        if (!extension.equals(TypeFile.values())) {
-            filetype = FileUtil.getExtension(file).toUpperCase();
-        } else {
-            switch (extension) {
-            case ASC: {
-                filetype = "ASC - ESRI ASCII grid";
-                break;
-            }
-            case CSV: {
-                filetype = "CSV - Comma-separated values";
-                break;
-            }
-            case DXF: {
-                filetype = "Autocad DXF - Drawing Exchange Format";
-                break;
-            }
-            case FLT: {
-                filetype = "FLT - ESRI Binary grid";
-                break;
-            }
-            case TIF: case TIFF: {
-                filetype = "GEOTIF/TIFF -  Tagged Image File Format";
-                break;
-            }
-            case JPG: case JPEG: {
-                filetype = "JPEG/JPG - Joint Photographic Experts Group";
-                break;
-            }
-            case PNG: {
-                filetype = "PNG - Portable Network Graphics";
-                break;
-            }
-            case GIF: {
-                filetype = "GIF - Graphics Interchange Format";
-                break;
-            }
-            case GRD: {
-                filetype = "GRD - Surfer ASCII Grid";
-                break;
-            }
-            case JP2: {
-                filetype = "JPEG 2000 - Joint Photographic Experts Group";
-                break;
-            }
-            case BMP: {
-                filetype = "BMP - Windows Bitmap";
-                break;
-            }
-            case ECW: {
-                filetype = "ECW - Enhanced Compression Wavelet";
-                break;
-            }
-            case MrSID: {
-                filetype = "MrSID - Multiresolution seamless image database";
-                break;
-            }
-            case TXT: {
-                filetype = "TXT - Text file";
-                break;
-            }
-            case SHP: {
-                filetype = "SHP - Esri Shapefile";
-                break;
-            }
-            case JML: {
-                filetype = "JML - OpenJUMP JML format";
-                break;
-            }
-            case GML: {
-                filetype = "GML - Geography Markup Language";
-                break;
-            }
-            case KML: {
-                filetype = "KML - Keyhole Markup Language";
-                break;
-            }
-            case OSM: {
-                filetype = "OSM - OpenStreetMap XML";
-                break;
-            }
-            }
+      String extUC = FileUtil.getExtension(file).toUpperCase();
+      switch (extUC) {
+        case "ASC": {
+          return "ASC - ESRI ASCII grid";
         }
-        return filetype;
+        case "CSV": {
+          return "CSV - Comma-separated values";
+        }
+        case "DXF": {
+          return "Autocad DXF - Drawing Exchange Format";
+        }
+        case "FLT": {
+          return "FLT - ESRI Binary grid";
+        }
+        case "TIF":
+        case "TIFF": {
+          return "GEOTIF/TIFF -  Tagged Image File Format";
+        }
+        case "JPG":
+        case "JPEG": {
+          return "JPEG/JPG - Joint Photographic Experts Group";
+        }
+        case "PNG": {
+          return "PNG - Portable Network Graphics";
+        }
+        case "GIF": {
+          return "GIF - Graphics Interchange Format";
+        }
+        case "GRD": {
+          return "GRD - Surfer ASCII Grid";
+        }
+        case "JP2": {
+          return "JPEG 2000 - Joint Photographic Experts Group";
+        }
+        case "BMP": {
+          return "BMP - Windows Bitmap";
+        }
+        case "ECW": {
+          return "ECW - Enhanced Compression Wavelet";
+        }
+        case "MrSID": {
+          return "MrSID - Multiresolution seamless image database";
+        }
+        case "TXT": {
+          return "TXT - Text file";
+        }
+        case "SHP": {
+          return "SHP - Esri Shapefile";
+        }
+        case "JML": {
+          return "JML - OpenJUMP JML format";
+        }
+        case "GML": {
+          return "GML - Geography Markup Language";
+        }
+        case "KML": {
+          return "KML - Keyhole Markup Language";
+        }
+        case "OSM": {
+          return "OSM - OpenStreetMap XML";
+        }
+      }
+      return extUC;
     }
 
     ///**
@@ -929,14 +907,14 @@ public abstract class LayerableUtil {
      * @return area as a double
      */
     public static double getValidArea(Layer layer) {
-    	double area=0;
-    	final FeatureCollection featureCollection = layer
+      double area=0;
+      final FeatureCollection featureCollection = layer
                 .getFeatureCollectionWrapper();
-    	 for (final Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
+       for (final Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
              final Feature feature = (Feature) i.next();
              area+= feature.getGeometry().getArea();
              }
-		return area;
+    return area;
     }
     
     /**
@@ -946,11 +924,11 @@ public abstract class LayerableUtil {
      * @return area as a double
      */
     public static double getValidArea(RasterImageLayer layer) throws IOException {
-    	Raster ras=layer.getRasterData(null);
-    	double noData =layer.getNoDataValue();
-    	double cellSize=layer.getMetadata().getOriginalCellSize();
-    	int counter = 0;
-    	int nx = ras.getWidth();
+      Raster ras=layer.getRasterData(null);
+      double noData =layer.getNoDataValue();
+      double cellSize=layer.getMetadata().getOriginalCellSize();
+      int counter = 0;
+      int nx = ras.getWidth();
         int ny = ras.getHeight();
         for (int y = 0; y < ny; y++) {
             for (int x = 0; x < nx; x++) {
@@ -959,8 +937,11 @@ public abstract class LayerableUtil {
                     counter++;
             }
         }
-		return cellSize*cellSize*counter;
+    return cellSize*cellSize*counter;
     }
-    
-    
+
+    public static void main(String[] args) {
+      System.out.println(getFileType(new File("Test.tif")));
+      System.out.println(getFileType(new File("Test.unknown")));
+    }
 }
