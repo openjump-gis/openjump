@@ -410,7 +410,7 @@ public class Fmt {
         int numFigs = number.length();
         int fracFigs = fraction.length();
 
-        if (((numFigs == 0) || number.equals("0")) && (fracFigs > 0)) {
+        if (((numFigs == 0) || number.toString().equals("0")) && (fracFigs > 0)) {
             // Don't count leading zeros in the fraction.
             numFigs = 0;
 
