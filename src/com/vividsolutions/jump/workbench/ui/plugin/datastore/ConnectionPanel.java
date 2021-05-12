@@ -112,9 +112,10 @@ public class ConnectionPanel extends JPanel {
                   return renderer;
                 ConnectionDescriptor connectionDescriptor = (ConnectionDescriptor) value;
                 try {
-                  Icon icon = ConnectionManagerPanel.getConnectionIcon(connectionDescriptor,
-                      connectionManager().getConnection(
-                          connectionDescriptor).isClosed());
+                  Icon icon = ConnectionManagerPanel.getConnectionIcon(
+                      connectionDescriptor,
+                      connectionManager().getConnection(connectionDescriptor).isClosed(),
+                      context);
                   renderer.setIcon(icon);
                 } catch (DataStoreException e) {
                   // we ignore those for eye candy

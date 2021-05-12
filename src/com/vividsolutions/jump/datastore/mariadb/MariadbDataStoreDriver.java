@@ -5,6 +5,9 @@ import java.sql.Connection;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
+import javax.swing.*;
 
 /**
  * A driver for supplying {@link com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection}s
@@ -32,5 +35,15 @@ public class MariadbDataStoreDriver
         throws Exception {
         Connection conn = super.createJdbcConnection(params);
         return new MariadbDSConnection(conn);
+    }
+
+    /** {@inheritDoc} */
+    @Override public Icon getConnectedIcon() {
+        return IconLoader.icon("ok_mariadb.png");
+    }
+
+    /** {@inheritDoc} */
+    @Override public Icon getDisconnectedIcon() {
+        return IconLoader.icon("ko_mariadb.png");
     }
 }
