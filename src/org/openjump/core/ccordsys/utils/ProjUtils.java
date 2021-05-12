@@ -68,7 +68,6 @@ public class ProjUtils {
      * @throws IOException if an IOException occurs
      * @throws URISyntaxException if an URISyntaxException occurs
      */
-    @SuppressWarnings("static-access")
     public static SRSInfo getSRSInfoFromGeoTiff(String fileSourcePath)
             throws IOException, URISyntaxException,
             TiffTags.TiffReadingException, ImageReadException {
@@ -336,7 +335,7 @@ public class ProjUtils {
                     .getFeatureCollectionWrapper();
             String sourcePathImage = null;
 
-            for (Iterator i = featureCollection.iterator(); i.hasNext();) {
+            for (Iterator<Feature> i = featureCollection.iterator(); i.hasNext();) {
                 Feature feature = (Feature) i.next();
                 sourcePathImage = feature
                         .getString(ImageryLayerDataset.ATTR_URI);
@@ -430,7 +429,7 @@ public class ProjUtils {
             FeatureCollection featureCollection = layer
                     .getFeatureCollectionWrapper();
             String sourcePathImage = null;
-            for (Iterator i = featureCollection.iterator(); i.hasNext();) {
+            for (Iterator<Feature> i = featureCollection.iterator(); i.hasNext();) {
                 Feature feature = (Feature) i.next();
                 sourcePathImage = feature
                         .getString(ImageryLayerDataset.ATTR_URI);
