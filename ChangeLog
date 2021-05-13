@@ -4,6 +4,12 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2021-05-13 mmichaud
+  * fix #17 OpenFileWizard with multiple files and options does not work
+
+2021-02-15 to 2021-05-15 : migration from 1.16 (jts 1.14) to 2.0 (jts 1.18) and
+    to github : large refactoring and cleanup
+
 * release 1.16 Changes updated til here ****************************************
 
 2020-12-23 ede
