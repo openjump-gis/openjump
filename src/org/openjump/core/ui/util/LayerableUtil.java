@@ -225,17 +225,6 @@ public abstract class LayerableUtil {
      * Layer.class
      *
      * @param layer the layer to test
-     * @return true if the layer is a system Layer currently Fence and Measure
-     *         Layers
-     */
-    public static boolean isSystem(Layer layer) {
-        return SystemLayerFinder.class.isInstance(layer);
-    }
-
-    /**
-     * Layer.class
-     *
-     * @param layer the layer to test
      * @return true Check if the layer is a cad Layer following DXF PlugIn
      *         schema it defines Cad layer with the presence of COLOR and TEXT
      *         attributes
