@@ -4,8 +4,13 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.DataBuffer;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.AffineTransformation;
+import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 
@@ -33,7 +38,7 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
  */
 public class VectorizeAlgorithm {
 
-    public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
+    public static WorkbenchFrame frame;// = JUMPWorkbench.getInstance().getFrame();
 
     /**
      * Create a FeatureCollection of polygons defining a GridWrapperNotInterpolated and number of band
@@ -152,6 +157,244 @@ public class VectorizeAlgorithm {
             }
         }
         return map;
+    }
+
+    // [mmichaud - 2021-05-09] : add a polygonizer as fast as Sextante and giving
+    // the same precise result as the one of Adb
+    public static FeatureCollection toPolygonsMikeToolBox(
+            GridWrapperNotInterpolated gwrapper,
+            boolean simplify,
+            String attributeName, int band) {
+
+        final int width = gwrapper.getGridExtent().getNX();
+        final int height = gwrapper.getGridExtent().getNY();
+        final double noData = gwrapper.getNoDataValue();
+        final List<Face> faces = new ArrayList<>();
+
+        final double xCellSize = gwrapper.getGridExtent().getCellSize().x;
+        final double yCellSize = gwrapper.getGridExtent().getCellSize().y;
+        final double xllCorner = gwrapper.getGridExtent().getXMin();
+        final double yllCorner = gwrapper.getGridExtent().getYMin();
+        // Transformation from image to model coordinates
+        AffineTransformation transform = new AffineTransformation(
+            xCellSize, 0.0, xllCorner, 0.0, -yCellSize, yllCorner+height*yCellSize
+        );
+        // Compact structure to flag visited pixels on a single bit
+        final BooleanMatrix m = new BooleanMatrix(width, height);
+        // Initialization : flag pixels with no value
+        for (int r = 0 ; r < height ; r++) {
+            for (int c = 0 ; c < width ; c++) {
+                double val = gwrapper.getCellValueAsDouble(c, r, band);
+                if (isNoData(val, noData)) m.set(r, c);
+            }
+        }
+        // Main loop on the image
+        for (int r = 0 ; r < height ; r++) {
+            for (int c = 0 ; c < width ; c++) {
+                if (!m.isSet(r, c)) {
+                    // if the pixel has not yet been visited, it is used
+                    // as the root of a new face
+                    double val = gwrapper.getCellValueAsDouble(c, r, band);
+                    Face face = new Face(val);
+                    faces.add(face);
+                    face.cells.add(new Cell(c,r));
+                    // iterativeExpansion will explore pixel neighbours having
+                    // the same value until no more are left
+                    iterativeExpansion(face, band, gwrapper, m);
+                }
+            }
+        }
+        // Last part get all segments making a face boundary and build
+        // the polygon by merging segments and polygonizing the result
+        // Create feature collection
+        final FeatureSchema featSchema = new FeatureSchema();
+        featSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+        featSchema.addAttribute("ID", AttributeType.INTEGER);
+        featSchema.addAttribute(attributeName, AttributeType.DOUBLE);
+        final FeatureCollection featColl = new FeatureDataset(featSchema);
+        int ID = 1;
+        for (Face face : faces) {
+            LineMerger merger = new LineMerger();
+            // Build boundaries from all segments of a face
+            merger.add(face.limits.stream().map(it -> it.toGeometry(gf)).collect(Collectors.toList()));
+            Polygonizer polygonizer = new Polygonizer();
+            polygonizer.add(merger.getMergedLineStrings());
+            Collection<Polygon> polygons = polygonizer.getPolygons();
+            Geometry geom = null;
+            // If several polygons are found, it means that the face has holes
+            // In this case, only the polygon with holes is of interest
+            if (polygons.size() > 1) {
+                for (Polygon poly : polygons) {
+                    if (poly.getNumInteriorRing() > 0) geom = poly;
+                    break;
+                }
+            } else geom = polygons.iterator().next();
+            if (geom == null) {
+                Logger.warn("Merge/Polygonization gave an unexpected result " + polygons);
+            }
+            geom = transform.transform(geom);
+            if (simplify)
+                geom = DouglasPeuckerSimplifier.simplify(geom, 0);
+            Feature feature = new BasicFeature(featSchema);
+            feature.setAttribute(1, ID);
+            feature.setGeometry(geom);
+            feature.setAttribute(2, face.value);
+            featColl.add(feature);
+            ID++;
+        }
+        System.out.println("end " + new Date());
+        return featColl;
+    }
+
+    static GeometryFactory gf = new GeometryFactory();
+
+    static void iterativeExpansion(Face face, int band,
+                                  GridWrapperNotInterpolated grid,
+                                  BooleanMatrix m) {
+
+        Set<Cell> exp = new HashSet<>();
+
+        while (!face.cells.isEmpty()) {
+
+            exp.clear();
+
+            for (Iterator<Cell> it = face.cells.iterator() ; it.hasNext() ; ) {
+                Cell cell = it.next();
+                int col = cell.col;
+                int row = cell.row;
+                it.remove(); // only way to remove element from the collection being iterated
+                             // other modifications (add) are done outside the loop
+                m.set(row, col);
+
+                // right side : col+1, row
+                if (col + 1 < m.width && !m.isSet(row, col + 1) &&
+                    grid.getCellValueAsDouble(col + 1, row, band) == face.value)
+                    exp.add(new Cell(col + 1, row));
+                else if (col + 1 >= m.width || grid.getCellValueAsDouble(col + 1, row, band) != face.value) {
+                    face.limits.add(new Segment(col + 1, row, col + 1, row + 1));
+                }
+
+                // bottom side : col, row+1
+                if (row + 1 < m.height && !m.isSet(row + 1, col) &&
+                    grid.getCellValueAsDouble(col, row + 1, band) == face.value)
+                    exp.add(new Cell(col, row + 1));
+                else if (row + 1 >= m.height || grid.getCellValueAsDouble(col, row + 1, band) != face.value) {
+                    face.limits.add(new Segment(col, row + 1, col + 1, row + 1));
+                }
+
+                // left side : col-1, row
+                if (col - 1 > -1 && !m.isSet(row, col - 1) &&
+                    grid.getCellValueAsDouble(col - 1, row, band) == face.value)
+                    exp.add(new Cell(col - 1, row));
+                else if (col - 1 < 0 || grid.getCellValueAsDouble(col - 1, row, band) != face.value) {
+                    face.limits.add(new Segment(col, row, col, row + 1));
+                }
+
+                // top side : col, row-1
+                if (row - 1 > -1 && !m.isSet(row - 1, col) &&
+                    grid.getCellValueAsDouble(col, row - 1, band) == face.value)
+                    exp.add(new Cell(col, row - 1));
+                else if (row - 1 < 0 || grid.getCellValueAsDouble(col, row - 1, band) != face.value) {
+                    face.limits.add(new Segment(col, row, col + 1, row));
+                }
+            }
+            face.cells.addAll(exp);
+        }
+    }
+
+    /**
+     * Structure to visit all contiguous cells with the same value
+     * and holding limits with cells having different values
+     */
+    static class Face {
+        double value;
+        Set<Segment> limits;
+        Set<Cell> cells;
+        Face(double value) {
+            this.value = value;
+            this.cells = new HashSet<>();
+            this.limits = new HashSet<>();
+        }
+    }
+
+    // A cell of the image made of a column and a row number
+    static class Cell {
+        public int col, row;
+        Cell(int col, int row) {
+            this.col = col;
+            this.row = row;
+        }
+        @Override public boolean equals(Object o) {
+            if (o instanceof Cell) {
+                Cell cell = (Cell)o;
+                return col == cell.col && row == cell.row;
+            } else return false;
+        }
+        @Override public int hashCode() {
+            int result = 17;
+            result = 37 * result + col;
+            result = 37 * result + row;
+            return result;
+        }
+        @Override public String toString() {
+            return "("+col+","+row+")";
+        }
+    }
+
+    /** Segment is a border between two cells with different values.*/
+    static class Segment {
+        double x0, y0,x1, y1;
+        Segment(double x0, double y0, double x1, double y1) {
+            this.x0 = x0;
+            this.y0 = y0;
+            this.x1 = x1;
+            this.y1 = y1;
+        }
+        Geometry toGeometry(GeometryFactory gf) {
+            return gf.createLineString(new Coordinate[]{
+                new Coordinate(x0,y0),
+                new Coordinate(x1,y1)
+            });
+        }
+        @Override public boolean equals(Object o) {
+            if (o instanceof Segment) {
+                Segment s = (Segment)o;
+                return x0 == s.x0 && y0 == s.y0 && x1 == s.x1 && y1 == s.y1;
+            } else return false;
+        }
+        @Override public int hashCode() {
+            //Algorithm from Effective Java by Joshua Bloch [Jon Aquino]
+            int result = 17;
+            result = 37 * result + Coordinate.hashCode(x0);
+            result = 37 * result + Coordinate.hashCode(y0);
+            result = 37 * result + Coordinate.hashCode(x1);
+            result = 37 * result + Coordinate.hashCode(y1);
+            return result;
+        }
+    }
+
+    /** A compact structure consuming 1 bit per pixel to keep track of visited cells.*/
+    static class BooleanMatrix {
+        int width, height;
+        long[] array;
+        BooleanMatrix(int width, int height) {
+            this.width = width;
+            this.height = height;
+            double length = Math.ceil((double)width*height/64);
+            array = new long[(int)length];
+        }
+        void set(int row, int col) {
+            long index = (long)row*width+col;
+            array[(int)(index/64)] |= (1L << index%64);
+        }
+        void unset(int row, int col) {
+            long index = (long)row*width+col;
+            array[(int)(index/64)] &= ~(1L << index%64);
+        }
+        boolean isSet(int row, int col) {
+            long index = (long)row*width+col;
+            return (array[(int)(index/64)] & (1L << index%64)) == (1L << index%64);
+        }
     }
 
 
@@ -1025,6 +1268,23 @@ public class VectorizeAlgorithm {
 
        return toPolygonsAdbToolBox(
                gwrapper, explodeMultipolygons,attributeName, band);
-   }    
+   }
+
+   public static void main(String[] args) {
+       BooleanMatrix m = new BooleanMatrix(640, 480);
+       for (int c = 0 ; c < 640 ; c++) {
+           for (int r = 0 ; r < 480 ; r++) {
+               if (m.isSet(r, c)) System.out.println("ERROR");
+           }
+       }
+       m.set(37, 19);
+       m.unset(37,19);
+       for (int c = 0 ; c < 640 ; c++) {
+           for (int r = 0 ; r < 480 ; r++) {
+               if (m.isSet(r, c)) System.out.println("" + r + " - " + c);
+           }
+       }
+
+   }
     
 }
