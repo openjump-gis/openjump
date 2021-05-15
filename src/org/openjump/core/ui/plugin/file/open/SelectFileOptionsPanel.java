@@ -60,6 +60,7 @@ import com.vividsolutions.jump.workbench.ui.InputChangedListener;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 public class SelectFileOptionsPanel extends JPanel implements WizardPanel {
+
   private static final long serialVersionUID = -3105562554743126639L;
 
   public static final String KEY = SelectFileOptionsPanel.class.getName();
@@ -73,13 +74,13 @@ public class SelectFileOptionsPanel extends JPanel implements WizardPanel {
   public static final String USE_SAME_SETTINGS_FOR = I18N.get(KEY
     + ".use-same-settings-for");
 
-  private JPanel mainPanel;
+  private final JPanel mainPanel;
 
-  private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
+  private final Set<InputChangedListener> listeners = new LinkedHashSet<>();
 
   private OpenFileWizardState state;
 
-  private WorkbenchContext workbenchContext;
+  private final WorkbenchContext workbenchContext;
 
   public SelectFileOptionsPanel(WorkbenchContext workbenchContext) {
     super(new BorderLayout());
@@ -163,9 +164,7 @@ public class SelectFileOptionsPanel extends JPanel implements WizardPanel {
       filePanel.setBorder(BorderFactory.createTitledBorder(state.getFileName(file)));
       for (Option option : optionFields) {
         final String name = option.getName();
-        String label = I18N.get(loader.getClass().getName() + "."
-          //+ name.replaceAll(" ", "-"));
-          + name);
+        String label = I18N.get(loader.getClass().getName() + "." + name);
         filePanel.add(new JLabel(label));
 
         String type = option.getType();
@@ -209,20 +208,32 @@ public class SelectFileOptionsPanel extends JPanel implements WizardPanel {
     panel.add(useSameField);
 
     for (Option option : optionFields) {
-      final String label = option.getName();
+      final String name = option.getName();
+      String label = I18N.get(loader.getClass().getName() + "." + name);
       panel.add(new JLabel(label));
 
       String type = option.getType();
       FieldComponentFactory factory = FieldComponentFactoryRegistry.getFactory(
         workbenchContext, type);
-      panel.add(factory.createComponent(new ValueChangeListener() {
+      ValueChangeListener fieldListener = new ValueChangeListener() {
         public void valueChanged(ValueChangeEvent event) {
           Object value = event.getValue();
-          state.setOption(loader, label, value);
+          state.setOption(loader, name, value);
           fireInputChanged();
         }
-      }));
-      state.setOption(loader, option.getName(), null);
+      };
+      JComponent field = factory.createComponent(fieldListener);
+      // [mmichaud 2021-05-13]
+      // init field component and wizard state with the option's defaultValue
+      // the defaultValue may be null
+      if (option.getDefault() != null) {
+        factory.setValue(field, option.getDefault());
+        state.setOption(loader, name, factory.getValue(field));
+      } else {
+        factory.setValue(field, null);
+        state.setOption(loader, name, null);
+      }
+      panel.add(field);
     }
 
     SpringUtilities.makeCompactGrid(panel, 1 + optionFields.size(), 2, 5, 5, 5,
