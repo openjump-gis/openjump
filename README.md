@@ -68,16 +68,16 @@ xxx-driver (ex. dxf-driver).
 - [x] Color_chooser
 - [x] ConcaveHullPlugin
 - [x] CsvDriver
-- [x] CTSPlugin
+- [x] ~~CTSPlugin~~ Now included in OpenJUMP CORE
 - [ ] de.soldin.jump
 - [x] DxfDriver
 - [ ] ExtensionManagerPlugin
 - [x] GraphToolboxPlugin
 - [ ] Horae
 - [x] JumpJGraphT
-- [ ] KmlDriver
+- [x] KmlDriver
 - [ ] LandscapeAnalysis
-- [ ] MapGenToolboxPlugin
+- [x] MapGenToolboxPlugin (not included in PLUS)
 - [x] MatchingPlugIn
 - [x] Measure Toolbox 
 - [ ] ojmapcoloring
