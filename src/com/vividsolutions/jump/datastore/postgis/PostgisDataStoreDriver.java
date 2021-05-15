@@ -7,6 +7,9 @@ import java.sql.Connection;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
+import javax.swing.*;
 import java.util.Properties;
 
 /**
@@ -40,5 +43,15 @@ public class PostgisDataStoreDriver
             I18N.get("JUMPWorkbench.jump") + " " + JUMPVersion.CURRENT_VERSION);
         Connection conn = super.createJdbcConnection(params, connectionProps);
         return new PostgisDSConnection(conn);
+    }
+
+    /** {@inheritDoc} */
+    @Override public Icon getConnectedIcon() {
+        return IconLoader.icon("ok_pg.png");
+    }
+
+    /** {@inheritDoc} */
+    @Override public Icon getDisconnectedIcon() {
+        return IconLoader.icon("ko_pg.png");
     }
 }

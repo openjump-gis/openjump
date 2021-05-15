@@ -7,6 +7,10 @@ import com.vividsolutions.jump.datastore.DataStoreConnection;
 import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabasesDSDriver;
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
+import javax.swing.*;
 
 /**
  * A driver for supplying
@@ -60,6 +64,16 @@ public class H2DataStoreDriver extends AbstractSpatialDatabasesDSDriver {
     database = database.replaceAll("(?i)\\.\\w+\\.db$", "");
     // only open already existing database files, _don't_ create
     return getUrlPrefix() + database + ";IFEXISTS=TRUE;";
+  }
+
+  /** {@inheritDoc} */
+  @Override public Icon getConnectedIcon() {
+    return IconLoader.icon("h2_icon.png");
+  }
+
+  /** {@inheritDoc} */
+  @Override public Icon getDisconnectedIcon() {
+    return GUIUtil.toGrayScale((ImageIcon)getConnectedIcon());
   }
 
 }

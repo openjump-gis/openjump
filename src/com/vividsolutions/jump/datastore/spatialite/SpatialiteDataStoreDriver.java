@@ -11,6 +11,10 @@ import com.vividsolutions.jump.datastore.spatialdatabases.AbstractSpatialDatabas
 import com.vividsolutions.jump.parameter.ParameterList;
 import com.vividsolutions.jump.parameter.ParameterListSchema;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
+import javax.swing.*;
 
 //import org.sqlite.SQLiteConfig;
 
@@ -97,6 +101,16 @@ public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDSDriver 
       this.spatialiteVersion = "unavailable";
 
     return dsConn;
+  }
+
+  /** {@inheritDoc} */
+  @Override public Icon getConnectedIcon() {
+    return IconLoader.icon("ok_spatialite.png");
+  }
+
+  /** {@inheritDoc} */
+  @Override public Icon getDisconnectedIcon() {
+    return GUIUtil.toGrayScale((ImageIcon)getConnectedIcon());
   }
 
 }
