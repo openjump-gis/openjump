@@ -29,6 +29,7 @@
         <imageio-ext.version>1.3.2</imageio-ext.version>
     </properties>
     <profiles>
+        <!-- switching os dependent lib paths for launch4j -->
         <profile>
             <id>windows</id>
             <activation>
@@ -51,6 +52,7 @@
                 <launch4j.dir>launcher/launch4j-3.0.2-linux</launch4j.dir>
             </properties>
         </profile>
+        <!-- profile creating a snapshot distro zip -->
         <profile>
           <id>snapshot</id>
           <properties>
@@ -120,12 +122,13 @@
                   </execution>
                 </executions>
               </plugin>
+              <!-- installing to local repo is disabled during distro creation -->
               <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
                 <executions>
                   <execution>
-                    <id>custom-install-jar</id>
+                    <id>custom-install</id>
                     <phase>none</phase>
                   </execution>
                 </executions>
@@ -133,6 +136,7 @@
             </plugins>
           </build>
         </profile>
+        <!-- profile creating a release distro zips -->
         <profile>
             <id>release</id>
             <properties>
@@ -209,12 +213,13 @@
                             </execution>
                         </executions>
                       </plugin>
+                      <!-- installing to local repo is disabled during distro creation -->
                       <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-install-plugin</artifactId>
                         <executions>
                           <execution>
-                            <id>custom-install-jar</id>
+                            <id>custom-install</id>
                             <phase>none</phase>
                           </execution>
                         </executions>
@@ -229,7 +234,6 @@
                             <configuration>
                               <file>${project.build.directory}/${build.name}.jar</file>
                               <version>${version.number}</version>
-                              <classifier>r${version.revision}</classifier>
                             </configuration>
                           </execution>
                         </executions>
@@ -237,6 +241,7 @@
                 </plugins>
             </build>
         </profile>
+        <!-- repack the distros, apply some postprocessing, permission fixing, recompression -->
         <profile>
             <id>portable</id>
             <properties>
@@ -366,6 +371,7 @@
                 </plugins>
             </build>
         </profile>
+        <!-- create jar/exe installers from portable distros -->
         <profile>
             <id>installer</id>
             <properties>
@@ -516,16 +522,7 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>javadoc8+ fix</id>
-            <activation>
-                <jdk>[1.8,)</jdk>
-            </activation>
-            <properties>
-
-                <javadoc.opts>-Xdoclint:none</javadoc.opts>
-            </properties>
-        </profile>
+        <!-- create javadoc zip -->
         <profile>
             <id>javadoc</id>
             <properties>
@@ -573,7 +570,7 @@
                                         <zip
                                             destfile="${project.build.directory}/${build.name}-apidocs.zip"
                                             level="9">
-                                            <zipfileset dir="${project.build.directory}/apidocs" prefix="apidocs"/>
+                                            <zipfileset dir="${project.build.directory}/apidocs" prefix=""/>
                                         </zip>
                                     </target>
                                 </configuration>
@@ -583,9 +580,36 @@
                             </execution>
                         </executions>
                     </plugin>
+                    
+                    <!-- attach to installed artifact -->
+                    <plugin>
+                      <artifactId>maven-install-plugin</artifactId>
+                      <executions>
+                        <execution>
+                          <id>custom-install</id>
+                          <configuration>
+                            <javadoc>${project.build.directory}/${build.name}-apidocs.zip</javadoc>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
+
+                    <!-- attach to deployed artifact -->
+                    <plugin>
+                      <artifactId>maven-deploy-plugin</artifactId>
+                      <executions>
+                        <execution>
+                          <id>custom-deploy</id>
+                          <configuration>
+                            <javadoc>${project.build.directory}/${build.name}-apidocs.zip</javadoc>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
+        <!-- create zip containing the sources -->
         <profile>
             <id>srczip</id>
             <properties>
@@ -621,7 +645,7 @@
                                         <zip
                                             destfile="${project.build.directory}/${build.name}-src.zip"
                                             level="9">
-                                            <zipfileset dir="${project.build.directory}/classes" prefix="src" excludes="**/*.class"/>
+                                            <zipfileset dir="${project.build.directory}/classes" prefix="" excludes="**/*.class"/>
                                         </zip>
                                     </target>
                                 </configuration>
@@ -631,9 +655,104 @@
                             </execution>
                         </executions>
                     </plugin>
+
+                    <!-- attach to installed artifact -->
+                    <plugin>
+                      <artifactId>maven-install-plugin</artifactId>
+                      <executions>
+                        <execution>
+                          <id>custom-install</id>
+                          <configuration>
+                            <sources>${project.build.directory}/${build.name}-src.zip</sources>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
+
+                    <!-- attach to deployed artifact -->
+                    <plugin>
+                      <artifactId>maven-deploy-plugin</artifactId>
+                      <executions>
+                        <execution>
+                          <id>custom-deploy</id>
+                          <configuration>
+                            <sources>${project.build.directory}/${build.name}-src.zip</sources>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
+      <!-- some helpful switches allowing disabling certain time consuming tasks during maven reruns -->
+      <profile>
+        <id>disable compilation (for testing purposes)</id>
+        <activation>
+          <property>
+            <name>skipCompile</name>
+            <value>true</value>
+          </property>
+        </activation>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>default-compile</id>
+                  <phase>none</phase>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+      <profile>
+        <id>disable test compilation (for testing purposes)</id>
+        <activation>
+          <property>
+            <name>skipTests</name>
+            <value>true</value>
+          </property>
+        </activation>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>default-testCompile</id>
+                  <phase>none</phase>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+      <profile>
+        <id>disable javadoc compilation (for testing purposes)</id>
+        <activation>
+          <property>
+            <name>skipJavadoc</name>
+            <value>true</value>
+          </property>
+        </activation>
+        <build>
+          <plugins>
+            <plugin>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>generate javadocs</id>
+                  <phase>none</phase>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
     </profiles>
     <build>
         <finalName>${project.artifactId}-${version.string}</finalName>
@@ -767,12 +886,13 @@
               </executions>
               <configuration>
                 <verbose>true</verbose>
-                <generateGitPropertiesFile>false</generateGitPropertiesFile>
+                <!-- write a copy of git props into target/classes to be contained in the resulting jar below -->
+                <generateGitPropertiesFile>true</generateGitPropertiesFile>
                 <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
                 <includeOnlyProperties>
                   <includeOnlyProperty>^git.branch$</includeOnlyProperty>
                   <includeOnlyProperty>^git.build.(time|version|(number(|.unique)))$</includeOnlyProperty>
-                  <includeOnlyProperty>^git.commit.id.(abbrev|full)$</includeOnlyProperty>
+                  <includeOnlyProperty>^git.commit.(id.(abbrev|full)|message.short)$</includeOnlyProperty>
                   <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
                   <includeOnlyProperty>^git.total.commit.count$</includeOnlyProperty>
                 </includeOnlyProperties>
@@ -813,6 +933,11 @@
                 <execution>
                   <id>default-jar</id>
                   <phase>install</phase>
+                  <configuration>
+                    <excludes>
+                      <exclude>**/*.java</exclude>
+                    </excludes>
+                  </configuration>
                 </execution>
               </executions>
             </plugin>
@@ -834,7 +959,7 @@
                   </goals>
                 </execution>
                 <execution>
-                  <id>custom-install-jar</id>
+                  <id>custom-install</id>
                   <goals>
                     <goal>install-file</goal>
                   </goals>
@@ -875,8 +1000,7 @@
                     <!-- needs to be set via -Durl=file://C:\m2-repo --> <!--
                     <url>file://${project.build.directory}/build-repo/</url>
                     -->
-                    <version>${project.version}-SNAPSHOT</version>
-                    <classifier>${version.string}</classifier>
+                    <version>${project.version}-${git.branch}-SNAPSHOT</version>
                   </configuration>
                 </execution>
               </executions>
