@@ -3,15 +3,28 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2 http://maven.apache.org/xsd/component-1.1.2.xsd">
   <dependencySets>
-    <!-- replaced by inclusion below
+    <!-- include only selected batik jars in PLUS to minimize distro size,
+         complete pom deps pull in way more files -->
     <dependencySet>
       <outputDirectory>/lib</outputDirectory>
       <includes>
-        <include>batik:*</include>
-        <include>js:*</include>
+        <include>*:batik-awt-util</include>
+        <include>*:batik-dom</include>
+        <include>*:batik-svg-dom</include>
+        <include>*:batik-svggen</include>
+        <include>*:batik-transcoder</include>
+        <include>*:batik-util</include>
+        <include>*:batik-xml</include>
+        <!-- >include>js:*</include -->
       </includes>
     </dependencySet>
-    -->
+    <dependencySet>
+      <outputDirectory>/lib/ext/imageio-ext</outputDirectory>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
+      <includes>
+        <include>it.geosolutions.imageio-ext:*</include>
+      </includes>
+    </dependencySet>
   </dependencySets>
   <fileSets>
     <fileSet>
@@ -31,6 +44,7 @@
     </fileSet>
     <!-- include batik in PLUS build via copying selected jars from lib/ folder
          to minimize distro size, pom deps pull in more files -->
+    <!-- 
     <fileSet>
       <directory>lib/</directory>
       <outputDirectory>/lib/</outputDirectory>
@@ -38,5 +52,6 @@
         <include>batik-*.jar</include>
       </includes>
     </fileSet>
+    -->
   </fileSets>
 </component>

@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2 http://maven.apache.org/xsd/component-1.1.2.xsd">
   <files>
     <file>
-      <source>${project.build.directory}/${build.name}-nosrc.jar</source>
+      <source>${project.build.directory}/${project.build.finalName}-nosrc.jar</source>
       <outputDirectory>/lib</outputDirectory>
     </file>
   </files>

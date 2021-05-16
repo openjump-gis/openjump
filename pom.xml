@@ -25,8 +25,9 @@
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+        <batik.version>1.6-1</batik.version>
         <jts.version>1.18.1</jts.version>
-        <imageio-ext.version>1.3.2</imageio-ext.version>
+        <imageio-ext.version>1.3.9</imageio-ext.version>
     </properties>
     <profiles>
         <!-- switching os dependent lib paths for launch4j -->
@@ -61,7 +62,6 @@
             <version.release>snapshot</version.release>
             <!-- props used by jar and assembly naming -->
             <version.string>${version.number}-r${version.revision}</version.string>
-            <build.name>${project.artifactId}-${version.string}</build.name>
           </properties>
           <build>
             <plugins>
@@ -97,7 +97,7 @@
                     <phase>package</phase>
                     <configuration>
                       <appendAssemblyId>false</appendAssemblyId>
-                      <finalName>${build.name}-CORE</finalName>
+                      <finalName>${project.build.finalName}-CORE</finalName>
                       <descriptors>
                         <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
                       </descriptors>
@@ -111,7 +111,7 @@
                     <phase>package</phase>
                     <configuration>
                       <appendAssemblyId>false</appendAssemblyId>
-                      <finalName>${build.name}-PLUS</finalName>
+                      <finalName>${project.build.finalName}-PLUS</finalName>
                       <descriptors>
                         <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
                       </descriptors>
@@ -148,7 +148,6 @@
               <recompress.jars>true</recompress.jars>
               <!-- props used by jar and assembly naming -->
               <version.string>${version.number}-r${version.revision}</version.string>
-              <build.name>${project.artifactId}-${version.string}</build.name>
             </properties>
             <build>
                 <plugins>
@@ -188,7 +187,7 @@
                                 <id>release core</id>
                                 <phase>package</phase>
                                 <configuration>
-                                    <finalName>${build.name}-CORE</finalName>
+                                    <finalName>${project.build.finalName}-CORE</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-core_stable.xml</descriptor>
                                     </descriptors>
@@ -202,7 +201,7 @@
                                 <id>release plus</id>
                                 <phase>package</phase>
                                 <configuration>
-                                    <finalName>${build.name}-PLUS</finalName>
+                                    <finalName>${project.build.finalName}-PLUS</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-plus_stable.xml</descriptor>
                                     </descriptors>
@@ -232,7 +231,7 @@
                           <execution>
                             <id>custom-deploy</id>
                             <configuration>
-                              <file>${project.build.directory}/${build.name}.jar</file>
+                              <file>${project.build.directory}/${project.build.finalName}.jar</file>
                               <version>${version.number}</version>
                             </configuration>
                           </execution>
@@ -293,13 +292,13 @@
                                         <!-- Using an ant task to deflate *.zip -->
                                         <echo>Unzip CORE</echo>
                                         <unzip
-                                            src="${project.build.directory}/${build.name}-CORE.zip"
+                                            src="${project.build.directory}/${project.build.finalName}-CORE.zip"
                                             dest="${portable.filepath}/core">
                                             <cutdirsmapper dirs="1" />
                                         </unzip>
                                         <echo>Unzip PLUS</echo>
                                         <unzip
-                                            src="${project.build.directory}/${build.name}-PLUS.zip"
+                                            src="${project.build.directory}/${project.build.finalName}-PLUS.zip"
                                             dest="${portable.filepath}/plus">
                                             <cutdirsmapper dirs="1" />
                                         </unzip>
@@ -345,9 +344,9 @@
                                             destfile="${portable.filepath}/${portable.filename}-CORE.zip"
                                             level="9">
                                             <zipfileset dir="${portable.filepath}/core"
-                                                        prefix="${version.string}-CORE" excludes="${project.binaries}" />
+                                                        prefix="${project.build.finalName}-CORE" excludes="${project.binaries}" />
                                             <zipfileset dir="${portable.filepath}/core"
-                                                        prefix="${version.string}-CORE" includes="${project.binaries}"
+                                                        prefix="${project.build.finalName}-CORE" includes="${project.binaries}"
                                                         filemode="755" />
                                         </zip>
                                         <echo>Zip PLUS portable </echo>
@@ -355,9 +354,9 @@
                                             destfile="${portable.filepath}/${portable.filename}-PLUS.zip"
                                             level="9">
                                             <zipfileset dir="${portable.filepath}/plus"
-                                                        prefix="${version.string}-PLUS" excludes="${project.binaries}" />
+                                                        prefix="${project.build.finalName}-PLUS" excludes="${project.binaries}" />
                                             <zipfileset dir="${portable.filepath}/plus"
-                                                        prefix="${version.string}-PLUS" includes="${project.binaries}"
+                                                        prefix="${project.build.finalName}-PLUS" includes="${project.binaries}"
                                                         filemode="755" />
                                         </zip>
                                     </target>
@@ -525,11 +524,6 @@
         <!-- create javadoc zip -->
         <profile>
             <id>javadoc</id>
-            <properties>
-              <!-- props used for zip naming naming -->
-              <version.string>${version.number}-r${version.revision}</version.string>
-              <build.name>${project.artifactId}-${version.string}</build.name>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -568,7 +562,7 @@
                                 <configuration>
                                     <target>
                                         <zip
-                                            destfile="${project.build.directory}/${build.name}-apidocs.zip"
+                                            destfile="${project.build.directory}/${project.build.finalName}-apidocs.zip"
                                             level="9">
                                             <zipfileset dir="${project.build.directory}/apidocs" prefix=""/>
                                         </zip>
@@ -588,7 +582,7 @@
                         <execution>
                           <id>custom-install</id>
                           <configuration>
-                            <javadoc>${project.build.directory}/${build.name}-apidocs.zip</javadoc>
+                            <javadoc>${project.build.directory}/${project.build.finalName}-apidocs.zip</javadoc>
                           </configuration>
                         </execution>
                       </executions>
@@ -601,7 +595,7 @@
                         <execution>
                           <id>custom-deploy</id>
                           <configuration>
-                            <javadoc>${project.build.directory}/${build.name}-apidocs.zip</javadoc>
+                            <javadoc>${project.build.directory}/${project.build.finalName}-apidocs.zip</javadoc>
                           </configuration>
                         </execution>
                       </executions>
@@ -612,11 +606,11 @@
         <!-- create zip containing the sources -->
         <profile>
             <id>srczip</id>
-            <properties>
-              <!-- props used for zip naming naming -->
-              <version.string>${version.number}-r${version.revision}</version.string>
-              <build.name>${project.artifactId}-${version.string}</build.name>
-            </properties>
+            <activation>
+              <property>
+                <name>!skipSrczip</name>
+              </property>
+            </activation>
             <build>
                 <plugins>
                     <!-- for testing speedup disable compilation --> <!--
@@ -643,7 +637,7 @@
                                 <configuration>
                                     <target>
                                         <zip
-                                            destfile="${project.build.directory}/${build.name}-src.zip"
+                                            destfile="${project.build.directory}/${project.build.finalName}-src.zip"
                                             level="9">
                                             <zipfileset dir="${project.build.directory}/classes" prefix="" excludes="**/*.class"/>
                                         </zip>
@@ -663,7 +657,7 @@
                         <execution>
                           <id>custom-install</id>
                           <configuration>
-                            <sources>${project.build.directory}/${build.name}-src.zip</sources>
+                            <sources>${project.build.directory}/${project.build.finalName}-src.zip</sources>
                           </configuration>
                         </execution>
                       </executions>
@@ -676,7 +670,7 @@
                         <execution>
                           <id>custom-deploy</id>
                           <configuration>
-                            <sources>${project.build.directory}/${build.name}-src.zip</sources>
+                            <sources>${project.build.directory}/${project.build.finalName}-src.zip</sources>
                           </configuration>
                         </execution>
                       </executions>
@@ -966,12 +960,11 @@
                   <phase>install</phase>
                   <configuration>
                     <packaging>jar</packaging>
-                    <version>${version.string}</version>
-                    <generatePom>true</generatePom>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                     <!-- 
                     <localRepositoryPath>${project.build.directory}/repo/</localRepositoryPath>
                     -->
+                    <version>${project.version}-${git.branch}-${git.commit.id.abbrev}</version>
                   </configuration>
                 </execution>
               </executions>
@@ -1064,7 +1057,6 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
-            <scope>compile</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
@@ -1091,7 +1083,6 @@
             <groupId>org.apache-extras.beanshell</groupId>
             <artifactId>bsh</artifactId>
             <version>2.0b6</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
@@ -1108,77 +1099,65 @@
             <groupId>org.jdom</groupId>
             <artifactId>jdom2</artifactId>
             <version>2.0.6</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>2.12.1</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.19</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>batik</groupId>
             <artifactId>batik-awt-util</artifactId>
-            <version>1.6</version>
-            <scope>compile</scope>
+            <version>${batik.version}</version>
         </dependency>
         <dependency>
             <groupId>batik</groupId>
             <artifactId>batik-dom</artifactId>
-            <version>1.6</version>
-            <scope>compile</scope>
+            <version>${batik.version}</version>
         </dependency>
         <dependency>
             <groupId>batik</groupId>
             <artifactId>batik-svggen</artifactId>
-            <version>1.6</version>
-            <scope>compile</scope>
+            <version>${batik.version}</version>
         </dependency>
         <dependency>
             <groupId>batik</groupId>
             <artifactId>batik-squiggle</artifactId>
-            <version>1.6</version>
-            <scope>compile</scope>
+            <version>${batik.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.buoy</groupId>
             <artifactId>buoy</artifactId>
             <version>1.9</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.yannrichet</groupId>
             <artifactId>JMathArray</artifactId>
             <version>1.0</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.yannrichet</groupId>
             <artifactId>JMathPlot</artifactId>
             <version>1.0.1</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>gov.nist.math</groupId>
             <artifactId>jama</artifactId>
             <version>1.0.3</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
-            <scope>compile</scope>
         </dependency>
-        <!--Version 2.2.1 is the last of the unmaintained 2.2 series
-        There is a 2.5.x anda 2.7 version but they both are much bigger
-        don't know if we need them as only few people use jython-->
+        <!-- Version 2.2.1 is the last of the unmaintained 2.2 series
+        There are 2.5.x and 2.7 versions but they  are much bigger
+        don't know if we need them as only few people use jython -->
         <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython</artifactId>
@@ -1212,7 +1191,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.11</version>
+            <version>3.12.0</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -1224,6 +1203,7 @@
             <artifactId>jai-imageio-core</artifactId>
             <version>1.4.0</version>
         </dependency>
+        <!-- disabled for now as imageio-ext is pulling them itself
         <dependency>
             <groupId>javax.media</groupId>
             <artifactId>jai_core</artifactId>
@@ -1239,36 +1219,181 @@
             <artifactId>jai_imageio</artifactId>
             <version>1.1</version>
         </dependency>
-        <!-- we provide the imageio-ext jars here for compilation only,
-        for runtime they are packaged from lib/imageio-ext/ for 
-        easier updating and splitting between CORE and PLUS -->
+        -->
+        <!-- imageio-ext modules needed for compilation and included in CORE -->
         <dependency>
             <groupId>it.geosolutions.imageio-ext</groupId>
             <artifactId>imageio-ext-utilities</artifactId>
             <version>${imageio-ext.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>it.geosolutions.imageio-ext</groupId>
             <artifactId>imageio-ext-gdalframework</artifactId>
             <version>${imageio-ext.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>it.geosolutions.imageio-ext</groupId>
             <artifactId>imageio-ext-geocore</artifactId>
             <version>${imageio-ext.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
            <groupId>it.geosolutions.imageio-ext</groupId>
            <artifactId>imageio-ext-tiff</artifactId>
            <!-- downgrade, as > 1.1.13 does not load single band TIFFs properly -->
-           <!-- not needed anymore as jai-imageio.core works fine and is preferred -->
-           <!-- version>1.1.13</version -->
-           <version>${imageio-ext.version}</version>
-           <scope>provided</scope>
+           <version>1.1.13</version>
         </dependency>
+        <!-- selected imageio-ext modules for different image formats to be packaged into PLUS -->
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-arcgrid</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalarcbinarygrid</artifactId>
+            <version>${imageio-ext.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalarcgrid</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalbsb</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdaldoq1</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdaldoq2</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdaldted</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalecw</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalehdr</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalenvihdr</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalenvisat</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalerdasimg</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalgeotiff</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalidrisi</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdaljpeg</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalkakadujp2</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalmrsid</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalmrsidjp2</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalnitf</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+                <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalvrt</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-imagereadmt</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-kakadu</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-nitf</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-png</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-turbojpeg</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        
         <!--Nico Ribot: 30 jan 2015. For JTreeTable : Datastore list of layers:--> 
         <dependency>
             <groupId>uk.gov.nationalarchives.thirdparty.netbeans</groupId>
