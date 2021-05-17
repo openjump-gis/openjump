@@ -53,7 +53,7 @@
                 <launch4j.dir>launcher/launch4j-3.0.2-linux</launch4j.dir>
             </properties>
         </profile>
-        <!-- profile creating a snapshot distro zip -->
+        <!-- profile creating snapshot distro zips for CORE/PLUS -->
         <profile>
           <id>snapshot</id>
           <properties>
@@ -136,7 +136,7 @@
             </plugins>
           </build>
         </profile>
-        <!-- profile creating a release distro zips -->
+        <!-- profile creating release distro zips for CORE/PLUS -->
         <profile>
             <id>release</id>
             <properties>
@@ -574,7 +574,7 @@
                             </execution>
                         </executions>
                     </plugin>
-                    
+
                     <!-- attach to installed artifact -->
                     <plugin>
                       <artifactId>maven-install-plugin</artifactId>
@@ -606,6 +606,7 @@
         <!-- create zip containing the sources -->
         <profile>
             <id>srczip</id>
+            <!-- activated by default unless -DskipSrczip is defined -->
             <activation>
               <property>
                 <name>!skipSrczip</name>
@@ -747,6 +748,68 @@
           </plugins>
         </build>
       </profile>
+      <profile>
+        <id>execute</id>
+        <!-- activated by default unless -DskipSrczip is defined -->
+        <activation>
+          <property>
+            <name>testExecute</name>
+            <value>true</value>
+          </property>
+        </activation>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>exec-maven-plugin</artifactId>
+              <version>3.0.0</version>
+                    <?m2e ignore?>
+              <executions>
+                <execution>
+                  <id>echo java version</id>
+                  <phase>test</phase>
+                  <goals>
+                    <goal>exec</goal>
+                  </goals>
+                  <configuration>
+                    <executable>java</executable>
+                    <arguments>
+                      <argument>-version</argument>
+                    </arguments>
+                  </configuration>
+                </execution>
+                <execution>
+                  <id>run OpenJUMP</id>
+                  <phase>test</phase>
+                  <goals>
+                    <goal>exec</goal>
+                  </goals>
+                  <configuration>
+                    <workingDirectory>${project.basedir}</workingDirectory>
+                    <executable>java</executable>
+                    <arguments>
+                      <argument>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argument>
+                      <argument>-classpath</argument>
+                      <classpath />
+                      <argument>com.vividsolutions.jump.workbench.JUMPWorkbench</argument>
+                      <argument>-default-plugins</argument>
+                      <argument>scripts\default-plugins.xml</argument>
+                      <argument>-plug-in-directory</argument>
+                      <argument>"lib\plus"</argument>
+                      <argument>-plug-in-directory</argument>
+                      <argument>"lib\ext"</argument>
+                      <argument>-I18n</argument>
+                      <argument>en_FR</argument>
+                      <argument>-v</argument>
+                      <argument>debug</argument>
+                    </arguments>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
     </profiles>
     <build>
         <finalName>${project.artifactId}-${version.string}</finalName>
@@ -794,221 +857,225 @@
         </resources>
         <plugins>
 
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+          <plugin>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>3.8.1</version>
+              <configuration>
+                  <source>1.8</source>
+                  <target>1.8</target>
+                  <compilerArgs>
+                    <arg>-Xlint:deprecation</arg>
+                  </compilerArgs>
+              </configuration>
+          </plugin>
+
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.2.0</version>
+            <?m2e ignore?>
+            <executions>
+              <!-- build several build date stamp formattings used all over -->
+              <execution>
+                <id>build-datestamp-property</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>timestamp-property</goal>
+                </goals>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <compilerArgs>
-                      <arg>-Xlint:deprecation</arg>
-                    </compilerArgs>
+                  <name>build.datestamp</name>
+                  <pattern>yyyyMMdd</pattern>
+                  <timeSource>build</timeSource>
+                  <locale>en_US</locale>
                 </configuration>
-            </plugin>
-
-           <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>build-helper-maven-plugin</artifactId>
-              <version>3.2.0</version>
-              <executions>
-                <!-- build several build date stamp formattings used all over -->
-                <execution>
-                  <id>build-datestamp-property</id>
-                  <phase>validate</phase>
-                  <goals>
-                    <goal>timestamp-property</goal>
-                  </goals>
-                  <configuration>
-                    <name>build.datestamp</name>
-                    <pattern>yyyyMMdd</pattern>
-                    <locale>en_US</locale>
-                  </configuration>
-                </execution>
-                <execution>
-                  <id>build-datelong-property</id>
-                  <phase>validate</phase>
-                  <goals>
-                    <goal>timestamp-property</goal>
-                  </goals>
-                  <configuration>
-                    <name>build.datelong</name>
-                    <pattern>dd. MMMM yyyy</pattern>
-                    <locale>en_US</locale>
-                  </configuration>
-                </execution>
-                <execution>
-                  <id>build-date-property</id>
-                  <phase>validate</phase>
-                  <goals>
-                    <goal>timestamp-property</goal>
-                  </goals>
-                  <configuration>
-                    <name>build.date</name>
-                    <pattern>dd.MM.yyyy</pattern>
-                    <locale>en_US</locale>
-                  </configuration>
-                </execution>
-
-                <execution>
-                  <id>add-junit-test-source</id>
-                  <phase>generate-test-sources</phase>
-                  <goals>
-                    <goal>add-test-source</goal>
-                  </goals>
-                  <configuration>
-                    <sources>
-                      <source>src/</source>
-                    </sources>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-
-            <plugin>
-              <groupId>pl.project13.maven</groupId>
-              <artifactId>git-commit-id-plugin</artifactId>
-              <version>4.0.4</version>
-              <executions>
-                <!-- retrieve git revision information from local repo -->
-                <execution>
-                  <id>get-the-git-infos</id>
-                  <goals>
-                    <goal>revision</goal>
-                  </goals>
-                  <phase>validate</phase>
-                </execution>
-              </executions>
-              <configuration>
-                <verbose>true</verbose>
-                <!-- write a copy of git props into target/classes to be contained in the resulting jar below -->
-                <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-                <includeOnlyProperties>
-                  <includeOnlyProperty>^git.branch$</includeOnlyProperty>
-                  <includeOnlyProperty>^git.build.(time|version|(number(|.unique)))$</includeOnlyProperty>
-                  <includeOnlyProperty>^git.commit.(id.(abbrev|full)|message.short)$</includeOnlyProperty>
-                  <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
-                  <includeOnlyProperty>^git.total.commit.count$</includeOnlyProperty>
-                </includeOnlyProperties>
-                <commitIdGenerationMode>full</commitIdGenerationMode>
-              </configuration>
-            </plugin>
-
-            <plugin>
-              <groupId>com.github.ekryd.echo-maven-plugin</groupId>
-              <artifactId>echo-maven-plugin</artifactId>
-              <version>1.3.2</version>
-              <!-- fixup some weird Eclipse m2e issue "Plugin execution not covered by lifecycle configuration"
-                   https://www.eclipse.org/m2e/documentation/release-notes-17.html#new-syntax-for-specifying-lifecycle-mapping-metadata -->
-              <?m2e execute onConfiguration,onIncremental?>
-              <executions>
-                <execution>
-                  <id>echo-version-info</id>
-                  <phase>initialize</phase>
-                  <goals>
-                    <goal>echo</goal>
-                  </goals>
-                  <configuration>
-                    <message>Building
-                      ${project.build.finalName}
-                    </message>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-
-            <!-- default-jar only needed for maven repo deployment,
-                 so postpone creation to install cycle  -->
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-jar-plugin</artifactId>
-              <version>3.2.0</version>
-              <executions>
-                <execution>
-                  <id>default-jar</id>
-                  <phase>install</phase>
-                  <configuration>
-                    <excludes>
-                      <exclude>**/*.java</exclude>
-                    </excludes>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-
-            <!-- installing artifact to local repo (usually "~/.m2")
-                 is mainly done to enable 
-                   https://jitpack.io/#openjump-gis/openjump
-                 repo builds -->
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-install-plugin</artifactId>
-              <version>3.0.0-M1</version>
-              <executions>
-                <execution>
-                  <id>default-install</id>
-                  <phase>none</phase>
-                  <goals>
-                    <goal>install-file</goal>
-                  </goals>
-                </execution>
-                <execution>
-                  <id>custom-install</id>
-                  <goals>
-                    <goal>install-file</goal>
-                  </goals>
-                  <phase>install</phase>
-                  <configuration>
-                    <packaging>jar</packaging>
-                    <file>${project.build.directory}/${project.build.finalName}.jar</file>
-                    <!-- 
-                    <localRepositoryPath>${project.build.directory}/repo/</localRepositoryPath>
-                    -->
-                    <version>${project.version}-${git.branch}-${git.commit.id.abbrev}</version>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-
-            <!-- this deploys the jar to a repo-url given
-                 used in snapshot/release builds to update
-                   oj.soldin.de repo -->
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-deploy-plugin</artifactId>
-              <version>3.0.0-M1</version>
-              <executions>
-                <execution>
-                  <id>default-deploy</id>
-                  <phase>none</phase>
-                </execution>
-                <execution>
-                  <id>custom-deploy</id>
-                  <phase>deploy</phase>
-                  <goals>
-                    <goal>deploy-file</goal>
-                  </goals>
-                  <configuration>
-                    <file>${project.build.directory}/${project.build.finalName}.jar</file>
-                    <!-- needs to be set via -Durl=file://C:\m2-repo --> <!--
-                    <url>file://${project.build.directory}/build-repo/</url>
-                    -->
-                    <version>${project.version}-${git.branch}-SNAPSHOT</version>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-surefire-plugin</artifactId>
-              <version>2.19.1</version>
-              <configuration>
-                <argLine>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argLine>
-              </configuration>
-            </plugin>
-        </plugins>
-
+              </execution>
+              <execution>
+                <id>build-datelong-property</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>timestamp-property</goal>
+                </goals>
+                <configuration>
+                  <name>build.datelong</name>
+                  <pattern>dd. MMMM yyyy</pattern>
+                  <timeSource>build</timeSource>
+                  <locale>en_US</locale>
+                </configuration>
+              </execution>
+              <execution>
+                <id>build-date-property</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>timestamp-property</goal>
+                </goals>
+                <configuration>
+                  <name>build.date</name>
+                  <pattern>dd.MM.yyyy</pattern>
+                  <timeSource>build</timeSource>
+                  <locale>en_US</locale>
+                </configuration>
+              </execution>
+  
+              <execution>
+                <id>add-junit-test-source</id>
+                <phase>generate-test-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>src/</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+  
+          <plugin>
+            <groupId>pl.project13.maven</groupId>
+            <artifactId>git-commit-id-plugin</artifactId>
+            <version>4.0.4</version>
+            <?m2e ignore?>
+            <executions>
+              <!-- retrieve git revision information from local repo -->
+              <execution>
+                <id>get-the-git-infos</id>
+                <goals>
+                  <goal>revision</goal>
+                </goals>
+                <phase>validate</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <verbose>true</verbose>
+              <!-- write a copy of git props into target/classes to be contained in the resulting jar below -->
+              <generateGitPropertiesFile>true</generateGitPropertiesFile>
+              <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+              <includeOnlyProperties>
+                <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+                <includeOnlyProperty>^git.build.(time|version|(number(|.unique)))$</includeOnlyProperty>
+                <includeOnlyProperty>^git.commit.(id.(abbrev|full)|message.short)$</includeOnlyProperty>
+                <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
+                <includeOnlyProperty>^git.total.commit.count$</includeOnlyProperty>
+              </includeOnlyProperties>
+              <commitIdGenerationMode>full</commitIdGenerationMode>
+            </configuration>
+          </plugin>
+  
+          <plugin>
+            <groupId>com.github.ekryd.echo-maven-plugin</groupId>
+            <artifactId>echo-maven-plugin</artifactId>
+            <version>1.3.2</version>
+            <!-- fixup some weird Eclipse m2e issue "Plugin execution not covered by lifecycle configuration"
+                 https://www.eclipse.org/m2e/documentation/release-notes-17.html#new-syntax-for-specifying-lifecycle-mapping-metadata -->
+            <?m2e ignore?>
+            <executions>
+              <execution>
+                <id>echo-version-info</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>echo</goal>
+                </goals>
+                <configuration>
+                  <message>Building
+                    ${project.build.finalName}
+                  </message>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+  
+          <!-- default-jar only needed for maven repo deployment,
+               so postpone creation to install cycle  -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.0</version>
+            <executions>
+              <execution>
+                <id>default-jar</id>
+                <phase>install</phase>
+                <configuration>
+                  <excludes>
+                    <exclude>**/*.java</exclude>
+                  </excludes>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+  
+          <!-- installing artifact to local repo (usually "~/.m2")
+               is mainly done to enable 
+                 https://jitpack.io/#openjump-gis/openjump
+               repo builds -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <version>3.0.0-M1</version>
+            <executions>
+              <execution>
+                <id>default-install</id>
+                <phase>none</phase>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>custom-install</id>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+                <phase>install</phase>
+                <configuration>
+                  <packaging>jar</packaging>
+                  <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                  <!-- 
+                  <localRepositoryPath>${project.build.directory}/repo/</localRepositoryPath>
+                  -->
+                  <version>${project.version}-${git.branch}-${git.commit.id.abbrev}</version>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+  
+          <!-- this deploys the jar to a repo-url given,
+               used in snapshot/release builds to update
+                 oj.soldin.de repo -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>3.0.0-M1</version>
+            <executions>
+              <execution>
+                <id>default-deploy</id>
+                <phase>none</phase>
+              </execution>
+              <execution>
+                <id>custom-deploy</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>deploy-file</goal>
+                </goals>
+                <configuration>
+                  <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                  <!-- needs to be set via -Durl=file://C:\m2-repo --> <!--
+                  <url>file://${project.build.directory}/build-repo/</url>
+                  -->
+                  <version>${project.version}-${git.branch}-SNAPSHOT</version>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+  
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.19.1</version>
+            <configuration>
+              <argLine>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argLine>
+            </configuration>
+          </plugin>
+      </plugins>
     </build>
     <repositories>
         <!-- Used for buoy and JAI core, codec and imageio
@@ -1058,17 +1125,6 @@
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.30</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.30</version>
-        </dependency>
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
@@ -1085,16 +1141,23 @@
             <version>2.0b6</version>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>cts</artifactId>
-            <version>1.5.1</version>
+          <groupId>org.orbisgis</groupId>
+          <artifactId>cts</artifactId>
+          <version>1.5.2</version>
         </dependency>
-        <!--dependency>
-          <groupId>jdom</groupId>
-          <artifactId>jdom</artifactId>
-          <version>1.0b8</version>
-          <scope>compile</scope>
-        </dependency-->
+        <!-- disabled as needed jar pulled by cts automatically, 
+             not sure we need cts to log to file really
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        -->
         <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom2</artifactId>
