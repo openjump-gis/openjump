@@ -25,13 +25,18 @@ will be updated regularly until the first OpenJUMP2 official release.
 
 ## Documentation
 
-The last official OpenJUMP release is OpenJUMP 1.16.
-
-You can download it from [Sourceforge - OpenJUMP](https://sourceforge.net/projects/jump-pilot/files/OpenJUMP/)
-
 To learn more on OpenJUMP you can check the official 
 [website](http://www.openjump.org/) or read the 
 [wiki documentation](http://ojwiki.soldin.de/index.php?title=Main_Page) 
+
+## Downloads
+
+The last official OpenJUMP release is OpenJUMP 1.16.
+You can download it from [Sourceforge - OpenJUMP](https://sourceforge.net/projects/jump-pilot/files/OpenJUMP/)
+
+OpenJUMP 2 snapshots can be downloaded from
+https://sourceforge.net/projects/jump-pilot/files/OpenJUMP2_snapshots/
+
 
 ## Migration to OpenJUMP 2
 
