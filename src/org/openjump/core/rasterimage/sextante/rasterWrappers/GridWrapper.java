@@ -93,7 +93,7 @@ public abstract class GridWrapper {
 
 	public boolean isNoDataValue (double dValue){
 
-		return (dValue == m_Layer.getNoDataValue());
+		return (dValue == m_Layer.getNoDataValue() || Double.isNaN(dValue));
 
 	}
 

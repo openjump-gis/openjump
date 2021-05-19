@@ -11,17 +11,13 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -30,8 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.DataStoreConnection;
@@ -43,27 +37,27 @@ import com.vividsolutions.jump.workbench.datastore.ConnectionDescriptor;
 import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.ErrorHandler;
-import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ConnectionManagerPanel extends JPanel {
   // Nicolas Ribot, 07 dec 2015: 
   // add icons according to database source
+  // [mmichaud 2021-05-12] move database dependant icon initialization in DataStoreDriver interface
   private static final Icon CONNECTED_ICON = IconLoader.icon("connect.png");
   private static final Icon DISCONNECTED_ICON = IconLoader.icon("disconnect.png");
-  private static final Icon PG_CONNECTED_ICON = IconLoader.icon("ok_pg.png");
-  private static final Icon PG_DISCONNECTED_ICON = IconLoader.icon("ko_pg.png");
-  private static final Icon H2_CONNECTED_ICON = IconLoader.icon("h2_icon.png");
-  private static final Icon H2_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)H2_CONNECTED_ICON);
-  private static final Icon ORA_CONNECTED_ICON = IconLoader.icon("ok_oracle.png");
-  private static final Icon ORA_DISCONNECTED_ICON = IconLoader.icon("ko_oracle.png");
-  private static final Icon MARIA_CONNECTED_ICON = IconLoader.icon("ok_mariadb.png");
-  private static final Icon MARIA_DISCONNECTED_ICON = IconLoader.icon("ko_mariadb.png");
-  private static final Icon SQLITE_CONNECTED_ICON = IconLoader.icon("ok_spatialite.png");
-  private static final Icon SQLITE_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)SQLITE_CONNECTED_ICON);
-  private static final Icon MYSQL_CONNECTED_ICON = IconLoader.icon("dolphin_icon.png");
-  private static final Icon MYSQL_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)MYSQL_CONNECTED_ICON);
+  // private static final Icon PG_CONNECTED_ICON = IconLoader.icon("ok_pg.png");
+  // private static final Icon PG_DISCONNECTED_ICON = IconLoader.icon("ko_pg.png");
+  // private static final Icon H2_CONNECTED_ICON = IconLoader.icon("h2_icon.png");
+  // private static final Icon H2_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)H2_CONNECTED_ICON);
+  // private static final Icon ORA_CONNECTED_ICON = IconLoader.icon("ok_oracle.png");
+  // private static final Icon ORA_DISCONNECTED_ICON = IconLoader.icon("ko_oracle.png");
+  // private static final Icon MARIA_CONNECTED_ICON = IconLoader.icon("ok_mariadb.png");
+  // private static final Icon MARIA_DISCONNECTED_ICON = IconLoader.icon("ko_mariadb.png");
+  // private static final Icon SQLITE_CONNECTED_ICON = IconLoader.icon("ok_spatialite.png");
+  // private static final Icon SQLITE_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)SQLITE_CONNECTED_ICON);
+  // private static final Icon MYSQL_CONNECTED_ICON = IconLoader.icon("dolphin_icon.png");
+  // private static final Icon MYSQL_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)MYSQL_CONNECTED_ICON);
 //  private final Icon SQLSERVER_CONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
 //  private final Icon SQLSERVER_DISCONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
   
@@ -74,7 +68,7 @@ public class ConnectionManagerPanel extends JPanel {
     // Partially generated using Eclipse Visual Editor [Jon Aquino 2005-03-08]
 
     private JScrollPane scrollPane = null;
-    private JList connectionJList = null;
+    private JList<ConnectionDescriptor> connectionJList = null;
     private JPanel buttonPanel = null;
     private JButton addButton = null;
     private JButton copyButton = null;
@@ -82,10 +76,10 @@ public class ConnectionManagerPanel extends JPanel {
     private JButton connectButton = null;
     private JPanel fillerPanel = null;
     private JButton disconnectButton = null;
-    private ConnectionManager connectionManager;
-    private ErrorHandler errorHandler;
-    private Registry registry;
-    private WorkbenchContext context;
+    private final ConnectionManager connectionManager;
+    private final ErrorHandler errorHandler;
+    private final Registry registry;
+    private final WorkbenchContext context;
 
     public ConnectionManagerPanel(ConnectionManager connectionManager,
             Registry registry, ErrorHandler errorHandler, WorkbenchContext context) {
@@ -98,11 +92,7 @@ public class ConnectionManagerPanel extends JPanel {
         initializeConnectionJList();
         updateButtons();
         connectionJList.getSelectionModel().addListSelectionListener(
-                new ListSelectionListener() {
-                    public void valueChanged(ListSelectionEvent e) {
-                        updateButtons();
-                    }
-                });
+            e -> updateButtons());
     }
 
     private void initializeConnectionJList() {
@@ -118,8 +108,7 @@ public class ConnectionManagerPanel extends JPanel {
         connectButton.setEnabled(findSelectedConnection(new Block() {
             public Object yield(Object connection) {
                 try {
-                    return Boolean.valueOf(((DataStoreConnection) connection)
-                            .isClosed());
+                    return ((DataStoreConnection) connection).isClosed();
                 } catch (DataStoreException e) {
                     errorHandler.handleThrowable(e);
                     return Boolean.FALSE;
@@ -129,8 +118,7 @@ public class ConnectionManagerPanel extends JPanel {
         disconnectButton.setEnabled(findSelectedConnection(new Block() {
             public Object yield(Object connection) {
                 try {
-                    return Boolean.valueOf(!((DataStoreConnection) connection)
-                            .isClosed());
+                    return !((DataStoreConnection) connection).isClosed();
                 } catch (DataStoreException e) {
                     errorHandler.handleThrowable(e);
                     return Boolean.FALSE;
@@ -140,10 +128,7 @@ public class ConnectionManagerPanel extends JPanel {
     }
 
     private boolean findSelectedConnection(Block criterion) {
-        for (Iterator i = getSelectedConnectionDescriptors().iterator(); i
-                .hasNext();) {
-            ConnectionDescriptor connectionDescriptor = (ConnectionDescriptor) i
-                    .next();
+        for (ConnectionDescriptor connectionDescriptor : getSelectedConnectionDescriptors()) {
             if (criterion.yield(connectionManager
                     .getConnection(connectionDescriptor)) == Boolean.TRUE) {
                 return true;
@@ -152,25 +137,19 @@ public class ConnectionManagerPanel extends JPanel {
         return false;
     }
 
-    private ListModel createListModel() {
-        DefaultListModel listModel = new DefaultListModel();
-        for (Iterator i = sort(
-                new ArrayList(connectionManager.getConnectionDescriptors()),
-                new Comparator() {
-                    public int compare(Object a, Object b) {
-                        return ((ConnectionDescriptor) a).toString().compareTo(
-                                ((ConnectionDescriptor) b).toString());
-                    }
-                }).iterator(); i.hasNext();) {
-            ConnectionDescriptor connectionDescriptor = (ConnectionDescriptor) i
-                    .next();
+    private ListModel<ConnectionDescriptor> createListModel() {
+        DefaultListModel<ConnectionDescriptor> listModel = new DefaultListModel<>();
+        for (ConnectionDescriptor connectionDescriptor : sort(
+                new ArrayList<>(connectionManager.getConnectionDescriptors()),
+            Comparator.comparing(Object::toString))) {
             listModel.addElement(connectionDescriptor);
         }
         return listModel;
     }
 
-    private List sort(List collection, Comparator comparator) {
-        Collections.sort(collection, comparator);
+    private List<ConnectionDescriptor> sort(List<ConnectionDescriptor> collection,
+                                            Comparator<ConnectionDescriptor> comparator) {
+        collection.sort(comparator);
         return collection;
     }
 
@@ -209,9 +188,9 @@ public class ConnectionManagerPanel extends JPanel {
         return scrollPane;
     }
 
-    private JList getConnectionJList() {
+    private JList<ConnectionDescriptor> getConnectionJList() {
         if (connectionJList == null) {
-            connectionJList = new JList();
+            connectionJList = new JList<>();
             connectionJList.setCellRenderer(new DefaultListCellRenderer() {
 
                 public Component getListCellRendererComponent(JList list,
@@ -222,13 +201,11 @@ public class ConnectionManagerPanel extends JPanel {
                             connectionDescriptor, index, isSelected,
                             cellHasFocus);
                     try {
-                        Icon icon = getConnectionIcon(connectionDescriptor,
-                            connectionManager.getConnection(
-                                connectionDescriptor).isClosed());
+                        Icon icon = getConnectionIcon(
+                            connectionDescriptor,
+                            connectionManager.getConnection(connectionDescriptor).isClosed(),
+                            context);
                         setIcon(icon);
-//                        setIcon(connectionManager.getConnection(
-//                                connectionDescriptor).isClosed() ? DISCONNECTED_ICON
-//                                : CONNECTED_ICON);
                     } catch (DataStoreException e) {
                         errorHandler.handleThrowable(e);
                     }
@@ -433,31 +410,21 @@ public class ConnectionManagerPanel extends JPanel {
      */
     private ConnectionDescriptor getSelectedConnection()
     {
-      for (Iterator i = getSelectedConnectionDescriptors().iterator(); i
-              .hasNext();) {
-          ConnectionDescriptor connectionDescriptor = (ConnectionDescriptor) i
-                  .next();
+      for (ConnectionDescriptor connectionDescriptor : getSelectedConnectionDescriptors()) {
           return connectionDescriptor;
       }
       return null;
     }
 
     private void deleteSelectedConnections() throws DataStoreException {
-        for (Iterator i = getSelectedConnectionDescriptors().iterator(); i
-                .hasNext();) {
-            ConnectionDescriptor connectionDescriptor = (ConnectionDescriptor) i
-                    .next();
+        for (ConnectionDescriptor connectionDescriptor : getSelectedConnectionDescriptors()) {
             connectionManager.deleteConnectionDescriptor(connectionDescriptor);
         }
     }
 
     private void openSelectedConnections() throws Exception {
-        for (Iterator i = getSelectedConnectionDescriptors().iterator(); i
-                .hasNext();) {
-            ConnectionDescriptor connectionDescriptor = (ConnectionDescriptor) i
-                    .next();
-            if (connectionManager.getConnection(connectionDescriptor)
-                    .isClosed()) {
+        for (ConnectionDescriptor connectionDescriptor : getSelectedConnectionDescriptors()) {
+            if (connectionManager.getConnection(connectionDescriptor).isClosed()) {
                 new PasswordPrompter().getOpenConnection(connectionManager,
                         connectionDescriptor, this);
             }
@@ -465,19 +432,15 @@ public class ConnectionManagerPanel extends JPanel {
     }
 
     private void closeSelectedConnections() throws DataStoreException {
-        for (Iterator i = getSelectedConnectionDescriptors().iterator(); i
-                .hasNext();) {
-            ConnectionDescriptor connectionDescriptor = (ConnectionDescriptor) i
-                    .next();
-            if (!connectionManager.getConnection(connectionDescriptor)
-                    .isClosed()) {
+        for (ConnectionDescriptor connectionDescriptor : getSelectedConnectionDescriptors()) {
+            if (!connectionManager.getConnection(connectionDescriptor).isClosed()) {
                 connectionManager.getConnection(connectionDescriptor).close();
             }
         }
     }
 
-    public Collection getSelectedConnectionDescriptors() {
-        return Arrays.asList(connectionJList.getSelectedValues());
+    public Collection<ConnectionDescriptor> getSelectedConnectionDescriptors() {
+        return connectionJList.getSelectedValuesList();
     }
     
     /**
@@ -487,9 +450,15 @@ public class ConnectionManagerPanel extends JPanel {
      * @return the corresponding icon
      */
     public static Icon getConnectionIcon(ConnectionDescriptor desc,
-        boolean isClosed) throws DataStoreException {
+        boolean isClosed, WorkbenchContext context) throws DataStoreException {
       String driverClassName = desc.getDataStoreDriverClassName();
-      
+      for (Object object : context.getRegistry().getEntries(DataStoreDriver.REGISTRY_CLASSIFICATION)) {
+        DataStoreDriver driver = (DataStoreDriver) object;
+        if (driver.getClass().getName().equals(driverClassName))
+          return isClosed?driver.getDisconnectedIcon() : driver.getConnectedIcon();
+      }
+      /*
+      //[mmichaud 2021-05-12] now get the icon from the DataStoreDriver interface
       if (driverClassName
           .equals(com.vividsolutions.jump.datastore.postgis.PostgisDataStoreDriver.class
               .getName())) {
@@ -516,6 +485,8 @@ public class ConnectionManagerPanel extends JPanel {
         return isClosed ? H2_DISCONNECTED_ICON : H2_CONNECTED_ICON;
       }
       // Default
+
+      */
       return isClosed ? DISCONNECTED_ICON : CONNECTED_ICON;
     }
 

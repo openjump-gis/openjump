@@ -45,7 +45,7 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  */
 public class RasterImageIO {
 
-	public ImageAndMetadata loadImage(WorkbenchContext wbContext,
+	public ImageAndMetadata loadImage(
 			String fileNameOrURL, Stats stats, Envelope viewPortEnvelope,
 			Resolution requestedRes) throws Exception {
 
@@ -292,9 +292,8 @@ public class RasterImageIO {
 			Coordinate coordinate, int band) throws Exception {
 
 		Point imageDims = getImageDimensions(fileNameOrURL);
-	//	Envelope envelope = getGeoReferencing(fileNameOrURL);
-		 Envelope envelope = getGeoReferencing(fileNameOrURL, true, new Point(
-		 		imageDims.x, imageDims.y));
+		Envelope envelope = getGeoReferencing(fileNameOrURL,
+				true, new Point(imageDims.x, imageDims.y));
 		double cellSizeX = (envelope.getMaxX() - envelope.getMinX())
 				/ imageDims.x;
 		double cellSizeY = (envelope.getMaxY() - envelope.getMinY())
@@ -417,18 +416,18 @@ public class RasterImageIO {
 		return null;
 	}
 
-	/**
-	 * Get Envelope  from file 
-	 * @param fileName
-	 * @return Envelope
-	 * @throws ReferencedImageException
-	 */
-	
-/*	public static Envelope getGeoReferencing(String fileName) throws ReferencedImageException {
-		GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(new File(fileName).toURI().toString());
-	return geoRaster.getEnvelope();
-	
-	}*/
+	///**
+	// * Get Envelope  from file
+	// * @param fileName
+	// * @return Envelope
+	// * @throws ReferencedImageException
+	// */
+	//
+	///*	public static Envelope getGeoReferencing(String fileName) throws ReferencedImageException {
+	//	GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(new File(fileName).toURI().toString());
+	//return geoRaster.getEnvelope();
+	//
+	//}*/
 	
 	/**
 	 * Substituted by method getGeoReferencing(String fileName)
@@ -920,16 +919,16 @@ public class RasterImageIO {
 		encoder.encode(bufferedImage);
 		tifOut.close();
 		 int bandCount = bufferedImage.getRaster().getNumBands();
-		  double minValue[] = new double[bandCount];
-	        double maxValue[] = new double[bandCount];
-	        double sum[] = new double[bandCount];
-	        double sumSquare[] = new double[bandCount];
-	        long cellsCount[] = new long[bandCount];
+		 double minValue[] = new double[bandCount];
+		 double maxValue[] = new double[bandCount];
+		 double sum[] = new double[bandCount];
+		 double sumSquare[] = new double[bandCount];
+		 long cellsCount[] = new long[bandCount];
 	        
-	        for(int b=0; b<bandCount; b++) {
-	            minValue[b] = Double.MAX_VALUE;
-	            maxValue[b] = -Double.MAX_VALUE;
-	        }
+		 for(int b=0; b<bandCount; b++) {
+		 	minValue[b] = Double.MAX_VALUE;
+		 	maxValue[b] = -Double.MAX_VALUE;
+		 }
 	        
 	        for(int r=0; r<bufferedImage.getHeight(); r++) {
 	            Raster raster2 = bufferedImage.getData(new Rectangle(0, r, bufferedImage.getWidth(), 1));

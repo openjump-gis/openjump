@@ -49,12 +49,13 @@ import java.util.List;
  * Inser vertices every x units along linear components of a Geometry.
  *
  * @author Micha&euml; Michaud
- * TODO should be replaced by JTS Densifier, but JTS does not take care of z value
+ * TODO maybe replaced by JTS Densifier, but at the moment JTS 1.18.1 does not
+ *      take care of z value
  */
 public class Densifier {
 
-    private Geometry geom;
-    private GeometryFactory factory;
+    private final Geometry geom;
+    private final GeometryFactory factory;
     private double maxLength = 1.0;
 
     /**
@@ -106,10 +107,10 @@ public class Densifier {
     }
     
     private Polygon densify(Polygon polygon) {
-        LinearRing exteriorRing = densify((LinearRing)polygon.getExteriorRing());
+        LinearRing exteriorRing = densify(polygon.getExteriorRing());
         LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
         for (int i = 0 ; i < holes.length ; i++) {
-            holes[i] = densify((LinearRing)polygon.getInteriorRingN(i));
+            holes[i] = densify(polygon.getInteriorRingN(i));
         }
         return factory.createPolygon(exteriorRing, holes);
     }

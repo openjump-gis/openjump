@@ -19,16 +19,14 @@ import java.awt.image.Raster;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.io.IOException;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
 import javax.media.jai.JAI;
 
-import com.vividsolutions.jump.workbench.model.Disposable;
+import com.vividsolutions.jump.workbench.model.*;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
-import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.util.metaData.MetaDataMap;
 import org.openjump.util.metaData.ObjectContainingMetaInformation;
 
@@ -37,14 +35,9 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.Timer;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.AbstractLayerable;
-import com.vividsolutions.jump.workbench.model.LayerManager;
-import com.vividsolutions.jump.workbench.model.Layerable;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerNameRenderer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.Viewport;
@@ -61,13 +54,14 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  * @version $Rev: 2509 $
  * modified: [sstein]: 16.Feb.2009 changed logger-entries to comments, used frame.warnUser
  */
-public final class RasterImageLayer extends AbstractLayerable
+// TODO ObjectContainingMetaInformation seems a bit redundant with Blackboard
+public final class RasterImageLayer extends GeoReferencedLayerable
         implements ObjectContainingMetaInformation, Disposable {
     
-    protected static Blackboard blackboard = null;
+    //protected static Blackboard blackboard = null;
     
-    protected final static String BLACKBOARD_KEY_PLUGINCONTEXT = PlugInContext.class.getName();
-    protected final static String BLACKBOARD_KEY_WORKBENCHCONTEXT = PlugInContext.class.getName();
+    //protected final static String BLACKBOARD_KEY_PLUGINCONTEXT = PlugInContext.class.getName();
+    //protected final static String BLACKBOARD_KEY_WORKBENCHCONTEXT = PlugInContext.class.getName();
     
     protected int lastImgProcessingMode = 0;
     
@@ -107,7 +101,7 @@ public final class RasterImageLayer extends AbstractLayerable
     protected BufferedImage scaledBufferedImage = null;
 
     protected Envelope actualImageEnvelope = null, visibleEnv = null, oldVisibleEnv;
-    protected Envelope originalImageEnvelope = null;
+    //protected Envelope originalImageEnvelope = null;
     
     /**
      * Flag to decide, if events are fired automatically, if the appearance (imageEnvelope, etc.) changes.<br>
@@ -153,7 +147,7 @@ public final class RasterImageLayer extends AbstractLayerable
      *@return the Envelope as string
      */
     public String getXmlEnvelope(){
-        return this.originalImageEnvelope.toString();
+        return getEnvelope().toString();
     }
 
     /**
@@ -184,14 +178,18 @@ public final class RasterImageLayer extends AbstractLayerable
      * @param imageToDisplay the image (if already loaded) or null
      * @param wholeImageEnvelope the image envelope in model (real world) coordinates
      */
-    public RasterImageLayer(String name, LayerManager layerManager, String imageFileName,
-                            BufferedImage imageToDisplay, Envelope wholeImageEnvelope) {
+    public RasterImageLayer(String name,
+                            LayerManager layerManager,
+                            String imageFileName,
+                            BufferedImage imageToDisplay,
+                            Envelope wholeImageEnvelope) {
         super(name, layerManager);
         
         getBlackboard().put(LayerNameRenderer.USE_CLOCK_ANIMATION_KEY, true);
         
         this.imageFileName = imageFileName;
-        this.originalImageEnvelope = wholeImageEnvelope;
+        setEnvelope(wholeImageEnvelope);
+        //this.originalImageEnvelope = wholeImageEnvelope;
         
         if (imageToDisplay != null)
             this.setImage(imageToDisplay);
@@ -218,7 +216,11 @@ public final class RasterImageLayer extends AbstractLayerable
      *@param newRaster the raster (if already loaded) or null
      *@param wholeImageEnvelope the image envelope in model (real world) coordinates
      */
-    public RasterImageLayer(String name, LayerManager layerManager, BufferedImage imageToDisplay, Raster newRaster, Envelope wholeImageEnvelope) {
+    public RasterImageLayer(String name,
+                            LayerManager layerManager,
+                            BufferedImage imageToDisplay,
+                            Raster newRaster,
+                            Envelope wholeImageEnvelope) {
         super(name, layerManager);
 
         if (imageToDisplay == null || newRaster == null) {
@@ -229,7 +231,8 @@ public final class RasterImageLayer extends AbstractLayerable
         getBlackboard().put(LayerNameRenderer.USE_CLOCK_ANIMATION_KEY, true);
         
         this.setNeedToKeepImage(true);
-        this.originalImageEnvelope = wholeImageEnvelope;
+        setEnvelope(wholeImageEnvelope);
+        //this.originalImageEnvelope = wholeImageEnvelope;
         
         this.setImage(imageToDisplay);
 
@@ -244,31 +247,45 @@ public final class RasterImageLayer extends AbstractLayerable
         //[sstein end]
     }
 
-    @Override
-    public Blackboard getBlackboard() {
-        if (RasterImageLayer.blackboard == null)
-            RasterImageLayer.blackboard = new Blackboard();
-        
-        return RasterImageLayer.blackboard;
-    }
+    //@Override
+    //public Blackboard getBlackboard() {
+    //    if (getBlackboard() == null)
+    //        RasterImageLayer.blackboard = new Blackboard();
+    //
+    //    return RasterImageLayer.blackboard;
+    //}
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        RasterImageLayer raster = null;
-        try {
-            raster = new RasterImageLayer(getName(), getLayerManager(), getImageFileName(),
-                    getImageForDisplay(), new Envelope(getWholeImageEnvelope()));
-            raster.needToKeepImage = needToKeepImage;
-        } catch (Exception ex) {
-            Logger.error(ex);
-        }
-        // clone must produce a layerable with the same name (as for Layer) not a unique name
-        if (raster != null) {
-            raster.getLayerManager().setFiringEvents(false);
-            raster.setName(getName());
-            raster.getLayerManager().setFiringEvents(true);
-        }
-        return raster;
+        return (imageFileName == null) ?
+                new RasterImageLayer(
+                        getName(),
+                        getLayerManager(),
+                        getImage(),
+                        getActualRasterData(),
+                        getEnvelope())
+                : new RasterImageLayer(
+                        getName(),
+                        getLayerManager(),
+                        getImageFileName(),
+                        getImage(),
+                        getEnvelope());
+        //RasterImageLayer raster = null;
+        //try {
+        //    BufferedImage im = image == null ? getImageForDisplay() : image;
+        //    raster = new RasterImageLayer(getName(), getLayerManager(), getImageFileName(),
+        //            getImageForDisplay(), new Envelope(getWholeImageEnvelope()));
+        //    raster.needToKeepImage = needToKeepImage;
+        //} catch (Exception ex) {
+        //    Logger.error(ex);
+        //}
+        //// clone must produce a layerable with the same name (as for Layer) not a unique name
+        //if (raster != null) {
+        //    raster.getLayerManager().setFiringEvents(false);
+        //    raster.setName(getName());
+        //    raster.getLayerManager().setFiringEvents(true);
+        //}
+        //return raster;
     }
     
     /**
@@ -373,10 +390,10 @@ public final class RasterImageLayer extends AbstractLayerable
                             getAvailRAM()*0.01/1024 + "kb + 10240");
                     return null;
                 } else {
-                    System.out.println("Reload image");
+                    Logger.debug("Reload image");
                 }
                 // Load the part of the image intersecting the viewport and setting this.image
-                reLoadImage();
+                reLoadImage(layerViewPanel);
                 if(image == null) {
                     // If image does not intersect viewport, it is null
                     return null;
@@ -391,6 +408,7 @@ public final class RasterImageLayer extends AbstractLayerable
 
                 // Apply symbology to this.image
                 imageToDraw = stretchImageValuesForDisplay();
+                layerViewPanel.getViewport().update();
                 setImage(imageToDraw);
 
                 //if(getCommittedMemory() + minRamToKeepFree < availRAM){
@@ -408,7 +426,7 @@ public final class RasterImageLayer extends AbstractLayerable
                 if (scaledBufferedImage == null || scaleXImg2Canvas != oldScaleXImg2Canvas ||
                         !RasterImageLayer.tilesAreNotNullAndCongruent( visibleEnv, oldVisibleEnv)){
 
-                    scaledBufferedImage = getVisiblePartOfTheImage( getImageForDisplay(), imagePart );
+                    scaledBufferedImage = getVisiblePartOfTheImage( getImageForDisplay(layerViewPanel), imagePart );
 
                     if (scaledBufferedImage != null) {
                         // avoid an 1 pixel by 1 pixel image to get scaled to thousands by thousands pixels causing an out of memory error
@@ -492,30 +510,32 @@ public final class RasterImageLayer extends AbstractLayerable
         }
     }
     
-    public void reLoadImage() throws Exception {
+    public void reLoadImage(LayerViewPanel layerViewPanel) throws Exception {
         
         //if (image == null && !needToKeepImage){
         
         RasterImageIO rasterImageIO = new RasterImageIO();
 
-        Viewport viewport = getWorkbenchContext().getLayerViewPanel().getViewport();
-        if(!viewport.getEnvelopeInModelCoordinates().intersects(originalImageEnvelope) &&
-                getWorkbenchContext().getLayerManager().getLayerables(Layerable.class).isEmpty()) {
-            viewport.zoom(originalImageEnvelope);
+        Viewport viewport = layerViewPanel.getViewport();
+        if(!viewport.getEnvelopeInModelCoordinates().intersects(getEnvelope())
+                && layerViewPanel.getLayerManager().getLayerables(Layerable.class).isEmpty()
+        ) {
+            viewport.zoom(getEnvelope());
         }
 
         Resolution requestedRes = RasterImageIO.calcRequestedResolution(viewport);
         long start = Timer.milliSecondsSince(0);
         Logger.debug("Try reading "+getName());
         // Get the part of the image intersecting the viewport
-        ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(getWorkbenchContext(), imageFileName, stats, viewport.getEnvelopeInModelCoordinates(), requestedRes);
+        ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(imageFileName,
+                stats, viewport.getEnvelopeInModelCoordinates(), requestedRes);
         Logger.debug("Reading '"+getName()+"' took "+Timer.secondsSinceString(start)+"s.");
         metadata = imageAndMetadata.getMetadata();
         image = imageAndMetadata.getImage();
         numBands = metadata.getStats().getBandCount();
         noDataValue = imageAndMetadata.getMetadata().getNoDataValue();
         stats = imageAndMetadata.getMetadata().getStats();
-        originalImageEnvelope = imageAndMetadata.getMetadata().getOriginalImageEnvelope();
+        setEnvelope(imageAndMetadata.getMetadata().getOriginalImageEnvelope());
         actualImageEnvelope = imageAndMetadata.getMetadata().getActualEnvelope();
         originalCellSize = imageAndMetadata.getMetadata().getOriginalCellSize();        
         actualCellSize = imageAndMetadata.getMetadata().getActualCellSize();
@@ -525,16 +545,16 @@ public final class RasterImageLayer extends AbstractLayerable
         }
     }
     
-    /**
-     * use this to assign the raster data again
-     * the method is called from  getRasterData();
-     */
-    public void reLoadImageButKeepImageForDisplay() throws Exception {
-       BufferedImage pi = getImageForDisplay();
-       //[sstein 24.Sept.2010] commented out:
-       //PlanarImage dontNeedThisImage = RasterImageLayer.loadImage( context, imageFileName); //causes error for .clone()
-       this.setImage(pi);
-    }
+    ///**
+    // * use this to assign the raster data again
+    // * the method is called from  getRasterData();
+    // */
+    //public void reLoadImageButKeepImageForDisplay() throws Exception {
+    //   BufferedImage pi = getImageForDisplay(layerViewPanel);
+    //   //[sstein 24.Sept.2010] commented out:
+    //   //PlanarImage dontNeedThisImage = RasterImageLayer.loadImage( context, imageFileName); //causes error for .clone()
+    //   this.setImage(pi);
+    //}
     
     protected BufferedImage stretchImageValuesForDisplay() throws NoninvertibleTransformException{
 
@@ -644,7 +664,7 @@ public final class RasterImageLayer extends AbstractLayerable
      * @return Envelope with the real world coordinates of the image
      */
     public Envelope getWholeImageEnvelope() {
-        return originalImageEnvelope;
+        return getEnvelope();
     }
     
     public Envelope getActualImageEnvelope() {
@@ -657,8 +677,8 @@ public final class RasterImageLayer extends AbstractLayerable
      * @param envelope the Envelope
      */
     private void setWholeImageEnvelope(Envelope envelope) {
-        originalImageEnvelope = envelope;
-        
+        setEnvelope(envelope);
+
         forceTotalRepaint();
         
         if (this.isFiringAppearanceEvents())
@@ -679,11 +699,11 @@ public final class RasterImageLayer extends AbstractLayerable
      *@return the Envelope as string
      */
     public String getXmlWholeImageEnvelope(){
-        return this.originalImageEnvelope.toString();
+        return getEnvelope().toString();
     }
     
     public String getXmlActualImageEnvelope() {
-        return this.actualImageEnvelope.toString();
+        return actualImageEnvelope.toString();
     }
     
     /**
@@ -731,7 +751,7 @@ public final class RasterImageLayer extends AbstractLayerable
      * @return return the imageEnvelope (= bounding box) as a geometry,
      */
     public Geometry getWholeImageEnvelopeAsGeometry(){
-        return new GeometryFactory().toGeometry(originalImageEnvelope);
+        return new GeometryFactory().toGeometry(getEnvelope());
     }
     
     public Geometry getActualImageEnvelopeAsGeometry(){
@@ -844,7 +864,8 @@ public final class RasterImageLayer extends AbstractLayerable
         return scaleImage(toBeScaled, (float)XscaleImg2Canvas, (float)Math.abs(YscaleImg2Canvas) );
 
     }
-    
+
+    /*
     public BufferedImage getTileAsImage( Envelope wantedEnvelope ) throws Exception{
 
         double imgWidth = image.getWidth();
@@ -919,17 +940,19 @@ public final class RasterImageLayer extends AbstractLayerable
         this.clearImageAndRaster(false);
         return result;
     }
+    */
+
     
-    protected WorkbenchContext getWorkbenchContext(){
-        return (WorkbenchContext)this.getBlackboard().get(BLACKBOARD_KEY_WORKBENCHCONTEXT);
-    }
+    //protected WorkbenchContext getWorkbenchContext(){
+    //    return (WorkbenchContext)this.getBlackboard().get(BLACKBOARD_KEY_WORKBENCHCONTEXT);
+    //}
     
-    public static void setWorkbenchContext(WorkbenchContext wContext){
-        if (blackboard==null)
-            blackboard = new Blackboard();
-        
-        blackboard.put(BLACKBOARD_KEY_WORKBENCHCONTEXT, wContext);
-    }
+    //public static void setWorkbenchContext(WorkbenchContext wContext){
+    //    if (blackboard==null)
+    //        blackboard = new Blackboard();
+    //
+    //    blackboard.put(BLACKBOARD_KEY_WORKBENCHCONTEXT, wContext);
+    //}
     
     public Rectangle getDrawingRectangle( double imgWidth, double imgHeight, Envelope imageEnv, Viewport viewport ) throws NoninvertibleTransformException{
         
@@ -1068,9 +1091,9 @@ public final class RasterImageLayer extends AbstractLayerable
      * returns the image, this can be modified - i.e. is just a representation. 
      * @return the image
      */
-    public BufferedImage getImageForDisplay() throws Exception {
+    public BufferedImage getImageForDisplay(LayerViewPanel layerViewPanel) throws Exception {
         if (image == null)
-            reLoadImage();
+            reLoadImage(layerViewPanel);
         return image;
     }
     
@@ -1348,7 +1371,7 @@ public final class RasterImageLayer extends AbstractLayerable
         
         double imgWidth = origImageWidth;
         double imgHeight = origImageHeight;
-        Envelope imageEnv = originalImageEnvelope;
+        Envelope imageEnv = getEnvelope();
         
         double minVisibleX = Math.max(envelope.getMinX(), imageEnv.getMinX());
         double minVisibleY = Math.max(envelope.getMinY(), imageEnv.getMinY());
@@ -1458,11 +1481,11 @@ public final class RasterImageLayer extends AbstractLayerable
 
     public Double getCellValue(double coordX, double coordY, int band) throws IOException {
         
-        double cellSizeX = (originalImageEnvelope.getMaxX() - originalImageEnvelope.getMinX()) / origImageWidth;
-        double cellSizeY = (originalImageEnvelope.getMaxY() - originalImageEnvelope.getMinY()) / origImageHeight;
+        double cellSizeX = (getEnvelope().getMaxX() - getEnvelope().getMinX()) / origImageWidth;
+        double cellSizeY = (getEnvelope().getMaxY() - getEnvelope().getMinY()) / origImageHeight;
         
-        int col = (int) Math.floor((coordX - originalImageEnvelope.getMinX()) / cellSizeX);
-        int row = origImageHeight - (int) Math.floor((coordY - originalImageEnvelope.getMinY()) / cellSizeY) - 1;
+        int col = (int) Math.floor((coordX - getEnvelope().getMinX()) / cellSizeX);
+        int row = origImageHeight - (int) Math.floor((coordY - getEnvelope().getMinY()) / cellSizeY) - 1;
         
         if(col <0 || col >= origImageWidth || row <0 || row >= origImageHeight) return null;
 
@@ -1516,10 +1539,10 @@ public final class RasterImageLayer extends AbstractLayerable
         this.symbology = symbology;
         symbologyChanged = true;
         scaledBufferedImage = null;
-        LayerViewPanel layerViewPanel = getWorkbenchContext().getLayerViewPanel();
-        if(layerViewPanel != null) {
-            layerViewPanel.getViewport().update();
-        }
+        //LayerViewPanel layerViewPanel = getWorkbenchContext().getLayerViewPanel();
+        //if(layerViewPanel != null) {
+        //    layerViewPanel.getViewport().update();
+        //}
     }
 
     public Raster getActualRasterData() {
@@ -1565,14 +1588,14 @@ public final class RasterImageLayer extends AbstractLayerable
     }
    
     //[Giuseppe Aruta 04/01/2017] SRS info for RasterImageLayer.class
-    private SRSInfo srsInfo;
+    //private SRSInfo srsInfo;
 
-    public SRSInfo getSRSInfo() {
-        return srsInfo;
-    }
+    //public SRSInfo getSRSInfo() {
+    //    return srsInfo;
+    //}
 
-    public void setSRSInfo(SRSInfo srs) {
-        this.srsInfo = srs;
-    }
+    //public void setSRSInfo(SRSInfo srs) {
+    //    this.srsInfo = srs;
+    //}
     
 }

@@ -87,8 +87,9 @@ public class FeatureInfoPlugIn extends AbstractPlugIn {
                 ((TaskFrameProxy) context.getActiveInternalFrame()).getTaskFrame());
         infoFrame.setSize(500, 300);
 
-        for (Iterator i = context.getLayerManager().iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
+        // TODO should be nice to extend FeatureInfoPlugIn to non-layer layerables
+        for (Iterator<Layer> i = context.getLayerManager().iterator(Layer.class); i.hasNext();) {
+            Layer layer = i.next();
 
             if (((SelectionManagerProxy) context.getActiveInternalFrame())
                 .getSelectionManager()

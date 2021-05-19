@@ -32,11 +32,10 @@
 package com.vividsolutions.jump.workbench.ui.renderer;
 
 import java.awt.Graphics2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -111,17 +110,16 @@ public class LayerRenderer extends FeatureCollectionRenderer {
         // [Jon Aquino 2005-03-01]
         Assert.isTrue(layerable.getMaxScale() == null
                 || layerable.getMinScale() == null
-                || layerable.getMaxScale().doubleValue() <= layerable
-                        .getMinScale().doubleValue());
+                || layerable.getMaxScale() <= layerable.getMinScale());
         if (!layerable.isScaleDependentRenderingEnabled()) {
             return true;
         }
         if (layerable.getMaxScale() != null
-                && scale(panel) < layerable.getMaxScale().doubleValue()) {
+                && scale(panel) < layerable.getMaxScale()) {
             return false;
         }
         if (layerable.getMinScale() != null
-                && scale(panel) > layerable.getMinScale().doubleValue()) {
+                && scale(panel) > layerable.getMinScale()) {
             return false;
         }
         return true;
@@ -135,9 +133,9 @@ public class LayerRenderer extends FeatureCollectionRenderer {
         return 1d / panel.getViewport().getScale();
     }
 
-    protected Collection styles() {
+    protected Collection<Style> styles() {
         //new ArrayList to avoid ConcurrentModificationExceptions. [Jon Aquino]
-        ArrayList styles = new ArrayList(layer.getStyles());
+        List<Style> styles = new ArrayList<>(layer.getStyles());
         styles.remove(layer.getVertexStyle());
         styles.remove(layer.getLabelStyle());
 
@@ -148,14 +146,14 @@ public class LayerRenderer extends FeatureCollectionRenderer {
         return styles;
     }
 
-    protected boolean useImageCaching(Map layerToFeaturesMap) {
+    protected boolean useImageCaching(Map<Layer, List<Feature>> layerToFeaturesMap) {
         if (layer.getBlackboard().get(ALWAYS_USE_IMAGE_CACHING_KEY, false)) {
             return true;
         }
         return super.useImageCaching(layerToFeaturesMap);
     }
 
-    protected Map layerToFeaturesMap() {
+    protected Map<Layer, Collection<Feature>> layerToFeaturesMap() {
         Envelope viewportEnvelope = panel.getViewport()
                 .getEnvelopeInModelCoordinates();
 

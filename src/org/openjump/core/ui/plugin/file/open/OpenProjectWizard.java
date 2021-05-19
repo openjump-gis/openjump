@@ -433,7 +433,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         Viewport viewport = context.getLayerViewPanel().getViewport();
         Resolution requestedRes = RasterImageIO
                 .calcRequestedResolution(viewport);
-        ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(context,
+        ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(/*context,*/
                 ril.getImageFileName(), null,
                 viewport.getEnvelopeInModelCoordinates(), requestedRes);
 
@@ -442,7 +442,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         // [Giuseppe Aruta 2017/11/13] Since raster file is reloaded we
         // detect raster and SRS info and store them as metadata.
         try {
-            ril.setSRSInfo(ProjUtils.getSRSInfoFromLayerSource(ril));
+            ril.setSrsInfo(ProjUtils.getSRSInfoFromLayerSource(ril));
         } catch (Exception e1) {
             e1.printStackTrace();
         }
@@ -456,11 +456,11 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                 .getWholeImageEnvelope().getWidth());
         mih.addMetaInformation(I18N.get("real-world-height"), ril
                 .getWholeImageEnvelope().getHeight());
-        mih.addMetaInformation("srid", ril.getSRSInfo().getCode());
-        if (ril.getSRSInfo().getCode().equals("0")) {
+        mih.addMetaInformation("srid", ril.getSrsInfo().getCode());
+        if (ril.getSrsInfo().getCode().equals("0")) {
             mih.addMetaInformation("srid-location", "");
         } else {
-            mih.addMetaInformation("srid-location", ril.getSRSInfo()
+            mih.addMetaInformation("srid-location", ril.getSrsInfo()
                     .getSource());
         }
 

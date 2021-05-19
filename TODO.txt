@@ -53,8 +53,11 @@
             - wfsplugin : edso
             - horae : mantaer
 
-        refactoring : we should reorganize layerable interface and subclasses a bit
+        refactoring :
+            - we should reorganize layerable interface and subclasses a bit
             so that we have less code smell like if layerable instance of ...
+            - if possible simplify PlugIn hierarchy by merging AbstractPlugIn
+            and AbstractUiPlugIn (as well as threaded version)
 
         redundancy : clean code, remove redundancy (started)
 

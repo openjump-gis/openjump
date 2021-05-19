@@ -44,59 +44,54 @@ import com.vividsolutions.jump.util.CoordinateArrays;
  */
 public class GeometryMicroscope {
 
-    private List geomList;
-    private Envelope env;
-    private double minSep;
+    private final List<Geometry> geomList;
+    private final Envelope env;
+    private final double minSep;
 
-    public GeometryMicroscope(List geomList, Envelope env, double minSep) {
+    public GeometryMicroscope(List<Geometry> geomList, Envelope env, double minSep) {
         this.geomList = geomList;
         this.env = env;
         this.minSep = minSep;
     }
 
-    public List getAdjusted() {
-        List segList = getSegList();
+    public List<Geometry> getAdjusted() {
+        List<LineSegment> segList = getSegList();
         MicroscopePointAdjuster mpa = new MicroscopePointAdjuster(segList, env,
                 minSep);
-        Map ptMap = mpa.getAdjustedPointMap();
+        Map<Coordinate,Coordinate> ptMap = mpa.getAdjustedPointMap();
         applyAdjustment(ptMap);
 
         return geomList;
     }
 
-    private void applyAdjustment(Map ptMap) {
+    private void applyAdjustment(Map<Coordinate,Coordinate> ptMap) {
         CoordinateAdjusterFilter coordAdjFilter = new CoordinateAdjusterFilter(ptMap);
 
-        for (Iterator i = geomList.iterator(); i.hasNext();) {
-            Geometry geom = (Geometry) i.next();
+        for (Geometry geom : geomList) {
             geom.apply(coordAdjFilter);
         }
     }
 
-    private List getSegList() {
-        List segList = new ArrayList();
+    private List<LineSegment> getSegList() {
+        List<LineSegment> segList = new ArrayList<>();
 
-        for (Iterator i = geomList.iterator(); i.hasNext();) {
-            Geometry geom = (Geometry) i.next();
-            List coordArrayList = CoordinateArrays.toCoordinateArrays(geom,
-                    false);
+        for (Geometry geom : geomList) {
+            List<Coordinate[]> coordArrayList =
+                CoordinateArrays.toCoordinateArrays(geom, false);
             addSegments(coordArrayList, segList);
         }
 
         return segList;
     }
 
-    private void addSegments(List coordArrayList, List segList) {
+    private void addSegments(List<Coordinate[]> coordArrayList, List<LineSegment> segList) {
         LineSegmentEnvelopeIntersector linesegEnvInt = new LineSegmentEnvelopeIntersector();
 
         // for now just return all segs
         // in future, only return segs which intersect env
-        for (Iterator i = coordArrayList.iterator(); i.hasNext();) {
-            Coordinate[] coord = (Coordinate[]) i.next();
-
+        for (Coordinate[] coord : coordArrayList) {
             for (int j = 0; j < (coord.length - 1); j++) {
                 LineSegment seg = new LineSegment(coord[j], coord[j + 1]);
-
                 if (linesegEnvInt.touches(seg, env)) {
                     segList.add(seg);
                 }
@@ -104,16 +99,16 @@ public class GeometryMicroscope {
         }
     }
 
-    public class CoordinateAdjusterFilter implements CoordinateFilter {
-        Map ptMap;
+    public static class CoordinateAdjusterFilter implements CoordinateFilter {
 
-        CoordinateAdjusterFilter(Map ptMap) {
+        Map<Coordinate,Coordinate> ptMap;
+
+        CoordinateAdjusterFilter(Map<Coordinate,Coordinate> ptMap) {
             this.ptMap = ptMap;
         }
 
         public void filter(Coordinate p) {
-            Coordinate adj = (Coordinate) ptMap.get(p);
-
+            Coordinate adj = ptMap.get(p);
             if (adj != null) {
                 p.x = adj.x;
                 p.y = adj.y;

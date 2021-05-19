@@ -144,7 +144,7 @@ public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
         plugInContext = context;
 		WorkbenchContext workbenchContext = context.getWorkbenchContext();
 		
-        RasterImageLayer.setWorkbenchContext(context.getWorkbenchContext());
+        //RasterImageLayer.setWorkbenchContext(context.getWorkbenchContext());
         
         if (context.getWorkbenchContext().getLayerViewPanel() == null){
             //logger.printWarning("rendering manager is NULL");

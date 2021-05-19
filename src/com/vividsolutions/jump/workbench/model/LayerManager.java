@@ -34,19 +34,15 @@ package com.vividsolutions.jump.workbench.model;
 import java.awt.Color;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
+import com.vividsolutions.jump.util.ObjectGraphIterator;
+import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.coordsys.CoordinateSystem;
-import com.vividsolutions.jump.coordsys.Reprojector;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.util.Blackboard;
@@ -63,28 +59,31 @@ import com.vividsolutions.jump.workbench.ui.style.AbstractPalettePanel;
 public class LayerManager {
 
     private static int layerManagerCount = 0;
-    private UndoableEditReceiver undoableEditReceiver = new UndoableEditReceiver();
-    private CoordinateSystem coordinateSystem = CoordinateSystem.UNSPECIFIED;
+
+    private final UndoableEditReceiver undoableEditReceiver = new UndoableEditReceiver();
 
     // As we introduce threaded drawing and other threaded tasks to the
     // workbench, we should be careful not to create situations in which
     // ConcurrentModificationExceptions can occur. [Jon Aquino]
     // Go with List rather than name-to-category map, because category names can
     // now change. [Jon Aquino]
-    private ArrayList<Category> categories = new ArrayList<>();
+    private final List<Category> categories = new ArrayList<>();
 
     // Store weak references to layers rather than the layers themselves -- if a
     // layer
     // is lucky enough to have all its strong references released, let it
     // dispose of
     // itself immediately [Jon Aquino]
-    private ArrayList<WeakReference<Layerable>> layerReferencesToDispose = new ArrayList<>();
-    private boolean firingEvents = true;
-    private ArrayList<LayerListener> layerListeners = new ArrayList<>();
-    private Iterator<Color> firstColors;
-    private Blackboard blackboard = new Blackboard();
+    private final List<WeakReference<Layerable>> layerReferencesToDispose = new ArrayList<>();
 
+    private final List<LayerListener> layerListeners = new ArrayList<>();
+    private final Iterator<Color> firstColors;
+    private final Blackboard blackboard = new Blackboard();
+
+    // Variables
+    private boolean firingEvents = true;
     private Task task;
+    private CoordinateSystem coordinateSystem = CoordinateSystem.UNSPECIFIED;
 
     public LayerManager() {
         firstColors = firstColors().iterator();
@@ -147,12 +146,16 @@ public class LayerManager {
 
     public void addLayerable(String categoryName, Layerable layerable) {
 
+        // TODO CoordinateSystem is unused, but it should be set for any Layerable, not just Layerable
+        if (layerable instanceof GeoReferencedLayerable) {
 
-        if (layerable instanceof Layer) {
             if (size() == 0 && getCoordinateSystem() == CoordinateSystem.UNSPECIFIED) {
-                setCoordinateSystem(((Layer) layerable)
-                        .getFeatureCollectionWrapper().getFeatureSchema()
-                        .getCoordinateSystem());
+                SRSInfo srsInfo = ((GeoReferencedLayerable) layerable).getSrsInfo();
+                if (srsInfo != null && srsInfo.getRegistry().equals(SRSInfo.Registry.EPSG)) {
+                    CoordinateSystem crs = new CoordinateSystem(srsInfo.getDescription(),
+                        Integer.parseInt(srsInfo.getCode()), null);
+                    setCoordinateSystem(crs);
+                }
             }
 // [12/2017 ede] reprojection is not properly implemented as of right now
 //            else {
@@ -175,31 +178,33 @@ public class LayerManager {
         fireLayerChanged(layerable, LayerEventType.METADATA_CHANGED);
     }
 
-    private void reproject(Layer layer, CoordinateSystem coordinateSystem) {
-        try {
-            Assert.isTrue(
-                    indexOf(layer) == -1,
-                    "If the LayerManager contained this layer, we'd need to be concerned about rolling back on an error [Jon Aquino]");
-
-            if (!Reprojector.instance().wouldChangeValues(
-                    layer.getFeatureCollectionWrapper().getFeatureSchema()
-                            .getCoordinateSystem(), coordinateSystem)) {
-                return;
-            }
-
-            for (Feature feature : layer.getFeatureCollectionWrapper().getFeatures()) {
-                Reprojector.instance().reproject(
-                        feature.getGeometry(),
-                        layer.getFeatureCollectionWrapper().getFeatureSchema()
-                                .getCoordinateSystem(), coordinateSystem);
-            }
-        } finally {
-            // Even if #isReprojectionNecessary returned false, we still need to
-            // set the CoordinateSystem to the new value [Jon Aquino]
-            layer.getFeatureCollectionWrapper().getFeatureSchema()
-                    .setCoordinateSystem(coordinateSystem);
-        }
-    }
+    //// Unused : we don't want to reproject new layers automatically,
+    //// even if they don't match the project's CoordinateReferenceSystem
+    //private void reproject(Layer layer, CoordinateSystem coordinateSystem) {
+    //    try {
+    //        Assert.isTrue(
+    //                indexOf(layer) == -1,
+    //                "If the LayerManager contained this layer, we'd need to be concerned about rolling back on an error [Jon Aquino]");
+//
+    //        if (!Reprojector.instance().wouldChangeValues(
+    //                layer.getFeatureCollectionWrapper().getFeatureSchema()
+    //                        .getCoordinateSystem(), coordinateSystem)) {
+    //            return;
+    //        }
+//
+    //        for (Feature feature : layer.getFeatureCollectionWrapper().getFeatures()) {
+    //            Reprojector.instance().reproject(
+    //                    feature.getGeometry(),
+    //                    layer.getFeatureCollectionWrapper().getFeatureSchema()
+    //                            .getCoordinateSystem(), coordinateSystem);
+    //        }
+    //    } finally {
+    //        // Even if #isReprojectionNecessary returned false, we still need to
+    //        // set the CoordinateSystem to the new value [Jon Aquino]
+    //        layer.getFeatureCollectionWrapper().getFeatureSchema()
+    //                .setCoordinateSystem(coordinateSystem);
+    //    }
+    //}
 
     public void addCategory(String categoryName) {
         addCategory(categoryName, categories.size());
@@ -238,7 +243,7 @@ public class LayerManager {
         return null;
     }
 
-    public List getCategories() {
+    public List<Category> getCategories() {
         return Collections.unmodifiableList(categories);
     }
 
@@ -258,6 +263,15 @@ public class LayerManager {
         return layer;
     }
 
+    /**
+     *
+     * @param  categoryName name of the category where the Layer will be added
+     * @param layerName the Layer name
+     * @param featureCollection the new FeatureCollection which will be added
+     *                          or which will replace the one in the previous
+     *                          Layer named layerName if any
+     * @return the Layer with its new FeatureCollection
+     */
     public Layer addOrReplaceLayer(String categoryName, String layerName,
             FeatureCollection featureCollection) {
         Layer oldLayer = getLayer(layerName);
@@ -295,8 +309,7 @@ public class LayerManager {
     }
 
     private boolean isExistingLayerableName(String name) {
-        for (Object object : getLayerables(Layerable.class)) {
-            Layerable layerable = (Layerable) object;
+        for (Layerable layerable : getLayerables(Layerable.class)) {
 
             if (layerable.getName().equals(name)) {
                 return true;
@@ -330,7 +343,7 @@ public class LayerManager {
      */
     private void remove(Layerable[] layerables, boolean dispose) {
         for (Layerable layerable : layerables) {
-            // iterate over cats to find layer
+            // iterate over categories to find layer
             for (Category category : categories) {
                 int index = category.indexOf(layerable);
 
@@ -406,12 +419,9 @@ public class LayerManager {
         // [sstein 2.Feb.2007] new line by Larry
         for (final LayerListener layerListener : new ArrayList<>(layerListeners)) {// LDB
                                                                                    // added
-            fireLayerEvent(new Runnable() {
-                public void run() {
-                    layerListener.categoryChanged(new CategoryEvent(category,
-                            type, categoryIndex));
-                }
-            });
+            fireLayerEvent(() ->
+                layerListener.categoryChanged(new CategoryEvent(category, type, categoryIndex))
+            );
         }
     }
 
@@ -437,12 +447,9 @@ public class LayerManager {
 
         // New ArrayList to avoid ConcurrentModificationException [Jon Aquino]
         for (final LayerListener layerListener : new ArrayList<>(layerListeners)) {
-            fireLayerEvent(new Runnable() {
-                public void run() {
-                    layerListener.featuresChanged(new FeatureEvent(features,
-                            type, layer, oldFeatureClones));
-                }
-            });
+            fireLayerEvent(() ->
+                layerListener.featuresChanged(new FeatureEvent(features, type, layer, oldFeatureClones))
+            );
         }
     }
 
@@ -485,12 +492,11 @@ public class LayerManager {
 
         // New ArrayList to avoid ConcurrentModificationException [Jon Aquino]
         for (final LayerListener layerListener : new ArrayList<>(layerListeners)) {
-            fireLayerEvent(new Runnable() {
-                public void run() {
-                    layerListener.layerChanged(new LayerEvent(layerable,
-                            layerChangeType, category, layerIndex));
-                }
-            });
+            fireLayerEvent(() ->
+                layerListener.layerChanged(
+                    new LayerEvent(layerable, layerChangeType, category, layerIndex)
+                )
+            );
         }
     }
 
@@ -540,11 +546,11 @@ public class LayerManager {
 
         for (Iterator<T> i = layerables.iterator(); i.hasNext();) {
             T layerable = i.next();
-
+            // TODO : why only Layers have drawingLast attribute ? [mmichaud]
             if (layerable instanceof Layer) {
                 Layer layer = (Layer) layerable;
                 if (layer.isDrawingLast()) {
-                    layersDrawnLast.add((T) layer);
+                    layersDrawnLast.add(layerable);
                     i.remove();
                 }
             }
@@ -554,20 +560,65 @@ public class LayerManager {
     }
 
     /**
-     * @return Layers, not all Layerables
+     * @return an iterator of layerables. Same as getLayerables but avoid building
+     *         collections
+     * WARNING : old iterator() returning an iterator of Layers only has been removed
+     * and all classes using it in OpenJUMP core have been updated
      */
-    public Iterator<Layer> iterator() {
+    public <T> Iterator<T> iterator(Class<T> clazz) {
         // <<TODO:PERFORMANCE>> Create an iterator that doesn't build a
         // Collection of Layers first (unlike #getLayers) [Jon Aquino]
-        return getLayers().iterator();
+        //return getLayers().iterator();
+        final Iterator<Object> iterator = new ObjectGraphIterator<>(LayerManager.this, input -> {
+            if (input instanceof LayerManager) {
+                return ((LayerManager) input).getCategories().iterator();
+            }
+            if (input instanceof Category) {
+                if (clazz.isInstance(input)) return input;
+                return ((Category) input).iterator();
+            }
+            if (input instanceof Layerable) {
+                return input;
+            }
+            throw new ClassCastException();
+        });
+        return new Iterator<T>() {
+            Object nextNode = null;
+            boolean hasNext = false;
+            boolean nextConsumed = true;
+            public boolean hasNext() {
+                if (nextConsumed) {
+                    hasNext = iterator.hasNext();
+                    if (hasNext) {
+                        nextNode = iterator.next();
+                        if (!(clazz.isInstance(nextNode))) {
+                            return hasNext();
+                        } else {
+                            nextConsumed = false;
+                            return true;
+                        }
+                    } else {
+                        nextConsumed = false;
+                        return false;
+                    }
+                } else return hasNext;
+            }
+            public T next() {
+                if (hasNext()) {
+                    nextConsumed = true;
+                    return (T)nextNode;
+                }
+                throw new NoSuchElementException("No such element");
+            }
+        };
     }
 
     /**
      * @return null if there is no such layer
      */
     public Layer getLayer(String name) {
-        for (Iterator i = iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
+        for (Iterator<Layer> i = iterator(Layer.class); i.hasNext();) {
+            Layer layer = i.next();
 
             if (layer.getName().equals(name)) {
                 return layer;
@@ -699,8 +750,8 @@ public class LayerManager {
     public List<Layer> getVisibleLayers(boolean includeFence) {
         ArrayList<Layer> visibleLayers = new ArrayList<>(getLayers());
 
-        for (Iterator i = visibleLayers.iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
+        for (Iterator<Layer> i = visibleLayers.iterator(); i.hasNext();) {
+            Layer layer = i.next();
 
             if (layer.getName().equals(FenceLayerFinder.LAYER_NAME)
                     && !includeFence) {
@@ -744,9 +795,7 @@ public class LayerManager {
     public Collection<Layer> getLayersWithModifiedFeatureCollections() {
         ArrayList<Layer> layersWithModifiedFeatureCollections = new ArrayList<>();
 
-        for (Iterator i = iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
-
+        for (Layer layer : getLayers()) {
             if (layer.isFeatureCollectionModified()) {
                 layersWithModifiedFeatureCollections.add(layer);
             }
@@ -774,8 +823,8 @@ public class LayerManager {
     public LinkedList<Layer> getLayersWithNullDataSource() {
         LinkedList<Layer> list = new LinkedList<>();
 
-        for (Iterator i = iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
+        for (Iterator<Layer> i = iterator(Layer.class); i.hasNext();) {
+            Layer layer = i.next();
             if (layer.getDataSourceQuery() == null) {
                 list.add(layer);
             }

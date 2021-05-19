@@ -39,22 +39,19 @@ import com.vividsolutions.jump.util.LangUtil;
  * 
  * @see Layerable
  */
-public abstract class AbstractLayerable implements Layerable {
+public abstract class AbstractLayerable implements Layerable, LayerManagerProxy {
+
   private LayerManager layerManager;
-
   private String name;
-
   private boolean visible = true;
   private boolean editable = false;
   private boolean selectable = true;
   private boolean readonly = false;
-
   private boolean scaleDependentRenderingEnabled = false;
 
   // When working with scale, the max is less than the min. [Jon Aquino
   // 2005-03-01]
   private Double minScale = null;
-
   private Double maxScale = null;
 
   /**
@@ -85,10 +82,12 @@ public abstract class AbstractLayerable implements Layerable {
     }
   }
 
+  @Override
   public void setLayerManager(LayerManager layerManager) {
     this.layerManager = layerManager;
   }
 
+  @Override
   public LayerManager getLayerManager() {
     return layerManager;
   }
@@ -115,10 +114,12 @@ public abstract class AbstractLayerable implements Layerable {
     fireLayerChanged(LayerEventType.APPEARANCE_CHANGED);
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public void setName(String name) {
     this.name = name;
     fireLayerChanged(LayerEventType.METADATA_CHANGED);
@@ -132,6 +133,15 @@ public abstract class AbstractLayerable implements Layerable {
     }
   }
 
+  // <<TODO:REFACTORING>> Move Visible to LayerSelection, since it should be a
+  // property of the view, not the model [Jon Aquino]
+  // isVisible has been there from the beginning and I can't see a better place [mmichaud]
+  @Override
+  public boolean isVisible() {
+    return visible;
+  }
+
+  @Override
   public void setVisible(boolean visible) {
     if (this.visible == visible) {
       return;
@@ -144,6 +154,7 @@ public abstract class AbstractLayerable implements Layerable {
    * Editability is not enforced; all parties are responsible for heeding this
    * flag.
    */
+  @Override
   public void setEditable(boolean editable) {
     if (this.editable == editable) {
       return;
@@ -153,13 +164,7 @@ public abstract class AbstractLayerable implements Layerable {
     fireLayerChanged(LayerEventType.METADATA_CHANGED);
   }
 
-  // <<TODO:REFACTORING>> Move Visible to LayerSelection, since it should be a
-  // property
-  // of the view, not the model [Jon Aquino]
-  public boolean isVisible() {
-    return visible;
-  }
-
+  @Override
   public boolean isEditable() {
     return editable;
   }
@@ -168,6 +173,7 @@ public abstract class AbstractLayerable implements Layerable {
    * @return true if this layer should always be 'readonly' I.e.: The layer
    *         should never have the editable field set to true.
    */
+  @Override
   public boolean isReadonly() {
     return readonly;
   }
@@ -175,6 +181,7 @@ public abstract class AbstractLayerable implements Layerable {
   /**
    * Set whether this layer can be made editable.
    */
+  @Override
   public void setReadonly(boolean value) {
     readonly = value;
   }
@@ -182,6 +189,7 @@ public abstract class AbstractLayerable implements Layerable {
   /**
    * @return true if features in this layer can be selected.
    */
+  @Override
   public boolean isSelectable() {
     return selectable;
   }
@@ -189,21 +197,24 @@ public abstract class AbstractLayerable implements Layerable {
   /**
    * Set whether or not features in this layer can be selected.
    * 
-   * @param value
-   *          true if features in this layer can be selected
+   * @param value true if features in this layer can be selected
    */
+  @Override
   public void setSelectable(boolean value) {
     selectable = value;
   }
 
+  @Override
   public String toString() {
     return getName();
   }
 
+  @Override
   public Double getMaxScale() {
     return maxScale;
   }
 
+  @Override
   public Layerable setMaxScale(Double maxScale) {
     if (LangUtil.bothNullOrEqual(this.maxScale, maxScale)) {
       return this;
@@ -213,10 +224,12 @@ public abstract class AbstractLayerable implements Layerable {
     return this;
   }
 
+  @Override
   public Double getMinScale() {
     return minScale;
   }
 
+  @Override
   public Layerable setMinScale(Double minScale) {
     if (LangUtil.bothNullOrEqual(this.minScale, minScale)) {
       return this;
@@ -226,10 +239,12 @@ public abstract class AbstractLayerable implements Layerable {
     return this;
   }
 
+  @Override
   public boolean isScaleDependentRenderingEnabled() {
     return scaleDependentRenderingEnabled;
   }
 
+  @Override
   public Layerable setScaleDependentRenderingEnabled(
       boolean scaleDependentRenderingEnabled) {
     if (this.scaleDependentRenderingEnabled == scaleDependentRenderingEnabled) {
@@ -239,4 +254,5 @@ public abstract class AbstractLayerable implements Layerable {
     fireAppearanceChanged();
     return this;
   }
+
 }

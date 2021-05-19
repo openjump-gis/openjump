@@ -36,7 +36,7 @@ import org.locationtech.jts.geom.Coordinate;
 
 public class CoordinatePrecisionReducer {
 
-  private NumberPrecisionReducer npr;
+  private final NumberPrecisionReducer npr;
 
   public CoordinatePrecisionReducer(NumberPrecisionReducer npr)
   {

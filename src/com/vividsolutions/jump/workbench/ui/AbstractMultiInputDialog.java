@@ -209,16 +209,17 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     // //////////////////////////////////////////////////////////////////////////
 
     // Map containing associations between field names and their component
-    private final HashMap<String, Component> fieldNameToComponentMap = new HashMap<String, Component>();
+    private final HashMap<String, Component> fieldNameToComponentMap = new HashMap<>();
 
     // Map containing associations between field names and their label
     private final HashMap<String, Component> fieldNameToLabelMap = new HashMap<>();
 
     // Map containing associations between field names and ButtonGroup
-    private final Map buttonGroupMap = new HashMap();
+    private final Map<String,ButtonGroup> buttonGroupMap = new HashMap<>();
 
     // Map containing associations between field names and EnableChecks
-    private final CollectionMap fieldNameToEnableCheckListMap = new CollectionMap();
+    private final CollectionMap<String,EnableCheck> fieldNameToEnableCheckListMap =
+        new CollectionMap<>();
 
     protected void addComponent(String fieldName, Component label,
             Component component) {
@@ -250,8 +251,8 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     /**
      * Gets JComboBox component matching this fieldName.
      */
-    public JComboBox getComboBox(String fieldName) {
-        return (JComboBox) getComponent(fieldName);
+    public <T> JComboBox<T> getComboBox(String fieldName) {
+        return (JComboBox<T>) getComponent(fieldName);
     }
 
     /**
@@ -297,8 +298,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         }
         // combobox
         if (component instanceof JComboBox) {
-            final Object selObj = ((JComboBox) component).getSelectedItem();
-            return selObj;
+            return ((JComboBox<?>) component).getSelectedItem();
         }
         // scrollpane
         if (component instanceof JScrollPane) {
@@ -307,13 +307,11 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         }
         // button
         if (component instanceof JButton) {
-            final boolean state = ((JButton) component).isEnabled();
-            return state;
+            return component.isEnabled();
         }
         // radiobutton, checkbox
         if (component instanceof JToggleButton) {
-            final boolean state = ((JToggleButton) component).isSelected();
-            return state;
+            return ((JToggleButton) component).isSelected();
         }
         // filechooser
         if (component instanceof JFileChooser) {
@@ -411,8 +409,8 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     /**
      * Returns a File Collection from a JFilechooser control.
      */
-    public List getFiles(String fieldName) {
-        return (List) getValue(fieldName);
+    public List<File> getFiles(String fieldName) {
+        return (List<File>)getValue(fieldName);
     }
 
     // //////////////////////////////////////////////////////////////////////////
@@ -430,7 +428,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      *            EnableCheck array to validate this control input
      */
     public void addEnableChecks(String fieldName,
-            Collection<? extends EnableCheck> enableChecks) {
+            Collection<EnableCheck> enableChecks) {
         fieldNameToEnableCheckListMap.addItems(fieldName, enableChecks);
     }
 
@@ -485,7 +483,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      *            tool tip to help the user
      * @return the JComboBox control added to this dialog
      */
-    public <T> JComboBox<T> addComboBox(String fieldName, Object selectedItem,
+    public <T> JComboBox<T> addComboBox(String fieldName, T selectedItem,
             Collection<T> items, String toolTipText) {
         final JComboBox<T> comboBox = new JComboBox<>(new Vector<>(items));
         comboBox.setSelectedItem(selectedItem);
@@ -837,7 +835,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      *            the LayerManager providing layers to the combo box
      * @return the JComboBox
      */
-    public JComboBox addLayerComboBox(String fieldName, Layer initialValue,
+    public JComboBox<Layer> addLayerComboBox(String fieldName, Layer initialValue,
             LayerManager layerManager) {
         return addLayerComboBox(fieldName, initialValue, null, layerManager);
     }
@@ -856,7 +854,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      *            the LayerManager providing layers to the combo box
      * @return the JComboBox
      */
-    public JComboBox addLayerComboBox(String fieldName, Layer initialValue,
+    public JComboBox<Layer> addLayerComboBox(String fieldName, Layer initialValue,
             String toolTipText, LayerManager layerManager) {
         return addLayerComboBox(fieldName, initialValue, toolTipText,
                 layerManager.getLayers());
@@ -875,7 +873,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      *            the LayerManager providing layers to the combo box
      * @return the JComboBox
      */
-    public JComboBox addEditableLayerComboBox(String fieldName,
+    public JComboBox<Layer> addEditableLayerComboBox(String fieldName,
             Layer initialValue, String toolTipText, LayerManager layerManager) {
         return addLayerComboBox(fieldName, initialValue, toolTipText,
                 layerManager.getEditableLayers());
@@ -894,7 +892,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      *            a filter to select layers with specified AttributeTypes
      * @return the JComboBox
      */
-    public JComboBox addLayerComboBox(String fieldName, String toolTipText,
+    public JComboBox<Layer> addLayerComboBox(String fieldName, String toolTipText,
             LayerManager layerManager, AttributeTypeFilter filter) {
         final List<Layer> layerList = new ArrayList<>();
         for (final Layer layer : layerManager.getLayers()) {
@@ -907,6 +905,51 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         final Layer initialLayer = layerList.size() > 0 ? layerList.get(0)
                 : null;
         return addLayerComboBox(fieldName, initialLayer, toolTipText, layerList);
+    }
+
+    /**
+     * Add a JComboBox containing RasterImageLayers.
+     *
+     * @param fieldName
+     *            field name of the control
+     * @param toolTipText
+     *            tool tip text associated with this combo box
+     * @param layerManager
+     *            the LayerManager providing RasterImageLayers to the combo box
+     * @return the JComboBox
+     */
+    public JComboBox<RasterImageLayer> addRasterLayerComboBox(
+        String fieldName, RasterImageLayer initialValue, String toolTipText,
+        LayerManager layerManager) {
+        return addLayerableComboBox(fieldName, initialValue, toolTipText,
+            layerManager, RasterImageLayer.class);
+    }
+
+    /**
+     * Add a JComboBox containing layerables of type clazz.
+     *
+     * @param fieldName
+     *            field name of the control
+     * @param toolTipText
+     *            tool tip text associated with this combo box
+     * @param layerManager
+     *            the LayerManager providing layers to the combo box
+     * @param clazz
+     *            class of the layerables
+     * @return the JComboBox
+     */
+    public <T extends Layerable> JComboBox<T> addLayerableComboBox(
+        String fieldName, T initialValue, String toolTipText,
+        LayerManager layerManager, Class<T> clazz) {
+
+        final JComboBox<T> comboBox = addComboBox(fieldName, initialValue,
+            layerManager.getLayerables(clazz), toolTipText);
+        final LayerNameRenderer layerListCellRenderer = new LayerNameRenderer();
+        layerListCellRenderer.setCheckBoxVisible(false);
+        layerListCellRenderer.setProgressIconLabelVisible(false);
+        comboBox.setRenderer(layerListCellRenderer);
+        comboBox.invalidate();
+        return comboBox;
     }
 
     /**
@@ -927,10 +970,10 @@ public abstract class AbstractMultiInputDialog extends JDialog {
             final String layerFieldName, final AttributeTypeFilter filter,
             final String toolTipText) {
 
-        final JComboBox layerComboBox = getComboBox(layerFieldName);
+        final JComboBox<Layer> layerComboBox = getComboBox(layerFieldName);
 
         final JComboBox<String> attributeComboBox = addComboBox(fieldName,
-                null, new ArrayList<String>(), toolTipText);
+                null, new ArrayList<>(), toolTipText);
 
         final ComboBoxModel<String> DEFAULT = new DefaultComboBoxModel<>(
                 new String[] { NO_VALID_ATTRIBUTE });
@@ -942,7 +985,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
             final List<String> attributes = filter.filter(schema);
             if (attributes.size() > 0) {
                 attributeComboBox.setModel(new DefaultComboBoxModel<>(
-                        attributes.toArray(new String[attributes.size()])));
+                        attributes.toArray(new String[0])));
             } else {
                 attributeComboBox.setModel(DEFAULT);
             }
@@ -961,7 +1004,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                     final String oldAttr = (String) attributeComboBox
                             .getSelectedItem();
                     attributeComboBox.setModel(new DefaultComboBoxModel<>(
-                            attributes.toArray(new String[attributes.size()])));
+                            attributes.toArray(new String[0])));
                     if (attributes.contains(oldAttr)) {
                         attributeComboBox.setSelectedItem(oldAttr);
                     }
@@ -1030,7 +1073,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
         // add to button group, if specified (and create one if it doesn't
         // exist)
         if (buttonGroupName != null) {
-            ButtonGroup group = (ButtonGroup) buttonGroupMap
+            ButtonGroup group = buttonGroupMap
                     .get(buttonGroupName);
             if (group == null) {
                 group = new ButtonGroup();
@@ -1129,12 +1172,8 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     }
 
     protected String firstValidationErrorMessage() {
-        for (final Iterator i = fieldNameToEnableCheckListMap.keySet()
-                .iterator(); i.hasNext();) {
-            final String fieldName = (String) i.next();
-            for (final Iterator j = fieldNameToEnableCheckListMap.getItems(
-                    fieldName).iterator(); j.hasNext();) {
-                final EnableCheck enableCheck = (EnableCheck) j.next();
+        for (String fieldName : fieldNameToEnableCheckListMap.keySet()) {
+            for (EnableCheck enableCheck : fieldNameToEnableCheckListMap.getItems(fieldName)) {
                 final String message = enableCheck.check(null);
                 if (message != null) {
                     return message;
@@ -1160,7 +1199,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
      */
 
     public <T> JComboBox<T> addLayerableComboBox(String fieldName,
-            Object initialValue, String toolTipText, Collection<T> layerable) {
+            T initialValue, String toolTipText, Collection<T> layerable) {
 
         final JComboBox<T> comboBox = addComboBox(fieldName, initialValue,
                 layerable, toolTipText);

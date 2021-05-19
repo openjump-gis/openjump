@@ -4,25 +4,33 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.openjump</groupId>
     <artifactId>OpenJUMP</artifactId>
-    <version>${version.release}</version>
-    <name>OpenJUMP</name>
+    <!-- update before every release accordingly -->
+    <version>2.0</version>
     <scm>
         <connection>scm:git:https://github.com/openjump-gis/openjump.git</connection>
         <developerConnection>scm:git:https://github.com/openjump-gis/openjump.git</developerConnection>
-        <tag>master</tag>
-        <url>https://github.com/openjump-gis/openjump/tree/master</url>
+        <tag>main</tag>
+        <url>https://github.com/openjump-gis/openjump/tree/main</url>
     </scm>
     <properties>
-        <version.number>0.0.0</version.number>
-        <version.release>git build</version.release>
+        <!-- setup some defaults used or overridden later -->
+        <version.number>${build.datestamp}</version.number>
+        <version.release>mvn build</version.release>
+        <version.revision>${git.total.commit.count}(${git.commit.id.abbrev})</version.revision>
+        <version.buildDateLong>${build.datelong}</version.buildDateLong>
+        <version.string>${git.branch}(${git.commit.id.abbrev})</version.string>
+
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
-        <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
-        <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+        <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+        <batik.version>1.6-1</batik.version>
         <jts.version>1.18.1</jts.version>
-        <imageio-ext.version>1.3.2</imageio-ext.version>
+        <imageio-ext.version>1.3.9</imageio-ext.version>
     </properties>
     <profiles>
+        <!-- switching os dependent lib paths for launch4j -->
         <profile>
             <id>windows</id>
             <activation>
@@ -45,132 +53,129 @@
                 <launch4j.dir>launcher/launch4j-3.0.2-linux</launch4j.dir>
             </properties>
         </profile>
+        <!-- profile creating snapshot distro zips for CORE/PLUS -->
         <profile>
-            <!-- DEPRECATED: replaced by profile snapshot below -->
-            <id>core</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <version.number>${version.datestamp}</version.number>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>${maven-assembly-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>make-core</id>
-                                <phase>package</phase>
-                                <configuration>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${project.artifactId}-${version.number}-${version.revision}-CORE</finalName>
-                                    <descriptors>
-                                        <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
-                                    </descriptors>
-                                </configuration>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
+          <id>snapshot</id>
+          <properties>
+            <!-- essential props used in etc/readme.txt and Version.java -->
+            <version.number>${build.datestamp}</version.number>
+            <version.release>snapshot</version.release>
+            <!-- props used by jar and assembly naming -->
+            <version.string>${version.number}-r${version.revision}</version.string>
+          </properties>
+          <build>
+            <plugins>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <executions>
+                  <execution>
+                    <id>nolang</id>
+                    <phase>package</phase>
+                    <goals>
+                      <goal>jar</goal>
+                    </goals>
+                    <configuration>
+                      <classifier>nolang</classifier>
+                      <excludes>
+                        <exclude>language/**</exclude>
+                      </excludes>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>
+              <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly-plugin.version}</version>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                  <execution>
+                    <id>snap-core</id>
+                    <phase>package</phase>
+                    <configuration>
+                      <appendAssemblyId>false</appendAssemblyId>
+                      <finalName>${project.build.finalName}-CORE</finalName>
+                      <descriptors>
+                        <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
+                      </descriptors>
+                    </configuration>
+                    <goals>
+                      <goal>single</goal>
+                    </goals>
+                  </execution>
+                  <execution>
+                    <id>snap-plus</id>
+                    <phase>package</phase>
+                    <configuration>
+                      <appendAssemblyId>false</appendAssemblyId>
+                      <finalName>${project.build.finalName}-PLUS</finalName>
+                      <descriptors>
+                        <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
+                      </descriptors>
+                    </configuration>
+                    <goals>
+                      <goal>single</goal>
+                    </goals>
+                  </execution>
+                </executions>
+              </plugin>
+              <!-- installing to local repo is disabled during distro creation -->
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <id>custom-install</id>
+                    <phase>none</phase>
+                  </execution>
+                </executions>
+              </plugin>
+            </plugins>
+          </build>
         </profile>
-        <profile>
-            <!-- DEPRECATED: replaced by profile snapshot below -->
-            <id>plus</id>
-            <properties>
-                <version.number>${version.datestamp}</version.number>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>${maven-assembly-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>make-plus</id>
-                                <phase>package</phase>
-                                <configuration>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${project.artifactId}-${version.number}-${version.revision}-PLUS</finalName>
-                                    <descriptors>
-                                        <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
-                                    </descriptors>
-                                </configuration>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>snapshot</id>
-            <properties>
-                <!-- has to be set on maven run with -D version.number=X.X.X -->
-                <version.number>${version.datestamp}</version.number>
-                <version.release>snapshot</version.release>
-                <version.string>${version.number}-${version.revision}</version.string>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>${maven-assembly-plugin.version}</version>
-                        <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>snap-core</id>
-                                <phase>package</phase>
-                                <configuration>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${project.artifactId}-${version.string}-CORE</finalName>
-                                    <descriptors>
-                                        <descriptor>etc/mvn/bin_zip-core_snapshot.xml</descriptor>
-                                    </descriptors>
-                                </configuration>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>snap-plus</id>
-                                <phase>package</phase>
-                                <configuration>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${project.artifactId}-${version.string}-PLUS</finalName>
-                                    <descriptors>
-                                        <descriptor>etc/mvn/bin_zip-plus_snapshot.xml</descriptor>
-                                    </descriptors>
-                                </configuration>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+        <!-- profile creating release distro zips for CORE/PLUS -->
         <profile>
             <id>release</id>
             <properties>
-                <!-- has to be set on maven run with -D version.number=X.X.X -->
-                <version.number>0.0.0</version.number>
-                <version.release>release</version.release>
-                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
-                <recompress.jars>true</recompress.jars>
+              <!-- set <version/> property above accordingly, but
+                   can be be overridden on maven run with e.g.
+                   -D version.number=X.X.X -D version.release=alpha -->
+              <version.number>${project.version}</version.number>
+              <version.release>release</version.release>
+              <recompress.jars>true</recompress.jars>
+              <!-- props used by jar and assembly naming -->
+              <version.string>${version.number}-r${version.revision}</version.string>
             </properties>
             <build>
                 <plugins>
+                    <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-jar-plugin</artifactId>
+                      <version>${maven-jar-plugin.version}</version>
+                      <executions>
+                        <execution>
+                          <id>nosrc</id>
+                          <phase>package</phase>
+                          <goals>
+                            <goal>jar</goal>
+                          </goals>
+                          <configuration>
+                            <classifier>nosrc</classifier>
+                            <excludes>
+                              <exclude>**/*.java</exclude>
+                              <!-- excluding unit-test and doc resources -->
+                              <exclude>**/*Test.class</exclude>
+                              <exclude>fixtures/**</exclude>
+                              <exclude>jumptest/**</exclude>
+                              <exclude>versiondoc/**</exclude>
+                            </excludes>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <version>${maven-assembly-plugin.version}</version>
@@ -182,7 +187,7 @@
                                 <id>release core</id>
                                 <phase>package</phase>
                                 <configuration>
-                                    <finalName>${version.string}-CORE</finalName>
+                                    <finalName>${project.build.finalName}-CORE</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-core_stable.xml</descriptor>
                                     </descriptors>
@@ -196,7 +201,7 @@
                                 <id>release plus</id>
                                 <phase>package</phase>
                                 <configuration>
-                                    <finalName>${version.string}-PLUS</finalName>
+                                    <finalName>${project.build.finalName}-PLUS</finalName>
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-plus_stable.xml</descriptor>
                                     </descriptors>
@@ -206,14 +211,40 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
+                      </plugin>
+                      <!-- installing to local repo is disabled during distro creation -->
+                      <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-install-plugin</artifactId>
+                        <executions>
+                          <execution>
+                            <id>custom-install</id>
+                            <phase>none</phase>
+                          </execution>
+                        </executions>
+                      </plugin>
+                      <!-- properly name release deployments -->
+                      <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <executions>
+                          <execution>
+                            <id>custom-deploy</id>
+                            <configuration>
+                              <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                              <version>${version.number}</version>
+                            </configuration>
+                          </execution>
+                        </executions>
+                      </plugin>
                 </plugins>
             </build>
         </profile>
+        <!-- repack the distros, apply some postprocessing, permission fixing, recompression -->
         <profile>
             <id>portable</id>
             <properties>
-                <portable.filename>${project.artifactId}-Portable-${version.number}-${version.revision}</portable.filename>
+                <portable.filename>${project.artifactId}-Portable-${version.string}</portable.filename>
                 <portable.filepath>${project.build.directory}/recompress</portable.filepath>
             </properties>
             <build>
@@ -261,13 +292,13 @@
                                         <!-- Using an ant task to deflate *.zip -->
                                         <echo>Unzip CORE</echo>
                                         <unzip
-                                            src="${project.build.directory}/${project.artifactId}-${version.string}-CORE.zip"
+                                            src="${project.build.directory}/${project.build.finalName}-CORE.zip"
                                             dest="${portable.filepath}/core">
                                             <cutdirsmapper dirs="1" />
                                         </unzip>
                                         <echo>Unzip PLUS</echo>
                                         <unzip
-                                            src="${project.build.directory}/${project.artifactId}-${version.string}-PLUS.zip"
+                                            src="${project.build.directory}/${project.build.finalName}-PLUS.zip"
                                             dest="${portable.filepath}/plus">
                                             <cutdirsmapper dirs="1" />
                                         </unzip>
@@ -313,9 +344,9 @@
                                             destfile="${portable.filepath}/${portable.filename}-CORE.zip"
                                             level="9">
                                             <zipfileset dir="${portable.filepath}/core"
-                                                        prefix="${version.string}-CORE" excludes="${project.binaries}" />
+                                                        prefix="${project.build.finalName}-CORE" excludes="${project.binaries}" />
                                             <zipfileset dir="${portable.filepath}/core"
-                                                        prefix="${version.string}-CORE" includes="${project.binaries}"
+                                                        prefix="${project.build.finalName}-CORE" includes="${project.binaries}"
                                                         filemode="755" />
                                         </zip>
                                         <echo>Zip PLUS portable </echo>
@@ -323,9 +354,9 @@
                                             destfile="${portable.filepath}/${portable.filename}-PLUS.zip"
                                             level="9">
                                             <zipfileset dir="${portable.filepath}/plus"
-                                                        prefix="${version.string}-PLUS" excludes="${project.binaries}" />
+                                                        prefix="${project.build.finalName}-PLUS" excludes="${project.binaries}" />
                                             <zipfileset dir="${portable.filepath}/plus"
-                                                        prefix="${version.string}-PLUS" includes="${project.binaries}"
+                                                        prefix="${project.build.finalName}-PLUS" includes="${project.binaries}"
                                                         filemode="755" />
                                         </zip>
                                     </target>
@@ -339,11 +370,11 @@
                 </plugins>
             </build>
         </profile>
+        <!-- create jar/exe installers from portable distros -->
         <profile>
             <id>installer</id>
             <properties>
-                <!-- >version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string -->
-                <installer.filename>${project.artifactId}-Installer-${version.string}</installer.filename>
+              <installer.filename>${project.artifactId}-Installer-${version.string}</installer.filename>
             </properties>
             <build>
                 <plugins>
@@ -490,43 +521,33 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>javadoc8 fix</id>
-            <activation>
-                <jdk>1.8</jdk>
-            </activation>
-            <properties>
-                <!--
-                  java8+ enforces some strict checking, which we do not abide (yet?)
-                  also see http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
-                -->
-                <additionalparam>-Xdoclint:none</additionalparam>
-            </properties>
-        </profile>
+        <!-- create javadoc zip -->
         <profile>
             <id>javadoc</id>
-            <properties>
-                <!-- by default datestamp, can be overwritten with -D version.number=X.X.X -->
-                <version.number>${version.datestamp}</version.number>
-                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
                         <configuration>
                             <outputDirectory>${project.build.directory}/apidocs/</outputDirectory>
                             <reportOutputDirectory>${project.build.directory}/apidocs/</reportOutputDirectory>
-                            <!-- destDir>${version.string}</destDir -->
                             <source>8</source>
                             <quiet>true</quiet>
+                            <!-- 
+                            java8+ enforces some strict checking, which we do not abide (yet?) 
+                            also see https://stackoverflow.com/questions/39616344/how-to-disable-javadoc-warnings-in-maven-javadoc-plugin
+                            -->
+                            <doclint>none</doclint>
                         </configuration>
                         <executions>
                             <execution>
+                                <id>generate javadocs</id>
                                 <phase>compile</phase>
                                 <goals>
-                                    <goal>javadoc</goal>
+                                    <!-- don't reinvoke 'generate-sources' -->
+                                    <goal>javadoc-no-fork</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -541,9 +562,9 @@
                                 <configuration>
                                     <target>
                                         <zip
-                                            destfile="${project.build.directory}/${version.string}-apidocs.zip"
+                                            destfile="${project.build.directory}/${project.build.finalName}-apidocs.zip"
                                             level="9">
-                                            <zipfileset dir="${project.build.directory}/apidocs" prefix="apidocs"/>
+                                            <zipfileset dir="${project.build.directory}/apidocs" prefix=""/>
                                         </zip>
                                     </target>
                                 </configuration>
@@ -553,18 +574,60 @@
                             </execution>
                         </executions>
                     </plugin>
+
+                    <!-- attach to installed artifact -->
+                    <plugin>
+                      <artifactId>maven-install-plugin</artifactId>
+                      <executions>
+                        <execution>
+                          <id>custom-install</id>
+                          <configuration>
+                            <javadoc>${project.build.directory}/${project.build.finalName}-apidocs.zip</javadoc>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
+
+                    <!-- attach to deployed artifact -->
+                    <plugin>
+                      <artifactId>maven-deploy-plugin</artifactId>
+                      <executions>
+                        <execution>
+                          <id>custom-deploy</id>
+                          <configuration>
+                            <javadoc>${project.build.directory}/${project.build.finalName}-apidocs.zip</javadoc>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
+        <!-- create zip containing the sources -->
         <profile>
             <id>srczip</id>
-            <properties>
-                <!-- by default datestamp, can be overwritten with -D version.number=X.X.X -->
-                <version.number>${version.datestamp}</version.number>
-                <version.string>${project.artifactId}-${version.number}-r${version.revision}</version.string>
-            </properties>
+            <!-- activated by default unless -DskipSrczip is defined -->
+            <activation>
+              <property>
+                <name>!skipSrczip</name>
+              </property>
+            </activation>
             <build>
                 <plugins>
+                    <!-- for testing speedup disable compilation --> <!--
+                    <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-compiler-plugin</artifactId>
+                      <executions>
+                        <execution>
+                          <id>default-compile</id>
+                          <configuration>
+                            <skipMain>true</skipMain>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
+                    -->
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>${maven-antrun-plugin.version}</version>
@@ -575,9 +638,9 @@
                                 <configuration>
                                     <target>
                                         <zip
-                                            destfile="${project.build.directory}/${version.string}-src.zip"
+                                            destfile="${project.build.directory}/${project.build.finalName}-src.zip"
                                             level="9">
-                                            <zipfileset dir="${project.build.directory}/classes" prefix="src" excludes="**/*.class"/>
+                                            <zipfileset dir="${project.build.directory}/classes" prefix="" excludes="**/*.class"/>
                                         </zip>
                                     </target>
                                 </configuration>
@@ -587,12 +650,169 @@
                             </execution>
                         </executions>
                     </plugin>
+
+                    <!-- attach to installed artifact -->
+                    <plugin>
+                      <artifactId>maven-install-plugin</artifactId>
+                      <executions>
+                        <execution>
+                          <id>custom-install</id>
+                          <configuration>
+                            <sources>${project.build.directory}/${project.build.finalName}-src.zip</sources>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
+
+                    <!-- attach to deployed artifact -->
+                    <plugin>
+                      <artifactId>maven-deploy-plugin</artifactId>
+                      <executions>
+                        <execution>
+                          <id>custom-deploy</id>
+                          <configuration>
+                            <sources>${project.build.directory}/${project.build.finalName}-src.zip</sources>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
+      <!-- some helpful switches allowing disabling certain time consuming tasks during maven reruns -->
+      <profile>
+        <id>disable compilation (for testing purposes)</id>
+        <activation>
+          <property>
+            <name>skipCompile</name>
+            <value>true</value>
+          </property>
+        </activation>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>default-compile</id>
+                  <phase>none</phase>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+      <profile>
+        <id>disable test compilation (for testing purposes)</id>
+        <activation>
+          <property>
+            <name>skipTests</name>
+            <value>true</value>
+          </property>
+        </activation>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>default-testCompile</id>
+                  <phase>none</phase>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+      <profile>
+        <id>disable javadoc compilation (for testing purposes)</id>
+        <activation>
+          <property>
+            <name>skipJavadoc</name>
+            <value>true</value>
+          </property>
+        </activation>
+        <build>
+          <plugins>
+            <plugin>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>generate javadocs</id>
+                  <phase>none</phase>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+      <profile>
+        <id>execute</id>
+        <!-- activated by default unless -DskipSrczip is defined -->
+        <activation>
+          <property>
+            <name>testExecute</name>
+            <value>true</value>
+          </property>
+        </activation>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>exec-maven-plugin</artifactId>
+              <version>3.0.0</version>
+                    <?m2e ignore?>
+              <executions>
+                <execution>
+                  <id>echo java version</id>
+                  <phase>test</phase>
+                  <goals>
+                    <goal>exec</goal>
+                  </goals>
+                  <configuration>
+                    <executable>java</executable>
+                    <arguments>
+                      <argument>-version</argument>
+                    </arguments>
+                  </configuration>
+                </execution>
+                <execution>
+                  <id>run OpenJUMP</id>
+                  <phase>test</phase>
+                  <goals>
+                    <goal>exec</goal>
+                  </goals>
+                  <configuration>
+                    <workingDirectory>${project.basedir}</workingDirectory>
+                    <executable>java</executable>
+                    <arguments>
+                      <argument>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argument>
+                      <argument>-classpath</argument>
+                      <classpath />
+                      <argument>com.vividsolutions.jump.workbench.JUMPWorkbench</argument>
+                      <argument>-default-plugins</argument>
+                      <argument>scripts\default-plugins.xml</argument>
+                      <argument>-plug-in-directory</argument>
+                      <argument>"lib\plus"</argument>
+                      <argument>-plug-in-directory</argument>
+                      <argument>"lib\ext"</argument>
+                      <argument>-I18n</argument>
+                      <argument>en_FR</argument>
+                      <argument>-v</argument>
+                      <argument>debug</argument>
+                    </arguments>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
     </profiles>
     <build>
-        <finalName>${project.artifactId}-${version.number}-${version.revision}</finalName>
+        <finalName>${project.artifactId}-${version.string}</finalName>
         <sourceDirectory>src/</sourceDirectory>
         <outputDirectory>target/classes</outputDirectory>
         <resources>
@@ -636,208 +856,258 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <!-- execute buildnumber plugin two times because it can't get date 
-            AND rev in one go -->
-            <plugin>
-                <inherited>true</inherited>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.4</version>
-                <!-- use os independent maven java svn provider, no need for svn binary in PATH anymore -->
-                <configuration>
-                  <doCheck>false</doCheck>
-		  <doUpdate>false</doUpdate>
-		  <shortRevisionLength>7</shortRevisionLength>
-                  <!--providerImplementations>
-                    <svn>javasvn</svn>
-                  </providerImplementations-->
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generate-buildnumber</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                        <configuration>
-                            <useLastCommittedRevision>true</useLastCommittedRevision>
-                            <buildNumberPropertyName>version.revision</buildNumberPropertyName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-datestamp</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                        <configuration>
-                            <format>{0,date,yyyyMMdd}</format>
-                            <items>
-                                <item>timestamp</item>
-                            </items>
-                            <buildNumberPropertyName>version.datestamp</buildNumberPropertyName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-dateLong</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                        <configuration>
-                            <format>{0,date,dd. MMMM yyyy}</format>
-                            <items>
-                                <item>timestamp</item>
-                            </items>
-                            <locale>en_US</locale>
-                            <buildNumberPropertyName>version.buildDateLong</buildNumberPropertyName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-dateShort</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                        <configuration>
-                            <format>{0,date,dd.MM.yyyy}</format>
-                            <items>
-                                <item>timestamp</item>
-                            </items>
-                            <locale>en_US</locale>
-                            <buildNumberPropertyName>version.buildDate</buildNumberPropertyName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--plugin> <groupId>com.google.code.maven-replacer-plugin</groupId> 
-            <artifactId>maven-replacer-plugin</artifactId> <version>1.3.9</version> <executions> 
-            <execution> <phase>process-resources</phase> <goals> <goal>replace</goal> 
-            </goals> </execution> </executions> <configuration> <file>target/classes/language/jump.properties</file> 
-            <replacements> <replacement> <token>JUMPWorkbench.version.release.*</token> 
-            <value>JUMPWorkbench.version.release = ${version}</value> </replacement> 
-            </replacements> </configuration> </plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
-                <executions>
-                    <execution>
-                        <id>nolang</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/nolang/</outputDirectory>
-                            <classifier>nolang</classifier>
-                            <excludes>
-                                <exclude>language/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>nosrc</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/nolang/</outputDirectory>
-                            <classifier>nosrc</classifier>
-                            <excludes>
-                                <exclude>**/*.java</exclude>
-                                <!-- excluding unit-test and doc resources -->
-                                <exclude>**/*Test.class</exclude>
-                                <exclude>fixtures/**</exclude>
-                                <exclude>jumptest/**</exclude>
-                                <exclude>versiondoc/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                </executions>
-                <!--configuration> <archive> <manifest> <mainClass>com.vividsolutions.jump.workbench.JUMPWorkbench</mainClass> 
-                <addClasspath>true</addClasspath> </manifest> </archive> </configuration -->
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.12</version>
-                <executions>
-                    <execution>
-                        <id>add-junit-test-source</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- remove redundant copy command <plugin> <groupId>org.codehaus.mojo</groupId> 
-            <artifactId>build-helper-maven-plugin</artifactId> <version>1.5</version> 
-            <executions> <execution> <id>attach-artifacts</id> <phase>package</phase> 
-            <goals> <goal>attach-artifact</goal> </goals> <configuration> <artifacts> 
-            <artifact> <file>target/openjump-core-1.4.3-SNAPSHOT-bin.zip</file> <type>zip</type> 
-            <classifier>bin</classifier> </artifact> </artifacts> </configuration> </execution> 
-            </executions> </plugin> -->
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-surefire-plugin</artifactId>
-              <version>2.19.1</version>
+
+          <plugin>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>3.8.1</version>
               <configuration>
-                <argLine>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argLine>
+                  <source>1.8</source>
+                  <target>1.8</target>
+                  <compilerArgs>
+                    <arg>-Xlint:deprecation</arg>
+                  </compilerArgs>
               </configuration>
-            </plugin>
-        </plugins>
+          </plugin>
+
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.2.0</version>
+            <?m2e ignore?>
+            <executions>
+              <!-- build several build date stamp formattings used all over -->
+              <execution>
+                <id>build-datestamp-property</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>timestamp-property</goal>
+                </goals>
+                <configuration>
+                  <name>build.datestamp</name>
+                  <pattern>yyyyMMdd</pattern>
+                  <timeSource>build</timeSource>
+                  <locale>en_US</locale>
+                </configuration>
+              </execution>
+              <execution>
+                <id>build-datelong-property</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>timestamp-property</goal>
+                </goals>
+                <configuration>
+                  <name>build.datelong</name>
+                  <pattern>dd. MMMM yyyy</pattern>
+                  <timeSource>build</timeSource>
+                  <locale>en_US</locale>
+                </configuration>
+              </execution>
+              <execution>
+                <id>build-date-property</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>timestamp-property</goal>
+                </goals>
+                <configuration>
+                  <name>build.date</name>
+                  <pattern>dd.MM.yyyy</pattern>
+                  <timeSource>build</timeSource>
+                  <locale>en_US</locale>
+                </configuration>
+              </execution>
+  
+              <execution>
+                <id>add-junit-test-source</id>
+                <phase>generate-test-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>src/</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+  
+          <plugin>
+            <groupId>pl.project13.maven</groupId>
+            <artifactId>git-commit-id-plugin</artifactId>
+            <version>4.0.4</version>
+            <?m2e ignore?>
+            <executions>
+              <!-- retrieve git revision information from local repo -->
+              <execution>
+                <id>get-the-git-infos</id>
+                <goals>
+                  <goal>revision</goal>
+                </goals>
+                <phase>validate</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <verbose>true</verbose>
+              <!-- write a copy of git props into target/classes to be contained in the resulting jar below -->
+              <generateGitPropertiesFile>true</generateGitPropertiesFile>
+              <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+              <includeOnlyProperties>
+                <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+                <includeOnlyProperty>^git.build.(time|version|(number(|.unique)))$</includeOnlyProperty>
+                <includeOnlyProperty>^git.commit.(id.(abbrev|full)|message.short)$</includeOnlyProperty>
+                <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
+                <includeOnlyProperty>^git.total.commit.count$</includeOnlyProperty>
+              </includeOnlyProperties>
+              <commitIdGenerationMode>full</commitIdGenerationMode>
+            </configuration>
+          </plugin>
+  
+          <plugin>
+            <groupId>com.github.ekryd.echo-maven-plugin</groupId>
+            <artifactId>echo-maven-plugin</artifactId>
+            <version>1.3.2</version>
+            <!-- fixup some weird Eclipse m2e issue "Plugin execution not covered by lifecycle configuration"
+                 https://www.eclipse.org/m2e/documentation/release-notes-17.html#new-syntax-for-specifying-lifecycle-mapping-metadata -->
+            <?m2e ignore?>
+            <executions>
+              <execution>
+                <id>echo-version-info</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>echo</goal>
+                </goals>
+                <configuration>
+                  <message>Building
+                    ${project.build.finalName}
+                  </message>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+  
+          <!-- default-jar only needed for maven repo deployment,
+               so postpone creation to install cycle  -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.0</version>
+            <executions>
+              <execution>
+                <id>default-jar</id>
+                <phase>install</phase>
+                <configuration>
+                  <excludes>
+                    <exclude>**/*.java</exclude>
+                  </excludes>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+  
+          <!-- installing artifact to local repo (usually "~/.m2")
+               is mainly done to enable 
+                 https://jitpack.io/#openjump-gis/openjump
+               repo builds -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <version>3.0.0-M1</version>
+            <executions>
+              <execution>
+                <id>default-install</id>
+                <phase>none</phase>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>custom-install</id>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+                <phase>install</phase>
+                <configuration>
+                  <packaging>jar</packaging>
+                  <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                  <!-- 
+                  <localRepositoryPath>${project.build.directory}/repo/</localRepositoryPath>
+                  -->
+                  <version>${project.version}-${git.branch}-${git.commit.id.abbrev}</version>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+  
+          <!-- this deploys the jar to a repo-url given,
+               used in snapshot/release builds to update
+                 oj.soldin.de repo -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>3.0.0-M1</version>
+            <executions>
+              <execution>
+                <id>default-deploy</id>
+                <phase>none</phase>
+              </execution>
+              <execution>
+                <id>custom-deploy</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>deploy-file</goal>
+                </goals>
+                <configuration>
+                  <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                  <!-- needs to be set via -Durl=file://C:\m2-repo --> <!--
+                  <url>file://${project.build.directory}/build-repo/</url>
+                  -->
+                  <version>${project.version}-${git.branch}-SNAPSHOT</version>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+  
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.19.1</version>
+            <configuration>
+              <argLine>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argLine>
+            </configuration>
+          </plugin>
+      </plugins>
     </build>
     <repositories>
+        <!-- Used for buoy and JAI core, codec and imageio
+             which are not avail on maven central -->
+        <repository>
+            <id>ojrepo</id>
+            <name>OpenJUMP Snapshot Repository</name>
+            <url>https://ojrepo.soldin.de/</url>
+        </repository>
+        <!-- MvnRepository holds a list of recent repos
+             https://mvnrepository.com/repos -->
         <repository>
             <id>Maven Central group</id>
             <name>Maven Central group Repository</name>
-            <!--url>https://mvnrepository.com/artifact/</url-->
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
-        <!-- Used for jmatharray, jmathplot and jama -->
         <repository>
-            <id>openjump</id>
-            <name>OpenJUMP Maven 2 Repository</name>
-            <url>http://jump-pilot.sourceforge.net/repository/</url>
-        </repository>
-        <repository>
-            <id>mvn-adamgent</id>
-            <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
-            <name>Adam Gent Maven Repository</name>
+            <id>apache.repo</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
+            <name>Apache Repo</name>
         </repository>
         <repository>
             <id>apache.snapshots</id>
-            <url>http://repository.apache.org/snapshots</url>
+            <url>https://repository.apache.org/snapshots</url>
             <name>Apache Snapshots</name>
         </repository>
-        <!-- osgeo keeps recent JAI codec, core, imageio jars -->
-        <repository>
-            <id>osgeo</id>
-            <name>Open Source Geospatial Foundation Repository</name>
-            <url>http://download.osgeo.org/webdav/geotools/</url>
-        </repository>
         <!-- deegree2 libs needed for WFS -->
-        <repository>
+        <!--repository>
             <id>deegree-snapshots</id>
             <name>Deegree Snaphots</name>
             <url>http://repo.deegree.org/content/repositories/snapshots/</url>
-        </repository>
+        </repository-->
         <!-- below the home of imageio-ext, needed for local compilation only
         for distribution jars are added manually in etc/mvn/*.cmp files -->
         <repository>
@@ -846,16 +1116,7 @@
             </snapshots>
             <id>imageio-ext-repository</id>
             <name>imageio-ext Repository</name>
-            <url>http://maven.geo-solutions.it/</url>
-        </repository>
-        <!-- we got our custommade jts 1.14 snapshot from here, thx Michael Bedward -->
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>sonatype-snapshots</id>
-            <name>sonatype-snapshots</name>
-            <url>http://oss.sonatype.org/content/repositories/snapshots/</url>
+            <url>https://maven.geo-solutions.it/</url>
         </repository>
     </repositories>
     <dependencies>
@@ -863,18 +1124,6 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.30</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.30</version>
         </dependency>
         <dependency>
             <groupId>org.locationtech.jts</groupId>
@@ -890,100 +1139,97 @@
             <groupId>org.apache-extras.beanshell</groupId>
             <artifactId>bsh</artifactId>
             <version>2.0b6</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>cts</artifactId>
-            <version>1.5.1</version>
+          <groupId>org.orbisgis</groupId>
+          <artifactId>cts</artifactId>
+          <version>1.5.2</version>
         </dependency>
-        <!--dependency>
-          <groupId>jdom</groupId>
-          <artifactId>jdom</artifactId>
-          <version>1.0b8</version>
-          <scope>compile</scope>
-        </dependency-->
+        <!-- disabled as needed jar pulled by cts automatically, 
+             not sure we need cts to log to file really
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        -->
         <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom2</artifactId>
             <version>2.0.6</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>2.12.1</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.19</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>batik</groupId>
             <artifactId>batik-awt-util</artifactId>
-            <version>1.6</version>
-            <scope>compile</scope>
+            <version>${batik.version}</version>
         </dependency>
         <dependency>
             <groupId>batik</groupId>
             <artifactId>batik-dom</artifactId>
-            <version>1.6</version>
-            <scope>compile</scope>
+            <version>${batik.version}</version>
         </dependency>
         <dependency>
             <groupId>batik</groupId>
             <artifactId>batik-svggen</artifactId>
-            <version>1.6</version>
-            <scope>compile</scope>
+            <version>${batik.version}</version>
         </dependency>
         <dependency>
             <groupId>batik</groupId>
             <artifactId>batik-squiggle</artifactId>
-            <version>1.6</version>
-            <scope>compile</scope>
+            <version>${batik.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.buoy</groupId>
             <artifactId>buoy</artifactId>
             <version>1.9</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.math.array</groupId>
-            <artifactId>jmatharray</artifactId>
-            <version>20070905</version>
-            <scope>compile</scope>
+            <groupId>com.github.yannrichet</groupId>
+            <artifactId>JMathArray</artifactId>
+            <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.math.plot</groupId>
-            <artifactId>jmathplot</artifactId>
-            <version>20070905</version>
-            <scope>compile</scope>
+            <groupId>com.github.yannrichet</groupId>
+            <artifactId>JMathPlot</artifactId>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
-            <groupId>jama</groupId>
+            <groupId>gov.nist.math</groupId>
             <artifactId>jama</artifactId>
-            <version>1.0.2</version>
-            <scope>compile</scope>
+            <version>1.0.3</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
-            <scope>compile</scope>
         </dependency>
+        <!-- Version 2.2.1 is the last of the unmaintained 2.2 series
+        There are 2.5.x and 2.7 versions but they  are much bigger
+        don't know if we need them as only few people use jython -->
         <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython</artifactId>
-            <version>2.7.2</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.tukaani</groupId>
             <artifactId>xz</artifactId>
-            <version>1.8</version>
+            <version>1.9</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -1008,7 +1254,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.11</version>
+            <version>3.12.0</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -1020,6 +1266,7 @@
             <artifactId>jai-imageio-core</artifactId>
             <version>1.4.0</version>
         </dependency>
+        <!-- disabled for now as imageio-ext is pulling them itself
         <dependency>
             <groupId>javax.media</groupId>
             <artifactId>jai_core</artifactId>
@@ -1035,36 +1282,180 @@
             <artifactId>jai_imageio</artifactId>
             <version>1.1</version>
         </dependency>
-        <!-- we provide the imageio-ext jars here for compilation only,
-        for runtime they are packaged from lib/imageio-ext/ for 
-        easier updating and splitting between CORE and PLUS -->
+        -->
+        <!-- imageio-ext modules needed for compilation and included in CORE -->
         <dependency>
             <groupId>it.geosolutions.imageio-ext</groupId>
             <artifactId>imageio-ext-utilities</artifactId>
             <version>${imageio-ext.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>it.geosolutions.imageio-ext</groupId>
             <artifactId>imageio-ext-gdalframework</artifactId>
             <version>${imageio-ext.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>it.geosolutions.imageio-ext</groupId>
             <artifactId>imageio-ext-geocore</artifactId>
             <version>${imageio-ext.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
            <groupId>it.geosolutions.imageio-ext</groupId>
            <artifactId>imageio-ext-tiff</artifactId>
            <!-- downgrade, as > 1.1.13 does not load single band TIFFs properly -->
-           <!-- not needed anymore as jai-imageio.core works fine and is preferred -->
-           <!-- version>1.1.13</version -->
-           <version>${imageio-ext.version}</version>
-           <scope>provided</scope>
+           <version>1.1.13</version>
         </dependency>
+        <!-- selected imageio-ext modules for different image formats to be packaged into PLUS -->
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-arcgrid</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalarcbinarygrid</artifactId>
+            <version>${imageio-ext.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalarcgrid</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalbsb</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdaldoq1</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdaldoq2</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdaldted</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalecw</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalehdr</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalenvihdr</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalenvisat</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalerdasimg</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalgeotiff</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalidrisi</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdaljpeg</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalkakadujp2</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalmrsid</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalmrsidjp2</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalnitf</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+                <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-gdalvrt</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-imagereadmt</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-kakadu</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-nitf</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-png</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-turbojpeg</artifactId>
+            <version>${imageio-ext.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!--Nico Ribot: 30 jan 2015. For JTreeTable : Datastore list of layers:--> 
         <dependency>
             <groupId>uk.gov.nationalarchives.thirdparty.netbeans</groupId>

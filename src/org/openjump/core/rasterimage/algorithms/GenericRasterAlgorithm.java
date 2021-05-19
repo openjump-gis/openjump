@@ -2,7 +2,6 @@ package org.openjump.core.rasterimage.algorithms;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
@@ -17,11 +16,11 @@ import java.util.Locale;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.rasterimage.ImageAndMetadata;
 import org.openjump.core.rasterimage.RasterImageIO;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.Resolution;
-import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 
 import com.sun.media.jai.codecimpl.util.RasterFactory;
 import org.locationtech.jts.geom.Coordinate;
@@ -45,7 +44,7 @@ public class GenericRasterAlgorithm {
     public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
 
     /**
-     * modify nodata tag a values to a defined input and save to tif file
+     * Modify nodata tag a values to a defined input and save to tif file
      * @param outputFile
      *        file to save. Eg "C:/folder/filename.tif" (always add extension)
      * @param rasterImageLayer
@@ -90,9 +89,9 @@ public class GenericRasterAlgorithm {
      * 
      * @param outputFile output file
      * @param rasterImageLayer raster image layer
-     * @param band
-     * @param nodata
-     * @throws IOException
+     * @param band th eband to process
+     * @param nodata nodata value
+     * @throws IOException if an IOException occurs
      */
     public void save_ResetNoDataTag(File outputFile,
             RasterImageLayer rasterImageLayer, int band, double nodata)
@@ -151,10 +150,10 @@ public class GenericRasterAlgorithm {
      * Extract a raster defining limits of output
      * @param outputFile output file
      * @param rasterImageLayer raster image layer
-     * @param band
-     * @param mindata
-     * @param maxdata
-     * @throws IOException
+     * @param band the band to process
+     * @param mindata  minimum data value to be extracted
+     * @param maxdata maximum data value to be extracted
+     * @throws IOException if an IOException occurs
      */
     public void save_ExtractValidData(File outputFile,
             RasterImageLayer rasterImageLayer, int band, double mindata,
@@ -188,9 +187,9 @@ public class GenericRasterAlgorithm {
      * Reset the values to a defined number of decimals
      * @param outputFile output file
      * @param rLayer raster image layer
-     * @param band
+     * @param band the band to process
      * @param n Number of decimal to set the values
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
     public void save_ChangeDecimalValues(File outputFile,
             RasterImageLayer rLayer, int band, int n) throws IOException {
@@ -224,8 +223,8 @@ public class GenericRasterAlgorithm {
 
     }
 
-    static DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(
-            Locale.ENGLISH);
+    //static DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(
+    //        Locale.ENGLISH);
 
     /**
      * Crop a RasterImageLayer to a defined envelope and save to tif file
@@ -235,15 +234,14 @@ public class GenericRasterAlgorithm {
      *        input RasterImageLayer
      * @param envelope
      *        input envelope to crop RasterImageLayer
-     * @throws IOException
+     * @throws IOException if an IOException occurs
      */
     public void save_CropToEnvelope(File outputFile,
             RasterImageLayer rasterLayer, Envelope envelope) throws IOException {
 
         final Rectangle subset = rasterLayer.getRectangleFromEnvelope(envelope);
         Raster raster = rasterLayer.getRasterData(subset);
-
-        if (rasterLayer.getImage().getColorModel() instanceof IndexColorModel) {
+        if (rasterLayer.getImage().getColorModel() instanceof IndexColorModel && subset != null) {
             final IndexColorModel indexColorModel = (IndexColorModel) rasterLayer
                     .getImage().getColorModel();
             final DataBuffer dataBufferIn = raster.getDataBuffer();
@@ -277,11 +275,10 @@ public class GenericRasterAlgorithm {
             bandOffsets[1] = raster.getWidth() * raster.getHeight();
             bandOffsets[2] = 2 * raster.getWidth() * raster.getHeight();
 
-            final WritableRaster wRaster = RasterFactory.createBandedRaster(
+            raster = RasterFactory.createBandedRaster(
                     dataBufferOut, raster.getWidth(), raster.getHeight(),
                     raster.getWidth(), bankIndices, bandOffsets,
                     new Point(0, 0));
-            raster = wRaster;
 
         }
         final RasterImageIO rasterImageIO = new RasterImageIO();
@@ -344,8 +341,8 @@ public class GenericRasterAlgorithm {
         final RasterImageIO rasterImageIO = new RasterImageIO();
 
         // Get whole image
-        final ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(frame
-                .getContext(), rLayer.getImageFileName(), rLayer.getMetadata()
+        final ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(/*frame
+                .getContext(),*/ rLayer.getImageFileName(), rLayer.getMetadata()
                 .getStats(), null, null);
 
         final ParameterBlock pb = new ParameterBlock();
@@ -369,13 +366,12 @@ public class GenericRasterAlgorithm {
      *          eg. "new File(C:/folder/fileName.tif)"
      * @param category
      *          eg. "Working"
-     * @throws NoninvertibleTransformException
-     * @throws TiffReadingException
-     * @throws Exception
+     * @throws Exception if an IOException occurs in RasterImageIO.getImageDimensions
+     *      or if a general Exception occurs in RasterImageIO.getGeoReferencing or in
+     *      RasterImageIO.loadImage
      */
     public void load(File inputFile, String category)
-            throws NoninvertibleTransformException, TiffReadingException,
-            Exception {
+            throws Exception {
 
         final RasterImageIO rasterImageIO = new RasterImageIO();
         final Point point = RasterImageIO.getImageDimensions(inputFile
@@ -388,7 +384,7 @@ public class GenericRasterAlgorithm {
         final Resolution requestedRes = RasterImageIO
                 .calcRequestedResolution(viewport);
         final ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
-                frame.getContext(), inputFile.getAbsolutePath(), null,
+                /*frame.getContext(),*/ inputFile.getAbsolutePath(), null,
                 viewport.getEnvelopeInModelCoordinates(), requestedRes);
         final RasterImageLayer ril = new RasterImageLayer(inputFile.getName(),
                 frame.getContext().getLayerManager(),
@@ -397,7 +393,8 @@ public class GenericRasterAlgorithm {
             category = ((Category) frame.getContext().getLayerableNamePanel()
                     .getSelectedCategories().toArray()[0]).getName();
         } catch (final RuntimeException e) {
-
+            Logger.warn("GenericRasterAlgorithm.load(\"" + inputFile + "\",\"" + category +
+                    "\") : error trying to get the name of the currently selected category", e);
         }
         frame.getContext().getLayerManager().addLayerable(category, ril);
     }

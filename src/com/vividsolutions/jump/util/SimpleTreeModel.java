@@ -32,7 +32,6 @@
 package com.vividsolutions.jump.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.event.TreeModelEvent;
@@ -42,59 +41,71 @@ import javax.swing.tree.TreePath;
 
 import org.locationtech.jts.util.Assert;
 
+/**
+ * Simple implementation of TreeModel.
+ * SimpleTreeModel is the equivalent of DefaultTreeModel with a firingEvent attribute
+ * to determine if model events must be propagated to the interface.
+ */
 public abstract class SimpleTreeModel implements TreeModel {
 
-    public static abstract class Folder {
-        private Class childrenClass;
-        private String name;
-        private Object parent;
-        public Folder(String name, Object parent, Class childrenClass) {
-            this.name = name;
-            this.parent = parent;
-            this.childrenClass = childrenClass;
-        }
-        public abstract List getChildren();
-        public String toString() {
-            return name;
-        }
-        public int hashCode() {
-            //JTree puts nodes in a Hashtable. To keep things simple, just return 0,
-            //which will cause linear searches (fine for small trees). [Jon Aquino]
-            return name.hashCode();
-        }
-        public boolean equals(Object other) {
-            //Folders are value objects. [Jon Aquino]
-            if (! (other instanceof Folder)) {
-                return false;
-            }
-            Folder otherFolder = (Folder) other;
-            return parent == otherFolder.parent && name.equals(otherFolder.name);
-        }
+    private final Object root;
+    private final List<TreeModelListener> listeners = new ArrayList<>();
+    private boolean firingEvents = true;
 
-        public Class getChildrenClass() {
-            return childrenClass;
-        }
-        
-        public Object getParent() {
-            return parent;
-        }
+    // [mmichaud] what is it for ? unused in OpenJUMP codebase
+    //public static abstract class Folder {
+    //    private final Class<?> childrenClass;
+    //    private final String name;
+    //    private final Object parent;
+    //    public Folder(String name, Object parent, Class<?> childrenClass) {
+    //        this.name = name;
+    //        this.parent = parent;
+    //        this.childrenClass = childrenClass;
+    //    }
+    //    public abstract List<?> getChildren();
+    //    public String toString() {
+    //        return name;
+    //    }
+    //    public int hashCode() {
+    //        //JTree puts nodes in a Hashtable. To keep things simple, just return 0,
+    //        //which will cause linear searches (fine for small trees). [Jon Aquino]
+    //        return name.hashCode();
+    //    }
+    //    public boolean equals(Object other) {
+    //        //Folders are value objects. [Jon Aquino]
+    //        if (! (other instanceof Folder)) {
+    //            return false;
+    //        }
+    //        Folder otherFolder = (Folder) other;
+    //        return parent == otherFolder.parent && name.equals(otherFolder.name);
+    //    }
+    //
+    //    public Class<?> getChildrenClass() {
+    //        return childrenClass;
+    //    }
+    //
+    //    public Object getParent() {
+    //        return parent;
+    //    }
+    //
+    //}
 
-    }
-
-    private Object root;
 
     public SimpleTreeModel(Object root) {
         this.root = root;
     }
 
+    @Override
     public Object getRoot() {
         return root;
     }
 
+    @Override
     public boolean isLeaf(Object node) {
-        return ! (node instanceof Folder) && getChildCount(node) == 0;
+        return /*! (node instanceof Folder) &&*/ getChildCount(node) == 0;
     }
 
+    @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
     }
 
@@ -102,9 +113,9 @@ public abstract class SimpleTreeModel implements TreeModel {
     public int getIndexOfChild(Object parent, Object child) {
         for (int i = 0; i < getChildCount(parent); i++) {
             //Folders are value objects. [Jon Aquino]
-            if (child instanceof Folder
+            if (/*child instanceof Folder
                 && getChild(parent, i) instanceof Folder
-                && getChild(parent, i).toString().equals(child.toString())) {
+                &&*/ getChild(parent, i).toString().equals(child.toString())) {
                 return i;
             }
             if (getChild(parent, i) == child) {
@@ -115,13 +126,14 @@ public abstract class SimpleTreeModel implements TreeModel {
         return -1;
     }
 
-    private ArrayList listeners = new ArrayList();
-    private boolean firingEvents = true;
 
+
+    @Override
     public void addTreeModelListener(TreeModelListener listener) {
         listeners.add(listener);
     }
 
+    @Override
     public void removeTreeModelListener(TreeModelListener listener) {
         listeners.remove(listener);
     }
@@ -130,16 +142,17 @@ public abstract class SimpleTreeModel implements TreeModel {
      * No need to handle Folders
      * @param parent not a Folder
      */
-    public abstract List getChildren(Object parent);
+    public abstract List<?> getChildren(Object parent);
 
     public Object getChild(Object parent, int index) {
         return children(parent).get(index);
     }
 
-    private List children(Object parent) {
-        return parent instanceof Folder
-            ? ((Folder) parent).getChildren()
-            : getChildren(parent);
+    private List<?> children(Object parent) {
+        //return parent instanceof Folder
+        //    ? ((Folder) parent).getChildren()
+        //    : getChildren(parent);
+        return getChildren(parent);
     }
 
     public int getChildCount(Object parent) {
@@ -149,33 +162,29 @@ public abstract class SimpleTreeModel implements TreeModel {
 
     public void fireTreeNodesChanged(TreeModelEvent e) {
         if (!firingEvents) { return; }
-        for (Iterator i = listeners.iterator(); i.hasNext(); ){
-            TreeModelListener l = (TreeModelListener) i.next();
-            l.treeNodesChanged(e);
+        for (TreeModelListener listener : listeners) {
+            listener.treeNodesChanged(e);
         }
     }
     
     public void fireTreeNodesInserted(TreeModelEvent e) {
         if (!firingEvents) { return; }
-        for (Iterator i = listeners.iterator(); i.hasNext(); ){
-            TreeModelListener l = (TreeModelListener) i.next();
-            l.treeNodesInserted(e);
+        for (TreeModelListener listener : listeners) {
+            listener.treeNodesInserted(e);
         }
     }
     
     public void fireTreeNodesRemoved(TreeModelEvent e) {
         if (!firingEvents) { return; }
-        for (Iterator i = listeners.iterator(); i.hasNext(); ){
-            TreeModelListener l = (TreeModelListener) i.next();
-            l.treeNodesRemoved(e);
+        for (TreeModelListener listener : listeners) {
+            listener.treeNodesRemoved(e);
         }
     }
     
     public void fireTreeStructureChanged(TreeModelEvent e) {
         if (!firingEvents) { return; }
-        for (Iterator i = listeners.iterator(); i.hasNext(); ){
-            TreeModelListener l = (TreeModelListener) i.next();
-            l.treeStructureChanged(e);
+        for (TreeModelListener listener : listeners) {
+            listener.treeStructureChanged(e);
         }
     }    
 

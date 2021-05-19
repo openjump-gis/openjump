@@ -45,19 +45,20 @@ import org.locationtech.jts.geom.*;
  * Points will not be moved outside the envelope.
  */
 public class MicroscopePointAdjuster {
-    private static final Coordinate origin = new Coordinate(0.0, 0.0, 0.0);
-    private List segList;
-    private Envelope env;
-    private double minSep;
-    private Map adjPtMap = new TreeMap();
 
-    public MicroscopePointAdjuster(List segList, Envelope env, double minSep) {
+    private static final Coordinate origin = new Coordinate(0.0, 0.0, 0.0);
+    private final List<LineSegment> segList;
+    private final Envelope env;
+    private final double minSep;
+    private final Map<Coordinate,Coordinate> adjPtMap = new TreeMap<>();
+
+    public MicroscopePointAdjuster(List<LineSegment> segList, Envelope env, double minSep) {
         this.segList = segList;
         this.env = env;
         this.minSep = minSep;
     }
 
-    public Map getAdjustedPointMap() {
+    public Map<Coordinate,Coordinate> getAdjustedPointMap() {
         computeAdjustments();
 
         return adjPtMap;
@@ -65,13 +66,13 @@ public class MicroscopePointAdjuster {
 
     private void computeAdjustments() {
         // find all points in Envelope
-        List ptsInEnv = findPointsInEnv(env);
-        List segsInEnv = findSegmentsInEnv(env);
+        List<Coordinate> ptsInEnv = findPointsInEnv(env);
+        List<LineSegment> segsInEnv = findSegmentsInEnv(env);
 
         SingleSegmentExpander ssex = new SingleSegmentExpander();
 
         if (ssex.isApplicable(segsInEnv, ptsInEnv)) {
-            LineSegment seg = (LineSegment) segsInEnv.get(0);
+            LineSegment seg = segsInEnv.get(0);
             Coordinate[] adjPt = ssex.expandSegment(seg, env);
             adjPtMap.put(new Coordinate(seg.p0), adjPt[0]);
             adjPtMap.put(new Coordinate(seg.p1), adjPt[1]);
@@ -85,24 +86,21 @@ public class MicroscopePointAdjuster {
      * Probably for testing only.
      * @return a list of adjusted segments
      */
-    public List adjustSegments() {
+    public List<LineSegment> adjustSegments() {
         // find all points in Envelope
-        List ptsInEnv = findPointsInEnv(env);
+        List<Coordinate> ptsInEnv = findPointsInEnv(env);
         computeAdjustedPtMap(ptsInEnv);
 
         return adjustSegs();
     }
 
-    private List findPointsInEnv(Envelope env) {
-        List ptsInEnv = new ArrayList();
+    private List<Coordinate> findPointsInEnv(Envelope env) {
+        List<Coordinate> ptsInEnv = new ArrayList<>();
 
-        for (Iterator i = segList.iterator(); i.hasNext();) {
-            LineSegment seg = (LineSegment) i.next();
-
+        for (LineSegment seg : segList) {
             if (env.contains(seg.p0)) {
                 ptsInEnv.add(seg.p0);
             }
-
             if (env.contains(seg.p1)) {
                 ptsInEnv.add(seg.p1);
             }
@@ -111,12 +109,10 @@ public class MicroscopePointAdjuster {
         return ptsInEnv;
     }
 
-    private List findSegmentsInEnv(Envelope env) {
-        List segsInEnv = new ArrayList();
+    private List<LineSegment> findSegmentsInEnv(Envelope env) {
+        List<LineSegment> segsInEnv = new ArrayList<>();
 
-        for (Iterator i = segList.iterator(); i.hasNext();) {
-            LineSegment seg = (LineSegment) i.next();
-
+        for (LineSegment seg : segList) {
             if (env.contains(seg.p0) && env.contains(seg.p1)) {
                 segsInEnv.add(seg);
             }
@@ -125,9 +121,8 @@ public class MicroscopePointAdjuster {
         return segsInEnv;
     }
 
-    private void computeAdjustedPtMap(List ptsInEnv) {
-        for (Iterator i = ptsInEnv.iterator(); i.hasNext();) {
-            Coordinate pt = (Coordinate) i.next();
+    private void computeAdjustedPtMap(List<Coordinate> ptsInEnv) {
+        for (Coordinate pt : ptsInEnv) {
             Coordinate adjPt = computeAdjustment(pt);
 
             if (!adjPt.equals(pt)) {
@@ -137,12 +132,10 @@ public class MicroscopePointAdjuster {
         }
     }
 
-    private List adjustSegs() {
-        List adjSegList = new ArrayList();
+    private List<LineSegment> adjustSegs() {
+        List<LineSegment> adjSegList = new ArrayList<>();
 
-        for (Iterator i = segList.iterator(); i.hasNext();) {
-            LineSegment seg = (LineSegment) i.next();
-
+        for (LineSegment seg : segList) {
             LineSegment adjSeg = new LineSegment();
             adjSeg.p0 = adjustPt(seg.p0);
             adjSeg.p1 = adjustPt(seg.p1);
@@ -153,7 +146,7 @@ public class MicroscopePointAdjuster {
     }
 
     private Coordinate adjustPt(Coordinate p) {
-        Coordinate adjMapPt = (Coordinate) adjPtMap.get(p);
+        Coordinate adjMapPt = adjPtMap.get(p);
 
         if (adjMapPt != null) {
             return new Coordinate(adjMapPt);
@@ -165,8 +158,7 @@ public class MicroscopePointAdjuster {
     private Coordinate computeAdjustment(Coordinate p) {
         Coordinate adjVec = new Coordinate();
 
-        for (Iterator i = segList.iterator(); i.hasNext();) {
-            LineSegment seg = (LineSegment) i.next();
+        for (LineSegment seg : segList) {
             double dist = seg.distance(p);
 
             // if too close, compute an adjustment weight vector
@@ -222,11 +214,9 @@ public class MicroscopePointAdjuster {
 
         double len = adjWeightVec.distance(origin);
 
-        /**
-         * have to do something smarter if length is really small.
-         * Probably test for which side of line point is and move it perp to line
-         * a fixed amount.
-         */
+        // have to do something smarter if length is really small.
+        // Probably test for which side of line point is and move it perp to line
+        // a fixed amount.
         double scale = minSep / len;
         adjWeightVec.x *= scale;
         adjWeightVec.y *= scale;

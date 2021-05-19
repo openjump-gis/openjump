@@ -46,6 +46,8 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import org.locationtech.jts.geom.Geometry;
+
 public class MicroscopePlugIn extends AbstractPlugIn {
     public MicroscopePlugIn() {
     }
@@ -83,10 +85,9 @@ public class MicroscopePlugIn extends AbstractPlugIn {
         return true;
     }
     private FeatureCollection magnify(FeatureCollection fc, Envelope env) {
-        List geomList = new ArrayList();
-        for (Iterator i = fc.query(env).iterator(); i.hasNext();) {
-            Feature feature = (Feature) i.next();
-            geomList.add(feature.getGeometry().clone());
+        List<Geometry> geomList = new ArrayList<>();
+        for (Feature feature : fc.query(env)) {
+            geomList.add(feature.getGeometry().copy());
         }
         //double minSep = 5.0;
         double minSep = env.getWidth() / 20; // kluge

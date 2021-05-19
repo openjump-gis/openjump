@@ -112,7 +112,7 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
 
         // Get whole image
         ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
-                context.getWorkbenchContext(), rLayer.getImageFileName(),
+                /*context.getWorkbenchContext(),*/ rLayer.getImageFileName(),
                 rLayer.getMetadata().getStats(), null, null);
 
         ParameterBlock pb = new ParameterBlock();
@@ -145,7 +145,7 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
         Resolution requestedRes = RasterImageIO
                 .calcRequestedResolution(viewport);
         imageAndMetadata = rasterImageIO.loadImage(
-                context.getWorkbenchContext(), outFile.getAbsolutePath(), null,
+                /*context.getWorkbenchContext(),*/ outFile.getAbsolutePath(), null,
                 viewport.getEnvelopeInModelCoordinates(), requestedRes);
         RasterImageLayer ril = new RasterImageLayer(outFile.getName(), context
                 .getWorkbenchContext().getLayerManager(),

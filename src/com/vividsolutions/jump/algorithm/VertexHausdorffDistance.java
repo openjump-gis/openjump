@@ -49,19 +49,29 @@ import org.locationtech.jts.algorithm.distance.*;
  * and roughly equal in length - just what is needed for line matching.
  * </b>
  */
-// TODO replace by org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance
 public class VertexHausdorffDistance
 {
 
+  /**
+   * Compute a discrete hausdorff distance between two geometries
+   * @param g0 first geometry
+   * @param g1 second geometry
+   * @deprecated use JTS DiscreteHausdorffDistance instead
+   */
+  @Deprecated
   public static double distance(Geometry g0, Geometry g1)
   {
-    VertexHausdorffDistance vhd = new VertexHausdorffDistance(g0, g1);
-    return vhd.distance();
+    return DiscreteHausdorffDistance.distance(g0, g1);
   }
 
-  private PointPairDistance ptDist = new PointPairDistance();
+  private final PointPairDistance ptDist = new PointPairDistance();
 
-  // This one is now available in JTS
+  /**
+   * Compute a discrete hausdorff distance between two geometries
+   * @param g0 first geometry
+   * @param g1 second geometry
+   * @deprecated use JTS DiscreteHausdorffDistance instead
+   */
   @Deprecated
   public VertexHausdorffDistance(Geometry g0, Geometry g1)
   {
@@ -74,7 +84,7 @@ public class VertexHausdorffDistance
    * (used by UniqueSegmentsWithToleranceFinder)
    * @param seg0 first LineSegment
    * @param seg1 second LineSegment
-     */
+   */
   public VertexHausdorffDistance(LineSegment seg0, LineSegment seg1)
   {
     compute(seg0, seg1);
@@ -122,10 +132,9 @@ public class VertexHausdorffDistance
   public static class MaxPointDistanceFilter
       implements CoordinateFilter
   {
-    private PointPairDistance maxPtDist = new PointPairDistance();
-    private PointPairDistance minPtDist = new PointPairDistance();
-    private DistanceToPoint euclideanDist = new DistanceToPoint();
-    private Geometry geom;
+    private final PointPairDistance maxPtDist = new PointPairDistance();
+    private final PointPairDistance minPtDist = new PointPairDistance();
+    private final Geometry geom;
 
     public MaxPointDistanceFilter(Geometry geom)
     {
@@ -135,7 +144,7 @@ public class VertexHausdorffDistance
     public void filter(Coordinate pt)
     {
       minPtDist.initialize();
-      euclideanDist.computeDistance(geom, pt, minPtDist);
+      DistanceToPoint.computeDistance(geom, pt, minPtDist);
       maxPtDist.setMaximum(minPtDist);
     }
 

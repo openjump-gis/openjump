@@ -124,13 +124,13 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     private static RasterImageLayer rLayer;
     public static JTextField unitfiled = new JTextField("");
     public static MultiInputDialog dialog;
-    private final List<Coordinate> savedCoordinates = new ArrayList<Coordinate>();
-    JRadioButton radioButton1 = new JRadioButton(DRAWN, drawnType);
-    JRadioButton radioButton2 = new JRadioButton(SELECTED, selectedType);
+    private final List<Coordinate> savedCoordinates = new ArrayList<>();
+    //JRadioButton radioButton1 = new JRadioButton(DRAWN, drawnType);
+    //JRadioButton radioButton2 = new JRadioButton(SELECTED, selectedType);
     JComboBox<RasterImageLayer> box;
     JComboBox<String> comboBox = new JComboBox<String>();
-    JPanel panel1 = new JPanel(new FlowLayout());
-    JLabel label1;
+    //JPanel panel1 = new JPanel(new FlowLayout());
+    //JLabel label1;
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
@@ -186,7 +186,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
         String srs = "";
         for (final RasterImageLayer currentLayer : rlayers) {
             try {
-                srs = currentLayer.getSRSInfo().getUnit().toString();
+                srs = currentLayer.getSrsInfo().getUnit().toString();
             } catch (final Exception e) {
                 srs = "metre";
             }
@@ -199,7 +199,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
                 .toArray()[0];
         String srsCode;
         try {
-            srsCode = firstElement.getSRSInfo().getUnit().toString();
+            srsCode = firstElement.getSrsInfo().getUnit().toString();
         } catch (final Exception e) {
             srsCode = "Unknown";
         }
@@ -236,7 +236,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
         box.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final String layerUnit = getLayer().getSRSInfo().getUnit()
+                final String layerUnit = getLayer().getSrsInfo().getUnit()
                         .toString();
 
                 unitfiled.setText(layerUnit);
@@ -244,12 +244,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
                 dialog.repaint();
             }
         });
-        cpan.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                color = cpan.getColor();
-            }
-        });
+        cpan.addActionListener(evt -> color = cpan.getColor());
         cpan.setColor(color);
         cpan.setAlpha(255);
         dialog.addRow("CheckColor", new JLabel(COLOR + " (" + PLOT + ")"),
@@ -257,7 +252,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     }
 
     public void updateComponents() {
-        final String layerUnit = getLayer().getSRSInfo().getUnit().toString();
+        final String layerUnit = getLayer().getSrsInfo().getUnit().toString();
         comboBox.setEnabled(layerUnit.equals("Unknown"));
         comboBox.setSelectedItem(layerUnit);
 
@@ -325,12 +320,10 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
 
             final Collection<Feature> features = context.getLayerViewPanel()
                     .getSelectionManager().getFeaturesWithSelectedItems();
-            if (features.size() == 0 || features.size() > 1) {
-                context.getWorkbenchFrame()
-                        .warnUser(
-                                I18N.getMessage(
-                                        "com.vividsolutions.jump.workbench.plugin.Exactly-n-features-must-be-selected", //$NON-NLS-1$
-                                        new Object[] { 1 }));
+            if (features.size() != 1) {
+                context.getWorkbenchFrame().warnUser(I18N.getMessage(
+                        "com.vividsolutions.jump.workbench.plugin.Exactly-n-features-must-be-selected", 1
+                        ));
 
             } else {
                 final Geometry geom = features.iterator().next().getGeometry();

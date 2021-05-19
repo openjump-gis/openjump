@@ -24,7 +24,6 @@ import javax.media.jai.PlanarImage;
 import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
-//import org.openjump.core.ui.plugin.layer.pirolraster.LoadSextanteRasterImagePlugIn;
 
 import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
@@ -41,8 +40,8 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  */
 public class RasterImageIOUtils {
     static Properties properties = null;
-    private static String byteOrder = "LSBFIRST";
-    private static String propertiesFile = "path";
+    private final static String byteOrder = "LSBFIRST";
+    private final static String propertiesFile = "path";
     static NumberFormat cellFormat = null;
     // public static final Double DEFAULT_NODATA = Double.valueOf(-9999.0D);
     public static double defaultNoData = -99999.0D;
@@ -56,13 +55,12 @@ public class RasterImageIOUtils {
      *            Selected Raster Image Layer (RasterImageLayer.class)
      * @param envWanted
      *            envelope wanted
-     * @throws NoninvertibleTransformException
-     *             , TiffReadingException, Exception
+     * @throws IOException if an IOException occurs in RasterImageLayer.getRasterData
+     *      or in RasterImageIO.writeImage
      */
 
     public static void saveTIF(File file, RasterImageLayer rLayer,
-            Envelope envWanted) throws NoninvertibleTransformException,
-            TiffReadingException, Exception {
+            Envelope envWanted) throws IOException {
 
         RasterImageIO rasterImageIO = new RasterImageIO();
 
@@ -183,7 +181,6 @@ public class RasterImageIOUtils {
     public static void saveASC(File outfile, PlugInContext context,
             RasterImageLayer rLayer) throws IOException {
         saveASC(outfile, context, rLayer, 0);
-        return;
     }
 
     /**
@@ -494,14 +491,14 @@ public class RasterImageIOUtils {
             }
             defaultNoData = rstLayer.getNoDataValue();
 
-            Double xcMin = Double.valueOf(rLayer.getActualImageEnvelope()
-                    .getMinX() + 0.5D * rstLayer.getLayerCellSize().x);
-            Double ycMin = Double.valueOf(rLayer.getActualImageEnvelope()
-                    .getMinY() + 0.5D * rstLayer.getLayerCellSize().y);
-            Double xcMax = Double.valueOf(rLayer.getActualImageEnvelope()
-                    .getMaxX() - 0.5D * rstLayer.getLayerCellSize().x);
-            Double ycMax = Double.valueOf(rLayer.getActualImageEnvelope()
-                    .getMaxY() - 0.5D * rstLayer.getLayerCellSize().y);
+            Double xcMin = rLayer.getActualImageEnvelope()
+                    .getMinX() + 0.5D * rstLayer.getLayerCellSize().x;
+            Double ycMin = rLayer.getActualImageEnvelope()
+                    .getMinY() + 0.5D * rstLayer.getLayerCellSize().y;
+            Double xcMax = rLayer.getActualImageEnvelope()
+                    .getMaxX() - 0.5D * rstLayer.getLayerCellSize().x;
+            Double ycMax = rLayer.getActualImageEnvelope()
+                    .getMaxY() - 0.5D * rstLayer.getLayerCellSize().y;
 
             PrintStream po = new PrintStream(out);
             po.println("DSAA");
@@ -764,8 +761,7 @@ public class RasterImageIOUtils {
      */
 
     public static void loadTIF(File file, PlugInContext context, String category)
-            throws NoninvertibleTransformException, TiffReadingException,
-            Exception {
+            throws Exception {
 
         RasterImageIO rasterImageIO = new RasterImageIO();
         Viewport viewport = context.getWorkbenchContext().getLayerViewPanel()
@@ -773,7 +769,7 @@ public class RasterImageIOUtils {
         Resolution requestedRes = RasterImageIO
                 .calcRequestedResolution(viewport);
         ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
-                context.getWorkbenchContext(), file.getAbsolutePath(), null,
+                /*context.getWorkbenchContext(),*/ file.getAbsolutePath(), null,
                 viewport.getEnvelopeInModelCoordinates(), requestedRes);
          Point point = RasterImageIO.getImageDimensions(file.getAbsolutePath());
        Envelope env = RasterImageIO.getGeoReferencing(file.getAbsolutePath(),
@@ -814,7 +810,7 @@ public class RasterImageIOUtils {
         Resolution requestedRes = RasterImageIO
                 .calcRequestedResolution(viewport);
         ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
-                context.getWorkbenchContext(), file.getAbsolutePath(), null,
+                /*context.getWorkbenchContext(),*/ file.getAbsolutePath(), null,
                 viewport.getEnvelopeInModelCoordinates(), requestedRes);
 
         GridFloat gf = new GridFloat(file.getAbsolutePath());
@@ -855,7 +851,7 @@ public class RasterImageIOUtils {
         Resolution requestedRes = RasterImageIO
                 .calcRequestedResolution(viewport);
         ImageAndMetadata imageAndMetadatar = rasterImageIO.loadImage(
-                context.getWorkbenchContext(), file.getAbsolutePath(), null,
+                /*context.getWorkbenchContext(),*/ file.getAbsolutePath(), null,
                 viewport.getEnvelopeInModelCoordinates(), requestedRes);
         GridAscii gf = new GridAscii(file.getAbsolutePath());
 

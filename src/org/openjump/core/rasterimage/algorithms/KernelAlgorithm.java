@@ -1,7 +1,6 @@
 package org.openjump.core.rasterimage.algorithms;
 
 import java.awt.Point;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ColorModel;
@@ -16,11 +15,11 @@ import java.util.LinkedHashMap;
 
 import javax.media.jai.PlanarImage;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.rasterimage.ImageAndMetadata;
 import org.openjump.core.rasterimage.RasterImageIO;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.Resolution;
-import org.openjump.core.rasterimage.TiffTags.TiffReadingException;
 import org.openjump.core.ui.util.LayerableUtil;
 
 import org.locationtech.jts.geom.Envelope;
@@ -31,14 +30,12 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
 public class KernelAlgorithm {
 
-    LinkedHashMap<String, float[]> subjects = createDataMap();
-    LinkedHashMap<String, String> subjects2 = createTextMap();
+    //LinkedHashMap<String, float[]> subjects = createDataMap();
+    //LinkedHashMap<String, String> subjects2 = createTextMap();
     public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
 
     public LinkedHashMap<String, float[]> createDataMap() {
-        final LinkedHashMap<String, float[]> map = new
-
-        LinkedHashMap<String, float[]>();
+        final LinkedHashMap<String, float[]> map = new LinkedHashMap<>();
         map.put(S_gradientEast, gradientEast);
         map.put(S_gradientNord, gradientNord);
         map.put(S_gradientNorthEast, gradientNorthEast);
@@ -74,9 +71,7 @@ public class KernelAlgorithm {
     }
 
     public LinkedHashMap<String, String> createTextMap() {
-        final LinkedHashMap<String, String> map = new
-
-        LinkedHashMap<String, String>();
+        final LinkedHashMap<String, String> map = new LinkedHashMap<>();
         map.put(S_gradientEast, Description01_Gradient);
         map.put(S_gradientNord, Description01_Gradient);
         map.put(S_gradientNorthEast, Description01_Gradient);
@@ -236,6 +231,7 @@ public class KernelAlgorithm {
     //Blur and Emboss
     public float[] averageblur = { 1 / 9f, 1 / 9f, 1 / 9f, 1 / 9f, 1 / 9f,
             1 / 9f, 1 / 9f, 1 / 9f, 1 / 9f };
+    // TODO there is a 1/0f division !!!
     public float[] smoothaverageblur = { 0f, 1 / 8f, 1 / 0f, 1 / 8f, 1 / 2f,
             1 / 8f, 0f, 1 / 8f, 0f };
     public float[] gaussianblur = { 1f / 256f, 4f / 256f, 6f / 256f, 4f / 256f,
@@ -255,8 +251,8 @@ public class KernelAlgorithm {
     public void filterRaster(File file, RasterImageLayer rLayer, float[] kernel)
             throws Exception {
 
-        final Double dim = Math.sqrt(kernel.length);
-        final int val = dim.intValue();
+        final double dim = Math.sqrt(kernel.length);
+        final int val = (int) dim;
         final BufferedImageOp blur = new ConvolveOp(
                 new Kernel(val, val, kernel));
 
@@ -290,8 +286,8 @@ public class KernelAlgorithm {
     public void filterRaster2(File file, RasterImageLayer rLayer, float[] kernel)
             throws Exception {
 
-        final Double dim = Math.sqrt(kernel.length);
-        final int val = dim.intValue();
+        final double dim = Math.sqrt(kernel.length);
+        final int val = (int) dim;
         final BufferedImageOp blur = new ConvolveOp(
                 new Kernel(val, val, kernel));
 
@@ -302,7 +298,7 @@ public class KernelAlgorithm {
             final BufferedImage src = new BufferedImage(colorModel,
                     (WritableRaster) r, false, null);*/
 
-        BufferedImage src = null;
+        BufferedImage src;
         int type;
         if (LayerableUtil.isMonoband(rLayer)) {
             src = rLayer.getImage();
@@ -324,9 +320,9 @@ public class KernelAlgorithm {
                 .getOriginalCellSize()), rLayer.getMetadata().getNoDataValue());
     }
 
+    //TODO how is it different from GenericRasterAlgorithm.load ?
     public void load(File outFile, String name, String category)
-            throws NoninvertibleTransformException, TiffReadingException,
-            Exception {
+            throws Exception {
 
         final RasterImageIO rasterImageIO = new RasterImageIO();
         final Point point = RasterImageIO.getImageDimensions(outFile
@@ -339,7 +335,7 @@ public class KernelAlgorithm {
         final Resolution requestedRes = RasterImageIO
                 .calcRequestedResolution(viewport);
         final ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
-                frame.getContext(), outFile.getAbsolutePath(), null,
+                /*frame.getContext(),*/ outFile.getAbsolutePath(), null,
                 viewport.getEnvelopeInModelCoordinates(), requestedRes);
         final RasterImageLayer ril = new RasterImageLayer(name, frame
                 .getContext().getLayerManager(), outFile.getAbsolutePath(),
@@ -348,7 +344,8 @@ public class KernelAlgorithm {
             category = ((Category) frame.getContext().getLayerableNamePanel()
                     .getSelectedCategories().toArray()[0]).getName();
         } catch (final RuntimeException e) {
-
+            Logger.warn("KernelAlgorithm.load(\"" + outFile + "\",\"" + name + "\",\"" + category +
+                    "\") : error trying to get the name of the currently selected category", e);
         }
         frame.getContext().getLayerManager().addLayerable(category, ril);
     }

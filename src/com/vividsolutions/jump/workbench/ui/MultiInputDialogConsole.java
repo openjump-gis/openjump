@@ -36,9 +36,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -131,12 +128,9 @@ public class MultiInputDialogConsole extends JPanel {
     }
     
     private Color soften(Color src, Color tgt, float c) {
-        int red   = src.getRed();
-        int green = src.getGreen();
-        int blue  = src.getBlue();
-        red       = tgt.getRed()   + (int)((1f-c)*(src.getRed()  -tgt.getRed()));
-        green     = tgt.getGreen() + (int)((1f-c)*(src.getGreen()-tgt.getGreen()));
-        blue      = tgt.getBlue()  + (int)((1f-c)*(src.getBlue() -tgt.getBlue()));
+        int red       = tgt.getRed()   + (int)((1f-c)*(src.getRed()  -tgt.getRed()));
+        int green     = tgt.getGreen() + (int)((1f-c)*(src.getGreen()-tgt.getGreen()));
+        int blue      = tgt.getBlue()  + (int)((1f-c)*(src.getBlue() -tgt.getBlue()));
         return new Color(red, green, blue);
     } 
     

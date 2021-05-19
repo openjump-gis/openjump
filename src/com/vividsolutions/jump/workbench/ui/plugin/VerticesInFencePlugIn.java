@@ -54,8 +54,8 @@ import com.vividsolutions.jump.workbench.ui.TextFrame;
 
 public class VerticesInFencePlugIn extends AbstractPlugIn {
 
-  private WKTWriter wktWriter = new WKTWriter(3);
-  private GeometryFactory factory = new GeometryFactory();
+  private final WKTWriter wktWriter = new WKTWriter(3);
+  private final GeometryFactory factory = new GeometryFactory();
 
   public VerticesInFencePlugIn() {
   }
@@ -83,10 +83,10 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
 
   private String description(PlugInContext context) {
     FenceLayerFinder fenceLayerFinder = new FenceLayerFinder(context);
-    StringBuffer description = new StringBuffer();
+    StringBuilder description = new StringBuilder();
     description.append("<html><body>");
-    for (Iterator i = context.getLayerManager().iterator(); i.hasNext();) {
-      Layer layer = (Layer) i.next();
+    for (Iterator<Layer> i = context.getLayerManager().iterator(Layer.class); i.hasNext();) {
+      Layer layer = i.next();
       if (!layer.isVisible()) {
         continue;
       }
@@ -99,11 +99,10 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
     return description.toString();
   }
 
-  public static Collection verticesInFence(Collection geometries,
+  public static Collection<Coordinate> verticesInFence(Collection<Geometry> geometries,
       Geometry fence, boolean skipClosingVertex) {
-    ArrayList verticesInFence = new ArrayList();
-    for (Iterator i = geometries.iterator(); i.hasNext();) {
-      Geometry geometry = (Geometry) i.next();
+    ArrayList<Coordinate> verticesInFence = new ArrayList<>();
+    for (Geometry geometry : geometries) {
       verticesInFence
           .addAll(verticesInFence(geometry, fence, skipClosingVertex)
               .getCoordinates());
@@ -118,8 +117,8 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
    */
   public static VerticesInFence verticesInFence(Geometry geometry,
       final Geometry fence, final boolean skipClosingVertex) {
-    final ArrayList coordinates = new ArrayList();
-    final ArrayList indices = new ArrayList();
+    final ArrayList<Coordinate> coordinates = new ArrayList<>();
+    final ArrayList<Integer> indices = new ArrayList<>();
     // PointLocator is non-re-entrant. Therefore, create a new instance for each
     // fence.
     // [Jon Aquino]
@@ -144,17 +143,17 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
             continue;
           }
           coordinates.add(component[j]);
-          indices.add(new Integer(index.value));
+          indices.add(index.value);
         }
       }
     });
     return new VerticesInFence() {
-      public List getCoordinates() {
+      public List<Coordinate> getCoordinates() {
         return coordinates;
       }
 
       public int getIndex(int i) {
-        return ((Integer) indices.get(i)).intValue();
+        return indices.get(i);
       }
     };
   }
@@ -169,10 +168,8 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
         + " </i><font color='#3300cc'><b>" + layer.getName()
         + "</b></font></td></tr>";
     String bgcolor = "darkgrey";
-    for (Iterator i = layer.getFeatureCollectionWrapper()
-        .query(context.getLayerViewPanel().getFence().getEnvelopeInternal())
-        .iterator(); i.hasNext();) {
-      Feature feature = (Feature) i.next();
+    for (Feature feature : layer.getFeatureCollectionWrapper()
+        .query(context.getLayerViewPanel().getFence().getEnvelopeInternal())) {
       VerticesInFence verticesInFence = verticesInFence(feature.getGeometry(),
           context.getLayerViewPanel().getFence(), true);
       if (verticesInFence.getCoordinates().isEmpty()) {
@@ -197,10 +194,10 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
     return foundVertices ? description : "";
   }
 
-  private WKTDisplayHelper helper = new WKTDisplayHelper();
+  private final WKTDisplayHelper helper = new WKTDisplayHelper();
 
   private String description(VerticesInFence verticesInFence, Geometry geometry) {
-    StringBuffer description = new StringBuffer();
+    StringBuilder description = new StringBuilder();
     // <<TODO:FEATURE>> Perhaps we should change these \n's to the line
     // separators
     // specific to the current platform. Then the user could copy the text and
@@ -211,10 +208,10 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
       description.append(GUIUtil.escapeHTML(
           "["
               + Fmt.fmt(helper.annotation(geometry,
-                  (Coordinate) verticesInFence.getCoordinates().get(i)), 10)
+                  verticesInFence.getCoordinates().get(i)), 10)
               + "] "
               + wktWriter.write(factory
-                  .createPoint((Coordinate) verticesInFence.getCoordinates()
+                  .createPoint(verticesInFence.getCoordinates()
                       .get(i))) + "\n", false, false));
     }
     description.append("</pre>");
@@ -222,7 +219,7 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
   }
 
   public interface VerticesInFence {
-    List getCoordinates();
+    List<Coordinate> getCoordinates();
 
     int getIndex(int i);
   }
@@ -237,6 +234,6 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
 
   public static void main(String[] args) {
     new WKTWriter();
-    ((Geometry) (new Object())).toString();
+    new Object();
   }
 }

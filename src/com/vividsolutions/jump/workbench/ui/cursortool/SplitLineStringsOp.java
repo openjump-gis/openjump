@@ -12,9 +12,8 @@ import java.util.Iterator;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.linearref.LengthIndexedLine;
 import org.locationtech.jts.util.Assert;
-import com.vividsolutions.jump.algorithm.LengthSubstring;
-import com.vividsolutions.jump.algorithm.LengthToPoint;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
@@ -135,11 +134,16 @@ public class SplitLineStringsOp {
 
 	protected LineString[] split(LineString lineString, Coordinate target,
 			boolean moveSplitToTarget) {
+		LengthIndexedLine indexLine = new LengthIndexedLine(lineString);
+		double splitIndex = indexLine.project(target);
 		LineString[] lineStrings = new LineString[] {
-				LengthSubstring.getSubstring(lineString, 0, LengthToPoint
-						.length(lineString, target)),
-				LengthSubstring.getSubstring(lineString, LengthToPoint.length(
-						lineString, target), lineString.getLength()) };
+				(LineString)indexLine.extractLine(0.0, splitIndex),
+				//LengthSubstring.getSubstring(lineString, 0, LengthToPoint
+				//		.length(lineString, target)),
+				(LineString)indexLine.extractLine(splitIndex, indexLine.getEndIndex())
+				//LengthSubstring.getSubstring(lineString, LengthToPoint.length(
+				//		lineString, target), lineString.getLength())
+		};
 		if (moveSplitToTarget) {
 			last(lineStrings[0]).setCoordinate(target);
 			first(lineStrings[1]).setCoordinate(target);

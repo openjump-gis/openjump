@@ -5,9 +5,13 @@ package com.vividsolutions.jump.workbench.ui.renderer;
 import java.awt.Graphics2D;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
+import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 
 public abstract class FeatureCollectionRenderer implements Renderer {
 	
@@ -65,23 +69,22 @@ public abstract class FeatureCollectionRenderer implements Renderer {
 		return currentFeatureCollectionRenderer.createRunnable();
 	}
 
-	protected boolean useImageCaching(Map layerToFeaturesMap) {
+	protected boolean useImageCaching(Map<Layer, List<Feature>> layerToFeaturesMap) {
 		return featureCount(layerToFeaturesMap) >= this.maxFeatures;
 	}
 
-	private int featureCount(Map layerToFeaturesMap) {
+	private int featureCount(Map<Layer, List<Feature>> layerToFeaturesMap) {
 		int count = 0;
-		for (Iterator i = layerToFeaturesMap.values().iterator(); i.hasNext();) {
-			Collection features = (Collection) i.next();
+		for (List<Feature> features : layerToFeaturesMap.values()) {
 			count += features.size();
 		}
 
 		return count;
 	}
 
-	protected abstract Map layerToFeaturesMap();
+	protected abstract Map<Layer,Collection<Feature>> layerToFeaturesMap();
 
-	protected abstract Collection styles();
+	protected abstract Collection<Style> styles();
 
 	public void cancel() {
 		imageCachingFeatureCollectionRenderer.cancel();

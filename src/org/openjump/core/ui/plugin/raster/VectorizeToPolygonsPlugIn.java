@@ -3,8 +3,6 @@ package org.openjump.core.ui.plugin.raster;
 import static com.vividsolutions.jump.I18N.get;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -54,17 +52,23 @@ public class VectorizeToPolygonsPlugIn extends ThreadedBasePlugIn {
             .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
     private final String algorithms = I18N
             .get("ui.plugin.raster.VectorizeToPolygonsPlugIn.algorithms");
+    private final String sSimplify = I18N
+        .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.simplify");
+
     String alg1 = "AdbToolbox";
     String alg2 = "Sextante";
+    String alg3 = "Mike";
 
     String choose;
     boolean explodeb = true;
     boolean applystyleb = false;
+    boolean simplifyb = false;
 
     private JCheckBox explode = new JCheckBox();
-    private JComboBox<String> comboBox = new JComboBox<String>();
-    private List<RasterImageLayer> fLayers = new ArrayList<RasterImageLayer>();
-    private JComboBox<RasterImageLayer> layerableComboBox = new JComboBox<RasterImageLayer>();
+    private JCheckBox simplify = new JCheckBox();
+    private JComboBox<String> comboBox = new JComboBox<>();
+    private List<RasterImageLayer> fLayers = new ArrayList<>();
+    private JComboBox<RasterImageLayer> layerableComboBox = new JComboBox<>();
 
     RasterImageLayer layer;
 
@@ -94,7 +98,7 @@ public class VectorizeToPolygonsPlugIn extends ThreadedBasePlugIn {
     }
 
     private void setDialogValues(final MultiInputDialog dialog,
-            PlugInContext context) throws IOException {
+            PlugInContext context) {
         dialog.setSideBarDescription(NAME);
         if (!context.getLayerNamePanel().selectedNodes(RasterImageLayer.class)
                 .isEmpty()) {
@@ -110,43 +114,42 @@ public class VectorizeToPolygonsPlugIn extends ThreadedBasePlugIn {
                 fLayers);
         layerableComboBox.setSize(200,
                 layerableComboBox.getPreferredSize().height);
-        final ArrayList<String> srsArray = new ArrayList<String>();
+        final ArrayList<String> srsArray = new ArrayList<>();
         srsArray.add(alg1);
         srsArray.add(alg2);
+        srsArray.add(alg3);
         comboBox = dialog.addComboBox(algorithms, "", srsArray, null);
         comboBox.setSize(200, comboBox.getPreferredSize().height);
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateGUI(e, dialog);
-
-                dialog.pack();
-                dialog.repaint();
-            }
+        comboBox.addActionListener(e -> {
+            //updateGUI(e, dialog);
+            dialog.pack();
+            dialog.repaint();
+            explode.setEnabled(comboBox.getSelectedIndex() == 0);
+            simplify.setEnabled(comboBox.getSelectedIndex() == 2);
         });
         explode = dialog.addCheckBox(sExplode, true);
         dialog.addCheckBox(sStyle, true);
-
+        simplify = dialog.addCheckBox(sSimplify, simplifyb);
+        simplify.setEnabled(comboBox.getSelectedIndex() == 2);
     }
 
-    private void updateGUI(ActionEvent evt, MultiInputDialog dialog) {
-        switch (comboBox.getSelectedIndex()) {
-        case 0:
-            explode.setEnabled(true);
-            break;
-        case 1:
-            explode.setEnabled(false);
-            break;
-
-        }
-    }
+    //private void updateGUI(ActionEvent evt, MultiInputDialog dialog) {
+    //    switch (comboBox.getSelectedIndex()) {
+    //    case 0:
+    //        explode.setEnabled(true);
+    //        break;
+    //    case 1:
+    //        explode.setEnabled(false);
+    //        break;
+    //    }
+    //}
 
     private void getDialogValues(MultiInputDialog dialog) {
         layer = (RasterImageLayer) dialog.getLayerable(sLayer);
         explodeb = dialog.getBoolean(sExplode);
         applystyleb = dialog.getBoolean(sStyle);
         choose = dialog.getText(algorithms);
-
+        simplifyb = dialog.getBoolean(sSimplify);
     }
 
     @Override
@@ -165,26 +168,36 @@ public class VectorizeToPolygonsPlugIn extends ThreadedBasePlugIn {
         FeatureCollection featDataset = new FeatureDataset(fs);
 
         switch (comboBox.getSelectedIndex()) {
-        case 0:
-            if (explodeb = true) {
-                featDataset = VectorizeAlgorithm.toPolygonsAdbToolBox(gwrapper,
+            case 0:
+                if (explodeb = true) {
+                    featDataset = VectorizeAlgorithm.toPolygonsAdbToolBox(gwrapper,
                         true, sValue, 0);
-            } else {
-                featDataset = VectorizeAlgorithm.toPolygonsAdbToolBox(gwrapper,
+                } else {
+                    featDataset = VectorizeAlgorithm.toPolygonsAdbToolBox(gwrapper,
                         false, sValue, 0);
-            }
-            break;
-        case 1:
-            featDataset = VectorizeAlgorithm.toPolygonsSextante(gwrapper,
+                }
+                break;
+            case 1:
+                featDataset = VectorizeAlgorithm.toPolygonsSextante(gwrapper,
                     sValue, 0);
-            break;
+                break;
+
+            case 2:
+                if (simplifyb) {
+                    featDataset = VectorizeAlgorithm.toPolygonsMikeToolBox(gwrapper,
+                        true, sValue, 0);
+                } else {
+                    featDataset = VectorizeAlgorithm.toPolygonsMikeToolBox(gwrapper,
+                        false, sValue, 0);
+                }
+                break;
         }
+
         final Layer vlayer = context.addLayer(StandardCategoryNames.WORKING,
                 rstLayer.getName() + "_" + "vectorized", featDataset);
 
         if (applystyleb) {
             Utils.applyRandomGradualStyle(vlayer, sValue);
-
         }
 
     }
@@ -200,7 +213,7 @@ public class VectorizeToPolygonsPlugIn extends ThreadedBasePlugIn {
                         1, RasterImageLayer.class)).add(new EnableCheck() {
                     @Override
                     public String check(JComponent component) {
-                        final List<RasterImageLayer> mLayer = new ArrayList<RasterImageLayer>();
+                        final List<RasterImageLayer> mLayer = new ArrayList<>();
                         final Collection<RasterImageLayer> rlayers = workbenchContext
                                 .getLayerManager().getLayerables(
                                         RasterImageLayer.class);
@@ -212,11 +225,7 @@ public class VectorizeToPolygonsPlugIn extends ThreadedBasePlugIn {
                         if (!mLayer.isEmpty()) {
                             return null;
                         }
-                        String msg = null;
-                        if (mLayer.isEmpty()) {
-                            msg = get(CHECK_FILE);
-                        }
-                        return msg;
+                        return get(CHECK_FILE);
                     }
                 });
     }

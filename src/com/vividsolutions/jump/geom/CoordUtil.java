@@ -35,7 +35,6 @@ package com.vividsolutions.jump.geom;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.util.Assert;
@@ -65,7 +64,7 @@ public class CoordUtil {
      * @param coordinates not empty
      * @return the average position of all input coordinates
      */
-    public static Coordinate average(Collection coordinates) {
+    public static Coordinate average(Collection<Coordinate> coordinates) {
         Assert.isTrue(!coordinates.isEmpty());
 
         double xSum = 0;
@@ -73,8 +72,7 @@ public class CoordUtil {
         double zSum = 0;
         boolean zNanFound = false;
         
-        for (Iterator i = coordinates.iterator(); i.hasNext();) {
-            Coordinate coordinate = (Coordinate) i.next();
+        for (Coordinate coordinate : coordinates) {
             xSum += coordinate.x;
             ySum += coordinate.y;
         	if (!Double.isNaN(coordinate.z))
@@ -95,14 +93,12 @@ public class CoordUtil {
      * @param p the point to measure distance to
      * @return the closest coordinate to p
      */
-    public static Coordinate closest(Collection coordinates, Coordinate p) {
+    public static Coordinate closest(Collection<Coordinate> coordinates, Coordinate p) {
         Assert.isTrue(!coordinates.isEmpty());
 
-        Coordinate closest = (Coordinate) coordinates.iterator().next();
+        Coordinate closest = coordinates.iterator().next();
 
-        for (Iterator i = coordinates.iterator(); i.hasNext();) {
-            Coordinate candidate = (Coordinate) i.next();
-
+        for (Coordinate candidate : coordinates) {
             if (p.distance(candidate) < p.distance(closest)) {
                 closest = candidate;
             }

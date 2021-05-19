@@ -35,6 +35,7 @@ package com.vividsolutions.jump.workbench.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.util.Assert;
@@ -44,7 +45,7 @@ import org.locationtech.jts.util.Assert;
  */
 public class Category {
 
-    private List<Layerable> layerables = new ArrayList<>();
+    private final List<Layerable> layerables = new ArrayList<>();
     private String name;
     private LayerManager layerManager;
 
@@ -100,6 +101,10 @@ public class Category {
 
     public List<Layerable> getLayerables() {
         return Collections.unmodifiableList(layerables);
+    }
+
+    public Iterator<Layerable> iterator() {
+        return layerables.iterator();
     }
 
     public void remove(Layerable layerable) {

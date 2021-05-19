@@ -105,9 +105,9 @@ public class ObservableFeatureCollection extends FeatureCollectionWrapper {
      * FeatureCollection.
      */
     public interface Listener {
-        void featuresAdded(Collection features);
+        void featuresAdded(Collection<Feature> features);
 
-        void featuresRemoved(Collection features);
+        void featuresRemoved(Collection<Feature> features);
     }
 
 }

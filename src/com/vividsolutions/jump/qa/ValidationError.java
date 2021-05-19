@@ -119,7 +119,7 @@ public class ValidationError {
             return interiorPointFinder.findPoint(g);
         } catch (Exception ex) {
             //InteriorPointFinder may fail because the geometry has bad topology [Jon Aquino]
-            return interiorPointFinder.centre(g.getEnvelopeInternal());
+            return g.getEnvelopeInternal().centre();
         }
     }
 }

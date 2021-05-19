@@ -20,6 +20,7 @@ import com.vividsolutions.jump.workbench.ui.EditTransaction;
  *
  */
 public class ChangeCoordinateSystemPlugIn extends AbstractPlugIn {
+
     public boolean execute(PlugInContext context) throws Exception {
         //Don't make this plug-in undoable -- it's a lot of data to store in memory [Jon Aquino]
         context.getLayerManager().getUndoableEditReceiver()
@@ -48,11 +49,11 @@ public class ChangeCoordinateSystemPlugIn extends AbstractPlugIn {
                                                                 .getCoordinateSystem(),
                     destination)) {
             //Two-phase commit [Jon Aquino]
-            ArrayList transactions = new ArrayList();
+            ArrayList<EditTransaction> transactions = new ArrayList();
 
-            for (Iterator i = context.getLayerManager().iterator();
+            for (Iterator<Layer> i = context.getLayerManager().iterator(Layer.class);
                     i.hasNext();) {
-                Layer layer = (Layer) i.next();
+                Layer layer = i.next();
                 EditTransaction transaction = new EditTransaction(layer.getFeatureCollectionWrapper()
                                                                        .getFeatures(),
                         getName(), layer, isRollingBackInvalidEdits(context),
@@ -72,7 +73,7 @@ public class ChangeCoordinateSystemPlugIn extends AbstractPlugIn {
             EditTransaction.commit(transactions);
         }
 
-        for (Iterator i = context.getLayerManager().iterator(); i.hasNext();) {
+        for (Iterator i = context.getLayerManager().iterator(Layer.class); i.hasNext();) {
             Layer layer = (Layer) i.next();
             layer.getFeatureCollectionWrapper().getFeatureSchema()
                  .setCoordinateSystem(destination);

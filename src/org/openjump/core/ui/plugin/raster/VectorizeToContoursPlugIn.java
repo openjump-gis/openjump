@@ -292,10 +292,8 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
         final FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("geometry", AttributeType.GEOMETRY);
         fs.addAttribute(sValue, AttributeType.DOUBLE);
-        FeatureCollection featDataset = new FeatureDataset(fs);
-
-        featDataset = VectorizeAlgorithm.toContours(gwrapper, contMin, contMax,
-                contIntv, sValue, 0);
+        FeatureCollection featDataset = new VectorizeAlgorithm()
+                .toContours(gwrapper, contMin, contMax, contIntv, sValue, 0);
 
         final Layer vlayer = context.addLayer(StandardCategoryNames.WORKING,
                 rstLayer.getName() + "_" + "vectorized", featDataset);
@@ -331,7 +329,7 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
         final Resolution requestedRes = RasterImageIO
                 .calcRequestedResolution(viewport);
         final ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
-                context.getWorkbenchContext(), inputFile.getAbsolutePath(),
+                /*context.getWorkbenchContext(),*/ inputFile.getAbsolutePath(),
                 null, viewport.getEnvelopeInModelCoordinates(), requestedRes);
         final RasterImageLayer ril = new RasterImageLayer(inputFile.getName(),
                 context.getLayerManager(), inputFile.getAbsolutePath(),
@@ -356,7 +354,7 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
                         1, RasterImageLayer.class)).add(new EnableCheck() {
                     @Override
                     public String check(JComponent component) {
-                        final List<RasterImageLayer> mLayer = new ArrayList<RasterImageLayer>();
+                        final List<RasterImageLayer> mLayer = new ArrayList<>();
                         final Collection<RasterImageLayer> rlayers = workbenchContext
                                 .getLayerManager().getLayerables(
                                         RasterImageLayer.class);

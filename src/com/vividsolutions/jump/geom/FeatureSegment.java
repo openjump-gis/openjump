@@ -43,9 +43,9 @@ import java.util.*;
  */
 public class FeatureSegment extends LineSegment
 {
-  private Feature feature;
+  private final Feature feature;
   private int index;
-  private List matches = null;
+  private List<FeatureSegment> matches = null;
 
   public FeatureSegment(Feature feature, int index, Coordinate p0,
       Coordinate p1)
@@ -58,10 +58,11 @@ public class FeatureSegment extends LineSegment
   public Feature getFeature() {
       return feature;
   }
+
   public void addMatch(FeatureSegment match)
   {
-    if (matches == null) matches = new ArrayList();
+    if (matches == null) matches = new ArrayList<>();
     matches.add(match);
   }
-  public List getMatches() { return matches; }
+  public List<FeatureSegment> getMatches() { return matches; }
 }

@@ -4,20 +4,18 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.DataBuffer;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import com.vividsolutions.jump.workbench.Logger;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.AffineTransformation;
+import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.openjump.core.rasterimage.sextante.OpenJUMPSextanteRasterLayer;
 import org.openjump.core.rasterimage.sextante.rasterWrappers.GridWrapperNotInterpolated;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
-import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
@@ -40,16 +38,7 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
  */
 public class VectorizeAlgorithm {
 
-    public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
-
-    //private static int arrPos(double valIn, double[] arrayIn) {
-    //    for (int i = 0; i < arrayIn.length; i++) {
-    //        if (arrayIn[i] == valIn) {
-    //            return i;
-    //        }
-    //    }
-    //    return -1;
-    //}
+    public static WorkbenchFrame frame;// = JUMPWorkbench.getInstance().getFrame();
 
     /**
      * Create a FeatureCollection of polygons defining a GridWrapperNotInterpolated and number of band
@@ -62,78 +51,63 @@ public class VectorizeAlgorithm {
     public static FeatureCollection toPolygonsAdbToolBox(
             GridWrapperNotInterpolated gwrapper, boolean explodeMultipolygons,
             String attributeName, int band) {
-        int ID = 1;
-        final double cellSize = gwrapper.getGridExtent().getCellSize().x;
-        final double xllCorner = gwrapper.getGridExtent().getXMin() + cellSize;
-        final double yllCorner = gwrapper.getGridExtent().getYMin() - cellSize;
+
+        final double xCellSize = gwrapper.getGridExtent().getCellSize().x;
+        final double yCellSize = gwrapper.getGridExtent().getCellSize().y;
+        final double xllCorner = gwrapper.getGridExtent().getXMin();
+        final double yllCorner = gwrapper.getGridExtent().getYMin();
         final double noData = gwrapper.getNoDataValue();
-        // Find unique values
-        final double[] uniqueVals = findUniqueVals(gwrapper, noData, band);
-        final int uniqueValsCount = uniqueVals.length;
-        final Map<Double,Integer> index = index(uniqueVals);
-        // Scan lines
-        @SuppressWarnings("unchecked")
-        final ArrayList<Polygon>[] arrAll = new ArrayList[uniqueValsCount];
-        for (int i = 0; i < arrAll.length; i++) {
-            arrAll[i] = new ArrayList<>();
-        }
-        final Coordinate[] coords = new Coordinate[5];
-        final PackedCoordinateSequenceFactory pcsf = new PackedCoordinateSequenceFactory();
+
+        // Find unique values and associate an empty list of polygons to each
+        final Map<Double,List<Polygon>> uniqueVals = findUniqueVals(gwrapper, noData, band);
+
         final GeometryFactory geomFactory = new GeometryFactory();
-        LinearRing lr;
         Polygon polygon;
+
         final int nCols = gwrapper.getGridExtent().getNX();
         final int nRows = gwrapper.getGridExtent().getNY();
-        final double yurCorner = yllCorner + (nRows * cellSize);
         for (int r = 0; r <= nRows + 1; r++) {
             double oldVal = noData;
             int cStart = 0;
-            int cEnd;
             for (int c = 0; c <= nCols + 1; c++) {
                 final double val = gwrapper.getCellValueAsDouble(c, r, band);
-                if (val != oldVal) {
-                    cEnd = c - 1;
-                    // Get polygon vertices
-                    if (oldVal != noData) {
-                        coords[0] = new Coordinate(xllCorner
-                                + (cStart * cellSize) - cellSize, yurCorner
-                                - (r * cellSize));
-                        coords[1] = new Coordinate(coords[0].x, coords[0].y
-                                + cellSize);
-                        coords[2] = new Coordinate(xllCorner
-                                + (cEnd * cellSize), coords[1].y);
-                        coords[3] = new Coordinate(coords[2].x, coords[0].y);
-                        coords[4] = coords[0];
-                        final CoordinateSequence cs = pcsf.create(coords);
-                        lr = new LinearRing(cs, geomFactory);
-                        polygon = new Polygon(lr, null, geomFactory);
-                        //arrAll[arrPos((int) oldVal, uniqueVals)].add(polygon);
-                        arrAll[index.get(oldVal)].add(polygon);
+                if (!sameAs(val, oldVal, noData)) {
+                    // Get the polygon made of all contiguous pixels with the same value
+                    // != does not work well with NaN : add a specific test
+                    if (!isNoData(oldVal, noData)) {
+                        polygon = (Polygon)geomFactory.toGeometry(new Envelope(
+                            xllCorner + cStart * xCellSize,
+                            xllCorner + c * xCellSize,
+                            yllCorner + (nRows-r-1) * yCellSize,
+                            yllCorner + (nRows-r) * yCellSize
+                            ));
+                        uniqueVals.get(oldVal).add(polygon);
                     }
                     oldVal = val;
                     cStart = c;
                 }
             }
         }
-        // Collapse polygons
+
         final FeatureSchema featSchema = new FeatureSchema();
         featSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
         featSchema.addAttribute("ID", AttributeType.INTEGER);
         featSchema.addAttribute(attributeName, AttributeType.DOUBLE);
         Feature feature;
+        int ID = 1;
         // Create feature collection
         final FeatureCollection featColl = new FeatureDataset(featSchema);
-        for (int i = 0; i < uniqueValsCount; i++) {
-            Geometry geom = CascadedPolygonUnion.union(arrAll[i]);
+        for (Map.Entry<Double,List<Polygon>> entry : uniqueVals.entrySet()) {
+            // Collapse polygons
+            Geometry geom = CascadedPolygonUnion.union(entry.getValue());
             geom = DouglasPeuckerSimplifier.simplify(geom, 0);
-            geom = TopologyPreservingSimplifier.simplify(geom, 00);
             if (explodeMultipolygons) {
                 // From multipolygons to single polygons
                 for (int g = 0; g < geom.getNumGeometries(); g++) {
                     feature = new BasicFeature(featSchema);
                     feature.setGeometry(geom.getGeometryN(g));
                     feature.setAttribute(1, ID);
-                    feature.setAttribute(2, uniqueVals[i]);
+                    feature.setAttribute(2, entry.getKey());
                     featColl.add(feature);
                     ID++;
                 }
@@ -141,54 +115,288 @@ public class VectorizeAlgorithm {
                 feature = new BasicFeature(featSchema);
                 feature.setAttribute(1, ID);
                 feature.setGeometry(geom);
-                feature.setAttribute(2, uniqueVals[i]);
+                feature.setAttribute(2, entry.getKey());
                 featColl.add(feature);
                 ID++;
             }
         }
-        System.gc();
         return featColl;
     }
 
-    private static double[] findUniqueVals(GridWrapperNotInterpolated gwrapper,
-            double nodata, int band) {
-        // Pass values to 1D array
-        final ArrayList<Double> vals = new ArrayList<Double>();
-        final int nx = gwrapper.getNX();//rstLayer.getLayerGridExtent().getNX();
-        final int ny = gwrapper.getNY();// rstLayer.getLayerGridExtent().getNY();
-        vals.add(nodata);
-        for (int x = 0; x < nx; x++) {//cols
-            for (int y = 0; y < ny; y++) {//rows
+    /**
+     * Return true if a == b or if both a and b are nodata or NaN
+     * @param a first value
+     * @param b second value
+     * @param noData double representing noData (maybe NaN or any double value)
+     * @return true if both a and b are noData value or both a and b represent
+     * same data value
+     */
+    private static boolean sameAs(double a, double b, double noData) {
+        boolean aIsNaN = isNoData(a, noData);
+        boolean bIsNaN = isNoData(b, noData);
+        return (aIsNaN && bIsNaN) || (!aIsNaN && !bIsNaN && a == b);
+    }
+
+    private static boolean isNoData(double a, double noData) {
+        return Double.isNaN(a) || (!Double.isNaN(noData) && a == noData);
+    }
+
+    private static Map<Double,List<Polygon>> findUniqueVals(GridWrapperNotInterpolated gwrapper,
+            double noData, int band) {
+        // Creates a map associating an empty list of polygons to each unique value
+        Map<Double,List<Polygon>> map = new TreeMap<>();
+        final int nx = gwrapper.getNX();
+        final int ny = gwrapper.getNY();
+        for (int x = 0; x < nx; x++) {
+            for (int y = 0; y < ny; y++) {
                 final double value = gwrapper.getCellValueAsDouble(x, y, band);
-                if (value != nodata) {
-                    vals.add(gwrapper.getCellValueAsDouble(x, y, band));
+                // != does not work well with NaN : add an explicit test
+                if (!isNoData(value, noData)) {
+                    map.computeIfAbsent(value, a -> new ArrayList<>());
                 }
             }
         }
-        // Find unique values
-        Collections.sort(vals);
-        final ArrayList<Double> uniqueValsArr = new ArrayList<Double>();
-        uniqueValsArr.add(vals.get(0));
-
-        for (int i = 1; i < vals.size(); i++) {
-            if (!vals.get(i).equals(vals.get(i - 1))) {
-                uniqueValsArr.add(vals.get(i));
-            }
-        }
-        final double[] uniqueVals = new double[uniqueValsArr.size()];
-        for (int i = 0; i < uniqueValsArr.size(); i++) {
-            uniqueVals[i] = uniqueValsArr.get(i);
-        }
-        return uniqueVals;
-    }
-
-    private static Map<Double,Integer> index(double[] values) {
-        Map<Double,Integer> map = new HashMap<>(values.length);
-        for (int i = 0 ; i < values.length ; i++) {
-            map.put(values[i],i);
-        }
         return map;
     }
+
+    // [mmichaud - 2021-05-09] : add a polygonizer as fast as Sextante and giving
+    // the same precise result as the one of Adb
+    public static FeatureCollection toPolygonsMikeToolBox(
+            GridWrapperNotInterpolated gwrapper,
+            boolean simplify,
+            String attributeName, int band) {
+
+        final int width = gwrapper.getGridExtent().getNX();
+        final int height = gwrapper.getGridExtent().getNY();
+        final double noData = gwrapper.getNoDataValue();
+        final List<Face> faces = new ArrayList<>();
+
+        final double xCellSize = gwrapper.getGridExtent().getCellSize().x;
+        final double yCellSize = gwrapper.getGridExtent().getCellSize().y;
+        final double xllCorner = gwrapper.getGridExtent().getXMin();
+        final double yllCorner = gwrapper.getGridExtent().getYMin();
+        // Transformation from image to model coordinates
+        AffineTransformation transform = new AffineTransformation(
+            xCellSize, 0.0, xllCorner, 0.0, -yCellSize, yllCorner+height*yCellSize
+        );
+        // Compact structure to flag visited pixels on a single bit
+        final BooleanMatrix m = new BooleanMatrix(width, height);
+        // Initialization : flag pixels with no value
+        for (int r = 0 ; r < height ; r++) {
+            for (int c = 0 ; c < width ; c++) {
+                double val = gwrapper.getCellValueAsDouble(c, r, band);
+                if (isNoData(val, noData)) m.set(r, c);
+            }
+        }
+        // Main loop on the image
+        for (int r = 0 ; r < height ; r++) {
+            for (int c = 0 ; c < width ; c++) {
+                if (!m.isSet(r, c)) {
+                    // if the pixel has not yet been visited, it is used
+                    // as the root of a new face
+                    double val = gwrapper.getCellValueAsDouble(c, r, band);
+                    Face face = new Face(val);
+                    faces.add(face);
+                    face.cells.add(new Cell(c,r));
+                    // iterativeExpansion will explore pixel neighbours having
+                    // the same value until no more are left
+                    iterativeExpansion(face, band, gwrapper, m);
+                }
+            }
+        }
+        // Last part get all segments making a face boundary and build
+        // the polygon by merging segments and polygonizing the result
+        // Create feature collection
+        final FeatureSchema featSchema = new FeatureSchema();
+        featSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+        featSchema.addAttribute("ID", AttributeType.INTEGER);
+        featSchema.addAttribute(attributeName, AttributeType.DOUBLE);
+        final FeatureCollection featColl = new FeatureDataset(featSchema);
+        int ID = 1;
+        for (Face face : faces) {
+            LineMerger merger = new LineMerger();
+            // Build boundaries from all segments of a face
+            merger.add(face.limits.stream().map(it -> it.toGeometry(gf)).collect(Collectors.toList()));
+            Polygonizer polygonizer = new Polygonizer();
+            polygonizer.add(merger.getMergedLineStrings());
+            Collection<Polygon> polygons = polygonizer.getPolygons();
+            Geometry geom = null;
+            // If several polygons are found, it means that the face has holes
+            // In this case, only the polygon with holes is of interest
+            if (polygons.size() > 1) {
+                for (Polygon poly : polygons) {
+                    if (poly.getNumInteriorRing() > 0) geom = poly;
+                    break;
+                }
+            } else geom = polygons.iterator().next();
+            if (geom == null) {
+                Logger.warn("Merge/Polygonization gave an unexpected result " + polygons);
+            }
+            geom = transform.transform(geom);
+            if (simplify)
+                geom = DouglasPeuckerSimplifier.simplify(geom, 0);
+            Feature feature = new BasicFeature(featSchema);
+            feature.setAttribute(1, ID);
+            feature.setGeometry(geom);
+            feature.setAttribute(2, face.value);
+            featColl.add(feature);
+            ID++;
+        }
+        System.out.println("end " + new Date());
+        return featColl;
+    }
+
+    static GeometryFactory gf = new GeometryFactory();
+
+    static void iterativeExpansion(Face face, int band,
+                                  GridWrapperNotInterpolated grid,
+                                  BooleanMatrix m) {
+
+        Set<Cell> exp = new HashSet<>();
+
+        while (!face.cells.isEmpty()) {
+
+            exp.clear();
+
+            for (Iterator<Cell> it = face.cells.iterator() ; it.hasNext() ; ) {
+                Cell cell = it.next();
+                int col = cell.col;
+                int row = cell.row;
+                it.remove(); // only way to remove element from the collection being iterated
+                             // other modifications (add) are done outside the loop
+                m.set(row, col);
+
+                // right side : col+1, row
+                if (col + 1 < m.width && !m.isSet(row, col + 1) &&
+                    grid.getCellValueAsDouble(col + 1, row, band) == face.value)
+                    exp.add(new Cell(col + 1, row));
+                else if (col + 1 >= m.width || grid.getCellValueAsDouble(col + 1, row, band) != face.value) {
+                    face.limits.add(new Segment(col + 1, row, col + 1, row + 1));
+                }
+
+                // bottom side : col, row+1
+                if (row + 1 < m.height && !m.isSet(row + 1, col) &&
+                    grid.getCellValueAsDouble(col, row + 1, band) == face.value)
+                    exp.add(new Cell(col, row + 1));
+                else if (row + 1 >= m.height || grid.getCellValueAsDouble(col, row + 1, band) != face.value) {
+                    face.limits.add(new Segment(col, row + 1, col + 1, row + 1));
+                }
+
+                // left side : col-1, row
+                if (col - 1 > -1 && !m.isSet(row, col - 1) &&
+                    grid.getCellValueAsDouble(col - 1, row, band) == face.value)
+                    exp.add(new Cell(col - 1, row));
+                else if (col - 1 < 0 || grid.getCellValueAsDouble(col - 1, row, band) != face.value) {
+                    face.limits.add(new Segment(col, row, col, row + 1));
+                }
+
+                // top side : col, row-1
+                if (row - 1 > -1 && !m.isSet(row - 1, col) &&
+                    grid.getCellValueAsDouble(col, row - 1, band) == face.value)
+                    exp.add(new Cell(col, row - 1));
+                else if (row - 1 < 0 || grid.getCellValueAsDouble(col, row - 1, band) != face.value) {
+                    face.limits.add(new Segment(col, row, col + 1, row));
+                }
+            }
+            face.cells.addAll(exp);
+        }
+    }
+
+    /**
+     * Structure to visit all contiguous cells with the same value
+     * and holding limits with cells having different values
+     */
+    static class Face {
+        double value;
+        Set<Segment> limits;
+        Set<Cell> cells;
+        Face(double value) {
+            this.value = value;
+            this.cells = new HashSet<>();
+            this.limits = new HashSet<>();
+        }
+    }
+
+    // A cell of the image made of a column and a row number
+    static class Cell {
+        public int col, row;
+        Cell(int col, int row) {
+            this.col = col;
+            this.row = row;
+        }
+        @Override public boolean equals(Object o) {
+            if (o instanceof Cell) {
+                Cell cell = (Cell)o;
+                return col == cell.col && row == cell.row;
+            } else return false;
+        }
+        @Override public int hashCode() {
+            int result = 17;
+            result = 37 * result + col;
+            result = 37 * result + row;
+            return result;
+        }
+        @Override public String toString() {
+            return "("+col+","+row+")";
+        }
+    }
+
+    /** Segment is a border between two cells with different values.*/
+    static class Segment {
+        double x0, y0,x1, y1;
+        Segment(double x0, double y0, double x1, double y1) {
+            this.x0 = x0;
+            this.y0 = y0;
+            this.x1 = x1;
+            this.y1 = y1;
+        }
+        Geometry toGeometry(GeometryFactory gf) {
+            return gf.createLineString(new Coordinate[]{
+                new Coordinate(x0,y0),
+                new Coordinate(x1,y1)
+            });
+        }
+        @Override public boolean equals(Object o) {
+            if (o instanceof Segment) {
+                Segment s = (Segment)o;
+                return x0 == s.x0 && y0 == s.y0 && x1 == s.x1 && y1 == s.y1;
+            } else return false;
+        }
+        @Override public int hashCode() {
+            //Algorithm from Effective Java by Joshua Bloch [Jon Aquino]
+            int result = 17;
+            result = 37 * result + Coordinate.hashCode(x0);
+            result = 37 * result + Coordinate.hashCode(y0);
+            result = 37 * result + Coordinate.hashCode(x1);
+            result = 37 * result + Coordinate.hashCode(y1);
+            return result;
+        }
+    }
+
+    /** A compact structure consuming 1 bit per pixel to keep track of visited cells.*/
+    static class BooleanMatrix {
+        int width, height;
+        long[] array;
+        BooleanMatrix(int width, int height) {
+            this.width = width;
+            this.height = height;
+            double length = Math.ceil((double)width*height/64);
+            array = new long[(int)length];
+        }
+        void set(int row, int col) {
+            long index = (long)row*width+col;
+            array[(int)(index/64)] |= (1L << index%64);
+        }
+        void unset(int row, int col) {
+            long index = (long)row*width+col;
+            array[(int)(index/64)] &= ~(1L << index%64);
+        }
+        boolean isSet(int row, int col) {
+            long index = (long)row*width+col;
+            return (array[(int)(index/64)] & (1L << index%64)) == (1L << index%64);
+        }
+    }
+
 
     private static int[][] m_Lock;
     private static char[][] m_Area;
@@ -233,8 +441,9 @@ public class VectorizeAlgorithm {
 
     private static void Discrete_Lock(GridWrapperNotInterpolated gwrapper,
             int x, int y, final int ID, int band) {
-        final int xTo[] = { 0, 1, 0, -1 }, yTo[] = { 1, 0, -1, 0 };
-        final char goDir[] = { 1, 2, 4, 8 };
+        final int[] xTo = { 0, 1, 0, -1 };
+        final int[] yTo = { 1, 0, -1, 0 };
+        final char[] goDir = { 1, 2, 4, 8 };
         boolean isBorder, doRecurse;
         char goTemp = 0;
         char[] goStack = new char[50];
@@ -326,8 +535,9 @@ public class VectorizeAlgorithm {
     private static Feature Discrete_Area(GridWrapperNotInterpolated gwrapper,
             FeatureSchema featSchema, String attributeName, int x, int y,
             final int ID, int band) {
-        final int xTo[] = { 0, 1, 0, -1 }, yTo[] = { 1, 0, -1, 0 };
-        final int xLock[] = { 0, 0, -1, -1 }, yLock[] = { 0, -1, -1, 0 };
+        final int[] xTo = { 0, 1, 0, -1 };
+        final int[] yTo = { 1, 0, -1, 0 };
+        final int[] xLock = { 0, 0, -1, -1 }, yLock = { 0, -1, -1, 0 };
         boolean bContinue, bStart;
         int i, ix, iy, ix1, iy1, dir, iStart;
         final double xMin = gwrapper.getGridExtent().getXMin();
@@ -335,10 +545,10 @@ public class VectorizeAlgorithm {
         final double dCellSizeX = gwrapper.getCellSize().x;
         final double dCellSizeY = gwrapper.getCellSize().y;
         double xFirst = 0, yFirst = 0;
-        final ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+        final ArrayList<Coordinate> coordinates = new ArrayList<>();
         Feature feature;
         feature = new BasicFeature(featSchema);
-        feature.setAttribute(1, new Integer(ID));
+        feature.setAttribute(1, ID);
         feature.setAttribute(2, gwrapper.getCellValueAsDouble(x, y, band));
         xFirst = xMin + (x) * dCellSizeX;
         yFirst = yMax - (y) * dCellSizeY;
@@ -426,13 +636,13 @@ public class VectorizeAlgorithm {
 
     }
 
-    private static char[][] m_Row;
-    private static char[][] m_Col;
+    private char[][] m_Row;
+    private char[][] m_Col;
 
-    private static OpenJUMPSextanteRasterLayer m_Visited = new OpenJUMPSextanteRasterLayer();
-    private static OpenJUMPSextanteRasterLayer m_Visited2 = new OpenJUMPSextanteRasterLayer();
-    private final static GeometryFactory m_GF = new GeometryFactory();
-    private static boolean removeZeroCells = false;
+    private final OpenJUMPSextanteRasterLayer m_Visited = new OpenJUMPSextanteRasterLayer();
+    private final OpenJUMPSextanteRasterLayer m_Visited2 = new OpenJUMPSextanteRasterLayer();
+    private final GeometryFactory m_GF = new GeometryFactory();
+    private boolean removeZeroCells = false;
 
     /**
      * Convert a DTM raster to a feature collection of contours (linestrings) defining
@@ -446,7 +656,7 @@ public class VectorizeAlgorithm {
      * @param band the band containing elevation data
      * @return a FeatureCollection containing vectorized contour lines
      */
-    public static FeatureCollection toContours(
+    public FeatureCollection toContours(
             GridWrapperNotInterpolated gwrapper, final double zMin,
             final double zMax, double dDistance, String attributeName, int band) {
         final FeatureCollection featColl = new FeatureDataset(
@@ -457,7 +667,7 @@ public class VectorizeAlgorithm {
         int ID;
         int iNX, iNY;
         double dZ;
-        double dValue = 0;
+        double dValue;
         iNX = gwrapper.getGridExtent().getNX();
         iNY = gwrapper.getGridExtent().getNY();
         m_Row = new char[iNY][iNX];
@@ -528,7 +738,7 @@ public class VectorizeAlgorithm {
      * @param attributeName attribute name
      * @return
      */
-    public static FeatureCollection toLines(
+    public FeatureCollection toLines(
             GridWrapperNotInterpolated gwrapper, String attributeName) {
         final FeatureSchema featSchema = new FeatureSchema();
         featSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
@@ -582,16 +792,16 @@ public class VectorizeAlgorithm {
     static int iNY;
     private static int m_iLine = 1;
 
-    private static Feature createLine(int x, int y, Point2D pt2d2,
+    private Feature createLine(int x, int y, Point2D pt2d2,
             GridWrapperNotInterpolated gwrapper, FeatureSchema featSchema) {
         final GeometryFactory m_GeometryFactory = new GeometryFactory();
         boolean bContinue = false;
         boolean bIsNotNull = false;
         Point pt;
-        final Object values[] = new Object[1];
+        final Object[] values = new Object[1];
 
         final Feature feature = new BasicFeature(featSchema);
-        final ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+        final ArrayList<Coordinate> coordinates = new ArrayList<>();
         coordinates.add(new Coordinate(pt2d2.getX(), pt2d2.getY()));
 
         pt2d2 = m_Visited.getWindowGridExtent().getWorldCoordsFromGridCoords(x,
@@ -614,7 +824,7 @@ public class VectorizeAlgorithm {
                 }
                 final Geometry line = m_GeometryFactory
                         .createLineString(coords);
-                values[0] = new Integer(m_iLine++);
+                values[0] = m_iLine++;
                 feature.setGeometry(line);
                 feature.setAttribute(1, values[0]);
                 // m_Lines.addFeature(line, values);
@@ -638,7 +848,7 @@ public class VectorizeAlgorithm {
 
                     final Geometry line = m_GeometryFactory
                             .createLineString(coords);
-                    values[0] = new Integer(m_iLine++);
+                    values[0] = m_iLine++;
                     feature.setGeometry(line);
                     feature.setAttribute(1, values[0]);
                 }
@@ -660,18 +870,18 @@ public class VectorizeAlgorithm {
 
     }
 
-    private final static int m_iOffsetX[] = { 0, 1, 0, -1 };
-    private final static int m_iOffsetY[] = { -1, 0, 1, 0 };
-    private final static int m_iOffsetXDiag[] = { -1, 1, 1, -1 };
-    private final static int m_iOffsetYDiag[] = { -1, -1, 1, 1 };
+    private final int[] m_iOffsetX = { 0, 1, 0, -1 };
+    private final int[] m_iOffsetY = { -1, 0, 1, 0 };
+    private final int[] m_iOffsetXDiag = { -1, 1, 1, -1 };
+    private final int[] m_iOffsetYDiag = { -1, -1, 1, 1 };
 
-    private static ArrayList<Point> getSurroundingLineCells(final int x,
+    private ArrayList<Point> getSurroundingLineCells(final int x,
             final int y, GridWrapperNotInterpolated gwrapper) {
 
         int i;
         //   final int j;
-        final ArrayList<Point> cells = new ArrayList<Point>();
-        final boolean bBlocked[] = new boolean[4];
+        final ArrayList<Point> cells = new ArrayList<>();
+        final boolean[] bBlocked = new boolean[4];
 
         for (i = 0; i < 4; i++) {
 
@@ -698,7 +908,7 @@ public class VectorizeAlgorithm {
 
     }
 
-    private static Feature findContour(GridWrapperNotInterpolated gwrapper,
+    private Feature findContour(GridWrapperNotInterpolated gwrapper,
             final int x, final int y, final double z, final boolean doRow,
             final int ID, String attribueName, int band) {
         final Feature feature = new BasicFeature(schema(attribueName));
@@ -710,9 +920,9 @@ public class VectorizeAlgorithm {
         final double xMin = gwrapper.getGridExtent().getXMin();
         final double yMax = gwrapper.getGridExtent().getYMax();
         Geometry line;
-        final Object values[] = new Object[1];
+        final Object[] values = new Object[1];
         final NextContourInfo info = new NextContourInfo();
-        final ArrayList<Coordinate> coords = new ArrayList<Coordinate>();
+        final ArrayList<Coordinate> coords = new ArrayList<>();
         info.x = x;
         info.y = y;
         info.iDir = 0;
@@ -740,8 +950,7 @@ public class VectorizeAlgorithm {
                 zy = info.y + 1;
             }
         } while (doContinue);
-        //  values[0] = new Integer(ID);
-        values[0] = new Double(z);
+        values[0] = z;
         final Coordinate[] coordinates = new Coordinate[coords.size()];
         for (int i = 0; i < coordinates.length; i++) {
             coordinates[i] = coords.get(i);
@@ -773,7 +982,7 @@ public class VectorizeAlgorithm {
         return featSchema;
     }
 
-    private static boolean findNextContour(final NextContourInfo info) {
+    private boolean findNextContour(final NextContourInfo info) {
         boolean doContinue;
         if (info.doRow) {
             switch (info.iDir) {
@@ -906,7 +1115,7 @@ public class VectorizeAlgorithm {
         public boolean doRow;
     }
 
-    public static FeatureCollection toGridPoint(
+    public FeatureCollection toGridPoint(
             GridWrapperNotInterpolated gwrapper, int numBands) {
         final FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("geometry", AttributeType.GEOMETRY);
@@ -945,7 +1154,7 @@ public class VectorizeAlgorithm {
 
     }
 
-    public static FeatureCollection toPoint(
+    public FeatureCollection toPoint(
             GridWrapperNotInterpolated gwrapper, int band) {
         final FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("geometry", AttributeType.GEOMETRY);
@@ -980,7 +1189,7 @@ public class VectorizeAlgorithm {
 
     }
 
-    public static FeatureCollection toGridPolygon(
+    public FeatureCollection toGridPolygon(
             GridWrapperNotInterpolated gwrapper, int maxCells, int numBands) {
         final FeatureSchema fs = new FeatureSchema();
         fs.addAttribute("geometry", AttributeType.GEOMETRY);
@@ -998,7 +1207,7 @@ public class VectorizeAlgorithm {
                 .getCellSize().x;
         final double halfCellDimY = 0.5 * gwrapper.getGridExtent()
                 .getCellSize().y;
-        final int numPoints = nx * ny;
+        //final int numPoints = nx * ny;
 
         for (int x = 0; x < nx; x++) {//cols
             for (int y = 0; y < ny; y++) {//rows
@@ -1028,7 +1237,7 @@ public class VectorizeAlgorithm {
                     sumvalue = sumvalue + value;
                 }
                 //-- add the feature
-                if (removeZeroCells == true) {
+                if (removeZeroCells) {
                     if (sumvalue > 0) {
                         fd.add(ftemp);
                     }
@@ -1056,14 +1265,26 @@ public class VectorizeAlgorithm {
        featSchema.addAttribute("ID", AttributeType.INTEGER);
        featSchema.addAttribute(attributeName, AttributeType.DOUBLE);
        // Create feature collection
-        FeatureCollection featColl = new FeatureDataset(featSchema);
-     
-       
-       featColl = toPolygonsAdbToolBox(
+
+       return toPolygonsAdbToolBox(
                gwrapper, explodeMultipolygons,attributeName, band);
-       
-      
-       return featColl;
-   }    
+   }
+
+   public static void main(String[] args) {
+       BooleanMatrix m = new BooleanMatrix(640, 480);
+       for (int c = 0 ; c < 640 ; c++) {
+           for (int r = 0 ; r < 480 ; r++) {
+               if (m.isSet(r, c)) System.out.println("ERROR");
+           }
+       }
+       m.set(37, 19);
+       m.unset(37,19);
+       for (int c = 0 ; c < 640 ; c++) {
+           for (int r = 0 ; r < 480 ; r++) {
+               if (m.isSet(r, c)) System.out.println("" + r + " - " + c);
+           }
+       }
+
+   }
     
 }

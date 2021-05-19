@@ -332,7 +332,7 @@ public class LayerViewPanel extends JPanel
 	public Map visibleLayerToFeaturesInFenceMap(Geometry fence) {
 		Map map = new HashMap();
 
-		for (Iterator i = getLayerManager().iterator(); i.hasNext();) {
+		for (Iterator i = getLayerManager().iterator(Layer.class); i.hasNext();) {
 			Layer layer = (Layer) i.next();
 
 			if (!layer.isVisible()) {

@@ -50,7 +50,7 @@ import com.vividsolutions.jump.util.MathUtil;
  */
 public class InteriorPointFinder {
 
-    private GeometryFactory factory = new GeometryFactory();
+    private final GeometryFactory factory = new GeometryFactory();
 
     //<<TODO:REFACTORING>> Move this class to JTS [Jon Aquino]
     public InteriorPointFinder() {
@@ -89,7 +89,7 @@ public class InteriorPointFinder {
         Geometry intersections = envelopeMiddle.intersection(geometry);
         Geometry widestIntersection = widestGeometry(intersections);
 
-        return centre(widestIntersection.getEnvelopeInternal());
+        return widestIntersection.getEnvelopeInternal().centre();
     }
 
     //@return if geometry is a collection, the widest sub-geometry; otherwise,
@@ -123,7 +123,7 @@ public class InteriorPointFinder {
         Envelope envelope = geometry.getEnvelopeInternal();
 
         if (envelope.getWidth() == 0) {
-            return factory.createPoint(centre(envelope));
+            return factory.createPoint(envelope.centre());
         }
 
         return factory.createLineString(new Coordinate[] {
@@ -134,15 +134,4 @@ public class InteriorPointFinder {
             });
     }
 
-    /**
-     * Returns the centre-of-mass of the envelope.
-     * @param envelope the envelope to analyze
-     * @return the centre of the envelope
-     */
-    public Coordinate centre(Envelope envelope) {
-        //<<TODO:REFACTORING>> Move #avg from GUIUtilities to a core JCS util class [Jon Aquino]
-        return new Coordinate(MathUtil.avg(envelope.getMinX(),
-                envelope.getMaxX()),
-            MathUtil.avg(envelope.getMinY(), envelope.getMaxY()));
-    }
 }

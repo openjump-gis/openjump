@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.vividsolutions.jump.feature.*;
+import com.vividsolutions.jump.workbench.Logger;
 import org.apache.commons.io.FileUtils;
 import org.openjump.core.apitools.IOTools;
 import org.openjump.core.rasterimage.RasterImageIOUtils;
@@ -22,10 +24,6 @@ import org.openjump.sigle.utilities.geom.FeatureCollectionUtil;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.BasicFeature;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureCollectionWrapper;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.util.java2xml.Java2XML;
@@ -134,7 +132,7 @@ public abstract class LayerableUtil {
      *         C/File/imagename.tif
      */
     public static String getFilePath(RasterImageLayer layer) {
-        String fileName = null;
+        String fileName;
         if (!layer.getImageFileName().contains(
                 System.getProperty("java.io.tmpdir"))) {
             fileName = layer.getImageFileName();
@@ -150,7 +148,7 @@ public abstract class LayerableUtil {
      *
      * @param layer the layer to test
      * @return true if the layer (Layer.class) is a temporary layer Both layers
-     *         in memory and layes stored into TEMP folder are considered as
+     *         in memory and layers stored into TEMP folder are considered as
      *         "Temporary layers"
      */
     public static boolean isTemporary(Layer layer) {
@@ -227,30 +225,14 @@ public abstract class LayerableUtil {
      * Layer.class
      *
      * @param layer the layer to test
-     * @return true if the layer is a system Layer currently Fence and Measure
-     *         Layers
-     */
-    public static boolean isSystem(Layer layer) {
-        return layer.equals(SystemLayerFinder.class);
-    }
-
-    /**
-     * Layer.class
-     *
-     * @param layer the layer to test
      * @return true Check if the layer is a cad Layer following DXF PlugIn
      *         schema it defines Cad layer with the presence of COLOR and TEXT
      *         attributes
      */
     public static boolean isCad(Layer layer) {
-        if (layer.getFeatureCollectionWrapper().getFeatureSchema()
-                .hasAttribute("COLOR")
-                && layer.getFeatureCollectionWrapper().getFeatureSchema()
-                        .hasAttribute("TEXT")) {
-            return true;
-        } else {
-            return false;
-        }
+        FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+        return schema.hasAttribute("COLOR")
+                && schema.hasAttribute("TEXT");
     }
 
     /**
@@ -354,15 +336,8 @@ public abstract class LayerableUtil {
      */
 
     public static boolean isMixedGeometryType(Layer layer) {
-        final FeatureCollectionWrapper featureCollection = layer
-                .getFeatureCollectionWrapper();
-        if ((FeatureCollectionUtil
-                .getFeatureCollectionDimension(featureCollection) == -1)
-                && featureCollection.size() > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        final FeatureCollection fc = layer.getFeatureCollectionWrapper();
+        return isMixedGeometryType(fc);
     }
 
     /**
@@ -391,7 +366,7 @@ public abstract class LayerableUtil {
         final FeatureCollectionWrapper fcw = layer
                 .getFeatureCollectionWrapper();
         final int numFeatures = fcw.size();
-        Geometry geo = null;
+        Geometry geo;
         boolean multipleGeoTypes = false;
         for (final Feature feature : fcw.getFeatures()) {
             geo = feature.getGeometry();
@@ -431,6 +406,7 @@ public abstract class LayerableUtil {
     public static String getFilePath(Layer layer) {
         final DataSourceQuery dsq = layer.getDataSourceQuery();
         String fileName = null;
+        // TODO Should it be && instead of || ?
         if (dsq != null
                 || !layer.getName().contains(
                         System.getProperty("java.io.tmpdir"))) {
@@ -491,113 +467,84 @@ public abstract class LayerableUtil {
      * @return the type of the file as string
      */
     public static String getFileType(File file) {
-        final TypeFile extension = TypeFile
-                .valueOf(FileUtil.getExtension(file));
-        if (!extension.equals(TypeFile.values())) {
-            filetype = FileUtil.getExtension(file).toUpperCase();
-        } else {
-            switch (extension) {
-            case ASC: {
-                filetype = "ASC - ESRI ASCII grid";
-                break;
-            }
-            case CSV: {
-                filetype = "CSV - Comma-separated values";
-                break;
-            }
-            case DXF: {
-                filetype = "Autocad DXF - Drawing Exchange Format";
-                break;
-            }
-            case FLT: {
-                filetype = "FLT - ESRI Binary grid";
-                break;
-            }
-            case TIF: {
-                filetype = "GEOTIF/TIFF -  Tagged Image File Format";
-                break;
-            }
-            case TIFF: {
-                filetype = "GEOTIF/TIFF -  Tagged Image File Format";
-                break;
-            }
-            case JPG: {
-                filetype = "JPEG/JPG - Joint Photographic Experts Group";
-                break;
-            }
-            case JPEG: {
-                filetype = "JPEG/JPG - Joint Photographic Experts Group";
-                break;
-            }
-            case PNG: {
-                filetype = "PNG - Portable Network Graphics";
-                break;
-            }
-            case GIF: {
-                filetype = "GIF - Graphics Interchange Format";
-                break;
-            }
-            case GRD: {
-                filetype = "GRD - Surfer ASCII Grid";
-                break;
-            }
-            case JP2: {
-                filetype = "JPEG 2000 - Joint Photographic Experts Group";
-                break;
-            }
-            case BMP: {
-                filetype = "BMP - Windows Bitmap";
-                break;
-            }
-            case ECW: {
-                filetype = "ECW - Enhanced Compression Wavelet";
-                break;
-            }
-            case MrSID: {
-                filetype = "MrSID - Multiresolution seamless image database";
-                break;
-            }
-            case TXT: {
-                filetype = "TXT - Text file";
-                break;
-            }
-            case SHP: {
-                filetype = "SHP - Esri Shapefile";
-                break;
-            }
-            case JML: {
-                filetype = "JML - OpenJUMP JML format";
-                break;
-            }
-            case GML: {
-                filetype = "GML - Geography Markup Language";
-                break;
-            }
-            case KML: {
-                filetype = "KML - Keyhole Markup Language";
-                break;
-            }
-            case OSM: {
-                filetype = "OSM - OpenStreetMap XML";
-                break;
-            }
-            }
+      String extUC = FileUtil.getExtension(file).toUpperCase();
+      switch (extUC) {
+        case "ASC": {
+          return "ASC - ESRI ASCII grid";
         }
-        return filetype;
+        case "CSV": {
+          return "CSV - Comma-separated values";
+        }
+        case "DXF": {
+          return "Autocad DXF - Drawing Exchange Format";
+        }
+        case "FLT": {
+          return "FLT - ESRI Binary grid";
+        }
+        case "TIF":
+        case "TIFF": {
+          return "GEOTIF/TIFF -  Tagged Image File Format";
+        }
+        case "JPG":
+        case "JPEG": {
+          return "JPEG/JPG - Joint Photographic Experts Group";
+        }
+        case "PNG": {
+          return "PNG - Portable Network Graphics";
+        }
+        case "GIF": {
+          return "GIF - Graphics Interchange Format";
+        }
+        case "GRD": {
+          return "GRD - Surfer ASCII Grid";
+        }
+        case "JP2": {
+          return "JPEG 2000 - Joint Photographic Experts Group";
+        }
+        case "BMP": {
+          return "BMP - Windows Bitmap";
+        }
+        case "ECW": {
+          return "ECW - Enhanced Compression Wavelet";
+        }
+        case "MrSID": {
+          return "MrSID - Multiresolution seamless image database";
+        }
+        case "TXT": {
+          return "TXT - Text file";
+        }
+        case "SHP": {
+          return "SHP - Esri Shapefile";
+        }
+        case "JML": {
+          return "JML - OpenJUMP JML format";
+        }
+        case "GML": {
+          return "GML - Geography Markup Language";
+        }
+        case "KML": {
+          return "KML - Keyhole Markup Language";
+        }
+        case "OSM": {
+          return "OSM - OpenStreetMap XML";
+        }
+      }
+      return extUC;
     }
 
-    /*
-     * Get the extension of the file
-     */
-    public static String getExtension(File file) {
-        String ext = null;
-        final String s = file.getName();
-        final int i = s.lastIndexOf('.');
-        if (i > 0 && i < s.length() - 1) {
-            ext = s.substring(i + 1).toUpperCase();
-        }
-        return ext;
-    }
+    ///**
+    // * Get the extension of the file
+    // * @deprecated already in FileUtil
+    // */
+    //public static String getExtension(File file) {
+    //    String ext = null;
+    //    final String s = file.getName();
+    //    final int i = s.lastIndexOf('.');
+    //    if (i > 0 && i < s.length() - 1) {
+    //        ext = s.substring(i + 1).toUpperCase();
+    //    }
+    //    return ext;
+    //}
 
     /**
      *
@@ -626,7 +573,7 @@ public abstract class LayerableUtil {
      *         not into the enum list it returns only the extension (eg. "MAP")
      */
     public static String getRasterFileDescription(RasterImageLayer layer) {
-        String name = null;
+        String name;
         final File file = new File(layer.getImageFileName());
         name = getFileType(file);
         return name;
@@ -660,6 +607,8 @@ public abstract class LayerableUtil {
             try {
                 IOTools.saveJMLFile(features, vpath);
             } catch (final Exception te) {
+                Logger.warn("Error while saving layer " + layer.getName() +
+                        " to " + path + " as JML", te);
             }
         } else {
             vfileName = FileUtil.addExtensionIfNone(new File(vector_name),
@@ -669,6 +618,8 @@ public abstract class LayerableUtil {
             try {
                 IOTools.saveShapefile(features, vpath);
             } catch (final Exception te) {
+                Logger.warn("Error while saving layer " + layer.getName() +
+                        " to " + path + " as Shapefile", te);
             }
         }
     }
@@ -691,6 +642,8 @@ public abstract class LayerableUtil {
         try {
             RasterImageIOUtils.saveTIF(outTIF_File, layer, envelope);
         } catch (final Exception te) {
+            Logger.warn("Error while saving RasterImageLayer '" +
+                    layer.getName() + "' to " + outTIF_name, te);
         }
 
     }
@@ -720,8 +673,10 @@ public abstract class LayerableUtil {
             outputChannel = new FileOutputStream(outFile).getChannel();
             outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
         } finally {
-            inputChannel.close();
-            outputChannel.close();
+            if (inputChannel != null)
+                inputChannel.close();
+            if (outputChannel != null)
+                outputChannel.close();
         }
         final WorldFileHandler worldFileHandler = new WorldFileHandler(
                 filepath, false);
@@ -742,7 +697,6 @@ public abstract class LayerableUtil {
      * @param path the path to export to
      * @throws IOException if an IOException occurs during SLD writing
      */
-
     public static void ExportVectorStyleToSLD(PlugInContext context,
             Layer layer, String path) throws Exception {
         final double internalScale = 1d / context.getLayerViewPanel()
@@ -774,7 +728,7 @@ public abstract class LayerableUtil {
         // FileWriter fw = new FileWriter( outputXML );
         final OutputStreamWriter fw = new OutputStreamWriter(
                 new FileOutputStream(sld_outFile), StandardCharsets.UTF_8);
-        final HashMap<String, String> map = new HashMap<String, String>(9);
+        final HashMap<String, String> map = new HashMap<>(9);
         map.put("wmsLayerName", name);
         map.put("featureTypeStyle", name);
         map.put("styleName", name);
@@ -788,20 +742,16 @@ public abstract class LayerableUtil {
         // ATENTION : note that min and max are swapped in JUMP!!!
         // will swap later, in transformContext
         Double d = layer.getMinScale();
-        d = d != null ? d : new Double(0);
+        d = d != null ? d : 0.0;
         map.put("minScale",
-                ""
-                        + LayerStyle2SLDPlugIn.toRealWorldScale(scaleFactor,
-                                d.doubleValue()));
+                "" + LayerStyle2SLDPlugIn.toRealWorldScale(scaleFactor, d));
         // using Double.MAX_VALUE is creating a large number - too many 0's
         // make it simple and hardcde a large number
         final double largeNumber = 99999999999d;
         d = layer.getMaxScale();
         d = d != null ? d : new Double(largeNumber);
         map.put("maxScale",
-                ""
-                        + LayerStyle2SLDPlugIn.toRealWorldScale(scaleFactor,
-                                d.doubleValue()));
+                "" + LayerStyle2SLDPlugIn.toRealWorldScale(scaleFactor, d));
         fw.write(LayerStyle2SLDPlugIn.transformContext(input, map));
         fw.close();
     }
@@ -822,6 +772,8 @@ public abstract class LayerableUtil {
         try {
             SLDHandler.write(rLayer.getSymbology(), null, sld_outFile);
         } catch (final Exception te) {
+            Logger.warn("Error while saving layer " + rLayer.getName() +
+                    " to " + path + " as SLD", te);
         }
 
     }
@@ -837,12 +789,9 @@ public abstract class LayerableUtil {
      */
     public static void ExportVectorProjection(PlugInContext context,
             Layer layer, String proj, String path) throws IOException {
-        String outPRJ = "";
-        File outFile = null;
-        outPRJ = context.getLayerManager().uniqueLayerName(
+        String outPRJ = context.getLayerManager().uniqueLayerName(
                 layer.getName() + ".prj");
-        outFile = new File(path.concat(File.separator).concat(outPRJ));
-        // FileUtils .writeStringToFile(outFile, proj);//Deprecated
+        File outFile = new File(path.concat(File.separator).concat(outPRJ));
         FileUtils.writeStringToFile(outFile, proj, charSet);
     }
 
@@ -858,12 +807,9 @@ public abstract class LayerableUtil {
     public static void ExportRasterProjection(PlugInContext context,
             RasterImageLayer layer, String proj, String path)
             throws IOException {
-        String outPRJ = "";
-        File outFile = null;
-        outPRJ = context.getLayerManager().uniqueLayerName(
+        String outPRJ = context.getLayerManager().uniqueLayerName(
                 layer.getName() + ".prj");
-        outFile = new File(path.concat(File.separator).concat(outPRJ));
-        // FileUtils .writeStringToFile(outFile, proj);//Deprecated
+        File outFile = new File(path.concat(File.separator).concat(outPRJ));
         FileUtils.writeStringToFile(outFile, proj, charSet);
     }
 
@@ -883,15 +829,9 @@ public abstract class LayerableUtil {
         final File inputFile = new File(wfilepath);
         final File outFile = new File(path.concat(File.separator).concat(
                 inputFile.getName()));
-        FileChannel inputChannel = null;
-        FileChannel outputChannel = null;
-        try {
-            inputChannel = new FileInputStream(inputFile).getChannel();
-            outputChannel = new FileOutputStream(outFile).getChannel();
+        try (FileChannel inputChannel = new FileInputStream(inputFile).getChannel();
+             FileChannel outputChannel = new FileOutputStream(outFile).getChannel()) {
             outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
-        } finally {
-            inputChannel.close();
-            outputChannel.close();
         }
     }
 
@@ -903,7 +843,7 @@ public abstract class LayerableUtil {
      * @return file path of the Layer
      */
     public static String filepath(Layer layer) {
-        String sourcePathImage = null;
+        String sourcePathImage;
         final FeatureCollection featureCollection = layer
                 .getFeatureCollectionWrapper();
         String filePath1 = null;
@@ -926,7 +866,7 @@ public abstract class LayerableUtil {
      * @return the path of the worldfile associated to the layer
      */
     public static String worldFilepath(Layer layer) {
-        String sourcePathImage = null;
+        String sourcePathImage;
         final FeatureCollection featureCollection = layer
                 .getFeatureCollectionWrapper();
         String worldPath = null;
@@ -941,7 +881,7 @@ public abstract class LayerableUtil {
                     filePath1.lastIndexOf("."));
             final String imageExtension = filePath1.substring(
                     filePath1.lastIndexOf(".") + 1).toLowerCase();
-            worldPath = worldFileName + "." + imageExtension.substring(0, 1)
+            worldPath = worldFileName + "." + imageExtension.charAt(0)
                     + imageExtension.substring(imageExtension.length() - 1)
                     + "w";
         }
@@ -956,14 +896,14 @@ public abstract class LayerableUtil {
      * @return area as a double
      */
     public static double getValidArea(Layer layer) {
-    	double area=0;
-    	final FeatureCollection featureCollection = layer
+      double area=0;
+      final FeatureCollection featureCollection = layer
                 .getFeatureCollectionWrapper();
-    	 for (final Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
+       for (final Iterator<?> i = featureCollection.iterator(); i.hasNext();) {
              final Feature feature = (Feature) i.next();
              area+= feature.getGeometry().getArea();
              }
-		return area;
+    return area;
     }
     
     /**
@@ -973,11 +913,11 @@ public abstract class LayerableUtil {
      * @return area as a double
      */
     public static double getValidArea(RasterImageLayer layer) throws IOException {
-    	Raster ras=layer.getRasterData(null);
-    	double noData =layer.getNoDataValue();
-    	double cellSize=layer.getMetadata().getOriginalCellSize();
-    	int counter = 0;
-    	int nx = ras.getWidth();
+      Raster ras=layer.getRasterData(null);
+      double noData =layer.getNoDataValue();
+      double cellSize=layer.getMetadata().getOriginalCellSize();
+      int counter = 0;
+      int nx = ras.getWidth();
         int ny = ras.getHeight();
         for (int y = 0; y < ny; y++) {
             for (int x = 0; x < nx; x++) {
@@ -986,8 +926,11 @@ public abstract class LayerableUtil {
                     counter++;
             }
         }
-		return cellSize*cellSize*counter;
+    return cellSize*cellSize*counter;
     }
-    
-    
+
+    public static void main(String[] args) {
+      System.out.println(getFileType(new File("Test.tif")));
+      System.out.println(getFileType(new File("Test.unknown")));
+    }
 }

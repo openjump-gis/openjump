@@ -45,18 +45,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -93,9 +88,8 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
 
   final private Map<Class<?>,JPopupMenu> nodeClassToPopupMenuMap = new HashMap<>();
 
-  BorderLayout borderLayout1 = new BorderLayout();
-
   JTree tree = new JTree() {
+
     @Override
     public boolean isPathEditable(TreePath path) {
       if (!isEditable()) {
@@ -106,30 +100,18 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
           || path.getLastPathComponent() instanceof Category;
     }
 
-    // Workaround for Java Bug 4199956 "JTree shows container can be
-    // expanded - even when empty", posted by bertrand.allo in the Java Bug
-    // Database. [Jon Aquino]
-    // 2019-12-31 : cannot see the effect of the bug, even if it is tagged
-    // won't fix in the bug database. Removing the second part of the or
-    // condition saves a lot of time in some situation (ex. copy/paste a
-    // layer with theming style having a lot of values) [mmichaud]
-    @Override
-    public boolean hasBeenExpanded(TreePath path) {
-      return super.hasBeenExpanded(path);
-          //|| !this.getModel().isLeaf(path.getLastPathComponent());
-    }
 
     // [ede 12.2012] only allow plain cursor keys. during adding shortcuts it
     // became obvious that the JTree reacted on each and every keystroke.
     // e.g. CTRL+A clashed with the SelectAllLayerItems shortcut as it selected
     // all layers in tree although the shortcut is meant to select all items in
     // all _selected_ layers only
-    List<Integer> allowedKeys = Arrays.asList(KeyEvent.VK_LEFT,
+    final List<Integer> allowedKeys = Arrays.asList(KeyEvent.VK_LEFT,
             KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN);
     @Override
     protected void processComponentKeyEvent(KeyEvent e) {
       // filter accepted key events
-      if (e.getModifiers() != 0 || !allowedKeys.contains(e.getKeyCode()))
+      if (e.getModifiersEx() != 0 || !allowedKeys.contains(e.getKeyCode()))
         return;
       super.processComponentKeyEvent(e);
     }
@@ -143,7 +125,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     protected boolean processKeyBinding(KeyStroke ks, KeyEvent e,
         int condition, boolean pressed) {
       // filter accepted key events
-      if (e.getModifiers() != 0 || !allowedKeys.contains(e.getKeyCode()))
+      if (e.getModifiersEx() != 0 || !allowedKeys.contains(e.getKeyCode()))
         return false;
       return super.processKeyBinding(ks, e, condition, pressed);
     }
@@ -152,15 +134,13 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
 
   final private LayerTreeCellRenderer layerTreeCellRenderer;
 
-  private TreeCellEditor cellEditor = new LayerTreeCellEditor(tree);
+  //private TreeCellEditor cellEditor = new LayerTreeCellEditor(tree);
 
   private Object popupNode;
 
   final private ArrayList<LayerNamePanelListener> listeners = new ArrayList<>();
 
   final private LayerManagerProxy layerManagerProxy;
-
-  JScrollPane scrollPane = new JScrollPane();
 
   final private FirableTreeModelWrapper firableTreeModelWrapper;
 
@@ -182,6 +162,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   public TreeLayerNamePanel(LayerManagerProxy layerManagerProxy,
       TreeModel treeModel, RenderingManager renderingManager,
       Map<Class<?>,TreeCellRenderer> additionalNodeClassToTreeCellRendererMap) {
+
     layerManagerProxy.getLayerManager().addLayerListener(this);
     this.layerManagerProxy = layerManagerProxy;
 
@@ -275,7 +256,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
         if (node instanceof Layerable) {
           Layerable layerable = (Layerable) node;
           int index = 0;
-          Category cat = null;
+          Category cat;
 
           int oldRow = tree.getRowForPath(movingTreePath);
           int newRow = tree.getRowForPath(tpDestination);
@@ -353,7 +334,8 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
 
         //[Giuseppe Aruta 2019-01-06] as suggested by Roberto Rossi (University of Padua) also RasterImageLayer don't need to be expanded when
         // dragged on layerable tree
-        if (!(tree.getPathForRow(rowNew).getLastPathComponent() instanceof Layer) && !(tree.getPathForRow(rowNew).getLastPathComponent() instanceof RasterImageLayer)) {
+        if (!(tree.getPathForRow(rowNew).getLastPathComponent() instanceof Layer) &&
+            !(tree.getPathForRow(rowNew).getLastPathComponent() instanceof RasterImageLayer)) {
           tree.expandRow(rowNew);
         }
 
@@ -383,44 +365,30 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
       }
     });
 
-    tree.setCellEditor(cellEditor);
+    tree.setCellEditor(new LayerTreeCellEditor());
     tree.setInvokesStopCellEditing(true);
     tree.setBackground(getBackground());
-    tree.addTreeSelectionListener(new TreeSelectionListener() {
-      public void valueChanged(TreeSelectionEvent e) {
-        fireLayerSelectionChanged();
-      }
-    });
+    tree.addTreeSelectionListener(e -> fireLayerSelectionChanged());
     tree.getModel().addTreeModelListener(new TreeModelListener() {
-      public void treeNodesChanged(TreeModelEvent e) {
-      }
+
+      public void treeNodesChanged(TreeModelEvent e) { }
 
       public void treeNodesInserted(TreeModelEvent e) {
         for (int i = 0; i < e.getChildren().length; i++) {
-          TreeUtil.visit(tree.getModel(),
-              e.getTreePath().pathByAddingChild(e.getChildren()[i]),
-              new TreeUtil.Visitor() {
-                public void visit(Stack path) {
-                  // When opening a task file, don't expand the
-                  // ColorThemingValues.
-                  // [Jon Aquino 2005-08-01]
-                  if (path.peek() instanceof LayerTreeModel.ColorThemingValue) {
-                    return;
-                  }
-                  if (path.peek() instanceof LayerTreeModel.RasterStyleValueIntv) {
-                      return;
-                  }
-                  tree.makeVisible(new TreePath(path.toArray()));
-                }
-              });
+          TreeUtil.visit(tree.getModel(), e.getTreePath().pathByAddingChild(e.getChildren()[i]), path -> {
+            // When opening a task file, don't expand the ColorThemingValues [Jon Aquino 2005-08-01]
+            if (path.peek() instanceof LayerTreeModel.SymbolizationLeafNode) {
+              return;
+            }
+            tree.makeVisible(new TreePath(path.toArray()));
+          });
         }
       }
 
-      public void treeNodesRemoved(TreeModelEvent e) {
-      }
+      public void treeNodesRemoved(TreeModelEvent e) { }
 
-      public void treeStructureChanged(TreeModelEvent e) {
-      }
+      public void treeStructureChanged(TreeModelEvent e) { }
+
     });
     TreeUtil.expandAll(tree, new TreePath(tree.getModel().getRoot()));
   }
@@ -430,10 +398,10 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   }
 
   private void setCellRenderer(Map<Class<?>,TreeCellRenderer> additionalNodeClassToTreeCellRendererMap) {
-    final Map<Class<?>,TreeCellRenderer> map = createNodeClassToTreeCellRendererMap();
-    map.putAll(additionalNodeClassToTreeCellRendererMap);
+    final Map<Class<?>,TreeCellRenderer> treeCellRendererMap = createNodeClassToTreeCellRendererMap();
+    treeCellRendererMap.putAll(additionalNodeClassToTreeCellRendererMap);
     tree.setCellRenderer(new TreeCellRenderer() {
-      private DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer() {
+      private final DefaultTreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer() {
 
         {
           // Transparent. [Jon Aquino]
@@ -445,8 +413,9 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
       public Component getTreeCellRendererComponent(JTree tree, Object value,
           boolean selected, boolean expanded, boolean leaf, int row,
           boolean hasFocus) {
+        // Return the component
         return ((TreeCellRenderer) LangUtil.ifNull(
-            CollectionUtil.get(value.getClass(), map), defaultRenderer))
+            CollectionUtil.get(value.getClass(), treeCellRendererMap), defaultRenderer))
             .getTreeCellRendererComponent(tree, value, selected, expanded,
                 leaf, row, hasFocus);
       }
@@ -483,7 +452,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
       public Component getTreeCellRendererComponent(JTree tree, Object value,
           boolean selected, boolean expanded, boolean leaf, int row,
           boolean hasFocus) {
-        label.setText(((LayerTreeModel.ColorThemingValue) value).toString());
+        label.setText(value.toString());
         BasicStyle style = ((LayerTreeModel.ColorThemingValue) value)
             .getStyle();
         colorPanel.setLineColor(style.isRenderingLine() ? GUIUtil.alphaColor(
@@ -599,7 +568,8 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   }
   
   void jbInit() throws Exception {
-    this.setLayout(borderLayout1);
+    this.setLayout(new BorderLayout());
+    JScrollPane scrollPane = new JScrollPane();
     tree.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mousePressed(MouseEvent e) {
         // popup triggers are pressed on Linux/OSX, released on Windows
@@ -620,8 +590,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     tree.setRowHeight(-1);
     scrollPane.getVerticalScrollBar().setUnitIncrement(20);
     tree.setShowsRootHandles(true);
-    scrollPane
-        .setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     scrollPane.setBorder(BorderFactory.createEtchedBorder());
     scrollPane.getViewport().add(tree);
     this.add(scrollPane, BorderLayout.CENTER);
@@ -697,8 +666,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
         .getLocation();
 
     // Initialize the LayerNameRenderer with the current node.
-    // checkBoxBounds will be different for Layers and WMSLayers. [Jon
-    // Aquino]
+    // checkBoxBounds will be different for Layers and WMSLayers. [Jon Aquino]
     layerTreeCellRenderer.getLayerNameRenderer().getTreeCellRendererComponent(
         tree, path.getLastPathComponent(), false, false, false, 0, false);
 
@@ -713,50 +681,47 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   }
 
   /**
-   * @deprecated use getSelectedLayerables() instead
+   * Return an array of selected {@link Layer}s.
+   * Note that layerables which are not Layers like WMSLayer or RasterImageLayer
+   * are not returned.
    */
-  @SuppressWarnings( "deprecation" )
-  @Deprecated
   public Layer[] getSelectedLayers() {
     return selectedLayers(this);
   }
 
   public static Layer[] selectedLayers(LayerNamePanel layerNamePanel) {
-    return (Layer[]) layerNamePanel.selectedNodes(Layer.class).toArray(
-        new Layer[] {});
+    return layerNamePanel.selectedNodes(Layer.class).toArray(new Layer[0]);
   }
 
+  public static Layerable[] selectedLayerables(LayerNamePanel layerNamePanel) {
+      return layerNamePanel.selectedNodes(Layer.class).toArray(new Layerable[0]);
+  }
   
-  public static Layerable[] selectedLayerabless(LayerNamePanel layerNamePanel) {
-      return (Layerable[]) layerNamePanel.selectedNodes(Layer.class).toArray(
-          new Layerable[] {});
-    }
-  
-  public Collection getSelectedLayerables() {
+  public Collection<Layerable> getSelectedLayerables() {
     return selectedNodes(Layerable.class);
   }
 
-  public Collection getSelectedCategories() {
+  public Collection<Category> getSelectedCategories() {
     return selectedNodes(Category.class);
   }
 
-  public Collection selectedNodes(Class c) {
+  public <T> Collection<T> selectedNodes(Class<T> c) {
     return selectedNodes(c, tree);
   }
 
-  public static Collection selectedNodes(Class c, JTree tree) {
-    ArrayList selectedNodes = new ArrayList();
+  public static <T> Collection<T> selectedNodes(Class<T> c, JTree tree) {
+    ArrayList<T> selectedNodes = new ArrayList<>();
     TreePath[] selectionPaths = tree.getSelectionPaths();
 
     if (selectionPaths == null) {
-      return new ArrayList();
+      return new ArrayList<>();
     }
 
-    for (int i = 0; i < selectionPaths.length; i++) {
-      Object node = selectionPaths[i].getLastPathComponent();
+    for (TreePath path : selectionPaths) {
+      Object node = path.getLastPathComponent();
 
       if (c.isInstance(node)) {
-        selectedNodes.add(node);
+        selectedNodes.add((T)node);
       }
     }
 
@@ -766,8 +731,8 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   public void setSelectedLayers(Layer[] layers) {
     tree.getSelectionModel().clearSelection();
 
-    for (int i = 0; i < layers.length; i++) {
-      addSelectedLayer(layers[i]);
+    for (Layer layer : layers) {
+      addSelectedLayer(layer);
     }
   }
 
@@ -919,9 +884,8 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
   }
 
   public synchronized void fireLayerSelectionChanged() {
-    for (Iterator<LayerNamePanelListener> i = listeners.iterator(); i.hasNext();) {
-      LayerNamePanelListener l = i.next();
-      l.layerSelectionChanged();
+    for (LayerNamePanelListener listener : listeners) {
+      listener.layerSelectionChanged();
     }
   }
 

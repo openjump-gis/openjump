@@ -59,17 +59,17 @@ import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
  */
 
 public class LayerTreeCellRenderer implements TreeCellRenderer {
-    //<<TODO:NAMING>> Rename class to LayerRenderer [Jon Aquino]
-    private LayerNameRenderer layerNameRenderer = new LayerNameRenderer();
 
-    private JLabel rootRendererComponent = new JLabel("Root");
+    private final LayerNameRenderer layerNameRenderer = new LayerNameRenderer();
 
-    private DefaultTreeCellRenderer categoryRenderer = new DefaultTreeCellRenderer();
+    private final JLabel rootRendererComponent = new JLabel("Root");
 
-    private RenderingManager renderingManager;
+    private final DefaultTreeCellRenderer categoryRenderer = new DefaultTreeCellRenderer();
 
-    private Icon ctg_open = IconLoader.icon("fugue/folder-open.png");
-    private Icon ctg_closed = IconLoader.icon("fugue/folder.png");
+    private final RenderingManager renderingManager;
+
+    private final Icon ctg_open = IconLoader.icon("fugue/folder-open.png");
+    private final Icon ctg_closed = IconLoader.icon("fugue/folder.png");
 
     public LayerTreeCellRenderer(RenderingManager renderingManager) {
         this.renderingManager = renderingManager;
@@ -102,11 +102,9 @@ public class LayerTreeCellRenderer implements TreeCellRenderer {
             categoryRendererComponent.setBorder(new EmptyBorder(new Insets(0, 0, 1, 0)));
             categoryRendererComponent.setText(((Category) node).getName());
             if (expanded) {
-                categoryRendererComponent.setIcon(ctg_open/*UIManager
-                        .getIcon("Tree.openIcon")*/);
+                categoryRendererComponent.setIcon(ctg_open);
             } else {
-                categoryRendererComponent.setIcon(ctg_closed/*UIManager
-                        .getIcon("Tree.closedIcon")*/);
+                categoryRendererComponent.setIcon(ctg_closed);
             }
 
             return categoryRendererComponent;

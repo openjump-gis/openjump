@@ -163,7 +163,7 @@ public class CreateHistogramPlugIn extends AbstractPlugIn implements
 
         final List<String> list = AttributeTypeFilter.NUMERIC_FILTER
                 .filter(context.getCandidateLayer(0));
-        final Object val = list.size() > 0 ? list.iterator().next() : null;
+        final String val = list.size() > 0 ? list.iterator().next() : null;
         final JComboBox<String> jcb_attribute = dialog.addComboBox(ATTRIBUTE,
                 val, list, ATTRIBUTE);
         if (list.size() == 0) {
@@ -193,8 +193,7 @@ public class CreateHistogramPlugIn extends AbstractPlugIn implements
         selAttribute = dialog.getText(ATTRIBUTE);
     }
 
-    private boolean createHistogram(final PlugInContext context, Layer selLayer)
-            throws Exception {
+    private boolean createHistogram(final PlugInContext context, Layer selLayer) {
 
         final FeatureCollection fc = selLayer.getFeatureCollectionWrapper();
         final FeatureSchema fs = fc.getFeatureSchema();

@@ -19,6 +19,7 @@ import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.LayerManager;
+import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerComboBox;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
@@ -93,7 +94,7 @@ public class ToolboxStateManager {
                                  .getAncestorOfClass(WorkbenchFrame.class,
                                     component)).getContext().getLayerManager(), new LayerManager());
                             return new Object[] {
-                                layerManager.size() > 0 ? layerManager.iterator().next() : null,
+                                layerManager.size() > 0 ? layerManager.iterator(Layerable.class).next() : null,
                                 layerManager
                             };
                         }
@@ -174,7 +175,7 @@ public class ToolboxStateManager {
             Class componentClass = (Class) i.next();
 
             if (componentClass.isInstance(component)) {
-                ((Strategy) componentClassToStrategyMap.get(componentClass)).monitor(component, this);
+                (componentClassToStrategyMap.get(componentClass)).monitor(component, this);
                 //Don't go any deeper [Jon Aquino]
                 return this;
             }
