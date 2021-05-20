@@ -1237,9 +1237,10 @@ ${project.artifactId} ${project.version} Changelog
         </dependency>
         <dependency>
             <groupId>batik</groupId>
-            <artifactId>batik-squiggle</artifactId>
+            <artifactId>batik-transcoder</artifactId>
             <version>${batik.version}</version>
         </dependency>
+
         <dependency>
             <groupId>net.sf.buoy</groupId>
             <artifactId>buoy</artifactId>
