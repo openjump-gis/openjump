@@ -15,8 +15,6 @@
            nolang, nosrc and add them via assembly -->
       <useProjectArtifact>false</useProjectArtifact>
       <excludes>
-
-
         <!-- exclude batik and js which is a batik dependency
              we'll selectively include needed deps in cmp_plus.xml -->
         <exclude>*:batik-*</exclude>
@@ -30,6 +28,7 @@
     </dependencySet>
     <dependencySet>
       <outputDirectory>/lib/ext/imageio-ext</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>*:imageio-ext-gdalframework</include>
         <include>*:imageio-ext-geocore</include>

@@ -7,6 +7,7 @@
          complete pom deps pull in way more files -->
     <dependencySet>
       <outputDirectory>/lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>*:batik-awt-util</include>
         <include>*:batik-dom</include>
@@ -21,6 +22,7 @@
     <dependencySet>
       <outputDirectory>/lib/ext/imageio-ext</outputDirectory>
       <useTransitiveFiltering>true</useTransitiveFiltering>
+      <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>it.geosolutions.imageio-ext:*</include>
       </includes>
