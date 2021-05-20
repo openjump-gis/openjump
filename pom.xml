@@ -915,7 +915,7 @@
                   <locale>en_US</locale>
                 </configuration>
               </execution>
-  
+
               <execution>
                 <id>add-junit-test-source</id>
                 <phase>generate-test-sources</phase>
@@ -939,7 +939,7 @@
             <executions>
               <!-- retrieve git revision information from local repo -->
               <execution>
-                <id>get-the-git-infos</id>
+                <id>fetch git properties of current branch</id>
                 <goals>
                   <goal>revision</goal>
                 </goals>
@@ -961,7 +961,51 @@
               <commitIdGenerationMode>full</commitIdGenerationMode>
             </configuration>
           </plugin>
-  
+
+          <plugin>
+            <groupId>se.bjurr.gitchangelog</groupId>
+            <artifactId>git-changelog-maven-plugin</artifactId>
+            <version>1.69</version>
+            <?m2e ignore?>
+            <executions>
+              <execution>
+                <id>GenerateGitChangelogCommits</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>git-changelog</goal>
+                </goals>
+                <configuration>
+                  <file>${project.build.outputDirectory}/git-log.txt</file>
+                  <toRef>HEAD</toRef> 
+                  <fromCommit>17603d8a46840a58dcf2d105d22a0000763e7dfd</fromCommit>
+                  <!-- needs 'git fetch __tags', rather use commit hash above
+                  <fromRef>1.16</fromRef>
+                  -->
+                  <dateFormat>yyyy.MM.dd HH:mm:ss</dateFormat>
+                  <templateContent>
+                    <![CDATA[
+${project.artifactId} ${project.version} Changelog
+
+{{#tags}}
+{{name}}
+
+{{#commits}}
+{{{commitTime}}} - {{{authorName}}} - https://github.com/{{{ownerName}}}/{{{repoName}}}/commit/{{{hash}}}
+{{{messageTitle}}}
+{{#messageBodyItems}}
+  {{{.}}}
+{{/messageBodyItems}}
+
+{{/commits}}
+
+{{/tags}}
+         ]]>
+                  </templateContent>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
           <plugin>
             <groupId>com.github.ekryd.echo-maven-plugin</groupId>
             <artifactId>echo-maven-plugin</artifactId>
@@ -984,7 +1028,7 @@
               </execution>
             </executions>
           </plugin>
-  
+
           <!-- default-jar only needed for maven repo deployment,
                so postpone creation to install cycle  -->
           <plugin>
@@ -1003,7 +1047,7 @@
               </execution>
             </executions>
           </plugin>
-  
+
           <!-- installing artifact to local repo (usually "~/.m2")
                is mainly done to enable 
                  https://jitpack.io/#openjump-gis/openjump
@@ -1037,7 +1081,7 @@
               </execution>
             </executions>
           </plugin>
-  
+
           <!-- this deploys the jar to a repo-url given,
                used in snapshot/release builds to update
                  oj.soldin.de repo -->
@@ -1062,11 +1106,14 @@
                   <url>file://${project.build.directory}/build-repo/</url>
                   -->
                   <version>${project.version}-${git.branch}-SNAPSHOT</version>
+                  <files>${project.build.outputDirectory}/git.properties,${project.build.outputDirectory}/git-log.txt</files>
+                  <classifiers>git-info,git-log</classifiers>
+                  <types>txt,txt</types>
                 </configuration>
               </execution>
             </executions>
           </plugin>
-  
+
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
