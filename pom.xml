@@ -1239,6 +1239,12 @@ ${project.artifactId} ${project.version} Changelog
             <groupId>batik</groupId>
             <artifactId>batik-transcoder</artifactId>
             <version>${batik.version}</version>
+            <exclusions>
+                <exclusion>  <!-- declare the exclusion here -->
+                    <groupId>fop</groupId>
+                    <artifactId>fop</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
