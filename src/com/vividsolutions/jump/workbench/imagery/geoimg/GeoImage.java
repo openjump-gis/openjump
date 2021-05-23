@@ -37,7 +37,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -46,15 +45,10 @@ import java.lang.reflect.InvocationTargetException;
 import javax.media.jai.InterpolationNearest;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
-import javax.media.jai.operator.AffineDescriptor;
 
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.util.AffineTransformation;
-import org.locationtech.jts.geom.util.AffineTransformationBuilder;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.util.Timer;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.model.Disposable;
@@ -108,7 +102,7 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
       // georeferencing?
       Envelope envImage = gtr.getEnvelope(f);
 
-      RenderedOp src_img = gtr.getImage();
+      RenderedOp src_img = gtr.getRenderedOp();
 
       ParameterBlock pb;
       // null (for small images) or hints containing a bigger tilecache for this image
@@ -148,8 +142,8 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
 //          System.out.println("GI: NO SCALE CACHE");
 
           // First, scale the original image
-          double scaleX = scale * Math.abs(gtr.getDblModelUnitsPerRasterUnit_X());
-          double scaleY = scale * Math.abs(gtr.getDblModelUnitsPerRasterUnit_Y());
+          double scaleX = scale * Math.abs(gtr.getScaleX());
+          double scaleY = scale * Math.abs(gtr.getScaleY());
 
           // calculate predicted dimensions
           double scaledW = scaleX * src_img.getWidth();
@@ -183,8 +177,6 @@ public class GeoImage implements ReferencedImage, Disposable, AlphaSetting {
               pb.add(full_scale); // x scale factor
               pb.add(full_scale); // y scale factor
               full_scale_img = JAI.create("subsampleaverage", pb, null).getAsBufferedImage();
-//              System.out.println("GI full scale img: "
-//                  + full_scale_img.getWidth());
             }
             scaleX_toUse = scaleX / full_scale;
             scaleY_toUse = scaleY / full_scale;

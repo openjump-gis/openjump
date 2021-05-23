@@ -1373,12 +1373,6 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         double imgHeight = origImageHeight;
         Envelope imageEnv = getEnvelope();
         
-        double minVisibleX = Math.max(envelope.getMinX(), imageEnv.getMinX());
-        double minVisibleY = Math.max(envelope.getMinY(), imageEnv.getMinY());
-        
-        double maxVisibleX = Math.min(envelope.getMaxX(), imageEnv.getMaxX());
-        double maxVisibleY = Math.min(envelope.getMaxY(), imageEnv.getMaxY());
-        
         double offset2VisibleX = imageEnv.getMinX() - envelope.getMinX();
         double offset2VisibleY = envelope.getMaxY() - imageEnv.getMaxY();
         
@@ -1386,33 +1380,22 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         double scaleY = imgHeight / imageEnv.getHeight();
         
         // use local variables!
-        int xOffset, yOffset, width, height;
+        int xOffset, yOffset;
         
         if (offset2VisibleX >= 0){
             xOffset = 0;
         } else {
-            xOffset = (int)(-offset2VisibleX * scaleX);
+            xOffset = (int)Math.round((-offset2VisibleX * scaleX));
         }
         
         if (offset2VisibleY >= 0){
             yOffset = 0;
         } else {
-            yOffset = (int)(-offset2VisibleY * scaleY);
+            yOffset = (int)Math.round((-offset2VisibleY * scaleY));
         }
         
-        width = (int)((maxVisibleX-minVisibleX) * scaleX);
-        height =  (int)((maxVisibleY-minVisibleY) * scaleY);
-        
-        if (width < imgWidth && height < imgHeight){ 
-            width += 1;
-            height += 1;
-        }
-        
-        
-        if (width <= 0 || height <= 0) return null;
-        
-        int wantedWidth = (int)(envelope.getWidth() * scaleX);
-        int wantedHeight = (int)(envelope.getHeight() * scaleY);
+        int wantedWidth = (int)Math.round((envelope.getWidth() * scaleX));
+        int wantedHeight = (int)Math.round((envelope.getHeight() * scaleY));
         
         return new Rectangle(xOffset, yOffset, wantedWidth, wantedHeight);
     }
