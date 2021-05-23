@@ -92,7 +92,7 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 
     }
 
-    public static void saveSingleRaster(PlugInContext context) {
+    public static void saveSingleRaster(PlugInContext context) throws Exception {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
         Envelope env = rLayer.getWholeImageEnvelope();
@@ -145,7 +145,7 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 
             band = 0;
 
-            try {
+//            try {
                 String trueExtension = (String) extensions.get(extension
                         .toUpperCase());
                 if (trueExtension.equalsIgnoreCase("ASC")) {
@@ -161,17 +161,17 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
                     RasterImageIOUtils.saveTIF(file, rLayer, env);
                     RasterImageIOUtils.loadTIF(file, context, catName);
                 }
-            } catch (Exception e) {
-                context.getWorkbenchFrame().warnUser(ERROR);
-                context.getWorkbenchFrame().getOutputFrame()
-                        .createNewDocument();
-                context.getWorkbenchFrame()
-                        .getOutputFrame()
-                        .addText(
-                                "SaveImageToRasterPlugIn Exception:"
-                                        + new Object[] { e.toString() });
-                return;
-            }
+//            } catch (Exception e) {
+//                context.getWorkbenchFrame().warnUser(ERROR);
+//                context.getWorkbenchFrame().getOutputFrame()
+//                        .createNewDocument();
+//                context.getWorkbenchFrame()
+//                        .getOutputFrame()
+//                        .addText(
+//                                "SaveImageToRasterPlugIn Exception:"
+//                                        + new Object[] { e.toString() });
+//                return;
+//            }
 
             //Giuseppe Aruta July 2 2015
             //Since this plugin now export to different raster format
