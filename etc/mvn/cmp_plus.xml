@@ -5,6 +5,7 @@
   <dependencySets>
     <!-- include only selected batik jars in PLUS to minimize distro size,
          complete pom deps pull in way more files -->
+    <!-- they are limited in pom.xml now
     <dependencySet>
       <outputDirectory>/lib</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
@@ -16,7 +17,15 @@
         <include>*:batik-transcoder</include>
         <include>*:batik-util</include>
         <include>*:batik-xml</include>
-        <!-- >include>js:*</include -->
+      </includes>
+    </dependencySet>
+    -->
+    <!-- include missing deps excluded from CORE in cmp_core.xml -->
+    <dependencySet>
+      <outputDirectory>/lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>batik:*</include>
       </includes>
     </dependencySet>
     <dependencySet>
@@ -28,6 +37,7 @@
       </includes>
     </dependencySet>
   </dependencySets>
+
   <fileSets>
     <fileSet>
       <directory>.</directory>
