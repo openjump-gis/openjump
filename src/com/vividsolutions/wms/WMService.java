@@ -40,6 +40,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 import javax.net.ssl.*;
 
@@ -62,6 +66,7 @@ public class WMService {
 
   public static final String WMS_1_3_0 = "1.3.0";
 
+  private final List<String> serverUrlPossibleParameter = Arrays.asList("MAP");
   private URL serverUrl;
   private String wmsVersion = WMS_1_1_1;
   private Capabilities cap;
@@ -78,10 +83,30 @@ public class WMService {
    */
   public WMService(String serverUrl, String wmsVersion) {
     try {
-      String[] tokens = serverUrl.split("\\?");
+      String[] tokens = serverUrl.split("\\?",2);
       this.serverUrl = new URL(tokens[0]+"?");
-      if (tokens.length > 1)
-        this.additionalParameters = tokens[1];
+      // We could also take the whole serverUrl string for this.serverUrl
+      // The split was used to "clean" the serverUrl and to make it possible
+      // to keep parameters as additional parameters of the query.
+      // Now, additional parameters can be added in the query panel
+      // serverUrl is still split but parameters in serverUrlPossibleParameter
+      // are kept in the base URL (ex. MAP=)
+      if (tokens.length > 1) {
+        // Separate parameters to be used for the base URL from those used for the query
+        String[] parameters = tokens[1].split("&");
+        for (int i = 0 ; i < parameters.length ; i++) {
+          String[] param = parameters[i].split("=");
+          // Parameter belonging to the base URL
+          if (serverUrlPossibleParameter.contains(param[0].toUpperCase(Locale.ROOT))) {
+            this.serverUrl = new URL(this.serverUrl + parameters[i] + "&");
+          } else if (this.additionalParameters == null) {
+            this.additionalParameters = parameters[i];
+          } else {
+            this.additionalParameters = "&" + parameters[i];
+          }
+        }
+        //this.additionalParameters = tokens[1];
+      }
     } catch (MalformedURLException e) {
       throw new IllegalArgumentException(e);
     }
