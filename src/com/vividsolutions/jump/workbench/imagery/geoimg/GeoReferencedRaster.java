@@ -67,28 +67,36 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.imagery.graphic.WorldFile;
 
 /**
- * Most georeferencing takes place here.
- * Georeferencing may take place in GeoTiff tags, in GDAL or in a worlfile like
- * tfw or pgw or jgw.
- * In a geotiff, georeferencement may be defined as a transformation matrix or
- * from a tiepoint and scale factors (georeferencement from several tiepoints is
- * not supported).
+ * Most georeferencing is done from this class.
+ *
+ * Georeferencing may use GeoTiff tags, GDAL metadata or a worlfile like tfw,
+ * pgw or jgw.
+ * <p>
+ * In geotiff, the Raster Space is defined by GTRasterTypeGeoKey and can be
+ * RasterPixelIsArea or RasterPixelIsPoint.</p>
+ * <p>
+ * In RasterPixelIsArea, image coordinate (0,0) is the upper left coordinate of
+ * the image and the first pixel value applies to the whole cell (from coordinate
+ * (0,0) to (1,1)). This is the default value, but it is now recommended to
+ * specify it explicitly.</p>
+ * <p>
+ * In RasterPixelIsPoint, we consider that the first value of the image matrix
+ * (0,0) applies to point located at the center of the upper left pixel. This is
+ * mostly used for elevation dataset like DTM</p>
+ * <p>
+ * Geotiff georeferencement may be defined as a transformation matrix or from
+ * a tiepoint and scale factors. Georeferencement from several tiepoints is
+ * not supported by OpenJUMP).</p>
+ * <p>
  * Warning : if georeferencement is defined by a single tiepoint along with a
  * scalex and a scaley factor, the tiepoint may be on the upper-left corner of
  * the upper-left pixel, on the center of the pixel or at any place as long as
- * image coordinate and model coordinate are consistent (see here after for the
- * interpretation of image coordinate)
- *
- * By default, coordinate (0,0) of a geotiff image represents the upper left corner
- * of the upper left pixel. This is called GTRasterTypeGeoKey = RasterPixelIsArea.
- * In this case, upper left corner of the image envelope is the transformation of
- * the (0,0) image coordinate and lower right corner is the image of (w,h).
- *
- * On the other hand, if GTRasterTypeGeoKey = RasterPixelIsPoint, image coordinate
- * (0,0) represents the center of the upper left pixel.
- *
- * World file defines an affine transformation with tx and ty translation parameters
- * defined relatively to the center of the upper left pixel.
+ * the model coordinate represent the transformation of the image coordinate
+ * (see here after for the interpretation of image coordinate)
+ * </p>
+ * <p>
+ * World file defines an affine transformation with its tx and ty translation
+ * parameters defined relatively to the center of the upper left pixel.</p>
  *
  * javadoc added by mmichaud on 2021-05-23
  */
