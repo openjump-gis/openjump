@@ -21,6 +21,7 @@ import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.io.datasource.DataSourceQuery;
 import com.vividsolutions.jump.util.FileUtil;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.imagery.ImageryLayerDataset;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageStyle;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -474,17 +475,22 @@ public class ProjUtils {
             throws Exception, URISyntaxException {
         String fileSourcePath = layer.getImageFileName();
         String extension = FileUtil.getExtension(fileSourcePath).toLowerCase();
-        SRSInfo srsInfo;
+        SRSInfo srsInfo = null;
+        // try to read geo tag
         if (extension.equals("tif") || extension.equals("tiff")) {
-            TiffTags.TiffMetadata metadata = TiffTags.readMetadata(new File(
-                    fileSourcePath));
+          try {
+            TiffTags.TiffMetadata metadata = TiffTags.readMetadata(new File(fileSourcePath));
             if (metadata.isGeoTiff()) {
-                srsInfo = metadata.getSRSInfo();
-                srsInfo.setSource(EMBEDDED_SRS);
-            } else {
-                srsInfo = ProjUtils.getSRSInfoFromAuxiliaryFile(fileSourcePath);
+              srsInfo = metadata.getSRSInfo();
+              srsInfo.setSource(EMBEDDED_SRS);
             }
-        } else {
+          } catch (Exception e) {
+            Logger.error(e);
+          }
+        }
+        
+        // fallthrough
+        if (srsInfo == null) {
             srsInfo = ProjUtils.getSRSInfoFromAuxiliaryFile(fileSourcePath);
         }
         // if srid=0 there must be no source for file projection.
