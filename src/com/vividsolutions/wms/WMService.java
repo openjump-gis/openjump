@@ -83,29 +83,15 @@ public class WMService {
    */
   public WMService(String serverUrl, String wmsVersion) {
     try {
-      String[] tokens = serverUrl.split("\\?",2);
-      this.serverUrl = new URL(tokens[0]+"?");
-      // We could also take the whole serverUrl string for this.serverUrl
-      // The split was used to "clean" the serverUrl and to make it possible
-      // to keep parameters as additional parameters of the query.
-      // Now, additional parameters can be added in the query panel
-      // serverUrl is still split but parameters in serverUrlPossibleParameter
-      // are kept in the base URL (ex. MAP=)
-      if (tokens.length > 1) {
-        // Separate parameters to be used for the base URL from those used for the query
-        String[] parameters = tokens[1].split("&");
-        for (int i = 0 ; i < parameters.length ; i++) {
-          String[] param = parameters[i].split("=");
-          // Parameter belonging to the base URL
-          if (serverUrlPossibleParameter.contains(param[0].toUpperCase(Locale.ROOT))) {
-            this.serverUrl = new URL(this.serverUrl + parameters[i] + "&");
-          } else if (this.additionalParameters == null) {
-            this.additionalParameters = parameters[i];
-          } else {
-            this.additionalParameters = "&" + parameters[i];
-          }
-        }
-        //this.additionalParameters = tokens[1];
+      if (serverUrl.contains("?")) {
+        if (serverUrl.endsWith("?"))
+          this.serverUrl = new URL(serverUrl);
+        else if (serverUrl.endsWith("&"))
+          this.serverUrl = new URL(serverUrl);
+        else
+          this.serverUrl = new URL(serverUrl + "&");
+      } else {
+        this.serverUrl = new URL(serverUrl + "?");
       }
     } catch (MalformedURLException e) {
       throw new IllegalArgumentException(e);
