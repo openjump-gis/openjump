@@ -8,6 +8,8 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
+import org.openjump.util.UriUtil;
+
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.ui.cursortool.FeatureInfoTool;
@@ -46,14 +48,7 @@ public class FeatureInfoRequest extends AbstractWMSRequest {
 
   @Override
   public URL getURL() throws MalformedURLException {
-    String featInfoUrl = WMService.legalize(service.getCapabilities().getFeatureInfoURL());
-
-//    if (featInfoUrl.contains("?")) {
-//      if (!featInfoUrl.endsWith("?"))
-//        featInfoUrl += "&";
-//    } else {
-//      featInfoUrl += "?";
-//    }
+    String featInfoUrl = UriUtil.urlMakeAppendSafe(service.getCapabilities().getFeatureInfoURL());
 
     if (WMService.WMS_1_0_0.equals(version)) {
       featInfoUrl += "REQUEST=feature_info&WMTVER=1.0.0";

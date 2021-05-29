@@ -275,6 +275,31 @@ public final class UriUtil {
   }
 
   /**
+   * Make sure the url string ends with '?' or '&' to safely append url parameters
+   * 
+   * @param url string
+   * @return url string safe to append parameters
+   */
+  public static String urlMakeAppendSafe(String url) {
+    String fixedURL = url.trim();
+
+    if (!fixedURL.contains("?")) {
+      fixedURL = fixedURL + "?";
+    } else {
+      if (fixedURL.endsWith("?")) {
+        // ok
+      } else {
+        // it must have other parameters
+        if (!fixedURL.endsWith("&")) {
+          fixedURL = fixedURL + "&";
+        }
+      }
+    }
+
+    return fixedURL;
+  }
+
+  /**
    * userinfo is the prepared urlencoded string before the @ eg. user:pass
    * 
    * @param url url String to add user info to

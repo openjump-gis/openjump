@@ -42,6 +42,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openjump.util.UriUtil;
+
 import com.vividsolutions.jump.workbench.Logger;
 
 /**
@@ -242,10 +244,7 @@ public class MapRequest extends AbstractWMSRequest{
     * @return the URL for this request
     * @throws MalformedURLException if there is a problem building the URL for some reason
     */
-    //[UT] changed to accept WMS 1.1.1
-    //[MM] changed to accept WMS 1.3.0
     public URL getURL() throws MalformedURLException {
-        StringBuilder urlBuf = new StringBuilder();
         String ver = "REQUEST=map&WMTVER=1.0";
         if ( WMService.WMS_1_1_0.equals( version )){
             ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.0";
@@ -254,8 +253,10 @@ public class MapRequest extends AbstractWMSRequest{
         } else if ( WMService.WMS_1_3_0.equals( version ) ){
             ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.3.0";
         }
-        urlBuf.append(WMService.legalize(service.getCapabilities().getGetMapURL()) +
-            ver + "&WIDTH=" + imgWidth + "&HEIGHT=" + imgHeight);
+
+        StringBuilder urlBuf = new StringBuilder(UriUtil.urlMakeAppendSafe(service.getCapabilities().getGetMapURL()));
+        urlBuf.append(ver + "&WIDTH=" + imgWidth + "&HEIGHT=" + imgHeight);
+
         try {
             urlBuf.append( "&LAYERS=" + encode(listToString( layerNames ), "UTF-8") );
         } catch (UnsupportedEncodingException e1) {

@@ -83,16 +83,8 @@ public class WMService {
    */
   public WMService(String serverUrl, String wmsVersion) {
     try {
-      if (serverUrl.contains("?")) {
-        if (serverUrl.endsWith("?"))
-          this.serverUrl = new URL(serverUrl);
-        else if (serverUrl.endsWith("&"))
-          this.serverUrl = new URL(serverUrl);
-        else
-          this.serverUrl = new URL(serverUrl + "&");
-      } else {
-        this.serverUrl = new URL(serverUrl + "?");
-      }
+      // no need to process it, as this is done in MapRequest, FeatInfoRequest later
+      this.serverUrl = new URL(serverUrl); 
     } catch (MalformedURLException e) {
       throw new IllegalArgumentException(e);
     }
@@ -149,7 +141,7 @@ public class WMService {
       parser = new ParserWMS1_3();
     }
 
-    String requestUrlString = WMService.legalize(this.serverUrl.toString()) + req;
+    String requestUrlString = UriUtil.urlMakeAppendSafe(this.serverUrl.toString()) + req;
     URL requestUrl = new URL(requestUrlString);
 
     InputStream inputStream = new BasicRequest(this, requestUrl).getInputStream();
@@ -157,77 +149,31 @@ public class WMService {
     String url1 = cap.getService().getServerUrl();
     String url2 = cap.getGetMapURL();
 
-    String compare_url1 = UriUtil.urlStripAuth(legalize(url1));
-    String compare_url2 = UriUtil.urlStripAuth(legalize(url2));
-    // if the difference is only in credentials then use url1 else ask from
-    // user
+    String noAuth_url1 = UriUtil.urlStripAuth(url1);
+    String noAuth_url2 = UriUtil.urlStripAuth(url2);
+    String compare_url1 = UriUtil.urlMakeAppendSafe(noAuth_url1);
+    String compare_url2 = UriUtil.urlMakeAppendSafe(noAuth_url2);
+    // if the difference is only in credentials then use url1 else ask from user
     if (!compare_url1.equals(compare_url2) && alertDifferingURL) {
       int resp = showConfirmDialog(
               null,
-              I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found", url2),
+              I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found", noAuth_url2, noAuth_url1),
               null,
               YES_NO_OPTION);
-      // nope. user wants to keep the initial url
+      // nope. user wants to keep the initial url1
       if (resp == NO_OPTION) {
         cap.setGetMapURL(url1);
       }
-      // make sure url2 has auth info if needed
+      // make sure auth info is transferred to url2, if needed
       else if (!UriUtil.urlGetUser(url1).isEmpty()) {
         String url2_withAuth = UriUtil.urlAddCredentials(url2,
                 UriUtil.urlGetUser(url1), UriUtil.urlGetPassword(url1));
         cap.setGetMapURL(url2_withAuth);
       }
     } else {
-      // changed 24.06.2011 (Wilfried Hornburg, LGLN) url1 --> url2; original:
-      // cap.setGetMapURL(url1);
-      // revert to url1, following Jukka's advice a discussion is on-going on
-      // JPP mailing list
       cap.setGetMapURL(url1);
     }
-
-
-    // [2016.01 ede] deactivated the error handling here as it leads to an
-    // infinite stack loop when trying to open a project containing a wms layer
-    // that can't be connected for some reason show error, close errordialog,
-    // new render of taskframe, show error...
-    //    } catch (FileNotFoundException e) {
-//      JOptionPane.showMessageDialog(null, I18N.getMessage(
-//          "com.vividsolutions.wms.WMService.WMS-Not-Found",
-//          new Object[] { e.getLocalizedMessage() }), I18N
-//          .get("com.vividsolutions.wms.WMService.Error"),
-//          JOptionPane.ERROR_MESSAGE);
-//      throw e;
-//    } catch (final WMSException e) {
-//      ErrorDialog.show(null, "WMS Error", e.getMessage(), e.getSource());
-//      throw e;
-//    } catch (IOException e) {
-//      JOptionPane.showMessageDialog(null, I18N.getMessage(
-//          "com.vividsolutions.wms.WMService.WMS-IO-Error", new Object[] {
-//              e.getClass().getSimpleName(), e.getLocalizedMessage() }), I18N
-//          .get("com.vividsolutions.wms.WMService.Error"),
-//          JOptionPane.ERROR_MESSAGE);
-//      throw e;
-//    }
   }
-
-  //private TrustManager trm = new X509TrustManager() {
-  //  public X509Certificate[] getAcceptedIssuers() { return null; }
-  //  public void checkClientTrusted(X509Certificate[] certs, String authType) { }
-  //  public void checkServerTrusted(X509Certificate[] certs, String authType) { }
-  //};
-  //private Set<URL> trustedURLs = new HashSet<>();
-
-  //private void setTrustOption(boolean trust, URL url)
-  //        throws KeyManagementException, NoSuchAlgorithmException {
-  //  SSLContext sc = SSLContext.getInstance("SSL");
-  //  if (trust || trustedURLs.contains(url)) {
-  //    sc.init(null, new TrustManager[]{trm}, null);
-  //    trustedURLs.add(url);
-  //  } else {
-  //    sc.init(null, null, null);
-  //  }
-  //  HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-  //}
 
   /**
    * Gets the url string of the map service.
@@ -288,27 +234,5 @@ public class WMService {
 
   public String getAdditionalParameters() {
     return additionalParameters;
-  }
-
-  //
-  // The WMService appends other parameters to the end of the URL
-  //
-  public static String legalize(String url) {
-    String fixedURL = url.trim();
-
-    if (!fixedURL.contains("?")) {
-      fixedURL = fixedURL + "?";
-    } else {
-      if (fixedURL.endsWith("?")) {
-        // ok
-      } else {
-        // it must have other parameters
-        if (!fixedURL.endsWith("&")) {
-          fixedURL = fixedURL + "&";
-        }
-      }
-    }
-
-    return fixedURL;
   }
 }
