@@ -1,6 +1,7 @@
 package org.openjump.core.rasterimage;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 
 /**
@@ -133,9 +135,16 @@ public class GDALPamDataset extends DefaultHandler {
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         DOMSource source = new DOMSource(doc);
-        StreamResult result = new StreamResult(auxXmlFile);
-        transformer.transform(source, result);
-        
+        // workaround older Xalan versions choking on backslashes
+        // file:\D:\... as opposed to file:/D:/
+        // as described in https://stackoverflow.com/a/24779531/1308810
+        FileOutputStream stream = new FileOutputStream(auxXmlFile);
+        try {
+          StreamResult result = new StreamResult(stream);
+          transformer.transform(source, result);
+        } finally {
+          FileUtil.close(stream);
+        }
     }
     
     

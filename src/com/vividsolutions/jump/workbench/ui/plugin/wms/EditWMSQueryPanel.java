@@ -414,10 +414,6 @@ public class EditWMSQueryPanel extends JPanel {
   protected void reinitializeService() {
     String url = urlPanel.getUrl();
     url = UriUtil.urlAddCredentials(url, urlPanel.getUser(), urlPanel.getPass()).trim();
-
-    // [ed] url is now legalized b4 every request
-    url = WMService.legalize(url);
-    // [UT] 20.04.2005
     WMService service = new WMService(url, URLWizardPanel.wmsVersion);
 
     try {

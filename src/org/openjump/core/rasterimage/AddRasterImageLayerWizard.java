@@ -208,8 +208,8 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             final SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerSource(rLayer);
             srsInfo.complete();
             rLayer.setSrsInfo(srsInfo);
-        } catch (final Exception e1) {
-            e1.printStackTrace();
+        } catch (Exception e) {
+            Logger.error(e);
         }
         // #################################
 

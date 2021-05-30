@@ -160,16 +160,10 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       String url = urlPanel.getUrl();
       url = UriUtil.urlAddCredentials(url, urlPanel.getUser(), urlPanel.getPass());
 
-      // [UT]
-      // String ver = (String)dataMap.get(VERSION_KEY);
-
-      url = WMService.legalize(url);
-      // [UT] 20.04.2005
       WMService service = new WMService(url, wmsVersion);
-      // WMService service = new WMService( url );
 
       service.initialize(true);
-      
+
       Set<String> list = new LinkedHashSet<>();
       // insert latest on top 
       list.add(url);
@@ -238,6 +232,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
   public JPanel createVersionPanel() {
     JPanel p = new JPanel(new GridBagLayout());
 
+    // automatically save version change in URLWizardPanel
     ActionListener al = e -> {
       JRadioButton jb = (JRadioButton)e.getSource();
       URLWizardPanel.wmsVersion = jb.getText();
