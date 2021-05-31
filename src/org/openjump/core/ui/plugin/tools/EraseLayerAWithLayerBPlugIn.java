@@ -22,6 +22,8 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import javax.swing.*;
@@ -44,14 +46,17 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
 
     private static String UPDATE_SRC         = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Update-Source-features-with-result");
     private static String CREATE_LYR         = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-new-layer-for-result");
+    private static String OVERLAY_NG         = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.use-overlay-ng");
+    private static String OVERLAY_NG_TT      = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.use-overlay-ng-tt");
 
-    private static String sFeatures = I18N.get("ui.GenericNames.features");
+    private static String sFeatures          = I18N.get("ui.GenericNames.features");
 
     private Layer layerA;
     private Layer layerB;
     private boolean updateMode = false;
     private boolean showNewVertices;
     private boolean decomposeMulti;
+    private boolean useOverlayNG;
 
     public EraseLayerAWithLayerBPlugIn() {
     }
@@ -104,6 +109,7 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
 
         final JCheckBox showNewVerticesCB = dialog.addCheckBox(SHOW_NEW_VERTICES, showNewVertices, SHOW_NEW_VERTICES);
         final JCheckBox decomposeMultiCB  = dialog.addCheckBox(DECOMPOSE_MULTI, decomposeMulti, DECOMPOSE_MULTI);
+        final JCheckBox useOverlayNGCB = dialog.addCheckBox(OVERLAY_NG, useOverlayNG, OVERLAY_NG_TT);
 
         boolean layerAEditable = dialog.getLayer(LAYER_A).isEditable();
         updateMode = layerAEditable;
@@ -145,6 +151,7 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
         updateMode = dialog.getBoolean(UPDATE_SRC);
         showNewVertices = dialog.getBoolean(SHOW_NEW_VERTICES);
         decomposeMulti = dialog.getBoolean(DECOMPOSE_MULTI);
+        useOverlayNG = dialog.getBoolean(OVERLAY_NG);
     }
 
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
@@ -340,7 +347,9 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
 
 
     private Geometry erase(Geometry a, Geometry b) {
-        return a.difference(b);
+        if (useOverlayNG)
+            return OverlayNGRobust.overlay(a, b, OverlayNG.DIFFERENCE);
+        else return a.difference(b);
     }
 
     private Geometry getHomogeneousGeometry(Geometry geom) {
