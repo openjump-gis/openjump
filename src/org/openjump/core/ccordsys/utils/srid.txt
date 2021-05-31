@@ -1,4 +1,4 @@
-﻿#This is a list of SRID code available
+#This is a list of SRID code available
 #It derives from GeoToolkit EPSG srid list with added extra ESRI and IGNF codes
 #History
 #[05_22_2016 - Giuseppe Aruta]
