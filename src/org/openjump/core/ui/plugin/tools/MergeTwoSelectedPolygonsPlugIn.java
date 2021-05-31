@@ -43,7 +43,7 @@ public class MergeTwoSelectedPolygonsPlugIn extends AbstractPlugIn{
 	//private String sMergeTwoPolys = "MergeTwoPolygons";
 	
     public void initialize(PlugInContext context) throws Exception {
-        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+        FeatureInstaller featureInstaller = context.getFeatureInstaller();
     	featureInstaller.addMainMenuItem(
     	        this,								//exe
                 new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY}, 	//menu path

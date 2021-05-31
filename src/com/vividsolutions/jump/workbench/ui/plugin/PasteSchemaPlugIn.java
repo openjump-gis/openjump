@@ -71,8 +71,7 @@ public class PasteSchemaPlugIn extends AbstractPlugIn {
     public void initialize(PlugInContext context) throws Exception {
 
         final WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        final FeatureInstaller featureInstaller = new FeatureInstaller(
-                workbenchContext);
+        final FeatureInstaller featureInstaller = context.getFeatureInstaller();
 
         final JPopupMenu layerNamePopupMenu = context.getWorkbenchContext()
                 .getWorkbench().getFrame().getLayerNamePopupMenu();

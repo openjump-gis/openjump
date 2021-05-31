@@ -554,7 +554,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
         boolean checkBox,
         Icon icon,
         EnableCheck enableCheck) {
-        FeatureInstaller.getInstance().addPopupMenuItem(
+        context.getFeatureInstaller().addPopupMenuItem(
             popupMenu(workbenchContext),
             wrap(plugIn),
             menuItemName,

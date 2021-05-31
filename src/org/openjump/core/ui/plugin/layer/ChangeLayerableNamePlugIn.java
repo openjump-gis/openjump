@@ -31,7 +31,7 @@ public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 	    EnableCheck enableCheck = createEnableCheck(workbenchContext);
 	    
 	    // Install in main menu
-	    FeatureInstaller installer = new FeatureInstaller(workbenchContext);
+	    FeatureInstaller installer = context.getFeatureInstaller();
 	    installer.addMainMenuPlugin(this,
 	        new String[] { MenuNames.LAYER }, getName() + "...", false, null, enableCheck);
 		

@@ -57,7 +57,7 @@ public class EasyButtonsPlugin extends ToolboxPlugIn {
   private EasyPanel buttonPanel = null;
 
   public void initialize(final PlugInContext context) throws Exception {
-    FeatureInstaller.getInstance().addMainMenuPlugin(this, new String[] { MenuNames.CUSTOMIZE });
+    context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.CUSTOMIZE });
 
     // Wait 2 seconds because EasyButtonsPlugIn needs all menu items
     // to be initialized first

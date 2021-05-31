@@ -44,7 +44,7 @@ public class PasteItemsAtPlugIn extends PasteItemsPlugIn {
 
   public void initialize(PlugInContext context) throws Exception {
 //    WorkbenchContext workbenchContext = context.getWorkbenchContext();
-//    FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+//    FeatureInstaller featureInstaller = context.getFeatureInstaller();
 //    JPopupMenu popupMenu = LayerViewPanel.popupMenu();
 //    featureInstaller.addPopupMenuItem(popupMenu, this, getNameWithMnemonic()
 //        + "{pos:10}", false, this.getIcon(),

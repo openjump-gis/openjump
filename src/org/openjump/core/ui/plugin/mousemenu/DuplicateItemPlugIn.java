@@ -31,7 +31,7 @@ public class DuplicateItemPlugIn extends AbstractPlugIn {
 	    {   
 		
 		 WorkbenchContext workbenchContext = context.getWorkbenchContext();
-	        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+	        FeatureInstaller featureInstaller = context.getFeatureInstaller();
 	        JPopupMenu popupMenu = LayerViewPanel.popupMenu();
 	        featureInstaller.addPopupMenuItem(popupMenu,
 	            this, getName(), 
@@ -40,7 +40,7 @@ public class DuplicateItemPlugIn extends AbstractPlugIn {
 	    }
 	
 	    	WorkbenchContext workbenchContext = context.getWorkbenchContext();
-	        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+	        FeatureInstaller featureInstaller = context.getFeatureInstaller();
 	        
 	         
 	        featureInstaller.addMainMenuItem(this,

@@ -152,7 +152,7 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
     }
     
     private void initializeMenuItem(PlugInContext context) {
-        FeatureInstaller installer = new FeatureInstaller(context.getWorkbenchContext());
+        FeatureInstaller installer = context.getFeatureInstaller();
         String[] menuPath = new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QA };
         installer.addMainMenuItem(this, menuPath, new JMenuItem(getName() + "..."),
                 createEnableCheck(context.getWorkbenchContext()));

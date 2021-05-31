@@ -55,7 +55,7 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
     /*
      * Deactivated public void initialize(PlugInContext context) throws
      * Exception { WorkbenchContext workbenchContext =
-     * context.getWorkbenchContext(); new FeatureInstaller(workbenchContext);
+     * context.getWorkbenchContext(); context.getFeatureInstaller();
      * context.getFeatureInstaller().addMainMenuPlugin( this, new String[]
      * {MenuNames.RASTER}, getName(), false, getIcon(),
      * createEnableCheck(context.getWorkbenchContext())); }

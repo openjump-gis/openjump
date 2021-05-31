@@ -84,7 +84,7 @@ public class ExtractCommonBoundaryBetweenPolysPlugIn extends AbstractPlugIn impl
     		this.sBoundaries = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.boundaries");
 	        this.LAYERREGIONS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.select-layer-with-polygons");
     		
-    		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    		FeatureInstaller featureInstaller = context.getFeatureInstaller();
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT}, 	//menu path

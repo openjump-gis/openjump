@@ -74,7 +74,7 @@ public class JoinTablePlugIn extends ThreadedBasePlugIn {
 				new EnableCheckFactory(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(1));
 		*/
 		
-		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+		FeatureInstaller featureInstaller = context.getFeatureInstaller();
 		featureInstaller.addMainMenuItem(
 				this,								//exe				
 				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES}, 	//menu path

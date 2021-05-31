@@ -55,7 +55,7 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
 
     String name = getName();
 
-    FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
     featureInstaller.addMainMenuPlugin(this, new String[] {MenuNames.FILE});
 
     // Add tool-bar Icon

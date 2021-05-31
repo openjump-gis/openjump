@@ -78,7 +78,7 @@ public class ReducePointsISAPlugIn extends AbstractPlugIn {
         workbenchContext = context.getWorkbenchContext();
         /*
         gContext = context;
-        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+        FeatureInstaller featureInstaller = context.getFeatureInstaller();
         JPopupMenu popupMenu = LayerViewPanel.popupMenu();
         featureInstaller.addPopupMenuItem(popupMenu,
             this, sSimplifyISA,

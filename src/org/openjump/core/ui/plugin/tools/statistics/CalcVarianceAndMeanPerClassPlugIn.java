@@ -91,7 +91,7 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
         sWrongDataType = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
         sCalcRatios = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.calculating-statistics");
     	
-    	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    	FeatureInstaller featureInstaller = context.getFeatureInstaller();
     	featureInstaller.addMainMenuPlugin(
     			this,
     			new String[] {MenuNames.TOOLS, MenuNames.STATISTICS},

@@ -124,7 +124,7 @@ public class FeatureInstaller {
     void insertSeparator(int i);
   }
 
-  private static FeatureInstaller instance = null;
+  private static Map<WorkbenchContext,FeatureInstaller> instances = new HashMap<>();
 
   private WorkbenchContext workbenchContext;
 
@@ -134,14 +134,17 @@ public class FeatureInstaller {
 
   private static HashMap<JMenuItem, PlugIn> menuItemRegistry = new HashMap();
 
-  public FeatureInstaller(WorkbenchContext workbenchContext) {
+  private FeatureInstaller(WorkbenchContext workbenchContext) {
     this.workbenchContext = workbenchContext;
     checkFactory = new EnableCheckFactory(workbenchContext);
   }
 
-  public static FeatureInstaller getInstance() {
-    if (instance == null)
-      instance = new FeatureInstaller(JUMPWorkbench.getInstance().getContext());
+  public static FeatureInstaller getInstance( WorkbenchContext context ) {
+    FeatureInstaller instance = instances.get(context);
+    if (instance == null) {
+      instance = new FeatureInstaller(context);
+      instances.put(context, instance);
+    }
     return instance;
   }
 
@@ -260,14 +263,13 @@ public class FeatureInstaller {
    * @param menuName name of the Menu
    * @return a JMenu
    */
-  public static JMenu addMainMenu(FeatureInstaller featureInstaller,
-      final String[] menuPath, String menuName) {
+  public JMenu addMainMenu( final String[] menuPath, String menuName) {
     if (menuPath == null)
       throw new IllegalArgumentException("menuPath must be a string array");
 
     //JMenu menu = new JMenu(menuName);
-    //JMenuBar parent = FeatureInstaller.getInstance().menuBar();
-    JMenuBar parent =featureInstaller.menuBar();
+    //JMenuBar parent = context.getFeatureInstaller().menuBar();
+    JMenuBar parent = menuBar();
 
     List fullPathList = new ArrayList(Arrays.asList(menuPath));
     fullPathList.add(menuName);
@@ -524,7 +526,7 @@ public class FeatureInstaller {
     // always protect the last two FILE menu entries, separator + exit item's
     // position
     int count = itemRoot.getComponentCount();
-    if (itemRoot.getWrappee() == FeatureInstaller.getInstance().menuBarMenu(
+    if (itemRoot.getWrappee() == this.menuBarMenu(
         MenuNames.FILE)
         && (pos < 0 || pos >= count - 2)) {
       pos = count - 2;
@@ -1433,21 +1435,21 @@ public class FeatureInstaller {
     return null;
   }
 
-  public static Menu createMenusIfNecessary(Menu parent, String[] menuPath) {
+  public Menu createMenusIfNecessary(Menu parent, String[] menuPath) {
     return createMenusIfNecessary(parent, menuPath, new String[menuPath.length]);
   }
 
   /**
    * @return the leaf
    */
-  public static Menu createMenusIfNecessary(Menu parent, String[] menuPath,
+  public Menu createMenusIfNecessary(Menu parent, String[] menuPath,
       Object[] menuPathPositions) {
     if (menuPath == null || menuPath.length == 0) {
       return parent;
     }
 
     if (menuPath[0].equals(MenuNames.ZOOM)
-        && FeatureInstaller.getInstance().fetchKeyForMenu(parent.getWrappee())
+        && this.fetchKeyForMenu(parent.getWrappee())
             .equals(WorkbenchProperties.KEY_LAYERVIEWPOPUP))
       System.out.println();
 
@@ -1469,16 +1471,16 @@ public class FeatureInstaller {
       // position
       int count = parent.getComponentCount();
 
-      if (parent.getWrappee() == FeatureInstaller.getInstance().menuBarMenu(
+      if (parent.getWrappee() == menuBarMenu(
           MenuNames.FILE)
           && (pos < 0 || pos >= count - 2)) {
         pos = count - 2;
       }
       // protect windows/help entries positions at the end of the main menu
-      else if (parent.getWrappee() == FeatureInstaller.getInstance().menuBar()
+      else if (parent.getWrappee() == menuBar()
           && !child.getText().equals(MenuNames.HELP)
           && !child.getText().equals(MenuNames.WINDOW)) {
-        Menu menu = wrapMenu(FeatureInstaller.getInstance().menuBar());
+        Menu menu = wrapMenu(menuBar());
         for (int i = 0; i < menu.getComponentCount(); i++) {
           Component c = menu.getComponent(i);
           if (c instanceof JMenu) {

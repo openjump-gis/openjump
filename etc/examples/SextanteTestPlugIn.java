@@ -90,7 +90,7 @@ public class SextanteTestPlugIn extends AbstractPlugIn implements ThreadedPlugIn
         
     public void initialize(PlugInContext context) throws Exception {
     				
-	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+	        FeatureInstaller featureInstaller = context.getFeatureInstaller();
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
 	                new String[] {"OJ-Sextante"}, 	//menu path

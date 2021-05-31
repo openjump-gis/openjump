@@ -117,7 +117,7 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
     	    
     	    this.sSidebar = this.sSidebar + "\n" + this.note;
     	    	
-    		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    		FeatureInstaller featureInstaller = context.getFeatureInstaller();
 	    	featureInstaller.addMainMenuPlugin(
 	    	        this,
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERALIZATION},

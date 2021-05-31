@@ -115,7 +115,7 @@ public class MergeSelectedPolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn
     	sSearchingForMergeCandidates = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Searching-for-merge-candidates");
     	sMergingPolygons = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merging-polygons");
     	
-        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+        FeatureInstaller featureInstaller = context.getFeatureInstaller();
     	featureInstaller.addMainMenuItem(
     	        this,								//exe
                 new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY}, 	//menu path

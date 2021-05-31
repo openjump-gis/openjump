@@ -63,7 +63,7 @@ public class MergePolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn {
     sAttributeToUse = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Attribute");
     //sInvalidFeatureMessage = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Features-must-be-valid");
 
-    FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
     featureInstaller.addMainMenuPlugin(
             this,                //exe
             new String[]{MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},  //menu path

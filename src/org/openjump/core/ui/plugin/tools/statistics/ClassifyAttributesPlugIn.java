@@ -138,8 +138,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements
         sWrongDataType = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
         sNoAttributeChoosen = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.No-attribute-choosen");
 
-        final FeatureInstaller featureInstaller = new FeatureInstaller(
-                context.getWorkbenchContext());
+        final FeatureInstaller featureInstaller = context.getFeatureInstaller();
         featureInstaller.addMainMenuPlugin(this, new String[] {
                 MenuNames.TOOLS, MenuNames.STATISTICS }, sName + "...", // name
                                                                         // methode

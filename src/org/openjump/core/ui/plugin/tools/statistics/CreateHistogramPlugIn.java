@@ -93,8 +93,7 @@ public class CreateHistogramPlugIn extends AbstractPlugIn implements
         sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn");
         sWrongDataType = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
 
-        final FeatureInstaller featureInstaller = new FeatureInstaller(
-                context.getWorkbenchContext());
+        final FeatureInstaller featureInstaller = context.getFeatureInstaller();
         featureInstaller.addMainMenuPlugin(this, new String[] {
                 MenuNames.TOOLS, MenuNames.STATISTICS, MenuNames.PLOT }, sName
                 + "...", false, // checkbox

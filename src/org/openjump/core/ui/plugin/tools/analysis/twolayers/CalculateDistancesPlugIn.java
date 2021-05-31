@@ -111,7 +111,7 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 				"It returns (i) the shortest disstance (sd), (ii) the shortest distance between centroids (sdc), " +
 				"and (iii) the Hausdorff distance (sdh, a maximum distance).";
 		*/
-		FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+		FeatureInstaller featureInstaller = context.getFeatureInstaller();
 		featureInstaller.addMainMenuPlugin(
 				this,				
 				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},

@@ -71,7 +71,7 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
     @Override
     public void initialize(PlugInContext context) throws Exception {
         super.initialize(context);
-        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+        FeatureInstaller featureInstaller = context.getFeatureInstaller();
         featureInstaller.addMainMenuPlugin(
                 this,
                 new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA},

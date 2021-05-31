@@ -181,20 +181,21 @@ public class PlugInManager {
         Logger.info("Finding all OJ extensions took "
             + Timer.secondsSinceString(start) + "s");
       }
-  
+
       configurations.addAll(findConfigurations(context.getWorkbench()
           .getProperties().getConfigurationClassNames()));
-  
+
       start = Timer.milliSecondsSince(0);
       loadConfigurations();
       Logger.info("Loading all OJ extensions took "
           + Timer.secondsSinceString(start) + "s");
-      
+
+      FeatureInstaller f = FeatureInstaller.getInstance(context);
       // enable autoseparating in installer for plugins possibly installed later on
-      FeatureInstaller.getInstance().setSeparatingEnabled(true);
+      f.setSeparatingEnabled(true);
       // for performance reasons we separate menu entries once
       // after all plugins/extensions were installed
-      FeatureInstaller.getInstance().updateSeparatorsInAllMenus();
+      f.updateSeparatorsInAllMenus();
     }
 
     private void loadConfigurations() {

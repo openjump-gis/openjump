@@ -168,7 +168,7 @@ public class JUMPConfiguration implements Setup {
         .put(SnapToVerticesPolicy.ENABLED_KEY, true);
 
     EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-    FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+    FeatureInstaller featureInstaller = FeatureInstaller.getInstance(workbenchContext);
     configureToolBar(workbenchContext, checkFactory);
     configureMainMenus(workbenchContext, checkFactory, featureInstaller);
     //configureLayerPopupMenu(workbenchContext, featureInstaller, checkFactory);

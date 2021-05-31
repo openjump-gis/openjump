@@ -80,14 +80,11 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
   }
 
   public void initialize(PlugInContext context) throws Exception {
-      
-      	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		featureInstaller.addMainMenuPlugin(
-            this,
-            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT},
-            getName() + "...", false, null,
-            createEnableCheck(context.getWorkbenchContext()),
-            -1); 
+
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
+    featureInstaller.addMainMenuPlugin(this,
+        new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT }, getName() + "...", false,
+        null, createEnableCheck(context.getWorkbenchContext()), -1);
   }
   
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

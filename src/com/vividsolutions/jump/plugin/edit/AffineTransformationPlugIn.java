@@ -143,9 +143,7 @@ public class AffineTransformationPlugIn extends AbstractThreadedUiPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
-        FeatureInstaller featureInstaller = new FeatureInstaller(
-                context.getWorkbenchContext());
-        featureInstaller.addMainMenuPlugin(this, new String[] {
+        context.getFeatureInstaller().addMainMenuPlugin(this, new String[] {
                 MenuNames.TOOLS, MenuNames.TOOLS_WARP }, getName() + "...",
                 false, null, createEnableCheck(context.getWorkbenchContext()),
                 -1);
