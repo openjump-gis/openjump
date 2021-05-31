@@ -37,7 +37,7 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
     public void initialize(PlugInContext context) throws Exception {
 	    WorkbenchContext workbenchContext = context.getWorkbenchContext();
 	    EnableCheck enableCheck = createEnableCheck(workbenchContext);
-	    FeatureInstaller installer = new FeatureInstaller(workbenchContext);
+	    FeatureInstaller installer = context.getFeatureInstaller();
 	    JPopupMenu popupMenu = workbenchContext.getWorkbench().getFrame()
 	        .getLayerNamePopupMenu();
 		installer.addPopupMenuPlugin(popupMenu, this, new String[]{MenuNames.DATASTORE},

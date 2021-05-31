@@ -94,7 +94,7 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   }
 
   public void initialize(PlugInContext context) throws Exception {
-    FeatureInstaller.getInstance().addMainMenuPlugin(this,
+    context.getFeatureInstaller().addMainMenuPlugin(this,
         new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QUERIES });
 
   }

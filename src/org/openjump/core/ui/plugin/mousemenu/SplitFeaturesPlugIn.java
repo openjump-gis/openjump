@@ -62,7 +62,7 @@ public class SplitFeaturesPlugIn extends AbstractThreadedUiPlugIn {
     public SplitFeaturesPlugIn() { }
   
     public void initialize(PlugInContext context) throws Exception {
-        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+        FeatureInstaller featureInstaller = context.getFeatureInstaller();
         JPopupMenu popupMenu = context.getLayerViewPanel().popupMenu();
         featureInstaller.addPopupMenuPlugin(popupMenu,
             this, 

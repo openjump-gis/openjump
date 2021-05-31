@@ -66,7 +66,7 @@ public class CopySchemaPlugIn extends AbstractPlugIn {
     public void initialize(PlugInContext context) throws Exception {
     	    	 
         WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+        FeatureInstaller featureInstaller = context.getFeatureInstaller();
         
         JPopupMenu layerNamePopupMenu = 
             context

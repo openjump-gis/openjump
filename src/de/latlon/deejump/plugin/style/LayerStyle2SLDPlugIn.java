@@ -152,17 +152,14 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
     @Override
     public void initialize(PlugInContext context) throws Exception {
 
-        FeatureInstaller featureInstaller =
-            new FeatureInstaller(context.getWorkbenchContext());
-	    EnableCheck enableCheck =
-	        createEnableCheck(context.getWorkbenchContext());
-	    JPopupMenu popupMenu =
-	        context.getWorkbenchFrame().getLayerNamePopupMenu();
-	    featureInstaller.addPopupMenuItem(popupMenu, this, new String[]{STYLE},
-		    this.getName(), false, ICON, enableCheck);
-        featureInstaller.addMainMenuItem(this, new String[] {LAYER},
-            this.getName(), // name methode .getName() (see AbstractPlugIn)
-            false, ICON, enableCheck);
+      FeatureInstaller featureInstaller = context.getFeatureInstaller();
+      EnableCheck enableCheck = createEnableCheck(context.getWorkbenchContext());
+      JPopupMenu popupMenu = context.getWorkbenchFrame().getLayerNamePopupMenu();
+      featureInstaller.addPopupMenuItem(popupMenu, this, new String[] { STYLE }, this.getName(), false, ICON,
+          enableCheck);
+      featureInstaller.addMainMenuItem(this, new String[] { LAYER }, this.getName(), // name methode .getName() (see
+                                                                                     // AbstractPlugIn)
+          false, ICON, enableCheck);
     }
 
     @Override

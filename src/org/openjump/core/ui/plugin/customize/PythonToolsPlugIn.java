@@ -78,7 +78,7 @@ public class PythonToolsPlugIn extends ToolboxPlugInV2 {
   }
 
   public void initialize(PlugInContext context) throws Exception {
-    FeatureInstaller.getInstance().addMainMenuPlugin(this, new String[] { MenuNames.CUSTOMIZE });
+    context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.CUSTOMIZE });
   }
 
   protected ToolboxDialog initializeToolbox() throws Exception {

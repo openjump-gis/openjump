@@ -38,8 +38,7 @@ public class GeometrySnapperPlugIn extends AbstractPlugIn implements ThreadedPlu
   }
 
   public void initialize(PlugInContext context) throws Exception {
-    FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-    featureInstaller.addMainMenuPlugin(
+    context.getFeatureInstaller().addMainMenuPlugin(
         this,
         new String[]{MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},
         this.getName() + "...", false, null,

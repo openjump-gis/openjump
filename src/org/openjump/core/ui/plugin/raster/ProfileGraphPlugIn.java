@@ -118,7 +118,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
-        FeatureInstaller.getInstance().addMainMenuPlugin(this,
+        context.getFeatureInstaller().addMainMenuPlugin(this,
                 new String[] { MenuNames.RASTER }, getName() + "...", false,
                 getIcon(), check());
     }

@@ -44,7 +44,7 @@ public class ConnectionManagerToolboxPlugIn extends ToolboxPlugIn {
             throw new UnsupportedOperationException(
                     "To do: fix: ConnectionManagerToolbox does not stay in sync with ConnectionManager object. Implement eventing. [Jon Aquino 2005-03-24]");
         }
-        new FeatureInstaller(context.getWorkbenchContext()).addMainMenuPlugin(
+        context.getFeatureInstaller().addMainMenuPlugin(
                 this, (new String[] { MenuNames.VIEW }), getName() + "...{pos:1}",
                 true, null, new EnableCheck() {
                     public String check(JComponent component) {

@@ -97,7 +97,7 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
    */
   public void initialize(final PlugInContext context) throws Exception {
     super.initialize(context);
-    FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
 
     // Add File Menu
     //featureInstaller.addMainMenuPlugin(this, new String[] {MenuNames.FILE});

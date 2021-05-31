@@ -21,7 +21,7 @@ public class CenterZoomPlugIn extends AbstractPlugIn {
     public void initialize(PlugInContext context) throws Exception { 
     
         WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext); 
+        FeatureInstaller featureInstaller = context.getFeatureInstaller(); 
         JPopupMenu popupMenu = LayerViewPanel.popupMenu();
         
         featureInstaller.addPopupMenuItem(popupMenu, this,

@@ -63,6 +63,7 @@ import org.openjump.core.ui.plugin.edittoolbox.cursortools.ConstrainedMultiClick
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -88,13 +89,14 @@ public class ShortcutKeysPlugIn extends AbstractPlugIn {
   public static final ImageIcon ICON = IconLoader.icon("keyboard.png");
   public static final String NAME = I18N.getInstance().get(ShortcutKeysPlugIn.class.getName());
 
-
   public boolean execute(PlugInContext context) throws Exception {
-    ShortcutKeysFrame dlg = ShortcutKeysFrame.instance();
+    ShortcutKeysFrame dlg;
+    // create everytime as tools are added during runtime to editingtoolbox
+    dlg = new ShortcutKeysFrame(context);
     dlg.setVisible(true);
     return true;
   }
-  
+
   public Icon getIcon() {
     return ICON;
   }
@@ -104,24 +106,17 @@ public class ShortcutKeysPlugIn extends AbstractPlugIn {
   }
 }
 
-class ShortcutKeysFrame extends JFrame {
-  private static ShortcutKeysFrame instance;
+final class ShortcutKeysFrame extends JFrame {
+  //private static ShortcutKeysFrame instance;
   JLabel shortsLabel = new JLabel();
   JPanel shortsPanel = new JPanel();
   JPanel buttonPanel = new JPanel();
   JButton okButton = new JButton();
+  private PlugInContext context;
 
-  public static ShortcutKeysFrame instance() {
-      // create everytime as tools are added during runtime to editingtoolbox
-      //if (instance == null) {
-          instance = new ShortcutKeysFrame();
-      //}
-      
-      return instance;
-  }
-
-  private ShortcutKeysFrame() {
+  protected ShortcutKeysFrame( PlugInContext context) {
       super (/*JUMPWorkbench.getInstance().getFrame(), */ShortcutKeysPlugIn.NAME/*, true*/);
+      this.context = context;
       // set a frame icon
       try {
           setIconImage(ShortcutKeysPlugIn.ICON.getImage());
@@ -239,7 +234,7 @@ class ShortcutKeysFrame extends JFrame {
   public void setVisible(boolean b) {
     if (b){
       pack();
-      GUIUtil.centre(instance, JUMPWorkbench.getInstance().getFrame());
+      GUIUtil.centre(this, context.getWorkbenchFrame());
     }
 
     super.setVisible(b);
@@ -259,7 +254,7 @@ class ShortcutKeysFrame extends JFrame {
   
   private List<String> buildOverviews(){
     JUMPWorkbench wb = JUMPWorkbench.getInstance();
-    FeatureInstaller finst = FeatureInstaller.getInstance();
+    FeatureInstaller finst = context.getFeatureInstaller();
     JMenuBar mainMenu = finst.menuBar();
     // fetch all menus
     JPopupMenu layerview_popup = LayerViewPanel.popupMenu();

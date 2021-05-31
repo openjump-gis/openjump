@@ -31,7 +31,6 @@
  */
 package com.vividsolutions.jump.plugin.edit;
 
-
 import javax.swing.ImageIcon;
 
 import java.util.*;
@@ -52,46 +51,46 @@ import com.vividsolutions.jump.workbench.ui.*;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
-    
+
   private final static String SRC_LAYER = I18N.getInstance().get("jump.plugin.edit.LineNoderPlugIn.Line-Layer");
   private final static String SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
-  
+
   private boolean useSelected = false;
   private String layerName;
   private GeometryFactory fact = new GeometryFactory();
 
-  public LineNoderPlugIn() { }
+  public LineNoderPlugIn() {
+  }
 
   /**
    * Returns a very brief description of this task.
+   * 
    * @return the name of this task
    */  
   public String getName() { 
       return I18N.getInstance().get("jump.plugin.edit.LineNoderPlugIn.Node-Lines");
   }
-  
+
   public void initialize(PlugInContext context) throws Exception {
-      	FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
-  		featureInstaller.addMainMenuPlugin(this,
-            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},
-            getName() + "...", false, null,
-            createEnableCheck(context.getWorkbenchContext()), -1);  
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
+    featureInstaller.addMainMenuPlugin(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY },
+        getName() + "...", false, null, createEnableCheck(context.getWorkbenchContext()), -1);
   }
-  
+
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
-      return new MultiEnableCheck()
-          .add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck())
-          .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
+    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    return new MultiEnableCheck().add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck())
+        .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
   }
 
   public boolean execute(PlugInContext context) throws Exception {
-    MultiInputDialog dialog = new MultiInputDialog(
-        context.getWorkbenchFrame(), getName(), true);
+    MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
     dialog.setVisible(true);
-    if (!dialog.wasOKPressed()) { return false; }
+    if (!dialog.wasOKPressed()) {
+      return false;
+    }
     getDialogValues(dialog);
     return true;
   }
@@ -101,7 +100,7 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
     monitor.report(I18N.getInstance().get("jump.plugin.edit.LineNoderPlugIn.Noding"));
 
     Layer layer = context.getLayerManager().getLayer(layerName);
-    
+
     Collection<Feature> inputFeatures = getFeaturesToProcess(layer, context);
 
     Collection<LineString> lines = getLines(inputFeatures);
@@ -110,14 +109,14 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
     Geometry nodedGeom = nodeLines(lines);
     Collection nodedLines = toLines(nodedGeom);
 
-    if (monitor.isCancelRequested()) return;
+    if (monitor.isCancelRequested())
+      return;
     createLayer(context, nodedLines);
   }
 
-  private Collection<Feature> getFeaturesToProcess(Layer lyr, PlugInContext context){
+  private Collection<Feature> getFeaturesToProcess(Layer lyr, PlugInContext context) {
     if (useSelected)
-      return context.getLayerViewPanel()
-                        .getSelectionManager().getFeaturesWithSelectedItems(lyr);
+      return context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems(lyr);
     return lyr.getFeatureCollectionWrapper().getFeatures();
   }
 
@@ -133,9 +132,8 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
   }
 
   /**
-   * Nodes a collection of linestrings.
-   * Noding is done via JTS union, which is reasonably effective but
-   * may exhibit robustness failures.
+   * Nodes a collection of linestrings. Noding is done via JTS union, which is
+   * reasonably effective but may exhibit robustness failures.
    *
    * @param lines the linear geometries to node
    * @return a collection of linear geometries, noded together
@@ -143,8 +141,9 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
   private Geometry nodeLines(Collection<LineString> lines) {
     Geometry linesGeom = fact.createMultiLineString(GeometryFactory.toLineStringArray(lines));
 
-    Geometry unionInput  = fact.createMultiLineString(null);
-    // force the unionInput to be non-empty if possible, to ensure union is not optimized away
+    Geometry unionInput = fact.createMultiLineString(null);
+    // force the unionInput to be non-empty if possible, to ensure union is not
+    // optimized away
     Geometry minLine = extractPoint(lines);
     if (minLine != null) {
       unionInput = minLine;
@@ -164,7 +163,7 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
     Geometry point = null;
     // extract first point from first non-empty geometry
     for (LineString lineString : lines) {
-      if (! lineString.isEmpty()) {
+      if (!lineString.isEmpty()) {
         Coordinate p = lineString.getCoordinate();
         point = lineString.getFactory().createPoint(p);
       }
@@ -172,8 +171,7 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
     return point;
   }
 
-  private void createLayer(PlugInContext context, Collection nodedLines)
-                                                              throws Exception {
+  private void createLayer(PlugInContext context, Collection nodedLines) throws Exception {
     FeatureCollection polyFC = FeatureDatasetFactory.createFromGeometry(nodedLines);
     context.addLayer(
         StandardCategoryNames.RESULT,
@@ -181,7 +179,6 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
         polyFC);
   }
 
-  
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("Polygonize.png")));
     dialog.setSideBarDescription(I18N.getInstance().get("jump.plugin.edit.LineNoderPlugIn.Nodes-the-lines-in-a-layer"));
@@ -194,5 +191,5 @@ public class LineNoderPlugIn extends AbstractThreadedUiPlugIn {
     layerName = layer.getName();
     useSelected = dialog.getBoolean(SELECTED_ONLY);
   }
-  
+
 }

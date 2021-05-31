@@ -36,7 +36,7 @@ public class GenerateUniqueRandomIdPlugIn extends AbstractUiPlugIn {
 
   public void initialize(PlugInContext context) throws Exception {
 
-    FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
     featureInstaller.addMainMenuPlugin(
             this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES, RANDOM},

@@ -110,17 +110,13 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
-        FeatureInstaller featureInstaller =
-            new FeatureInstaller(context.getWorkbenchContext());
-	    EnableCheck enableCheck =
-	        createEnableCheck(context.getWorkbenchContext());
-	    JPopupMenu popupMenu =
-	        context.getWorkbenchFrame().getLayerNamePopupMenu();
-	    featureInstaller.addPopupMenuItem(popupMenu, this, new String[]{STYLE},
-		    this.getName(), false, ICON, enableCheck);
-        featureInstaller.addMainMenuItem(this, new String[] {LAYER},
-            I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name"),
-            false, ICON, enableCheck);
+      FeatureInstaller featureInstaller = context.getFeatureInstaller();
+      EnableCheck enableCheck = createEnableCheck(context.getWorkbenchContext());
+      JPopupMenu popupMenu = context.getWorkbenchFrame().getLayerNamePopupMenu();
+      featureInstaller.addPopupMenuItem(popupMenu, this, new String[] { STYLE }, this.getName(), false, ICON,
+          enableCheck);
+      featureInstaller.addMainMenuItem(this, new String[] { LAYER },
+          I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name"), false, ICON, enableCheck);
     }
 
     private static String fixAttribute(Layer l, WorkbenchFrame frame, String old) {

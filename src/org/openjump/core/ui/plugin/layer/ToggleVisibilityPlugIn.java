@@ -63,7 +63,7 @@ public class ToggleVisibilityPlugIn extends AbstractPlugIn {
   public void initialize(PlugInContext context) throws Exception {
     WorkbenchContext workbenchContext = context.getWorkbenchContext();
 
-    FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
     JPopupMenu layerNamePopupMenu = workbenchContext.getWorkbench().getFrame()
         .getLayerNamePopupMenu();
     featureInstaller.addPopupMenuItem(layerNamePopupMenu, this,

@@ -78,7 +78,7 @@ public class MoveAlongAnglePlugIn extends AbstractPlugIn {
     /*
      * public void initialize(PlugInContext context) throws Exception {
      * workbenchContext = context.getWorkbenchContext(); FeatureInstaller
-     * featureInstaller = new FeatureInstaller(workbenchContext); JPopupMenu
+     * featureInstaller = context.getFeatureInstaller(); JPopupMenu
      * popupMenu = LayerViewPanel.popupMenu();
      * featureInstaller.addPopupMenuItem(popupMenu, this, sMoveAlongAngle,
      * false, null, //to do: add icon this.createEnableCheck(workbenchContext));

@@ -148,7 +148,7 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn {
   public void initialize(PlugInContext context) throws Exception {
     WorkbenchContext workbenchContext = context.getWorkbenchContext();
     WorkbenchFrame frame = workbenchContext.getWorkbench().getFrame();
-    FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
     EnableCheck enableCheck = SaveDatasetsPlugIn
         .createEnableCheck(workbenchContext);
 

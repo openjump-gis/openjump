@@ -154,7 +154,7 @@ public class LoadSextanteRasterImagePlugIn extends AbstractPlugIn {
         //RenderingManager.putRendererForLayerable(RasterImageLayer.class, new RasterImageLayerRendererFactory(context.getWorkbenchContext()));
         //context.getWorkbenchFrame().getNodeClassToPopupMenuMap().put(RasterImageLayer.class, RasterImageContextMenu.getInstance(context));
         
-    	FeatureInstaller featureInstaller = new FeatureInstaller(workbenchContext);
+    	FeatureInstaller featureInstaller = context.getFeatureInstaller();
         
         featureInstaller.addMainMenuItem(
         		this, 

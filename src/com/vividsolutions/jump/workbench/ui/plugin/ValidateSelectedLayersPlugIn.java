@@ -115,7 +115,7 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
 
     public void initialize(PlugInContext context) throws Exception
     {
-        FeatureInstaller.getInstance().addMainMenuPlugin(
+        context.getFeatureInstaller().addMainMenuPlugin(
                 this,								//exe
   				      new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA}, 	//menu path
                 this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 

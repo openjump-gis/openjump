@@ -60,7 +60,7 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
 
 //    String name = getName();
 //    if (!JUMPVersion.getRelease().equalsIgnoreCase("release"))
-//      FeatureInstaller.getInstance().addMainMenuPlugin(this,
+//      context.getFeatureInstaller().addMainMenuPlugin(this,
 //          new String[] { MenuNames.FILE });
 
     // add each wiz one by one

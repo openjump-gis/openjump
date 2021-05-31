@@ -93,7 +93,7 @@ public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugI
     		this.sPoints = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.points");
     	    this.DELETE_LAST_POINT_IF_CLOSED = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.Account-for-closed-Geometries");
     		
-	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+	        FeatureInstaller featureInstaller = context.getFeatureInstaller();
 	    	featureInstaller.addMainMenuItem(
 	    	        this,								//exe
 	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT}, 	//menu path

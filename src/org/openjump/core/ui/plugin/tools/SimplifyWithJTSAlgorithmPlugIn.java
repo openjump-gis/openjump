@@ -84,7 +84,7 @@ public class SimplifyWithJTSAlgorithmPlugIn extends AbstractPlugIn implements Th
     double maxPDisp = 0;
 
     public void initialize(PlugInContext context) throws Exception {
-        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
+        FeatureInstaller featureInstaller = context.getFeatureInstaller();
     	featureInstaller.addMainMenuPlugin(
     	        this,								//exe
 				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERALIZATION }, 	//menu path

@@ -32,7 +32,7 @@ public class ChangeSRIDPlugIn extends AbstractPlugIn {
     EnableCheck enableCheck = new MultiEnableCheck()
         .add(enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck())
         .add(enableCheckFactory.createExactlyNLayersMustBeSelectedCheck(1));
-    new FeatureInstaller(context.getWorkbenchContext()).addMainMenuPlugin(this, new String[] { MenuNames.LAYER },
+    context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.LAYER },
         getName() + "...", false, null, enableCheck);
   }
 

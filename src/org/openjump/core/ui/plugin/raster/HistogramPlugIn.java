@@ -142,7 +142,7 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
-        FeatureInstaller.getInstance().addMainMenuPlugin(this,
+        context.getFeatureInstaller().addMainMenuPlugin(this,
                 new String[] { MenuNames.RASTER }, NAME + "...", false, // checkbox
                 null, // icon
                 check());

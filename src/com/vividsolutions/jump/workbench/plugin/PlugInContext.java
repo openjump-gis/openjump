@@ -196,7 +196,7 @@ public class PlugInContext implements LayerViewPanelProxy,
     }
 
     public FeatureInstaller getFeatureInstaller() {
-        return FeatureInstaller.getInstance();
+        return FeatureInstaller.getInstance(workbenchContext);
     }
 
 }
