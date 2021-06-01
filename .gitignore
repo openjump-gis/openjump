@@ -1,6 +1,6 @@
 # Compiled class files and maven target folder
 *.class
-target/*
+target/
 
 # Log file
 *.log
@@ -21,4 +21,3 @@ hs_err_pid*
 .project
 
 workbench-state.*
-
