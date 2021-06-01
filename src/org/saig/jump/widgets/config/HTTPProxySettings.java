@@ -37,11 +37,6 @@
 package org.saig.jump.widgets.config;
 
 import org.apache.commons.lang3.StringUtils;
-import org.saig.core.crypt.CryptManager;
-import org.saig.core.crypt.CryptManagerException;
-import org.saig.core.crypt.CryptManagerFactory;
-
-import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * Wrapper to the HTTP Proxy settings parameters 
@@ -62,20 +57,6 @@ public class HTTPProxySettings {
     private String password;
     
     private String directConnectionTo;
-    
-    private CryptManager manager;
-    
-    /**
-     * 
-     */
-    public HTTPProxySettings()
-    {
-        try {
-            manager = CryptManagerFactory.getManager(CryptManagerFactory.PASSWORD_BASED_ENCRYPTION);
-        } catch (CryptManagerException e) {
-          Logger.error(e);
-        }
-    }
 
     public HTTPProxySettings(boolean enabled) {
       this.enabled = enabled;
@@ -138,28 +119,4 @@ public class HTTPProxySettings {
         return directConnectionTo;
     }
 
-    /**
-     *
-     * @return the encrypted password
-     */
-    public String getEncryptedPassword() {
-        String encryptedPassword = password;
-        if(manager != null)
-        {
-            try {
-                encryptedPassword = manager.encrypt(password);
-            } catch (Exception e) {
-              Logger.error(e);
-            }
-        }
-        return encryptedPassword;
-    }
-
-    public void setEncryptedPassword( String encryptedPassword ) {
-        try {
-            password = manager.decrypt(encryptedPassword);
-        } catch (Exception e) {
-          Logger.error(e);
-        }
-    }
 }
