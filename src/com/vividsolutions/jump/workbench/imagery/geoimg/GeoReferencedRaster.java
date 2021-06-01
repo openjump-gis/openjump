@@ -389,7 +389,7 @@ public class GeoReferencedRaster extends GeoRaster {
 
     Logger.info("No georeference found! Will use default 0,0 placement.");
     JUMPWorkbench.getInstance().getFrame()
-        .warnUser(I18N.get(this.getClass().getName() + ".no-georeference-found"));
+        .warnUser(I18N.getInstance().get(this.getClass().getName() + ".no-georeference-found"));
 
     // set up a default envelope
     double[] tags = new double[6];

@@ -39,13 +39,13 @@ public class DataStoreLayerRowModel implements RowModel {
     public String getColumnName(int column) {
         switch (column) {
             case 0:
-                return I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Geometry");
+                return I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Geometry");
             case 1:
-                return I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Where");
+                return I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Where");
             case 2:
-                return I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Caching");
+                return I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Caching");
             case 3:
-                return I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Max-Features");
+                return I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Max-Features");
             default:
                 assert false;
         }

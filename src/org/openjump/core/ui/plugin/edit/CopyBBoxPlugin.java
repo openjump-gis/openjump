@@ -55,7 +55,7 @@ public class CopyBBoxPlugin extends AbstractPlugIn {
 
     @Override
     public String getName() {
-      return I18N.get( "org.openjump.core.ui.plugin.edit.CopyBBoxPlugin.name" );
+      return I18N.getInstance().get( "org.openjump.core.ui.plugin.edit.CopyBBoxPlugin.name" );
     }
 
     @Override

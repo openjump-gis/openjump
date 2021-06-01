@@ -52,7 +52,7 @@ public class SelectLineStringsTool extends SelectTool {
     
     public String getName() {
         //The default implementation will return "Select Line Strings". [Jon Aquino]
-        return I18N.get("ui.cursortool.SelectLineStringsTool.select-linestrings");
+        return I18N.getInstance().get("ui.cursortool.SelectLineStringsTool.select-linestrings");
     }
     
     public void activate(LayerViewPanel layerViewPanel) {

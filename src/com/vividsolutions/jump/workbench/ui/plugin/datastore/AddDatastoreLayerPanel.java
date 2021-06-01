@@ -50,8 +50,8 @@ import java.sql.SQLException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-// TODO String s1 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Prevents-unnecessary-queries-to-the-datastore");
-//      String s2 = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.The-recommended-setting-is-to-leave-this-checked");
+// TODO String s1 = I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Prevents-unnecessary-queries-to-the-datastore");
+//      String s2 = I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.The-recommended-setting-is-to-leave-this-checked");
 //      cachingCheckBox.setToolTipText("<html>" + s1 + "<br>" + s2 + "</html>");
 public class AddDatastoreLayerPanel extends ConnectionPanel {
 
@@ -118,7 +118,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
       return super.validateInput();
     }
     if (this.selectedLayers == null || this.selectedLayers.size() == 0) {
-      return I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Required-field-missing-Dataset");
+      return I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Required-field-missing-Dataset");
     }
     return null;
   }
@@ -130,7 +130,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
       datasetTreeModel = new DataStoreLayerTreeModel(root);
       datasetOutlineModel = DefaultOutlineModel.createOutlineModel(
           datasetTreeModel, new DataStoreLayerRowModel(), true,
-          I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Schemas"));
+          I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Schemas"));
 
       datasetOutline = new Outline();
       final Component panel = this;
@@ -154,8 +154,8 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
             String s = checkSelectedLayer((DataStoreLayer) o);
             if (!s.isEmpty()) {
               ErrorDialog.show(panel, 
-                  I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.SQL-error"),
-                  I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Invalid-layer-where-clause") 
+                  I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.SQL-error"),
+                  I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Invalid-layer-where-clause") 
                       + " " + ((DataStoreLayer) o).getFullName(), s);
             }
           }
@@ -253,7 +253,7 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
       }
       datasetOutlineModel = DefaultOutlineModel.createOutlineModel(
           datasetTreeModel, new DataStoreLayerRowModel(), true,
-          I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Dataset"));
+          I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Dataset"));
       datasetOutline.setModel(datasetOutlineModel);
       setTableColWidth();
       datasetOutline.setDefaultEditor(String.class, new DataStoreLayerWhereEditor());
@@ -341,8 +341,8 @@ public class AddDatastoreLayerPanel extends ConnectionPanel {
     // Retrieve the dataset names using a ThreadedBasePlugIn, so
     // that the user can kill the thread if desired
     // [Jon Aquino 2005-03-11]
-    final String msgDs = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Retrieving-list-of-datasets");
-    final String msgGeoT = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.No-geo-table-found");
+    final String msgDs = I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Retrieving-list-of-datasets");
+    final String msgGeoT = I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.No-geo-table-found");
     String[] datasetNames = (String[]) runInKillableThread(
         msgDs, getContext(),
         new Block() {

@@ -38,8 +38,6 @@
 
 package org.openjump.core.ui.plugin.style;
 
-import static com.vividsolutions.jump.I18N.get;
-import static com.vividsolutions.jump.I18N.getMessage;
 import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
 import static com.vividsolutions.jump.workbench.ui.MenuNames.STYLE;
 import static com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn.get;
@@ -74,6 +72,7 @@ import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.swing.SelectFromListPanel;
 import org.w3c.dom.Document;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.Blackboard;
@@ -120,7 +119,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 	    featureInstaller.addPopupMenuItem(popupMenu, this, new String[]{STYLE},
 		    this.getName(), false, ICON, enableCheck);
         featureInstaller.addMainMenuItem(this, new String[] {LAYER},
-            get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name"),
+            I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name"),
             false, ICON, enableCheck);
     }
 
@@ -167,9 +166,9 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
                 l.removeStyle(l.getStyle(ColorThemingStyle.class));
                 l.addStyle(cts);
             } catch (NumberFormatException e) {
-                showMessageDialog(frame, getMessage(
+                showMessageDialog(frame, I18N.getInstance().get(
                         "org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Number-Error-reading-styles",
-                        new Object[] { e.getLocalizedMessage() }), get("com.vividsolutions.wms.WMService.Error"),
+                        new Object[] { e.getLocalizedMessage() }), I18N.getInstance().get("com.vividsolutions.wms.WMService.Error"),
                         ERROR_MESSAGE);
             }
         }
@@ -273,9 +272,9 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
         } catch (NumberFormatException e) {
             throw e;
         } catch (IllegalArgumentException e) {
-            showMessageDialog(frame, getMessage(
+            showMessageDialog(frame, I18N.getInstance().get(
                     "org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Error-reading-styles", new Object[] { e
-                            .getLocalizedMessage() }), get("com.vividsolutions.wms.WMService.Error"), ERROR_MESSAGE);
+                            .getLocalizedMessage() }), I18N.getInstance().get("com.vividsolutions.wms.WMService.Error"), ERROR_MESSAGE);
             Logger.debug("Probably unknown attribute name: ", e);
             return;
         }
@@ -300,10 +299,10 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
         }
 
         OKCancelDialog dlg = new OKCancelDialog(frame,
-                get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Select-Attribute"), true, panel,
+                I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Select-Attribute"), true, panel,
                 new Validator() {
                     public String validateInput(Component component) {
-                        return panel.list.getSelectedValue() == null ? get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Must-Select-Attribute")
+                        return panel.list.getSelectedValue() == null ? I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Must-Select-Attribute")
                                 : null;
                     }
                 });
@@ -327,8 +326,8 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
         if (rules.isEmpty()) {
             showMessageDialog(context.getWorkbenchFrame(),
-                    get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.No-Styles-Found"),
-                    get("com.vividsolutions.wms.WMService.Error"), INFORMATION_MESSAGE);
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.No-Styles-Found"),
+                    I18N.getInstance().get("com.vividsolutions.wms.WMService.Error"), INFORMATION_MESSAGE);
             return;
         }
 
@@ -343,10 +342,10 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             final StyleChooserPanel panel = new StyleChooserPanel(doc);
 
             dlg = new OKCancelDialog(context.getWorkbenchFrame(),
-                    get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Choose-Style"), true, panel,
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Choose-Style"), true, panel,
                     new Validator() {
                         public String validateInput(Component component) {
-                            return panel.getSelectedStyle() == null ? get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Must-Select-Style")
+                            return panel.getSelectedStyle() == null ? I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Must-Select-Style")
                                     : null;
                         }
                     });
@@ -360,8 +359,8 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
             }
         } while (dlg.wasOKPressed()
                 && showConfirmDialog(context.getWorkbenchFrame(),
-                        get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Select-Another-Style"),
-                        get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), YES_NO_OPTION) == YES_OPTION);
+                        I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Select-Another-Style"),
+                        I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), YES_NO_OPTION) == YES_OPTION);
     }
 
     @Override
@@ -390,7 +389,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
     @Override
     public String getName() {
-        return get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.name");
     }
     
     /**

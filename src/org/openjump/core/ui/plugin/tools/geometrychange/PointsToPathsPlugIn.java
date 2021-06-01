@@ -55,14 +55,14 @@ public class PointsToPathsPlugIn extends AbstractPlugIn implements ThreadedPlugI
     }
 
     public boolean execute(PlugInContext context) throws Exception {
-        UI_USE_SELECTION = I18N.get(KEY + ".use-selection");
-        UI_LAYER = I18N.get(KEY + ".layer");
-        UI_ORDER_BY_ATTRIBUTE = I18N.get(KEY + ".order-by-attribute");
-        UI_ORDER_BY_ATTRIBUTE_TT = I18N.get(KEY + ".order-by-attribute-tooltip");
-        UI_GROUP_BY = I18N.get(KEY + ".group-by-option");
-        UI_GROUP_BY_ATTRIBUTE = I18N.get(KEY + ".group-by-attribute");
-        UI_GROUP_BY_ATTRIBUTE_TT = I18N.get(KEY + ".group-by-attribute-tooltip");
-        MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), I18N.get(KEY), true);
+        UI_USE_SELECTION = I18N.getInstance().get(KEY + ".use-selection");
+        UI_LAYER = I18N.getInstance().get(KEY + ".layer");
+        UI_ORDER_BY_ATTRIBUTE = I18N.getInstance().get(KEY + ".order-by-attribute");
+        UI_ORDER_BY_ATTRIBUTE_TT = I18N.getInstance().get(KEY + ".order-by-attribute-tooltip");
+        UI_GROUP_BY = I18N.getInstance().get(KEY + ".group-by-option");
+        UI_GROUP_BY_ATTRIBUTE = I18N.getInstance().get(KEY + ".group-by-attribute");
+        UI_GROUP_BY_ATTRIBUTE_TT = I18N.getInstance().get(KEY + ".group-by-attribute-tooltip");
+        MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), I18N.getInstance().get(KEY), true);
         setDialogValues(dialog, context);
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
@@ -99,7 +99,7 @@ public class PointsToPathsPlugIn extends AbstractPlugIn implements ThreadedPlugI
                 } else { countNonPoint++; }
             }
             if (countNonPoint > 0) {
-                context.getWorkbenchFrame().warnUser(I18N.get(KEY + ".non-point-warning"));
+                context.getWorkbenchFrame().warnUser(I18N.getInstance().get(KEY + ".non-point-warning"));
             }
             Comparator<Feature> comparator = Comparator.comparing(new Function<Feature,Comparable>() {
                 public Comparable apply(Feature f) {
@@ -119,7 +119,7 @@ public class PointsToPathsPlugIn extends AbstractPlugIn implements ThreadedPlugI
                 if (coords.size() > 1) {
                     f.setGeometry(list.get(0).getGeometry().getFactory().createLineString(coords.toCoordinateArray()));
                 } else {
-                    context.getWorkbenchFrame().warnUser(I18N.get(KEY + ".invalid-path"));
+                    context.getWorkbenchFrame().warnUser(I18N.getInstance().get(KEY + ".invalid-path"));
                     f.setGeometry(list.get(0).getGeometry().getFactory().createPoint(coords.getCoordinate(0)));
                 }
                 dataset.add(f);
@@ -127,7 +127,7 @@ public class PointsToPathsPlugIn extends AbstractPlugIn implements ThreadedPlugI
 
             if (dataset.isEmpty()) {
                 context.getWorkbenchFrame()
-                        .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
+                        .warnUser(I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
                 return;
             }
             context.addLayer(StandardCategoryNames.RESULT, layer.getName() + "-paths", dataset);

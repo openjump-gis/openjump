@@ -23,13 +23,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class GenerateUniqueRandomIdPlugIn extends AbstractUiPlugIn {
 
-  private static String LAYER        = I18N.get("ui.GenericNames.select-layer");
-  private static String ATTRIBUTE    = I18N.get("ui.GenericNames.select-attribute");
-  private static String RANDOM       = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandom");
+  private static String LAYER        = I18N.getInstance().get("ui.GenericNames.select-layer");
+  private static String ATTRIBUTE    = I18N.getInstance().get("ui.GenericNames.select-attribute");
+  private static String RANDOM       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandom");
 
-  private static String NO_CANDIDATE = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.no-editable-layer-with-numeric-attribute");
-  private static String NON_EMPTY_ATT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.non-empty-attribute");
-  private static String OVERWRITE_PROMPT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.overwrite-prompt");
+  private static String NO_CANDIDATE = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomNumberPlugIn.no-editable-layer-with-numeric-attribute");
+  private static String NON_EMPTY_ATT = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.non-empty-attribute");
+  private static String OVERWRITE_PROMPT = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.overwrite-prompt");
 
   private Layer layer;
   private String attribute;
@@ -132,7 +132,7 @@ public class GenerateUniqueRandomIdPlugIn extends AbstractUiPlugIn {
     context.getLayerManager().getUndoableEditReceiver().startReceiving();
     try {
       UndoableCommand command =
-              new UndoableCommand(I18N.get(AutoAssignAttributePlugIn.class.getName())) {
+              new UndoableCommand(I18N.getInstance().get(AutoAssignAttributePlugIn.class.getName())) {
 
                 public void execute() {
                   Iterator<Feature> newFeatIterator = newFeatures.iterator();

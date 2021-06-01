@@ -15,7 +15,7 @@ public class ExtensionManagerPlugIn extends ThreadedBasePlugIn {
     }
 
     public String getName(){
-    	return I18N.get("deejump.pluging.manager.ExtensionManagerDialog.Extension-Manager");
+    	return I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.Extension-Manager");
     }
     
     public boolean execute( PlugInContext context ) throws Exception {
@@ -33,7 +33,7 @@ public class ExtensionManagerPlugIn extends ThreadedBasePlugIn {
 
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         managerDialog.updateExtensions( monitor );
-        context.getWorkbenchFrame().setStatusMessage( I18N.get("deejump.pluging.manager.ExtensionManagerPlugIn.Plug-ins-will-only-be-removed-after-next-start"));
+        context.getWorkbenchFrame().setStatusMessage( I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerPlugIn.Plug-ins-will-only-be-removed-after-next-start"));
     }
     
     public void initialize(PlugInContext context) throws Exception {

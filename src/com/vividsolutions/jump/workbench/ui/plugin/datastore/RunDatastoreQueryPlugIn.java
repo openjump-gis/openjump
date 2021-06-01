@@ -42,7 +42,7 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
     }
 
     public String getName(){
-    	return I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn.Run-Datastore-Query");
+    	return I18N.getInstance().get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn.Run-Datastore-Query");
     }
     
     public Icon getIcon(){
@@ -56,7 +56,7 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
         panel.saveQuery();
 
         monitor.allowCancellationRequests();
-        monitor.report( I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn.Creating-layer") );
+        monitor.report( I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn.Creating-layer") );
 
         //int maxFeatures = ((Integer)LangUtil.ifNull( panel.getMaxFeatures(),
         //    new Integer(Integer.MAX_VALUE))).intValue();
@@ -96,7 +96,7 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
             int i = 0;
             while (featureInputStream.hasNext() && !monitor.isCancelRequested()) {
                 featureDataset.add(featureInputStream.next());
-                monitor.report( ++i, -1, I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn.features"));
+                monitor.report( ++i, -1, I18N.getInstance().get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPlugIn.features"));
             }
             String name = panel.getLayerName();
             Layer layer = new Layer(name,

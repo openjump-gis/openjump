@@ -142,11 +142,11 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 		pointStyleComboBox.setRenderer(new ComboRenderer());
 		pointStyleComboBox.setEditable(false);
 		// an item is a String Array, index 0 is the Text in the ComboBox and index 1 is the VertexStyle
-		pointStyleComboBox.addItem(new String[] {I18N.get("deejump.ui.style.RenderingStylePanel.square"), VertexStylesFactory.SQUARE_STYLE});
-        pointStyleComboBox.addItem(new String[] {I18N.get("deejump.ui.style.RenderingStylePanel.circle"), VertexStylesFactory.CIRCLE_STYLE});
-        pointStyleComboBox.addItem(new String[] {I18N.get("deejump.ui.style.RenderingStylePanel.triangle"), VertexStylesFactory.TRIANGLE_STYLE});
-        pointStyleComboBox.addItem(new String[] {I18N.get("deejump.ui.style.RenderingStylePanel.cross"), VertexStylesFactory.CROSS_STYLE});
-        pointStyleComboBox.addItem(new String[] {I18N.get("deejump.ui.style.RenderingStylePanel.star"), VertexStylesFactory.STAR_STYLE});
+		pointStyleComboBox.addItem(new String[] {I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.square"), VertexStylesFactory.SQUARE_STYLE});
+        pointStyleComboBox.addItem(new String[] {I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.circle"), VertexStylesFactory.CIRCLE_STYLE});
+        pointStyleComboBox.addItem(new String[] {I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.triangle"), VertexStylesFactory.TRIANGLE_STYLE});
+        pointStyleComboBox.addItem(new String[] {I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.cross"), VertexStylesFactory.CROSS_STYLE});
+        pointStyleComboBox.addItem(new String[] {I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.star"), VertexStylesFactory.STAR_STYLE});
 		pointSizeLabel = new JLabel();
 		pointSizeSlider = new JSlider();
 		fillPanel = new JPanel();
@@ -157,7 +157,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 		this.add(mainPanel, BorderLayout.CENTER);
 
 		// Linecolor
-        lineColorLabel.setText(I18N.get("ui.SelectionStyllingOptionsPanel.LineColor"));
+        lineColorLabel.setText(I18N.getInstance().get("ui.SelectionStyllingOptionsPanel.LineColor"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -172,7 +172,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
         mainPanel.add(lineColorChooserPanel, gridBagConstraints);
         
         // Fillcolor
-        fillColorLabel.setText(I18N.get("ui.SelectionStyllingOptionsPanel.FillColor"));
+        fillColorLabel.setText(I18N.getInstance().get("ui.SelectionStyllingOptionsPanel.FillColor"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -187,7 +187,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
         mainPanel.add(fillColorChooserPanel, gridBagConstraints);
         
         // Opacity
-        fillOpacityLabel.setText(I18N.get("ui.SelectionStyllingOptionsPanel.FillOpacity"));
+        fillOpacityLabel.setText(I18N.getInstance().get("ui.SelectionStyllingOptionsPanel.FillOpacity"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -230,7 +230,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
 		mainPanel.add(GUIUtil.createSyncdTextField(fillOpacitySlider, 3), gridBagConstraints);
 
 		// Pointform
-        pointStyleLabel.setText(I18N.get("ui.SelectionStyllingOptionsPanel.PointStyle"));
+        pointStyleLabel.setText(I18N.getInstance().get("ui.SelectionStyllingOptionsPanel.PointStyle"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -247,7 +247,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
         mainPanel.add(pointStyleComboBox, gridBagConstraints);
 
 		// Pointsize
-        pointSizeLabel.setText(I18N.get("ui.SelectionStyllingOptionsPanel.PointSize"));
+        pointSizeLabel.setText(I18N.getInstance().get("ui.SelectionStyllingOptionsPanel.PointSize"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -295,7 +295,7 @@ public class SelectionStyllingOptionsPanel extends JPanel implements OptionsPane
         mainPanel.add(fillPanel, gridBagConstraints);
 
 		// Button "Restore default settings"
-		restoreDefaultsButton.setText(I18N.get("ui.SelectionStyllingOptionsPanel.RestoreDefaultsSettings"));
+		restoreDefaultsButton.setText(I18N.getInstance().get("ui.SelectionStyllingOptionsPanel.RestoreDefaultsSettings"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;

@@ -29,7 +29,7 @@ public class AddImageLayerPlugIn extends AbstractUiPlugIn {
 
   @Override
   public String getName() {
-    return I18N.get("ui.plugin.imagery.AddImageLayerPlugIn.Add-Image-Layer");
+    return I18N.getInstance().get("ui.plugin.imagery.AddImageLayerPlugIn.Add-Image-Layer");
   }
 
   @Override
@@ -62,8 +62,7 @@ public class AddImageLayerPlugIn extends AbstractUiPlugIn {
   }
 
   private Layer createLayer(LayerManager lm) {
-    String newLayerName = I18N
-        .get("ui.plugin.imagery.AddImageLayerPlugIn.Image")
+    String newLayerName = I18N.getInstance().get("ui.plugin.imagery.AddImageLayerPlugIn.Image")
         + "_"
         + nameCounter++;
     Layer layer = new ReferencedImagesLayer(newLayerName, Color.black,

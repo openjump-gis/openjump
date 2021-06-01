@@ -103,20 +103,20 @@ public class BeanshellAttributeCalculatorPlugIn extends ThreadedBasePlugIn
     //private Interpreter interpreter;
     
     //String LAYER                   = I18N.getString(KEY + ".layer");
-    private static String BEANSHELL_ATT_CAL       = I18N.get(KEY);
-    private static String NEW_ATTRIBUTE_NAME      = I18N.get(KEY + ".new-attribute-name");
-    private static String NEW_ATTRIBUTE_TYPE      = I18N.get(KEY + ".new-attribute-type");
-    private static String BSH_EXPRESSION          = I18N.get(KEY + ".beanshell-expression");
-    private static String SCRIPT_SNIPPETS         = I18N.get(KEY + ".script-snippets");
-    private static String COMPUTING_NEW_ATTRIBUTE = I18N.get(KEY + ".computing-new-attribute");
-    private static String TOO_MANY_ERRORS         = I18N.get(KEY + ".too-many-errors");
-    private static String DYNAMIC                 = I18N.get(KEY + ".dynamic");
-    private static String TEST_EXPRESSION         = I18N.get(KEY + ".test-expression");
-    private static String SCRIPT_INIT_ERROR       = I18N.get(KEY + ".script-initialisation-error");
-    private static String SCRIPT_EVAL_ERROR       = I18N.get(KEY + ".script-evaluation-error");
-    private static String CHECK_TYPES_MATCH       = I18N.get(KEY + ".check-types-match");
-    private static String SCRIPT_EVAL             = I18N.get(KEY + ".script-evaluation");
-    private static String SCRIPT_OK               = I18N.get(KEY + ".script-ok");
+    private static String BEANSHELL_ATT_CAL       = I18N.getInstance().get(KEY);
+    private static String NEW_ATTRIBUTE_NAME      = I18N.getInstance().get(KEY + ".new-attribute-name");
+    private static String NEW_ATTRIBUTE_TYPE      = I18N.getInstance().get(KEY + ".new-attribute-type");
+    private static String BSH_EXPRESSION          = I18N.getInstance().get(KEY + ".beanshell-expression");
+    private static String SCRIPT_SNIPPETS         = I18N.getInstance().get(KEY + ".script-snippets");
+    private static String COMPUTING_NEW_ATTRIBUTE = I18N.getInstance().get(KEY + ".computing-new-attribute");
+    private static String TOO_MANY_ERRORS         = I18N.getInstance().get(KEY + ".too-many-errors");
+    private static String DYNAMIC                 = I18N.getInstance().get(KEY + ".dynamic");
+    private static String TEST_EXPRESSION         = I18N.getInstance().get(KEY + ".test-expression");
+    private static String SCRIPT_INIT_ERROR       = I18N.getInstance().get(KEY + ".script-initialisation-error");
+    private static String SCRIPT_EVAL_ERROR       = I18N.getInstance().get(KEY + ".script-evaluation-error");
+    private static String CHECK_TYPES_MATCH       = I18N.getInstance().get(KEY + ".check-types-match");
+    private static String SCRIPT_EVAL             = I18N.getInstance().get(KEY + ".script-evaluation");
+    private static String SCRIPT_OK               = I18N.getInstance().get(KEY + ".script-ok");
     
     String[] FUNCTIONS = new String[]{".trim()",
                                       ".toLowerCase()",

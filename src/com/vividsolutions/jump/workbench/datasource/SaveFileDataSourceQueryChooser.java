@@ -204,7 +204,7 @@ public class SaveFileDataSourceQueryChooser extends FileDataSourceQueryChooser {
             .getWorkbench()
             .getFrame()
             .warnUser(
-                I18N.get("com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser.Invalid-file-name"));
+                I18N.getInstance().get("com.vividsolutions.jump.workbench.datasource.SaveFileDataSourceQueryChooser.Invalid-file-name"));
         return false;
       }
 

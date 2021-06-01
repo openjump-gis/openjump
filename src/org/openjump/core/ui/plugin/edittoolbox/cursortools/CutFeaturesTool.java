@@ -59,7 +59,7 @@ public class CutFeaturesTool extends MultiClickTool {
     }
 
     public String getName() {
-      return I18N.get("org.openjump.core.ui.plugin.tools.CutFeaturesTool");
+      return I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CutFeaturesTool");
     }
 
     public Cursor getCursor() {
@@ -79,8 +79,8 @@ public class CutFeaturesTool extends MultiClickTool {
       for (Layer activeLayer : selectionManager.getLayersWithSelectedItems()) {
         if (!activeLayer.isEditable()) {
           JOptionPane.showMessageDialog(null,
-                  I18N.getMessage("plugin.EnableCheckFactory.selected-items-layers-must-be-editable", 1),
-                  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), 1);
+                  I18N.getInstance().get("plugin.EnableCheckFactory.selected-items-layers-must-be-editable", 1),
+                  I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.Information"), 1);
           return;
         }
       }
@@ -105,7 +105,7 @@ public class CutFeaturesTool extends MultiClickTool {
               }
               if ((geomSelected.getClass().getSimpleName().equals("GeometryCollection"))) {
                 context.getWorkbench().getFrame().warnUser(
-                        I18N.get("org.openjump.core.ui.plugin.tools.CutFeaturesTool.geometryCollection-cannot-be-processed"));
+                        I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CutFeaturesTool.geometryCollection-cannot-be-processed"));
               }
               else if (cuttingLine.intersects(geomSelected)) {
                 if (geomSelected instanceof Polygon || geomSelected instanceof MultiPolygon) {
@@ -177,7 +177,7 @@ public class CutFeaturesTool extends MultiClickTool {
       if (getCoordinates().size() < 2) {
 
         getPanel().getContext().warnUser(
-                I18N.get("ui.cursortool.editing.DrawLineString.the-linestring-must-have-at-least-2-points"));
+                I18N.getInstance().get("ui.cursortool.editing.DrawLineString.the-linestring-must-have-at-least-2-points"));
 
         return false;
       }

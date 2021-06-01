@@ -76,8 +76,8 @@ public class InfoFrame extends DetachableInternalFrame implements
         TaskFrameProxy,
         LayerViewPanelProxy {
 
-    public final static String TABLE_VIEW = I18N.get("com.vividsolutions.jump.workbench.ui.InfoFrame.table-view");
-    public final static String HTML_VIEW = I18N.get("com.vividsolutions.jump.workbench.ui.InfoFrame.html-view");
+    public final static String TABLE_VIEW = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.InfoFrame.table-view");
+    public final static String HTML_VIEW = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.InfoFrame.html-view");
 
     // Blackboard keys
 	public static final String BB_FEATUREINFO_WINDOW_SIZE_WIDTH = ViewAttributesPlugIn.class.getName() + " - FEATUREINFO_WINDOW_SIZE_WIDTH";
@@ -210,7 +210,7 @@ public class InfoFrame extends DetachableInternalFrame implements
         tabbedPane.setSelectedComponent(tab);
     }
     public static String title(String taskName) {
-        return I18N.get("ui.InfoFrame.feature-info")+": " + taskName;
+        return I18N.getInstance().get("ui.InfoFrame.feature-info")+": " + taskName;
     }
     private void updateTitle(String taskName) {
         setTitle(title(taskName));
@@ -234,7 +234,7 @@ public class InfoFrame extends DetachableInternalFrame implements
                 }
             }
         });*/
-        this.setTitle(I18N.get("ui.InfoFrame.feature-info"));
+        this.setTitle(I18N.getInstance().get("ui.InfoFrame.feature-info"));
         this.getContentPane().setLayout(borderLayout1);
         tabbedPane.setTabPlacement(JTabbedPane.LEFT);
         this.getContentPane().add(tabbedPane, BorderLayout.CENTER);

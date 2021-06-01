@@ -56,8 +56,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ProfileGraphTool extends MultiClickTool {
 
-    private final static String sDistance = I18N
-            .get("org.openjump.core.ui.plugin.tools.MeasureM_FTool.Distance");
+    private final static String sDistance = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasureM_FTool.Distance");
     /**
      * 2015_01_31. Giuseppe Aruta Add new panel which display profile info:
      * length, mean slope, coordinates of starting and ending points, cell
@@ -122,7 +121,7 @@ public class ProfileGraphTool extends MultiClickTool {
             getPanel()
                     .getContext()
                     .warnUser(
-                            I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
+                            I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return;
         }
 
@@ -166,7 +165,6 @@ public class ProfileGraphTool extends MultiClickTool {
 
     @Override
     public String getName() {
-    	return I18N
-        .get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
+    	return I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
     }
 }

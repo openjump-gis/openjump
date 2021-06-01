@@ -56,10 +56,8 @@ public class FeatureCollectionPanel extends JPanel {
     private final DefaultTableModel model = new DefaultTableModel();
     private final Color LIGHT_GRAY = new Color(230, 230, 230);
     private JPanel southPanel = new JPanel();
-    private final String sSaved = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
-    private final String SCouldNotSave = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
+    private final String sSaved = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    private final String SCouldNotSave = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
 
     public FeatureCollectionPanel(FeatureCollection featureCollection) {
         super();
@@ -82,9 +80,9 @@ public class FeatureCollectionPanel extends JPanel {
 
     private void jbInit() throws Exception {
         setLayout(new BorderLayout());
-        jLabel.setText(I18N.get("ui.AttributeTablePanel.featurecollection")
+        jLabel.setText(I18N.getInstance().get("ui.AttributeTablePanel.featurecollection")
                 + " - (" + featureCollection.size() + " "
-                + I18N.get("ui.AttributeTablePanel.features") + ")");
+                + I18N.getInstance().get("ui.AttributeTablePanel.features") + ")");
         jLabel.setFont(jLabel.getFont().deriveFont(Font.BOLD));
         //setFeatureCollection(featureCollection);
         jTable = new JTable();
@@ -134,7 +132,7 @@ public class FeatureCollectionPanel extends JPanel {
         final JPanel save = new JPanel();
         save.setLayout(new FlowLayout(FlowLayout.RIGHT));
         final JButton saveButton = new JButton(
-                I18N.get("deejump.plugin.SaveLegendPlugIn.Save"));
+                I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save"));
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

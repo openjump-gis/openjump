@@ -62,14 +62,11 @@ public class SelectRasterImageFilesPanel extends JFCWithEnterAction implements
     //  public static final String FILE_CHOOSER_DIRECTORY_KEY = KEY
     //          + " - FILE CHOOSER DIRECTORY";
 
-    public static final String TITLE = I18N
-            .get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.Select-Raster-Image");
+    public static final String TITLE = I18N.getInstance().get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.Select-Raster-Image");
 
-    public static final String INSTRUCTIONS = I18N
-            .get("org.openjump.core.ui.plugin.file.open.SelectFileOptionsPanel.instructions");
+    public static final String INSTRUCTIONS = I18N.getInstance().get("org.openjump.core.ui.plugin.file.open.SelectFileOptionsPanel.instructions");
 
-    public static final String ALL_FILES = I18N
-            .get("org.openjump.core.ui.plugin.file.open.SelectFilesPanel.all-files");
+    public static final String ALL_FILES = I18N.getInstance().get("org.openjump.core.ui.plugin.file.open.SelectFilesPanel.all-files");
 
     private final Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
 
@@ -101,7 +98,7 @@ public class SelectRasterImageFilesPanel extends JFCWithEnterAction implements
          */
         final FileFilter JAI_IMAGE_FILE_FILTER = GUIUtil
                 .createFileFilter(
-                        I18N.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.supported-raster-image-formats"),
+                        I18N.getInstance().get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.supported-raster-image-formats"),
                         new String[] { "tif", "tiff", "gif", "jpg", "jp2",
                                 "png", "flt", "bmp", "asc", "txt" });
         addChoosableFileFilter(JAI_IMAGE_FILE_FILTER);

@@ -33,15 +33,15 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
 
     public static final String KEY = DataStoreSaveDriverPanel.class.getName();
 
-    private static final String TABLE                    = I18N.get(KEY + ".table");
+    private static final String TABLE                    = I18N.getInstance().get(KEY + ".table");
 
-    private static final String WRITE_3D_GEOM            = I18N.get(KEY + ".write-3d-geometries");
-    private static final String CONVERT_NAN_Z            = I18N.get(KEY + ".convert-nan-z");
-    private static final String NARROW_GEOMETRY_TYPE     = I18N.get(KEY + ".narrow-geometry-type");
-    private static final String CONVERT_TO_MULTIGEOMETRY = I18N.get(KEY + ".convert-to-multigeometry");
-    private static final String CREATE_DB_PK             = I18N.get(KEY + ".create-database-primary-key");
-    private static final String NORMALIZED_TABLE_NAME    = I18N.get(KEY + ".normalized-table-name-key");
-    private static final String NORMALIZED_COLUMN_NAMES  = I18N.get(KEY + ".normalized-column-names-key");
+    private static final String WRITE_3D_GEOM            = I18N.getInstance().get(KEY + ".write-3d-geometries");
+    private static final String CONVERT_NAN_Z            = I18N.getInstance().get(KEY + ".convert-nan-z");
+    private static final String NARROW_GEOMETRY_TYPE     = I18N.getInstance().get(KEY + ".narrow-geometry-type");
+    private static final String CONVERT_TO_MULTIGEOMETRY = I18N.getInstance().get(KEY + ".convert-to-multigeometry");
+    private static final String CREATE_DB_PK             = I18N.getInstance().get(KEY + ".create-database-primary-key");
+    private static final String NORMALIZED_TABLE_NAME    = I18N.getInstance().get(KEY + ".normalized-table-name-key");
+    private static final String NORMALIZED_COLUMN_NAMES  = I18N.getInstance().get(KEY + ".normalized-column-names-key");
 
     // UI elements
     ConnectionPanel connectionPanel;
@@ -200,7 +200,7 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
     }
 
     protected String getTitle() {
-        return I18N.get(this.getClass().getName() + ".title");
+        return I18N.getInstance().get(this.getClass().getName() + ".title");
     }
 
     private class PanelAncestorListener implements AncestorListener {
@@ -235,10 +235,10 @@ public class DataStoreSaveDriverPanel extends AbstractDriverPanel {
 
     public String getValidationError() {
         if (connectionPanel.getConnectionDescriptor() == null)
-            return I18N.getMessage("org.openjump.core.ui.plugin.datastore.postgis.PostGISSaveDataSourceQueryChooser.no-connection-choosen");
+            return I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.postgis.PostGISSaveDataSourceQueryChooser.no-connection-choosen");
         if (tableComboBox.getSelectedItem() == null ||
                 tableComboBox.getSelectedItem().equals(""))
-            return I18N.getMessage("org.openjump.core.ui.plugin.datastore.postgis.PostGISSaveDataSourceQueryChooser.no-table-choosen");
+            return I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.postgis.PostGISSaveDataSourceQueryChooser.no-table-choosen");
         return null;
     }
 

@@ -54,8 +54,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 // created on 16.05.2005
 public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
 
-  private String name = I18N
-      .get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.select-all-items-of-selected-layers");
+  private String name = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.select-all-items-of-selected-layers");
 
   public SelectAllLayerItemsPlugIn() {
     super();
@@ -71,7 +70,7 @@ public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
             context.getWorkbenchContext().getWorkbench().getFrame()
                 .getLayerNamePopupMenu(),
             this,
-            I18N.get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.select-current-layer-items"),
+            I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.select-current-layer-items"),
             false, null, createEnableCheck(context.getWorkbenchContext()));
 
     context
@@ -115,12 +114,11 @@ public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
     context
         .getWorkbenchFrame()
         .setTimeMessage(
-            I18N.get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.layer-items")
+            I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.layer-items")
                 + ": "
                 + count
                 + ", "
-                + I18N
-                    .get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.selected-items")
+                + I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectAllLayerItemsPlugIn.selected-items")
                 + ": " + myf.size());
     System.gc();
     return true;

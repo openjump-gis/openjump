@@ -45,10 +45,10 @@ import com.vividsolutions.jump.I18N;
 public class DiscreteColorThemingState
     implements ColorThemingStylePanel.State {
     public String getAllOtherValuesDescription() {
-        return I18N.get("ui.renderer.style.DiscreteColorThemingState.all-other-values");
+        return I18N.getInstance().get("ui.renderer.style.DiscreteColorThemingState.all-other-values");
     }
     public String getAttributeValueColumnTitle() {
-        return I18N.get("ui.renderer.style.DiscreteColorThemingState.attribute-values");
+        return I18N.getInstance().get("ui.renderer.style.DiscreteColorThemingState.attribute-values");
     }
     public ColorScheme filterColorScheme(ColorScheme colorScheme) {
         return colorScheme;

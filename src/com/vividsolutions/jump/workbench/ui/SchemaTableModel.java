@@ -90,8 +90,8 @@ public class SchemaTableModel extends ColumnBasedTableModel {
         return (Field) fields.get(row);
     }
 
-    public final static String FIELD_NAME_COLUMN_NAME = I18N.get("ui.SchemaTableModel.field-name");
-    public final static String DATA_TYPE_COLUMN_NAME = I18N.get("ui.SchemaTableModel.data-type");
+    public final static String FIELD_NAME_COLUMN_NAME = I18N.getInstance().get("ui.SchemaTableModel.field-name");
+    public final static String DATA_TYPE_COLUMN_NAME = I18N.getInstance().get("ui.SchemaTableModel.data-type");
     public SchemaTableModel(Layer layer) {
         this.layer = layer;
         for (int i = 0; i < layer.getFeatureCollectionWrapper().getFeatureSchema().getAttributeCount(); i++) {
@@ -146,10 +146,10 @@ public class SchemaTableModel extends ColumnBasedTableModel {
 
     private String createName() {
         int i = 1;
-        while (hasFieldNamed(I18N.get("ui.SchemaTableModel.field")+i)) {
+        while (hasFieldNamed(I18N.getInstance().get("ui.SchemaTableModel.field")+i)) {
             i++;
         }
-        return I18N.get("ui.SchemaTableModel.field")+i;
+        return I18N.getInstance().get("ui.SchemaTableModel.field")+i;
     }
 
     private boolean hasFieldNamed(String name) {

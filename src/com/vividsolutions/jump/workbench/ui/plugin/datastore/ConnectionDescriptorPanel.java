@@ -64,10 +64,10 @@ public class ConnectionDescriptorPanel extends JPanel
     mainPanel.removeAll();
     editComponentList.clear();
     addEditComponent(0,
-            I18N.get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Name"),
+            I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Name"),
             nameText, 0.5);
     addEditComponent(1,
-            I18N.get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Driver"),
+            I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Driver"),
             driverComboBox, 0);
     for (int i = 0; i < schema.getNames().length; i++) {
       String name = schema.getNames()[i];
@@ -453,7 +453,7 @@ public class ConnectionDescriptorPanel extends JPanel
                     (Component) editComponentList.get(i));
             //TODO: nicolas ribot, 19 fev 2015: password is not required for some databases
             if (!"Password".equals(schema.getNames()[i]) && (parameter == null || parameter.equals(""))) {
-                return (I18N.get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Required-field-missing") + " " + schema.getNames()[i]);
+                return (I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Required-field-missing") + " " + schema.getNames()[i]);
             }
         }
         return null;

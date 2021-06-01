@@ -52,7 +52,7 @@ import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     
-  private final static String LAYER = I18N.get("ui.MenuNames.LAYER");
+  private final static String LAYER = I18N.getInstance().get("ui.MenuNames.LAYER");
 
   private static FeatureCollection toLineStrings(Collection<LineSegment> segments) {
     FeatureSchema schema = new FeatureSchema();
@@ -120,7 +120,7 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
    * @return the name of this task
    */
   public String getName() { 
-      return I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extract-Segments"); 
+      return I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Extract-Segments"); 
   }
 
   public void initialize(PlugInContext context) throws Exception {
@@ -156,7 +156,7 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     
     monitor.allowCancellationRequests();
 
-    monitor.report(I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracting-Segments"));
+    monitor.report(I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracting-Segments"));
 
     Layer layer = context.getLayerManager().getLayer(layerName);
     FeatureCollection lineFC = layer.getFeatureCollectionWrapper();
@@ -197,7 +197,7 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
   private void createLayers(PlugInContext context, FeatureCollection result) throws Exception {
     context.addLayer(
         StandardCategoryNames.RESULT,
-        layerName + " " + I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracted-Segs"),
+        layerName + " " + I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracted-Segs"),
         result);
     createOutput(context);
   }
@@ -205,33 +205,33 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
   private void createOutput(PlugInContext context) {
     context.getOutputFrame().createNewDocument();
     context.getOutputFrame().addHeader(1,
-    		I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extract-Segments"));
-    context.getOutputFrame().addField(I18N.get("ui.MenuNames.LAYER")+ ":", layerName);
+    		I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Extract-Segments"));
+    context.getOutputFrame().addField(I18N.getInstance().get("ui.MenuNames.LAYER")+ ":", layerName);
 
     context.getOutputFrame().addText(" ");
     context.getOutputFrame().addField(
-        I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Number-of-unique-segments-extracted"), 
+        I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Number-of-unique-segments-extracted"), 
         "" + uniqueSegmentCount);
   }
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("ExtractSegments.png")));
-    dialog.setSideBarDescription(I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracts-all-unique-line-segments-from-a-dataset"));
+    dialog.setSideBarDescription(I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Extracts-all-unique-line-segments-from-a-dataset"));
     dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
     final JRadioButton removeDoubleSegmentsCheckBox = dialog.addRadioButton(
-            I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Remove-doubled-segments"),
+            I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Remove-doubled-segments"),
             "group1", removeDoubledSegments, null);
     final JRadioButton makeDoubleSegmentsUniqueCheckBox = dialog.addRadioButton(
-            I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Make-doubled-segments-unique"),
+            I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Make-doubled-segments-unique"),
             "group1", makeDoubledSegmentsUnique, null);
     final JRadioButton keepAllSegmentsCheckBox = dialog.addRadioButton(
-              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-all-segments"),
+              I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-all-segments"),
             "group1", keepAllSegments, null);
     final JCheckBox mergeCheckBox = dialog.addCheckBox(
-              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Merge-resulting-segments"),mergeResultingSegments);
+              I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Merge-resulting-segments"),mergeResultingSegments);
     mergeCheckBox.setEnabled(removeDoubledSegments || makeDoubledSegmentsUnique);
     final JCheckBox keepAttributesCheckBox = dialog.addCheckBox(
-              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-attributes"),keepAttributes);
+              I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-attributes"),keepAttributes);
     keepAttributesCheckBox.setEnabled(keepAllSegments);
 
     removeDoubleSegmentsCheckBox.addActionListener(new ActionListener() {
@@ -267,14 +267,14 @@ public class ExtractSegmentsPlugIn extends AbstractThreadedUiPlugIn {
     Layer layer = dialog.getLayer(LAYER);
     layerName = layer.getName();
     removeDoubledSegments = dialog.getBoolean(
-        I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Remove-doubled-segments"));
+        I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Remove-doubled-segments"));
     makeDoubledSegmentsUnique = dialog.getBoolean(
-              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Make-doubled-segments-unique"));
+              I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Make-doubled-segments-unique"));
     keepAllSegments = dialog.getBoolean(
-            I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-all-segments"));
+            I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-all-segments"));
     mergeResultingSegments = dialog.getBoolean(
-        I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Merge-resulting-segments"));
+        I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Merge-resulting-segments"));
     keepAttributes = dialog.getBoolean(
-              I18N.get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-attributes"));
+              I18N.getInstance().get("jump.plugin.edit.ExtractSegmentsPlugIn.Keep-attributes"));
   }
 }

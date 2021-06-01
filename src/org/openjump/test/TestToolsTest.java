@@ -316,9 +316,9 @@ public class TestToolsTest {
             implements ThreadedPlugIn {
         private MultiInputDialog dialog;
         private final static String PARAMETER_1 = 
-                I18N.get("ExamplePlugInWithDialog.param1");
+                I18N.getInstance().get("ExamplePlugInWithDialog.param1");
         private final static String PARAMETER_2 = 
-                I18N.get("ExamplePlugInWithDialog.param2");
+                I18N.getInstance().get("ExamplePlugInWithDialog.param2");
         
         /** Configures plugin. */
         public boolean execute(PlugInContext context) throws Exception {

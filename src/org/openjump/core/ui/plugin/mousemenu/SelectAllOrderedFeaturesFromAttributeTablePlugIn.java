@@ -49,7 +49,7 @@ public class SelectAllOrderedFeaturesFromAttributeTablePlugIn extends AbstractPl
     }
     context.getWorkbenchFrame().setTimeMessage(
             "" + count + " " +
-            I18N.get("org.openjump.core.ui.plugin.mousemenu.SelectAllOrderedFeaturesFromAttributeTablePlugIn.selected-features")
+            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SelectAllOrderedFeaturesFromAttributeTablePlugIn.selected-features")
     );
     return true;
   }

@@ -67,19 +67,19 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
     private TaskFrame taskFrame;
     private LayerManagerProxy layerManagerProxy;
     public LayerListener attributeTabLayerListener;
-    private static final String sNoModifiedWritableLayerSelected = I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-modified-writable-layer-selected");
+    private static final String sNoModifiedWritableLayerSelected = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-modified-writable-layer-selected");
     //The String values returned by these EnableChecks are not used.
     //The only thing checked is whether they are null or not. [Jon Aquino]
     private EnableCheck taskFrameEnableCheck = new EnableCheck() {
         public String check(JComponent component) {
-            return (!taskFrame.isVisible()) ? I18N.get("ui.AttributeTab.task-frame-must-be-open") : null;
+            return (!taskFrame.isVisible()) ? I18N.getInstance().get("ui.AttributeTab.task-frame-must-be-open") : null;
         }
     };
 
     private EnableCheck layersEnableCheck = new EnableCheck() {
         public String check(JComponent component) {
             return panel.getModel().getLayers().isEmpty()
-                ? I18N.get("ui.AttributeTab.one-or-more-layers-must-be-present")
+                ? I18N.getInstance().get("ui.AttributeTab.one-or-more-layers-must-be-present")
                 : null;
         }
     };
@@ -89,7 +89,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
     private EnableCheck rowsSelectedEnableCheck = new EnableCheck() {
         public String check(JComponent component) {
             return panel.selectedFeatures().isEmpty()
-                ? I18N.get("ui.AttributeTab.one-or-more-rows-must-be-selected")
+                ? I18N.getInstance().get("ui.AttributeTab.one-or-more-rows-must-be-selected")
                 : null;
         }
     };
@@ -286,7 +286,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
     	toolBar
             .add(
                 new JButton(),
-                I18N.get("ui.AttributeTab.pan-to-previous-row"),
+                I18N.getInstance().get("ui.AttributeTab.pan-to-previous-row"),
                 IconLoader.icon("SmallUp.gif"),
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -301,7 +301,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
         toolBar
             .add(
                 new JButton(),
-                I18N.get("ui.AttributeTab.zoom-to-previous-row"),
+                I18N.getInstance().get("ui.AttributeTab.zoom-to-previous-row"),
                 IconLoader.icon("SmallMagnifyUp.gif"),
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -316,7 +316,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
         toolBar
             .add(
                 new JButton(),
-                I18N.get("ui.AttributeTab.zoom-to-next-row"),
+                I18N.getInstance().get("ui.AttributeTab.zoom-to-next-row"),
                 IconLoader.icon("SmallMagnifyDown.gif"),
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -331,7 +331,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
         toolBar
             .add(
                 new JButton(),
-                I18N.get("ui.AttributeTab.pan-to-next-row"),
+                I18N.getInstance().get("ui.AttributeTab.pan-to-next-row"),
                 IconLoader.icon("SmallDown.gif"),
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -346,7 +346,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
         toolBar
             .add(
                 new JButton(),
-                I18N.get("ui.AttributeTab.zoom-to-selected-rows"),
+                I18N.getInstance().get("ui.AttributeTab.zoom-to-selected-rows"),
                 IconLoader.icon("SmallMagnify.gif"),
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -361,7 +361,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
         toolBar
             .add(
                 new JButton(),
-                I18N.get("ui.AttributeTab.pan-to-selected-rows"),
+                I18N.getInstance().get("ui.AttributeTab.pan-to-selected-rows"),
                 IconLoader.icon("MoveTo.gif"),
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -378,7 +378,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
         toolBar
             .add(
                 new JButton(),
-                I18N.get("ui.AttributeTab.zoom-to-full-extent"),
+                I18N.getInstance().get("ui.AttributeTab.zoom-to-full-extent"),
                 IconLoader.icon("globe3_16.png"),
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -392,7 +392,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
         toolBar
             .add(
                 new JButton(),
-                I18N.get("ui.AttributeTab.select-in-task-window"),
+                I18N.getInstance().get("ui.AttributeTab.select-in-task-window"),
                 IconLoader.icon("SmallSelect.gif"),
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -408,7 +408,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
         toolBar
             .add(
                 new JButton(),
-                I18N.get("ui.AttributeTab.flash-selected-rows"),
+                I18N.getInstance().get("ui.AttributeTab.flash-selected-rows"),
                 IconLoader.icon("Flashlight.gif"),
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {

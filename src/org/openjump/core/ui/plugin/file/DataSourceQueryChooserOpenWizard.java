@@ -97,16 +97,16 @@ public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
             }
           } else {
             context.getWorkbenchFrame().warnUser(
-              I18N.get("datasource.LoadDatasetPlugIn.query-not-readable"));
+              I18N.getInstance().get("datasource.LoadDatasetPlugIn.query-not-readable"));
           }
         }
         if (exceptionsEncountered) {
           context.getWorkbenchFrame().warnUser(
-            I18N.get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
+            I18N.getInstance().get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
         }
       } else {
         context.getWorkbenchFrame().warnUser(
-          I18N.get(KEY + ".no-queries-found"));
+          I18N.getInstance().get(KEY + ".no-queries-found"));
       }
     }
   }
@@ -127,17 +127,17 @@ public class DataSourceQueryChooserOpenWizard extends AbstractWizardGroup {
         1,
         exceptions.size()
           + " "
-          + I18N.get("datasource.LoadDatasetPlugIn.problem")
+          + I18N.getInstance().get("datasource.LoadDatasetPlugIn.problem")
           + StringUtil.s(exceptions.size())
           + " "
-          + I18N.get("datasource.LoadDatasetPlugIn.loading")
+          + I18N.getInstance().get("datasource.LoadDatasetPlugIn.loading")
           + " "
           + dataSourceQuery.toString()
           + "."
-          + ((exceptions.size() > 10) ? I18N.get("datasource.LoadDatasetPlugIn.first-and-last-five")
+          + ((exceptions.size() > 10) ? I18N.getInstance().get("datasource.LoadDatasetPlugIn.first-and-last-five")
             : ""));
     context.getOutputFrame().addText(
-      I18N.get("datasource.LoadDatasetPlugIn.see-view-log"));
+      I18N.getInstance().get("datasource.LoadDatasetPlugIn.see-view-log"));
 
     ExceptionUtil.reportExceptions(context, exceptions);
   }

@@ -21,9 +21,9 @@ public class SaveToDataStorePanel extends AbstractWizardPanel {
 
   public static final String KEY = SaveToDataStorePanel.class.getName();
 
-  private static final String TITLE = I18N.get(KEY);
+  private static final String TITLE = I18N.getInstance().get(KEY);
 
-  private static final String INSTRUCTIONS = I18N.get(KEY + ".instructions");
+  private static final String INSTRUCTIONS = I18N.getInstance().get(KEY + ".instructions");
 
   private static final String LASTCONNECTION = SaveToDataStorePanel.class.getName()
           + " - LAST CONNECTION";
@@ -73,7 +73,7 @@ public class SaveToDataStorePanel extends AbstractWizardPanel {
   public boolean isInputValid() {
     String errorMessage = dataStoreSaveDriverPanel.getValidationError();
     if (dataStoreSaveDriverPanel.tableComboBox.getEditor().getItem().toString().trim().equals("")) errorMessage =
-            I18N.getMessage("org.openjump.core.ui.plugin.datastore.postgis.PostGISSaveDataSourceQueryChooser.no-table-choosen");
+            I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.postgis.PostGISSaveDataSourceQueryChooser.no-table-choosen");
     //if (errorMessage != null) workbenchContext.getWorkbench().getFrame().warnUser(errorMessage);
     return null == errorMessage;
   }

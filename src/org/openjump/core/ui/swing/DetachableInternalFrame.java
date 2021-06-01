@@ -105,7 +105,7 @@ public class DetachableInternalFrame extends JInternalFrame {
 	private void init() {
 		// build popupmenu
 		detachPopupMenu = new JPopupMenu();
-		detachMenuItem = new JMenuItem(I18N.get("org.openjump.core.ui.swing.DetachableInternalFrame.detach-window"));
+		detachMenuItem = new JMenuItem(I18N.getInstance().get("org.openjump.core.ui.swing.DetachableInternalFrame.detach-window"));
 		detachMenuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {

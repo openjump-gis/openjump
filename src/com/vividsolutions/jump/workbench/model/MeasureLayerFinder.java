@@ -28,7 +28,7 @@ public class MeasureLayerFinder extends SystemLayerFinder {
 	public static final String FEATURE_ATTRIBUTE_LENGTH = "length";
 	private static final String FEATURE_ATTRIBUTE_POINTS = "points";
 
-	public static final String LAYER_NAME = I18N.get("model.MeasureLayerFinder.measure");
+	public static final String LAYER_NAME = I18N.getInstance().get("model.MeasureLayerFinder.measure");
 
 	private static Layer measureLayer = null;
 	private WorkbenchContext context = null;

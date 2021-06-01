@@ -148,7 +148,7 @@ public class OptionSpec {
     // we complain only if there are too few arguments
     // more can as well be files that were carelessly placed
     else if (args.length < nNeededArgs) {
-      String msg = I18N.getMessage(JUMPWorkbench.I18NPREFIX
+      String msg = I18N.getInstance().get(JUMPWorkbench.I18NPREFIX
           + "option-{0}-needs-{1}-parameters-but-only-{2}-were-given.",
           StringUtils.join(names, ", "), nNeededArgs, args.length);
       msg += "\n\n" + getDesc();

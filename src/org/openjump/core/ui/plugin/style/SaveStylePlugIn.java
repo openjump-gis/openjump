@@ -63,8 +63,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 public class SaveStylePlugIn extends ThreadedBasePlugIn {
 
     public final static ImageIcon ICON = IconLoader.icon("style_out.png");
-    private final String name = I18N
-            .get("org.openjump.core.ui.plugin.style.StylePlugIns.export-style");
+    private final String name = I18N.getInstance().get("org.openjump.core.ui.plugin.style.StylePlugIns.export-style");
 
     public ImageIcon getIcon() {
 
@@ -130,7 +129,7 @@ public class SaveStylePlugIn extends ThreadedBasePlugIn {
 
     private void monitor(TaskMonitor monitor, File file) {
         monitor.allowCancellationRequests();
-        monitor.report(I18N.get("ui.plugin.SaveDatasetAsPlugIn.saving") + ": "
+        monitor.report(I18N.getInstance().get("ui.plugin.SaveDatasetAsPlugIn.saving") + ": "
                 + file.getAbsolutePath());
     }
 
@@ -161,7 +160,7 @@ public class SaveStylePlugIn extends ThreadedBasePlugIn {
         JOptionPane
                 .showMessageDialog(
                         JUMPWorkbench.getInstance().getFrame(),
-                        I18N.get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved")
+                        I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved")
                                 + ": " + filePath, getName(),
                         JOptionPane.PLAIN_MESSAGE);
 

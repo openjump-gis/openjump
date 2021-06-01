@@ -63,8 +63,7 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
   public boolean execute(PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
     TextFrame textFrame = new TextFrame(context.getWorkbenchFrame());
-    textFrame.setTitle(I18N
-        .get("ui.plugin.VerticesInFencePlugIn.vertices-in-fence"));
+    textFrame.setTitle(I18N.getInstance().get("ui.plugin.VerticesInFencePlugIn.vertices-in-fence"));
     textFrame.clear();
     textFrame.setText(description(context));
     textFrame.setSize(550, 300);
@@ -164,7 +163,7 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
   private String description(Layer layer, PlugInContext context) {
     boolean foundVertices = false;
     String description = "<Table width=100%><tr><td colspan=2 valign=top><i>"
-        + I18N.get("ui.plugin.VerticesInFencePlugIn.layer")
+        + I18N.getInstance().get("ui.plugin.VerticesInFencePlugIn.layer")
         + " </i><font color='#3300cc'><b>" + layer.getName()
         + "</b></font></td></tr>";
     String bgcolor = "darkgrey";
@@ -185,7 +184,7 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
       // Aquino]
       description += ("<tr bgcolor=" + bgcolor
           + "><td width=10% valign=top><font size='-1'><i>"
-          + I18N.get("ui.plugin.VerticesInFencePlugIn.feature-id")
+          + I18N.getInstance().get("ui.plugin.VerticesInFencePlugIn.feature-id")
           + " </i></font><font size='-1' color='#3300cc'><b>" + feature.getID() + "</b></font><td>");
       description += description(verticesInFence, feature.getGeometry());
       description += "</td></tr>";

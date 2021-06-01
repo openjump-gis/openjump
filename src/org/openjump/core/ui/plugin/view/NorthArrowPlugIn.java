@@ -49,7 +49,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class NorthArrowPlugIn extends AbstractPlugIn {
 
-	private static final String NORTH_ARROW = I18N.get("org.openjump.core.ui.plugin.view.NorthArrowPlugIn.North-Arrow");
+	private static final String NORTH_ARROW = I18N.getInstance().get("org.openjump.core.ui.plugin.view.NorthArrowPlugIn.North-Arrow");
 
 	public void initialize(PlugInContext context) throws Exception {
 		FeatureInstaller featureInstaller = context.getFeatureInstaller();

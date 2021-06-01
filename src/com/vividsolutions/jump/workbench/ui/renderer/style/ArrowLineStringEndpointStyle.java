@@ -153,54 +153,54 @@ public class ArrowLineStringEndpointStyle extends LineStringEndpointStyle {
 
     public static class FeathersStart extends Feathers {
         public FeathersStart() {
-            super(I18N.get("ui.renderer.style.ArrowLineStringEndpointStyle.start-feathers"), true, "FeathersStart.gif");
+            super(I18N.getInstance().get("ui.renderer.style.ArrowLineStringEndpointStyle.start-feathers"), true, "FeathersStart.gif");
         }
     }
 
     public static class FeathersEnd extends Feathers {
         public FeathersEnd() {
-            super(I18N.get("ui.renderer.style.ArrowLineStringEndpointStyle.end-feathers"), false, "FeathersEnd.gif");
+            super(I18N.getInstance().get("ui.renderer.style.ArrowLineStringEndpointStyle.end-feathers"), false, "FeathersEnd.gif");
         }
     }
 
     public static class OpenStart extends ArrowLineStringEndpointStyle {
         public OpenStart() {
-            super(I18N.get("ui.renderer.style.ArrowLineStringEndpointStyle.start-arrow-open"), true, "ArrowStartOpen.gif", MEDIUM_ANGLE,
+            super(I18N.getInstance().get("ui.renderer.style.ArrowLineStringEndpointStyle.start-arrow-open"), true, "ArrowStartOpen.gif", MEDIUM_ANGLE,
                 MEDIUM_LENGTH, false);
         }
     }
 
     public static class OpenEnd extends ArrowLineStringEndpointStyle {
         public OpenEnd() {
-            super(I18N.get("ui.renderer.style.ArrowLineStringEndpointStyle.end-arrow-open"), false, "ArrowEndOpen.gif", MEDIUM_ANGLE,
+            super(I18N.getInstance().get("ui.renderer.style.ArrowLineStringEndpointStyle.end-arrow-open"), false, "ArrowEndOpen.gif", MEDIUM_ANGLE,
                 MEDIUM_LENGTH, false);
         }
     }
 
     public static class SolidStart extends ArrowLineStringEndpointStyle {
         public SolidStart() {
-            super(I18N.get("ui.renderer.style.ArrowLineStringEndpointStyle.start-arrow-solid"), true, "ArrowStartSolid.gif",
+            super(I18N.getInstance().get("ui.renderer.style.ArrowLineStringEndpointStyle.start-arrow-solid"), true, "ArrowStartSolid.gif",
                 MEDIUM_ANGLE, MEDIUM_LENGTH, true);
         }
     }
 
     public static class SolidEnd extends ArrowLineStringEndpointStyle {
         public SolidEnd() {
-            super(I18N.get("ui.renderer.style.ArrowLineStringEndpointStyle.end-arrow-solid"), false, "ArrowEndSolid.gif", MEDIUM_ANGLE,
+            super(I18N.getInstance().get("ui.renderer.style.ArrowLineStringEndpointStyle.end-arrow-solid"), false, "ArrowEndSolid.gif", MEDIUM_ANGLE,
                 MEDIUM_LENGTH, true);
         }
     }
 
     public static class NarrowSolidStart extends ArrowLineStringEndpointStyle {
         public NarrowSolidStart() {
-            super(I18N.get("ui.renderer.style.ArrowLineStringEndpointStyle.start-arrow-solid-narrow"), true,
+            super(I18N.getInstance().get("ui.renderer.style.ArrowLineStringEndpointStyle.start-arrow-solid-narrow"), true,
                 "ArrowStartSolidNarrow.gif", SMALL_ANGLE, LARGE_LENGTH, true);
         }
     }
 
     public static class NarrowSolidEnd extends ArrowLineStringEndpointStyle {
         public NarrowSolidEnd() {
-            super(I18N.get("ui.renderer.style.ArrowLineStringEndpointStyle.end-arrow-solid-narrow"), false, "ArrowEndSolidNarrow.gif",
+            super(I18N.getInstance().get("ui.renderer.style.ArrowLineStringEndpointStyle.end-arrow-solid-narrow"), false, "ArrowEndSolidNarrow.gif",
                 SMALL_ANGLE, LARGE_LENGTH, true);
         }
     }

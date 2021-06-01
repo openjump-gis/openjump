@@ -484,7 +484,7 @@ public class IOTools {
         // Should create this condition in EnableCheckFactory
         if (layer.getFeatureCollectionWrapper().getFeatures().size() == 0) {
             throw new Exception(
-                    I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
         }
         final BasicFeature bf = (BasicFeature) layer
                 .getFeatureCollectionWrapper().getFeatures().get(0);
@@ -503,8 +503,7 @@ public class IOTools {
         map.put("styleName", name);
         map.put("styleTitle", name);
         map.put("geoType", geoType);
-        map.put("geomProperty", I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"));
+        map.put("geomProperty", I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"));
         map.put("Namespace", "http://www.deegree.org/app");
         // map.put("NamespacePrefix", prefix + ":");
         // map.put("NamespacePrefixWithoutColon", prefix);
@@ -866,8 +865,7 @@ public class IOTools {
                 // a filechooser is open to select that dolder
                 final JFCWithEnterAction chooser = new JFCWithEnterAction();
                 chooser.setCurrentDirectory(new java.io.File("."));
-                chooser.setDialogTitle(I18N
-                        .get("org.openjump.core.ui.plugin.style.StylePlugIns.IO.select-folder"));
+                chooser.setDialogTitle(I18N.getInstance().get("org.openjump.core.ui.plugin.style.StylePlugIns.IO.select-folder"));
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
                 chooser.setAcceptAllFileFilterUsed(false);
@@ -885,7 +883,7 @@ public class IOTools {
                             .getLayerViewPanel()
                             .getContext()
                             .warnUser(
-                                    I18N.get("org.openjump.core.ui.plugin.style.StylePlugIns.IO.styles-could-not-be-loaded"));
+                                    I18N.getInstance().get("org.openjump.core.ui.plugin.style.StylePlugIns.IO.styles-could-not-be-loaded"));
                 }
             }
         }
@@ -907,8 +905,7 @@ public class IOTools {
                 layer.setStyles(names);
             } catch (final Exception e) {
                 Logger.error(e);
-                final String errorMessage = I18N
-                        .get("org.openjump.core.ui.plugin.style.StylePlugIns.IO.error");
+                final String errorMessage = I18N.getInstance().get("org.openjump.core.ui.plugin.style.StylePlugIns.IO.error");
                 JOptionPane.showMessageDialog(
                         workbenchFrame.getActiveInternalFrame(), errorMessage,
                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -974,7 +971,7 @@ public class IOTools {
         // Should create this condition in EnableCheckFactory
         if (layer.getFeatureCollectionWrapper().getFeatures().size() == 0) {
             throw new Exception(
-                    I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
         }
         final BasicFeature bf = (BasicFeature) layer
                 .getFeatureCollectionWrapper().getFeatures().get(0);
@@ -993,8 +990,7 @@ public class IOTools {
         map.put("styleName", name);
         map.put("styleTitle", name);
         map.put("geoType", geoType);
-        map.put("geomProperty", I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"));
+        map.put("geomProperty", I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"));
         map.put("Namespace", "http://www.deegree.org/app");
         // map.put("NamespacePrefix", prefix + ":");
         // map.put("NamespacePrefixWithoutColon", prefix);
@@ -1028,7 +1024,7 @@ public class IOTools {
         final String geoType = geo.getGeometryType();
         final MultiInputDialog dialog = new MultiInputDialog(
                 JUMPWorkbench.getInstance().getFrame(),
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.SLD-Parameters"),
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.SLD-Parameters"),
                 true);
         String geomProperty = "GEOM";
 
@@ -1042,44 +1038,44 @@ public class IOTools {
         dialog.addSeparator();
 
         dialog.addTextField(
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"),
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"),
                 geomProperty,
                 25,
                 null,
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.Input-the-name-of-the-geometry-property"));
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Input-the-name-of-the-geometry-property"));
 
         dialog.addSeparator();
 
         dialog.addTextField(
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"),
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"),
                 name,
                 25,
                 null,
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"));
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"));
         dialog.addTextField(
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"),
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"),
                 name,
                 25,
                 null,
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"));
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"));
         dialog.addTextField(
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"),
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"),
                 name,
                 25,
                 null,
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"));
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"));
         dialog.addTextField(
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"),
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"),
                 name,
                 25,
                 null,
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"));
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"));
         dialog.addTextField(
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"),
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"),
                 "http://www.deegree.org/app",
                 25,
                 null,
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"));
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"));
         GUIUtil.centreOnWindow(dialog);
 
         dialog.setVisible(true);
@@ -1092,20 +1088,14 @@ public class IOTools {
         // for the label and
         // for the key is beyond me
         final String wmsLayerName = dialog
-                .getText(I18N
-                        .get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"));
-        final String styleName = dialog.getText(I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"));
-        final String styleTitle = dialog.getText(I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"));
+                .getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"));
+        final String styleName = dialog.getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"));
+        final String styleTitle = dialog.getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"));
         final String featureTypeStyle = dialog
-                .getText(I18N
-                        .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"));
+                .getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"));
         geomProperty = dialog
-                .getText(I18N
-                        .get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"));
-        final String namespace = dialog.getText(I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"));
+                .getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"));
+        final String namespace = dialog.getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"));
 
         final double internalScale = 1d / JUMPWorkbench.getInstance()
                 .getFrame().getContext().getLayerViewPanel().getViewport()
@@ -1122,7 +1112,7 @@ public class IOTools {
         // Should create this condition in EnableCheckFactory
         if (layer.getFeatureCollectionWrapper().getFeatures().size() == 0) {
             throw new Exception(
-                    I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
         }
 
         final Java2XML java2Xml = new Java2XML();

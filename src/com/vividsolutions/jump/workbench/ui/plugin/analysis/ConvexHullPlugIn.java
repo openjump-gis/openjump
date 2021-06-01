@@ -57,7 +57,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class ConvexHullPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     
-    private String LAYER = I18N.get("ui.plugin.analysis.ConvexHullPlugIn.Source-Layer");
+    private String LAYER = I18N.getInstance().get("ui.plugin.analysis.ConvexHullPlugIn.Source-Layer");
     private MultiInputDialog dialog;
 
     public ConvexHullPlugIn() {
@@ -98,7 +98,7 @@ public class ConvexHullPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
      public boolean execute(PlugInContext context) throws Exception {
      	//[sstein, 16.07.2006] put here again for language settings
-        LAYER = I18N.get("ui.plugin.analysis.ConvexHullPlugIn.Source-Layer");
+        LAYER = I18N.getInstance().get("ui.plugin.analysis.ConvexHullPlugIn.Source-Layer");
         //Unlike ValidatePlugIn, here we always call #initDialog because we want
         //to update the layer comboboxes. [Jon Aquino]
         initDialog(context);
@@ -112,15 +112,15 @@ public class ConvexHullPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     }
 
     public String getName(){
-    	return I18N.get("ui.plugin.analysis.ConvexHullPlugIn.Convex-Hull-on-Layer");
+    	return I18N.getInstance().get("ui.plugin.analysis.ConvexHullPlugIn.Convex-Hull-on-Layer");
     }
      
     private void initDialog(PlugInContext context) {
-        dialog = new MultiInputDialog(context.getWorkbenchFrame(), I18N.get("ui.plugin.analysis.ConvexHullPlugIn.Convex-Hull-on-Layer"), true);
+        dialog = new MultiInputDialog(context.getWorkbenchFrame(), I18N.getInstance().get("ui.plugin.analysis.ConvexHullPlugIn.Convex-Hull-on-Layer"), true);
 
         //dialog.setSideBarImage(IconLoader.icon("Overlay.gif"));
         dialog.setSideBarDescription(
-        		 I18N.get("ui.plugin.analysis.ConvexHullPlugIn.Creates-a-new-layer-containing-the-convex-hull-of-all-the-features-in-the-source-layer"));
+        		 I18N.getInstance().get("ui.plugin.analysis.ConvexHullPlugIn.Creates-a-new-layer-containing-the-convex-hull-of-all-the-features-in-the-source-layer"));
         String fieldName = LAYER;
         JComboBox addLayerComboBox = dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
         GUIUtil.centreOnWindow(dialog);
@@ -135,12 +135,12 @@ public class ConvexHullPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         if (hullFC == null) return;
         
         context.getLayerManager().addCategory(categoryName);
-        context.addLayer(categoryName, I18N.get("ui.plugin.analysis.ConvexHullPlugIn.Convex-Hull"), hullFC);
+        context.addLayer(categoryName, I18N.getInstance().get("ui.plugin.analysis.ConvexHullPlugIn.Convex-Hull"), hullFC);
     }
 
     private FeatureCollection convexHhull(TaskMonitor monitor, FeatureCollection fc) {
         monitor.allowCancellationRequests();
-        monitor.report(I18N.get("ui.plugin.analysis.ConvexHullPlugIn.Computing-Convex-Hull") + "...");
+        monitor.report(I18N.getInstance().get("ui.plugin.analysis.ConvexHullPlugIn.Computing-Convex-Hull") + "...");
 
         int size = fc.size();
         GeometryFactory geomFact = null;

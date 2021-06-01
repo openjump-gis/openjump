@@ -70,12 +70,12 @@ public class MariadbDSConnection extends SpatialDatabasesDSConnection {
           fs = ifs.getFeatureSchema();
         } catch (Exception e) {
           throw new Exception(
-              I18N.get(com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection.class.getName()
+              I18N.getInstance().get(com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection.class.getName()
                   +".SQL-error") + e.getMessage());
         }
         
         if (fs.getGeometryIndex() < 0) {
-            throw new Exception(I18N.get(
+            throw new Exception(I18N.getInstance().get(
                 com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection.class.getName()
                 +".resultset-must-have-a-geometry-column"));
         }

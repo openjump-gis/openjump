@@ -78,11 +78,11 @@ public class SelectByTypePlugIn extends AbstractPlugIn
     private boolean excludeEmptyGeometries = false;
     protected AbstractSelection selection;
 
-    private final static String sSelectByGeometryType = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Select-by-Geometry-Type");
-    private final static String sSelectOnlyTheseTypes = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Select-only-these-types");
-    private final static String sEmptyGeometries = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Empty-Geometries");
-    private final static String sOnSelectedLayersOnly = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.On-selected-layers-only");
-    private final static String sExcludeEmptyGeometries = I18N.get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Exclude-empty-geometries");
+    private final static String sSelectByGeometryType = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Select-by-Geometry-Type");
+    private final static String sSelectOnlyTheseTypes = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Select-only-these-types");
+    private final static String sEmptyGeometries = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Empty-Geometries");
+    private final static String sOnSelectedLayersOnly = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.On-selected-layers-only");
+    private final static String sExcludeEmptyGeometries = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Exclude-empty-geometries");
 	
     public void initialize(PlugInContext context) throws Exception
     {     

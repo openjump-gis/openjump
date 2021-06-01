@@ -45,10 +45,10 @@ public class SelectUrlWithAuthPanel extends JPanel {
   }
 
   private void initUrlPanel() {
-    JLabel urlLabel = new JLabel(I18N.get("ui.GenericNames.url"));
-    JLabel userLabel = new JLabel(I18N.get("ui.GenericNames.user"));
-    JLabel passLabel = new JLabel(I18N.get("ui.GenericNames.password"));
-    JLabel showLabel = new JLabel(I18N.get("ui.GenericNames.show"));
+    JLabel urlLabel = new JLabel(I18N.getInstance().get("ui.GenericNames.url"));
+    JLabel userLabel = new JLabel(I18N.getInstance().get("ui.GenericNames.user"));
+    JLabel passLabel = new JLabel(I18N.getInstance().get("ui.GenericNames.password"));
+    JLabel showLabel = new JLabel(I18N.getInstance().get("ui.GenericNames.show"));
 
     user = new JTextField();
     pass = new JPasswordField();

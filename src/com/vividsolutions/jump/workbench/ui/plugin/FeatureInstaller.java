@@ -1556,7 +1556,7 @@ public class FeatureInstaller {
       }
     }
     else if (name.startsWith("I18N.")) {
-      name = I18N.get(name.replaceFirst("I18N\\.", ""));
+      name = I18N.getInstance().get(name.replaceFirst("I18N\\.", ""));
     }
     return name;
   }

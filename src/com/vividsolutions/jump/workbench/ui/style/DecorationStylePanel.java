@@ -59,7 +59,7 @@ public class DecorationStylePanel extends JPanel implements StylePanel {
     private Collection choosableStyleClasses;
 
 	public String getTitle() {
-		return I18N.get("ui.style.DecorationStylePanel.decorations");
+		return I18N.getInstance().get("ui.style.DecorationStylePanel.decorations");
 	}
 
     public DecorationStylePanel(Layer layer, Collection choosableStyleClasses) {
@@ -129,8 +129,8 @@ public class DecorationStylePanel extends JPanel implements StylePanel {
 
     void jbInit() throws Exception {
         this.setLayout(borderLayout1);
-        addRemovePanel.setLeftText(I18N.get("ui.style.DecorationStylePanel.available"));
-        addRemovePanel.setRightText(I18N.get("ui.style.DecorationStylePanel.in-use"));
+        addRemovePanel.setLeftText(I18N.getInstance().get("ui.style.DecorationStylePanel.available"));
+        addRemovePanel.setRightText(I18N.getInstance().get("ui.style.DecorationStylePanel.in-use"));
         this.add(addRemovePanel, BorderLayout.CENTER);
     }
 

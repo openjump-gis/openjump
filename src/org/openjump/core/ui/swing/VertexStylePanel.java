@@ -172,11 +172,11 @@ public class VertexStylePanel extends JPanel implements ListCellRenderer {
 		vertexStyleComboBox.setRenderer(this);
 		vertexStyleComboBox.setEditable(false);
 		// an item is a String Array, index 0 is the Text in the ComboBox and index 1 is the VertexStyle
-		vertexStyleComboBox.addItem(new String[] {I18N.get("deejump.ui.style.RenderingStylePanel.square"), VertexStylesFactory.SQUARE_STYLE});
-        vertexStyleComboBox.addItem(new String[] {I18N.get("deejump.ui.style.RenderingStylePanel.circle"), VertexStylesFactory.CIRCLE_STYLE});
-        vertexStyleComboBox.addItem(new String[] {I18N.get("deejump.ui.style.RenderingStylePanel.triangle"), VertexStylesFactory.TRIANGLE_STYLE});
-        vertexStyleComboBox.addItem(new String[] {I18N.get("deejump.ui.style.RenderingStylePanel.cross"), VertexStylesFactory.CROSS_STYLE});
-        vertexStyleComboBox.addItem(new String[] {I18N.get("deejump.ui.style.RenderingStylePanel.star"), VertexStylesFactory.STAR_STYLE});
+		vertexStyleComboBox.addItem(new String[] {I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.square"), VertexStylesFactory.SQUARE_STYLE});
+        vertexStyleComboBox.addItem(new String[] {I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.circle"), VertexStylesFactory.CIRCLE_STYLE});
+        vertexStyleComboBox.addItem(new String[] {I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.triangle"), VertexStylesFactory.TRIANGLE_STYLE});
+        vertexStyleComboBox.addItem(new String[] {I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.cross"), VertexStylesFactory.CROSS_STYLE});
+        vertexStyleComboBox.addItem(new String[] {I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.star"), VertexStylesFactory.STAR_STYLE});
 		vertexSizeLabel = new JLabel();
 		vertexSizeSlider = new JSlider();
 		fillPanel = new JPanel();
@@ -187,7 +187,7 @@ public class VertexStylePanel extends JPanel implements ListCellRenderer {
 		this.add(mainPanel, BorderLayout.CENTER);
 
 		// Vertexcolor
-        vertexColorLabel.setText(I18N.get("org.openjump.core.ui.swing.VertexStylePanel.vertex-color"));
+        vertexColorLabel.setText(I18N.getInstance().get("org.openjump.core.ui.swing.VertexStylePanel.vertex-color"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -202,7 +202,7 @@ public class VertexStylePanel extends JPanel implements ListCellRenderer {
         mainPanel.add(vertexColorChooserPanel, gridBagConstraints);
 
 		// Vertexform
-        vertexStyleLabel.setText(I18N.get("org.openjump.core.ui.swing.VertexStylePanel.vertex-style"));
+        vertexStyleLabel.setText(I18N.getInstance().get("org.openjump.core.ui.swing.VertexStylePanel.vertex-style"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -219,7 +219,7 @@ public class VertexStylePanel extends JPanel implements ListCellRenderer {
         mainPanel.add(vertexStyleComboBox, gridBagConstraints);
 
 		// Vertexsize
-        vertexSizeLabel.setText(I18N.get("org.openjump.core.ui.swing.VertexStylePanel.vertexsize"));
+        vertexSizeLabel.setText(I18N.getInstance().get("org.openjump.core.ui.swing.VertexStylePanel.vertexsize"));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -268,7 +268,7 @@ public class VertexStylePanel extends JPanel implements ListCellRenderer {
 
 		// Button "Restore default settings"
 		if (displayRestoreDefaultsButton) {
-		restoreDefaultsButton.setText(I18N.get("org.openjump.core.ui.swing.VertexStylePanel.RestoreDefaultsSettings"));
+		restoreDefaultsButton.setText(I18N.getInstance().get("org.openjump.core.ui.swing.VertexStylePanel.RestoreDefaultsSettings"));
 			gridBagConstraints = new java.awt.GridBagConstraints();
 			gridBagConstraints.gridx = 0;
 			gridBagConstraints.gridy = 4;

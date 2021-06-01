@@ -724,13 +724,13 @@ public class TextEditor extends JComponent {
 			p.add(getFontFamilyTextField(), BorderLayout.NORTH);
 			p.add(scrollPane, BorderLayout.CENTER);
 
-			final JLabel label = new JLabel(I18N.get("ui.FontChooser.font"));
+			final JLabel label = new JLabel(I18N.getInstance().get("ui.FontChooser.font"));
 			label.setHorizontalAlignment(JLabel.LEFT);
 			label.setHorizontalTextPosition(JLabel.LEFT);
 			label.setLabelFor(getFontFamilyTextField());
 			label.setDisplayedMnemonic('F');
 			fontNamePanel.setBorder(new TitledBorder(new EtchedBorder(), " "
-					+ I18N.get("ui.FontChooser.font") + " "));
+					+ I18N.getInstance().get("ui.FontChooser.font") + " "));
 			fontNamePanel.add(p, BorderLayout.CENTER);
 
 		}
@@ -755,13 +755,13 @@ public class TextEditor extends JComponent {
 			p.add(getFontStyleTextField(), BorderLayout.NORTH);
 			p.add(scrollPane, BorderLayout.CENTER);
 
-			final JLabel label = new JLabel(I18N.get("ui.FontChooser.style"));
+			final JLabel label = new JLabel(I18N.getInstance().get("ui.FontChooser.style"));
 			label.setHorizontalAlignment(JLabel.LEFT);
 			label.setHorizontalTextPosition(JLabel.LEFT);
 			label.setLabelFor(getFontStyleTextField());
 			label.setDisplayedMnemonic('Y');
 			fontStylePanel.setBorder(new TitledBorder(new EtchedBorder(), " "
-					+ I18N.get("ui.FontChooser.style") + " "));
+					+ I18N.getInstance().get("ui.FontChooser.style") + " "));
 
 			fontStylePanel.add(p, BorderLayout.CENTER);
 		}
@@ -787,13 +787,13 @@ public class TextEditor extends JComponent {
 			p.add(scrollPane, BorderLayout.CENTER);
 
 			final JLabel label = new JLabel(
-					I18N.get("ui.style.LabelStylePanel.height"));
+					I18N.getInstance().get("ui.style.LabelStylePanel.height"));
 			label.setHorizontalAlignment(JLabel.LEFT);
 			label.setHorizontalTextPosition(JLabel.LEFT);
 			label.setLabelFor(getFontSizeTextField());
 			label.setDisplayedMnemonic('S');
 			fontSizePanel.setBorder(new TitledBorder(new EtchedBorder(), " "
-					+ I18N.get("ui.FontChooser.size") + " "));
+					+ I18N.getInstance().get("ui.FontChooser.size") + " "));
 			fontSizePanel.add(p, BorderLayout.CENTER);
 		}
 		return fontSizePanel;
@@ -807,7 +807,7 @@ public class TextEditor extends JComponent {
 			.setBorder(new TitledBorder(
 					new EtchedBorder(),
 					" "
-							+ I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.string")
+							+ I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.string")
 							+ " "));
 
 			JScrollPane scroll = new JScrollPane(getSampleTextField()); //place the JTextArea in a scroll pane
@@ -827,7 +827,7 @@ public class TextEditor extends JComponent {
 
 			sampleText.setLineWrap(true);
 			sampleText.setWrapStyleWord(true);
-			sampleText.setText(I18N.get("ui.FontChooser.sampletext"));
+			sampleText.setText(I18N.getInstance().get("ui.FontChooser.sampletext"));
 			sampleText.setBorder(lowered);
 			//	sampleText.setPreferredSize(new Dimension(150, 40));
 		}

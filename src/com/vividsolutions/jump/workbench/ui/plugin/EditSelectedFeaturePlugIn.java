@@ -64,7 +64,7 @@ public class EditSelectedFeaturePlugIn extends WKTPlugIn {
 	}
 
     public String getName() {
-        return I18N.get("ui.plugin.EditSelectedFeaturePlugIn.view-edit-selected-feature");
+        return I18N.getInstance().get("ui.plugin.EditSelectedFeaturePlugIn.view-edit-selected-feature");
     }
     
     public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
@@ -103,7 +103,7 @@ public class EditSelectedFeaturePlugIn extends WKTPlugIn {
     protected void apply(FeatureCollection c, PlugInContext context)
         throws WorkbenchException {
         if (c.size() != 1) {
-            throw new WorkbenchException(I18N.get("ui.plugin.EditSelectedFeaturePlugIn.expected-1-feature-but-found")+" " + c.size());
+            throw new WorkbenchException(I18N.getInstance().get("ui.plugin.EditSelectedFeaturePlugIn.expected-1-feature-but-found")+" " + c.size());
         }
         EditTransaction transaction =
             new EditTransaction(
@@ -124,12 +124,12 @@ public class EditSelectedFeaturePlugIn extends WKTPlugIn {
 	protected EnterWKTDialog createDialog(PlugInContext context) {
 		EnterWKTDialog d = super.createDialog(context);
         d.setTitle(
-            (layer(context).isEditable() ? I18N.get("ui.plugin.EditSelectedFeaturePlugIn.edit")+" " : "")
-                + I18N.get("ui.plugin.EditSelectedFeaturePlugIn.feature")+" "
+            (layer(context).isEditable() ? I18N.getInstance().get("ui.plugin.EditSelectedFeaturePlugIn.edit")+" " : "")
+                + I18N.getInstance().get("ui.plugin.EditSelectedFeaturePlugIn.feature")+" "
                 + feature.getID()
-                + " "+I18N.get("ui.plugin.EditSelectedFeaturePlugIn.in")+" "
+                + " "+I18N.getInstance().get("ui.plugin.EditSelectedFeaturePlugIn.in")+" "
                 + layer
-                + (layer(context).isEditable() ? "" : " ("+I18N.get("ui.plugin.EditSelectedFeaturePlugIn.layer-is-uneditable")+")"));
+                + (layer(context).isEditable() ? "" : " ("+I18N.getInstance().get("ui.plugin.EditSelectedFeaturePlugIn.layer-is-uneditable")+")"));
         d.setEditable(layer(context).isEditable());
 		d.setText(helper.format(new WKTWriter(3).write(feature
 				.getGeometry())));

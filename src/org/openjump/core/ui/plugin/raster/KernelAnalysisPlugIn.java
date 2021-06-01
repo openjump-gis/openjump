@@ -50,21 +50,15 @@ import it.betastudio.adbtoolbox.libs.FileOperations;
 
 public class KernelAnalysisPlugIn extends ThreadedBasePlugIn {
 
-    public static String dimension = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension");
+    public static String dimension = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension");
 
-    private final String CLAYER = I18N.get("ui.GenericNames.Source-Layer");
-    private final String OUTPUT_FILE = I18N
-            .get("driver.DriverManager.file-to-save");
-    private final String CHECK = I18N.get("ui.GenericNames.check-field");
-    private final String KernelAnalysis = I18N
-            .get("ui.plugin.raster.KernelAnalysisPlugIn.Name");
-    private final String defaultKernels = I18N
-            .get("ui.plugin.raster.KernelAnalysisPlugIn.default-kernels");
-    private final String PROCESSING = I18N
-            .get("jump.plugin.edit.NoderPlugIn.processing");
-    private final String NO_OVERWRITE = I18N
-            .get("ui.GenericNames.cannot-overwrite-input-layer");
+    private final String CLAYER = I18N.getInstance().get("ui.GenericNames.Source-Layer");
+    private final String OUTPUT_FILE = I18N.getInstance().get("driver.DriverManager.file-to-save");
+    private final String CHECK = I18N.getInstance().get("ui.GenericNames.check-field");
+    private final String KernelAnalysis = I18N.getInstance().get("ui.plugin.raster.KernelAnalysisPlugIn.Name");
+    private final String defaultKernels = I18N.getInstance().get("ui.plugin.raster.KernelAnalysisPlugIn.default-kernels");
+    private final String PROCESSING = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.processing");
+    private final String NO_OVERWRITE = I18N.getInstance().get("ui.GenericNames.cannot-overwrite-input-layer");
     private JComboBox<RasterImageLayer> layerableComboBox = new JComboBox<RasterImageLayer>();
     private RasterImageLayer rLayer;
     private final ImageIcon icon16 = IconLoader

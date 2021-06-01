@@ -89,17 +89,12 @@ public class CreateScatterPlotPlugIn extends AbstractPlugIn implements
     @Override
     public void initialize(PlugInContext context) throws Exception {
 
-        ATTRIBUTEA = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Select-attribute-for-east-axis");
-        ATTRIBUTEB = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Select-attribute-for-north-axis");
+        ATTRIBUTEA = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Select-attribute-for-east-axis");
+        ATTRIBUTEB = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Select-attribute-for-north-axis");
         CLAYER = GenericNames.SELECT_LAYER;
-        sScatterPlot = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Scatter-Plot");
-        sName = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn");
-        sWrongDataType = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
+        sScatterPlot = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Scatter-Plot");
+        sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn");
+        sWrongDataType = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
 
         final FeatureInstaller featureInstaller = new FeatureInstaller(
                 context.getWorkbenchContext());

@@ -92,7 +92,7 @@ public class FirstTaskFramePlugIn extends AbstractPlugIn {// AbstractPlugIn {
                 workbenchContext, new TaskMonitorManager()).actionPerformed(
                 new ActionEvent(this, 0, ""));
           } catch (Exception ex) {
-            String mesg = I18N.getMessage(this.getClass().getName()+".could-not-load-file-{0}", f);
+            String mesg = I18N.getInstance().get(this.getClass().getName()+".could-not-load-file-{0}", f);
             Logger.error(mesg);
             context.getWorkbenchFrame().warnUser(mesg);
           }
@@ -121,7 +121,7 @@ public class FirstTaskFramePlugIn extends AbstractPlugIn {// AbstractPlugIn {
                   new ActionEvent(this, 0, ""));
             }
           } catch (Exception e2) {
-            String mesg = I18N.getMessage(this.getClass().getName()+".could-not-load-file-{0}", f);
+            String mesg = I18N.getInstance().get(this.getClass().getName()+".could-not-load-file-{0}", f);
             Logger.error(mesg);
           }
         }

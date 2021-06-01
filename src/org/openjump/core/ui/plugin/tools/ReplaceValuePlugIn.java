@@ -62,12 +62,12 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 public class ReplaceValuePlugIn extends AbstractPlugIn implements ThreadedPlugIn {
  
   //-- replace later with correct language
-  private static String ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
-  private static String VALUE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value");
-  private static String ATTRIBUTE_SRC = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-src");
-  private static String BY_ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value-by-copy");
+  private static String ATTRIBUTE = I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
+  private static String VALUE = I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value");
+  private static String ATTRIBUTE_SRC = I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-src");
+  private static String BY_ATTRIBUTE = I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value-by-copy");
   private static String SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
-  private static String DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
+  private static String DESCRIPTION = I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
 
   private Layer layer;
   private String attrName;
@@ -90,17 +90,17 @@ public class ReplaceValuePlugIn extends AbstractPlugIn implements ThreadedPlugIn
   }
 
   public String getName(){
-  	return I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Replace-Attribute-Value");
+  	return I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Replace-Attribute-Value");
   }
   
   public boolean execute(PlugInContext context) throws Exception {
 //	  lemesre: duplicate from private initialisation
-	  //ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
-	  //VALUE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value");
-	  //ATTRIBUTE_SRC = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-src");
-	  //BY_ATTRIBUTE = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value-by-copy");
+	  //ATTRIBUTE = I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute");
+	  //VALUE = I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value");
+	  //ATTRIBUTE_SRC = I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-src");
+	  //BY_ATTRIBUTE = I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.New-value-by-copy");
 	  //SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
-	  //DESCRIPTION = I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
+	  //DESCRIPTION = I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Description");
 
 	  MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
 	  setDialogValues(dialog, context);
@@ -112,7 +112,7 @@ public class ReplaceValuePlugIn extends AbstractPlugIn implements ThreadedPlugIn
 		  return true;
 	  }
 	  else {
-		  JOptionPane.showMessageDialog(dialog, I18N.get("ui.SchemaPanel.layer-must-be-editable"));
+		  JOptionPane.showMessageDialog(dialog, I18N.getInstance().get("ui.SchemaPanel.layer-must-be-editable"));
 	  }
 	  return false;
 
@@ -133,10 +133,10 @@ public class ReplaceValuePlugIn extends AbstractPlugIn implements ThreadedPlugIn
 				  context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems(layer);
           if (featureSelected.size() == 0) {
               context.getWorkbenchFrame().warnUser(
-              		I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-feature-selected"));
+              		I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-feature-selected"));
               return;
           }
-		  monitor.report(I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Replacing-values"));
+		  monitor.report(I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Replacing-values"));
 		  if (byAttribute) {
 			  replaceByAttributeValue(featureSelected, attrName,attrNameSrc);
 		  } else {
@@ -178,7 +178,7 @@ public class ReplaceValuePlugIn extends AbstractPlugIn implements ThreadedPlugIn
     
    
     final JTextField textfield = dialog.addTextField(
-    		I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-type"), 
+    		I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-type"), 
 			(layer.getFeatureCollectionWrapper().getFeatureSchema().getAttributeType(column1)).toString(), 
 			10, null, null);
     textfield.setEnabled(false);
@@ -299,12 +299,12 @@ public class ReplaceValuePlugIn extends AbstractPlugIn implements ThreadedPlugIn
                         break;
                     }
                 }
-                if (layer == null) return I18N.get("com.vividsolutions.jump.workbench.plugin.Exactly-one-selected-layer-must-be-editable");
+                if (layer == null) return I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-selected-layer-must-be-editable");
                 if (layer.getFeatureCollectionWrapper().getFeatureSchema().getAttributeCount() < 2) {
-                    return I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-attribute");
+                    return I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-attribute");
                 }
                 if (layer.getFeatureCollectionWrapper().size() == 0) {
-                    return I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-feature");
+                    return I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-feature");
                 }
                 return null;
             }

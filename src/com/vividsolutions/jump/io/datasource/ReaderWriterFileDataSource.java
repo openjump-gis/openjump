@@ -96,7 +96,7 @@ public class ReaderWriterFileDataSource extends FileDataSource {
             TaskMonitorV2Util
                 .setTitle(
                     monitor,
-                    I18N.getMessage(
+                    I18N.getInstance().get(
                         "com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource.open",
                         createDescriptiveName(uri)));
           }
@@ -140,7 +140,7 @@ public class ReaderWriterFileDataSource extends FileDataSource {
           TaskMonitorV2Util
               .setTitle(
                   monitor,
-                  I18N.getMessage(
+                  I18N.getInstance().get(
                       "com.vividsolutions.jump.io.datasource.ReaderWriterFileDataSource.write",
                       createDescriptiveName(uri)));
         }

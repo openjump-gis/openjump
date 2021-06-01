@@ -86,7 +86,7 @@ import de.soldin.awt.VerticalFlowLayout;
 
 public class ShortcutKeysPlugIn extends AbstractPlugIn {
   public static final ImageIcon ICON = IconLoader.icon("keyboard.png");
-  public static final String NAME = I18N.get(ShortcutKeysPlugIn.class.getName());
+  public static final String NAME = I18N.getInstance().get(ShortcutKeysPlugIn.class.getName());
 
 
   public boolean execute(PlugInContext context) throws Exception {
@@ -213,7 +213,7 @@ class ShortcutKeysFrame extends JFrame {
       add(scroll, BorderLayout.CENTER);
 
       /* OK Button */
-      okButton.setText(I18N.get("ui.OKCancelPanel.ok"));
+      okButton.setText(I18N.getInstance().get("ui.OKCancelPanel.ok"));
       okButton.addActionListener(new java.awt.event.ActionListener() {
           public void actionPerformed(ActionEvent e) {
             setVisible(false);
@@ -324,14 +324,14 @@ class ShortcutKeysFrame extends JFrame {
     // add leftover (non)menu shortcuts
     HashMap shortcut_plugins = new LinkedHashMap();
     // assuming main menu categories are unique
-    categories.put(I18N.get(ShortcutKeysPlugIn.getClassName()+".more"), shortcut_plugins);
+    categories.put(I18N.getInstance().get(ShortcutKeysPlugIn.getClassName()+".more"), shortcut_plugins);
     for (KeyStroke key : wb.getFrame().getKeyboardShortcuts()) {
       if (!strokeInMap(key, categories))
         shortcut_plugins.put(getKeyStrokeText(key), wb.getFrame().getKeyboardShortcutPlugin(key));
     }
     // add global cursortools shortcuts (defined in quasimode tool)
 //    shortcut_plugins = new LinkedHashMap();
-//    categories.put(I18N.get(this.getClass().getName()+".cursortools-quasimodes"), shortcut_plugins);
+//    categories.put(I18N.getInstance().get(this.getClass().getName()+".cursortools-quasimodes"), shortcut_plugins);
 //    for (QuasimodeTool.ModifierKeySpec key : QuasimodeTool.getDefaultKeyboardShortcuts()) {
 //      // create a pseudo plugin that spits out the name only
 //      final CursorTool ct = QuasimodeTool.getDefaultKeyboardShortcutTool(key);
@@ -377,7 +377,7 @@ class ShortcutKeysFrame extends JFrame {
     HashMap<String, HashMap> categories = new HashMap();
     // add global cursortools shortcuts (defined in quasimode tool)
     LinkedHashMap shortcut_plugins = new LinkedHashMap();
-    categories.put(I18N.get(ShortcutKeysPlugIn.getClassName()+".cursortools-quasimodes"), shortcut_plugins);
+    categories.put(I18N.getInstance().get(ShortcutKeysPlugIn.getClassName()+".cursortools-quasimodes"), shortcut_plugins);
     for (QuasimodeTool.ModifierKeySpec key : QuasimodeTool.getDefaultKeyboardShortcuts()) {
       // create a pseudo plugin that spits out the name only
       final CursorTool ct = QuasimodeTool.getDefaultKeyboardShortcutTool(key);
@@ -424,13 +424,13 @@ class ShortcutKeysFrame extends JFrame {
     // add an all tools describing e.g. snapping options
     tools.add(0, new ShortcutsDescriptor() {
       public String getName() {
-        return I18N.get(ShortcutKeysPlugIn.getClassName() + ".all-editing-tools");
+        return I18N.getInstance().get(ShortcutKeysPlugIn.getClassName() + ".all-editing-tools");
       }
       
       public Map<ModifierKeySpec, String> describeShortcuts() {
         Map map = new HashMap();
         map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_SPACE }),
-            I18N.get(ShortcutKeysPlugIn.getClassName() + ".temporarily-switch-off-snapping"));
+            I18N.getInstance().get(ShortcutKeysPlugIn.getClassName() + ".temporarily-switch-off-snapping"));
         return map;
       }
     });
@@ -457,11 +457,11 @@ class ShortcutKeysFrame extends JFrame {
       public Map<ModifierKeySpec, String> describeShortcuts() {
         Map map = new HashMap();
         map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_BACK_SPACE }),
-            I18N.get(MultiClickTool.class.getName() + ".erase-last-segment-or-point"));
+            I18N.getInstance().get(MultiClickTool.class.getName() + ".erase-last-segment-or-point"));
         map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_ESCAPE }),
-            I18N.get(MultiClickTool.class.getName() + ".cancel-drawing"));
+            I18N.getInstance().get(MultiClickTool.class.getName() + ".cancel-drawing"));
         map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_ENTER }),
-            I18N.get(MultiClickTool.class.getName() + ".finish-drawing"));
+            I18N.getInstance().get(MultiClickTool.class.getName() + ".finish-drawing"));
         return map;
       }
     });
@@ -491,7 +491,7 @@ class ShortcutKeysFrame extends JFrame {
       // title glued to first entry so they will not get separated by layout
       if (i==1)
         tool_out = "<tr><td colspan=2><b><center><u>"
-            + GUIUtil.escapeHTML(I18N.get(ShortcutKeysPlugIn.getClassName()
+            + GUIUtil.escapeHTML(I18N.getInstance().get(ShortcutKeysPlugIn.getClassName()
                 + ".editing-tools-options")) + "</u></center></b></td></tr>\n"
             + tool_out;
       if (i<=2){
@@ -501,7 +501,7 @@ class ShortcutKeysFrame extends JFrame {
     }
 //    tools_out = //tools_out.length() <= 0 ? "" : "<html><body><table>\n" +
 //        "<tr><td colspan=2><b><center><u>"
-//        + I18N.get(this.getClass().getName() + ".editing-tools-options")
+//        + I18N.getInstance().get(this.getClass().getName() + ".editing-tools-options")
 //        + "</u></center></b></td></tr>\n" + tools_out;
 //        //+ "\n</table></body></html>";
 

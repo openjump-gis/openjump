@@ -223,7 +223,7 @@ public class MultiInputDialog extends AbstractMultiInputDialog {
   
       // LDB: set the default button for Enter to the OK for all
       this.getRootPane().setDefaultButton(
-          okCancelApplyPanel.getButton(I18N.get("ui.OKCancelPanel.ok")));
+          okCancelApplyPanel.getButton(I18N.getInstance().get("ui.OKCancelPanel.ok")));
   
       setMainComponent();
   

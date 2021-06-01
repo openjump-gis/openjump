@@ -363,7 +363,7 @@ public abstract class AttributePredicate {
   // starts with predicates
   private static class StartsWithPredicate extends AttributePredicate {
     public StartsWithPredicate() {
-      super(I18N.get("ui.plugin.analysis.AttributePredicate.starts-with"));
+      super(I18N.getInstance().get("ui.plugin.analysis.AttributePredicate.starts-with"));
     }
 
     public boolean isTrue(Object arg1, Object arg2) {
@@ -385,7 +385,7 @@ public abstract class AttributePredicate {
   // ends with predicates
   private static class EndsWithPredicate extends AttributePredicate {
     public EndsWithPredicate() {
-      super(I18N.get("ui.plugin.analysis.AttributePredicate.ends-with"));
+      super(I18N.getInstance().get("ui.plugin.analysis.AttributePredicate.ends-with"));
     }
 
     public boolean isTrue(Object arg1, Object arg2) {
@@ -407,7 +407,7 @@ public abstract class AttributePredicate {
   // preg match predicates
   private static class MatchesPredicate extends AttributePredicate {
     public MatchesPredicate() {
-      super(I18N.get("ui.plugin.analysis.AttributePredicate.matches"));
+      super(I18N.getInstance().get("ui.plugin.analysis.AttributePredicate.matches"));
     }
 
     public boolean isTrue(Object arg1, Object arg2) {

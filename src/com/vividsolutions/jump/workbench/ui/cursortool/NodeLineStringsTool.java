@@ -47,10 +47,10 @@ public class NodeLineStringsTool extends AbstractClickSelectedLineStringsTool {
 		}
 	}
 
-    private final static String sNoIntersectionsHere = I18N.get("com.vividsolutions.jump.workbench.ui.cursortool.NodeLineStringsTool.No-intersections-here");
+    private final static String sNoIntersectionsHere = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.cursortool.NodeLineStringsTool.No-intersections-here");
     
     public String getName() {
-        return I18N.get("com.vividsolutions.jump.workbench.ui.cursortool.NodeLineStringsTool.Node-LineStrings");
+        return I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.cursortool.NodeLineStringsTool.Node-LineStrings");
     }
     
 	protected void gestureFinished(Collection nearbyLineStringFeatures)

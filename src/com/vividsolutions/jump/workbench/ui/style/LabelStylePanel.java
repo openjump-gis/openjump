@@ -59,47 +59,47 @@ import java.util.Date;
 
 public class LabelStylePanel extends JPanel implements StylePanel {
     private static final String NONE = "("+
-    	I18N.get("ui.style.LabelStylePanel.none")+")";
+    	I18N.getInstance().get("ui.style.LabelStylePanel.none")+")";
     private static final String CHOOSE_COLOUR = 
-    	I18N.get("ui.style.LabelStylePanel.choose-colour");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.choose-colour");
     private static final String CHOOSE_FONT = 
-    	I18N.get("ui.style.LabelStylePanel.choose-font");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.choose-font");
     private static final String BROWSE = 
-    	I18N.get("ui.style.LabelStylePanel.browse");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.browse");
     private static final String LABEL_ATTRIBUTE = 
-    	I18N.get("ui.style.LabelStylePanel.label-attribute");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.label-attribute");
     private static final String SCALE_LABELS_WITH_THE_ZOOM_LEVEL = 
-    	I18N.get("ui.style.LabelStylePanel.scale-labels-with-the-zoom-level");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.scale-labels-with-the-zoom-level");
     private static final String HIDE_LABELS_WHEN = 
-    	I18N.get("ui.style.LabelStylePanel.hide-labels-when"); 
+    	I18N.getInstance().get("ui.style.LabelStylePanel.hide-labels-when"); 
     private static final String DRAW_OUTLINE_HALO_AROUND_LABELS = 
-    	I18N.get("ui.style.LabelStylePanel.draw-outline-halo-around-labels"); 
+    	I18N.getInstance().get("ui.style.LabelStylePanel.draw-outline-halo-around-labels"); 
     private static final String ENABLE_LABELLING = 
-    	I18N.get("ui.style.LabelStylePanel.enable-labelling");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.enable-labelling");
     private static final String HEIGHT = 
-    	I18N.get("ui.style.LabelStylePanel.height");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.height");
     private static final String OUTLINE_WIDTH = 
-    	I18N.get("ui.style.LabelStylePanel.outline-width"); 
+    	I18N.getInstance().get("ui.style.LabelStylePanel.outline-width"); 
     private static final String PREVIEW_AT_CURRENT_ZOOM_LEVEL = 
-    	I18N.get("ui.style.LabelStylePanel.preview-at-current-zoom-level");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.preview-at-current-zoom-level");
     private static final String VERTICAL_ALIGNMENT = 
-    	I18N.get("ui.style.LabelStylePanel.vertical-alignment");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.vertical-alignment");
     private static final String HORIZONTAL_POSITION = 
-    	I18N.get("ui.style.LabelStylePanel.horizontal-position");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.horizontal-position");
     private static final String HORIZONTAL_ALIGNMENT = 
-    	I18N.get("ui.style.LabelStylePanel.horizontal-alignment");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.horizontal-alignment");
     private static final String CHANGE_FONT = 
-    	I18N.get("ui.style.LabelStylePanel.change-font");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.change-font");
     private static final String CHANGE_COLOUR = 
-    	I18N.get("ui.style.LabelStylePanel.change-colour");  
+    	I18N.getInstance().get("ui.style.LabelStylePanel.change-colour");  
     private static final String ANGLE_ATTRIBUTE_DEGREES = 
-    	I18N.get("ui.style.LabelStylePanel.angle-attribute-degrees");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.angle-attribute-degrees");
     private static final String HIDE_OVERLAPPING_LABELS = 
-    	I18N.get("ui.style.LabelStylePanel.hide-overlapping-labels");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.hide-overlapping-labels");
     private static final String HEIGHT_ATTRIBUTE = 
-    	I18N.get("ui.style.LabelStylePanel.height-attribute");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.height-attribute");
     private static final String SCALE_IS_BELOW = 
-    	I18N.get("ui.style.LabelStylePanel.scale-is-below");
+    	I18N.getInstance().get("ui.style.LabelStylePanel.scale-is-below");
 
     private static final String HIDE_AT_SCALE_TEXT = SCALE_IS_BELOW+"   1:";
     private BorderLayout borderLayout1 = new BorderLayout();
@@ -108,7 +108,7 @@ public class LabelStylePanel extends JPanel implements StylePanel {
     private JComboBox attributeComboBox = new JComboBox();
     private JComboBox angleAttributeComboBox = new JComboBox();
 	public String getTitle() {
-		return I18N.get("ui.style.LabelStylePanel.labels");
+		return I18N.getInstance().get("ui.style.LabelStylePanel.labels");
 	}
 	public String validateInput() {
         return null;

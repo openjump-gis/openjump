@@ -89,14 +89,10 @@ public class CreateBarPlotPlugIn extends AbstractPlugIn implements
 
         ATTRIBUTE = GenericNames.SELECT_ATTRIBUTE;
         CLAYER = GenericNames.SELECT_LAYER;
-        sBarPlot = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Bar-Plot");
-        sNthfeature = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.n-th-feature");
-        sName = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn");
-        sWrongDataType = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
+        sBarPlot = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Bar-Plot");
+        sNthfeature = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.n-th-feature");
+        sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn");
+        sWrongDataType = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
 
         final FeatureInstaller featureInstaller = new FeatureInstaller(
                 context.getWorkbenchContext());

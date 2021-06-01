@@ -89,7 +89,7 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2, Refresh
     }
 
     public TaskMonitorDialog(Frame frame, ErrorHandler errorHandler, boolean modal) {
-        super(frame, I18N.get("ui.task.TaskMonitorDialog.busy"), modal);
+        super(frame, I18N.getInstance().get("ui.task.TaskMonitorDialog.busy"), modal);
         this.errorHandler = errorHandler;
 
         try {
@@ -110,7 +110,7 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2, Refresh
 
     private void jbInit() throws Exception {
         mainPanel.setLayout(new GridBagLayout());
-        cancelButton.setText(I18N.get("ui.task.TaskMonitorDialog.cancel"));
+        cancelButton.setText(I18N.getInstance().get("ui.task.TaskMonitorDialog.cancel"));
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     cancelButton_actionPerformed(e);
@@ -129,12 +129,12 @@ public class TaskMonitorDialog extends JDialog implements TaskMonitorV2, Refresh
         labelPanel.setLayout(new GridBagLayout());
 
         taskProgressLabel = createWrapLabel("");
-        taskProgressLabel.setText(I18N.get("ui.task.TaskMonitorDialog.task-progress-goes-here"));
+        taskProgressLabel.setText(I18N.getInstance().get("ui.task.TaskMonitorDialog.task-progress-goes-here"));
 
         separator = Box.createRigidArea(new Dimension(10,10));
         
         subtaskProgressLabel = createWrapLabel("");
-        subtaskProgressLabel.setText(I18N.get("ui.task.TaskMonitorDialog.subtask-progress-goes-here"));
+        subtaskProgressLabel.setText(I18N.getInstance().get("ui.task.TaskMonitorDialog.subtask-progress-goes-here"));
 
         mainPanel.add(labelPanel,
             new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,

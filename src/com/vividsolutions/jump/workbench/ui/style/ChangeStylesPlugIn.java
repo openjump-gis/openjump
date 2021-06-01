@@ -78,11 +78,11 @@ public class ChangeStylesPlugIn extends AbstractPlugIn {
     public boolean execute(PlugInContext context) throws Exception {
         final Layer layer = context.getSelectedLayer(0);
         MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
-                I18N.get("ui.style.ChangeStylesPlugIn.change-styles"), true);
+                I18N.getInstance().get("ui.style.ChangeStylesPlugIn.change-styles"), true);
         dialog.setInset(0);
         dialog.setSideBarImage(IconLoader.icon("Symbology.gif"));
         dialog.setSideBarDescription(
-        		I18N.get("ui.style.ChangeStylesPlugIn.you-can-use-this-dialog-to-change-the-colour-line-width"));
+        		I18N.getInstance().get("ui.style.ChangeStylesPlugIn.you-can-use-this-dialog-to-change-the-colour-line-width"));
 
         final ArrayList stylePanels = new ArrayList();
         RenderingStylePanel renderingStylePanel = new RenderingStylePanel(context.getWorkbenchContext()
@@ -207,7 +207,7 @@ public class ChangeStylesPlugIn extends AbstractPlugIn {
         public DummyColorThemingStylePanel() {
             //GridBagLayout so it gets centered. [Jon Aquino]
             super(new GridBagLayout());
-            add(new JLabel(I18N.get("ui.style.ChangeStylesPlugIn.this-layer-has-no-attributes")));
+            add(new JLabel(I18N.getInstance().get("ui.style.ChangeStylesPlugIn.this-layer-has-no-attributes")));
         }
 
         public String getTitle() {

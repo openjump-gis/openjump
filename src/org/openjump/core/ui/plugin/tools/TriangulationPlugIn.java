@@ -74,14 +74,14 @@ import javax.swing.JComboBox;
  */
 public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
 
-  //public static String TRIANGULATION     = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulation");
-  public static String TRIANGULATE       = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulate");
-  public static String TRIANGULATED      = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulated");
-  public static String SITES_LAYER       = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.sites-layer");
-  public static String CONSTRAINTS_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.constraints-layer");
-  public static String INTERIOR_ONLY     = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.polygon-interior-only");
-  public static String TOLERANCE         = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.tolerance");
-  public static String DESCRIPTION       = I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.description");
+  //public static String TRIANGULATION     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulation");
+  public static String TRIANGULATE       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulate");
+  public static String TRIANGULATED      = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.triangulated");
+  public static String SITES_LAYER       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.sites-layer");
+  public static String CONSTRAINTS_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.constraints-layer");
+  public static String INTERIOR_ONLY     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.polygon-interior-only");
+  public static String TOLERANCE         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.tolerance");
+  public static String DESCRIPTION       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.description");
   public static Layer NO_CONSTRAINT;
 
 	String sitesLayer;
@@ -112,7 +112,7 @@ public class TriangulationPlugIn extends AbstractThreadedUiPlugIn{
     // TODO : there is probably a better (lighter) way to set no constraint
     if (NO_CONSTRAINT == null) {
       NO_CONSTRAINT = new Layer(
-              I18N.get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.no-constraint"),
+              I18N.getInstance().get("org.openjump.core.ui.plugin.tools.TriangulationPlugIn.no-constraint"),
               Color.BLACK, new FeatureDataset(new FeatureSchema()), new LayerManager());
     }
  		MultiInputDialog dialog = new MultiInputDialog(

@@ -240,7 +240,7 @@ public class ConnectionManagerPanel extends JPanel {
         if (addButton == null) {
             addButton = new JButton();
             addButton.setIcon(NEW_DB_ICON);
-            addButton.setText(I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Add"));
+            addButton.setText(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Add"));
             addButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     ConnectionDescriptor connectionDescriptor = addConnection();
@@ -260,7 +260,7 @@ public class ConnectionManagerPanel extends JPanel {
         if (copyButton == null) {
             copyButton = new JButton();
             copyButton.setIcon(DBS_ICON);
-            copyButton.setText(I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Copy"));
+            copyButton.setText(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Copy"));
             copyButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     ConnectionDescriptor connectionDescriptor = copyConnection();
@@ -277,7 +277,7 @@ public class ConnectionManagerPanel extends JPanel {
     }
 
     private ConnectionDescriptor copyConnection() {
-      return addOrCopyConnection(I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Copy-Connection"), getSelectedConnection());
+      return addOrCopyConnection(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Copy-Connection"), getSelectedConnection());
     }
 
     private ConnectionDescriptor addConnection() {
@@ -286,11 +286,11 @@ public class ConnectionManagerPanel extends JPanel {
         JOptionPane
             .showMessageDialog(
                 SwingUtilities.windowForComponent(this),
-                I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.No-datastore-drivers-are-loaded"));
+                I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.No-datastore-drivers-are-loaded"));
         return null;
       }
       return addOrCopyConnection(
-          I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Add-Connection"),
+          I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Add-Connection"),
           null);
     }
 
@@ -334,7 +334,7 @@ public class ConnectionManagerPanel extends JPanel {
         if (deleteButton == null) {
             deleteButton = new JButton();
             deleteButton.setIcon(DELETE_DB_ICON);
-            deleteButton.setText(I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Delete"));
+            deleteButton.setText(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Delete"));
             deleteButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     try {
@@ -354,7 +354,7 @@ public class ConnectionManagerPanel extends JPanel {
         if (connectButton == null) {
             connectButton = new JButton();
             connectButton.setIcon(CONNECTED_ICON);
-            connectButton.setText(I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Connect"));
+            connectButton.setText(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Connect"));
             connectButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
@@ -382,7 +382,7 @@ public class ConnectionManagerPanel extends JPanel {
         if (disconnectButton == null) {
             disconnectButton = new JButton();
             disconnectButton.setIcon(DISCONNECTED_ICON);
-            disconnectButton.setText(I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Disconnect"));
+            disconnectButton.setText(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionManagerPanel.Disconnect"));
             disconnectButton
                     .addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent e) {

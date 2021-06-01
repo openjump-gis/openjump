@@ -79,7 +79,7 @@ public class SnapVerticesToolsOptionsPanel extends JPanel implements OptionsPane
     private void jbInit() throws Exception {
         this.setLayout(borderLayout1);
         jPanel1.setLayout(gridBagLayout1);
-        insertVerticesCheckBox.setText(I18N.get("ui.SnapVerticeToolsOptionsPanel.insert-vertex-if-none-in-segment"));
+        insertVerticesCheckBox.setText(I18N.getInstance().get("ui.SnapVerticeToolsOptionsPanel.insert-vertex-if-none-in-segment"));
         this.add(jPanel1, BorderLayout.CENTER);
         jPanel1.add(
         insertVerticesCheckBox,

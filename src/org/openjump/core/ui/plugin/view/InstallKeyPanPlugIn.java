@@ -42,14 +42,14 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
     private static final int ZOOM_OUT = 5;
     private static final int ZOOM_FULL = 6;
     
-    public static final String sPAN_NORTH = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-north");
-    public static final String sPAN_EAST  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-east");
-    public static final String sPAN_SOUTH = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-south");
-    public static final String sPAN_WEST  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-west");
-    public static final String sZOOM_IN   = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-in");
-    public static final String sZOOM_OUT  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-out");
-    public static final String sZOOM_EXT  = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-to-full-extent");
-    public static final String sACCEPTED_VALUES = I18N.get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.accepted-values");
+    public static final String sPAN_NORTH = I18N.getInstance().get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-north");
+    public static final String sPAN_EAST  = I18N.getInstance().get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-east");
+    public static final String sPAN_SOUTH = I18N.getInstance().get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-south");
+    public static final String sPAN_WEST  = I18N.getInstance().get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.pan-west");
+    public static final String sZOOM_IN   = I18N.getInstance().get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-in");
+    public static final String sZOOM_OUT  = I18N.getInstance().get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-out");
+    public static final String sZOOM_EXT  = I18N.getInstance().get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.zoom-to-full-extent");
+    public static final String sACCEPTED_VALUES = I18N.getInstance().get("org.openjump.core.ui.plugin.view.InstallKeyPanPlugIn.accepted-values");
 
     /* matrix defining directions */
     private static final int[][] DIRECTIONS = 

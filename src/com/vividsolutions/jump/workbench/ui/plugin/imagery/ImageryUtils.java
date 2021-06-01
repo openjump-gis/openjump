@@ -381,10 +381,8 @@ public class ImageryUtils {
     private final static JFCWithEnterAction fileChooser = new GUIUtil.FileChooserWithOverwritePrompting();
     private final static FileNameExtensionFilter filter = new FileNameExtensionFilter(
             "GeoTIFF", "tif");
-    private static final String SAVE = I18N
-            .get("jump.plugin.edit.AffineTransformationPlugIn.save");
-    private static final String ALLOWED_IMAGES = I18N
-            .get("jump.plugin.edit.AffineTransformationPlugIn.allowed-files");
+    private static final String SAVE = I18N.getInstance().get("jump.plugin.edit.AffineTransformationPlugIn.save");
+    private static final String ALLOWED_IMAGES = I18N.getInstance().get("jump.plugin.edit.AffineTransformationPlugIn.allowed-files");
     static WorkbenchContext wcontex = JUMPWorkbench.getInstance().getContext();
 
     /**

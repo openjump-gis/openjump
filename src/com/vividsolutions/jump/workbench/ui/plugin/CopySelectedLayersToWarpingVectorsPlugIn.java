@@ -65,7 +65,7 @@ public class CopySelectedLayersToWarpingVectorsPlugIn extends AbstractPlugIn {
                 public String check(JComponent component) {
                     return workbenchContext.getLayerableNamePanel().getSelectedLayers().length == 1
                     && workbenchContext.getLayerNamePanel().getSelectedLayers()[0] == new WarpingVectorLayerFinder(workbenchContext).getLayer()
-                    ? I18N.get("ui.plugin.CopySelectedLayersToWarpingVectorsPlugIn.a-layer-other-than")+"'" + new WarpingVectorLayerFinder(workbenchContext).getLayerName() + "' "+I18N.get("ui.plugin.CopySelectedLayersToWarpingVectorsPlugIn.must-be-selected") : null;
+                    ? I18N.getInstance().get("ui.plugin.CopySelectedLayersToWarpingVectorsPlugIn.a-layer-other-than")+"'" + new WarpingVectorLayerFinder(workbenchContext).getLayerName() + "' "+I18N.getInstance().get("ui.plugin.CopySelectedLayersToWarpingVectorsPlugIn.must-be-selected") : null;
                 }
             });
     }
@@ -74,7 +74,7 @@ public class CopySelectedLayersToWarpingVectorsPlugIn extends AbstractPlugIn {
         ArrayList newFeatures = new ArrayList(features);
         Collection nonVectorFeatures = nonVectorFeatures(newFeatures);
         if (!nonVectorFeatures.isEmpty()) {
-            context.warnUser(I18N.get("ui.plugin.CopySelectedLayersToWarpingVectorsPlugIn.skipped")+" " + nonVectorFeatures.size() + " non-two-point-linestring" + StringUtil.s(nonVectorFeatures.size()) + " e.g. " + ((Feature)nonVectorFeatures.iterator().next()).getGeometry().toText());
+            context.warnUser(I18N.getInstance().get("ui.plugin.CopySelectedLayersToWarpingVectorsPlugIn.skipped")+" " + nonVectorFeatures.size() + " non-two-point-linestring" + StringUtil.s(nonVectorFeatures.size()) + " e.g. " + ((Feature)nonVectorFeatures.iterator().next()).getGeometry().toText());
             newFeatures.removeAll(nonVectorFeatures);
         }    
         return newFeatures;

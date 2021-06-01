@@ -85,14 +85,14 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 
 		// build the popup menu
 		popupMenu = new JPopupMenu();
-		distanceMenuItem = new JMenuItem(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.distance-measuring"), IconLoader.icon("Ruler.gif"));
+		distanceMenuItem = new JMenuItem(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.distance-measuring"), IconLoader.icon("Ruler.gif"));
 		distanceMenuItem.addActionListener(this);
 		popupMenu.add(distanceMenuItem);
-		areaMenuItem = new JMenuItem(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.area-measuring"), IconLoader.icon("Ruler_area.gif"));
+		areaMenuItem = new JMenuItem(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.area-measuring"), IconLoader.icon("Ruler_area.gif"));
 		areaMenuItem.addActionListener(this);
 		popupMenu.add(areaMenuItem);
 		popupMenu.addSeparator();
-		optionsMenuItem  = new JMenuItem(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.options"));
+		optionsMenuItem  = new JMenuItem(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.options"));
 		optionsMenuItem.addActionListener(this);
 		popupMenu.add(optionsMenuItem);
 
@@ -301,7 +301,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 			measureMode = MEASURE_MODE_DISTANCE;
 			if (toolbarButton != null) {
 				toolbarButton.setIcon(IconLoader.icon("Ruler.gif"));
-				toolbarButton.setToolTipText(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.distance-measuring"));
+				toolbarButton.setToolTipText(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.distance-measuring"));
 				// activate this tool
 				toolbarButton.setSelected(true);
 				context.getLayerViewPanel().setCurrentCursorTool(QuasimodeTool.createWithDefaults(this));
@@ -311,7 +311,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 			measureMode = MEASURE_MODE_AREA;
 			if (toolbarButton != null) {
 				toolbarButton.setIcon(IconLoader.icon("Ruler_area.gif"));
-				toolbarButton.setToolTipText(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.area-measuring"));
+				toolbarButton.setToolTipText(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureTool.area-measuring"));
 				// activate this tool
 				toolbarButton.setSelected(true);
 				context.getLayerViewPanel().setCurrentCursorTool(QuasimodeTool.createWithDefaults(this));

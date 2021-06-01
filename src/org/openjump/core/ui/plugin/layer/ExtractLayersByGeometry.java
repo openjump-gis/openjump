@@ -80,61 +80,37 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 public class ExtractLayersByGeometry extends AbstractThreadedUiPlugIn {
 
-  private final static String EXTRACT_LAYERS_BY_GEOMETRY_TYPE = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-Layers-by-Geometry-Type");
+  private final static String EXTRACT_LAYERS_BY_GEOMETRY_TYPE = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-Layers-by-Geometry-Type");
 
-  private final static String EXTRACT_BY_GEOMETRY_TYPE = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Type");
-  private final static String EXTRACT_BY_GEOMETRY_TYPE_TT = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Type-Tooltip");
+  private final static String EXTRACT_BY_GEOMETRY_TYPE = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Type");
+  private final static String EXTRACT_BY_GEOMETRY_TYPE_TT = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Type-Tooltip");
 
-  private final static String EXTRACT_BY_SHAPEFILE_TYPE = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Shapefile-Type");
-  private final static String EXTRACT_BY_SHAPEFILE_TYPE_TT = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Shapefile-Type-Tooltip");
+  private final static String EXTRACT_BY_SHAPEFILE_TYPE = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Shapefile-Type");
+  private final static String EXTRACT_BY_SHAPEFILE_TYPE_TT = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Shapefile-Type-Tooltip");
 
-  private final static String EXTRACT_BY_GEOMETRY_DIMENSION = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Dimension");
-  private final static String EXTRACT_BY_GEOMETRY_DIMENSION_TT = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Dimension-Tooltip");
+  private final static String EXTRACT_BY_GEOMETRY_DIMENSION = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Dimension");
+  private final static String EXTRACT_BY_GEOMETRY_DIMENSION_TT = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Extract-by-Geometry-Dimension-Tooltip");
 
-  private final static String KEEP_EMPTY_GEOMETRIES_APPART = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Keep-Empty-Geometries-Appart");
+  private final static String KEEP_EMPTY_GEOMETRIES_APPART = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Keep-Empty-Geometries-Appart");
 
-  private final static String DO_NOT_EXPLODE_GEOMETRY_COLLECTIONS = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Do-Not-Explode-GeometryCollections");
-  private final static String EXPLODE_ALL_GEOMETRY_COLLECTIONS = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Explode-All-GeometryCollections");
-  private final static String EXPLODE_PURE_GEOMETRY_COLLECTIONS = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Explode-Pure-GeometryCollections");
+  private final static String DO_NOT_EXPLODE_GEOMETRY_COLLECTIONS = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Do-Not-Explode-GeometryCollections");
+  private final static String EXPLODE_ALL_GEOMETRY_COLLECTIONS = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Explode-All-GeometryCollections");
+  private final static String EXPLODE_PURE_GEOMETRY_COLLECTIONS = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Explode-Pure-GeometryCollections");
 
 
-  private final static String ONLY_ONE_GEOMETRY_TYPE_FOUND = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Only-one-geometry-type-found");
-  private final static String EMPTY = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.empty");
-  private final static String POINT = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.point");
-  private final static String MULTIPOINT = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multipoint");
-  private final static String ZERODIM = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.point");
-  private final static String LINESTRING = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.linestring");
-  private final static String MULTILINESTRING = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multilinestring");
-  private final static String POLYLINE = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polyline");
-  private final static String ONEDIM = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.line");
-  private final static String POLYGON = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polygon");
-  private final static String MULTIPOLYGON = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multipolygon");
-  private final static String TWODIM = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.area");
-  private final static String GEOMETRYCOLLECTION = I18N
-          .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.geometrycollection");
+  private final static String ONLY_ONE_GEOMETRY_TYPE_FOUND = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.Only-one-geometry-type-found");
+  private final static String EMPTY = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.empty");
+  private final static String POINT = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.point");
+  private final static String MULTIPOINT = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multipoint");
+  private final static String ZERODIM = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.point");
+  private final static String LINESTRING = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.linestring");
+  private final static String MULTILINESTRING = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multilinestring");
+  private final static String POLYLINE = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polyline");
+  private final static String ONEDIM = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.line");
+  private final static String POLYGON = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polygon");
+  private final static String MULTIPOLYGON = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.multipolygon");
+  private final static String TWODIM = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.area");
+  private final static String GEOMETRYCOLLECTION = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.geometrycollection");
 
   private final static String LAYER = GenericNames.SELECT_LAYER;
 

@@ -34,24 +34,24 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
 
     private final static String KEY = MakeValidPlugIn.class.getName();
 
-    public static String SOURCE_LAYER              = I18N.get(KEY + ".source-layer");
-    public static String DESCRIPTION               = I18N.get(KEY + ".description");
-    public static String RESULT_LAYER_SUFFIX       = I18N.get(KEY + ".result-layer-suffix");
+    public static String SOURCE_LAYER              = I18N.getInstance().get(KEY + ".source-layer");
+    public static String DESCRIPTION               = I18N.getInstance().get(KEY + ".description");
+    public static String RESULT_LAYER_SUFFIX       = I18N.getInstance().get(KEY + ".result-layer-suffix");
 
-    public static String PRESERVE_GEOM_DIM         = I18N.get(KEY + ".preserve-geom-dim");
-    public static String PRESERVE_GEOM_DIM_TOOLTIP = I18N.get(KEY + ".preserve-geom-dim-tooltip");
+    public static String PRESERVE_GEOM_DIM         = I18N.getInstance().get(KEY + ".preserve-geom-dim");
+    public static String PRESERVE_GEOM_DIM_TOOLTIP = I18N.getInstance().get(KEY + ".preserve-geom-dim-tooltip");
 
-    public static String REMOVE_DUPLICATE_COORD    = I18N.get(KEY + ".remove-duplicate-coord");
-    public static String REMOVE_DUPLICATE_COORD_TOOLTIP = I18N.get(KEY + ".remove-duplicate-coord-tooltip");
+    public static String REMOVE_DUPLICATE_COORD    = I18N.getInstance().get(KEY + ".remove-duplicate-coord");
+    public static String REMOVE_DUPLICATE_COORD_TOOLTIP = I18N.getInstance().get(KEY + ".remove-duplicate-coord-tooltip");
 
-    public static String DECOMPOSE_MULTI           = I18N.get(KEY + ".decompose-multi");
-    public static String DECOMPOSE_MULTI_TOOLTIP   = I18N.get(KEY + ".decompose-multi-tooltip");
+    public static String DECOMPOSE_MULTI           = I18N.getInstance().get(KEY + ".decompose-multi");
+    public static String DECOMPOSE_MULTI_TOOLTIP   = I18N.getInstance().get(KEY + ".decompose-multi-tooltip");
 
-    public static String CORRECT_CURRENT_LAYER     = I18N.get(KEY + ".correct-current-layer");
-    public static String CORRECT_CURRENT_LAYER_TOOLTIP = I18N.get(KEY + ".correct-current-layer-tooltip");
-    public static String CREATE_NEW_LAYER          = I18N.get(KEY + ".create-new-layer");
-    public static String CREATE_NEW_LAYER_TOOLTIP  = I18N.get(KEY + ".create-new-layer-tooltip");
-    public static String ERROR_LAYER_SUFFIX        = I18N.get(KEY + ".error-layer-suffix");
+    public static String CORRECT_CURRENT_LAYER     = I18N.getInstance().get(KEY + ".correct-current-layer");
+    public static String CORRECT_CURRENT_LAYER_TOOLTIP = I18N.getInstance().get(KEY + ".correct-current-layer-tooltip");
+    public static String CREATE_NEW_LAYER          = I18N.getInstance().get(KEY + ".create-new-layer");
+    public static String CREATE_NEW_LAYER_TOOLTIP  = I18N.getInstance().get(KEY + ".create-new-layer-tooltip");
+    public static String ERROR_LAYER_SUFFIX        = I18N.getInstance().get(KEY + ".error-layer-suffix");
 
     private Layer layerA;
     private boolean preserveGeomDim = true;
@@ -65,7 +65,7 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
     }
 
     public String getName() {
-        return I18N.get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MakeValidPlugIn");
     }
 
     @Override

@@ -92,10 +92,10 @@ public class OverlayEngine {
     public FeatureCollection overlay(FeatureCollection a, FeatureCollection b,
         AttributeMapping mapping, TaskMonitor monitor) {
         monitor.allowCancellationRequests();
-        monitor.report(I18N.get("tools.OverlayEngine.indexing-second-feature-collection"));
+        monitor.report(I18N.getInstance().get("tools.OverlayEngine.indexing-second-feature-collection"));
 
         IndexedFeatureCollection indexedB = new IndexedFeatureCollection(b);
-        monitor.report(I18N.get("tools.OverlayEngine.overlaying-feature-collections"));
+        monitor.report(I18N.getInstance().get("tools.OverlayEngine.overlaying-feature-collections"));
 
         FeatureDataset overlay = new FeatureDataset(mapping.createSchema("GEOMETRY"));
         List<Feature> aFeatures = a.getFeatures();

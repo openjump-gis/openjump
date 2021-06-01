@@ -51,7 +51,6 @@ public class SaveDatasetAsFilePlugIn extends AbstractSaveDatasetAsPlugIn {
         }
     };
     public String getName() {
-        return I18N
-                .get("datasource.SaveDatasetAsFilePlugIn.save-dataset-as-file");
+        return I18N.getInstance().get("datasource.SaveDatasetAsFilePlugIn.save-dataset-as-file");
     }
 }

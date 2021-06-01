@@ -107,7 +107,7 @@ public class FeatureSchema implements Cloneable, Serializable {
         Integer index = attributeNameToIndexMap.get(attributeName);
         if (index == null) {
             throw new IllegalArgumentException(
-                I18N.get("feature.FeatureSchema.unrecognized-attribute-name")+" " + attributeName);
+                I18N.getInstance().get("feature.FeatureSchema.unrecognized-attribute-name")+" " + attributeName);
         }
         return index;
     }
@@ -179,14 +179,14 @@ public class FeatureSchema implements Cloneable, Serializable {
             //Assert.isTrue(geometryIndex == -1);
             if (geometryIndex != -1) {
                 throw new IllegalArgumentException(
-                        I18N.get("feature.FeatureSchema.only-one-geometry-is-authorized"));
+                        I18N.getInstance().get("feature.FeatureSchema.only-one-geometry-is-authorized"));
             }
             geometryIndex = attributeCount;
         }
         //Assert.isTrue(!attributeNames.contains(attributeName));
         if (attributeNames.contains(attributeName)) {
             throw new IllegalArgumentException(
-                    I18N.getMessage("feature.FeatureSchema.attribute-already-exists", attributeName));
+                    I18N.getInstance().get("feature.FeatureSchema.attribute-already-exists", attributeName));
         }
         attributeNames.add(attributeName);
         attributeNameToIndexMap.put(attributeName, attributeCount);

@@ -91,23 +91,23 @@ public class EditOptionsPanel extends JPanel implements OptionsPanel {
 			.getName() + " - LAYER_TOOLTIPS";
 
 	public static final String EDIT_PANEL =
-			I18N.get("ui.EditOptionsPanel.edit-panel");
+			I18N.getInstance().get("ui.EditOptionsPanel.edit-panel");
 	public static final String PREVENT_INVALID_EDIT =
-			I18N.get("ui.EditOptionsPanel.prevent-edits-resulting-in-invalid-geometries");
+			I18N.getInstance().get("ui.EditOptionsPanel.prevent-edits-resulting-in-invalid-geometries");
 	public static final String SELECT_NEW_GEOMETRY =
-			I18N.get("ui.EditOptionsPanel.select-new-geometry"); // Select the geometry after it has been drawn
+			I18N.getInstance().get("ui.EditOptionsPanel.select-new-geometry"); // Select the geometry after it has been drawn
 
-	public static final String SELECT_INFO_GEOMETRY ="..."+I18N.get("ui.EditOptionsPanel.open.info.frame");
+	public static final String SELECT_INFO_GEOMETRY ="..."+I18N.getInstance().get("ui.EditOptionsPanel.open.info.frame");
 
 	public static final String SELECT_NEW_GEOMETRY_WARNING =
-			I18N.get("ui.EditOptionsPanel.select-new-geometry-deselect-previous-selection"); // Select the geometry after it has been drawn
+			I18N.getInstance().get("ui.EditOptionsPanel.select-new-geometry-deselect-previous-selection"); // Select the geometry after it has been drawn
 	public static final String SINGLE_EDITABLE_LAYER =
-			I18N.get("ui.EditOptionsPanel.single-editable-layer");
+			I18N.getInstance().get("ui.EditOptionsPanel.single-editable-layer");
 
 	public static final String CONFIGURE_LAYERTREE_PANEL =
-			I18N.get("ui.EditOptionsPanel.configure-layer-tree-tooltip");
+			I18N.getInstance().get("ui.EditOptionsPanel.configure-layer-tree-tooltip");
 	public static final String LAYER_TOOLTIP =
-			I18N.get("ui.EditOptionsPanel.enable-JUMP-basic-tooltips");
+			I18N.getInstance().get("ui.EditOptionsPanel.enable-JUMP-basic-tooltips");
 
 
 	public EditOptionsPanel(final Blackboard blackboard) {

@@ -80,18 +80,18 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 	
 
-    private String sidebartext = 			I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.Calculates-distances-description");
-	private String sSRC_LAYER = 			I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.layer-with-origins");
-	private String sSRC_UniqueIdAttrib = 	I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.select-unique-attribute-for-origin-identification");
-	private String sTGT_LAYER = 			I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.layer-with destinations");	
-	private String sTGT_UniqueIdAttrib = 	I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.select-unique-attribute-for-destination-identification");
-	private String sDIST_OP = 				I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.select-distance-operation-for-non-point-geometries");	
-	private String distresult = 			I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.distances-result");
-	private String notimplemented = 		I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.not-implemented");	
-	private String sMonitorMsg = 			I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.origins-evaluated");
-	private String sCalcCentroidDist = 		I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.calculate-centroid-distance");
-	private String sCalcHausdorffDsit = 	I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.calculate-Hausdorff-distance-a-maximal-distance");
-	private String sGenerateLines = 		I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.generate-line-distance-geometries-to-first-destination");
+    private String sidebartext = 			I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.Calculates-distances-description");
+	private String sSRC_LAYER = 			I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.layer-with-origins");
+	private String sSRC_UniqueIdAttrib = 	I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.select-unique-attribute-for-origin-identification");
+	private String sTGT_LAYER = 			I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.layer-with destinations");	
+	private String sTGT_UniqueIdAttrib = 	I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.select-unique-attribute-for-destination-identification");
+	private String sDIST_OP = 				I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.select-distance-operation-for-non-point-geometries");	
+	private String distresult = 			I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.distances-result");
+	private String notimplemented = 		I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.not-implemented");	
+	private String sMonitorMsg = 			I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.origins-evaluated");
+	private String sCalcCentroidDist = 		I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.calculate-centroid-distance");
+	private String sCalcHausdorffDsit = 	I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.calculate-Hausdorff-distance-a-maximal-distance");
+	private String sGenerateLines = 		I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.generate-line-distance-geometries-to-first-destination");
 		
 	//-- vars
 	private Layer orgLayer = null;
@@ -122,7 +122,7 @@ public class CalculateDistancesPlugIn extends ThreadedBasePlugIn{
 	}
 	
 	public String getName(){
-		return I18N.get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.Calculate-Distances");
+		return I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CalculateDistancesPlugIn.Calculate-Distances");
 	}
 	
 	public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

@@ -26,8 +26,7 @@ import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class MeasureSelectedPlugIn extends AbstractPlugIn {
-    public static final String NAME = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.MeasureSelectedFeaturePlugIn.name");
+    public static final String NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.MeasureSelectedFeaturePlugIn.name");
 
     public static final Icon ICON = IconLoader.icon("Ruler.gif");
 
@@ -110,7 +109,7 @@ public class MeasureSelectedPlugIn extends AbstractPlugIn {
                 return geom instanceof GeometryCollection
                         || geom instanceof Point ? geom.getGeometryType()
                         + " - "
-                        + I18N.get("org.openjump.core.ui.plugin.mousemenu.MeasureSelectedFeaturePlugIn.message1")
+                        + I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.MeasureSelectedFeaturePlugIn.message1")
                         : null;
             }
         });

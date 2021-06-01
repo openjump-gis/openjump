@@ -32,58 +32,54 @@
 package com.vividsolutions.jump;
 
 import java.io.File;
+import java.security.InvalidParameterException;
 import java.text.MessageFormat;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.ResourceBundle.Control;
 
 import com.vividsolutions.jump.workbench.Logger;
-
 
 /**
  * Singleton for the Internationalization (I18N)
  **/
 public final class I18N {
 
-
-  private static final I18N instance = new I18N();
-
-  // [Michael Michaud 2007-03-23] plugInsResourceBundle is deactivated because
-  // all the methods using it have been deactivated.
-  // [sstein] activated again since Pirol does use it
-  // [ede 11.2012] kept it, although i don't see any usage of it in here
-  // [ede 12.2015] used by de.fho.jump.pirol.utilities.i18n.I18NPlug
-  public static Hashtable plugInsResourceBundle = new Hashtable();
-
-  /** The map of I18N instances. */
+  // a map of additional I18N instances
   private static Map<Object, I18N> instances = new HashMap<>();
 
-  /** The defaults for the I18N instance. */
+  // set some defaults for the I18N instances
   private static ClassLoader classLoader;
   private String resourcePath = "language/jump";
-  private Locale locale = Locale.getDefault();
+  private static Locale locale = Locale.getDefault();
+  private static boolean initialized = false;
 
-  /** three rbs see getText(String) for details */
-  private ResourceBundle resourceBundle, resourceBundle2, resourceBundle3;
+  private ResourceBundle resourceBundle, resourceBundle2, resourceBundle3 = null;
+
+  // remember missing strings, do not flood log
+  private HashSet<String> missing = new HashSet<>();
+
+  // the default instance used by OJ-Core (depends on the initializations above!)
+  public static final I18N JUMP = new I18N();
 
   private I18N() {
-    init();
+    // using resourcePath as defined above
   }
 
   /**
    * Construct an I18N instance for the category.
    * 
-   * @param categoryPrefix
-   *          i18n files should be in category/language/jump files.
+   * @param categoryPrefix i18n files should be in category/language/jump files.
    */
   private I18N(final String categoryPrefix) {
+    // prepend categoryPrefix
     resourcePath = categoryPrefix.replace('.', '/') + "/" + resourcePath;
-    init();
   }
 
   /**
@@ -97,65 +93,67 @@ public final class I18N {
     // returns it as separated by the OS which may contain eg. backslashes
     // on windows, leading to resources not found in zipped jars
     if (File.separatorChar != '/')
-        resourcePath = resourcePath.replace(File.separatorChar, '/');
-    init();
-  }
-
-  private void locale(Locale loc) {
-    if (loc != null) {
-      locale = loc;
-      init();
-    }
+      resourcePath = resourcePath.replace(File.separatorChar, '/');
   }
 
   /**
-   * the following three methods locale() language() country() are named that
-   * way because the getter methods were already defined statically and have to
-   * remain for legacy reasons
+   * reinitialize _all_ instances. should be called after language changes or such.
    */
-  private Locale locale() {
-    return locale != null ? locale : Locale.getDefault();
+  private static void initAll() {
+    // nuffin to do
+    if (initialized) return;
+
+    // apply to instances
+    for (I18N i18n : instances.values()) {
+      i18n.init();
+    }
+    JUMP.init();
+
+    initialized = true;
   }
 
-  private String language() {
-    return locale().getLanguage();
-  }
-
-  private String country() {
-    return locale().getCountry();
-  }
-
-  // everytime something important changes the resourcebundles have to be
-  // recreated accordingly and the runtime should be updated as well
+  /**
+  * everytime something important changes the resourcebundles have to be
+  * recreated accordingly and the runtime should be updated as well
+  */
   private void init() {
-    ClassLoader cl = classLoader instanceof ClassLoader ? classLoader
-        : getClass().getClassLoader();
+    //System.out.println("reinit -> "+locale.toString() +" "+this+ " "+resourcePath);
+    ClassLoader cl = classLoader instanceof ClassLoader ? classLoader : getClass().getClassLoader();
     // load several resourcebundles to allow overlaying "invalid" translations
     // with an entry from te next sensible translation file
     // order is: lang_Country, lang, default (english)
     // loads selected locale, selected language, empty locale
-    resourceBundle = ResourceBundle.getBundle(resourcePath, locale, cl);
+    this.resourceBundle = locale.getCountry().isEmpty() ? null : getResourceBundle(locale);
     // loads lang only locale or empty
-    resourceBundle2 = ResourceBundle.getBundle(resourcePath, new Locale(
-        language()), cl);
-    // loads only empty fallback locale (english)
-    resourceBundle3 = ResourceBundle.getBundle(resourcePath,
-        new Locale("", ""), cl);
-    // apply locale to system
-    applyToRuntime(locale);
+    this.resourceBundle2 = locale.getLanguage().isEmpty() ? null : getResourceBundle( new Locale(locale.getLanguage()) );
+    // loads only empty default fallback locale (english in our case)
+    this.resourceBundle3 = getResourceBundle(Locale.ROOT);
   }
 
-  // remember missing strings, do not flood log
-  private HashSet<String> missing = new HashSet<>();
-
   /**
-   * We ignore untranslated string when we find them
-   * 
-   * @param text internationalized string to check
+   * find the exactly matching resourcebundle or return null if not available
    */
-  private boolean isValid(String text) {
-    return text != null && !text.trim().equals("")
-        && !text.trim().startsWith("#T:");
+  private ResourceBundle getResourceBundle(Locale loco) {
+    // limit fetching to exactly this locale
+    ResourceBundle.Control rbc = new ResourceBundle.Control() {
+      @Override
+      public List<Locale> getCandidateLocales(String name, Locale locale) {
+        return Collections.singletonList(loco);
+      }
+      @Override
+      public Locale getFallbackLocale(String baseName, Locale locale) {
+        return null;
+      }
+    };
+    ResourceBundle rb;
+    ClassLoader cl = classLoader instanceof ClassLoader ? classLoader : getClass().getClassLoader();
+    try {
+      rb = ResourceBundle.getBundle(resourcePath, loco, cl, rbc);
+    } catch (MissingResourceException e) {
+      rb = null;
+    }
+
+    return rb;
   }
 
   /**
@@ -163,55 +161,32 @@ public final class I18N {
    * PlugInManager (plugin jars are added to a child classloader there) to allow
    * plugins to make use of this I18N class.
    * 
-   * @param cl
-   *          the classLoader to set
+   * @param cl the classLoader to set
    */
   public static void setClassLoader(ClassLoader cl) {
-    if (cl != null)
-      classLoader = cl;
-    // apply to instances
-    for (I18N i18n : instances.values()) {
-      i18n.init();
-    }
-    getInstance().init();
+    if (cl == null)
+      throw new IllegalArgumentException("Classloader must not be null.");
+    classLoader = cl;
+    // reinit rsbs later
+    initialized = false;
   }
 
   /**
-   * Get the I18N text from the language file associated with this instance. If
-   * no label is defined then a default string is created from the last part of
-   * the key.
+   * Set locale from string and (re)init
    * 
-   * ATTENTION: using three resource bundles is a workaround to enable having
-   * entries in the language properties that are not translated now (empty or
-   * #T:something)
-   * 
-   * @param key
-   *          The key of the text in the language file.
-   * @return The I18Nized text.
-   * 
-   * @deprecated Use {@link #getMessage(String, Object...)} instead
+   * @param localeNew the code for the lang and country locale to set
    */
-  @Deprecated
-  public String getText(final String key) {
-    return getMessage(this, key);
+  public static void setLocale(Locale localeNew) {
+    if (localeNew == null)
+      throw new InvalidParameterException("Parameter localeNew must not be Null.");
+
+    locale = localeNew;
+    // reinit rsbs later
+    initialized = false;
   }
 
-  /**
-   * Convenience wrapper for {@link #getMessage(Object, String, Object...)}
-   * 
-   * Get the I18N text from the language file associated with the specified
-   * category. If no label is defined then a default string is created from the
-   * last part of the key.
-   * 
-   * @deprecated use getMessage() instead
-   * @param categoryPrefix
-   *          The category.
-   * @param key
-   *          The key of the text in the language file.
-   * @return The I18Nized text.
-   */
-  public static String getText(final String categoryPrefix, final String key) {
-    return getMessage((Object)categoryPrefix, key);
+  public static Locale getLocale() {
+    return locale;
   }
 
   /**
@@ -224,19 +199,15 @@ public final class I18N {
    * resourcebundle is looked up as
    * /org/openjump/myplugin/language/jump[_locale].properties
    * 
-   * categoryPrefixOrPath = new File("language/wfs/messages") then
-   * resourcebundle is looked up as /language/wfs/messages[_locale].properties
+   * categoryPrefixOrPath = new File("language/wfs/messages") then resourcebundle
+   * is looked up as /language/wfs/messages[_locale].properties
    * 
-   * @param categoryPrefixOrPathOrI18N
-   *          The category.
+   * @param categoryPrefixOrPathOrI18N The category.
    * @return The instance.
    */
   private static I18N getInstance(final Object categoryPrefixOrPathOrI18N) {
-    // needed for legacy methods like this.getText(String)
-    if (categoryPrefixOrPathOrI18N instanceof I18N)
-      return (I18N) categoryPrefixOrPathOrI18N;
-    
     I18N instance = instances.get(categoryPrefixOrPathOrI18N);
+
     if (instance == null) {
       if (categoryPrefixOrPathOrI18N instanceof File) {
         instance = new I18N((File) categoryPrefixOrPathOrI18N);
@@ -250,46 +221,40 @@ public final class I18N {
   }
 
   /**
-   * useless as there are no instance class methods. should be private, but who
-   * knows what is using this code anyway.
+   * Create & return the I18N instance for the given prefix
    * 
-   * use static I18N.getMessage() methods instead
-   * 
-   * @param categoryPrefix the category
+   * @param a categoryPrefix e.g. "my.cool.extension"
    * @return I18N object for this category
    */
-  public static I18N getInstance(final String categoryPrefix) {
+  public static I18N getInstance(String categoryPrefix) {
     return getInstance((Object) categoryPrefix);
   }
 
   /**
-   * useless as there are no instance class methods. should be private, but who
-   * knows what is using this code anyway.
+   * Create & return the I18N instance for the given path
    * 
-   * use static I18N.getMessage() methods instead
-   * 
-   * @param path path of the ResourceBundle
-   * @return I18N object for the ResourceBundle located at path
+   * @param path, some path in classpath e.g. new File('my/cool/extension/')
+   * @return I18N object
    */
-  public static I18N getInstance(final File path) {
+  public static I18N getInstance(File path) {
     return getInstance((Object) path);
   }
 
   /**
-   * useless as there are no instance class methods. should be private, but who
-   * knows what is using this code anyway.
+   * Return the default I18N singleton for OJ2
+   * for use like I18N.getInstance().get()
    * 
-   * use static I18N.getMessage() methods instead
    * @return singleton I18N object for OpenJUMP
    */
   public static I18N getInstance() {
     // is initialized statically above
-    return instance;
+    return JUMP;
   }
 
   /**
-   * [ede] utility method which is used in several places
-   * (loadFile,getLanguage...)
+   * utility method to convert a simplified locale string e.g. 'en_US'
+   * to a usable java.util.locale object
+   * 
    * @param localeCode a locale code String
    * @return a Locale from the localeCode
    */
@@ -305,29 +270,14 @@ public final class I18N {
       Logger.debug("lang:" + lc[0]);
       locale = new Locale(lc[0]);
     } else {
-      Logger.debug(localeCode
-          + " is an illegal argument to define lang [and country]");
+      Logger.error(localeCode + " is an illegal argument to define lang [and country]");
     }
 
     return locale;
   }
 
-  /**
-   * Load file specified in command line (-i18n lang_country) (lang_country
-   * :language 2 letters + "_" + country 2 letters) Tries first to extract lang
-   * and country, and if only lang is specified, loads the corresponding
-   * resource bundle.
-   * 
-   * @param langcountry the code for the lang and country locale to set
-   */
-  public static void setLocale(final String langcountry) {
-    Locale loc = fromCode(langcountry);
-    getInstance().locale(loc);
-    getInstance().init();
-  }
-
   /***
-   * Applies a given locale to the java runtime.
+   * Utility method. Applies a given locale to the java runtime.
    * 
    * @param loc the Locale to apply
    */
@@ -338,34 +288,23 @@ public final class I18N {
   }
 
   /**
-   * Process text with the locale 'jump_&lt;locale&gt;.properties' file
-   * 
-   * @param label the key to look for.
-   * @return i18n label [Michael Michaud 2007-03-23] If no resourcebundle is
-   *         found, returns a default string which is the last part of the label
-   */
-  public static String get(final String label) {
-    return getMessage((Object)null,label);
-  }
-
-  /**
    * Get the short signature for locale (letters extension :language 2 letters +
    * "_" + country 2 letters)
    * 
    * @return string signature for locale
    */
-  public static String getLocale() {
-    return getLanguage() + "_" + getCountry();
+  public static String getLocaleString() {
+    return locale.getLanguage() + "_" + locale.getCountry();
   }
 
   /**
-   * Get the short signature for language (letters extension :language 2
-   * letters) of the default instance
+   * Get the short signature for language (letters extension :language 2 letters)
+   * of the default instance
    * 
    * @return string signature for language
    */
   public static String getLanguage() {
-    return getInstance().language();
+    return locale.getLanguage();
   }
 
   /**
@@ -374,21 +313,7 @@ public final class I18N {
    * @return string signature for country
    */
   public static String getCountry() {
-    return getInstance().country();
-  }
-
-  /**
-   * Process text with the locale 'jump_<locale>.properties' file If no
-   * resourcebundle is found, returns default string contained inside
-   * com.vividsolutions.jump.jump
-   * 
-   * @param label the key to look for
-   *          with argument insertion : {0}
-   * @param objects values of parameters contained in the key
-   * @return i18n label
-   */
-  public static String getMessage(final String label, final Object... objects) {
-    return getMessage((Object) null, label, objects);
+    return locale.getCountry();
   }
 
   /**
@@ -396,93 +321,113 @@ public final class I18N {
    * specified category or path. If no label is defined then a default string is
    * created from the last part of the key.
    * 
+   * Supports re-usage of translations in default instance via '$J:' prefix. e.g.
+   *   some.other.key = $J:reusable.generic.translation
+   *  will be looked up and the content of
+   *   reusable.generic.translation = some cool translation
+   *  returned.
+   * 
    * Examples:
    * 
-   * categoryPrefixOrPathOrI18N instanceof I18N
-   * legacy option, mainly for the instance method this.getText(String)
+   * categoryPrefixOrPathOrI18N instanceof I18N legacy option, mainly for the
+   * instance method this.getText(String)
    * 
    * categoryPrefixOrPathOrI18N = new String("org.openjump.myplugin") then
    * resourcebundle is looked up as
    * /org/openjump/myplugin/language/jump[_locale].properties
    * 
-   * categoryPrefixOrPath = new File("language/wfs/messages") then
-   * resourcebundle is looked up as /language/wfs/messages[_locale].properties
+   * categoryPrefixOrPath = new File("language/wfs/messages") then resourcebundle
+   * is looked up as /language/wfs/messages[_locale].properties
    * 
-   * @param categoryPrefixOrPathOrI18n
-   *          The categoryPrefix or path object or i18n object.
-   * @param label
-   *          Label with argument insertion : {0}
-   * @param objects values of parameters contained in the key
+   * @param categoryPrefixOrPathOrI18n The categoryPrefix or path object or i18n
+   *                                   object.
+   * @param label                      Label with argument insertion : {0}
+   * @param objects                    values of parameters contained in the key
    * 
    * @return i18n label
    */
-  private static String getMessage(final Object categoryPrefixOrPathOrI18n,
-      final String label, final Object... objects) {
-    I18N i18n = categoryPrefixOrPathOrI18n != null ? getInstance(categoryPrefixOrPathOrI18n)
-        : getInstance();
-//    if (label.contains("ShortenLinePlugIn"))
-//        System.out.println(label);
+  public String get(final String label, final Object... objects) {
+    // refresh in case settings changed inbetween
+    initAll();
+
     try {
-      // IMPORTANT: trailing spaces break the Malayalam translation, 
-      //            so we trim here, just to make sure
-      String text = i18n.getValue(label).trim();
+      // IMPORTANT: trailing spaces break the Malayalam translation,
+      // so we trim here, just to make sure
+      String text = getValue(label).trim();
       // reread in case of reused i18n vars '$J:'
       if (text.startsWith("$J:"))
-          text = getInstance().getValue(text.substring(3).trim());
+        text = getInstance().getValue(text.substring(3).trim());
       // no params, nothing to parse
-      if ( objects.length < 1 )
+      if (objects.length < 1)
         return text;
       // parse away
       final MessageFormat mformat = new MessageFormat(text);
-      return mformat.format(objects);
+      String res = mformat.format(objects);
+      return res;
     } catch (java.util.MissingResourceException e) {
       // last resort fallback is to simply reuse the last key segment as value
       final String[] labelpath = label.split("\\.");
-      Logger.warn(e.getMessage() + " no default value, the resource key is used: "
-          + labelpath[labelpath.length - 1]);
+      Logger.warn(e.getMessage() + " no default value, the resource key is used: " + labelpath[labelpath.length - 1]);
 
-      final MessageFormat mformat = new MessageFormat(
-          labelpath[labelpath.length - 1]);
+      final MessageFormat mformat = new MessageFormat(labelpath[labelpath.length - 1]);
       return mformat.format(objects);
     }
   }
 
-  public static String getMessage(final File path, final String label,
-      final Object... objects) {
-    return getMessage((Object) path, label, objects);
-  }
-  
   /**
-   * Find value for the key,
-   * - respect validity and use next rb order being 'lang_Country', 'lang', '' default
-   * - eventually return missing resource exception
+   * Find value for the key, - respect validity and use next rb order being
+   * 'lang_Country', 'lang', '' default - eventually return missing resource
+   * exception
+   * 
    * @param key key to retrieve
    * @return the value for the key
    */
   private String getValue(final String key) {
-      String text;
-      try {
-        // try lang_country resourcebundle
-        if (isValid(text = resourceBundle.getString(key)))
+    String text;
+    try {
+      // try lang_country resourcebundle
+      if (resourceBundle != null && isValid(text = findKeyInResourceBundle(resourceBundle,key)))
+        return text;
+      // try language only resourcebundle
+      if (resourceBundle2 != null && isValid(text = findKeyInResourceBundle(resourceBundle2,key)))
+        return text;
+      // eventually use base resourcebundle
+      if (resourceBundle3 != null && isValid(text = findKeyInResourceBundle(resourceBundle3,key)))
           return text;
-        // try language only resourcebundle
-        if (isValid(text = resourceBundle2.getString(key)))
-          return text;
-        // eventually use base resourcebundle
-        return resourceBundle3.getString(key);
-      } catch (java.util.MissingResourceException e) {
-        if (!missing.contains(key)) {
-          String msg = "No translation for key ''{0}'' in bundle ''{1}''.";
-          msg = MessageFormat.format(msg, key, resourcePath);
+      else
+        throw new MissingResourceException("Missing translation even in jump.properties", "", key);
+    } catch (MissingResourceException e) {
+      if (!missing.contains(key)) {
+        String msg = "No translation for key ''{0}'' in bundle ''{1}''.";
+        msg = MessageFormat.format(msg, key, resourcePath);
 
-          Logger.warn(msg, Logger.isDebugEnabled() ? e : null);
+        Logger.warn(msg, Logger.isDebugEnabled() ? e : null);
 
-          missing.add(key);
-          // uncomment and add a search string to get staks telling you where the
-          // call came from
-          // Assert.isTrue(!key.contains("Write"));
-        }
-        throw e;
+        missing.add(key);
+        // uncomment and add a search string to get staks telling you where the
+        // call came from
+        // Assert.isTrue(!key.contains("Write"));
       }
+      throw e;
     }
+  }
+
+  private String findKeyInResourceBundle( ResourceBundle rb, String key) {
+    String value = null;
+    try {
+      value = rb.getString(key);
+    } catch (MissingResourceException e) {
+      // yeah, it's not there, so what?!
+    }
+    return value;
+  }
+  
+  /**
+   * We ignore empty or untranslated strings when we find them
+   * 
+   * @param text internationalized string to check
+   */
+  private boolean isValid(String text) {
+    return text != null && !text.trim().equals("") && !text.trim().startsWith("#T:");
+  }
 }

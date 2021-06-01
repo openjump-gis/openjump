@@ -69,12 +69,12 @@ public class SnapVerticesToSelectedVertexClickTool extends NClickTool {
         if (!check(new EnableCheck() {
             public String check(JComponent component) {
                 if (!getPanel().getFence().contains(factory.createPoint(clickCoordinate))) {
-                    return I18N.get("ui.cursortool.editing.SnapVerticesToSelectedVertexClickTool.please-click-inside-the-fence"); }
+                    return I18N.getInstance().get("ui.cursortool.editing.SnapVerticesToSelectedVertexClickTool.please-click-inside-the-fence"); }
                 if (getPanel().getSelectionManager().getSelectedItems().isEmpty()) {
-                    return I18N.get("ui.cursortool.editing.SnapVerticesToSelectedVertexClickTool.select-a-feature-part-or-linestring-in-the-fence-containing-the-vertex-to-snap-to");
+                    return I18N.getInstance().get("ui.cursortool.editing.SnapVerticesToSelectedVertexClickTool.select-a-feature-part-or-linestring-in-the-fence-containing-the-vertex-to-snap-to");
                         }
                 if (getPanel().getSelectionManager().getSelectedItems().size() > 1) {
-                    return I18N.get("ui.cursortool.editing.SnapVerticesToSelectedVertexClickTool.select-only-one-feature-part-or-linestring-containing-the-vertex-to-snap-to");
+                    return I18N.getInstance().get("ui.cursortool.editing.SnapVerticesToSelectedVertexClickTool.select-only-one-feature-part-or-linestring-containing-the-vertex-to-snap-to");
                         }
                 return null; }
         })) {

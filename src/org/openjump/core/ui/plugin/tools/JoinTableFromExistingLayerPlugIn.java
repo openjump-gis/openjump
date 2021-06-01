@@ -69,20 +69,20 @@ import static com.vividsolutions.jump.workbench.ui.AttributeTypeFilter.*;
  */
 public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 
-	private final static String sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.description");
-	private final static String BASE_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Base-layer-that-should-be-extended");
-	private final static String JOIN_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Layer-with-attributes-to-join");
-	private final static String BASE_LAYER_ID = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Base-layer-attribute-with-unique-feature-IDs");
-	private final static String JOIN_LAYER_ID = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Attribute-with-unique-IDs");
-	private final static String sDisplayUnmatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.display-unmatched-items-from-base-layer");
-	private final static String sAllMatched = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.All-items-matched-no-layer-with-unmatched-features");
-	private final static String sItemsProcessed = I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.items-processed");
+	private final static String sSidebar = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.description");
+	private final static String BASE_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Base-layer-that-should-be-extended");
+	private final static String JOIN_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Layer-with-attributes-to-join");
+	private final static String BASE_LAYER_ID = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Base-layer-attribute-with-unique-feature-IDs");
+	private final static String JOIN_LAYER_ID = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.Attribute-with-unique-IDs");
+	private final static String sDisplayUnmatched = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.display-unmatched-items-from-base-layer");
+	private final static String sAllMatched = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.All-items-matched-no-layer-with-unmatched-features");
+	private final static String sItemsProcessed = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.items-processed");
 
 	//-- for output of layers
-	private final static String sJoinResult =  I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.join-result");
-	private final static String sUnmatchedItems = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.unmatched-items");
-	private final static String sTooManyItems = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches");
-	private final static String sMultiMatchesMsg = I18N.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches-for-feature-FID");
+	private final static String sJoinResult =  I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.join-result");
+	private final static String sUnmatchedItems = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.unmatched-items");
+	private final static String sTooManyItems = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches");
+	private final static String sMultiMatchesMsg = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn.multiple-matches-for-feature-FID");
 
 	private Layer baseLayer = null;
 	private Layer joinLayer = null;
@@ -93,8 +93,7 @@ public class JoinTableFromExistingLayerPlugIn extends AbstractThreadedUiPlugIn{
 	private MultiInputDialog dialog;
 
 	public String getName() {
-		return I18N
-				.get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn") + "...";
+		return I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinTableFromExistingLayerPlugIn") + "...";
 	}
 
 	public void initialize(PlugInContext context) throws Exception {

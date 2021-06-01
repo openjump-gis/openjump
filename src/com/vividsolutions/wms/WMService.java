@@ -157,7 +157,7 @@ public class WMService {
     if (!compare_url1.equals(compare_url2) && alertDifferingURL) {
       int resp = showConfirmDialog(
               null,
-              I18N.getMessage("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found", noAuth_url2, noAuth_url1),
+              I18N.getInstance().get("com.vididsolutions.wms.WMService.Other-GetMap-URL-Found", noAuth_url2, noAuth_url1),
               null,
               YES_NO_OPTION);
       // nope. user wants to keep the initial url1

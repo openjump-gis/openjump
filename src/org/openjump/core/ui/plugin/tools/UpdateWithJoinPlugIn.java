@@ -29,22 +29,22 @@ import static com.vividsolutions.jump.workbench.ui.AttributeTypeFilter.NUMSTRING
  */
 public class UpdateWithJoinPlugIn extends AbstractThreadedUiPlugIn {
 
-    private final static String DESCRIPTION = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Description");
-    //private final static String CHOOSE_LAYERS = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Choose-layers");
-    private final static String REFERENCE_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Reference-layer-to-update");
-    private final static String JOIN_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Join-layer");
-    private final static String REFERENCE_LAYER_EXT_ID = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Reference-layer-ext-id");
-    private final static String JOIN_LAYER_ID = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Join-layer-id");
-    private final static String LEFT_JOIN = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Left-join");
-    private final static String LEFT_JOIN_TT = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Left-join-tooltip");
-    private final static String RIGHT_JOIN = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Right-join");
-    private final static String RIGHT_JOIN_TT = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Right-join-tooltip");
-    //private final static String ADD_ATTRIBUTES = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Add-attributes-create-new-layer");
-    //private final static String ADD_ATTRIBUTES_TT = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Add-attributes-tooltip");
-    private final static String MAP_ATTRIBUTES = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Map-attributes");
-    private final static String DO_NOT_JOIN = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Do-not-join");
-    private final static String UNDEFINED_MAPPING = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Attributes-mapping-is-not-defined");
-    private final static String JOIN_NOT_UNIQUE = I18N.get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Join-layer-id-is-not-unique");
+    private final static String DESCRIPTION = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Description");
+    //private final static String CHOOSE_LAYERS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Choose-layers");
+    private final static String REFERENCE_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Reference-layer-to-update");
+    private final static String JOIN_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Join-layer");
+    private final static String REFERENCE_LAYER_EXT_ID = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Reference-layer-ext-id");
+    private final static String JOIN_LAYER_ID = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Join-layer-id");
+    private final static String LEFT_JOIN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Left-join");
+    private final static String LEFT_JOIN_TT = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Left-join-tooltip");
+    private final static String RIGHT_JOIN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Right-join");
+    private final static String RIGHT_JOIN_TT = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Right-join-tooltip");
+    //private final static String ADD_ATTRIBUTES = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Add-attributes-create-new-layer");
+    //private final static String ADD_ATTRIBUTES_TT = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Add-attributes-tooltip");
+    private final static String MAP_ATTRIBUTES = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Map-attributes");
+    private final static String DO_NOT_JOIN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Do-not-join");
+    private final static String UNDEFINED_MAPPING = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Attributes-mapping-is-not-defined");
+    private final static String JOIN_NOT_UNIQUE = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.UpdateWithJoinPlugIn.Join-layer-id-is-not-unique");
 
     private Layer referenceLayer = null;
     private Layer joinLayer = null;
@@ -197,7 +197,7 @@ public class UpdateWithJoinPlugIn extends AbstractThreadedUiPlugIn {
         referenceLayer.getLayerManager().getUndoableEditReceiver().startReceiving();
         try {
             UndoableCommand command =
-                    new UndoableCommand(I18N.get(AutoAssignAttributePlugIn.class.getName())) {
+                    new UndoableCommand(I18N.getInstance().get(AutoAssignAttributePlugIn.class.getName())) {
                         public void execute() {
                             for (Feature f : referenceLayer.getFeatureCollectionWrapper().getFeatures()) {
                                 Feature newFeature = newFeatures.get(f.getID());

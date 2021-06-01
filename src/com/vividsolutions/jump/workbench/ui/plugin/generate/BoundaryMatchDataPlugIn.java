@@ -53,15 +53,15 @@ public class BoundaryMatchDataPlugIn extends AbstractPlugIn {
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addLayerViewMenuItem(
             this,
-            new String[] { I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.tools"),
-            		I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.generate") },
+            new String[] { I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.tools"),
+            		I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.generate") },
             getName() + "...");
     }
 
     public boolean execute(PlugInContext context) throws Exception {
         MultiInputDialog dialog =
             new MultiInputDialog(context.getWorkbenchFrame(), 
-            		I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.generate-boundary-match-data"), true);
+            		I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.generate-boundary-match-data"), true);
         setDialogValues(dialog);
         GUIUtil.centreOnWindow(dialog);
         dialog.setVisible(true);
@@ -77,46 +77,46 @@ public class BoundaryMatchDataPlugIn extends AbstractPlugIn {
     }
 
     private void setDialogValues(MultiInputDialog dialog) {
-        dialog.setTitle(I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.generate-boundary-match-data"));
+        dialog.setTitle(I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.generate-boundary-match-data"));
         dialog.setSideBarImage(new ImageIcon(getClass().getResource("GenerateBdyMatchData.gif")));
         dialog.setSideBarDescription(
-        		I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.generates-two-sample-datasets-containing-random-boundary-perturbations"));
+        		I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.generates-two-sample-datasets-containing-random-boundary-perturbations"));
 
         //<<TODO>> Add the concept of pluggable validators to MultiInputDialog. [Jon Aquino]
         dialog.addPositiveIntegerField(
-        	I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.layer-width-cells"),
+        	I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.layer-width-cells"),
             engine.getLayerWidthInCells(),
             5);
         dialog.addPositiveIntegerField(
-        	I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.layer-height-cells"),
+        	I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.layer-height-cells"),
             engine.getLayerHeightInCells(),
             5);
         dialog.addPositiveDoubleField(
-        	I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.cells-side-length"),
+        	I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.cells-side-length"),
             engine.getCellSideLength(),
             5);
         dialog.addPositiveIntegerField(
-        	I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.vertices-per-cell-side"),
+        	I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.vertices-per-cell-side"),
             engine.getVerticesPerCellSide(),
             5);
         dialog.addPositiveIntegerField(
-        	I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.vertices-per-boundary-side"),
+        	I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.vertices-per-boundary-side"),
             engine.getVerticesPerBoundarySide(),
             5);
         dialog.addNonNegativeDoubleField(
-        	I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.boundary-amplitude"),
+        	I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.boundary-amplitude"),
             engine.getBoundaryAmplitude(),
             5);
         dialog.addPositiveDoubleField(
-        	I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.boundary-period"),
+        	I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.boundary-period"),
             engine.getBoundaryPeriod(),
             5);
         dialog.addNonNegativeDoubleField(
-        	I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.max-boundary-perturbation"),
+        	I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.max-boundary-perturbation"),
             engine.getMaxBoundaryPerturbation(),
             5);
         dialog.addNonNegativeDoubleField(
-        	I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.perturbation-probability"),
+        	I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.perturbation-probability"),
             engine.getPerturbationProbability(),
             5);
         dialog.addDoubleField("Min X", engine.getSouthwestCornerOfLeftLayer().x, 5);
@@ -126,14 +126,14 @@ public class BoundaryMatchDataPlugIn extends AbstractPlugIn {
     private void getDialogValues(MultiInputDialog dialog) {
         engine.setSouthwestCornerOfLeftLayer(
             new Coordinate(dialog.getDouble(("Min X")), dialog.getDouble(("Min Y"))));
-        engine.setLayerHeightInCells(dialog.getInteger((I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.layer-height-cells"))));
-        engine.setLayerWidthInCells(dialog.getInteger((I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.layer-width-cells"))));
-        engine.setCellSideLength(dialog.getDouble((I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.cells-side-length"))));
-        engine.setVerticesPerCellSide(dialog.getInteger((I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.vertices-per-cell-side"))));
-        engine.setBoundaryAmplitude(dialog.getDouble((I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.boundary-amplitude"))));
-        engine.setBoundaryPeriod(dialog.getDouble((I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.boundary-period"))));
-        engine.setVerticesPerBoundarySide(dialog.getInteger((I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.vertices-per-boundary-side"))));
-        engine.setMaxBoundaryPerturbation(dialog.getDouble((I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.max-boundary-perturbation"))));
-        engine.setPerturbationProbability(dialog.getDouble((I18N.get("ui.plugin.generate.BoundaryMatchDataPlugIn.perturbation-probability"))));
+        engine.setLayerHeightInCells(dialog.getInteger((I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.layer-height-cells"))));
+        engine.setLayerWidthInCells(dialog.getInteger((I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.layer-width-cells"))));
+        engine.setCellSideLength(dialog.getDouble((I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.cells-side-length"))));
+        engine.setVerticesPerCellSide(dialog.getInteger((I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.vertices-per-cell-side"))));
+        engine.setBoundaryAmplitude(dialog.getDouble((I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.boundary-amplitude"))));
+        engine.setBoundaryPeriod(dialog.getDouble((I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.boundary-period"))));
+        engine.setVerticesPerBoundarySide(dialog.getInteger((I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.vertices-per-boundary-side"))));
+        engine.setMaxBoundaryPerturbation(dialog.getDouble((I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.max-boundary-perturbation"))));
+        engine.setPerturbationProbability(dialog.getDouble((I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.perturbation-probability"))));
     }
 }

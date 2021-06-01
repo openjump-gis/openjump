@@ -47,14 +47,14 @@ public class RasterColorEditorDialog extends JDialog {
     private JComboBox colorScaleChooser;
 
     private String[] colorTableList = {
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Default-colors"), 
-    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Green-Yellow-Red"), 
-    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Green-Red"), 
-    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Red-Blue"), 
-    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Red"), 
-    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Black-White"), 
-    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.White-Black"),
-    		I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Rainbow")
+            I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Default-colors"), 
+    		I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Green-Yellow-Red"), 
+    		I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Green-Red"), 
+    		I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Red-Blue"), 
+    		I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Red"), 
+    		I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Black-White"), 
+    		I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.White-Black"),
+    		I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Rainbow")
     		};
 
     private JPanel mainPanel = new JPanel();
@@ -81,11 +81,11 @@ public class RasterColorEditorDialog extends JDialog {
 
     private JButton NoDataColorButton = new JButton();
 
-    private JLabel NodataColor = new JLabel(I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.No-data-color")); //$NON-NLS-1$
+    private JLabel NodataColor = new JLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.No-data-color")); //$NON-NLS-1$
 
     private ColorPanel NoDataColorPanel = new ColorPanel();
 
-    private JCheckBox transparent = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Transparency")); //$NON-NLS-1$
+    private JCheckBox transparent = new JCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Transparency")); //$NON-NLS-1$
 
     private int alpha = 255;
 
@@ -93,20 +93,20 @@ public class RasterColorEditorDialog extends JDialog {
 
     private boolean enabled = true;
 
-    private String sToolTip = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Choose-a-color-range-It-will-be-automaticaly-expanded-between-the-2-values");
-    private String sColorRange = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Color-range");
-    private String sFromValue = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.From-value");
-    private String sToValue = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.To-value");
-    private String sNoDataValueColor = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.no-data-value-color");
-    private String sChange = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.change");
-    private String sChoseOtherColor = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Choose-other-color-for-no-data-values");
-    private String sToggleTransparency = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Toggle-transparency-for-no-data-values");
-    private String sSelectColor = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Select-color");
-    private String sLayerName = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Selected-Layer");
+    private String sToolTip = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Choose-a-color-range-It-will-be-automaticaly-expanded-between-the-2-values");
+    private String sColorRange = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Color-range");
+    private String sFromValue = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.From-value");
+    private String sToValue = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.To-value");
+    private String sNoDataValueColor = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.no-data-value-color");
+    private String sChange = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.change");
+    private String sChoseOtherColor = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Choose-other-color-for-no-data-values");
+    private String sToggleTransparency = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Toggle-transparency-for-no-data-values");
+    private String sSelectColor = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Select-color");
+    private String sLayerName = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Selected-Layer");
     
     public RasterColorEditorDialog(PlugInContext context,
             RasterImageLayer actualLayer) {
-        super(context.getWorkbenchFrame(), I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor"), true); //$NON-NLS-1$
+        super(context.getWorkbenchFrame(), I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor"), true); //$NON-NLS-1$
         plugInContext = context;
         setLayer(actualLayer);
 

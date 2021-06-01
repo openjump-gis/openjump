@@ -56,7 +56,7 @@ public class SimpleQueryPlugIn extends AbstractPlugIn {
     }
     
     public String getName() {
-      return I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.menuitem");
+      return I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.menuitem");
     }
 
 }

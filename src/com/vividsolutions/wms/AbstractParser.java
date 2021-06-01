@@ -306,7 +306,7 @@ public abstract class AbstractParser implements IParser {
             // possible NullPointerException from getNamedItem returning a null
             // also possible NumberFormatException
             e.printStackTrace();
-            throw new Exception( I18N.get("com.vividsolutions.wms.Parser.invalid-bounding-box-element-node")+": " + e.toString() );
+            throw new Exception( I18N.getInstance().get("com.vividsolutions.wms.Parser.invalid-bounding-box-element-node")+": " + e.toString() );
         }   
     }
     
@@ -321,7 +321,7 @@ public abstract class AbstractParser implements IParser {
 			      return new BoundingBox(srs, minx, miny, maxx, maxy);
         } catch( Exception e ) {
             e.printStackTrace();
-            throw new Exception( I18N.get("com.vividsolutions.wms.Parser.invalid-bounding-box-element-node")+": " + e.toString() );
+            throw new Exception( I18N.getInstance().get("com.vividsolutions.wms.Parser.invalid-bounding-box-element-node")+": " + e.toString() );
         }   
     }
     
@@ -356,7 +356,7 @@ public abstract class AbstractParser implements IParser {
 			      return new BoundingBox(srs, minx, miny, maxx, maxy);
         } catch( Exception e ) {
             e.printStackTrace();
-            throw new Exception( I18N.get("com.vividsolutions.wms.Parser.invalid-bounding-box-element-node")+": " + e.toString() );
+            throw new Exception( I18N.getInstance().get("com.vividsolutions.wms.Parser.invalid-bounding-box-element-node")+": " + e.toString() );
         }
     }
 

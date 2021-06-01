@@ -73,7 +73,7 @@ public class WMSStylePlugIn extends AbstractPlugIn {
                 context, WMSLayer.class);
         final MultiInputDialog dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(),
-                I18N.get("ui.style.ChangeStylesPlugIn.change-styles") + " - "
+                I18N.getInstance().get("ui.style.ChangeStylesPlugIn.change-styles") + " - "
                         + layer.getName() + " (WMS)", true);
         dialog.setSize(500, 400);
         // dialog.setInset(0);
@@ -88,9 +88,9 @@ public class WMSStylePlugIn extends AbstractPlugIn {
         final WMSTransparencyPanel trppanel = new WMSTransparencyPanel(layer,
                 context.getLayerViewPanel());
         tabbedPane.add(
-                I18N.get("ui.renderer.style.ColorThemingPanel.transparency"),
+                I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.transparency"),
                 trppanel);
-        tabbedPane.add(I18N.get("ui.style.ScaleStylePanel.scale"), panel);
+        tabbedPane.add(I18N.getInstance().get("ui.style.ScaleStylePanel.scale"), panel);
         dialog.addRow(tabbedPane);
 
         dialog.setApplyVisible(true);
@@ -111,7 +111,7 @@ public class WMSStylePlugIn extends AbstractPlugIn {
 
                         JOptionPane.showMessageDialog(
                                 null,
-                                I18N.get("ui.style.ScaleStylePanel.units-pixel-at-smallest-scale-must-be-larger-than-units-pixel-at-largest-scale"),
+                                I18N.getInstance().get("ui.style.ScaleStylePanel.units-pixel-at-smallest-scale-must-be-larger-than-units-pixel-at-largest-scale"),
                                 "Jump", JOptionPane.ERROR_MESSAGE);
 
                     } else {
@@ -142,7 +142,7 @@ public class WMSStylePlugIn extends AbstractPlugIn {
     }
 
     public String getName() {
-        return I18N.get("ui.style.ChangeStylesPlugIn.change-styles");
+        return I18N.getInstance().get("ui.style.ChangeStylesPlugIn.change-styles");
     }
 
     public MultiEnableCheck createEnableCheck(

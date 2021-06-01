@@ -76,24 +76,24 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
     implements ThreadedPlugIn {
     private static String CHECK_BASIC_TOPOLOGY = "";
-    private final static String CHECK_POLYGON_ORIENTATION = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-polygon-orientation");
-    //private final static String CHECK_LINESTRINGS_SIMPLE = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-linestrings-are-simple");
-    private final static String CHECK_GEOMETRIES_SIMPLE = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-geometries-are-simple");
-    private final static String CHECK_POLYGONS_HAVE_NO_HOLES = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-polygons-and-multipolygons-with-holes");
-    private final static String CHECK_NO_REPEATED_CONSECUTIVE_POINTS = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-repeated-consective-points");
-    private final static String CHECK_MIN_SEGMENT_LENGTH = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-minimum-segment-length");
-    private final static String CHECK_MIN_ANGLE = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-minimum-angle");
-    private final static String MIN_SEGMENT_LENGTH = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.minimum-segment-length");    
-    private final static String MIN_ANGLE = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.minimum-angle-in-degrees");
-    private final static String MIN_POLYGON_AREA = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.minimum-polygon-area");    
-    private final static String CHECK_MIN_POLYGON_AREA = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-minimum-polygon-area");
-    private final static String DISALLOW_POINTS = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-points");
-    private final static String DISALLOW_LINESTRINGS = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-linestrings");
-    private final static String DISALLOW_POLYGONS = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-polygons");
-    private final static String DISALLOW_MULTIPOINTS = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-multipoints");
-    private final static String DISALLOW_MULTILINESTRINGS = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-multilinestrings");
-    private final static String DISALLOW_MULTIPOLYGONS = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-multipolygons");
-    private final static String DISALLOW_GEOMETRYCOLLECTIONS = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-geometrycollections");
+    private final static String CHECK_POLYGON_ORIENTATION = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.check-polygon-orientation");
+    //private final static String CHECK_LINESTRINGS_SIMPLE = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-linestrings-are-simple");
+    private final static String CHECK_GEOMETRIES_SIMPLE = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-geometries-are-simple");
+    private final static String CHECK_POLYGONS_HAVE_NO_HOLES = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-polygons-and-multipolygons-with-holes");
+    private final static String CHECK_NO_REPEATED_CONSECUTIVE_POINTS = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-repeated-consective-points");
+    private final static String CHECK_MIN_SEGMENT_LENGTH = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.check-minimum-segment-length");
+    private final static String CHECK_MIN_ANGLE = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.check-minimum-angle");
+    private final static String MIN_SEGMENT_LENGTH = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.minimum-segment-length");    
+    private final static String MIN_ANGLE = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.minimum-angle-in-degrees");
+    private final static String MIN_POLYGON_AREA = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.minimum-polygon-area");    
+    private final static String CHECK_MIN_POLYGON_AREA = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.check-minimum-polygon-area");
+    private final static String DISALLOW_POINTS = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-points");
+    private final static String DISALLOW_LINESTRINGS = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-linestrings");
+    private final static String DISALLOW_POLYGONS = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-polygons");
+    private final static String DISALLOW_MULTIPOINTS = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-multipoints");
+    private final static String DISALLOW_MULTILINESTRINGS = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-multilinestrings");
+    private final static String DISALLOW_MULTIPOLYGONS = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-multipolygons");
+    private final static String DISALLOW_GEOMETRYCOLLECTIONS = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.disallow-geometrycollections");
     private static final String ERROR = "ERROR";
     private static final String SOURCE_FID = "SOURCE_FID";
     private static final String GEOMETRY = "GEOMETRY";
@@ -138,7 +138,7 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
         //output window. [Jon Aquino]
         Layer[] selectedLayers = context.getSelectedLayers();
         context.getOutputFrame().createNewDocument();
-        context.getOutputFrame().addHeader(1, I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.validation-errors"));
+        context.getOutputFrame().addHeader(1, I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.validation-errors"));
 
         for (int i = 0;
                 (i < selectedLayers.length) && !monitor.isCancelRequested();
@@ -226,10 +226,10 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
                                                         .getFeatures(), monitor);
 
         if (!validationErrors.isEmpty()) {
-            addLayer(toLayer(I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.error-locations")+" - " + layer.getName(),
+            addLayer(toLayer(I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.error-locations")+" - " + layer.getName(),
                     toLocationFeatures(validationErrors, layer), layer, true,
                     context), context);
-            addLayer(toLayer(I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.bad-features")+" - " + layer.getName(),
+            addLayer(toLayer(I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.bad-features")+" - " + layer.getName(),
                     toFeatures(validationErrors, layer), layer, false, context),
                 context);
         }
@@ -239,10 +239,10 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
 
     private void outputSummary(PlugInContext context, Layer layer,
         List validationErrors) {
-        context.getOutputFrame().addHeader(2, I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.layer")+" " + layer.getName());
+        context.getOutputFrame().addHeader(2, I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.layer")+" " + layer.getName());
 
         if (validationErrors.isEmpty()) {
-            context.getOutputFrame().addText(I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.no-validation-errors"));
+            context.getOutputFrame().addText(I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.no-validation-errors"));
 
             return;
         }
@@ -348,18 +348,18 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
 
     private void initDialog(PlugInContext context) {
     	
-    	CHECK_BASIC_TOPOLOGY = I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-basic-topology");
+    	CHECK_BASIC_TOPOLOGY = I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.check-basic-topology");
         dialog = new DualPaneInputDialog(context.getWorkbenchFrame(),
-        		I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.validate-selected-layers"), true);
+        		I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.validate-selected-layers"), true);
         dialog.setSideBarImage(IconLoader.icon("Validate.gif"));
-        dialog.setSideBarDescription(I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.tests-layers-against-various-criteria"));
-        dialog.addLabel("<HTML><STRONG>"+I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.geometry-metrics-validation")+"</STRONG></HTML>");
+        dialog.setSideBarDescription(I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.tests-layers-against-various-criteria"));
+        dialog.addLabel("<HTML><STRONG>"+I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.geometry-metrics-validation")+"</STRONG></HTML>");
         dialog.addSeparator();
         dialog.addCheckBox(CHECK_BASIC_TOPOLOGY, true, "Test");
         dialog.addCheckBox(CHECK_NO_REPEATED_CONSECUTIVE_POINTS,
             false);
         dialog.addCheckBox(CHECK_POLYGON_ORIENTATION,
-            false, I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-polygon-shells-are-oriented-clockwise-and-holes-counterclockwise"));
+            false, I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-polygon-shells-are-oriented-clockwise-and-holes-counterclockwise"));
         dialog.addCheckBox(CHECK_MIN_SEGMENT_LENGTH, false);
         dialog.addPositiveDoubleField(MIN_SEGMENT_LENGTH, 0.001,
             5);
@@ -369,10 +369,10 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
         dialog.addPositiveDoubleField(MIN_POLYGON_AREA, 0.001,
             5);
         dialog.addCheckBox(CHECK_GEOMETRIES_SIMPLE, false,
-        		I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-geometries-are-simple"));
+        		I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.check-that-geometries-are-simple"));
         //dialog.startNewColumn();
         dialog.setRightPane();
-        dialog.addLabel("<HTML><STRONG>"+I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.geometry-types-validation")+"</STRONG></HTML>");
+        dialog.addLabel("<HTML><STRONG>"+I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.geometry-types-validation")+"</STRONG></HTML>");
         dialog.addSeparator();
         dialog.addCheckBox(DISALLOW_POINTS, false);
         dialog.addCheckBox(DISALLOW_LINESTRINGS, false);
@@ -384,6 +384,6 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
         dialog.addCheckBox(CHECK_POLYGONS_HAVE_NO_HOLES,
             false);
         dialog.addCheckBox(DISALLOW_GEOMETRYCOLLECTIONS,
-            false, I18N.get("ui.plugin.ValidateSelectedLayersPlugIn.geometry-collection-subtypes-are-not-disallowed"));
+            false, I18N.getInstance().get("ui.plugin.ValidateSelectedLayersPlugIn.geometry-collection-subtypes-are-not-disallowed"));
     }
 }

@@ -69,7 +69,7 @@ public class ZoomRealtimeTool extends AbstractZoomTool
   private static final double ZOOM_OUT_LIMIT = 0.1d;
   private boolean dragging = false;
   private boolean rightMouse = false;
-  private static final String sName = I18N.get("org.openjump.core.ui.plugin.tools.ZoomRealtimeTool.Zoom-Realtime");
+  private static final String sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ZoomRealtimeTool.Zoom-Realtime");
 
   public ZoomRealtimeTool() {
   }

@@ -54,7 +54,7 @@ public class MosaicInternalFramesPlugIn extends AbstractUiPlugIn {
     public static final ImageIcon ICON = IconLoader.icon("application_mosaic.png");
 
     public MosaicInternalFramesPlugIn() {
-        super(I18N.get("org.openjump.core.ui.plugin.window.MosaicInternalFramesPlugIn.Mosaic"),
+        super(I18N.getInstance().get("org.openjump.core.ui.plugin.window.MosaicInternalFramesPlugIn.Mosaic"),
             ICON);
     }
 

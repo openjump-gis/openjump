@@ -57,7 +57,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 public class ExtractLayerInFence extends AbstractPlugIn {
 
 	private final static String EXTRACT_LAYER_IN_FENCE =
-	    	I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayerInFence.Extract-Layer-in-Fence");
+	    	I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayerInFence.Extract-Layer-in-Fence");
 	 
 	public ExtractLayerInFence() {
 

@@ -55,8 +55,8 @@ import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
     
-  private final static String SRC_LAYER = I18N.get("jump.plugin.edit.PolygonizerPlugIn.Line-Layer");
-  private final static String NODE_INPUT = I18N.get("jump.plugin.edit.PolygonizerPlugIn.Node-input-before-polygonizing");
+  private final static String SRC_LAYER = I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Line-Layer");
+  private final static String NODE_INPUT = I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Node-input-before-polygonizing");
   private final static String SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
     
   private boolean useSelected = false;
@@ -76,7 +76,7 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
    * @return the name of this task
    */
   public String getName() { 
-      return I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonize"); 
+      return I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Polygonize"); 
   }
 
   public void initialize(PlugInContext context) throws Exception {
@@ -100,7 +100,7 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
   public boolean execute(PlugInContext context) throws Exception {
     MultiInputDialog dialog = new MultiInputDialog(
         context.getWorkbenchFrame(), 
-        I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonize"), true);
+        I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Polygonize"), true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
     dialog.setVisible(true);
@@ -113,7 +113,7 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
     monitor.allowCancellationRequests();
 
     Polygonizer polygonizer = new Polygonizer();
-    monitor.report(I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonizing"));
+    monitor.report(I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Polygonizing"));
 
     Layer layer = context.getLayerManager().getLayer(layerName);
     Collection<Feature> inputFeatures = getFeaturesToProcess(layer, context);
@@ -122,7 +122,7 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
     Collection<Geometry> lines = getLines(inputFeatures);
     Collection<Geometry> nodedLines = lines;
     if (nodeInputLines) {
-      monitor.report(I18N.get("jump.plugin.edit.PolygonizerPlugIn.Noding-input-lines"));
+      monitor.report(I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Noding-input-lines"));
       nodedLines = nodeLines(lines);
     }
 
@@ -193,10 +193,10 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
     if (dangleFC.size() > 0) {
       Layer lyr4 = context.addLayer(
           StandardCategoryNames.QA,
-          I18N.get("jump.plugin.edit.PolygonizerPlugIn.Dangles"),
+          I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Dangles"),
           dangleFC);
       LayerStyleUtil.setLinearStyle(lyr4, Color.red, 2, 0);
-      lyr4.setDescription(I18N.get("jump.plugin.edit.PolygonizerPlugIn.Dangling-edges"));
+      lyr4.setDescription(I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Dangling-edges"));
     }
 
     FeatureCollection cutFC = FeatureDatasetFactory.createFromGeometry(polygonizer.getCutEdges());
@@ -205,10 +205,10 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
     if (cutFC.size() > 0) {
       Layer lyr = context.addLayer(
           StandardCategoryNames.QA,
-          I18N.get("jump.plugin.edit.PolygonizerPlugIn.Cuts"),
+          I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Cuts"),
           cutFC);
       LayerStyleUtil.setLinearStyle(lyr, Color.blue, 2, 0);
-      lyr.setDescription(I18N.get("jump.plugin.edit.PolygonizerPlugIn.Cut-edges"));
+      lyr.setDescription(I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Cut-edges"));
     }
 
     FeatureCollection invalidRingFC = FeatureDatasetFactory.createFromGeometry(polygonizer.getInvalidRingLines());
@@ -217,16 +217,16 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
     if (invalidRingFC.size() > 0) {
       Layer lyr = context.addLayer(
           StandardCategoryNames.QA,
-          I18N.get("jump.plugin.edit.PolygonizerPlugIn.Invalid-Rings"),
+          I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Invalid-Rings"),
           invalidRingFC);
       LayerStyleUtil.setLinearStyle(lyr, Color.blue, 2, 0);
-      lyr.setDescription(I18N.get("jump.plugin.edit.PolygonizerPlugIn.Invalid-Rings"));
+      lyr.setDescription(I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Invalid-Rings"));
     }
 
     FeatureCollection polyFC = FeatureDatasetFactory.createFromGeometry(polygonizer.getPolygons());
     context.addLayer(
         StandardCategoryNames.RESULT,
-        layerName + " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygons"),
+        layerName + " " + I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Polygons"),
         polyFC);
 
     createOutput(context, polyFC);
@@ -236,31 +236,31 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
   private void createOutput(PlugInContext context, FeatureCollection polyFC) {
     context.getOutputFrame().createNewDocument();
     context.getOutputFrame().addHeader(1,
-    		I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonization"));
+    		I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Polygonization"));
     context.getOutputFrame().addField("Layer: ", layerName);
 
 
     context.getOutputFrame().addText(" ");
     context.getOutputFrame().addField(
-    		I18N.get("jump.plugin.edit.PolygonizerPlugIn.Number-of-input-edges"), "" + inputEdgeCount);
+    		I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Number-of-input-edges"), "" + inputEdgeCount);
     context.getOutputFrame().addField(
-    		I18N.get("jump.plugin.edit.PolygonizerPlugIn.Number-of-polygons-created"), "" + polyFC.size());
+    		I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Number-of-polygons-created"), "" + polyFC.size());
     context.getOutputFrame().addField(
-    		I18N.get("jump.plugin.edit.PolygonizerPlugIn.Number-of-dangling-edges-found"), "" + dangleCount);
+    		I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Number-of-dangling-edges-found"), "" + dangleCount);
     context.getOutputFrame().addField(
-    		I18N.get("jump.plugin.edit.PolygonizerPlugIn.Number-of-cut-edges-found"), "" + cutCount);
+    		I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Number-of-cut-edges-found"), "" + cutCount);
     context.getOutputFrame().addField(
-    		I18N.get("jump.plugin.edit.PolygonizerPlugIn.Number-of-invalid-rings-found"), "" + invalidRingCount);
+    		I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Number-of-invalid-rings-found"), "" + invalidRingCount);
   }
 
 
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("Polygonize.png")));
-    dialog.setSideBarDescription(I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonizes-the-line-segments-in-a-layer")
-            + " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonization-requires-correctly-noded-data")
-			+ " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.If-desired-the-input-data-may-be-noded-before-polygonizing-is-performed")
-			+ " " + I18N.get("jump.plugin.edit.PolygonizerPlugIn.Dangles-Cutlines-and-Invalid-Rings-are-identified")
+    dialog.setSideBarDescription(I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Polygonizes-the-line-segments-in-a-layer")
+            + " " + I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Polygonization-requires-correctly-noded-data")
+			+ " " + I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.If-desired-the-input-data-may-be-noded-before-polygonizing-is-performed")
+			+ " " + I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Dangles-Cutlines-and-Invalid-Rings-are-identified")
     );
     dialog.addLayerComboBox(SRC_LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
     dialog.addCheckBox(SELECTED_ONLY, useSelected);

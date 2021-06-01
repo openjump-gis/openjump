@@ -51,8 +51,7 @@ public class ECWImageFactory implements ReferencedImageFactory {
   private static final String TYPE_NAME = "ECW";
   private static final String DESCRIPTION = "Enhanced Compressed Wavelet (via ecw3.3)";
   private static final String[] EXTENSIONS = new String[] { "ecw" };
-  final static String sNotInstalled = I18N
-      .get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
+  final static String sNotInstalled = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
 
   private static Boolean available = null;
 
@@ -75,7 +74,7 @@ public class ECWImageFactory implements ReferencedImageFactory {
     if (!StandardCharsets.US_ASCII.newEncoder().canEncode(filepath)) {
       String hint = filepath.replaceAll("[^\\u0000-\\u007F]", "?");
       throw new ECWLoadException(
-          I18N.getMessage(
+          I18N.getInstance().get(
               "com.vividsolutions.jump.workbench.imagery.ecw.path-contains-nonansi-chars",
               hint));
     }

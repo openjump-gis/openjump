@@ -56,7 +56,7 @@ public class DisposeSelectedLayersPlugIn extends RemoveSelectedLayersPlugIn {
     // using the same name as remove plugin, as a users remove in ui is
     // essentially a remove/dispose combination
     public String getName() {
-    return I18N.get(getClass().getSuperclass().getCanonicalName());
+    return I18N.getInstance().get(getClass().getSuperclass().getCanonicalName());
   }
 
 }

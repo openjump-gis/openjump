@@ -120,7 +120,7 @@ public class GeoJSONReader extends AbstractJUMPReader {
             milliSeconds = now;
             TaskMonitorUtil.report(
                 monitor,
-                I18N.getMessage("Reader.parsed-{0}-features",
+                I18N.getInstance().get("Reader.parsed-{0}-features",
                     String.format("%,10d", fcwrap.size())));
           }
         } catch (Exception e) {

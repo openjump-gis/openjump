@@ -52,7 +52,7 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
   private static final String KEY = OpenFilePlugIn.class.getName();
   private static final ImageIcon ICON = IconLoader.icon("folder_page.png");
 
-  private static final String FILE_DOES_NOT_EXIST = I18N.get(KEY
+  private static final String FILE_DOES_NOT_EXIST = I18N.getInstance().get(KEY
     + ".file-does-not-exist");
 
   /**

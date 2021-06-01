@@ -201,10 +201,10 @@ public class PlugInManager {
       PlugInContext pc = context.createPlugInContext();
       for (Iterator i = configurations.iterator(); i.hasNext();) {
         Configuration configuration = (Configuration) i.next();
-        monitor.report(I18N.get(LOADING) + " " + name(configuration) + " "
-            + version(configuration));
         long start = Timer.milliSecondsSince(0);
         try {
+          monitor.report(I18N.getInstance().get(LOADING) + " " + name(configuration) + " "
+              + version(configuration));
           // we used the plugin classloader to instantiate extensions already above
           configuration.configure(pc);
           //System.out.println(Arrays.toString(((URLClassLoader)classLoader).getURLs()));
@@ -215,7 +215,7 @@ public class PlugInManager {
         catch (Throwable e) {
           context.getErrorHandler().handleThrowable(e);
           context.getWorkbench().getFrame()
-              .log(configuration.getClass().getName() + " " + I18N.get(NOT_INITIALIZED), this.getClass());
+              .log(configuration.getClass().getName() + " " + I18N.getInstance().get(NOT_INITIALIZED), this.getClass());
         }
       }
     }
@@ -234,7 +234,7 @@ public class PlugInManager {
             && initSetting.equals(WorkbenchProperties.ATTR_VALUE_FALSE))
           continue;
 
-        monitor.report(I18N.get(LOADING) + " " + className);
+        monitor.report(I18N.getInstance().get(LOADING) + " " + className);
 
         Class plugInClass = null;
         try {
@@ -307,7 +307,7 @@ public class PlugInManager {
         } catch (Throwable e) {
           context.getErrorHandler().handleThrowable(e);
           context.getWorkbench().getFrame()
-              .log(className + " " + I18N.get(NOT_INITIALIZED), this.getClass());
+              .log(className + " " + I18N.getInstance().get(NOT_INITIALIZED), this.getClass());
         }
       }
     }
@@ -393,7 +393,7 @@ public class PlugInManager {
       for (Iterator i = findFilesRecursively( plugInDirectory, false ).iterator(); i.hasNext();) {
         start = Timer.milliSecondsSince(0);
         File file = (File) i.next();
-        String msg = I18N.getMessage(
+        String msg = I18N.getInstance().get(
             "com.vividsolutions.jump.workbench.plugin.PlugInManager.scan",
             new String[] { file.getName() });
         monitor.report(msg);
@@ -485,7 +485,7 @@ public class PlugInManager {
                     + ". Refine class name algorithm.");
             return null;
         } catch (Throwable t) {
-            Logger.error(I18N.get(LOADING_ERROR) + " " + className + ":");
+            Logger.error(I18N.getInstance().get(LOADING_ERROR) + " " + className + ":");
             //e.g. java.lang.VerifyError: class
             // org.apache.xml.serialize.XML11Serializer
             //overrides final method [Jon Aquino]

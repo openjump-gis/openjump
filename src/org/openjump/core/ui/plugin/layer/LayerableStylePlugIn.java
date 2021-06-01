@@ -69,7 +69,7 @@ public class LayerableStylePlugIn extends AbstractPlugIn {
     }
 
     public String getName() {
-        return I18N.get("ui.style.ChangeStylesPlugIn.change-styles");
+        return I18N.getInstance().get("ui.style.ChangeStylesPlugIn.change-styles");
     }
 
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

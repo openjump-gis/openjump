@@ -173,7 +173,7 @@ public class FeatureInfoWriter {
             && ((stringBuffer.length() + featureWriter.toHTML(feature).length())
                 > (32768 - 2000))) {
             //See http://developer.java.sun.com/developer/bugParade/bugs/4775730.html. [Jon Aquino]
-            text = I18N.get("ui.FeatureInfoWriter.text-representation-of-geometry-is-too-large");
+            text = I18N.getInstance().get("ui.FeatureInfoWriter.text-representation-of-geometry-is-too-large");
         }
         stringBuffer.append(text);
     }

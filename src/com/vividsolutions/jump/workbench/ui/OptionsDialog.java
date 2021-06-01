@@ -63,7 +63,7 @@ public class OptionsDialog extends JDialog {
     private OKCancelPanel okCancelPanel = new OKCancelPanel();
     private JTabbedPane tabbedPane = new JTabbedPane();
 
-    private static String sOptions=I18N.get("com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn");
+    private static String sOptions=I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn");
 	
     private OptionsDialog(Frame frame, String title, boolean modal) {
         super(frame, title, modal);

@@ -290,10 +290,10 @@ public class EditTransaction {
             if (!editTransaction.proposedGeometriesValid()) {
                 if (editTransaction.rollingBackInvalidEdits) {
                     editTransaction.layerViewPanelContext.warnUser(
-                        I18N.get("ui.EditTransaction.the-geometry-is-invalid-cancelled"));
+                        I18N.getInstance().get("ui.EditTransaction.the-geometry-is-invalid-cancelled"));
                     return false;
                 } else {
-                    editTransaction.layerViewPanelContext.warnUser(I18N.get("ui.EditTransaction.the-new-geometry-is-invalid"));
+                    editTransaction.layerViewPanelContext.warnUser(I18N.getInstance().get("ui.EditTransaction.the-new-geometry-is-invalid"));
                 }
             }
             commands.add(editTransaction.createCommand());

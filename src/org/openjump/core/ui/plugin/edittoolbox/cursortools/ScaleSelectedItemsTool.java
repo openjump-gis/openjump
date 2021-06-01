@@ -109,8 +109,8 @@ public class ScaleSelectedItemsTool extends DragTool implements ShortcutsDescrip
     
     public ScaleSelectedItemsTool(EnableCheckFactory checkFactory) {
         
-    	this.scaleSelectedItems =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.ScaleSelectedItemsTool.Scale-Selected-Items");
-    	this.sScaleFactor =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.ScaleSelectedItemsTool.scale-factor");    
+    	this.scaleSelectedItems =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.ScaleSelectedItemsTool.Scale-Selected-Items");
+    	this.sScaleFactor =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.ScaleSelectedItemsTool.scale-factor");    
     	
     	this.checkFactory = checkFactory;
         
@@ -472,7 +472,7 @@ public class ScaleSelectedItemsTool extends DragTool implements ShortcutsDescrip
    public Map<ModifierKeySpec, String> describeShortcuts() {
      Map map = new HashMap();
      map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_SHIFT }),
-         I18N.get(this.getClass().getName() + ".keep-aspect-ratio"));
+         I18N.getInstance().get(this.getClass().getName() + ".keep-aspect-ratio"));
      return map;
    }
 }

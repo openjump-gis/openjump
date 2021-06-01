@@ -43,13 +43,13 @@ public class StatisticOverViewTableModel  extends StandardPirolTableModel {
 
     public StatisticOverViewTableModel(Feature[] features) {
         super(new String[]{ 
-        		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.attribute"), 
-        		I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-type"), 
-        		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum"), 
-        		I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewTableModel.mean-mode"), 
-        		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum"), 
-        		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev"),
-        		I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum")});
+        		I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.attribute"), 
+        		I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-type"), 
+        		I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum"), 
+        		I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewTableModel.mean-mode"), 
+        		I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum"), 
+        		I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev"),
+        		I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum")});
         this.features = features;
         
         this.setupTable();

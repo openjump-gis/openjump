@@ -64,7 +64,7 @@ public class AffineTransControlPointExtracter {
   private FeatureCollection fcDest;
 
   private int inputType = TYPE_UNKNOWN;
-  private String parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Unrecognized-control-point-geometry");
+  private String parseErrMsg = I18N.getInstance().get("jump.plugin.edit.AffineTransControlPointExtracter.Unrecognized-control-point-geometry");
 
   private Geometry[] geomSrc = new Geometry[3];
   private Geometry[] geomDest = new Geometry[3];
@@ -96,13 +96,13 @@ public class AffineTransControlPointExtracter {
 
     // error - # geoms must match
     if (fcSrcSize != fcDestSize) {
-      parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Control-point-collections-must-be-same-size");
+      parseErrMsg = I18N.getInstance().get("jump.plugin.edit.AffineTransControlPointExtracter.Control-point-collections-must-be-same-size");
       return;
     }
 
     // for now only handling pair of geoms to define control points
     if (fcSrcSize != 1) {
-      parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Control-points-must-be-a-single-geometry");
+      parseErrMsg = I18N.getInstance().get("jump.plugin.edit.AffineTransControlPointExtracter.Control-points-must-be-a-single-geometry");
       return;
     }
 
@@ -110,13 +110,13 @@ public class AffineTransControlPointExtracter {
     geomDest[0] = fcDest.iterator().next().getGeometry();
 
     if (geomSrc[0].getClass() != geomDest[0].getClass()) {
-      parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Control-points-must-be-LineStrings");
+      parseErrMsg = I18N.getInstance().get("jump.plugin.edit.AffineTransControlPointExtracter.Control-points-must-be-LineStrings");
       return;
     }
 
     // for now only handling LineStrings
     if (! (geomSrc[0] instanceof LineString)) {
-      parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Control-points-must-be-LineStrings");
+      parseErrMsg = I18N.getInstance().get("jump.plugin.edit.AffineTransControlPointExtracter.Control-points-must-be-LineStrings");
       return;
     }
 
@@ -128,14 +128,14 @@ public class AffineTransControlPointExtracter {
     controlPtDest = geomDest[0].getCoordinates();
 
     if (controlPtSrc.length != controlPtDest.length) {
-      parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Control-Point-LineStrings-are-different-lengths");
+      parseErrMsg = I18N.getInstance().get("jump.plugin.edit.AffineTransControlPointExtracter.Control-Point-LineStrings-are-different-lengths");
       return;
     }
     if (controlPtSrc.length < 2) {
-      parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Single-control-points-are-not-supported");
+      parseErrMsg = I18N.getInstance().get("jump.plugin.edit.AffineTransControlPointExtracter.Single-control-points-are-not-supported");
     }
     if (controlPtSrc.length > 3) {
-      parseErrMsg = I18N.get("jump.plugin.edit.AffineTransControlPointExtracter.Too-many-points-in-LineString");
+      parseErrMsg = I18N.getInstance().get("jump.plugin.edit.AffineTransControlPointExtracter.Too-many-points-in-LineString");
     }
     inputType = TYPE_VECTOR;
   }

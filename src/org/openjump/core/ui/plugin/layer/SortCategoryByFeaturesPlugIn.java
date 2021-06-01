@@ -70,12 +70,9 @@ public class SortCategoryByFeaturesPlugIn extends SortCategoryAbstractPlugIn {
   @Override
   protected void addMenuOptions(PlugInContext context) {
 
-    this.subMenuLabel = I18N
-        .get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Featues");
-    this.mostLabel = I18N
-        .get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Least-Number-of-Features");
-    this.leastLabel = I18N
-        .get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Most-Number-of-Features");
+    this.subMenuLabel = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Featues");
+    this.mostLabel = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Least-Number-of-Features");
+    this.leastLabel = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategoryByFeaturesPlugIn.By-Most-Number-of-Features");
 
     FeatureInstaller.addMainMenu(context.getFeatureInstaller(),
         new String[] { MenuNames.LAYER }, menuLabelOnLayer);

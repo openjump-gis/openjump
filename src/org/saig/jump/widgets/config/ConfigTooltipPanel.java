@@ -44,8 +44,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import org.saig.core.gui.swing.sldeditor.util.FormUtils;
-import org.saig.jump.lang.I18N;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.ui.OptionsPanelV2;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
@@ -97,8 +97,8 @@ public class ConfigTooltipPanel extends OptionsPanelV2 {
     private JPanel getTooltipPanel() {
         if (tooltipPanel == null) {
             tooltipPanel = new JPanel(new GridBagLayout());
-            tooltipPanel.setBorder(BorderFactory.createTitledBorder(I18N
-                    .getString("Configure layer tree tooltip")));
+            tooltipPanel.setBorder(BorderFactory.createTitledBorder(I18N.getInstance()
+                    .get("Configure layer tree tooltip")));
             tooltipCheck = new JCheckBox("Enable JUMP basic tooltips");
             FormUtils.addRowInGBL(tooltipPanel, 0, 0, tooltipCheck);
         }
