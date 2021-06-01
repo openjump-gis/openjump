@@ -49,8 +49,8 @@ import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUti
  */
 public class AutoCompletePolygonCursorTool extends PolygonTool {
 
-   final static String sAutoComplete = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.AutoCompletePolygonCursorTool.Auto-Complete-Polygon");	   
-   final static String sCanNotAdd = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.AutoCompletePolygonCursorTool.Can-not-add-polygon");	   
+   final static String sAutoComplete = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.AutoCompletePolygonCursorTool.Auto-Complete-Polygon");	   
+   final static String sCanNotAdd = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.AutoCompletePolygonCursorTool.Can-not-add-polygon");	   
 	   
    private static WorkbenchContext context;
    private EnableCheckFactory checkFactory;
@@ -95,7 +95,7 @@ public class AutoCompletePolygonCursorTool extends PolygonTool {
 			.getContext()
 			.warnUser(
 
-					I18N.get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected"));
+					I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected"));
 
 			return;
 		}
@@ -105,7 +105,7 @@ public class AutoCompletePolygonCursorTool extends PolygonTool {
 			.getContext()
 			.warnUser(
 
-					I18N.get("com.vividsolutions.jump.workbench.plugin.Selected-items-layers-must-be-editable"));
+					I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Selected-items-layers-must-be-editable"));
 
 			return;
 

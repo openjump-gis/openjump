@@ -27,7 +27,7 @@ public class LinearReferencingOnSelectionPlugIn extends AbstractLinearReferencin
     private static final String KEY = LinearReferencingOnSelectionPlugIn.class.getName();
 
     public LinearReferencingOnSelectionPlugIn() {
-        super(I18N.get(KEY), IconLoader.icon("linearref_selection.png"));
+        super(I18N.getInstance().get(KEY), IconLoader.icon("linearref_selection.png"));
     }
 
     private String categoryName = StandardCategoryNames.RESULT;

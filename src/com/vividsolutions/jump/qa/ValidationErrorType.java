@@ -43,46 +43,46 @@ import com.vividsolutions.jump.I18N;
 public class ValidationErrorType {
     /** Geometry class not allowed */
     public final static ValidationErrorType GEOMETRY_CLASS_DISALLOWED = new ValidationErrorType(
-            I18N.get("qa.ValidationErrorType.geometry-class-not-allowed"));
+            I18N.getInstance().get("qa.ValidationErrorType.geometry-class-not-allowed"));
 
     /** Basic topology is invalid */
     public final static ValidationErrorType BASIC_TOPOLOGY_INVALID = new ValidationErrorType(
-    		I18N.get("qa.ValidationErrorType.basic-topology-is-invalid"));
+    		I18N.getInstance().get("qa.ValidationErrorType.basic-topology-is-invalid"));
 
     /** Polygon shell is oriented counter-clockwise */
     public final static ValidationErrorType EXTERIOR_RING_CCW = new ValidationErrorType(
-    		I18N.get("qa.ValidationErrorType.polygon-shell-is-oriented-counter-clockwise"));
+    		I18N.getInstance().get("qa.ValidationErrorType.polygon-shell-is-oriented-counter-clockwise"));
 
     /** Polygon hole is oriented clockwise */
     public final static ValidationErrorType INTERIOR_RING_CW = new ValidationErrorType(
-    		I18N.get("qa.ValidationErrorType.polygon-hole-is-oriented-clockwise"));
+    		I18N.getInstance().get("qa.ValidationErrorType.polygon-hole-is-oriented-clockwise"));
     
     /** 
      * Linestring not simple 
      * @since OpenJUMP 1.6
      */
     public final static ValidationErrorType NONSIMPLE = new ValidationErrorType(
-    		I18N.get("qa.ValidationErrorType.non-simple"));
+    		I18N.getInstance().get("qa.ValidationErrorType.non-simple"));
 
     /** Contains segment with length below minimum */
     public final static ValidationErrorType SMALL_SEGMENT = new ValidationErrorType(
-    		I18N.get("qa.ValidationErrorType.contains-segment-with-length-below-minimum"));
+    		I18N.getInstance().get("qa.ValidationErrorType.contains-segment-with-length-below-minimum"));
 
     /** Is/contains polygon with area below minimum */
     public final static ValidationErrorType SMALL_AREA = new ValidationErrorType(
-    		I18N.get("qa.ValidationErrorType.is-contain-polygon-with-area-below-minimum"));
+    		I18N.getInstance().get("qa.ValidationErrorType.is-contain-polygon-with-area-below-minimum"));
 
     /** Contains segments with angle below minimum */
     public final static ValidationErrorType SMALL_ANGLE = new ValidationErrorType(
-    		I18N.get("qa.ValidationErrorType.contains-segments-with-angle-below-minimum"));
+    		I18N.getInstance().get("qa.ValidationErrorType.contains-segments-with-angle-below-minimum"));
 
     /** Polygon has holes */
     public final static ValidationErrorType POLYGON_HAS_HOLES = new ValidationErrorType(
-    		I18N.get("qa.ValidationErrorType.polygon-has-holes"));
+    		I18N.getInstance().get("qa.ValidationErrorType.polygon-has-holes"));
 
     /** Consecutive points are the same */
     public final static ValidationErrorType REPEATED_CONSECUTIVE_POINTS = new ValidationErrorType(
-    		I18N.get("qa.ValidationErrorType.consecutive-points-are-the-same"));
+    		I18N.getInstance().get("qa.ValidationErrorType.consecutive-points-are-the-same"));
     private String message;
 
     private ValidationErrorType(String message) {

@@ -56,12 +56,9 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class ToggleVisibilityPlugIn extends AbstractPlugIn {
-  private final static String toggleVisibility = I18N
-      .get("org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn");
-  private final static String errorSeeOutputWindow = I18N
-      .get("org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn.Error-See-Output-Window");
-  private final static String layerName = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Layer-Name");
+  private final static String toggleVisibility = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn");
+  private final static String errorSeeOutputWindow = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ToggleVisibilityPlugIn.Error-See-Output-Window");
+  private final static String layerName = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Layer-Name");
 
   public void initialize(PlugInContext context) throws Exception {
     WorkbenchContext workbenchContext = context.getWorkbenchContext();

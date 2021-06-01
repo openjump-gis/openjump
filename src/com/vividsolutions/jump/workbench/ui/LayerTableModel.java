@@ -176,7 +176,7 @@ public class LayerTableModel extends ColumnBasedTableModel {
                     layer.getLayerManager().getUndoableEditReceiver().startReceiving();
                     try {
                         UndoableCommand command =
-                            new UndoableCommand(I18N.get("ui.plugin.LayerTableModel.edit")+" " + schema.getAttributeName(j)) {
+                            new UndoableCommand(I18N.getInstance().get("ui.plugin.LayerTableModel.edit")+" " + schema.getAttributeName(j)) {
                             public void execute() {
                                 Feature oldClone = (Feature)feature.clone();
                                 feature.setAttribute(j, value);

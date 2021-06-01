@@ -59,7 +59,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     private JFileChooser fileChooser = null;
     private WorkbenchContext workbenchContext;
     private JCheckBox worldFileCheckBox = null;
-    private JLabel pixelSizeLabel = new JLabel(I18N.get("ui.plugin.SaveImageAsPlugIn.width-in-pixels"));
+    private JLabel pixelSizeLabel = new JLabel(I18N.getInstance().get("ui.plugin.SaveImageAsPlugIn.width-in-pixels"));
     private final ImageIcon icon = IconLoader.icon("Box.gif");
     private Geometry fence = null;
 
@@ -91,7 +91,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
                     ((MyFileFilter) getFileFilter()).getFormat()));
               }
             };
-            fileChooser.setDialogTitle(I18N.get("ui.plugin.SaveImageAsPlugIn.save-image"));
+            fileChooser.setDialogTitle(I18N.getInstance().get("ui.plugin.SaveImageAsPlugIn.save-image"));
             //Remove *.* [Jon Aquino 11/6/2003]
             GUIUtil.removeChoosableFileFilters(fileChooser);
             Map<String,MyFileFilter> formatToFileFilterMap = new HashMap<>();
@@ -112,7 +112,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
             JPanel jPanelSize = new JPanel(new FlowLayout(FlowLayout.LEFT));
             JPanel jPanelWF   = new JPanel(new FlowLayout(FlowLayout.LEFT));
             worldFileCheckBox = new javax.swing.JCheckBox();
-            worldFileCheckBox.setText(I18N.get("ui.plugin.SaveImageAsPlugIn.write-world-file"));
+            worldFileCheckBox.setText(I18N.getInstance().get("ui.plugin.SaveImageAsPlugIn.write-world-file"));
             if (fence != null){
             	JLabel fenceIcon = new JLabel(icon);
             	jPanelSize.add(fenceIcon);
@@ -173,7 +173,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
       super.initialize(context);
       context.getFeatureInstaller().addMainMenuPlugin(this, new String[] {
           MenuNames.FILE, MenuNames.FILE_SAVEVIEW },
-              I18N.get(this.getClass().getName())+"...",false,null,
+              I18N.getInstance().get(this.getClass().getName())+"...",false,null,
               createEnableCheck(context.getWorkbenchContext()));
     }
 
@@ -209,7 +209,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
  			if (fenceFound)
 			{
  				envelope = fence.getEnvelopeInternal(); 
- 				String fenceLayerName = I18N.get("model.FenceLayerFinder.fence");
+ 				String fenceLayerName = I18N.getInstance().get("model.FenceLayerFinder.fence");
  				Layer fenceLayer = workbenchContext.getLayerableNamePanel()
                         .getLayerManager().getLayer(fenceLayerName);
 				fenceLayer.setVisible(false);
@@ -241,7 +241,7 @@ public class SaveImageAsPlugIn extends ExportImagePlugIn {
     private void save(RenderedImage image, String format, File file)
             throws IOException {
         boolean writerFound = ImageIO.write(image, format, file);
-        Assert.isTrue( writerFound, I18N.get("ui.plugin.SaveImageAsPlugIn.cannot-find-writer-for-image-format")+" '"
+        Assert.isTrue( writerFound, I18N.getInstance().get("ui.plugin.SaveImageAsPlugIn.cannot-find-writer-for-image-format")+" '"
                 + format + "'");
     }
 

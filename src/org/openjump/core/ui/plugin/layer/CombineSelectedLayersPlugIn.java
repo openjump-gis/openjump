@@ -57,10 +57,8 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 
 public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
 
-  private static final String LAYER = I18N
-      .get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.LAYER");
-  private static final String COMBINE_SELECTED_LAYERS = I18N
-      .get("org.openjump.core.ui.plugin.layer.CombineSelectedLayers");
+  private static final String LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.LAYER");
+  private static final String COMBINE_SELECTED_LAYERS = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.CombineSelectedLayers");
 
   private String uniqueName = LAYER;
 

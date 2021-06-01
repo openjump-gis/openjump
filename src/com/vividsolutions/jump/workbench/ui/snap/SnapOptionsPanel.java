@@ -110,7 +110,7 @@ public class SnapOptionsPanel extends JPanel implements OptionsPanel {
 
     public String validateInput() {
         String errorMessage = "\"" + gridSizeTextField.getText() +
-            "\" "+I18N.get("ui.snap.SnapOptionsPanel.is-not-a-valid-grid-size");
+            "\" "+I18N.getInstance().get("ui.snap.SnapOptionsPanel.is-not-a-valid-grid-size");
 
         try {
             if (Double.parseDouble(gridSizeTextField.getText()) <= 0) {
@@ -167,18 +167,18 @@ public class SnapOptionsPanel extends JPanel implements OptionsPanel {
 
     private void jbInit() throws Exception {
         titledBorder1 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),
-        		I18N.get("ui.snap.SnapOptionsPanel.snapping"));
+        		I18N.getInstance().get("ui.snap.SnapOptionsPanel.snapping"));
         border2 = BorderFactory.createEtchedBorder(Color.white,
                 new Color(148, 145, 140));
-        titledBorder2 = new TitledBorder(border2, I18N.get("ui.snap.SnapOptionsPanel.grid-display"));
+        titledBorder2 = new TitledBorder(border2, I18N.getInstance().get("ui.snap.SnapOptionsPanel.grid-display"));
         this.setLayout(borderLayout1);
         jPanel1.setLayout(gridBagLayout1);
         jPanel2.setLayout(gridBagLayout2);
         jPanel2.setBorder(titledBorder1);
-        snapToFeaturesCheckBox.setText(I18N.get("ui.snap.SnapOptionsPanel.snap-to-vertices-and-lines"));
-        snapToVerticesCheckBox.setText(I18N.get("ui.snap.SnapOptionsPanel.snap-to-vertices"));
-        snapToLineStringBeingEditedCheckBox.setText(I18N.get("ui.snap.SnapOptionsPanel.snap-to-linestring-being-edited"));
-        snapToGridCheckBox.setText(I18N.get("ui.snap.SnapOptionsPanel.snap-to-grid"));
+        snapToFeaturesCheckBox.setText(I18N.getInstance().get("ui.snap.SnapOptionsPanel.snap-to-vertices-and-lines"));
+        snapToVerticesCheckBox.setText(I18N.getInstance().get("ui.snap.SnapOptionsPanel.snap-to-vertices"));
+        snapToLineStringBeingEditedCheckBox.setText(I18N.getInstance().get("ui.snap.SnapOptionsPanel.snap-to-linestring-being-edited"));
+        snapToGridCheckBox.setText(I18N.getInstance().get("ui.snap.SnapOptionsPanel.snap-to-grid"));
         jPanel4.setLayout(gridBagLayout3);
         jPanel5.setBorder(titledBorder2);
         jPanel5.setLayout(gridBagLayout4);
@@ -186,19 +186,19 @@ public class SnapOptionsPanel extends JPanel implements OptionsPanel {
         gridSizeTextField.setHorizontalAlignment(SwingConstants.TRAILING);
         jPanel7.setLayout(gridBagLayout6);
         showGridDotsRadioButton.setSelected(true);
-        showGridDotsRadioButton.setText(I18N.get("ui.snap.SnapOptionsPanel.show-grid-as-dots"));
-        showGridLinesRadioButton.setText(I18N.get("ui.snap.SnapOptionsPanel.show-grid-as-lines"));
+        showGridDotsRadioButton.setText(I18N.getInstance().get("ui.snap.SnapOptionsPanel.show-grid-as-dots"));
+        showGridLinesRadioButton.setText(I18N.getInstance().get("ui.snap.SnapOptionsPanel.show-grid-as-lines"));
         showGridCheckBox.setToolTipText("");
-        showGridCheckBox.setText(I18N.get("ui.snap.SnapOptionsPanel.show-grid-size"));
+        showGridCheckBox.setText(I18N.getInstance().get("ui.snap.SnapOptionsPanel.show-grid-size"));
         showGridCheckBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     showGridCheckBox_actionPerformed(e);
                 }
             });
         tolerancePanel.setLayout(gridBagLayout5);
-        toleranceLabel.setText(I18N.get("ui.snap.SnapOptionsPanel.tolerance"));
-        toleranceUnitsLabel.setText(I18N.get("ui.snap.SnapOptionsPanel.pixels"));
-        showGridUnitsLabel.setText(I18N.get("ui.snap.SnapOptionsPanel.model-units"));
+        toleranceLabel.setText(I18N.getInstance().get("ui.snap.SnapOptionsPanel.tolerance"));
+        toleranceUnitsLabel.setText(I18N.getInstance().get("ui.snap.SnapOptionsPanel.pixels"));
+        showGridUnitsLabel.setText(I18N.getInstance().get("ui.snap.SnapOptionsPanel.model-units"));
 
         this.add(jPanel1, BorderLayout.CENTER);
         jPanel1.add(jPanel2,

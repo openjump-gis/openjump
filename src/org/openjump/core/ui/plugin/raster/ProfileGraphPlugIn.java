@@ -80,40 +80,24 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     /**
      * Plugin to draw a profile on a raster layer
      */
-    public static String CLAYER = I18N.get("ui.GenericNames.Source-Layer");
-    private final String DRAWN = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.draw-linstring-as-trace");
-    private final String SELECTED = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.use-selected-linstring-as-trace");;
-    private final String sName = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
-    private final String WARNING = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.select-one-linstring");
-    public final String PROFILE_INFO = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Info");
-    public final String PLOT = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot");
-    private final String OPTIONS = I18N
-            .get("com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn");
-    public static String HEIGHT = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values");
-    public static String WIDTH = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.2d-distance");
-    public final String DESCRIPTION = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Description");
-    private static String SELECT_BAND = I18N
-            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.select-one-band");
-    private static String LAYER_UNIT = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.srs-unit");
-    private static String VERICAL_AXES_LABEL = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.vertical-axes-label");
-    private static String HORIZONTAL_AXES_LABEL = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.horizontal-axes-label");
+    public static String CLAYER = I18N.getInstance().get("ui.GenericNames.Source-Layer");
+    private final String DRAWN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.draw-linstring-as-trace");
+    private final String SELECTED = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.use-selected-linstring-as-trace");;
+    private final String sName = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
+    private final String WARNING = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.select-one-linstring");
+    public final String PROFILE_INFO = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Info");
+    public final String PLOT = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot");
+    private final String OPTIONS = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn");
+    public static String HEIGHT = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values");
+    public static String WIDTH = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.2d-distance");
+    public final String DESCRIPTION = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Description");
+    private static String SELECT_BAND = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.select-one-band");
+    private static String LAYER_UNIT = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.srs-unit");
+    private static String VERICAL_AXES_LABEL = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.vertical-axes-label");
+    private static String HORIZONTAL_AXES_LABEL = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.horizontal-axes-label");
 
-    private static String COLOR = I18N
-            .get("ui.renderer.style.ColorThemingTableModel.colour");
-    private static String CHOOSE_COLOR = I18N
-            .get("ui.ColorChooserPanel.choose-color");
+    private static String COLOR = I18N.getInstance().get("ui.renderer.style.ColorThemingTableModel.colour");
+    private static String CHOOSE_COLOR = I18N.getInstance().get("ui.ColorChooserPanel.choose-color");
 
     public static String UNIT;
     public static int numband;
@@ -286,7 +270,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
         monitor.allowCancellationRequests();
         monitor.report(getName()
                 + ": "
-                + I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.computing"));
+                + I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.computing"));
         if (ProfileGraphGUI.resultFC != null || ProfileGraphGUI.nPoints > 0) {
             ProfileGraphGUI.resultFC.clear();
             ProfileGraphGUI.nPoints = 0;
@@ -321,7 +305,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
             final Collection<Feature> features = context.getLayerViewPanel()
                     .getSelectionManager().getFeaturesWithSelectedItems();
             if (features.size() != 1) {
-                context.getWorkbenchFrame().warnUser(I18N.getMessage(
+                context.getWorkbenchFrame().warnUser(I18N.getInstance().get(
                         "com.vividsolutions.jump.workbench.plugin.Exactly-n-features-must-be-selected", 1
                         ));
 

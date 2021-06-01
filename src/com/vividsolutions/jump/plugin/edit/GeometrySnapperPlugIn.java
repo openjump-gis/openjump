@@ -22,11 +22,11 @@ import java.util.ArrayList;
 
 public class GeometrySnapperPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
-  private static final String LAYER = I18N.get("ui.GenericNames.LAYER");
-  private static final String REF_LAYER = I18N.get("ui.GenericNames.REFERENCE_LAYER");
-  private static final String TOLERANCE = I18N.get("ui.plugin.analysis.GeometrySnapperPlugIn.tolerance");
-  private static final String AUTO_SNAP = I18N.get("ui.plugin.analysis.GeometrySnapperPlugIn.auto-snap");
-
+  private static I18N i18n = I18N.getInstance();
+  private static final String LAYER = i18n.get("ui.GenericNames.LAYER");
+  private static final String REF_LAYER = i18n.get("ui.GenericNames.REFERENCE_LAYER");
+  private static final String TOLERANCE = i18n.get("ui.plugin.analysis.GeometrySnapperPlugIn.tolerance");
+  private static final String AUTO_SNAP = i18n.get("ui.plugin.analysis.GeometrySnapperPlugIn.auto-snap");
 
   private String layer;
   private String refLayer;
@@ -34,7 +34,7 @@ public class GeometrySnapperPlugIn extends AbstractPlugIn implements ThreadedPlu
   private MultiInputDialog dialog;
 
   public String getName() {
-    return I18N.get("ui.plugin.analysis.GeometrySnapperPlugIn.Geometry-Snapper");
+    return i18n.get("ui.plugin.analysis.GeometrySnapperPlugIn.Geometry-Snapper");
   }
 
   public void initialize(PlugInContext context) throws Exception {
@@ -69,7 +69,7 @@ public class GeometrySnapperPlugIn extends AbstractPlugIn implements ThreadedPlu
   public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
     monitor.allowCancellationRequests();
 
-    monitor.report(I18N.get("ui.plugin.analysis.GeometrySnapperPlugIn.snapping"));
+    monitor.report(i18n.get("ui.plugin.analysis.GeometrySnapperPlugIn.snapping"));
 
     FeatureCollection fc = context.getLayerManager().getLayer(layer)
         .getFeatureCollectionWrapper();
@@ -104,7 +104,7 @@ public class GeometrySnapperPlugIn extends AbstractPlugIn implements ThreadedPlu
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
 
     dialog.setSideBarDescription(
-        I18N.get("ui.plugin.analysis.GeometrySnapperPlugIn.description")
+        i18n.get("ui.plugin.analysis.GeometrySnapperPlugIn.description")
     );
 
     Layer layer1 = (layer == null || context.getLayerManager().getLayer(layer) == null) ?

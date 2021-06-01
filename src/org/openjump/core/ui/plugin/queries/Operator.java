@@ -74,7 +74,7 @@ public class Operator {
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer(I18N.get("org.openjump.core.ui.plugin.queries.Operator."+key));
+        StringBuffer sb = new StringBuffer(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.Operator."+key));
         if(arg == null) {return sb.toString();}
         else {return sb.toString() + " (" + arg + ")";}
     }

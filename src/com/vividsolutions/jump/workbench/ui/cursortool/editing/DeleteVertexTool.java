@@ -78,11 +78,11 @@ public class DeleteVertexTool extends SpecifyFeaturesTool {
         int emptyGeometryCount = EditTransaction.emptyGeometryCount(transactions);
         if (emptyGeometryCount > 0) {
             getPanel().getContext().warnUser(
-            		I18N.get("ui.cursortool.editing.DeleteVertexTool.cancelled-deletion-would-result-in-empty-geometry"));
+            		I18N.getInstance().get("ui.cursortool.editing.DeleteVertexTool.cancelled-deletion-would-result-in-empty-geometry"));
             return;
         }
         if (verticesDeleted.isEmpty()) {
-            getPanel().getContext().warnUser(I18N.get("ui.cursortool.editing.DeleteVertexTool.no-selection-handles-here"));
+            getPanel().getContext().warnUser(I18N.getInstance().get("ui.cursortool.editing.DeleteVertexTool.no-selection-handles-here"));
             return;
         }
         EditTransaction.commit(transactions, new EditTransaction.SuccessAction() {

@@ -62,8 +62,7 @@ public class SortCategorySavePlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 
-		menuLabel = I18N
-				.get("org.openjump.core.ui.plugin.layer.SortCategorySavePlugIn.Save");
+		menuLabel = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategorySavePlugIn.Save");
 
 		context
 				.getFeatureInstaller()
@@ -71,8 +70,7 @@ public class SortCategorySavePlugIn extends AbstractPlugIn {
 						this,
 						new String[] {
 								MenuNames.LAYER,
-								I18N
-										.get(SortCategoryAbstractPlugIn.I18N_SORT_MENU_LABEL) },
+								I18N.getInstance().get(SortCategoryAbstractPlugIn.I18N_SORT_MENU_LABEL) },
 						menuLabel, false, ICON, null);
 	}
 

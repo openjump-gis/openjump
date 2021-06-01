@@ -39,7 +39,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 public class MergeTwoSelectedPolygonsPlugIn extends AbstractPlugIn{
 
 
-	private String sMergeTwoPolys = I18N.get("org.openjump.core.ui.plugin.tools.MergeTwoSelectedPolygonsPlugIn.Merge-Two-Polygons");
+	private String sMergeTwoPolys = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeTwoSelectedPolygonsPlugIn.Merge-Two-Polygons");
 	//private String sMergeTwoPolys = "MergeTwoPolygons";
 	
     public void initialize(PlugInContext context) throws Exception {

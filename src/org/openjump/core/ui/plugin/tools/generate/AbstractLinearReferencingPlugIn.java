@@ -58,25 +58,25 @@ public abstract class AbstractLinearReferencingPlugIn  extends AbstractThreadedU
 
     public boolean execute(PlugInContext context) throws Exception {
 
-        DESCRIPTION         = I18N.get(KEY + ".description");
+        DESCRIPTION         = I18N.getInstance().get(KEY + ".description");
 
-        DISTANCE_UNIT       = I18N.get(KEY + ".distance-unit");
-        MAP_UNIT            = I18N.get(KEY + ".map-unit");
-        MAP_UNIT_TOOLTIP    = I18N.get(KEY + ".map-unit-tooltip");
-        LINESTRING_FRACTION = I18N.get(KEY + ".linestring-fraction");
-        LINESTRING_FRACTION_TOOLTIP    = I18N.get(KEY + ".linestring-fraction-tooltip");
+        DISTANCE_UNIT       = I18N.getInstance().get(KEY + ".distance-unit");
+        MAP_UNIT            = I18N.getInstance().get(KEY + ".map-unit");
+        MAP_UNIT_TOOLTIP    = I18N.getInstance().get(KEY + ".map-unit-tooltip");
+        LINESTRING_FRACTION = I18N.getInstance().get(KEY + ".linestring-fraction");
+        LINESTRING_FRACTION_TOOLTIP    = I18N.getInstance().get(KEY + ".linestring-fraction-tooltip");
 
-        DISTANCE_AND_OFFSET = I18N.get(KEY + ".distance-and-offset");
-        DISTANCE            = I18N.get(KEY + ".distance");
-        DISTANCE_TOOLTIP    = I18N.get(KEY + ".distance-tooltip");
-        OFFSET              = I18N.get(KEY + ".offset");
-        OFFSET_TOOLTIP      = I18N.get(KEY + ".offset-tooltip");
+        DISTANCE_AND_OFFSET = I18N.getInstance().get(KEY + ".distance-and-offset");
+        DISTANCE            = I18N.getInstance().get(KEY + ".distance");
+        DISTANCE_TOOLTIP    = I18N.getInstance().get(KEY + ".distance-tooltip");
+        OFFSET              = I18N.getInstance().get(KEY + ".offset");
+        OFFSET_TOOLTIP      = I18N.getInstance().get(KEY + ".offset-tooltip");
 
-        REPEAT              = I18N.get(KEY + ".repeat");
-        REPEAT_DISTANCE     = I18N.get(KEY + ".repeat-distance");
-        ADD_END_POINT       = I18N.get(KEY + ".add-end-point");
+        REPEAT              = I18N.getInstance().get(KEY + ".repeat");
+        REPEAT_DISTANCE     = I18N.getInstance().get(KEY + ".repeat-distance");
+        ADD_END_POINT       = I18N.getInstance().get(KEY + ".add-end-point");
 
-        EMPTY_RESULT        = I18N.get(KEY + ".empty-result");
+        EMPTY_RESULT        = I18N.getInstance().get(KEY + ".empty-result");
         return true;
     }
 

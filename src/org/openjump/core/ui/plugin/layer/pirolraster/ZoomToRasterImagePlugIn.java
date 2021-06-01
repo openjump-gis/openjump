@@ -52,8 +52,7 @@ public class ZoomToRasterImagePlugIn extends AbstractPlugIn {
      * @inheritDoc
      */
     public String getName() {
-        return I18N
-                .get("org.openjump.core.ui.plugin.layer.pirolraster.ZoomToRasterImagePlugIn.Zoom-To-Raster-Image");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ZoomToRasterImagePlugIn.Zoom-To-Raster-Image");
     }
 
     /**
@@ -68,7 +67,7 @@ public class ZoomToRasterImagePlugIn extends AbstractPlugIn {
         if (rLayer == null) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
+                            I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return false;
         }
         /*

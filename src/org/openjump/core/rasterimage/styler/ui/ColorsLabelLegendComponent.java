@@ -92,8 +92,7 @@ public class ColorsLabelLegendComponent extends JComponent {
 
         g.setFont(new Font("Tahoma", Font.PLAIN, 12));
         // g.drawString("NoDataValue", x, y + 20);
-        final String jLabel_NoDataTitle = I18N
-                .get("org.openjump.core.ui.plugin.raster.nodata.nodata");
+        final String jLabel_NoDataTitle = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.nodata");
         g.drawString(jLabel_NoDataTitle, x, y + 20);
         g.setFont(new Font("Tahoma", Font.PLAIN, 11));
         y = startY + (step * i++);

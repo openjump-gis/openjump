@@ -176,7 +176,7 @@ public class RemoveSelectedCategoriesPlugIn extends AbstractPlugIn {
                 public String check(JComponent component) {
                     return (pickUnselectedCategory(workbenchContext.getLayerNamePanel(),
                         workbenchContext.getLayerManager()) == null)
-                    ? I18N.get("ui.plugin.RemoveSelectedCategoriesPlugIn.at-least-1-category-must-be-left-unselected") : null;
+                    ? I18N.getInstance().get("ui.plugin.RemoveSelectedCategoriesPlugIn.at-least-1-category-must-be-left-unselected") : null;
                 }
             });
     }

@@ -54,14 +54,14 @@ import java.util.Collection;
 */
 public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
-  private static String UPDATE_SRC = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
-  private static String CREATE_LYR = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
+  private static String UPDATE_SRC = I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
+  private static String CREATE_LYR = I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
   private static String MASK_LAYER = GenericNames.MASK_LAYER;
   private static String SRC_LAYER = GenericNames.SOURCE_LAYER;
-  private static String PREDICATE = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Relation");
+  private static String PREDICATE = I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Relation");
   private static String PARAM = GenericNames.PARAMETER;
-  private static String DIALOG_COMPLEMENT = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Complement-Result");
-  private static String ALLOW_DUPS = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Allow-Duplicates-in-Result");
+  private static String DIALOG_COMPLEMENT = I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Complement-Result");
+  private static String ALLOW_DUPS = I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Allow-Duplicates-in-Result");
 
   private JTextField paramField;
   private Collection functionNames;
@@ -86,7 +86,7 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   }
 
   public String getName(){
-  	return I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Spatial-Query");
+  	return I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Spatial-Query");
   }
 
   public ImageIcon getIcon(){
@@ -126,7 +126,7 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
     if (maskLyr == null) return;
     if (srcLayer == null) return;
 
-    monitor.report(I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Executing-query")+" " + functionToRun.getName() + "...");
+    monitor.report(I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Executing-query")+" " + functionToRun.getName() + "...");
 
     FeatureCollection maskFC = maskLyr.getFeatureCollectionWrapper();
     FeatureCollection sourceFC = srcLayer.getFeatureCollectionWrapper();
@@ -163,7 +163,7 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
 
     if (executer.isExceptionThrown()) {
       context.getWorkbenchFrame().warnUser(
-              I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Errors-found-while-executing-query") +
+              I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Errors-found-while-executing-query") +
                       ":" + executer.getException());
     }
   }
@@ -173,8 +173,8 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     //dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffGeometry.png")));
     dialog.setSideBarDescription(
-    		I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Finds-the-Source-features-which-have-a-given-spatial-relationship-to-some-feature-in-the-Mask-layer")
-        + " (" + I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.ie-where-Source.Relationship(Mask)-is-true") + ")" );
+    		I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Finds-the-Source-features-which-have-a-given-spatial-relationship-to-some-feature-in-the-Mask-layer")
+        + " (" + I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.ie-where-Source.Relationship(Mask)-is-true") + ")" );
 
     //Set initial layer values to the first and second layers in the layer list.
     //In #initialize we've already checked that the number of layers >= 1. [Jon Aquino]

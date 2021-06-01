@@ -60,10 +60,10 @@ public class PlumePlugIn extends AbstractPlugIn {
     
 	private WorkbenchContext workbenchContext;
 
-	private final static String sNew = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.New");
-	private final static String sTheradius = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.The-arc-radius");
-	private final static String selectLineStrings = I18N.get("ui.cursortool.SelectLineStringsTool.select-linestrings");
-	private final static String RADIUS = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Radius");
+	private final static String sNew = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.New");
+	private final static String sTheradius = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.The-arc-radius");
+	private final static String selectLineStrings = I18N.getInstance().get("ui.cursortool.SelectLineStringsTool.select-linestrings");
+	private final static String RADIUS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Radius");
 	private final static String RADIUS1 = RADIUS + " 1";
 	private final static String RADIUS2 = RADIUS + " 2";
 	private double radius1 = 5.0;

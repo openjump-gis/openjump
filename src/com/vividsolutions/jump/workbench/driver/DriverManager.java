@@ -64,9 +64,9 @@ public class DriverManager {
 
     public DriverManager(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
-        sharedOpenBasicFileDriverPanel = new SharedFileDriverPanel(I18N.get("driver.DriverManager.file-to-open"),
+        sharedOpenBasicFileDriverPanel = new SharedFileDriverPanel(I18N.getInstance().get("driver.DriverManager.file-to-open"),
                 errorHandler);
-        sharedSaveBasicFileDriverPanel = new SharedFileDriverPanel(I18N.get("driver.DriverManager.file-to-save"),
+        sharedSaveBasicFileDriverPanel = new SharedFileDriverPanel(I18N.getInstance().get("driver.DriverManager.file-to-save"),
                 errorHandler);
         sharedOpenBasicFileDriverPanel.setFileMustExist(true);
         sharedSaveBasicFileDriverPanel.setFileMustExist(false);

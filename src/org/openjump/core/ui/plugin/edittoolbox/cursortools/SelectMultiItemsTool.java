@@ -30,7 +30,7 @@ import java.util.*;
  */
 public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescriptor {
 
-    final static String sSelectMultiItems = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool");
+    final static String sSelectMultiItems = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool");
 
     private AbstractSelection selection;
     private Coordinate coordinate;
@@ -94,8 +94,8 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
                     (Feature) ((Collection) entry.getValue()).iterator().next());
         } else if (count > 40) {
             JOptionPane.showMessageDialog(getWorkbenchFrame(),
-                    I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Too-many-features"),
-                    I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Message"),
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Too-many-features"),
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Message"),
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
@@ -107,7 +107,7 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
 
         final JCheckBoxMenuItem jcbAll = new JCheckBoxMenuItem(
                 "<html><b>" +
-                I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.All") +
+                I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.All") +
                 "</b></html>");
         jcbAll.setUI(new StayOpenCheckBoxMenuItemUI());
         jcbAll.setSelected(false);
@@ -153,7 +153,7 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
 
         final JMenuItem jcbValid = new JMenuItem(
                 "<html><b><i><font color=\"green\">" +
-                I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Validate") +
+                I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Validate") +
                 "</font></i></b></html>"
         );
         jcbValid.setSelected(true);

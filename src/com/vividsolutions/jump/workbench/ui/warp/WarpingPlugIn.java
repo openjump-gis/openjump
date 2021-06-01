@@ -83,7 +83,7 @@ public class WarpingPlugIn extends ToolboxPlugIn {
                 if (!incremental && !warpingPanel.isWarpingIncrementally()) {
                     return null;
                 }
-                return I18N.get("ui.warp.WarpingPlugIn.incremental-warping-must-be")+" " + (incremental ? I18N.get("ui.warp.WarpingPlugIn.enabled") : I18N.get("ui.warp.WarpingPlugIn.disabled"));
+                return I18N.getInstance().get("ui.warp.WarpingPlugIn.incremental-warping-must-be")+" " + (incremental ? I18N.getInstance().get("ui.warp.WarpingPlugIn.enabled") : I18N.getInstance().get("ui.warp.WarpingPlugIn.disabled"));
             }
         });
     }

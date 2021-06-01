@@ -120,7 +120,7 @@ public class CombineSelectedFeaturesPlugIn extends AbstractPlugIn {
           feature.setGeometry(mp);
       }
       else {
-          context.getWorkbenchFrame().warnUser(I18N.get("com.vividsolutions.jump.workbench.ui.plugin.CombineSelectedFeaturesPlugIn.invalid-multipolygon"));
+          context.getWorkbenchFrame().warnUser(I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.CombineSelectedFeaturesPlugIn.invalid-multipolygon"));
           feature.setGeometry(factory.createGeometryCollection((Geometry[]) FeatureUtil
           .toGeometries(originalFeatures).toArray(
               new Geometry[originalFeatures.size()])));

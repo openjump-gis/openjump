@@ -15,9 +15,9 @@ public class AddDataStoreLayerWizardPanel extends AbstractWizardPanel {
 
   private static final String KEY = AddDataStoreLayerWizardPanel.class.getName();
 
-  private static final String TITLE = I18N.get(KEY);
+  private static final String TITLE = I18N.getInstance().get(KEY);
 
-  private static final String INSTRUCTIONS = I18N.get(KEY + ".instructions");
+  private static final String INSTRUCTIONS = I18N.getInstance().get(KEY + ".instructions");
 
   private AddDatastoreLayerPanel dataStorePanel;
 

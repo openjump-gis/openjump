@@ -88,16 +88,11 @@ public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn
         implements ThreadedPlugIn {
 
     GeometryFactory gfactory = new GeometryFactory();
-    private final String sName = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.Create-Lattice-from-Raster");
-    private final String sBand = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
-    private final String sLattice = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.lattice");
-    private final String sCreatePoints = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.creating-points");
-    private static String Source_Layer = I18N
-            .get("ui.GenericNames.Source-Layer");
+    private final String sName = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.Create-Lattice-from-Raster");
+    private final String sBand = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
+    private final String sLattice = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.lattice");
+    private final String sCreatePoints = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreateLatticeFromSelectedImageLayerPlugIn.creating-points");
+    private static String Source_Layer = I18N.getInstance().get("ui.GenericNames.Source-Layer");
 
     private final String sSidebar = sLattice;
 
@@ -155,7 +150,7 @@ public class CreateLatticeFromSelectedImageLayerPlugIn extends AbstractPlugIn
         if (rLayer == null) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
+                            I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return;
         }
 

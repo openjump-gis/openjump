@@ -76,8 +76,7 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn {
     }
 
     public String getName() {
-      return I18N
-          .get("org.openjump.core.ui.plugin.mousemenu.category.SetCategoryVisibilityPlugIn.Set-Category-Visibility");
+      return I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.category.SetCategoryVisibilityPlugIn.Set-Category-Visibility");
     }
     
     public void initialize(PlugInContext context) throws Exception {

@@ -87,26 +87,17 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends
 
     private MultiInputDialog dialog;
 
-    private final String sName = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Create-Polygon-Grid-from-Raster");
-    public String sRemoveZeroCells = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.remove-cells-with-values")
+    private final String sName = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Create-Polygon-Grid-from-Raster");
+    public String sRemoveZeroCells = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.remove-cells-with-values")
             + " =< 0";
-    private final String sSidebar = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Creates-a-polygon-grid-from-the-selected-raster");
-    public String sMaxCellsToDisplay = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.max-cells-to-display");
-    private final String sCreatingPolygons = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Creating-polygons")
+    private final String sSidebar = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Creates-a-polygon-grid-from-the-selected-raster");
+    public String sMaxCellsToDisplay = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.max-cells-to-display");
+    private final String sCreatingPolygons = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.Creating-polygons")
             + "...";
-    private final String sGrid = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.grid");
-    public static String Source_Layer = I18N
-            .get("ui.GenericNames.Source-Layer");
-    private final String sToManyPolygons = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.To-many-polygons-to-generate");
-    private final String sBand = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
+    private final String sGrid = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.grid");
+    public static String Source_Layer = I18N.getInstance().get("ui.GenericNames.Source-Layer");
+    private final String sToManyPolygons = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.To-many-polygons-to-generate");
+    private final String sBand = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
 
     GeometryFactory gfactory = new GeometryFactory();
     public int maxCells = 200000;
@@ -163,7 +154,7 @@ public class CreatePolygonGridFromSelectedImageLayerPlugIn extends
         if (rLayer == null) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
+                            I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return;
         }
 

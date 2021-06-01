@@ -23,11 +23,11 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
 
     public static final String KEY = PostGISSaveDataSourceQueryChooser.class.getName();
 
-    private static final String ERROR = I18N.get(KEY + ".error");
-    private static final String NO_CONNECTION_CHOOSEN     = I18N.get(KEY + ".no-connection-choosen");
-    private static final String NO_TABLE_CHOOSEN          = I18N.get(KEY + ".no-table-choosen");
-    private static final String CONNECTION_IS_NOT_POSTGIS = I18N.get(KEY + ".selected-connection-is-not-postgis");
-    private static final String GID_ALREADY_EXISTS        = I18N.get(KEY + ".gid-already-exists");
+    private static final String ERROR = I18N.getInstance().get(KEY + ".error");
+    private static final String NO_CONNECTION_CHOOSEN     = I18N.getInstance().get(KEY + ".no-connection-choosen");
+    private static final String NO_TABLE_CHOOSEN          = I18N.getInstance().get(KEY + ".no-table-choosen");
+    private static final String CONNECTION_IS_NOT_POSTGIS = I18N.getInstance().get(KEY + ".selected-connection-is-not-postgis");
+    private static final String GID_ALREADY_EXISTS        = I18N.getInstance().get(KEY + ".gid-already-exists");
 
     private PlugInContext context;
     private PostGISSaveDriverPanel panel;
@@ -171,6 +171,6 @@ public class PostGISSaveDataSourceQueryChooser implements DataSourceQueryChooser
      * Returns the String displayed in the Format Chooser.
      */
     public String toString() {
-        return I18N.get(KEY + ".PostGIS-Table");
+        return I18N.getInstance().get(KEY + ".PostGIS-Table");
     }
 }

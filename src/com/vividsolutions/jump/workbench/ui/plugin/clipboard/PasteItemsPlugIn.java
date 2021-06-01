@@ -79,8 +79,8 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
 	
   public static ImageIcon ICON = IconLoader.icon("items_paste.png");
   
-  public static final String MUST_NOT_BE_EMPTY = I18N.get("ui.plugin.PasteItemsPlugIn.clipboard-must-not-be-empty");
-  public static final String MUST_CONTAIN_GEOMETRY = I18N.get("ui.plugin.PasteItemsPlugIn.clipboard-must-contain-geometries-or-wkt");
+  public static final String MUST_NOT_BE_EMPTY = I18N.getInstance().get("ui.plugin.PasteItemsPlugIn.clipboard-must-not-be-empty");
+  public static final String MUST_CONTAIN_GEOMETRY = I18N.getInstance().get("ui.plugin.PasteItemsPlugIn.clipboard-must-contain-geometries-or-wkt");
 
   private static final String DECIMAL_PATTERN = "\\d+(?:\\.\\d+)?";
 

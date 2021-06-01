@@ -57,9 +57,9 @@ import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
  */
 public abstract class ConstrainedDragTool extends AbstractCursorTool {
 	
-	final static String lengthST =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.length");
-	final static String angleST =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.angle");
-	final static String degrees =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
+	final static String lengthST =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.length");
+	final static String angleST =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.angle");
+	final static String degrees =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
 	
     public static final int DEFAULT_VIEW_CLICK_BUFFER = 2;
     private int viewClickBuffer = DEFAULT_VIEW_CLICK_BUFFER;

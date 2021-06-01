@@ -84,7 +84,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
 
     @Override
     public String getName() {
-        return I18N.get("ui.style.ChangeStylesPlugIn.change-styles");
+        return I18N.getInstance().get("ui.style.ChangeStylesPlugIn.change-styles");
     }
 
     @Override
@@ -98,13 +98,12 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         
         //[Giuseppe Aruta] June 3 2015 - added Layer name.
         final MultiInputDialog dialog = new MultiInputDialog(wbframe,
-                I18N.get("ui.style.ChangeStylesPlugIn.change-styles") + " - "
+                I18N.getInstance().get("ui.style.ChangeStylesPlugIn.change-styles") + " - "
                         + layer.getName(), true);
         dialog.setApplyVisible(true);
         dialog.setInset(0);
         dialog.setSideBarImage(IconLoader.icon("Symbology.gif"));
-        dialog.setSideBarDescription(I18N
-                .get("ui.style.ChangeStylesPlugIn.you-can-use-this-dialog-to-change-the-colour-line-width"));
+        dialog.setSideBarDescription(I18N.getInstance().get("ui.style.ChangeStylesPlugIn.you-can-use-this-dialog-to-change-the-colour-line-width"));
 
         final ArrayList<StylePanel> stylePanels = new ArrayList<>();
         final DeeRenderingStylePanel renderingStylePanel = new DeeRenderingStylePanel(blackboard, layer, pb);
@@ -277,7 +276,7 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         private DummyColorThemingStylePanel() {
             // GridBagLayout so it gets centered. [Jon Aquino]
             super(new GridBagLayout());
-            add(new JLabel(I18N.get("ui.style.ChangeStylesPlugIn.this-layer-has-no-attributes")));
+            add(new JLabel(I18N.getInstance().get("ui.style.ChangeStylesPlugIn.this-layer-has-no-attributes")));
         }
 
         public String getTitle() {

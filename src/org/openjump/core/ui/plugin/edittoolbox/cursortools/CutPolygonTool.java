@@ -37,7 +37,7 @@ import java.util.Iterator;
 */
 public class CutPolygonTool extends PolygonTool {
 		  
-    final static String sCookieCut = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.CutPolygonTool.Create-Cookie-Cut");
+    final static String sCookieCut = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.CutPolygonTool.Create-Cookie-Cut");
     		
 	Geometry geomSelected = null;
 	Geometry geomDraw = null;
@@ -81,11 +81,11 @@ public class CutPolygonTool extends PolygonTool {
 	    // Conditions to use the CutPolygon function
 	    
 	    if (selectedLayers.length == 0){
-			JOptionPane.showMessageDialog(null, I18N.getMessage("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-selected", new Object[]{1}),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-selected", new Object[]{1}),  I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
 	    }
 	    
 	    else if (selectedLayers.length > 1) {
-	        JOptionPane.showMessageDialog(null,  I18N.getMessage("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-have-selected-items", new Object[]{1}),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
+	        JOptionPane.showMessageDialog(null,  I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-have-selected-items", new Object[]{1}),  I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
 	    }
 	    
 	    else {
@@ -129,7 +129,7 @@ public class CutPolygonTool extends PolygonTool {
 	            }
 			}
 	        else {
-	           	JOptionPane.showMessageDialog(null,  I18N.get("ui.SchemaPanel.layer-must-be-editable"),  I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
+	           	JOptionPane.showMessageDialog(null,  I18N.getInstance().get("ui.SchemaPanel.layer-must-be-editable"),  I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.INFORMATION_MESSAGE);
 	        }
 	    }
 	}

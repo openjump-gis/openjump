@@ -69,14 +69,14 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
     private JSpinner spinnerbox;
 
     private String[] colorTableList = {
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Default-colors"),// 0
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Green-Yellow-Red"),// 1
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Green-Red"),// 2
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Red-Blue"),// 3
+            I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Default-colors"),// 0
+            I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Green-Yellow-Red"),// 1
+            I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Blue-Green-Red"),// 2
+            I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Red-Blue"),// 3
             "Red-Yellow", // 4
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Black-White"),// 5
+            I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Black-White"),// 5
             "Stripes sixties", // 6
-            I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Rainbow"),// 7
+            I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorDialog.Rainbow"),// 7
             "Color Relief", // 8
             "Topo", // 9
             "Spectral (Color brewer)", // 10
@@ -112,31 +112,19 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
     private int alpha = 255;
     public int intColor;
 
-    private String sToolTip = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Choose-a-color-range-It-will-be-automaticaly-expanded-between-the-2-values");
-    private String sFromValue = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.From-value");
-    private String sToValue = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.To-value");
-    private static String STATISTICS = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
-    private static String TITLE = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor");
-    private static String NUMBER = I18N
-            .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes")
+    private String sToolTip = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Choose-a-color-range-It-will-be-automaticaly-expanded-between-the-2-values");
+    private String sFromValue = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.From-value");
+    private String sToValue = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.To-value");
+    private static String STATISTICS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
+    private static String TITLE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor");
+    private static String NUMBER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes")
             + ":";
-    private static String NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.nodata");
-    private static String MIN = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.min");
-    private static String MAX = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.max");
-    private static String TRANSPARENT = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Set-values-outside-transparent");
-    private static String INVERT = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Invert-colors");
-    private static String INTERVALS = I18N
-            .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Intervals");
+    private static String NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.nodata");
+    private static String MIN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.min");
+    private static String MAX = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.max");
+    private static String TRANSPARENT = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Set-values-outside-transparent");
+    private static String INVERT = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Invert-colors");
+    private static String INTERVALS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Intervals");
 
     SpinnerModel spinner;
 

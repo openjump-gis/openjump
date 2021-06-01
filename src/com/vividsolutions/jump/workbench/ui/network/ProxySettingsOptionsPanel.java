@@ -700,7 +700,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
   }
 
   private static String getMessage(String id) {
-    return I18N.get(ProxySettingsOptionsPanel.class.getName() + "." + id);
+    return I18N.getInstance().get(ProxySettingsOptionsPanel.class.getName() + "." + id);
   }
 
   /**
@@ -772,7 +772,7 @@ public class ProxySettingsOptionsPanel extends OptionsPanelV2 {
         method.setAccessible(true);
         Object o = method.invoke(null, cache);
       } catch (Exception e) {
-        e.printStackTrace();
+        Logger.error(e);
       }
 
       if (!settings.getUserName().isEmpty()) {

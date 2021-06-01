@@ -57,8 +57,8 @@ public class DrawConstrainedPolygonPlugIn extends AbstractPlugIn
 {
     private boolean polygonButtonAdded = false;
     
-    final static String constraints = I18N.get("org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedPolygonPlugIn.Constraints");
-    final static String errorSeeOutputWindow =I18N.get("org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedPolygonPlugIn.Error-See-Output-Window");
+    final static String constraints = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedPolygonPlugIn.Constraints");
+    final static String errorSeeOutputWindow =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedPolygonPlugIn.Error-See-Output-Window");
     
     public void initialize(final PlugInContext context) throws Exception
     {

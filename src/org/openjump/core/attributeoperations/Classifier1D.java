@@ -68,11 +68,11 @@ public class Classifier1D {
 		//   this shall work because this method should be called before
 		//   the class field strings are used for comparison
 
-			Classifier1D.EQUAL_RANGE = I18N.get("ui.renderer.style.ColorThemingStylePanel.Equal-Interval");
-			Classifier1D.EQUAL_NUMBER = I18N.get("ui.renderer.style.ColorThemingStylePanel.Quantile-Equal-Number");
-			Classifier1D.MEAN_STDEV = I18N.get( "ui.renderer.style.ColorThemingStylePanel.Mean-Standard-Deviation");
-			Classifier1D.MAX_BREAKS = I18N.get("ui.renderer.style.ColorThemingStylePanel.Maximal-Breaks");	
-			Classifier1D.JENKS_BREAKS = I18N.get("ui.renderer.style.ColorThemingStylePanel.Jenks-Optimal-Method");	
+			Classifier1D.EQUAL_RANGE = I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Equal-Interval");
+			Classifier1D.EQUAL_NUMBER = I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Quantile-Equal-Number");
+			Classifier1D.MEAN_STDEV = I18N.getInstance().get( "ui.renderer.style.ColorThemingStylePanel.Mean-Standard-Deviation");
+			Classifier1D.MAX_BREAKS = I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Maximal-Breaks");	
+			Classifier1D.JENKS_BREAKS = I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Jenks-Optimal-Method");	
 
 		//-- make a list for the GUI
 		List classifierList = new ArrayList();

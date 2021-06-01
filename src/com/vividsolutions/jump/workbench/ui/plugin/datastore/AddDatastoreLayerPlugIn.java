@@ -22,7 +22,7 @@ public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
     }
 
     public String getName(){
-    	return I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn.Add-Datastore-Layer");
+    	return I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn.Add-Datastore-Layer");
     }
     
     private Layer createLayer(
@@ -71,7 +71,7 @@ public class AddDatastoreLayerPlugIn extends AbstractAddDatastoreLayerPlugIn {
     protected Layerable createLayerable(ConnectionPanel panel,
             TaskMonitor monitor, PlugInContext context) throws Exception {
 //        System.out.println("createLayerable");
-        monitor.report(I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn.Creating-layer"));
+        monitor.report(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPlugIn.Creating-layer"));
         return createLayer((AddDatastoreLayerPanel) panel, context);
     }
 

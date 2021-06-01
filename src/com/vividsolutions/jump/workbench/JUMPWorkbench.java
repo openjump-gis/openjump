@@ -328,20 +328,22 @@ public class JUMPWorkbench {
       if (commandLine.hasOption(I18N_FILE)) {
         I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
         // initialize I18N
-        I18N.setLocale(I18N_SETLOCALE);
+        Locale loc = I18N.fromCode(I18N_SETLOCALE);
+        I18N.applyToRuntime(loc);
+        I18N.setLocale(loc);
       }
 
       // set user agent used by UrlConnection, if not set on cmdline
       if (System.getProperty("http.agent") == null)
-        System.setProperty("http.agent", I18N.get("JUMPWorkbench.jump") + " "
+        System.setProperty("http.agent", I18N.getInstance().get("JUMPWorkbench.jump") + " "
             + JUMPVersion.CURRENT_VERSION);
 
       if (commandLine.hasOption("help")) {
         printProperly(commandLine.printDoc());
         System.exit(0);
       } else if (commandLine.hasOption("version")) {
-        printProperly(I18N.get("JUMPWorkbench.jump") + " "
-            + I18N.get("ui.AboutDialog.version") + " "
+        printProperly(I18N.getInstance().get("JUMPWorkbench.jump") + " "
+            + I18N.getInstance().get("ui.AboutDialog.version") + " "
             + JUMPVersion.CURRENT_VERSION);
         System.exit(0);
       } else if (commandLine.hasOption("print-properties")) {
@@ -353,7 +355,7 @@ public class JUMPWorkbench {
       if (commandLine.hasOption("verbosity")) {
         Option v = commandLine.getOption("verbosity");
         if (v.getNumArgs() < 1) {
-          printProperly(I18N.get(v.getSpec().getDesc()));
+          printProperly(I18N.getInstance().get(v.getSpec().getDesc()));
           System.exit(1);
         }
           
@@ -377,11 +379,11 @@ public class JUMPWorkbench {
               (com.vividsolutions.jump.workbench.ui.ProgressMonitor) progressMonitorClass
           .getDeclaredConstructor().newInstance();
       SplashPanelV2 splashPanel = new SplashPanelV2(splashImage(),
-          I18N.get("ui.AboutDialog.version") + " "
+          I18N.getInstance().get("ui.AboutDialog.version") + " "
               + JUMPVersion.CURRENT_VERSION);
       splashPanel.addProgressMonitor(progressMonitor);
 
-      main(I18N.get("JUMPWorkbench.jump"), splashPanel, progressMonitor);
+      main(I18N.getInstance().get("JUMPWorkbench.jump"), splashPanel, progressMonitor);
       Logger.info("OJ start took "
           + Timer.secondsSinceString(start) + "s alltogether.");
 
@@ -423,10 +425,10 @@ public class JUMPWorkbench {
     SplashWindow splashWindow = new SplashWindow(splashComponent);
     splashWindow.setVisible(true);
 
-    taskMonitor.report(I18N.get("JUMPWorkbench.status.create"));
+    taskMonitor.report(I18N.getInstance().get("JUMPWorkbench.status.create"));
     workbench = new JUMPWorkbench(title, splashWindow, taskMonitor);
 
-    taskMonitor.report(I18N.get("JUMPWorkbench.status.configure-core"));
+    taskMonitor.report(I18N.getInstance().get("JUMPWorkbench.status.configure-core"));
     // first things first, make persistent data available early
     PersistentBlackboardPlugIn persistentBlackboard = new PersistentBlackboardPlugIn();
     persistentBlackboard.initialize(workbench.context.createPlugInContext());
@@ -445,17 +447,17 @@ public class JUMPWorkbench {
     config.setup(workbench.context);
 
     // load plugin/extensions via plugin mgr.
-    taskMonitor.report(I18N.get("JUMPWorkbench.status.load-extensions"));
+    taskMonitor.report(I18N.getInstance().get("JUMPWorkbench.status.load-extensions"));
     workbench.context.getWorkbench().getPlugInManager().load();
     
     // some more intialization 
     // TODO: clean up and merge with setup above or even better put into xml config
-    taskMonitor.report(I18N.get("JUMPWorkbench.status.initialize-datasources"));
+    taskMonitor.report(I18N.getInstance().get("JUMPWorkbench.status.initialize-datasources"));
     config.postExtensionInitialization(workbench.context);
 
-    taskMonitor.report(I18N.get("JUMPWorkbench.status.restore-state"));
+    taskMonitor.report(I18N.getInstance().get("JUMPWorkbench.status.restore-state"));
     frame.restore();
-    taskMonitor.report(I18N.get("JUMPWorkbench.status.show-workbench"));
+    taskMonitor.report(I18N.getInstance().get("JUMPWorkbench.status.show-workbench"));
     frame.setVisible(true);
     // Activate SelectFeaturesTool cursor after opening a new session.
     // See also JUMPConfiguration.configureToolBar() where the select
@@ -507,7 +509,7 @@ public class JUMPWorkbench {
   }
 
   private static boolean setFont() throws Exception {
-    String test = I18N.get("ui.MenuNames.FILE");
+    String test = I18N.getInstance().get("ui.MenuNames.FILE");
     boolean replaced = false;
     Font font = null;
 
@@ -755,7 +757,7 @@ public class JUMPWorkbench {
     JOptionPane pane = new JOptionPane(scrollPane,
         JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION,
         IconLoader.icon("oj_32.png"));
-    JDialog d = pane.createDialog(I18N.get("JUMPWorkbench.jump"));
+    JDialog d = pane.createDialog(I18N.getInstance().get("JUMPWorkbench.jump"));
     // some cute icons
     ArrayList<Image> l = new ArrayList<>(APP_ICONS);
     l.add(0, IconLoader.image("information_16x16.png"));

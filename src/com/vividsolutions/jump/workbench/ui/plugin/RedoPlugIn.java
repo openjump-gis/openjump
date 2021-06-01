@@ -60,7 +60,7 @@ public class RedoPlugIn extends AbstractPlugIn {
               .getLayerManager().getUndoableEditReceiver().getUndoManager();
           if (component != null)
             component.setToolTipText(undoManager.getRedoPresentationName());
-          return (!undoManager.canRedo()) ? I18N.get("com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn.nothing-to-redo") : null;
+          return (!undoManager.canRedo()) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn.nothing-to-redo") : null;
         }
       });;
 

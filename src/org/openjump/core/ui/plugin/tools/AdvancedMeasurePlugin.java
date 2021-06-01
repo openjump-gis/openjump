@@ -21,7 +21,7 @@ public class AdvancedMeasurePlugin extends AbstractPlugIn {
 
 		advancedMeasureTool = new AdvancedMeasureTool(context.getWorkbenchContext());
 		context.getWorkbenchContext().getWorkbench().getFrame().getToolBar().addCursorTool(advancedMeasureTool, advancedMeasureTool.getToolbarButton());
-		OptionsDialog.instance(context.getWorkbenchContext().getWorkbench()).addTab(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin.OptionPanelTitle"), new AdvancedMeasureOptionsPanel(context.getWorkbenchContext()));
+		OptionsDialog.instance(context.getWorkbenchContext().getWorkbench()).addTab(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin.OptionPanelTitle"), new AdvancedMeasureOptionsPanel(context.getWorkbenchContext()));
 	}
 
 	@Override

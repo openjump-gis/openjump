@@ -41,7 +41,7 @@ import com.vividsolutions.jump.workbench.ui.snap.SnapToFeaturesPolicy;
 
 public class NoteTool extends NClickTool {
 
-  public static final String NOTES = I18N.get("ui.cursortool.NoteTool.notes");
+  public static final String NOTES = I18N.getInstance().get("ui.cursortool.NoteTool.notes");
 
   // Create DEFAULT_SCHEMA as a static attribute to be sure the schema is
   // initialized from NoteStyle class with internationalized attributes
@@ -164,7 +164,7 @@ public class NoteTool extends NClickTool {
   }
 
   public String getName() {
-    return I18N.get("ui.cursortool.NoteTool");
+    return I18N.getInstance().get("ui.cursortool.NoteTool");
   }
 
   private JTextArea textArea;

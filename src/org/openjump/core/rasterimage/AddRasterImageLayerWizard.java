@@ -59,7 +59,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
     public AddRasterImageLayerWizard(WorkbenchContext workbenchContext) {
         super(
-                I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image"),
+                I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image"),
                 IconLoader.icon("mapSv2_13.png"),
                 SelectRasterImageFilesPanel.KEY);
         this.workbenchContext = workbenchContext;
@@ -100,7 +100,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
      */
     @Override
     public void run(WizardDialog dialog, TaskMonitor monitor) {
-        TaskMonitorV2Util.setTitle(monitor, I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image"));
+        TaskMonitorV2Util.setTitle(monitor, I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image"));
         properties = new PropertiesHandler(
                 AddRasterImageLayerWizard.propertiesFile);
         if (files == null) {
@@ -137,11 +137,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                         file.getPath());
 
                 properties.store(" " + KEY_ZOOM_TO_INSERTED_IMAGE
-                        + I18N.get("RasterImagePlugIn.28")
+                        + I18N.getInstance().get("RasterImagePlugIn.28")
                         + KEY_ALWAYS_ACCEPT_TWF_EXT
-                        + I18N.get("RasterImagePlugIn.29")
+                        + I18N.getInstance().get("RasterImagePlugIn.29")
                         + "path"
-                        + I18N.get("RasterImagePlugIn.30"));
+                        + I18N.getInstance().get("RasterImagePlugIn.30"));
 
                 final String selectedFilename = file.getPath();
                 imageFileName = selectedFilename;
@@ -278,7 +278,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             context.getWorkbench()
                     .getFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.can-not-determine-image-dimensions"));
+                            I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.can-not-determine-image-dimensions"));
             return null;
         }
 
@@ -354,16 +354,16 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 context.getWorkbench()
                         .getFrame()
                         .warnUser(
-                                I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
+                                I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
                 final WizardDialog d = new WizardDialog(
                         context.getWorkbench().getFrame(),
-                        I18N.getMessage(
+                        I18N.getInstance().get(
                                 "org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found-message",
                                 fil.getName())
                         /*
-                         * I18N.get("RasterImagePlugIn.34") +
+                         * I18N.getInstance().get("RasterImagePlugIn.34") +
                          * this.worldFileHandler.getWorldFileName() +
-                         * I18N.get("RasterImagePlugIn.35")
+                         * I18N.getInstance().get("RasterImagePlugIn.35")
                          */
                         , context.getErrorHandler());
                 d.init(new WizardPanel[] { new RasterImageWizardPanel() });
@@ -424,8 +424,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
             worldFileHandler.writeWorldFile(env, imageDimensions.x,
                     imageDimensions.y);
             final File fil = new File(fileName);
-            final String MSG = I18N
-                    .getMessage(
+            final String MSG = I18N.getInstance().get(
                             "org.openjump.core.rasterimage.AddRasterImageLayerWizard.message",
                             fil.getName());
             context.getWorkbench().getFrame().setStatusMessage(MSG);

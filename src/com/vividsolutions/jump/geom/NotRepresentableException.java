@@ -47,7 +47,7 @@ import com.vividsolutions.jump.I18N;
 public class NotRepresentableException extends Exception {
 
   public NotRepresentableException() {
-    super(I18N.get("jump.geom.NotRepresentableException.Projective-point-not-representable-on-the-Cartesian-plane"));
+    super(I18N.getInstance().get("jump.geom.NotRepresentableException.Projective-point-not-representable-on-the-Cartesian-plane"));
   }
 
 }

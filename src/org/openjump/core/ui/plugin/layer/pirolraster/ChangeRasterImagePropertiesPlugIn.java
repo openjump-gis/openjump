@@ -67,7 +67,7 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
         String bboardKey = ChangeRasterImagePropertiesPlugIn.class.getName() +"-"+rLayer.getUUID()+ " - COLORSTYLE";   
         final MultiInputDialog dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(),
-                I18N.get("ui.style.ChangeStylesPlugIn.change-styles") + " - "
+                I18N.getInstance().get("ui.style.ChangeStylesPlugIn.change-styles") + " - "
                         + rLayer.getName() + " (Sextante)", true);
         dialog.setSideBarImage(IconLoader.icon("Symbology.gif"));
         dialog.setSize(500, 400);
@@ -141,7 +141,7 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
 
                         JOptionPane.showMessageDialog(
                                 null,
-                                I18N.get("ui.style.ScaleStylePanel.units-pixel-at-smallest-scale-must-be-larger-than-units-pixel-at-largest-scale"),
+                                I18N.getInstance().get("ui.style.ScaleStylePanel.units-pixel-at-smallest-scale-must-be-larger-than-units-pixel-at-largest-scale"),
                                 "Jump", JOptionPane.ERROR_MESSAGE);
 
                     } else {
@@ -200,7 +200,7 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
     }
 
     public String getName() {
-        return I18N.get("ui.style.ChangeStylesPlugIn.change-styles");
+        return I18N.getInstance().get("ui.style.ChangeStylesPlugIn.change-styles");
    }
 
     public ImageIcon getIcon() {

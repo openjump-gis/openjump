@@ -45,6 +45,8 @@ import org.openjump.util.UriUtil;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.io.CompressedFile;
@@ -56,7 +58,6 @@ import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Prioritized;
-import org.saig.jump.lang.I18N;
 
 public class ReferencedImageFactoryFileLayerLoader extends
     AbstractFileLayerLoader implements Prioritized {
@@ -107,7 +108,7 @@ public class ReferencedImageFactoryFileLayerLoader extends
       feature = createImageFeature(imageFactory, uri,
               getImageryLayerDataset(layer));
     } catch(Exception e) {
-      throw new ReferencedImageException(I18N.getMessage(
+      throw new ReferencedImageException(I18N.getInstance().get(
               "com.vividsolutions.jump.workbench.imagery.ReferencedImageException",
               new Object[]{UriUtil.getFileName(uri), imageFactory.getDescription() }),
               e

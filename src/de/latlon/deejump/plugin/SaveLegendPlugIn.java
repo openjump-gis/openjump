@@ -100,8 +100,8 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG", new String[] {"png"}));
         fileChooser.addChoosableFileFilter(fileChooser.getAcceptAllFileFilter());
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fileChooser.setApproveButtonText( I18N.get("deejump.plugin.SaveLegendPlugIn.Save"));
-		fileChooser.setDialogTitle( I18N.get("deejump.plugin.SaveLegendPlugIn.Save-legend-as-image-png"));
+		fileChooser.setApproveButtonText( I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save"));
+		fileChooser.setDialogTitle( I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save-legend-as-image-png"));
 	}
 
     @Override
@@ -173,7 +173,7 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
         
         	
         	// can only save if has a sizw -> put in a frame
-        	JFrame f = new JFrame(I18N.get("deejump.plugin.SaveLegendPlugIn.Save-legend-as-image-png"));
+        	JFrame f = new JFrame(I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save-legend-as-image-png"));
     		f.getContentPane().add( tree );
     		f.pack();
 //    		f.setVisible( true );
@@ -193,7 +193,7 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
 		
 		JTree tree = treePanel.getTree();
         // create root node which gets the project name
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(I18N.get("ui.WorkbenchFrame.task") + " " + layers[0].getTask().getName());
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(I18N.getInstance().get("ui.WorkbenchFrame.task") + " " + layers[0].getTask().getName());
         // lopp through all given layers
 		for (int l = 0; l < layers.length; l++) {
             Layer layer = layers[l];
@@ -220,7 +220,7 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
 	
     @Override
 	public String getName() {
-		return I18N.get("deejump.plugin.SaveLegendPlugIn.Save-legend");
+		return I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save-legend");
 	}
 	
 	public static void saveComponentAsJPEG(Component myComponent, 

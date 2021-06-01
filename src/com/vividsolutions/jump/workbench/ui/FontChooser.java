@@ -58,7 +58,7 @@ import com.vividsolutions.jump.I18N;
  *
 */
 public class FontChooser extends javax.swing.JDialog {
-    private String sampleText = I18N.get("ui.FontChooser.sampletext");
+    private String sampleText = I18N.getInstance().get("ui.FontChooser.sampletext");
     String[] styleList = new String[] { "Plain", "Bold", "Italic" };
     String[] sizeList = new String[] {
             "2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24",
@@ -257,7 +257,7 @@ public class FontChooser extends javax.swing.JDialog {
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         java.awt.GridBagConstraints gridBagConstraints1;
-        setTitle(I18N.get("ui.FontChooser.font-chooser"));
+        setTitle(I18N.getInstance().get("ui.FontChooser.font-chooser"));
         addWindowListener(new java.awt.event.WindowAdapter() {
                 public void windowClosing(java.awt.event.WindowEvent evt) {
                     closeDialog(evt);
@@ -268,7 +268,7 @@ public class FontChooser extends javax.swing.JDialog {
 
         java.awt.GridBagConstraints gridBagConstraints2;
         jPanel3.setBorder(new javax.swing.border.TitledBorder(
-                new javax.swing.border.EtchedBorder(), " "+I18N.get("ui.FontChooser.font")+" "));
+                new javax.swing.border.EtchedBorder(), " "+I18N.getInstance().get("ui.FontChooser.font")+" "));
 
         jFont.setEditable(false);
         jFont.setColumns(24);
@@ -315,7 +315,7 @@ public class FontChooser extends javax.swing.JDialog {
 
         java.awt.GridBagConstraints gridBagConstraints3;
         jPanel4.setBorder(new javax.swing.border.TitledBorder(
-                new javax.swing.border.EtchedBorder(), " "+I18N.get("ui.FontChooser.style")+" "));
+                new javax.swing.border.EtchedBorder(), " "+I18N.getInstance().get("ui.FontChooser.style")+" "));
 
         jStyle.setColumns(18);
         jStyle.addActionListener(new java.awt.event.ActionListener() {
@@ -360,7 +360,7 @@ public class FontChooser extends javax.swing.JDialog {
 
         java.awt.GridBagConstraints gridBagConstraints4;
         jPanel5.setBorder(new javax.swing.border.TitledBorder(
-                new javax.swing.border.EtchedBorder(), " "+I18N.get("ui.FontChooser.size")+" "));
+                new javax.swing.border.EtchedBorder(), " "+I18N.getInstance().get("ui.FontChooser.size")+" "));
 
         jSize.setColumns(6);
         jSize.addActionListener(new java.awt.event.ActionListener() {
@@ -410,7 +410,7 @@ public class FontChooser extends javax.swing.JDialog {
 
         java.awt.GridBagConstraints gridBagConstraints5;
         jPanel1.setBorder(new javax.swing.border.TitledBorder(
-                new javax.swing.border.EtchedBorder(), " "+I18N.get("ui.FontChooser.sample")+" "));
+                new javax.swing.border.EtchedBorder(), " "+I18N.getInstance().get("ui.FontChooser.sample")+" "));
 
         jSample.setWrapStyleWord(true);
         jSample.setLineWrap(true);
@@ -440,7 +440,7 @@ public class FontChooser extends javax.swing.JDialog {
         jButtons.setLayout(new java.awt.GridBagLayout());
 
         jOk.setMnemonic(KeyEvent.VK_O);
-        jOk.setText(I18N.get("ui.FontChooser.ok"));
+        jOk.setText(I18N.getInstance().get("ui.FontChooser.ok"));
         jOk.setRequestFocusEnabled(false);
         jOk.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -453,7 +453,7 @@ public class FontChooser extends javax.swing.JDialog {
                 new Insets(5, 5, 5, 0), 0, 0));
 
         jCancel.setMnemonic(KeyEvent.VK_C);
-        jCancel.setText(I18N.get("ui.FontChooser.cancel"));
+        jCancel.setText(I18N.getInstance().get("ui.FontChooser.cancel"));
         jCancel.setRequestFocusEnabled(false);
         jCancel.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {

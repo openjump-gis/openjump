@@ -70,20 +70,18 @@ public class ZoomToScalePlugIn extends AbstractPlugIn {
   double oldHorizontalScale = 0; // is calculated for panel-width (not heigth!!)
   double modelWidth = 0;
   double panelWidth = 0;
-  String text = I18N
-      .get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.set-new-scale-to-zoom")
+  String text = I18N.getInstance().get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.set-new-scale-to-zoom")
       + "     1:";
 
   public void initialize(PlugInContext context) throws Exception {
 
-    this.T1 = I18N
-        .get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.scale") + ": ";
+    this.T1 = I18N.getInstance().get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.scale") + ": ";
     context
         .getFeatureInstaller()
         .addMainMenuItem(
             this,
             new String[] { MenuNames.VIEW },
-            I18N.get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.zoom-to-scale")
+            I18N.getInstance().get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.zoom-to-scale")
                 + "{pos:9}", false, null,
             createEnableCheck(context.getWorkbenchContext()));
   }
@@ -103,7 +101,7 @@ public class ZoomToScalePlugIn extends AbstractPlugIn {
 
     MultiInputDialog dialog = new MultiInputDialog(
         context.getWorkbenchFrame(),
-        I18N.get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.zoom-to-scale"),
+        I18N.getInstance().get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.zoom-to-scale"),
         true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
@@ -142,8 +140,7 @@ public class ZoomToScalePlugIn extends AbstractPlugIn {
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog
-        .addLabel(I18N
-            .get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.actual-scale-in-horizontal-direction")
+        .addLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.actual-scale-in-horizontal-direction")
             + "     1:" + new DecimalFormat("#").format(oldHorizontalScale));
     JTextField field = dialog.addDoubleField(text, Math.floor(oldHorizontalScale), 12, text);
     field.setHorizontalAlignment(JTextField.LEFT);

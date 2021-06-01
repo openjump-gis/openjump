@@ -87,14 +87,14 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
         //if (makeEditable) setAllLayersToUneditable(context);
         layerable.setEditable(makeEditable);
       } else {
-        String message = "<html><br>" + I18N.getMessage(CONFIRMATION_1, "<i>'"+layerable.getName()+"'</i>");
-        message += "<br><br>" + I18N.get(CONFIRMATION_2) + "<br></html>";
+        String message = "<html><br>" + I18N.getInstance().get(CONFIRMATION_1, "<i>'"+layerable.getName()+"'</i>");
+        message += "<br><br>" + I18N.getInstance().get(CONFIRMATION_2) + "<br></html>";
         JLabel label = new JLabel(message);
         JPanel panel = new JPanel();
         panel.add(label);
         OKCancelDialog okCancelPanel = new OKCancelDialog(
                 context.getWorkbenchFrame(),
-                I18N.getMessage(CONFIRMATION_TITLE),
+                I18N.getInstance().get(CONFIRMATION_TITLE),
                 true,
                 panel,
                 new OKCancelDialog.Validator() {
@@ -158,8 +158,7 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
         Layerable[] layers = getSelectedLayerables(workbenchContext);
         for (int i = 0; i < layers.length; i++) {
           if (layers[i].isReadonly()) {
-            errMsg = I18N
-                .get("ui.plugin.EditablePlugIn.The-selected-layer-cannot-be-made-editable");
+            errMsg = I18N.getInstance().get("ui.plugin.EditablePlugIn.The-selected-layer-cannot-be-made-editable");
             break;
           }
         }

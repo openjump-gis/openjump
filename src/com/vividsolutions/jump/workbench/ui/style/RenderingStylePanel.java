@@ -221,7 +221,7 @@ public class RenderingStylePanel extends BasicStylePanel implements StylePanel {
     }
 
     public String getTitle() {
-        return I18N.get("ui.style.RenderingStylePanel.rendering");
+        return I18N.getInstance().get("ui.style.RenderingStylePanel.rendering");
     }
 
     private void setLayer(Layer layer) {
@@ -240,7 +240,7 @@ public class RenderingStylePanel extends BasicStylePanel implements StylePanel {
             return;
         }
 
-        vertexCheckBox.setText(I18N.get("ui.style.RenderingStylePanel.vertices-size"));
+        vertexCheckBox.setText(I18N.getInstance().get("ui.style.RenderingStylePanel.vertices-size"));
         vertexCheckBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     showVerticesCheckBox_actionPerformed(e);
@@ -257,7 +257,7 @@ public class RenderingStylePanel extends BasicStylePanel implements StylePanel {
 //        fillPatternTipLabel.setFont(new java.awt.Font("SansSerif", 2, 10));
 //        fillPatternTipLabel.setOpaque(false);
 //        fillPatternTipLabel.setEditable(false);
-//        fillPatternTipLabel.setText(I18N.get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
+//        fillPatternTipLabel.setText(I18N.getInstance().get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
 //        fillPatternTipLabel.setLineWrap(true);
 //        fillPatternTipLabel.setWrapStyleWord(true);
         
@@ -273,7 +273,7 @@ public class RenderingStylePanel extends BasicStylePanel implements StylePanel {
             new GridBagConstraints(0, 35, 2, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(2, 2, 2, 2), 0, 0));
-        centerPanel.add(new JLabel(I18N.get("ui.style.RenderingStylePanel.preview")),
+        centerPanel.add(new JLabel(I18N.getInstance().get("ui.style.RenderingStylePanel.preview")),
             new GridBagConstraints(0, 40, 3, 1, 0.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(2, 2, 0, 2), 0, 0));

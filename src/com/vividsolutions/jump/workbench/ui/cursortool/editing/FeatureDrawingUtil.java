@@ -147,13 +147,13 @@ public class FeatureDrawingUtil {
 		if (layerNamePanelProxy.getLayerNamePanel().chooseEditableLayer() == null) {
 			Layer layer = layerViewPanel.getLayerManager().addLayer(
 					StandardCategoryNames.WORKING,
-					I18N.get("ui.cursortool.editing.FeatureDrawingUtil.new"),
+					I18N.getInstance().get("ui.cursortool.editing.FeatureDrawingUtil.new"),
 					AddNewLayerPlugIn.createBlankFeatureCollection());
 			layer.setEditable(true);
 			layerViewPanel
 			.getContext()
 			.warnUser(
-					I18N.get("ui.cursortool.editing.FeatureDrawingUtil.no-layer-is-editable-creating-new-editable-layer"));
+					I18N.getInstance().get("ui.cursortool.editing.FeatureDrawingUtil.no-layer-is-editable-creating-new-editable-layer"));
 		}
 		return layerNamePanelProxy.getLayerNamePanel().chooseEditableLayer();
 	}
@@ -171,7 +171,7 @@ public class FeatureDrawingUtil {
 			layerViewPanel
 			.getContext()
 			.warnUser(
-					I18N.get("ui.cursortool.editing.FeatureDrawingUtil.draw-feature-tool-topology-error"));
+					I18N.getInstance().get("ui.cursortool.editing.FeatureDrawingUtil.draw-feature-tool-topology-error"));
 			return null;
 		}
 		// Don't want viewport to change at this stage. [Jon Aquino]

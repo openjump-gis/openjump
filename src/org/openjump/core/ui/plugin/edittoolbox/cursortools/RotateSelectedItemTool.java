@@ -72,19 +72,16 @@ import com.vividsolutions.jump.workbench.ui.cursortool.ShortcutsDescriptor;
 
 public class RotateSelectedItemTool extends DragTool implements ShortcutsDescriptor {
 
-  final static String rotateSelectedItem = I18N
-      .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.RotateSelectedItemTool.Rotate-Selected-Item");
-  final static String angleST = I18N
-      .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.angle");
-  final static String degrees = I18N
-      .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
+  final static String rotateSelectedItem = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.RotateSelectedItemTool.Rotate-Selected-Item");
+  final static String angleST = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.angle");
+  final static String degrees = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
   // shortcut doc
   final static Map shortcuts = new HashMap();
   {
     shortcuts
         .put(
             new QuasimodeTool.ModifierKeySpec(new int[] { KeyEvent.VK_SHIFT }),
-            I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.RotateSelectedItemTool.Set-Rotation-Center"));
+            I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.RotateSelectedItemTool.Set-Rotation-Center"));
   }
 
   private KeyListener cursorSwitcher = new KeyListener() {

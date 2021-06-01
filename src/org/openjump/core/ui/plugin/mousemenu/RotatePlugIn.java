@@ -57,23 +57,15 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 public class RotatePlugIn extends AbstractPlugIn {
 
-    private static final String sRotate = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Rotate");
-    private static final String sRotateSelectedFeatures = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Rotate-Selected-Features");
-    private static final String sRotateAbout = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Rotate-about");
-    private static final String sTheAngleInDegreesClockwise = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.The-angle-in-degrees-clockwise");
+    private static final String sRotate = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Rotate");
+    private static final String sRotateSelectedFeatures = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Rotate-Selected-Features");
+    private static final String sRotateAbout = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Rotate-about");
+    private static final String sTheAngleInDegreesClockwise = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.The-angle-in-degrees-clockwise");
 
-    private static final String METHOD_ABOUTCENTER = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Center");
-    private static final String METHOD_ABOUTCLICKPOINT = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Click-Point");
-    private final static String ANGLE = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Rotation-Angle");
-    private final static String ROTATEABOUT = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Rotate-About");
+    private static final String METHOD_ABOUTCENTER = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Center");
+    private static final String METHOD_ABOUTCLICKPOINT = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Click-Point");
+    private final static String ANGLE = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Rotation-Angle");
+    private final static String ROTATEABOUT = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.RotatePlugIn.Rotate-About");
     private final double Deg2Rad = 0.0174532925199432; // pi/180
     private WorkbenchContext workbenchContext;
     private double rotateAngle = 45.0;

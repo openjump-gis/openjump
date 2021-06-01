@@ -75,8 +75,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 
 	private final static String LAYER1 = GenericNames.LAYER_A;
 	private final static String LAYER2 = GenericNames.LAYER_B;
-	private final static String sTRANSFER = I18N
-			.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Transfer-attributes");
+	private final static String sTRANSFER = I18N.getInstance().get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Transfer-attributes");
 	private String sDescription = "Intersects all geometries of two layers that contain both polygons. Note: The Planar Graph function provides similar functionality.";
 	private Layer layer1 = null;
 	private Layer layer2 = null;
@@ -96,8 +95,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 						new EnableCheckFactory(context.getWorkbenchContext())
 								.createAtLeastNLayersMustExistCheck(1)));
 
-		this.sDescription = I18N
-				.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.sDescrition");
+		this.sDescription = I18N.getInstance().get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.sDescrition");
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -118,8 +116,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 	}
 
 	public String getName() {
-		return I18N
-				.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Intersect-Polygon-Layers") + "...";
+		return I18N.getInstance().get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Intersect-Polygon-Layers") + "...";
 	}
 
 	public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
@@ -130,7 +127,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 				context);
 		if ((resultColl != null) && (resultColl.size() > 0)) {
 			context.addLayer(StandardCategoryNames.RESULT,
-							I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.intersection") + "-" +
+							I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.intersection") + "-" +
 											layer1.getName() + "-" + layer2.getName(),
 					resultColl);
 		}
@@ -138,8 +135,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 			context
 					.getWorkbenchFrame()
 					.warnUser(
-							I18N
-									.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Error-while-executing-spatial-function"));
+							I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Error-while-executing-spatial-function"));
 	}
 
 	/**
@@ -288,7 +284,7 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 		}
 		if (context != null) {
 			if (errorsInA.size() > 0 || errorsInB.size() > 0) {
-				String errorStrg = I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Found-more-than-one-source-feature-in-Layer");
+				String errorStrg = I18N.getInstance().get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Found-more-than-one-source-feature-in-Layer");
 				String layers = "";
 				if (errorsInA.size() > 0) {
 					layers = layers + " " + GenericNames.LAYER_A;
@@ -297,8 +293,8 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 									"IntersectPolygonLayersPlugIn: " + errorStrg + ": " + GenericNames.LAYER_A + "." +
 									"\n" +
 									"Reason: The Layer contains probably objects that overlay each other. Will set polygon values of items with FID: " + errorsInA +
-									" to NaN. Use " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes") +
-									" or " + I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially") +
+									" to NaN. Use " + I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes") +
+									" or " + I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially") +
 									" functions to obtain atributes from " + GenericNames.LAYER_A);
 				}
 				if (errorsInB.size() > 0) {
@@ -308,8 +304,8 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 									"IntersectPolygonLayersPlugIn: " + errorStrg + ": " + GenericNames.LAYER_B + "." +
 									"\n" +
 									"Reason: The Layer contains probably objects that overlay each other. Will set polygon values of items with FID: " + errorsInB +
-									" to NaN. Use " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes") +
-									" or " + I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially") +
+									" to NaN. Use " + I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes") +
+									" or " + I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially") +
 									" functions to obtain atributes from " + GenericNames.LAYER_B);
 				}
 				context.getWorkbenchFrame().warnUser(errorStrg + layers);

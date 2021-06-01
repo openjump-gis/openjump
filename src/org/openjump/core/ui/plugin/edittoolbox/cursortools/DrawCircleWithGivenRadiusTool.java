@@ -83,15 +83,15 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
     private int points = 8;
     private static double tolerance = 0.1;
     //private String T1 = "Circle Radius";
-	private String T1 = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Cirlce-Radius") + ":";
+	private String T1 = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Cirlce-Radius") + ":";
 	//private String T2 = "Number of segments per circle quarter";
-	private String T2 = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Number-of-segments-per-circle-quarter") + ":";
+	private String T2 = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Number-of-segments-per-circle-quarter") + ":";
 	//private String name = "Draw circle with given radius and center.";
-	private String name = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Draw-circle-with-given-radius-and-center");
+	private String name = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Draw-circle-with-given-radius-and-center");
 	//private String sidebarstring = "Draws a circle by specifying the radius, the number of segments per circle quarter and the center position by mouse click";
-	private String sidebarstring = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Draws-a-circle-by-specifiying-the-radius-and-the-circle-accuracy-and-the-centre-position-by-mouse-click");
-	private String sAccuracy = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Circle-Accuracy");
-	private String sReset = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.too-small-tolerance-reset-to-300-segments");
+	private String sidebarstring = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Draws-a-circle-by-specifiying-the-radius-and-the-circle-accuracy-and-the-centre-position-by-mouse-click");
+	private String sAccuracy = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Circle-Accuracy");
+	private String sReset = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.too-small-tolerance-reset-to-300-segments");
 	    
 	private DrawCircleWithGivenRadiusTool(FeatureDrawingUtil featureDrawingUtil) {
 		super(1);

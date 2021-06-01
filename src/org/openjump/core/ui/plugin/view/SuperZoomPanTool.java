@@ -107,7 +107,7 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 	}
 		
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		getWorkbench().getFrame().setStatusMessage(I18N.get("org.openjump.core.ui.plugin.view.SuperZoomPanTool.wheelmode-message"));
+		getWorkbench().getFrame().setStatusMessage(I18N.getInstance().get("org.openjump.core.ui.plugin.view.SuperZoomPanTool.wheelmode-message"));
 		int nclicks = e.getWheelRotation();  //negative is up/away
 		mouseWheelCount = mouseWheelCount + nclicks;
 		if (mouseWheelCount == 0) {
@@ -189,13 +189,13 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
             imageG2d.drawRect(zoomAreaWidth / 2 + textAreaOffsetX, zoomAreaHeight / 2 + textAreaOffsetY, textAreaWidth - 1, textAreaHeight -1);
             // draw the map scale
             imageG2d.setColor(Color.black);
-            imageG2d.drawString(I18N.get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.scale") + " 1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(panel.getViewport()) / scale), zoomAreaWidth / 2 + textAreaOffsetX + 5, zoomAreaHeight / 2 + textAreaOffsetY + 14);
+            imageG2d.drawString(I18N.getInstance().get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.scale") + " 1:" + (int) Math.floor(ScreenScale.getHorizontalMapScale(panel.getViewport()) / scale), zoomAreaWidth / 2 + textAreaOffsetX + 5, zoomAreaHeight / 2 + textAreaOffsetY + 14);
             // draw the tool hint with a simple linebreaker, because drawString do not make this
             int hintX = zoomAreaWidth / 2 + textAreaOffsetX + 5;
             int hintOffsetX = 0;
             int hintY = zoomAreaHeight / 2 + textAreaOffsetY + 32;
             FontMetrics fm = imageG2d.getFontMetrics();
-            String hintString = I18N.get("org.openjump.core.ui.plugin.view.SuperZoomPanTool.wheelmode-message");
+            String hintString = I18N.getInstance().get("org.openjump.core.ui.plugin.view.SuperZoomPanTool.wheelmode-message");
             for (String word : hintString.split(" ")) {
                 word += " ";
                 if (hintX + hintOffsetX + fm.stringWidth(word)> hintX + textAreaWidth -2) {
@@ -323,7 +323,7 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
 
 	@Override
 	public String getName() {
-		return I18N.get("org.openjump.core.ui.plugin.view.SuperZoomPanTool.zoom-pan");
+		return I18N.getInstance().get("org.openjump.core.ui.plugin.view.SuperZoomPanTool.zoom-pan");
 	}
 	
 	

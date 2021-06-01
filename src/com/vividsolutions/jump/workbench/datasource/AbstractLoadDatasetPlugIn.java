@@ -30,7 +30,7 @@ public abstract class AbstractLoadDatasetPlugIn extends AbstractLoadSaveDatasetP
         for (DataSourceQuery dataSourceQuery : getDataSourceQueries()) {
             ArrayList<Throwable> exceptions = new ArrayList<>();
             Assert.isTrue(dataSourceQuery.getDataSource().isReadable());
-            monitor.report(I18N.get("datasource.LoadDatasetPlugIn.loading")+" " + dataSourceQuery.toString() + "...");
+            monitor.report(I18N.getInstance().get("datasource.LoadDatasetPlugIn.loading")+" " + dataSourceQuery.toString() + "...");
 
             Connection connection = dataSourceQuery.getDataSource().getConnection();
 
@@ -57,17 +57,17 @@ public abstract class AbstractLoadDatasetPlugIn extends AbstractLoadSaveDatasetP
             }
         }
         if (exceptionsEncountered) {
-            context.getWorkbenchFrame().warnUser(I18N.get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
+            context.getWorkbenchFrame().warnUser(I18N.getInstance().get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
         }
     }
 
     private void reportExceptions(ArrayList<Throwable> exceptions,
         DataSourceQuery dataSourceQuery, PlugInContext context) {
         context.getOutputFrame().addHeader(1,
-            exceptions.size() + " "+I18N.get("datasource.LoadDatasetPlugIn.problem") + StringUtil.s(exceptions.size()) +
-            " "+ I18N.get("datasource.LoadDatasetPlugIn.loading")  + " " + dataSourceQuery.toString() + "." +
-            ((exceptions.size() > 10) ? " "+I18N.get("datasource.LoadDatasetPlugIn.first-and-last-five") : ""));
-        context.getOutputFrame().addText(I18N.get("datasource.LoadDatasetPlugIn.see-view-log"));
+            exceptions.size() + " "+I18N.getInstance().get("datasource.LoadDatasetPlugIn.problem") + StringUtil.s(exceptions.size()) +
+            " "+ I18N.getInstance().get("datasource.LoadDatasetPlugIn.loading")  + " " + dataSourceQuery.toString() + "." +
+            ((exceptions.size() > 10) ? " "+I18N.getInstance().get("datasource.LoadDatasetPlugIn.first-and-last-five") : ""));
+        context.getOutputFrame().addText(I18N.getInstance().get("datasource.LoadDatasetPlugIn.see-view-log"));
 
         ExceptionUtil.reportExceptions(context, exceptions);
     }

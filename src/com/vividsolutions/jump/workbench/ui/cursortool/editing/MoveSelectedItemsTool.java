@@ -303,7 +303,7 @@ public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescript
     public Map<ModifierKeySpec, String> describeShortcuts() {
       Map map = new HashMap();
       map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_SHIFT }),
-          I18N.get(this.getClass().getName() + ".rotate-item"));
+          I18N.getInstance().get(this.getClass().getName() + ".rotate-item"));
       return map;
     }
 }

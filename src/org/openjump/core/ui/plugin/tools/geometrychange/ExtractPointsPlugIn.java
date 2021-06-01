@@ -88,10 +88,10 @@ public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugI
     public void initialize(PlugInContext context) throws Exception {
     		
     		this.CLAYER = GenericNames.LAYER;
-       		this.sName = I18N.get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.Extract-Points");
-    	    this.sideBarText = I18N.get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.description");
-    		this.sPoints = I18N.get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.points");
-    	    this.DELETE_LAST_POINT_IF_CLOSED = I18N.get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.Account-for-closed-Geometries");
+       		this.sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.Extract-Points");
+    	    this.sideBarText = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.description");
+    		this.sPoints = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.points");
+    	    this.DELETE_LAST_POINT_IF_CLOSED = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.Account-for-closed-Geometries");
     		
 	        FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
 	    	featureInstaller.addMainMenuItem(

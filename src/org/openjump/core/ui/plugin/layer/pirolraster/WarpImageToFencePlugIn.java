@@ -69,8 +69,7 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
      */
     @Override
 	public String getName() {
-        return I18N
-                .get("org.openjump.core.ui.plugin.layer.pirolraster.WarpImageToFencePlugIn.Warp-Image-To-Fence");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.WarpImageToFencePlugIn.Warp-Image-To-Fence");
     }
 
     /**
@@ -84,14 +83,14 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
         if (rLayer == null) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
+                            I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return false;
         }
 
         Random rnd = new Random();
         int n = 1000 + rnd.nextInt(9000);
         String random = Integer.toString(n);
-        String warped = I18N.get("ui.warp.WarpingPanel.warped");
+        String warped = I18N.getInstance().get("ui.warp.WarpingPanel.warped");
         String fileName = warped + "_" + rLayer.getName() + "_" + random
                 + ".tif";
 

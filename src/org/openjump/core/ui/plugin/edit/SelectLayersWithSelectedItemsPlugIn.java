@@ -49,7 +49,7 @@ import com.vividsolutions.jump.workbench.model.Layer;
 public class SelectLayersWithSelectedItemsPlugIn extends AbstractPlugIn {
 
     private static final String sSelectLayersWithSelectedItems =
-            I18N.get("org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn.SelectLayersWithSelectedItems");
+            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn.SelectLayersWithSelectedItems");
 
     public void initialize(PlugInContext context) throws Exception
     {     

@@ -1552,8 +1552,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     }
  
    
-    private final static String NODATASOURCELAYER = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.nodatasourcelayer.message");
+    private final static String NODATASOURCELAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.nodatasourcelayer.message");
 
 	/**
      * @return the file path of a RasterImageLayer.class

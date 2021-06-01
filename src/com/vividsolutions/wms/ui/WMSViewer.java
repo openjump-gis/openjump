@@ -69,7 +69,7 @@ public class WMSViewer extends JFrame implements ActionListener, MouseListener {
    * Constructs a WMSViewer object.
    */
   public WMSViewer() {
-    super( I18N.get("com.vividsolutions.wms.ui.WMSViewer.wms-viewer") );
+    super( I18N.getInstance().get("com.vividsolutions.wms.ui.WMSViewer.wms-viewer") );
     this.addWindowListener(new WindowAdapter() {
         public void windowClosing(WindowEvent e) {System.exit(0);}
     });
@@ -79,14 +79,14 @@ public class WMSViewer extends JFrame implements ActionListener, MouseListener {
     // create and layout the top panel (server connect)
     JPanel topPanel = new JPanel();
     topPanel.setLayout( new FlowLayout() );
-    topPanel.add( new JLabel( I18N.get("com.vividsolutions.wms.ui.WMSViewer.server-string")) );
-    serverUrlField = new JTextField( I18N.get("com.vividsolutions.wms.ui.WMSViewer.wms-url"), 30 );
+    topPanel.add( new JLabel( I18N.getInstance().get("com.vividsolutions.wms.ui.WMSViewer.server-string")) );
+    serverUrlField = new JTextField( I18N.getInstance().get("com.vividsolutions.wms.ui.WMSViewer.wms-url"), 30 );
     topPanel.add( serverUrlField );
-    connectButton = new JButton( I18N.get("com.vividsolutions.wms.ui.WMSViewer.connect") );
+    connectButton = new JButton( I18N.getInstance().get("com.vividsolutions.wms.ui.WMSViewer.connect") );
     connectButton.setActionCommand( "connect" );
     connectButton.addActionListener( this );
     topPanel.add( connectButton );
-    disconnectButton = new JButton( I18N.get("com.vividsolutions.wms.ui.WMSViewer.disconnect") );
+    disconnectButton = new JButton( I18N.getInstance().get("com.vividsolutions.wms.ui.WMSViewer.disconnect") );
     disconnectButton.setActionCommand( "disconnect" );
     disconnectButton.addActionListener( this );
     disconnectButton.setEnabled( false );
@@ -122,19 +122,19 @@ public class WMSViewer extends JFrame implements ActionListener, MouseListener {
     thePanel = new JPanel();
     thePanel.setLayout( new GridLayout( 3, 1 ) );
     ButtonGroup bg = new ButtonGroup();
-    JRadioButton rb = new JRadioButton( I18N.get("com.vividsolutions.wms.ui.WMSViewer.pan") );
+    JRadioButton rb = new JRadioButton( I18N.getInstance().get("com.vividsolutions.wms.ui.WMSViewer.pan") );
     rb.setActionCommand( "pan" );
     rb.addActionListener( this );
     rb.setSelected( true );
     zoomMode = "pan";
     thePanel.add( rb );
     bg.add( rb );
-    rb = new JRadioButton( I18N.get("com.vividsolutions.wms.ui.WMSViewer.zoom-in") );
+    rb = new JRadioButton( I18N.getInstance().get("com.vividsolutions.wms.ui.WMSViewer.zoom-in") );
     rb.setActionCommand( "zoomIn" );
     rb.addActionListener( this );
     thePanel.add( rb );
     bg.add( rb );
-    rb = new JRadioButton( I18N.get("com.vividsolutions.wms.ui.WMSViewer.zoom-out"));
+    rb = new JRadioButton( I18N.getInstance().get("com.vividsolutions.wms.ui.WMSViewer.zoom-out"));
     rb.setActionCommand( "zoomOut" );
     rb.addActionListener( this );
     thePanel.add( rb );
@@ -148,7 +148,7 @@ public class WMSViewer extends JFrame implements ActionListener, MouseListener {
     bottomPanel.setLayout( new FlowLayout() );
     formatCombo = new JComboBox();
     bottomPanel.add( formatCombo );
-    getImageButton = new JButton( I18N.get("com.vividsolutions.wms.ui.WMSViewer.get-image") );
+    getImageButton = new JButton( I18N.getInstance().get("com.vividsolutions.wms.ui.WMSViewer.get-image") );
     getImageButton.setActionCommand( "getImage" );
     getImageButton.addActionListener( this );
     getImageButton.setEnabled( false );

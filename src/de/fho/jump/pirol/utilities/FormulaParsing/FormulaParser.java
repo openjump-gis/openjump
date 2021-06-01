@@ -121,7 +121,7 @@ public class FormulaParser {
                         theValue = new AttributeValue(attrName);
                     } else {
                         logger.printError("could not parse: " + attrName);
-                        throw new IllegalArgumentException( I18N.get("pirol.plugIns.EditAttributeByFormula.do-not-know-how-to-parse") + ": >" + attrName + "<");
+                        throw new IllegalArgumentException( I18N.getInstance().get("pirol.plugIns.EditAttributeByFormula.do-not-know-how-to-parse") + ": >" + attrName + "<");
                     }
                         
                 } else if (operation[0].trim().startsWith(FormulaParser.KEY_SQRT)){
@@ -166,7 +166,7 @@ public class FormulaParser {
                     theValue = new PowerOfOperation(FormulaParser.getValue(value1Str, featSchema), FormulaParser.getValue(value2Str, featSchema));
                 } else {
                     logger.printError("could not parse: " + operation[0]);
-                    throw new IllegalArgumentException( I18N.get("pirol.plugIns.EditAttributeByFormula.do-not-know-how-to-parse") + ": >" + operation[0] + "<");
+                    throw new IllegalArgumentException( I18N.getInstance().get("pirol.plugIns.EditAttributeByFormula.do-not-know-how-to-parse") + ": >" + operation[0] + "<");
                 }
             }
         } else {

@@ -66,26 +66,16 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel,
         ActionListener {
 
     private static final long serialVersionUID = -6644440388147608621L;
-    public static final String WRITE_WORLDFILE = I18N
-            .get("ui.plugin.SaveImageAsPlugIn.write-world-file");
-    public static final String MINX_KEY = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.minx");
-    public static final String MAXX_KEY = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxx");
-    public static final String MINY_KEY = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.miny");
-    public static final String MAXY_KEY = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxy");
-    public static final String TITLE = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.worldfile-dialog");
-    public static final String INSTRUCTION = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.please-enter-the-image-path");
-    public static final String WORLD = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.optimizedworldfile");
-    public static final String TOOLTIP = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.warp-tooltip");;
-    public static final String WARP = I18N
-            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.warp");
+    public static final String WRITE_WORLDFILE = I18N.getInstance().get("ui.plugin.SaveImageAsPlugIn.write-world-file");
+    public static final String MINX_KEY = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.minx");
+    public static final String MAXX_KEY = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxx");
+    public static final String MINY_KEY = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.miny");
+    public static final String MAXY_KEY = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxy");
+    public static final String TITLE = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.worldfile-dialog");
+    public static final String INSTRUCTION = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.please-enter-the-image-path");
+    public static final String WORLD = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.optimizedworldfile");
+    public static final String TOOLTIP = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.warp-tooltip");;
+    public static final String WARP = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.warp");
 
     private InputChangedFirer inputChangedFirer = new InputChangedFirer();
     private Map dataMap;
@@ -106,17 +96,13 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel,
         try {
             jbInit();
             minxTextField
-                    .setText(I18N
-                            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.west-coordinate"));
+                    .setText(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.west-coordinate"));
             maxxTextField
-                    .setText(I18N
-                            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.east-coordinate"));
+                    .setText(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.east-coordinate"));
             minyTextField
-                    .setText(I18N
-                            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.south-coordinate"));
+                    .setText(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.south-coordinate"));
             maxyTextField
-                    .setText(I18N
-                            .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.north-coordinate"));
+                    .setText(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.north-coordinate"));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -136,17 +122,13 @@ public class RasterImageWizardPanel extends JPanel implements WizardPanel,
     void jbInit() throws Exception {
 
         minxLabel
-                .setText(I18N
-                        .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.minx"));
+                .setText(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.minx"));
         maxxLabel
-                .setText(I18N
-                        .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxx"));
+                .setText(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxx"));
         minyLabel
-                .setText(I18N
-                        .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.miny"));
+                .setText(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.miny"));
         maxyLabel
-                .setText(I18N
-                        .get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxy"));
+                .setText(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel.maxy"));
 
         this.setLayout(gridBagLayout1);
         minxTextField.setPreferredSize(new Dimension(270, 21));

@@ -392,7 +392,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         private JLabel buttonGCPartlyEmpty = buildPartlyEmptyIconLabel(gc);
 
         GeometryCellRenderer() {
-            String text = I18N.get("ui.AttributeTablePanel.feature.view-edit");
+            String text = I18N.getInstance().get("ui.AttributeTablePanel.feature.view-edit");
             JLabel[] buttons = new JLabel[] { buttonPoint, buttonMultiPoint,
                 buttonLineString, buttonMultiLineString, buttonPolygon,
                 buttonMultiPolygon, buttonGC, buttonLinearRing, buttonPointEmpty,
@@ -689,12 +689,12 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     		 layerListCellRenderer.getLabel().setText(
                     getModel().getLayer().getName() + " ("
                             + getModel().getRowCount() + " "
-							+ I18N.get("ui.AttributeTablePanel.feature") + ")");
+							+ I18N.getInstance().get("ui.AttributeTablePanel.feature") + ")");
     	} else {
     		 layerListCellRenderer.getLabel().setText(
                     getModel().getLayer().getName() + " ("
                             + getModel().getRowCount() + " "
-                            + I18N.get("ui.AttributeTablePanel.features") + ")");
+                            + I18N.getInstance().get("ui.AttributeTablePanel.features") + ")");
     	}
     }
 

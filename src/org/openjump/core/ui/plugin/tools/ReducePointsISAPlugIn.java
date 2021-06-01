@@ -62,14 +62,14 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 public class ReducePointsISAPlugIn extends AbstractPlugIn {
 	
-	private final static String sSimplifyISA = I18N.get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.Simplify-ISA-algorithm");
-	private final static String sPointsReducedFrom = I18N.get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.Points-reduced-from");
-	private final static String sTo = I18N.get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.to");
-	private final static String sReducePointsInSelectedFeatures = I18N.get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.Reduce-points-in-selected-features");
-	private final static String sTheReducePointsTolerance = I18N.get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.The-reduce-points-tolerance");	
+	private final static String sSimplifyISA = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.Simplify-ISA-algorithm");
+	private final static String sPointsReducedFrom = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.Points-reduced-from");
+	private final static String sTo = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.to");
+	private final static String sReducePointsInSelectedFeatures = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.Reduce-points-in-selected-features");
+	private final static String sTheReducePointsTolerance = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.The-reduce-points-tolerance");	
 	
     private WorkbenchContext workbenchContext;
-    private final static String TOLERANCE = I18N.get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.Tolerance");;
+    private final static String TOLERANCE = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ReducePointsISAPlugIn.Tolerance");;
     private double tolerance = 0.1;
     PlugInContext gContext;
 

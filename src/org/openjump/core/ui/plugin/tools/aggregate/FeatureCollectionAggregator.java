@@ -29,12 +29,12 @@ public class FeatureCollectionAggregator {
         // Check validity of input attribute names
         for (String attributeName : keyAttributes) {
             if (!fc.getFeatureSchema().hasAttribute(attributeName)) {
-                throw new AggregatorException(I18N.getMessage(KEY + ".attribute-does-not-exists", attributeName));
+                throw new AggregatorException(I18N.getInstance().get(KEY + ".attribute-does-not-exists", attributeName));
             }
         }
         for (AttributeAggregator aggregator : aggregators) {
             if (!fc.getFeatureSchema().hasAttribute(aggregator.getInputName())) {
-                throw new AggregatorException(I18N.getMessage(KEY + ".attribute-does-not-exists", aggregator.getInputName()));
+                throw new AggregatorException(I18N.getInstance().get(KEY + ".attribute-does-not-exists", aggregator.getInputName()));
             }
         }
     }

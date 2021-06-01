@@ -90,12 +90,11 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 public class ShowViewCenterPlugIn extends AbstractPlugIn {
 
-    public static String NAME = I18N
-            .get("org.openjump.core.ui.plugin.view.showcenter.name");
+    public static String NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.view.showcenter.name");
 
-    public static String DIMENSION = I18N.get("ui.FontChooser.size");
+    public static String DIMENSION = I18N.getInstance().get("ui.FontChooser.size");
 
-    public static String COLOR = I18N.get("ui.ColorChooserPanel.choose-color");
+    public static String COLOR = I18N.getInstance().get("ui.ColorChooserPanel.choose-color");
 
     Integer windth = 30;
     ImageIcon radio_icon_3 = GUIUtil.toSmallIcon(new ImageIcon(getClass()

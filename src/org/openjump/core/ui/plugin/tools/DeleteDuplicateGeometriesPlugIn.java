@@ -140,15 +140,15 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
     private void initializeLanguageStrings() {
         String langPrefix = getClass().getCanonicalName();
         langSourceLayer = GenericNames.SELECT_LAYER;
-        langName = I18N.get(langPrefix + ".Delete-Duplicate-Geometries");
-        langDescription = I18N.get(langPrefix + 
+        langName = I18N.getInstance().get(langPrefix + ".Delete-Duplicate-Geometries");
+        langDescription = I18N.getInstance().get(langPrefix + 
                 ".deletes-features-with-similar-geometry");
-        langDeleteOnlySameAttributes = I18N.get(langPrefix + 
+        langDeleteOnlySameAttributes = I18N.getInstance().get(langPrefix + 
                 ".delete-only-if-attributes-are-the-same");
-        langMonitorCheckedFeatures = I18N.get(langPrefix + ".checked");
-        langResultNameCleaned = I18N.get(langPrefix + ".cleaned");
-        langResultNameDeleted = I18N.get(langPrefix + ".deleted");
-        langKeepDeletedFeatures = I18N.get(langPrefix + ".keep-deleted-features");
+        langMonitorCheckedFeatures = I18N.getInstance().get(langPrefix + ".checked");
+        langResultNameCleaned = I18N.getInstance().get(langPrefix + ".cleaned");
+        langResultNameDeleted = I18N.getInstance().get(langPrefix + ".deleted");
+        langKeepDeletedFeatures = I18N.getInstance().get(langPrefix + ".keep-deleted-features");
     }
     
     private void initializeMenuItem(PlugInContext context) {

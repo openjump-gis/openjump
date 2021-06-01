@@ -73,7 +73,7 @@ public abstract class SortCategoryAbstractPlugIn extends AbstractPlugIn
 
 	public void initialize(PlugInContext context) throws Exception {
 
-		menuLabelOnLayer = I18N.get(I18N_SORT_MENU_LABEL);
+		menuLabelOnLayer = I18N.getInstance().get(I18N_SORT_MENU_LABEL);
 
 		addMenuOptions(context);
 		addActionListenersToMenu(context);

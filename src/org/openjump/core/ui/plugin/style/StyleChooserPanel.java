@@ -38,7 +38,6 @@
 
 package org.openjump.core.ui.plugin.style;
 
-import static com.vividsolutions.jump.I18N.get;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static org.openjump.util.SLDImporter.getPossibleColorThemingStyleNames;
 import static org.openjump.util.SLDImporter.getRuleNamesWithGeometrySymbolizers;
@@ -55,6 +54,8 @@ import javax.swing.event.ListSelectionListener;
 
 import org.openjump.core.ui.swing.SelectFromListPanel;
 import org.w3c.dom.Document;
+
+import com.vividsolutions.jump.I18N;
 
 /**
  * <code>StyleChooserPanel</code>
@@ -74,11 +75,11 @@ public class StyleChooserPanel extends JPanel implements ListSelectionListener {
 
     private SelectFromListPanel select;
 
-    private static final String LABEL = get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Label-Styles");
+    private static final String LABEL = I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Label-Styles");
 
-    private static final String BASIC = get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Basic-Styles");
+    private static final String BASIC = I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Basic-Styles");
 
-    private static final String THEMING = get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Color-Theming-Styles");
+    private static final String THEMING = I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Color-Theming-Styles");
 
     /**
      *

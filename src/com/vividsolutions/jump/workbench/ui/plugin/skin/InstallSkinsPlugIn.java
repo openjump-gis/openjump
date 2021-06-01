@@ -53,10 +53,8 @@ import com.vividsolutions.jump.workbench.ui.OptionsDialog;
 
 public class InstallSkinsPlugIn extends AbstractPlugIn {
 
-  private static String SKINS = I18N
-      .get("ui.plugin.skin.InstallSkinsPlugIn.skins");
-  private static String DEFAULT = I18N
-      .get("ui.plugin.skin.InstallSkinsPlugIn.default");
+  private static String SKINS = I18N.getInstance().get("ui.plugin.skin.InstallSkinsPlugIn.skins");
+  private static String DEFAULT = I18N.getInstance().get("ui.plugin.skin.InstallSkinsPlugIn.default");
 
   private LookAndFeelProxy createProxy(final String name,
       final String lookAndFeelClassName) {
@@ -83,8 +81,8 @@ public class InstallSkinsPlugIn extends AbstractPlugIn {
   }
 
   public void initialize(PlugInContext context) throws Exception {
-    SKINS = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.skins");
-    DEFAULT = I18N.get("ui.plugin.skin.InstallSkinsPlugIn.default");
+    SKINS = I18N.getInstance().get("ui.plugin.skin.InstallSkinsPlugIn.skins");
+    DEFAULT = I18N.getInstance().get("ui.plugin.skin.InstallSkinsPlugIn.default");
     ArrayList skins = new ArrayList();
 
     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {

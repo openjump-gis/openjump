@@ -81,12 +81,11 @@ public class EditWMSQueryPlugIn extends AbstractPlugIn {
                 .selectedNodes(WMSLayer.class).iterator().next();
         MultiInputDialog dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(),
-                I18N.get("ui.plugin.wms.EditWMSQueryPlugIn.edit-wms-query"),
+                I18N.getInstance().get("ui.plugin.wms.EditWMSQueryPlugIn.edit-wms-query"),
                 true);
 
         dialog.setSideBarImage(IconLoader.icon("EditWMSLayer.jpg"));
-        dialog.setSideBarDescription(I18N
-                .get("ui.plugin.wms.EditWMSQueryPlugIn.this-dialog-enables-you-to-change-the-layers-being-retrieved-from-a-web-map-server"));
+        dialog.setSideBarDescription(I18N.getInstance().get("ui.plugin.wms.EditWMSQueryPlugIn.this-dialog-enables-you-to-change-the-layers-being-retrieved-from-a-web-map-server"));
 
         EditWMSQueryPanel panel = new EditWMSQueryPanel(layer);
 
@@ -94,7 +93,7 @@ public class EditWMSQueryPlugIn extends AbstractPlugIn {
         // messages
         // e.g. if the user doesn't pick any layers. [Jon Aquino]
         dialog.addRow(
-                I18N.get("ui.plugin.wms.EditWMSQueryPlugIn.chosen-layers"),
+                I18N.getInstance().get("ui.plugin.wms.EditWMSQueryPlugIn.chosen-layers"),
                 new JLabel(""), panel, panel.getEnableChecks(), "",
                 AbstractMultiInputDialog.NO_LABEL, GridBagConstraints.BOTH);
         dialog.pack();

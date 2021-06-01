@@ -110,8 +110,8 @@ public class AddRemovePanel extends JPanel {
         border2 = new EtchedBorder(EtchedBorder.RAISED, new Color(0, 0, 51), new Color(0, 0, 25));
         this.setLayout(gridBagLayout1);
         jPanel1.setLayout(gridBagLayout2);
-        removeButton.setToolTipText(I18N.get("ui.addremove.AddRemovePanel.remove"));
-        removeAllButton.setToolTipText(I18N.get("ui.addremove.AddRemovePanel.remove-all"));
+        removeButton.setToolTipText(I18N.getInstance().get("ui.addremove.AddRemovePanel.remove"));
+        removeAllButton.setToolTipText(I18N.getInstance().get("ui.addremove.AddRemovePanel.remove-all"));
         removeButton.setMargin(new Insets(0, 0, 0, 0));
         removeAllButton.setMargin(new Insets(0, 0, 0, 0));
         removeButton.setIcon(GUIUtil.toSmallIcon(IconLoader.icon("VCRBack.gif")));
@@ -126,10 +126,10 @@ public class AddRemovePanel extends JPanel {
                 removeAllButton_actionPerformed(e);
             }
         });
-        addButton.setToolTipText(I18N.get("ui.addremove.AddRemovePanel.add"));
-        moveUpButton.setToolTipText(I18N.get("ui.addremove.AddRemovePanel.move-up"));
-        moveDownButton.setToolTipText(I18N.get("ui.addremove.AddRemovePanel.move-down"));
-        addAllButton.setToolTipText(I18N.get("ui.addremove.AddRemovePanel.add-all"));
+        addButton.setToolTipText(I18N.getInstance().get("ui.addremove.AddRemovePanel.add"));
+        moveUpButton.setToolTipText(I18N.getInstance().get("ui.addremove.AddRemovePanel.move-up"));
+        moveDownButton.setToolTipText(I18N.getInstance().get("ui.addremove.AddRemovePanel.move-down"));
+        addAllButton.setToolTipText(I18N.getInstance().get("ui.addremove.AddRemovePanel.add-all"));
         addButton.setMargin(new Insets(0, 0, 0, 0));
         moveUpButton.setMargin(new Insets(0, 0, 0, 0));
         moveDownButton.setMargin(new Insets(0, 0, 0, 0));

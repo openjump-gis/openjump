@@ -52,21 +52,21 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
  */
 public class CreateGridPlugIn extends AbstractUiPlugIn implements ThreadedPlugIn{
 
-    private final static String EXTENT            = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.extent");
-    private final static String ALL_LAYERS        = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.all-layers");
-    private final static String SELECTED_LAYERS   = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.selected-layers");
-    private final static String SELECTED_FEATURES = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.selected-features");
-    private final static String VIEW              = I18N.get("ui.MenuNames.VIEW");
-    private final static String SYNCHRONIZE       = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.synchronize");
-    private final static String DX                = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.dx");
-    private final static String DY                = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.dy");
-    private final static String CREATE_POINTS     = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.points");
-    private final static String CREATE_LINES      = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.lines");
-    private final static String CREATE_POLYS      = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.polygons");
-    private final static String POINT_GRID        = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.point-grid");
-    private final static String LINE_GRID         = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.line-grid");
-    private final static String POLY_GRID         = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.poly_grid");
-    private final static String NULL_EXTENT       = I18N.get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.null-extent");
+    private final static String EXTENT            = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.extent");
+    private final static String ALL_LAYERS        = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.all-layers");
+    private final static String SELECTED_LAYERS   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.selected-layers");
+    private final static String SELECTED_FEATURES = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.selected-features");
+    private final static String VIEW              = I18N.getInstance().get("ui.MenuNames.VIEW");
+    private final static String SYNCHRONIZE       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.synchronize");
+    private final static String DX                = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.dx");
+    private final static String DY                = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.dy");
+    private final static String CREATE_POINTS     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.points");
+    private final static String CREATE_LINES      = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.lines");
+    private final static String CREATE_POLYS      = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.polygons");
+    private final static String POINT_GRID        = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.point-grid");
+    private final static String LINE_GRID         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.line-grid");
+    private final static String POLY_GRID         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.poly_grid");
+    private final static String NULL_EXTENT       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.CreateGridPlugIn.null-extent");
     
     //boolean use_selection = false;
     String extent = ALL_LAYERS;

@@ -58,22 +58,15 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  */
 public class ChangeNoDataValuePlugIn extends ThreadedBasePlugIn {
 
-    public static final String PLUGINNAME = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn.name");
-    private String OUTPUT_FILE = I18N.get("driver.DriverManager.file-to-save")
+    public static final String PLUGINNAME = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn.name");
+    private String OUTPUT_FILE = I18N.getInstance().get("driver.DriverManager.file-to-save")
             + ": ";
-    private static String FROM = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.from");
-    private static String TO = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.to");
-    private static String STATISTICS = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
-    private static String NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.nodata");
-    private static String MIN = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.min");
-    private static String MAX = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.max");
+    private static String FROM = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.from");
+    private static String TO = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.to");
+    private static String STATISTICS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
+    private static String NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.nodata");
+    private static String MIN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.min");
+    private static String MAX = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.max");
 
     private Properties properties = null;
  //   private static String propertiesFile = LoadSextanteRasterImagePlugIn
@@ -101,7 +94,7 @@ public class ChangeNoDataValuePlugIn extends ThreadedBasePlugIn {
     @Override
     public void run(TaskMonitor monitor, PlugInContext context)
             throws Exception {
-        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.processing"));
+        monitor.report(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.processing"));
         reportNothingToUndoYet(context);
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
@@ -285,7 +278,7 @@ public class ChangeNoDataValuePlugIn extends ThreadedBasePlugIn {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()

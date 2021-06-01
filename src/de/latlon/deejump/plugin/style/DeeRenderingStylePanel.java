@@ -328,7 +328,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
 
     @Override
     public String getTitle() {
-        return I18N.get("ui.style.RenderingStylePanel.rendering");
+        return I18N.getInstance().get("ui.style.RenderingStylePanel.rendering");
     }
 
     private void setLayer(Layer layer) {
@@ -359,8 +359,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
             return;
         }
 
-        vertexCheckBox.setText(I18N
-                .get("ui.style.RenderingStylePanel.vertices-size"));
+        vertexCheckBox.setText(I18N.getInstance().get("ui.style.RenderingStylePanel.vertices-size"));
 
         // GH 2005.09.22 this Listner is better than actionListener for this
         // Checkbox
@@ -473,7 +472,7 @@ public class DeeRenderingStylePanel extends BasicStylePanel implements
         centerPanel.add(vertexCheckBox, new GridBagConstraints(0, 35, 2, 1,
                 0.0, 0.0, WEST, NONE, new Insets(2, 2, 2, 2), 0, 0));
         centerPanel.add(
-                new JLabel(I18N.get("ui.style.RenderingStylePanel.preview")),
+                new JLabel(I18N.getInstance().get("ui.style.RenderingStylePanel.preview")),
                 new GridBagConstraints(0, 40, 3, 1, 0.0, 0.0, WEST, NONE,
                         new Insets(2, 2, 0, 2), 0, 0));
         centerPanel.add(previewPanel, new GridBagConstraints(0, 45, 3, 1, 0.0,

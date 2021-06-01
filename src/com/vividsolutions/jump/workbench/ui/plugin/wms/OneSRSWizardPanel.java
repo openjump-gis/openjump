@@ -81,12 +81,12 @@ public class OneSRSWizardPanel extends JPanel implements WizardPanel {
     }
 
     public String getInstructions() {
-        return I18N.get("ui.plugin.wms.OneSRSWizardPanel.the-layers-you-have-chosen-support-only-one-coordinate-system");
+        return I18N.getInstance().get("ui.plugin.wms.OneSRSWizardPanel.the-layers-you-have-chosen-support-only-one-coordinate-system");
     }
 
     void jbInit() throws Exception {
-        srsLabel.setText(I18N.get("ui.plugin.wms.OneSRSWizardPanel.select-coordinate-reference-system"));
-        formatLabel = new JLabel(I18N.get("ui.plugin.wms.SRSWizardPanel.image-format"));
+        srsLabel.setText(I18N.getInstance().get("ui.plugin.wms.OneSRSWizardPanel.select-coordinate-reference-system"));
+        formatLabel = new JLabel(I18N.getInstance().get("ui.plugin.wms.SRSWizardPanel.image-format"));
         formatBox = new JComboBox();
         this.setLayout(gridBagLayout1);
         textField.setEnabled(false);
@@ -153,7 +153,7 @@ public class OneSRSWizardPanel extends JPanel implements WizardPanel {
 
 
     public String getTitle() {
-        return I18N.get("ui.plugin.wms.OneSRSWizardPanel.select-coordinate-reference-system");
+        return I18N.getInstance().get("ui.plugin.wms.OneSRSWizardPanel.select-coordinate-reference-system");
     }
 
     public String getID() {

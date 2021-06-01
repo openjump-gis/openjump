@@ -108,10 +108,10 @@ public class DrawFenceTool extends PolygonTool {
 	    final Collection myf = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
 		//context.getWorkbenchFrame().setTimeMessage("Items: " + count + ", selected items:" + myf.size());
 		context.getWorkbenchFrame().setTimeMessage(
-				I18N.get("org.openjump.core.ui.plugin.edit.helpclassesselection.DrawFenceTool.layer-items") + ": " + 
+				I18N.getInstance().get("org.openjump.core.ui.plugin.edit.helpclassesselection.DrawFenceTool.layer-items") + ": " + 
 				count + 
 				", " +
-				I18N.get("org.openjump.core.ui.plugin.edit.helpclassesselection.DrawFenceTool.selected-items") +
+				I18N.getInstance().get("org.openjump.core.ui.plugin.edit.helpclassesselection.DrawFenceTool.selected-items") +
 				": " +
 				myf.size());
 		

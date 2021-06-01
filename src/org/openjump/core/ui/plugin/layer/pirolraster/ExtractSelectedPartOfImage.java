@@ -76,8 +76,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
      */
     @Override
 	public String getName() {
-        return I18N
-                .get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.Extract-Selected-Part-Of-Image");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.Extract-Selected-Part-Of-Image");
     }
 
     /**
@@ -91,14 +90,13 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         Random rnd = new Random();
         int n = 1000 + rnd.nextInt(9000);
         String random = Integer.toString(n);
-        String part = I18N
-                .get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of");
+        String part = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of");
         String fileName = part + rLayer.getName() + "_" + random + ".tif";
 
         String newLayerName = context
                 .getLayerManager()
                 .uniqueLayerName(
-                        I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of")
+                        I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of")
                                 + rLayer.getName() + ".tif");
         // String extension =
         // rLayer.getImageFileName().substring(rLayer.getImageFileName().lastIndexOf("."),
@@ -193,7 +191,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         return true;
 
         // if (rLayer==null){
-        //            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
+        //            context.getWorkbenchFrame().warnUser(I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
         // return false;
         // }
         //
@@ -206,7 +204,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         // display plus the data
         //
         // if (partOfImageWanted==null){
-        // context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.fence-in-wrong-region"));
+        // context.getWorkbenchFrame().warnUser(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.fence-in-wrong-region"));
         // return false;
         // }
         //
@@ -225,7 +223,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         String newLayerName = context
                 .getLayerManager()
                 .uniqueLayerName(
-                        I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of")
+                        I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of")
                                 + rLayer.getName());
 
         RasterImageLayer newRasterLayer = new RasterImageLayer(newLayerName,

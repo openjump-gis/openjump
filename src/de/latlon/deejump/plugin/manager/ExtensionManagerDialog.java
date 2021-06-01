@@ -74,7 +74,7 @@ public class ExtensionManagerDialog extends JDialog {
 
     public ExtensionManagerDialog(JFrame parent, WorkbenchContext workbenchContext, String extensionSite)
             throws Exception {
-        super(parent,  I18N.get("deejump.pluging.manager.ExtensionManagerDialog.Extension-Manager"));
+        super(parent,  I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.Extension-Manager"));
         setSize(350, 500);
         setResizable(false);
         setModal( true );
@@ -105,7 +105,7 @@ public class ExtensionManagerDialog extends JDialog {
     // Used for testing out of the OJ Workbench - see static main(String[] args)
     private ExtensionManagerDialog(JFrame parent, List  fakeInstalledExtensions)
             throws HeadlessException {
-        super(parent,  I18N.get("deejump.pluging.manager.ExtensionManagerDialog.Extension-Manager"));
+        super(parent,  I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.Extension-Manager"));
         setSize(350, 500);
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent e) {
@@ -182,7 +182,7 @@ public class ExtensionManagerDialog extends JDialog {
                 managePanel, 
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        panes.addTab(I18N.get("deejump.pluging.manager.ExtensionManagerDialog.Installed-Extensions"), pane);
+        panes.addTab(I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.Installed-Extensions"), pane);
         
         refreshExtensionsPanel( managePanel, installedExtensions, true );
         
@@ -197,7 +197,7 @@ public class ExtensionManagerDialog extends JDialog {
         }*/
 
         newVersionsPanel = new JPanel();
-        panes.add(I18N.get("deejump.pluging.manager.ExtensionManagerDialog.New-Versions"), newVersionsPanel);
+        panes.add(I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.New-Versions"), newVersionsPanel);
         panes.setEnabledAt(1, false);
 
         JComponent c = new JComponent() {
@@ -212,7 +212,7 @@ public class ExtensionManagerDialog extends JDialog {
                 installPanel,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        panes.add(I18N.get("deejump.pluging.manager.ExtensionManagerDialog.Install"), pane);
+        panes.add(I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.Install"), pane);
         
         refreshExtensionsPanel( installPanel, remoteExtensions, false );
         
@@ -225,13 +225,13 @@ public class ExtensionManagerDialog extends JDialog {
         c.setBorder(BorderFactory.createEmptyBorder(bSize, bSize, bSize,
                         bSize));
         
-        JButton button = new JButton(I18N.get("deejump.pluging.manager.ExtensionManagerDialog.Configure"));
+        JButton button = new JButton(I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.Configure"));
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 
                 String input = JOptionPane.showInputDialog( 
                         ExtensionManagerDialog.this, 
-                        I18N.get("deejump.pluging.manager.ExtensionManagerDialog.Catalog-site-URL"),
+                        I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.Catalog-site-URL"),
                         extensionSite );
                 
                 extensionSite = input != null ? input : extensionSite;
@@ -244,7 +244,7 @@ public class ExtensionManagerDialog extends JDialog {
         c.add(button);
         c.add( Box.createHorizontalStrut( 20 ));
         
-        button = new JButton(I18N.get("deejump.pluging.manager.ExtensionManagerDialog.OK"));
+        button = new JButton(I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.OK"));
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 //                updateExtensions();
@@ -257,7 +257,7 @@ public class ExtensionManagerDialog extends JDialog {
         c.add(button);
         c.add( Box.createHorizontalStrut( 20 ));
         
-        button = new JButton(I18N.get("deejump.pluging.manager.ExtensionManagerDialog.Cancel"));
+        button = new JButton(I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.Cancel"));
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 //                updateExtensions();
@@ -282,7 +282,7 @@ public class ExtensionManagerDialog extends JDialog {
             refreshExtensionsPanel( installPanel, remoteExtensions, false );
         } catch (MalformedURLException e1) {
             JOptionPane.showMessageDialog( ExtensionManagerDialog.this, 
-            		I18N.get("deejump.pluging.manager.ExtensionManagerDialog.You-entered-a-malformed-URL"), I18N.get("deejump.pluging.manager.ExtensionManagerDialog.Disgraceful-Error"), JOptionPane.ERROR_MESSAGE );
+            		I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.You-entered-a-malformed-URL"), I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.Disgraceful-Error"), JOptionPane.ERROR_MESSAGE );
         }
     }
     
@@ -313,13 +313,13 @@ public class ExtensionManagerDialog extends JDialog {
             }
         }
         
-        final String desc = I18N.get("deejump.pluging.manager.ExtensionManagerDialog.This-extension-has-not-been-found-in-the-catalogue")+ "\n" +
-        					I18N.get("deejump.pluging.manager.ExtensionManagerDialog.It-may-have-been-added-by-copying-into-the-lib/ext-directory");
-        final String unknownCat = I18N.get("deejump.pluging.manager.ExtensionManagerDialog.unknown-category");
-        final String unknownAuthor = I18N.get("deejump.pluging.manager.ExtensionManagerDialog.unknown-author");
+        final String desc = I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.This-extension-has-not-been-found-in-the-catalogue")+ "\n" +
+        					I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.It-may-have-been-added-by-copying-into-the-lib/ext-directory");
+        final String unknownCat = I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.unknown-category");
+        final String unknownAuthor = I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.unknown-author");
         
-        return new ExtensionWrapper( pluggedInExt.getName(), pluggedInExt.getName() + "(" + I18N.get("deejump.pluging.manager.ExtensionManagerDialog.uncatalogued") + ")",
-                unknownAuthor, pluggedInExt.getVersion(), I18N.get("deejump.pluging.manager.ExtensionManagerDialog.unknown-JUMP-version"), 
+        return new ExtensionWrapper( pluggedInExt.getName(), pluggedInExt.getName() + "(" + I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.uncatalogued") + ")",
+                unknownAuthor, pluggedInExt.getVersion(), I18N.getInstance().get("deejump.pluging.manager.ExtensionManagerDialog.unknown-JUMP-version"), 
                 unknownCat, desc, new ArrayList(0));
     }
 

@@ -301,12 +301,11 @@ public class FileUtil {
 
       // only report if monitor is set
       if (monitor != null) {
-        monitor.report(I18N.getMessage(
+        monitor.report(I18N.getInstance().get(
             I18NPREFIX + "receiving-{0}-MiB-(at-{1}-{2})",
             String.format("%.2f", counter / 1024f / 1024),
             String.format("%.2f", speed < 1 ? speed * 1024 : speed),
-            speed < 1 ? I18N.getMessage(I18NPREFIX + "KiB/s") : I18N
-                .getMessage(I18NPREFIX + "MiB/s")));
+            speed < 1 ? I18N.getInstance().get(I18NPREFIX + "KiB/s") : I18N.getInstance().get(I18NPREFIX + "MiB/s")));
       }
       fout.write(b, 0, r);
       if (i >= 1023) {

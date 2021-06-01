@@ -55,10 +55,8 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
   public static final String MRSIDINFO = "mrsidgeoinfo";
   private static HashMap<String, String> binariesAvailable = new HashMap();
 
-  final static String sNotInstalled = I18N
-      .get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
-  final static String sErrorSeeOutputWindow = I18N
-      .get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.Error-See-Output-Window");
+  final static String sNotInstalled = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.not-installed");
+  final static String sErrorSeeOutputWindow = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.Error-See-Output-Window");
 
   public String getTypeName() {
     return "MrSID";

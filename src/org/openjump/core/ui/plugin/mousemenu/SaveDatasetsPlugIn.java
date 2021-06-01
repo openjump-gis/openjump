@@ -95,73 +95,41 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.SaveProjectPlugIn;
 
 public class SaveDatasetsPlugIn extends AbstractPlugIn {
-  private static final String sSaveSelectedDatasets = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Save-Selected-Datasets");
-  private static final String sUseSaveDatasetAsToSaveLayer = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Use***Save-Dataset-As***to-Save-Layer");
-  private static final String sSavedLayer = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Saved-Layer");
-  private static final String sErrorSeeOutputWindow = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window");
-  private static final String sWarningSeeOutputWindow = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Warning-See-Output-Window");
-  private static final String sCouldNotSaveLayer = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Could-not-save-layer");
-  private static final String sCouldNotSave = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Could-not-save");
-  private static final String sLayer = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.layer");
-  private static final String sWithEmptyGeometry = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.with-empty-geometry");
-  private static final String sWithMixedGeometryTypes = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.with-mixed-geometry-types");
-  private static final String sCanNotSaveReadOnly = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Cannot-save-to-read-only-source-for-layer");
-  private static final String sDidNotSaveSameFile = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Did-not-save-these-layers-since-they-would-have-to-be-saved-to-the-same-file");
-  private static final String sSavedTask = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Saved-task");
-  private static final String sFileName = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.File-Name");
-  private static final String sLayerName = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Layer-Name");
-  private static final String sUnrecognizedFileType = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Unrecognized-file-type");
-  private static final String sNewLayerCreated = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.New-layer-created");
-  private static final String sCouldNotWrite = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Could-not-write");
-  private static final String sEmptyLayerNotSaved = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Empty-layer-not-saved");
-  private static final String sSaveFilesFromReadOnlySources = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Save-files-from-read-only-sources");
-  private static final String sFiles = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Files");
-  private static final String sWantToSaveReadonly = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Do-you-want-to-save-the-read-only-layers");
-  private static final String sNoteLayerNameWillBeFileName = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Note-layer-name-will-be-filename");
-  private static final String sReadOnlyLayer = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.read-only-layer");
-  private static final String sReplacesFile = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.replaces-file");
-  private static final String sReadOnlyWillReplace = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.read-only-source-will-replace-an-existing-file");
-  private static final String sNoteOutputWindow = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Note-Output-window-will-display-the-results-of-this-command");
-  private static final String sWouldHaveReplaced = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.The-read-only-layer-would-have-replaced-the-following-file(s)");
-  private static final String sHasReplaced = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.The-read-only-layer-has-replaced-the-following-file(s)");
-  private static final String sNoOutputDir = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-output-directory-designated-for-read-only-source-could-not-save-layer");
-  private static final String sNoOutputFileExt = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-output-file-extension-designated-for-read-only-source-could-not-save-layer");
+  private static final String sSaveSelectedDatasets = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Save-Selected-Datasets");
+  private static final String sUseSaveDatasetAsToSaveLayer = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Use***Save-Dataset-As***to-Save-Layer");
+  private static final String sSavedLayer = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Saved-Layer");
+  private static final String sErrorSeeOutputWindow = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window");
+  private static final String sWarningSeeOutputWindow = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Warning-See-Output-Window");
+  private static final String sCouldNotSaveLayer = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Could-not-save-layer");
+  private static final String sCouldNotSave = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Could-not-save");
+  private static final String sLayer = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.layer");
+  private static final String sWithEmptyGeometry = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.with-empty-geometry");
+  private static final String sWithMixedGeometryTypes = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.with-mixed-geometry-types");
+  private static final String sCanNotSaveReadOnly = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Cannot-save-to-read-only-source-for-layer");
+  private static final String sDidNotSaveSameFile = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Did-not-save-these-layers-since-they-would-have-to-be-saved-to-the-same-file");
+  private static final String sSavedTask = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Saved-task");
+  private static final String sFileName = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.File-Name");
+  private static final String sLayerName = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Layer-Name");
+  private static final String sUnrecognizedFileType = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Unrecognized-file-type");
+  private static final String sNewLayerCreated = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.New-layer-created");
+  private static final String sCouldNotWrite = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Could-not-write");
+  private static final String sEmptyLayerNotSaved = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Empty-layer-not-saved");
+  private static final String sSaveFilesFromReadOnlySources = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Save-files-from-read-only-sources");
+  private static final String sFiles = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Files");
+  private static final String sWantToSaveReadonly = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Do-you-want-to-save-the-read-only-layers");
+  private static final String sNoteLayerNameWillBeFileName = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Note-layer-name-will-be-filename");
+  private static final String sReadOnlyLayer = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.read-only-layer");
+  private static final String sReplacesFile = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.replaces-file");
+  private static final String sReadOnlyWillReplace = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.read-only-source-will-replace-an-existing-file");
+  private static final String sNoteOutputWindow = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Note-Output-window-will-display-the-results-of-this-command");
+  private static final String sWouldHaveReplaced = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.The-read-only-layer-would-have-replaced-the-following-file(s)");
+  private static final String sHasReplaced = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.The-read-only-layer-has-replaced-the-following-file(s)");
+  private static final String sNoOutputDir = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-output-directory-designated-for-read-only-source-could-not-save-layer");
+  private static final String sNoOutputFileExt = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-output-file-extension-designated-for-read-only-source-could-not-save-layer");
   // With the new "modified-writable-layer-selected" enableCheck, we shouldn't
   // need
   // sCanNotSaveReadOnly
-  private static final String sNoModifiedWritableLayerSelected = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-modified-writable-layer-selected");
+  private static final String sNoModifiedWritableLayerSelected = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.No-modified-writable-layer-selected");
 
   private boolean saveAll = false;
   private int saveReadOnlySources = -1; // -1 - ask; 0 - don't save; 1 - save;

@@ -22,7 +22,7 @@ public abstract class AbstractSaveDatasetAsPlugIn
         DataSourceQuery dataSourceQuery = getDataSourceQueries().iterator().next();
 
         monitor.allowCancellationRequests();
-        monitor.report(I18N.get("datasource.SaveDatasetAsPlugIn.saving") + " "
+        monitor.report(I18N.getInstance().get("datasource.SaveDatasetAsPlugIn.saving") + " "
                 + dataSourceQuery.toString() + "...");
 
         Connection connection = dataSourceQuery.getDataSource().getConnection();

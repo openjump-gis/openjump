@@ -140,7 +140,7 @@ public class FeatureCollectionUtil {
     if (featureCollection.getFeatures().size() > 1 && featureCollection.getFeatures().get(0).getGeometry() != null) {
       featureCollection.getFeatures().get(0).getGeometry().getFactory();
     } else {
-      Logger.error(I18N.get("ui.plugin.analysis.DissolvePlugIn.needs-two-features-or-more"));
+      Logger.error(I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.needs-two-features-or-more"));
       // return null;
     }
     FeatureSchema newSchema;

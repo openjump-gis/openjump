@@ -42,12 +42,12 @@ import java.util.List;
  */
 public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
 
-    private final static String LAYER             = I18N.get("ui.plugin.analysis.DissolvePlugIn.source-layer");
-    private final static String DESCRIPTION       = I18N.get("ui.plugin.analysis.DissolvePlugIn.description");
-    private final static String ATTRIBUTES        = I18N.get("ui.plugin.analysis.DissolvePlugIn.attributes");
-    private final static String MERGE_LINESTRINGS = I18N.get("ui.plugin.analysis.DissolvePlugIn.merge-linestrings");
-    private final static String SIMPLE_GEOMETRIES = I18N.get("ui.plugin.analysis.DissolvePlugIn.decompose-multi-geometries");
-    private final static String REMOVE_UNUSED_ATT = I18N.get("ui.plugin.analysis.DissolvePlugIn.remove-unused-attributes");
+    private final static String LAYER             = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.source-layer");
+    private final static String DESCRIPTION       = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.description");
+    private final static String ATTRIBUTES        = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.attributes");
+    private final static String MERGE_LINESTRINGS = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.merge-linestrings");
+    private final static String SIMPLE_GEOMETRIES = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.decompose-multi-geometries");
+    private final static String REMOVE_UNUSED_ATT = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.remove-unused-attributes");
 
     private Layer layer;
     private boolean merge_linestrings = true;
@@ -63,7 +63,7 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
     }
 
     public String getName() {
-        return I18N.get("ui.plugin.analysis.DissolvePlugIn");
+        return I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn");
     }
 
     @Override
@@ -99,11 +99,11 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
     private void initDialog(final MultiInputDialog dialog, PlugInContext context) {
 
         //dialog.setSideBarImage(IconLoader.icon("dissolve_layer_icon.gif"));
-        dialog.setSideBarDescription(I18N.get(DESCRIPTION));
+        dialog.setSideBarDescription(I18N.getInstance().get(DESCRIPTION));
 
         final JComboBox layerComboBox = dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), context.getLayerManager());
 
-        dialog.addSubTitle(I18N.get(ATTRIBUTES));
+        dialog.addSubTitle(I18N.getInstance().get(ATTRIBUTES));
         attributePanel = new JPanel();
         attributePanel.setLayout(new BoxLayout(attributePanel, BoxLayout.Y_AXIS));
         final JComponent scrollableAttributeChecks = new JScrollPane(attributePanel);
@@ -114,13 +114,13 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
         dialog.addSeparator();
 
         final JCheckBox mergeLineStringsCheckBox = dialog.addCheckBox(MERGE_LINESTRINGS, merge_linestrings,
-                I18N.get("ui.plugin.analysis.DissolvePlugIn.merge-linestrings-tooltip"));
+                I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.merge-linestrings-tooltip"));
 
         final JCheckBox simpleGeometriesCheckBox = dialog.addCheckBox(SIMPLE_GEOMETRIES, simple_geometries,
-                I18N.get("ui.plugin.analysis.DissolvePlugIn.decompose-multi-geometries-tooltip"));
+                I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.decompose-multi-geometries-tooltip"));
 
         final JCheckBox removeUnusedAttCheckBox = dialog.addCheckBox(REMOVE_UNUSED_ATT, remove_unused_att,
-                I18N.get("ui.plugin.analysis.DissolvePlugIn.remove-unused-attributes-tooltip"));
+                I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.remove-unused-attributes-tooltip"));
 
 
         updateControls(dialog);
@@ -183,7 +183,7 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
         }
         else {
             context.getWorkbenchFrame().warnUser(
-                    I18N.get("ui.plugin.analysis.DissolvePlugIn.needs-two-features-or-more"));
+                    I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.needs-two-features-or-more"));
             return;
         }
 
@@ -202,7 +202,7 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
 
         // Order features by attribute value in a map
         Map<List<Object>,FeatureCollection> map = new HashMap<List<Object>,FeatureCollection>();
-        monitor.report(I18N.get("ui.plugin.analysis.DissolvePlugIn"));
+        monitor.report(I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn"));
         for (Iterator i = inputFC.iterator() ; i.hasNext() ; ) {
             Feature f = (Feature)i.next();
             List<Object> key = computeKeyFromAttributes(f, attributes);
@@ -220,7 +220,7 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
         int count = 1;
         FeatureCollection resultfc = new FeatureDataset(newSchema);
         for (Iterator<List<Object>> it = map.keySet().iterator() ; it.hasNext() ; ) {
-            monitor.report(I18N.get("ui.plugin.analysis.DissolvePlugIn.computing-union") + " (" + count++ + "/" + map.size() + ")");
+            monitor.report(I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.computing-union") + " (" + count++ + "/" + map.size() + ")");
             List<Object> key = it.next();
             FeatureCollection fca = map.get(key);
             if (fca.size() > 0) {
@@ -260,7 +260,7 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
             Geometry g = f.getGeometry();
             if (!g.isValid()) {
                 context.getWorkbenchFrame().warnUser(
-                        I18N.get("ui.plugin.analysis.DissolvePlugIn.invalid-geometry-excluded"));
+                        I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.invalid-geometry-excluded"));
                 continue;
             }
             else {

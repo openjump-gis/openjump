@@ -59,16 +59,11 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  */
 public class RasterLegendPlugIn implements ThreadedPlugIn {
 
-    private final String sSaved = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
-    private final String sShowLegend = I18N
-            .get("org.openjump.core.ui.plugin.style.LegendPlugIn");
-    private final String SCouldNotSave = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
-    private final String SAVE = I18N
-            .get("deejump.plugin.SaveLegendPlugIn.Save");
-    private final String CLOSE = I18N
-            .get("ui.plugin.imagery.ImageLayerManagerDialog.Close");
+    private final String sSaved = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    private final String sShowLegend = I18N.getInstance().get("org.openjump.core.ui.plugin.style.LegendPlugIn");
+    private final String SCouldNotSave = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
+    private final String SAVE = I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save");
+    private final String CLOSE = I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Close");
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
@@ -386,7 +381,7 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
     }
 
     protected void notsaved() {
-        JOptionPane.showMessageDialog(null, SCouldNotSave, I18N.get(getName()),
+        JOptionPane.showMessageDialog(null, SCouldNotSave, I18N.getInstance().get(getName()),
                 JOptionPane.WARNING_MESSAGE);
     }
 

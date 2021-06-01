@@ -69,8 +69,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 
 public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
-    private String LAYER = I18N.get("ui.plugin.analysis.UnionPlugIn.layer");
-    private String SELECTED_ONLY = I18N.get("ui.plugin.analysis.UnionPlugIn.selected-features-only");
+    private String LAYER = I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.layer");
+    private String SELECTED_ONLY = I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.selected-features-only");
     private boolean useSelected = false;
     private MultiInputDialog dialog;
     private JComboBox addLayerComboBox;
@@ -98,7 +98,7 @@ public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     public boolean execute(PlugInContext context) throws Exception {
     	//[sstein, 16.07.2006] put here again to load correct language
         //[mmichaud 2007-05-20] move to UnionPlugIn constructor to load the string only once
-        //LAYER = I18N.get("ui.plugin.analysis.UnionPlugIn.layer");
+        //LAYER = I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.layer");
         //Unlike ValidatePlugIn, here we always call #initDialog because we want
         //to update the layer comboboxes. [Jon Aquino]
         int n = context.getLayerViewPanel().getSelectionManager()
@@ -115,16 +115,16 @@ public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     }
 
     private void initDialog(PlugInContext context) {
-        dialog = new MultiInputDialog(context.getWorkbenchFrame(), I18N.get("ui.plugin.analysis.UnionPlugIn.union"), true);
+        dialog = new MultiInputDialog(context.getWorkbenchFrame(), I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.union"), true);
 
         //dialog.setSideBarImage(IconLoader.icon("Overlay.gif"));
         if (useSelected) {
             dialog.setSideBarDescription(
-                I18N.get("ui.plugin.analysis.UnionPlugIn.creates-a-new-layer-containing-the-union-of-selected-features-in-the-input-layer"));
+                I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.creates-a-new-layer-containing-the-union-of-selected-features-in-the-input-layer"));
         }
         else {
             dialog.setSideBarDescription(
-                I18N.get("ui.plugin.analysis.UnionPlugIn.creates-a-new-layer-containing-the-union-of-all-the-features-in-the-input-layer"));
+                I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.creates-a-new-layer-containing-the-union-of-all-the-features-in-the-input-layer"));
         }
         String fieldName = LAYER;
         if (useSelected) {
@@ -159,7 +159,7 @@ public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         FeatureCollection fc = FeatureDatasetFactory.createFromGeometry(geoms);
         
         context.getLayerManager().addCategory(StandardCategoryNames.RESULT);
-        context.addLayer(StandardCategoryNames.RESULT, I18N.get("ui.plugin.analysis.UnionPlugIn.union"), fc);
+        context.addLayer(StandardCategoryNames.RESULT, I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.union"), fc);
     }
     
 }

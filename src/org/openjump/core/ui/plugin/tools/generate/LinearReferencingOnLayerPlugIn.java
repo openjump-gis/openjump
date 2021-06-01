@@ -49,7 +49,7 @@ public class LinearReferencingOnLayerPlugIn extends AbstractLinearReferencingPlu
     String path_section_attribute;
 
     public LinearReferencingOnLayerPlugIn() {
-        super(I18N.get(KEY), IconLoader.icon("linearref_layer.png"));
+        super(I18N.getInstance().get(KEY), IconLoader.icon("linearref_layer.png"));
     }
 
     private String categoryName = StandardCategoryNames.RESULT;
@@ -76,16 +76,16 @@ public class LinearReferencingOnLayerPlugIn extends AbstractLinearReferencingPlu
 
     public boolean execute(PlugInContext context) throws Exception {
 
-        MAIN_OPTIONS = I18N.get(KEY + ".main-options");
-        SOURCE_LAYER = I18N.get(KEY + ".source-layer");
+        MAIN_OPTIONS = I18N.getInstance().get(KEY + ".main-options");
+        SOURCE_LAYER = I18N.getInstance().get(KEY + ".source-layer");
 
-        ATTRIBUTES                              = I18N.get(KEY + ".attributes");
-        USE_ATTRIBUTE_AS_PATH_IDENTIFIER        = I18N.get(KEY + ".use-attribute-as-path-identifier");
-        PATH_IDENTIFIER_TOOLTIP                 = I18N.get(KEY + ".path-identifier-tooltip");
-        PATH_IDENTIFIER_ATTRIBUTE               = I18N.get(KEY + ".path-identifier-attribute");
-        USE_ATTRIBUTE_TO_ORDER_PATH_SECTIONS    = I18N.get(KEY + ".use-attribute-to-order-path-sections");
-        PATH_SECTION_TOOLTIP                    = I18N.get(KEY + ".path-section-tooltip");
-        PATH_SECTION_ATTRIBUTE                  = I18N.get(KEY + ".path-section-attribute");
+        ATTRIBUTES                              = I18N.getInstance().get(KEY + ".attributes");
+        USE_ATTRIBUTE_AS_PATH_IDENTIFIER        = I18N.getInstance().get(KEY + ".use-attribute-as-path-identifier");
+        PATH_IDENTIFIER_TOOLTIP                 = I18N.getInstance().get(KEY + ".path-identifier-tooltip");
+        PATH_IDENTIFIER_ATTRIBUTE               = I18N.getInstance().get(KEY + ".path-identifier-attribute");
+        USE_ATTRIBUTE_TO_ORDER_PATH_SECTIONS    = I18N.getInstance().get(KEY + ".use-attribute-to-order-path-sections");
+        PATH_SECTION_TOOLTIP                    = I18N.getInstance().get(KEY + ".path-section-tooltip");
+        PATH_SECTION_ATTRIBUTE                  = I18N.getInstance().get(KEY + ".path-section-attribute");
 
         super.execute(context);
 

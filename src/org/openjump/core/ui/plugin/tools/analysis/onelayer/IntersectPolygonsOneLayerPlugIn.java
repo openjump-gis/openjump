@@ -51,7 +51,7 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 
 	private final static String LAYER1 = GenericNames.LAYER_A;
-	private final static String sTRANSFER = I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Transfer-attributes");
+	private final static String sTRANSFER = I18N.getInstance().get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Transfer-attributes");
 	private String sDescription = "Intersects all polygon geometries in a layer. Regions that can be " +
 			"mapped to two source polygons will not contain attributes. Note: The Planar Graph function provides similar functionality.";
 	private PlugInContext context;
@@ -72,7 +72,7 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 						new EnableCheckFactory(context.getWorkbenchContext())
 								.createAtLeastNLayersMustExistCheck(1)));
 		// -- reset in execute to correct language
-		this.sDescription = I18N.get("org.openjump.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn.sDescription");
+		this.sDescription = I18N.getInstance().get("org.openjump.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn.sDescription");
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -93,7 +93,7 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 
 	public String getName() {
 		//return "Intersect-Polygons";
-		return I18N.get("org.openjump.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn.Intersect-Polygons");
+		return I18N.getInstance().get("org.openjump.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn.Intersect-Polygons");
 	}
 
 	public void run(TaskMonitor monitor, PlugInContext context)
@@ -104,12 +104,12 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 		FeatureCollection resultColl = runIntersectionNew(layer1
 				.getFeatureCollectionWrapper(), this.transferAtt, monitor, context);
 		if ((resultColl != null) && (resultColl.size() > 0)) {
-			context.addLayer(StandardCategoryNames.RESULT, I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.intersection") + "-" + layer1.getName(),
+			context.addLayer(StandardCategoryNames.RESULT, I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.intersection") + "-" + layer1.getName(),
 					resultColl);
 		}
 		if (exceptionThrown)
 			context.getWorkbenchFrame()
-					.warnUser(I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Error-while-executing-spatial-function"));
+					.warnUser(I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Error-while-executing-spatial-function"));
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 				// --
 				if (context != null) {
 					context.getWorkbenchFrame().warnUser(
-							I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Geometry-no-Polygon-or-Multi-Polygon"));
+							I18N.getInstance().get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Geometry-no-Polygon-or-Multi-Polygon"));
 				}
 				// --
 				return null;
@@ -206,13 +206,13 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 				if (context != null) {
 					errorInA = true;
 					/*
-					String errorStrg = I18N.get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Found-more-than-one-source-feature-in-Layer");
+					String errorStrg = I18N.getInstance().get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.Found-more-than-one-source-feature-in-Layer");
 					context.getWorkbenchFrame().warnUser(errorStrg+ " " + GenericNames.LAYER_A);
 		            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
 		            context.getWorkbenchFrame().getOutputFrame().addText("IntersectPolygonLayersPlugIn: " + errorStrg+ ": " + GenericNames.LAYER_A + 
 		            		". Reason: The Layer contains probably objects that overlay each other. Will set polygon values of item with FID: " + f.getID() + 
-		            		" to NaN. Use i)" + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes") + 
-		            		" or ii)" + I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially") + 
+		            		" to NaN. Use i)" + I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes") + 
+		            		" or ii)" + I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially") + 
 		            		" functions to obtain atributes from " + GenericNames.LAYER_A);
 		            */
 				}

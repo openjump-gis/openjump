@@ -51,7 +51,7 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 public class DrawConstrainedCirclePlugIn extends AbstractPlugIn
 {
     private boolean circleButtonAdded = false;
-    final static String errorSeeOutputWindow =I18N.get("org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedCirclePlugIn.Error-See-Output-Window");
+    final static String errorSeeOutputWindow =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedCirclePlugIn.Error-See-Output-Window");
     
     public void initialize(final PlugInContext context) throws Exception
     {

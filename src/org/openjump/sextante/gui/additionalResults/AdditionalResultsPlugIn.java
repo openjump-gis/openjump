@@ -20,10 +20,8 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 
 public class AdditionalResultsPlugIn extends AbstractPlugIn {
 
-    private String sName = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Result-viewer");
-    private static String sWarning = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.List-of-results-is-empty");
+    private String sName = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Result-viewer");
+    private static String sWarning = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.List-of-results-is-empty");
 
     @Override
     public void initialize(PlugInContext context) throws Exception {

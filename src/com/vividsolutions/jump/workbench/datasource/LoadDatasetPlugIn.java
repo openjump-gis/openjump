@@ -122,7 +122,7 @@ public class LoadDatasetPlugIn extends ThreadedBasePlugIn {
 
     public String getName() {
         //Suggest that multiple datasets may be loaded [Jon Aquino 11/10/2003]
-        return I18N.get("datasource.LoadDatasetPlugIn.load-dataset");
+        return I18N.getInstance().get("datasource.LoadDatasetPlugIn.load-dataset");
     }
 
     public void initialize(final PlugInContext context) throws Exception {
@@ -204,17 +204,17 @@ public class LoadDatasetPlugIn extends ThreadedBasePlugIn {
             }
         }
         if (exceptionsEncountered) {
-            context.getWorkbenchFrame().warnUser(I18N.get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
+            context.getWorkbenchFrame().warnUser(I18N.getInstance().get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
         }
     }
 
     private void reportExceptions(List<Throwable> exceptions,
         DataSourceQuery dataSourceQuery, PlugInContext context) {
         context.getOutputFrame().addHeader(1,
-            exceptions.size() + " " + I18N.get("datasource.LoadDatasetPlugIn.problem") + StringUtil.s(exceptions.size()) +
-            " "+ I18N.get("datasource.LoadDatasetPlugIn.loading") +" "+ dataSourceQuery.toString() + "." +
-            ((exceptions.size() > 10) ? I18N.get("datasource.LoadDatasetPlugIn.first-and-last-five") : ""));
-        context.getOutputFrame().addText(I18N.get("datasource.LoadDatasetPlugIn.see-view-log"));
+            exceptions.size() + " " + I18N.getInstance().get("datasource.LoadDatasetPlugIn.problem") + StringUtil.s(exceptions.size()) +
+            " "+ I18N.getInstance().get("datasource.LoadDatasetPlugIn.loading") +" "+ dataSourceQuery.toString() + "." +
+            ((exceptions.size() > 10) ? I18N.getInstance().get("datasource.LoadDatasetPlugIn.first-and-last-five") : ""));
+        context.getOutputFrame().addText(I18N.getInstance().get("datasource.LoadDatasetPlugIn.see-view-log"));
 
         ExceptionUtil.reportExceptions(context, exceptions);
     }

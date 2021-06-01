@@ -132,7 +132,7 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
                 if (showCharsetSelection) {
                   FieldComponentFactory fieldComponentFactory = new ComboBoxFieldComponentFactory(
                       context,
-                      I18N.get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset")
+                      I18N.getInstance().get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset")
                           + ":", Charset.availableCharsets().keySet().toArray());
                   comboboxFieldComponent = fieldComponentFactory
                       .createComponent();

@@ -72,8 +72,7 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
  */
 public class BeanToolsPlugIn extends AbstractPlugIn {
 
-  private static final String sName = I18N
-      .get("org.openjump.core.ui.plugin.customize.BeanToolsPlugIn.Bean-Tools");
+  private static final String sName = I18N.getInstance().get("org.openjump.core.ui.plugin.customize.BeanToolsPlugIn.Bean-Tools");
 
   private String lastcmd = "";
   private String beanShellDirName;
@@ -89,7 +88,7 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
       return;
     }
     beanShellDirName = plugInDirectory.getPath() + File.separator
-        + I18N.get("ui.plugin.customize.BeanToolsPlugIn.BeanTools");
+        + I18N.getInstance().get("ui.plugin.customize.BeanToolsPlugIn.BeanTools");
     File beanShellDir = new File(beanShellDirName);
     featureInstaller = context.getFeatureInstaller();
     taskMonitorManager = new TaskMonitorManager();
@@ -146,7 +145,7 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
       JMenu menu = featureInstaller.menuBarMenu(MenuNames.CUSTOMIZE);
       if (menu == null) {
         menu = (JMenu) featureInstaller.installMnemonic(
-            new JMenu(I18N.get(MenuNames.CUSTOMIZE)),
+            new JMenu(I18N.getInstance().get(MenuNames.CUSTOMIZE)),
             featureInstaller.menuBar());
         featureInstaller.menuBar().add(menu);
       }

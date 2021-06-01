@@ -171,7 +171,7 @@ public class SelectFilePanel extends JFCWithEnterAction implements
 
   @Override
   public String getTitle() {
-    return I18N.get(KEY + ".title");
+    return I18N.getInstance().get(KEY + ".title");
   }
 
   @Override
@@ -181,7 +181,7 @@ public class SelectFilePanel extends JFCWithEnterAction implements
 
   @Override
   public String getInstructions() {
-    return I18N.get(KEY + ".instructions");
+    return I18N.getInstance().get(KEY + ".instructions");
   }
 
   @Override

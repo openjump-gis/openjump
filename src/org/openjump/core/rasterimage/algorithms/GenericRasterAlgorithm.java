@@ -36,10 +36,8 @@ import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 
 public class GenericRasterAlgorithm {
 
-    private final static String sSaved = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
-    private final static String SCouldNotSave = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
+    private final static String sSaved = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    private final static String SCouldNotSave = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
 
     public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
 

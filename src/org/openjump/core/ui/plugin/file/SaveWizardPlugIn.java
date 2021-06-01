@@ -141,6 +141,6 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
 
   @Override
   public String getName() {
-    return I18N.get("com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn") +" (testing)";
+    return I18N.getInstance().get("com.vividsolutions.jump.workbench.datasource.SaveDatasetAsPlugIn") +" (testing)";
   }
 }

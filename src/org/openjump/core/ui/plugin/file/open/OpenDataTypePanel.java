@@ -29,9 +29,9 @@ import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 public class OpenDataTypePanel extends JPanel implements WizardPanel {
   public static final String KEY = OpenDataTypePanel.class.getName();
 
-  private static final String TITLE = I18N.get(KEY);
+  private static final String TITLE = I18N.getInstance().get(KEY);
 
-  private static final String INSTRUCTIONS = I18N.get(KEY + ".instructions");
+  private static final String INSTRUCTIONS = I18N.getInstance().get(KEY + ".instructions");
 
   private JList list;
 

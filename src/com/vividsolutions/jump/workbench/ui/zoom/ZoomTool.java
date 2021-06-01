@@ -54,7 +54,7 @@ public class ZoomTool extends AbstractZoomTool {
      * If the selection box has side length less than this value, the input
      * will be considered to be a click rather than a box.
      */
-    public static final String ZOOM_TOOL_NAME = I18N.get("ui.zoom.ZoomTool.zoom-in-out");
+    public static final String ZOOM_TOOL_NAME = I18N.getInstance().get("ui.zoom.ZoomTool.zoom-in-out");
 
     public ZoomTool() {                        
         setColor(Color.black);

@@ -209,11 +209,10 @@ public class SchemaPanel extends JPanel {
         @Override
         public String check(JComponent component) {
             if (!layer.isEditable()) {
-                return I18N.get("ui.SchemaPanel.layer-must-be-editable");
+                return I18N.getInstance().get("ui.SchemaPanel.layer-must-be-editable");
             }
             if (rowsToActOn().length == 0) {
-                return I18N
-                        .get("ui.SchemaPanel.at-least-1-row-must-be-selected");
+                return I18N.getInstance().get("ui.SchemaPanel.at-least-1-row-must-be-selected");
             }
             return null;
         }
@@ -230,7 +229,7 @@ public class SchemaPanel extends JPanel {
     private final MyPlugIn insertPlugIn = new MyPlugIn() {
         @Override
         public String getName() {
-            return I18N.get("ui.SchemaPanel.insert");
+            return I18N.getInstance().get("ui.SchemaPanel.insert");
         }
 
         @Override
@@ -249,7 +248,7 @@ public class SchemaPanel extends JPanel {
     private final MyPlugIn deletePlugIn = new MyPlugIn() {
         @Override
         public String getName() {
-            return I18N.get("ui.SchemaPanel.delete");
+            return I18N.getInstance().get("ui.SchemaPanel.delete");
         }
 
         @Override
@@ -273,7 +272,7 @@ public class SchemaPanel extends JPanel {
 
         @Override
         public String getName() {
-            return I18N.get("ui.SchemaPanel.move-field-up");
+            return I18N.getInstance().get("ui.SchemaPanel.move-field-up");
         }
 
         @Override
@@ -289,8 +288,7 @@ public class SchemaPanel extends JPanel {
             return super.createEnableCheck().add(new EnableCheck() {
                 @Override
                 public String check(JComponent component) {
-                    return min(rowsToActOn()) == 0 ? I18N
-                            .get("ui.SchemaPanel.field-is-already-at-the-top")
+                    return min(rowsToActOn()) == 0 ? I18N.getInstance().get("ui.SchemaPanel.field-is-already-at-the-top")
                             : null;
                     // No corresponding check in moveDownPlugIn because there is
                     // no
@@ -309,7 +307,7 @@ public class SchemaPanel extends JPanel {
 
         @Override
         public String getName() {
-            return I18N.get("ui.SchemaPanel.move-field-down");
+            return I18N.getInstance().get("ui.SchemaPanel.move-field-down");
         }
 
         @Override
@@ -329,9 +327,9 @@ public class SchemaPanel extends JPanel {
 
         @Override
         public String getName() {
-            return I18N.get("ui.MenuNames.SCHEMA ")
+            return I18N.getInstance().get("ui.MenuNames.SCHEMA ")
                     + " - "
-                    + I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.Save");
+                    + I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Save");
         }
 
         @Override
@@ -363,11 +361,9 @@ public class SchemaPanel extends JPanel {
         }
     };
 
-    static String Error = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window");
+    static String Error = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window");
 
-    static String FileSaved = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    static String FileSaved = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
 
     private final MyPlugIn loadSchemaPlugIn = new MyPlugIn() {
         @Override
@@ -377,9 +373,9 @@ public class SchemaPanel extends JPanel {
 
         @Override
         public String getName() {
-            return I18N.get("ui.MenuNames.SCHEMA ")
+            return I18N.getInstance().get("ui.MenuNames.SCHEMA ")
                     + " - "
-                    + I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.open");
+                    + I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.open");
         }
 
         @Override
@@ -639,7 +635,7 @@ public class SchemaPanel extends JPanel {
         jPanel1.setLayout(gridBagLayout1);
         statusLabel.setBorder(BorderFactory.createLoweredBevelBorder());
         statusLabel.setText(" ");
-        applyButton.setText(I18N.get("ui.SchemaPanel.apply-changes"));
+        applyButton.setText(I18N.getInstance().get("ui.SchemaPanel.apply-changes"));
         applyButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -647,13 +643,11 @@ public class SchemaPanel extends JPanel {
             }
         });
         forceInvalidConversionsToNullCheckBox
-                .setToolTipText(I18N
-                        .get("ui.SchemaPanel.leave-unchecked-if-you-want-to-be-notified-of-conversion-errors"));
-        forceInvalidConversionsToNullCheckBox.setText(I18N
-                .get("ui.SchemaPanel.force-invalid-conversions-to-null"));
+                .setToolTipText(I18N.getInstance().get("ui.SchemaPanel.leave-unchecked-if-you-want-to-be-notified-of-conversion-errors"));
+        forceInvalidConversionsToNullCheckBox.setText(I18N.getInstance().get("ui.SchemaPanel.force-invalid-conversions-to-null"));
         buttonPanel.setLayout(gridBagLayout3);
         buttonPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-        revertButton.setText(I18N.get("ui.SchemaPanel.revert-changes"));
+        revertButton.setText(I18N.getInstance().get("ui.SchemaPanel.revert-changes"));
         revertButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -725,12 +719,11 @@ public class SchemaPanel extends JPanel {
         }
 
         if (geometryCount() > 1) {
-            return I18N
-                    .get("ui.SchemaPanel.only-one-geometry-field-is-allowed");
+            return I18N.getInstance().get("ui.SchemaPanel.only-one-geometry-field-is-allowed");
         }
 
         if (geometryCount() == 0) {
-            return I18N.get("ui.SchemaPanel.a-geometry-field-must-be-defined");
+            return I18N.getInstance().get("ui.SchemaPanel.a-geometry-field-must-be-defined");
         }
 
         return null;
@@ -755,7 +748,7 @@ public class SchemaPanel extends JPanel {
 
     private String validate(int row, String name) {
         if (name.trim().length() == 0) {
-            return I18N.get("ui.SchemaPanel.field-name-cannot-be-blank");
+            return I18N.getInstance().get("ui.SchemaPanel.field-name-cannot-be-blank");
         }
 
         // Existing fields are already trimmed. [Jon Aquino]
@@ -770,7 +763,7 @@ public class SchemaPanel extends JPanel {
             }
 
             if (getModel().get(i).getName().equalsIgnoreCase(name.trim())) {
-                return I18N.get("ui.SchemaPanel.field-name-already-exists")
+                return I18N.getInstance().get("ui.SchemaPanel.field-name-already-exists")
                         + ": " + name;
             }
         }

@@ -72,14 +72,14 @@ public class GeometryInfoTab extends JPanel {
             ex.printStackTrace();
         }
 
-        toolBar.add(showGeometriesButton, I18N.get("ui.GeometryInfoTab.geometries"), IconLoader
+        toolBar.add(showGeometriesButton, I18N.getInstance().get("ui.GeometryInfoTab.geometries"), IconLoader
                 .icon("Geometry.gif"), new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateText();
             }
         }, new MultiEnableCheck());
         toolBar.addSpacer();
-        toolBar.add(showAttributesButton, I18N.get("ui.GeometryInfoTab.attributes"), IconLoader
+        toolBar.add(showAttributesButton, I18N.getInstance().get("ui.GeometryInfoTab.attributes"), IconLoader
                 .icon("Attribute.gif"), new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateText();

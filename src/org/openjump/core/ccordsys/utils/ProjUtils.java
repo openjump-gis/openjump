@@ -42,18 +42,12 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataS
  */
 public class ProjUtils {
 
-    private static final String PROJECTION_UNSPECIFIED = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.unknown_projection");
-    private static final String USER_DEFINED = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.User_defined");
-    private static final String NOT_RECOGNIZED = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not_recognized");
-    private static final String NO_SRS = I18N
-            .get("org.openjump.core.ccordsys.No-srs");
-    private static final String EMBEDDED_SRS = I18N
-            .get("org.openjump.core.ccordsys.Embedded-srs");
-    private static final String NOT_CONSISTENT_SRS = I18N
-            .get("org.openjump.core.ccordsys.Not-consistent-srs");
+    private static final String PROJECTION_UNSPECIFIED = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.unknown_projection");
+    private static final String USER_DEFINED = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.User_defined");
+    private static final String NOT_RECOGNIZED = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not_recognized");
+    private static final String NO_SRS = I18N.getInstance().get("org.openjump.core.ccordsys.No-srs");
+    private static final String EMBEDDED_SRS = I18N.getInstance().get("org.openjump.core.ccordsys.Embedded-srs");
+    private static final String NOT_CONSISTENT_SRS = I18N.getInstance().get("org.openjump.core.ccordsys.Not-consistent-srs");
 
     /**
      * - Read SRS from GeoTIFF tag - This method gets projection srid code and

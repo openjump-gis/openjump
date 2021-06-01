@@ -85,7 +85,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
 
   // [UT]
   public static final String VERSION_KEY = "WMS_VERSION";
-  public static final String TITLE = I18N.get(I18N_PREFIX + "select-uniform-resource-locator-url");
+  public static final String TITLE = I18N.getInstance().get(I18N_PREFIX + "select-uniform-resource-locator-url");
 
   // this is a hack, guess why
   public static String wmsVersion = WMService.WMS_1_3_0;
@@ -140,7 +140,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
             0, 0, 0), 0, 0));
 
     JPanel versionPanel = createVersionPanel();
-    versionPanel.setBorder(BorderFactory.createTitledBorder(I18N.get("ui.GenericNames.version")));
+    versionPanel.setBorder(BorderFactory.createTitledBorder(I18N.getInstance().get("ui.GenericNames.version")));
     keepNorth.add(versionPanel, new GridBagConstraints(0, 1,
         1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
         new Insets(0, 0, 0, 0), 0, 0));
@@ -152,7 +152,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
   }
 
   public String getInstructions() {
-    return I18N.get(I18N_PREFIX + "please-enter-the-url-of-the-wms-server");
+    return I18N.getInstance().get(I18N_PREFIX + "please-enter-the-url-of-the-wms-server");
   }
 
   public void exitingToRight() throws WorkbenchException {
@@ -184,7 +184,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
 
       if (format == null) {
         throw new WorkbenchException(
-          I18N.get(I18N_PREFIX + "the-server-does-not-support-gif-png-or-jpeg-format"));
+          I18N.getInstance().get(I18N_PREFIX + "the-server-does-not-support-gif-png-or-jpeg-format"));
       }
 
       dataMap.put(MapLayerWizardPanel.FORMAT_LIST_KEY, service.getCapabilities().getMapFormats());
@@ -260,7 +260,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
   // [UT] 20.10.2005
   private Component createLossyCheckBox() {
     JPanel p = new JPanel();
-    JCheckBox checkBox = new JCheckBox(I18N.get(I18N_PREFIX + "prefer-lossy-images"), true);
+    JCheckBox checkBox = new JCheckBox(I18N.getInstance().get(I18N_PREFIX + "prefer-lossy-images"), true);
 
     checkBox.setToolTipText("This will try to load JPEG images, if the WMS allows it.");
     checkBox.addActionListener(e -> lossyPreferred = ((JCheckBox)e.getSource()).isSelected());

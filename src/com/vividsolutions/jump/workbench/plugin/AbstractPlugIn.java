@@ -310,7 +310,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
   
   public static String createName(Class<? extends PlugIn> plugInClass) {
     try {
-      return I18N.get(plugInClass.getName());
+      return I18N.getInstance().get(plugInClass.getName());
     } catch (java.util.MissingResourceException e) {
       // No I18N for the PlugIn so log it, but don't stop
       Logger.error(e.getMessage() + " " + plugInClass.getName());
@@ -336,7 +336,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
         try {
           if (workbenchContext.getWorkbench() != null) {
             workbenchContext.getWorkbench().getFrame().setStatusMessage("");
-            Logger.info(I18N.get("plugin.AbstractPlugIn.executing") + " " + plugIn.getName());
+            Logger.info(I18N.getInstance().get("plugin.AbstractPlugIn.executing") + " " + plugIn.getName());
           }
 
           PlugInContext plugInContext = workbenchContext.createPlugInContext();
@@ -370,7 +370,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
           }
 
           if (workbenchContext.getWorkbench() != null) {
-            Logger.info(I18N.get("plugin.AbstractPlugIn.done-current-committed-memory")
+            Logger.info(I18N.getInstance().get("plugin.AbstractPlugIn.done-current-committed-memory")
                     + workbenchContext.getWorkbench().getFrame()
                     .getMBCommittedMemory() + " MB");
           }

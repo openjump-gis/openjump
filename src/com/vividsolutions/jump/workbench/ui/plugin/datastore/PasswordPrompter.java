@@ -102,10 +102,10 @@ public class PasswordPrompter {
     private String promptForPassword(String identifier, Component parent) {
         Assert.isTrue(SwingUtilities.isEventDispatchThread());
         final JPasswordField passwordField = new JPasswordField(15);
-        final JDialog dialog = createDialog(I18N.get("jump.workbench.ui.plugin.datastore.PasswordPrompter.Password"), parent);
+        final JDialog dialog = createDialog(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.PasswordPrompter.Password"), parent);
         dialog.getContentPane().setLayout(new GridBagLayout());
         dialog.getContentPane().add(
-                new JLabel(I18N.get("jump.workbench.ui.plugin.datastore.PasswordPrompter.Enter-password-for")+" " + identifier + ": "),
+                new JLabel(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.PasswordPrompter.Enter-password-for")+" " + identifier + ": "),
                 new GridBagConstraints(0, 0, 1, 1, 0, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.NONE,
                         new Insets(2, 2, 2, 2), 0, 0));
@@ -115,7 +115,7 @@ public class PasswordPrompter {
                         GridBagConstraints.CENTER, GridBagConstraints.NONE,
                         new Insets(2, 2, 2, 2), 0, 0));
         dialog.getContentPane().add(
-                new JButton(I18N.get("jump.workbench.ui.plugin.datastore.PasswordPrompter.OK")) {
+                new JButton(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.PasswordPrompter.OK")) {
                     {
                         addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {

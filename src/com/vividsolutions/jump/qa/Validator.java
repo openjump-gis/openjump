@@ -203,7 +203,7 @@ public class Validator {
     public List validate(Collection features, TaskMonitor monitor) {
         monitor.allowCancellationRequests();
         int validatedFeatureCount = 0;
-        monitor.report(I18N.get("qa.Validator.validating"));
+        monitor.report(I18N.getInstance().get("qa.Validator.validating"));
 
         List<Object> validationErrors = new ArrayList<>();
         int totalFeatures = features.size();

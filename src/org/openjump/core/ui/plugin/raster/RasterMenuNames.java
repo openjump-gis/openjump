@@ -12,16 +12,11 @@ public class RasterMenuNames {
     /**
      * Common to all the raster plugins
      */
-    public static String Source_Layer = I18N
-            .get("ui.GenericNames.Source-Layer");
-    public static String Output_file = I18N
-            .get("driver.DriverManager.file-to-save");
-    public static String Choose_an_action = I18N
-            .get("ui.GenericNames.choose-an-action");
-    public static String Check_field = I18N
-            .get("ui.GenericNames.check-field");
-    public static String PROCESSING = I18N
-            .get("jump.plugin.edit.NoderPlugIn.processing");
+    public static String Source_Layer = I18N.getInstance().get("ui.GenericNames.Source-Layer");
+    public static String Output_file = I18N.getInstance().get("driver.DriverManager.file-to-save");
+    public static String Choose_an_action = I18N.getInstance().get("ui.GenericNames.choose-an-action");
+    public static String Check_field = I18N.getInstance().get("ui.GenericNames.check-field");
+    public static String PROCESSING = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.processing");
 
     /**
      * ManageDataPlugIn
@@ -92,6 +87,5 @@ public class RasterMenuNames {
     public static String contour_contourNumber = "contour number";
     //    public static String contour_properties = "contours properties";
     //    public static String contour_range = "Renge elevation";
-    public static String Value = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
+    public static String Value = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
 }

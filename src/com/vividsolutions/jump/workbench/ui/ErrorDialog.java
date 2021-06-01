@@ -60,8 +60,8 @@ import com.vividsolutions.jump.util.StringUtil;
 
 
 public class ErrorDialog extends JOptionPane {
-    private static final String SHOW_DETAILS = I18N.get("ui.ErrorFialog.show-details");
-    private static final String HIDE_DETAILS = I18N.get("ui.ErrorFialog.hide-details");
+    private static final String SHOW_DETAILS = I18N.getInstance().get("ui.ErrorFialog.show-details");
+    private static final String HIDE_DETAILS = I18N.getInstance().get("ui.ErrorFialog.hide-details");
 
     //The actual width will be MIN_DIALOG_WIDTH or the width as determined by
     //the error message (after applying StringUtil#split to it), whichever is
@@ -70,7 +70,7 @@ public class ErrorDialog extends JOptionPane {
     private String details;
 
     private ErrorDialog() {
-        super(I18N.get("ui.ErrorFialog.message"), ERROR_MESSAGE, DEFAULT_OPTION);
+        super(I18N.getInstance().get("ui.ErrorFialog.message"), ERROR_MESSAGE, DEFAULT_OPTION);
     }
 
     private void addDetailPanel(final JDialog dialog, final JButton detailButton) {

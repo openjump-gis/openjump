@@ -95,7 +95,7 @@ public class MoveVertexTool extends DragTool {
                 public String check(JComponent component) {
                     try {
                         return !nearSelectionHandle(e.getPoint())
-                            ? I18N.get("ui.cursortool.MoveVertexTool.no-editable-selection-handles-here")
+                            ? I18N.getInstance().get("ui.cursortool.MoveVertexTool.no-editable-selection-handles-here")
                             : null;
                             } catch (Exception e) {
                         return e.toString(); }

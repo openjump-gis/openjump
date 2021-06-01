@@ -104,7 +104,7 @@ public class MultiRingBufferSelectedPlugIn extends AbstractPlugIn
 
     public void initialize(PlugInContext context) throws Exception {
         MULTIPLE_RING_BUFFER =
-            I18N.get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Multiple-Ring-Buffer");
+            I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Multiple-Ring-Buffer");
         context.getFeatureInstaller().addMainMenuItem(this,
             new String[] {MenuNames.TOOLS , MenuNames.TOOLS_ANALYSIS},
             MULTIPLE_RING_BUFFER + "...",
@@ -112,26 +112,26 @@ public class MultiRingBufferSelectedPlugIn extends AbstractPlugIn
     }
   
     public boolean execute(PlugInContext context) throws Exception {
-        MULTIPLE_RING_BUFFER = I18N.get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Multiple-Ring-Buffer");
-        sRESET = I18N.get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Reset-all-buffer-options");
-        SELECTED_ONLY = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Use-selected-features-only");
-        BUFFERDISTANCE = I18N.get("ui.plugin.analysis.BufferPlugIn.buffer-distance");
-        BUFFER = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn");
-        NEWLAYERNAME = BUFFER + "-" + I18N.get("ui.MenuNames.SELECTION");
+        MULTIPLE_RING_BUFFER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Multiple-Ring-Buffer");
+        sRESET = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Reset-all-buffer-options");
+        SELECTED_ONLY = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.Use-selected-features-only");
+        BUFFERDISTANCE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.buffer-distance");
+        BUFFER = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn");
+        NEWLAYERNAME = BUFFER + "-" + I18N.getInstance().get("ui.MenuNames.SELECTION");
         LAYER = MenuNames.LAYER;
         layerName = NEWLAYERNAME;
-        String options =  I18N.get("com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn");
+        String options =  I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn");
         LAYEROPTIONS = LAYER+" "+options+":";
         BUFFEROPTIONS = BUFFER + " "+options+":";
-        LABEL = I18N.get("ui.style.LabelStylePanel.labels");
-        THEMING = I18N.get("ui.renderer.style.ColorThemingPanel.colour-theming");
-        String name = I18N.get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Name");
+        LABEL = I18N.getInstance().get("ui.style.LabelStylePanel.labels");
+        THEMING = I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.colour-theming");
+        String name = I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Name");
         LAYERNAME = LAYER + " " + name;
-        String attribute = I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.attribute");
+        String attribute = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.attribute");
         ATTRIBUTENAME = attribute+ " "+ name;
         ATTRIBUTEVALUE =BUFFER +" "+ LABEL;
         BUFFERNUMBER = BUFFER +" Number";
-        DISTANCEATTRIBUTE =  I18N.get("org.openjump.core.ui.plugin.tools.MeasureM_FTool.Distance");
+        DISTANCEATTRIBUTE =  I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasureM_FTool.Distance");
 
         MultiInputDialog dialog = new MultiInputDialog(
             context.getWorkbenchFrame(), getName(), true);

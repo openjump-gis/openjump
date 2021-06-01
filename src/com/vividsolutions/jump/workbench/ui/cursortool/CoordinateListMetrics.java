@@ -47,10 +47,10 @@ import com.vividsolutions.jump.geom.Angle;
  */
 public class CoordinateListMetrics
 {
-	String sArea = I18N.get("ui.cursortool.CoordinateListMetrics.Area");
-	String sAzimuth = I18N.get("ui.cursortool.CoordinateListMetrics.Azimuth");
-	String sAngle = I18N.get("ui.cursortool.CoordinateListMetrics.Angle");
-	String sDistance = I18N.get("ui.cursortool.CoordinateListMetrics.Distance"); 
+	String sArea = I18N.getInstance().get("ui.cursortool.CoordinateListMetrics.Area");
+	String sAzimuth = I18N.getInstance().get("ui.cursortool.CoordinateListMetrics.Azimuth");
+	String sAngle = I18N.getInstance().get("ui.cursortool.CoordinateListMetrics.Angle");
+	String sDistance = I18N.getInstance().get("ui.cursortool.CoordinateListMetrics.Distance"); 
 	
   public CoordinateListMetrics() {
   }

@@ -46,7 +46,7 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
 
     @Override
     public String getName() {
-	    return I18N.get("org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn.Refresh-datastore-query");
+	    return I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn.Refresh-datastore-query");
     }
 
     @Override
@@ -112,7 +112,7 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
 	            for (Layer layer : selectedLayers) {
 	                if (layer.getDataSourceQuery() == null ||
 	                    !(layer.getDataSourceQuery().getDataSource() instanceof DataStoreQueryDataSource)) {
-	                    return I18N.get("org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn.Only-datastore-query-layers-must-be-selected");
+	                    return I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.RefreshDataStoreQueryPlugIn.Only-datastore-query-layers-must-be-selected");
 	                }
 	            }
 	            return null;

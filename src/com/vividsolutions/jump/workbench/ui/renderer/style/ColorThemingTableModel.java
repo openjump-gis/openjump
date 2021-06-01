@@ -170,7 +170,7 @@ public class ColorThemingTableModel extends ColumnBasedTableModel {
 
     protected List createColumns(final FeatureSchema schema) {
         ArrayList<Column> columns = new ArrayList<Column>();
-        columns.add(new Column(I18N.get("ui.renderer.style.ColorThemingTableModel.style"), BasicStyle.class) {
+        columns.add(new Column(I18N.getInstance().get("ui.renderer.style.ColorThemingTableModel.style"), BasicStyle.class) {
             public Object getValueAt(int rowIndex) {
                 return attributeMapping(rowIndex).getBasicStyle();
             }
@@ -180,7 +180,7 @@ public class ColorThemingTableModel extends ColumnBasedTableModel {
                     new TableModelEvent(ColorThemingTableModel.this, rowIndex));
             }
         });
-        columns.add(new Column(I18N.get("ui.renderer.style.ColorThemingTableModel.attribute-value"), null) {
+        columns.add(new Column(I18N.getInstance().get("ui.renderer.style.ColorThemingTableModel.attribute-value"), null) {
             public Class getDataClass() {
                 //attributeName will be null if layer has no non-spatial attributes 
                 //[Jon Aquino]
@@ -204,7 +204,7 @@ public class ColorThemingTableModel extends ColumnBasedTableModel {
                         rowIndex));
             }
         });
-        columns.add(new Column(I18N.get("ui.renderer.style.ColorThemingTableModel.label"), String.class) {
+        columns.add(new Column(I18N.getInstance().get("ui.renderer.style.ColorThemingTableModel.label"), String.class) {
             public Object getValueAt(int rowIndex) {
                 return attributeMapping(rowIndex).getLabel();
             }

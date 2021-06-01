@@ -156,9 +156,9 @@ public class BoundaryMatchDataEngine {
         addLeftSquareCells(leftFeatureCollection);
         addRightSquareCells(rightFeatureCollection);
         addBoundaryCells(leftFeatureCollection, rightFeatureCollection);
-        context.addLayer(StandardCategoryNames.WORKING, I18N.get("ui.plugin.generate.BoundaryMatchDataEngine.left"),
+        context.addLayer(StandardCategoryNames.WORKING, I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataEngine.left"),
             leftFeatureCollection);
-        context.addLayer(StandardCategoryNames.WORKING, I18N.get("ui.plugin.generate.BoundaryMatchDataEngine.right"),
+        context.addLayer(StandardCategoryNames.WORKING, I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataEngine.right"),
             rightFeatureCollection);
     }
 

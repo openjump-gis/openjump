@@ -91,6 +91,6 @@ public class DummyTool implements CursorTool {
   }
 
   public String getName() {
-    return I18N.get("ui.cursortool.DummyTool.dummy-cursor-tool");
+    return I18N.getInstance().get("ui.cursortool.DummyTool.dummy-cursor-tool");
   }
 }

@@ -50,8 +50,7 @@ public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 
     @Override
     public String getName() {
-	return I18N
-		.get("org.openjump.core.ui.plugin.layer.ChangeLayerableName.Rename");
+	return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ChangeLayerableName.Rename");
     }
 
     @Override
@@ -62,7 +61,7 @@ public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 	    final String oldName = layer.getName();
 	    final String newName =
 	        (String)JOptionPane.showInputDialog(context.getWorkbenchFrame(),
-			    I18N.get("org.openjump.core.ui.plugin.layer.ChangeLayerableName.Rename"),
+			    I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ChangeLayerableName.Rename"),
 			    getName(), JOptionPane.PLAIN_MESSAGE, null, null, oldName);
 	    if(newName != null) {
 	        execute(new UndoableCommand(getName()) {

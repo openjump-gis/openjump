@@ -284,7 +284,7 @@ public class BasicStyle implements Style, StrokeFillStyle, AlphaSetting {
             array[i] = Float.parseFloat(string) * lineWidth;
 
             if (array[i] <= 0) {
-                throw new IllegalArgumentException(I18N.get("ui.renderer.style.BasicStyle.negative-dash-length"));
+                throw new IllegalArgumentException(I18N.getInstance().get("ui.renderer.style.BasicStyle.negative-dash-length"));
             }
         }
         return array;

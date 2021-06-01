@@ -66,25 +66,25 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 public class ConstraintsOptionsPanel extends JPanel implements OptionsPanel {
     private Border titleBorder;
     WorkbenchContext workbenchContext;
-    final static String length = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Length");
-    final static String incAngle = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Incremental-Angle");
-    final static String incAngleShift = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Incremental-Angle-Shift-to-activate");
-    final static String angle = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Angle");
-    final static String angleShift = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Angle-Shift-to-activate");
-    final static String constrainAngleByStepsOf = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-angle-by-steps-of");
-    final static String degree = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.degree");
-    final static String negativeNumbersNotAllowedForLength=I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.negative-numbers-not-allowed-for-length");
-    final static String isToSmall = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.is-too-small-must-be-3-or-greater");
-    final static String invalidNumbers = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.invalid-numbers");
-    final static String constrainLengthToNearest = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-length-to-nearest");
-    final static String modelUnits = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.model-units");
-    final static String ConstrainAngleTo45DegreeIncrements = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-angle-to-45-degree-increments");
-    final static String byDividing360DegreesInto = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.by-dividing-360-degrees-into");
-    final static String parts = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.parts");
-    final static String constrainToRelativeAngle = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-to-relative-angle");
-    final static String constrainToAbsoluteAngle = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-to-absolute-angle");
-    final static String degrees = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.degrees");
-    final static String constrainToAngle = I18N.get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-to-angle");
+    final static String length = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Length");
+    final static String incAngle = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Incremental-Angle");
+    final static String incAngleShift = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Incremental-Angle-Shift-to-activate");
+    final static String angle = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Angle");
+    final static String angleShift = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Angle-Shift-to-activate");
+    final static String constrainAngleByStepsOf = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-angle-by-steps-of");
+    final static String degree = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.degree");
+    final static String negativeNumbersNotAllowedForLength=I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.negative-numbers-not-allowed-for-length");
+    final static String isToSmall = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.is-too-small-must-be-3-or-greater");
+    final static String invalidNumbers = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.invalid-numbers");
+    final static String constrainLengthToNearest = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-length-to-nearest");
+    final static String modelUnits = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.model-units");
+    final static String ConstrainAngleTo45DegreeIncrements = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-angle-to-45-degree-increments");
+    final static String byDividing360DegreesInto = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.by-dividing-360-degrees-into");
+    final static String parts = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.parts");
+    final static String constrainToRelativeAngle = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-to-relative-angle");
+    final static String constrainToAbsoluteAngle = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-to-absolute-angle");
+    final static String degrees = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.degrees");
+    final static String constrainToAngle = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintsOptionsPanel.Constrain-to-angle");
     
     
     //main constraints panel

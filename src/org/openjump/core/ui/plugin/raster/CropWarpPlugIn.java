@@ -60,15 +60,12 @@ import it.betastudio.adbtoolbox.libs.FileOperations;
 
 public class CropWarpPlugIn extends ThreadedBasePlugIn {
 
-    private final String SELECTED = I18N
-            .get("jump.plugin.edit.PolygonizerPlugIn.Use-selected-features-only");
-    private final String VIEW = I18N.get("ui.MenuNames.VIEW");
-    private final String LAYER = I18N.get("ui.MenuNames.LAYER");
-    private final String PROCESSING = I18N
-            .get("jump.plugin.edit.NoderPlugIn.processing");
-    private final String CLAYER = I18N.get("ui.GenericNames.Source-Layer");
-    private final String OUTPUT_FILE = I18N
-            .get("driver.DriverManager.file-to-save");
+    private final String SELECTED = I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Use-selected-features-only");
+    private final String VIEW = I18N.getInstance().get("ui.MenuNames.VIEW");
+    private final String LAYER = I18N.getInstance().get("ui.MenuNames.LAYER");
+    private final String PROCESSING = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.processing");
+    private final String CLAYER = I18N.getInstance().get("ui.GenericNames.Source-Layer");
+    private final String OUTPUT_FILE = I18N.getInstance().get("driver.DriverManager.file-to-save");
 
     private final ImageIcon icon16 = IconLoader
             .icon("fugue/folder-horizontal-open_16.png");
@@ -89,25 +86,17 @@ public class CropWarpPlugIn extends ThreadedBasePlugIn {
     public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
     private RasterImageLayer rLayer;
 
-    private final String NAME = I18N
-            .get("ui.plugin.raster.CropWarpPlugIn.Name");
-    private final String Target_OBJECT = I18N
-            .get("ui.plugin.raster.CropWarpPlugIn.target-object");
-    private final String CROP_RASTER = I18N
-            .get("ui.plugin.raster.CropWarpPlugIn.crop-raster");
-    private final String CROP_RASTER_TIP = I18N
-            .get("ui.plugin.raster.CropWarpPlugIn.crop-raster-tip");
-    private final String WARP_RASTER = I18N
-            .get("ui.plugin.raster.CropWarpPlugIn.warp-raster");
-    private final String WARP_RASTER_TIP = I18N
-            .get("ui.plugin.raster.CropWarpPlugIn.warp-raster-tip");
-    private final String TARGET_LAYER = I18N
-            .get("ui.plugin.raster.CropWarpPlugIn.target-layer");
+    private final String NAME = I18N.getInstance().get("ui.plugin.raster.CropWarpPlugIn.Name");
+    private final String Target_OBJECT = I18N.getInstance().get("ui.plugin.raster.CropWarpPlugIn.target-object");
+    private final String CROP_RASTER = I18N.getInstance().get("ui.plugin.raster.CropWarpPlugIn.crop-raster");
+    private final String CROP_RASTER_TIP = I18N.getInstance().get("ui.plugin.raster.CropWarpPlugIn.crop-raster-tip");
+    private final String WARP_RASTER = I18N.getInstance().get("ui.plugin.raster.CropWarpPlugIn.warp-raster");
+    private final String WARP_RASTER_TIP = I18N.getInstance().get("ui.plugin.raster.CropWarpPlugIn.warp-raster-tip");
+    private final String TARGET_LAYER = I18N.getInstance().get("ui.plugin.raster.CropWarpPlugIn.target-layer");
 
 
     private final String CHECK = RasterMenuNames.Check_field;
-    private final String NO_OVERWRITE = I18N
-            .get("ui.GenericNames.cannot-overwrite-input-layer");
+    private final String NO_OVERWRITE = I18N.getInstance().get("ui.GenericNames.cannot-overwrite-input-layer");
     private final String ACTION_LABEL = RasterMenuNames.Choose_an_action;
 
     private void updateGUI1(ActionEvent evt, MultiInputDialog dialog) {

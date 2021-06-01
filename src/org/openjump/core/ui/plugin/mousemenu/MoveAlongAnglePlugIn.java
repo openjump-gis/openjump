@@ -54,29 +54,21 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 public class MoveAlongAnglePlugIn extends AbstractPlugIn {
 
-    private final static String sMoveAlongAngle = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Move-Along-Angle");
-    private final static String sMoveSelectedFeaturesAlongAngle = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Move-Selected-Features-Along-Angle");
-    private final static String sTheDistanceInMapUnitsToMove = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.The-distance-in-map-units-to-move");
-    private final static String sTheAngleInDegreesToMove = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.The-angle-in-degrees-to-move");
-    private final static String sWillCovert = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Will-convert-input-value-from-feet-to-meters");
+    private final static String sMoveAlongAngle = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Move-Along-Angle");
+    private final static String sMoveSelectedFeaturesAlongAngle = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Move-Selected-Features-Along-Angle");
+    private final static String sTheDistanceInMapUnitsToMove = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.The-distance-in-map-units-to-move");
+    private final static String sTheAngleInDegreesToMove = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.The-angle-in-degrees-to-move");
+    private final static String sWillCovert = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Will-convert-input-value-from-feet-to-meters");
 
     private WorkbenchContext workbenchContext;
-    private final static String ANGLE = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Move-Angle");
-    private final static String DISTANCE = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Move-Distance");
+    private final static String ANGLE = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Move-Angle");
+    private final static String DISTANCE = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Move-Distance");
     private final double Deg2Rad = 0.0174532925199432; // pi/180
     private MultiInputDialog dialog;
     private double moveAngle = 0.0;
     private double moveDistance = 1.0;
 
-    private final static String CONVERTTOMETERS = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Convert-Feet-to-Meters");
+    private final static String CONVERTTOMETERS = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.MoveAlongAnglePlugIn.Convert-Feet-to-Meters");
     private double conversionFactor = 1.0;
 
     public String getName() {
