@@ -282,18 +282,23 @@ public class ConnectionManager {
      */
     private List<SpatialDSLayer> getLayersUsing(ConnectionDescriptor cd) {
       // iterate over al tasks collecting datastore layers
-      List<SpatialDSLayer> layers = new ArrayList();
+      List<SpatialDSLayer> layers = new ArrayList<SpatialDSLayer>();
       for (TaskFrame frame : context.getWorkbench().getFrame().getTaskFrames()) {
         layers.addAll(frame.getLayerManager().getLayerables(SpatialDSLayer.class));
       }
 
       // check if anyone is using the connection descriptor given
-      List<SpatialDSLayer> layersUsingThisCD = new ArrayList();
+      List<SpatialDSLayer> layersUsingThisCD = new ArrayList<SpatialDSLayer>();
       for (SpatialDSLayer layer : layers) {
-        ConnectionDescriptor layerCd = (ConnectionDescriptor) layer.getDataSourceQuery()
+        try {
+          ConnectionDescriptor layerCd = (ConnectionDescriptor) layer.getDataSourceQuery()
             .getDataSource().getProperties().get(DataStoreQueryDataSource.CONNECTION_DESCRIPTOR_KEY);
-        if (cd == layerCd) {
-          layersUsingThisCD.add(layer);
+          if (cd == layerCd) {
+            layersUsingThisCD.add(layer);
+          }
+        } catch (NullPointerException e) {
+          // no datasource or whatever, no usage :), log it though just in case
+          Logger.error(e);
         }
       }
       return layersUsingThisCD;
