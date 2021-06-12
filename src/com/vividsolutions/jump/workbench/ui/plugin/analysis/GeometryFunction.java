@@ -39,6 +39,7 @@ import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.linemerge.LineSequencer;
+import org.locationtech.jts.operation.overlay.snap.GeometrySnapper;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
@@ -99,7 +100,8 @@ public abstract class GeometryFunction
     new MinimumDiameterFunction(),
     new MinimumBoundingRectangleFunction(),
     new RemoveHolesFunction(),
-    new RemoveSmallHolesFunction()
+    new RemoveSmallHolesFunction(),
+    new SnapToSelfFunction()
   };
 
   public static List<String> getNames()
@@ -535,6 +537,18 @@ public abstract class GeometryFunction
     {
       RemoveSmallSegments removeSmallSegments = new RemoveSmallSegments(param[0]);
       return removeSmallSegments.process(geom[0]);
+    }
+  }
+
+  // added on 2021-05-30 by mmichaud
+  private static class SnapToSelfFunction extends GeometryFunction {
+    public SnapToSelfFunction() {
+      super(I18N.get("ui.plugin.analysis.GeometryFunction.Snap-To-Self"), 1, 1);
+    }
+
+    public Geometry execute(Geometry[] geom, final double[] param)
+    {
+      return GeometrySnapper.snapToSelf(geom[0], param[0], true);
     }
   }
   

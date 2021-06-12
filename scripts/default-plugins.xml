@@ -811,6 +811,9 @@
         com.vividsolutions.jump.plugin.edit.NoderPlugIn
     </plug-in>
     <plug-in>
+        com.vividsolutions.jump.plugin.edit.GeometrySnapperPlugIn
+    </plug-in>
+    <plug-in>
         com.vividsolutions.jump.plugin.edit.PrecisionReducerPlugIn
     </plug-in>
     <plug-in>
