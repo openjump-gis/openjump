@@ -244,59 +244,65 @@ public class MapRequest extends AbstractWMSRequest{
     * @return the URL for this request
     * @throws MalformedURLException if there is a problem building the URL for some reason
     */
-    public URL getURL() throws MalformedURLException {
-        String ver = "REQUEST=map&WMTVER=1.0";
-        if ( WMService.WMS_1_1_0.equals( version )){
-            ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.0";
-        } else if ( WMService.WMS_1_1_1.equals( version ) ){
-            ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1";
-        } else if ( WMService.WMS_1_3_0.equals( version ) ){
-            ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.3.0";
-        }
+   public URL getURL() throws MalformedURLException {
+       String ver = "REQUEST=map&WMTVER=1.0";
+       if ( WMService.WMS_1_1_0.equals( version )){
+           ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.0";
+       } else if ( WMService.WMS_1_1_1.equals( version ) ){
+           ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1";
+       } else if ( WMService.WMS_1_3_0.equals( version ) ){
+           ver = "REQUEST=GetMap&SERVICE=WMS&VERSION=1.3.0";
+       }
 
-        StringBuilder urlBuf = new StringBuilder(UriUtil.urlMakeAppendSafe(service.getCapabilities().getGetMapURL()));
-        urlBuf.append(ver + "&WIDTH=" + imgWidth + "&HEIGHT=" + imgHeight);
+       StringBuilder urlBuf = new StringBuilder(UriUtil.urlMakeAppendSafe(service.getCapabilities().getGetMapURL()));
+       urlBuf.append(ver + "&WIDTH=" + imgWidth + "&HEIGHT=" + imgHeight);
 
-        try {
-            urlBuf.append( "&LAYERS=" + encode(listToString( layerNames ), "UTF-8") );
-        } catch (UnsupportedEncodingException e1) {
-            Logger.debug("UTF8 not supported by Java version", e1);
-        }
-        if( transparent ) {
-            urlBuf.append( "&TRANSPARENT=TRUE" );
-        }
-        if( format != null ) {
-            try {
-                urlBuf.append( "&FORMAT=" + encode(format, "UTF-8") );
-            } catch (UnsupportedEncodingException e) {
-                Logger.debug("UTF8 not supported by Java version", e);
-            }
-        }
-        if( bbox != null ) {
-            urlBuf.append( "&" + bbox.getBBox(version));
-            if( bbox.getSRS() != null && !bbox.getSRS().equals( "LatLon" ) ) {
-                if (version.compareTo(WMService.WMS_1_3_0) < 0) {
-                    urlBuf.append( "&SRS=" + bbox.getSRS() );
-                } else {
-                    urlBuf.append( "&CRS=" + bbox.getSRS() );
-                }
-            }
-        }
-        // [UT] some style info is *required*, so add this to be spec conform
-        //urlBuf.append( "&STYLES=" );
-        if (style == null) urlBuf.append("&STYLES=");
-        else urlBuf.append("&STYLES=").append(style.getName());
-        if (moreParameters != null && moreParameters.length()>0) {
-            if (moreParameters.startsWith("&")) urlBuf.append(moreParameters);
-            else urlBuf.append("&").append(moreParameters);
-        }
-        System.out.println(urlBuf.toString());
-        Logger.trace(urlBuf.toString());
-        return new URL( urlBuf.toString() );
-    }
-
-
-
-
+       try {
+           urlBuf.append( "&LAYERS=" + encode(listToString( layerNames ), "UTF-8") );
+       } catch (UnsupportedEncodingException e1) {
+           Logger.debug("UTF8 not supported by Java version", e1);
+       }
+       if( transparent ) {
+           urlBuf.append( "&TRANSPARENT=TRUE" );
+       }
+       if( format != null ) {
+           try {
+               urlBuf.append( "&FORMAT=" + encode(format, "UTF-8") );
+           } catch (UnsupportedEncodingException e) {
+               Logger.debug("UTF8 not supported by Java version", e);
+           }
+       }
+       if( bbox != null ) {
+           urlBuf.append( "&" + bbox.getBBox(version));
+           if( bbox.getSRS() != null && !bbox.getSRS().equals( "LatLon" ) ) {
+               if (version.compareTo(WMService.WMS_1_3_0) < 0) {
+                   urlBuf.append( "&SRS=" + bbox.getSRS() );
+               } else {
+                   urlBuf.append( "&CRS=" + bbox.getSRS() );
+               }
+           }
+       }
+       // [UT] some style info is *required*, so add this to be spec conform
+       //urlBuf.append( "&STYLES=" );
+       if (style == null) urlBuf.append("&STYLES=");
+       else {
+           try {
+               urlBuf.append("&STYLES=").append(encode(style.getName(), "UTF-8"));
+           } catch (UnsupportedEncodingException e) {
+               Logger.debug("UTF8 not supported by Java version", e);
+           }
+       }
+       if (moreParameters != null && moreParameters.length()>0) {
+           try {
+               if (moreParameters.startsWith("&")) urlBuf.append(encode(moreParameters,"UTF-8"));
+               else urlBuf.append("&").append(encode(moreParameters,"UTF-8"));
+           } catch (UnsupportedEncodingException e) {
+               Logger.debug("UTF8 not supported by Java version", e);
+           }
+       }
+       System.out.println(urlBuf);
+       Logger.trace(urlBuf.toString());
+       return new URL( urlBuf.toString() );
+   }
 
 }
