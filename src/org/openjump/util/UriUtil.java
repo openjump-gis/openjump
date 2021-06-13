@@ -8,6 +8,8 @@ import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.vividsolutions.jump.workbench.Logger;
+
 /**
  * Utility class for handline {@link URI}.
  * 
@@ -184,6 +186,7 @@ public final class UriUtil {
     try {
       return URLEncoder.encode(in, charSet);
     } catch (Exception e) {
+      Logger.error(e);
       return in;
     }
   }
@@ -192,6 +195,7 @@ public final class UriUtil {
     try {
       return URLDecoder.decode(in, charSet);
     } catch (Exception e) {
+      Logger.error(e);
       return in;
     }
   }

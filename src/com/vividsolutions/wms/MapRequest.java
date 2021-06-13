@@ -32,7 +32,7 @@
 
 package com.vividsolutions.wms;
 
-import static java.net.URLEncoder.encode;
+import static org.openjump.util.UriUtil.urlEncode;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -256,21 +256,13 @@ public class MapRequest extends AbstractWMSRequest{
 
        StringBuilder urlBuf = new StringBuilder(UriUtil.urlMakeAppendSafe(service.getCapabilities().getGetMapURL()));
        urlBuf.append(ver + "&WIDTH=" + imgWidth + "&HEIGHT=" + imgHeight);
+       urlBuf.append( "&LAYERS=" + urlEncode(listToString( layerNames )) );
 
-       try {
-           urlBuf.append( "&LAYERS=" + encode(listToString( layerNames ), "UTF-8") );
-       } catch (UnsupportedEncodingException e1) {
-           Logger.debug("UTF8 not supported by Java version", e1);
-       }
        if( transparent ) {
            urlBuf.append( "&TRANSPARENT=TRUE" );
        }
        if( format != null ) {
-           try {
-               urlBuf.append( "&FORMAT=" + encode(format, "UTF-8") );
-           } catch (UnsupportedEncodingException e) {
-               Logger.debug("UTF8 not supported by Java version", e);
-           }
+         urlBuf.append( "&FORMAT=" + urlEncode(format) );
        }
        if( bbox != null ) {
            urlBuf.append( "&" + bbox.getBBox(version));
@@ -286,21 +278,14 @@ public class MapRequest extends AbstractWMSRequest{
        //urlBuf.append( "&STYLES=" );
        if (style == null) urlBuf.append("&STYLES=");
        else {
-           try {
-               urlBuf.append("&STYLES=").append(encode(style.getName(), "UTF-8"));
-           } catch (UnsupportedEncodingException e) {
-               Logger.debug("UTF8 not supported by Java version", e);
-           }
+         urlBuf.append("&STYLES=").append(urlEncode(style.getName()));
        }
        if (moreParameters != null && moreParameters.length()>0) {
-           try {
-               if (moreParameters.startsWith("&")) urlBuf.append(encode(moreParameters,"UTF-8"));
-               else urlBuf.append("&").append(encode(moreParameters,"UTF-8"));
-           } catch (UnsupportedEncodingException e) {
-               Logger.debug("UTF8 not supported by Java version", e);
-           }
+         if (!moreParameters.startsWith("&"))
+           urlBuf.append("&");
+         urlBuf.append(urlEncode(moreParameters));
        }
-       System.out.println(urlBuf);
+
        Logger.trace(urlBuf.toString());
        return new URL( urlBuf.toString() );
    }
