@@ -4,14 +4,35 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2021-06-13 mmichaud, ede
+  * fix WMS parameters encoding
+
+2021-06-13 mmichaud
+  * add snap-rounding plugin using jts 1.18
+  * add self-snapping function in Geometry Function plugin
+
+2021-06-01 ede
+  * enhance database connection robustness against NPE
+
+2021-05-31 mmichaud
+  * add robust algo option from JTS 1.18 for geometry eraser
+  * add robust algo option from JTS 1.18 for precision reducer
+
+2021-05-25 mmichaud, ede
+  * improve WMS URL parsing
+
+2021-05-24 ede
+  * don't die on reading srs info from invalid GeoTIFFs
+
 2021-05-24 mmichaud
-  * Fix #23 about wms base url including parameters
+  * fix #23 about wms base url including parameters
 
 2021-05-23 mmichaud
-  * Fix #22 about 0.5 pixel shift problem
+  * fix #22 about 0.5 pixel shift problem
 
 2021-05-13 mmichaud
   * fix #17 OpenFileWizard with multiple files and options does not work
+  * add a fast Raster Vectorization algorithm
 
 2021-02-15 to 2021-05-15 : migration from 1.16 (jts 1.14) to 2.0 (jts 1.18) and
     to github : large refactoring and cleanup
