@@ -815,6 +815,8 @@
         <finalName>${project.artifactId}-${version.string}</finalName>
         <sourceDirectory>src/</sourceDirectory>
         <outputDirectory>target/classes</outputDirectory>
+        <testSourceDirectory>src/</testSourceDirectory>
+        <testOutputDirectory>target/test-classes</testOutputDirectory>
         <resources>
             <resource>
                 <directory>src</directory>
