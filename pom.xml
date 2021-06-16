@@ -53,6 +53,63 @@
                 <launch4j.dir>launcher/launch4j-3.0.2-linux</launch4j.dir>
             </properties>
         </profile>
+        <profile>
+          <id>download of extensions distro zips (for testing purposes)</id>
+          <activation>
+            <property>
+              <name>skipDownloads</name>
+              <value>!true</value>
+            </property>
+          </activation>
+          <properties>
+            <core.folder>${project.build.directory}/lib.ext.core/</core.folder>
+            <plus.folder>${project.build.directory}/lib.ext.plus/</plus.folder>
+          </properties>
+          <build>
+            <plugins>
+              <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <id>CORE-install-skyprinter</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/skyprinter-extension/releases/download/2.0-SNAPSHOT/skyprinter-extension-2.0.0-SNAPSHOT.zip</url>
+                      <sha1>d837327dfec6955ed1dd0a3135ea54318fd2d0a4</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${core.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>
+              <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <executions>
+                  <!-- example execution to download/integrate an extension for PLUS distro
+                  <execution>
+                    <id>PLUS-install-extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/my.cool.extension/distro.zip</url>
+                      <md5>2b1b2b606f1171b681c8f25ca847c171</md5>
+                      or
+                      <sha1>d837327dfec6955ed1dd0a3135ea54318fd2d0a4</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  -->
+                </executions>
+              </plugin>
+            </plugins>
+          </build>
+        </profile>
         <!-- profile creating snapshot distro zips for CORE/PLUS -->
         <profile>
           <id>snapshot</id>
@@ -1029,6 +1086,12 @@ ${project.artifactId} ${project.version} Changelog
                 </configuration>
               </execution>
             </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>com.googlecode.maven-download-plugin</groupId>
+            <artifactId>download-maven-plugin</artifactId>
+            <version>1.6.3</version>
           </plugin>
 
           <!-- default-jar only needed for maven repo deployment,
