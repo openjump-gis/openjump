@@ -296,8 +296,8 @@ public class PlugInManager {
           }
 
           // register shortcuts of plugins
-          AbstractPlugIn.registerShortcuts(plugIn);
-          
+          pc.getFeatureInstaller().registerShortcuts(plugIn);
+
           context
               .getWorkbench()
               .getFrame()

@@ -462,7 +462,7 @@ public class JUMPConfiguration implements Setup {
       plugIn.initialize(context);
 
       // register shortcuts of plugins
-      AbstractPlugIn.registerShortcuts(plugIn);
+      context.getFeatureInstaller().registerShortcuts(plugIn);
     }
   }
 

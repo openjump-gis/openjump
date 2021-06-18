@@ -26,7 +26,6 @@
  ******************************************************************************/
 package org.openjump.core.ui.plugin.file;
 
-import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.swing.ImageIcon;
@@ -38,9 +37,7 @@ import org.openjump.core.ui.plugin.file.open.OpenFileWizard;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
@@ -106,9 +103,6 @@ public class OpenFilePlugIn extends AbstractWizardPlugin {
     OpenFileWizard openFileWizard = new OpenFileWizard(workbenchContext);
     setWizard(openFileWizard);
     OpenWizardPlugIn.addWizard(workbenchContext, openFileWizard);
-    
-    // register shortcut
-    AbstractPlugIn.registerShortcuts(this);
   }
 
 }

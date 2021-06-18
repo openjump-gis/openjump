@@ -14,7 +14,6 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
@@ -39,7 +38,7 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
   public OpenWizardPlugIn() {
     super(I18N.getInstance().get(KEY), icon16);
     this.setShortcutKeys(KeyEvent.VK_O);
-    this.setShortcutModifiers(KeyEvent.CTRL_MASK);
+    this.setShortcutModifiers(KeyEvent.CTRL_DOWN_MASK);
   }
 
   public static void addWizard(final WorkbenchContext workbenchContext,
@@ -64,9 +63,6 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
 
     // Add to category pop-up menu
     featureInstaller.addPopupMenuPlugin(frame.getCategoryPopupMenu(), this, name, false, icon16, enableCheck);
-
-    // shortcut
-    AbstractPlugIn.registerShortcuts(this);
   }
 
   public boolean execute(PlugInContext context) throws Exception {

@@ -50,6 +50,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MenuListener;
 import javax.swing.event.PopupMenuEvent;
@@ -58,7 +59,6 @@ import javax.swing.event.PopupMenuListener;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
@@ -306,25 +306,23 @@ public class EasyPanel extends JPanel {
       this.buttonNumber = buttonNumber;
       this.setText(default_name);
       this.setToolTipText("F" + (buttonNumber + 1));
-      // this.setMnemonic(KeyEvent.VK_F1+buttonNumber); //Mnenoics are useless -
-      // need focus
+      // this.setMnemonic(KeyEvent.VK_F1+buttonNumber);
+      // Mnemonics are useless - need focus
       toolbox.getContext().getWorkbench().getFrame()
-          .addKeyboardShortcut(KeyEvent.VK_F1 + buttonNumber, 0, new PlugIn() { // inline
-                                                                                // a
-                                                                                // plugin
-                public boolean execute(PlugInContext context) throws Exception {
-                  executeMenuItem();
-                  return false;
-                }
-
-                public String getName() {
-                  return EasyButtonsPlugin.TOOLBOX_NAME
-                      + " - " + ((jMenuItem != null) ? jMenuItem.getText() : BUTTON_EMPTY);
-                }
-
-                public void initialize(PlugInContext context) throws Exception {
-                }
-              }, new MultiEnableCheck());
+          .addKeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_F1 + buttonNumber, 0), new PlugIn() { // inline
+            // a
+            // plugin
+            public boolean execute(PlugInContext context) throws Exception {
+              executeMenuItem();
+              return false;
+            }
+            public String getName() {
+              return EasyButtonsPlugin.TOOLBOX_NAME + " - "
+                  + ((jMenuItem != null) ? jMenuItem.getText() : BUTTON_EMPTY);
+            }
+            public void initialize(PlugInContext context) throws Exception {
+            }
+          });
     }
 
     public void unsetMenuItem() {
