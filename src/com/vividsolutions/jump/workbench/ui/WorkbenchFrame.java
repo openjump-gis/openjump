@@ -180,7 +180,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         public ExitPlugin() {
             super(I18N.getInstance().get("ui.WorkbenchFrame.exit"));
             this.setShortcutKeys(KeyEvent.VK_Q);
-            this.setShortcutModifiers(KeyEvent.CTRL_MASK);
+            this.setShortcutModifiers(KeyEvent.CTRL_DOWN_MASK);
         }
 
         public void initialize(PlugInContext context) throws Exception {
@@ -188,7 +188,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
             context.getFeatureInstaller().addMainMenuPlugin(this,
                     new String[] { MenuNames.FILE });
             // register and block menu accelerator action
-            registerShortcuts(this);
+            context.getFeatureInstaller().registerShortcuts(this);
         }
 
         public boolean execute(PlugInContext context) throws Exception {
@@ -1815,43 +1815,27 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      * modifiers=0 (caps-lock A). For more details, see the
      * java.awt.event.KeyEvent class - it has a full explanation.
      * 
-     * @param keyCode
+     * Adding an existing keystroke overwrites the existing entry.
+     * 
+     * keyCode
      *            What key to attach to (See java.awt.event.KeyEvent)
-     * @param modifiers
+     * modifiers
      *            0= none, 1=shift, 2= cntrl, 8=alt, 3=shift+cntrl, etc... See
      *            the modifier mask constants in the Event class
-     * @param plugIn
-     *            What plugin to execute
      * 
-     * @deprecated use addKeyboardShortcut(KeyStroke key, PlugIn plugIn) instead
+     * 
+     * @param stroke
+     *            can be created via e.g. {@link KeyStroke#getKeyStroke(int, int)}
+     * @param plugIn
+     *            which plugin to execute
      */
-    public void addKeyboardShortcut(final int keyCode, final int modifiers,
-            final PlugIn plugIn, EnableCheck check) {
-        // warn on overwriting shortcuts, only to console "KISS"
-        // if
-        // (shortcutListener.containsDefinition(KeyStroke.getKeyStroke(keyCode,
-        // modifiers)))
-        // System.err.println("reassign shortcut "
-        // + KeyEvent.getKeyModifiersText(modifiers) + "/"
-        // + KeyEvent.getKeyText(keyCode)/* + "(" + modifiers + "/" + keyCode
-        // + ") from " + shortcutListener.get(keyCode, modifiers)[0] + " to "
-        // + plugIn + " -> " + shortcutListener*/);
-
-        check = (check == null) ? AbstractPlugIn.getEnableCheck(plugIn) : check;
-        // System.err.println("add shortcut "+keyCode+"/"+modifiers+
-        // " -> "+plugIn.getName());
-        shortcutListener.add(keyCode, modifiers, plugIn, check);
-    }
-
     public void addKeyboardShortcut(KeyStroke stroke, PlugIn plugIn) {
-        shortcutListener.add(stroke, plugIn);
+      shortcutListener.add(stroke, plugIn);
     }
 
     public PlugIn getKeyboardShortcutPlugin(KeyStroke key) {
-        PlugIn p = shortcutListener.getPlugIn(key);
-        // if (p==null)
-        // System.out.println("wbf getkscp "+keyCode+"/"+modifiers+" = "+p+" -> "+shortcutListener);
-        return p;
+      PlugIn p = shortcutListener.getPlugIn(key);
+      return p;
     }
 
     public final Set<KeyStroke> getKeyboardShortcuts() {

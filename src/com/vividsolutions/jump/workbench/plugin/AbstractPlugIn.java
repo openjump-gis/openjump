@@ -38,17 +38,18 @@ import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 import javax.swing.undo.UndoableEdit;
 
-import org.locationtech.jts.util.Assert;
+import org.junit.Assert;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
@@ -78,6 +79,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
 
   // [mmichaud 2014-10-01] add some methods for macro plugin recorder
   private Map<String,Object> parameters;
+  private PlugInContext context = null;
 
   public void addParameter(String name, Object value) {
       if (parameters == null) parameters = new HashMap<>();
@@ -130,6 +132,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
   }
 
   public void initialize(PlugInContext context) throws Exception {
+    this.context  = context;
   }
 
   /**
@@ -229,13 +232,10 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
       } while (m==null && (c=c.getSuperclass())!=null);
       if (m != null) {
         m.setAccessible(true);
-        return (EnableCheck) m.invoke(this, JUMPWorkbench.getInstance()
-            .getContext());
+        return (EnableCheck) m.invoke(this, getContext().getWorkbenchContext());
       }
-    } catch (SecurityException e) {
-    } catch (IllegalArgumentException e) {
-    } catch (IllegalAccessException e) {
-    } catch (InvocationTargetException e) {
+    } catch (SecurityException|IllegalArgumentException|IllegalAccessException|InvocationTargetException e) {
+      Logger.error(e);
     }
     // or return unimplemented
     return null;
@@ -435,53 +435,8 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
         .getEnableCheck() : null;
   }
 
-  /**
-   * Convenience method to collect all plugins of a probably multi shortcut
-   * enabled plugin. Used to register multiple shortcut enabled plugins in one
-   * go.
-   * 
-   * @param plugin a PlugIn
-   * @return plugins array
-   */
-  public static PlugIn[] fetchShortcutEnabledPlugins(PlugIn plugin) {
-    Vector<PlugIn> plugins = new Vector();
-    // add plugin
-    if (plugin instanceof ShortcutEnabled
-        && ((ShortcutEnabled) plugin).isShortcutEnabled())
-      plugins.add(plugin);
-    // add plugin contained shortcut plugins
-    if (plugin instanceof MultiShortcutEnabled) {
-      PlugIn[] shortys = ((MultiShortcutEnabled) plugin)
-          .getShortcutEnabledPlugins();
-      if (shortys != null)
-        plugins.addAll(Arrays.asList(shortys));
-    }
-
-    return plugins.toArray(new PlugIn[]{});
+  private PlugInContext getContext() {
+    Assert.assertNotNull("Add super.initialize() to your AbstractPlugIn.initialize() implementation!",context);
+    return context;
   }
-
-  /**
-   * Utility method to register global shortcuts. Should be preferred to the 
-   * more direct approach using WorkbenchFrame.addKeyboardShortcut() .
-   * 
-   * @param plugin a PlugIn
-   * @return true if shortcuts have been added for the PlugIn
-   */
-  public static boolean registerShortcuts(PlugIn plugin) {
-    PlugIn[] shortys = fetchShortcutEnabledPlugins(plugin);
-    if (shortys.length < 1)
-      return false;
-
-    JUMPWorkbench wb = JUMPWorkbench.getInstance();
-    for (PlugIn p : shortys) {
-      Assert.isTrue(p instanceof ShortcutEnabled,
-          "plugin must be shortcut enabled");
-      wb.getFrame().addKeyboardShortcut(
-          ((ShortcutEnabled) p).getShortcutKeys(),
-          ((ShortcutEnabled) p).getShortcutModifiers(), p, getEnableCheck(p));
-    }
-
-    return true;
-  }
-
 }

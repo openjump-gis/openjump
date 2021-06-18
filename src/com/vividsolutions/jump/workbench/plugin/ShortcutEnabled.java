@@ -18,7 +18,7 @@ public interface ShortcutEnabled {
    * @return the KeyStroke associated to the shortcut
    */
   KeyStroke getShortcutKeyStroke();
-  
+
   int getShortcutModifiers();
 
   void setShortcutModifiers(int shortcutModifiers);

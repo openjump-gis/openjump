@@ -64,16 +64,15 @@ import javax.swing.event.MenuListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.locationtech.jts.util.Assert;
 import org.openjump.core.CheckOS;
 import org.openjump.core.ui.plugin.AbstractUiPlugIn;
 import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageContextMenu;
 import org.openjump.core.ui.swing.listener.EnableCheckMenuItemShownListener;
 
-import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.WorkbenchProperties;
@@ -84,6 +83,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.EnableChecked;
 import com.vividsolutions.jump.workbench.plugin.Iconified;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
+import com.vividsolutions.jump.workbench.plugin.MultiShortcutEnabled;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.ShortcutEnabled;
 import com.vividsolutions.jump.workbench.ui.AttributeTab;
@@ -92,6 +92,7 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.ShortcutPluginExecuteKeyListener;
 import com.vividsolutions.jump.workbench.ui.TitledPopupMenu;
+import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 
@@ -1584,18 +1585,68 @@ public class FeatureInstaller {
    */
   private void assignShortcut(JMenuItem menuItem, PlugIn executable) {
     if (executable instanceof ShortcutEnabled) {
-      KeyStroke st = ((ShortcutEnabled) executable).getShortcutKeyStroke();
+      ShortcutEnabled shortCutPlugin = (ShortcutEnabled)executable;
+      KeyStroke st = shortCutPlugin.getShortcutKeyStroke();
       if (st == null || st.getKeyCode() < 1)
         return;
       // filter according to platform first
       st = ShortcutPluginExecuteKeyListener.getPlatformKeyStroke(st);
       menuItem.setAccelerator(st);
-      // register with workbench (usually done in JumpConfiguration,
-      // Pluginmanager)
+      // register with workbench (usually done in JumpConfiguration, Pluginmanager)
       // for cases where plugins initialize themselves and "forgot" to do it
-      if (JUMPWorkbench.getInstance().getFrame().getKeyboardShortcutPlugin(st) == null)
-        AbstractPlugIn.registerShortcuts(executable);
+      if (workbenchContext.getWorkbench().getFrame().getKeyboardShortcutPlugin(st) == null)
+        registerShortcuts(executable);
     }
+  }
+
+  /**
+   * Utility method to register global shortcuts. Should be preferred to the 
+   * more direct approach using WorkbenchFrame.addKeyboardShortcut() .
+   * 
+   * @param plugin a PlugIn
+   * @return true if shortcuts have been added for the PlugIn
+   */
+  public boolean registerShortcuts( PlugIn plugin ) {
+    PlugIn[] shortys = fetchShortcutEnabledPlugins(plugin);
+    if (shortys.length < 1)
+      return false;
+
+    WorkbenchFrame f = workbenchContext.getWorkbench().getFrame();
+    for (PlugIn p : shortys) {
+      Assert.isTrue(p instanceof ShortcutEnabled,
+          "plugin must be shortcut enabled");
+      
+      KeyStroke st = ((ShortcutEnabled)p).getShortcutKeyStroke();
+      if (workbenchContext.getWorkbench().getFrame().getKeyboardShortcutPlugin(st) == null)
+        f.addKeyboardShortcut( st, p);
+    }
+
+    return true;
+  }
+
+  /**
+   * Convenience method to collect all plugins of a probably multi shortcut
+   * enabled plugin. Used to register multiple shortcut enabled plugins in one
+   * go.
+   * 
+   * @param plugin a PlugIn
+   * @return plugins array
+   */
+  public static PlugIn[] fetchShortcutEnabledPlugins(PlugIn plugin) {
+    Vector<PlugIn> plugins = new Vector();
+    // add plugin
+    if (plugin instanceof ShortcutEnabled
+        && ((ShortcutEnabled) plugin).isShortcutEnabled())
+      plugins.add(plugin);
+    // add plugin contained shortcut plugins
+    if (plugin instanceof MultiShortcutEnabled) {
+      PlugIn[] shortys = ((MultiShortcutEnabled) plugin)
+          .getShortcutEnabledPlugins();
+      if (shortys != null)
+        plugins.addAll(Arrays.asList(shortys));
+    }
+
+    return plugins.toArray(new PlugIn[]{});
   }
 
   private JMenuItem createMenuItem(String menuItemName, boolean checkBox, Icon icon) {
