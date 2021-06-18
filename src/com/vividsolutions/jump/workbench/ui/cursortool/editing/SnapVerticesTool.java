@@ -31,6 +31,19 @@
  */
 package com.vividsolutions.jump.workbench.ui.cursortool.editing;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Shape;
+import java.awt.geom.NoninvertibleTransformException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.swing.Icon;
+import javax.swing.JComponent;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 
@@ -45,20 +58,6 @@ import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.SpecifyFeaturesTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn;
-
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Shape;
-import java.awt.geom.NoninvertibleTransformException;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.swing.Icon;
-import javax.swing.JComponent;
 
 
 public class SnapVerticesTool extends SpecifyFeaturesTool {
@@ -106,7 +105,7 @@ public class SnapVerticesTool extends SpecifyFeaturesTool {
                 getBoxInModelCoordinates()), editableLayers,
             isRollingBackInvalidEdits(), getPanel(), getTaskFrame().getTask(),
             suggestedTarget, targetFeature,
-            getWorkbench().getBlackboard().get(SnapVerticesOp.INSERT_VERTICES_IF_NECESSARY_KEY,
+            getContext().getBlackboard().get(SnapVerticesOp.INSERT_VERTICES_IF_NECESSARY_KEY,
                 true));
     }
 

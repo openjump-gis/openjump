@@ -17,8 +17,9 @@ import java.util.Random;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import org.openjump.core.apitools.LayerTools;
-import org.openjump.core.apitools.PlugInContextTools;
 import org.openjump.core.apitools.SelectionTools;
 import org.openjump.core.rasterimage.CurrentLayerIsRasterImageLayerCheck;
 import org.openjump.core.rasterimage.ImageAndMetadata;
@@ -26,8 +27,6 @@ import org.openjump.core.rasterimage.RasterImageIO;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.Resolution;
 
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
@@ -170,7 +169,7 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
         multiEnableCheck.add(checkFactory.createFenceMustBeDrawnCheck());
 
         EnableCheck enableCheck = new CurrentLayerIsRasterImageLayerCheck(
-                PlugInContextTools.getContext(workbenchContext));
+                workbenchContext.createPlugInContext());
         multiEnableCheck.add(enableCheck);
 
         return multiEnableCheck;

@@ -38,7 +38,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.KeyboardFocusManager;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -47,7 +46,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.NoninvertibleTransformException;
@@ -74,9 +72,9 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEvent;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
@@ -90,7 +88,6 @@ import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.DummyTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.LeftClickFilter;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
-import com.vividsolutions.jump.workbench.ui.plugin.ViewAttributesPlugIn;
 import com.vividsolutions.jump.workbench.ui.renderer.RenderingManager;
 import com.vividsolutions.jump.workbench.ui.renderer.java2D.Java2DConverter;
 import com.vividsolutions.jump.workbench.ui.renderer.style.PinEqualCoordinatesStyle;
@@ -422,7 +419,11 @@ public class LayerViewPanel extends JPanel
    * @return WorkbenchFrame
    */
   public WorkbenchFrame getWorkBenchFrame() {
-    return JUMPWorkbench.getInstance().getFrame();
+    // workaround as context is not passed to here, TODO?
+    Window window = SwingUtilities.windowForComponent(this);
+    // Will not be a WorkbenchFrame in apps that don't use the workbench
+    // e.g. LayerViewPanelDemoFrame. [Jon Aquino]
+    return (window instanceof WorkbenchFrame) ? (WorkbenchFrame) window : null;
   }
 
 	/**

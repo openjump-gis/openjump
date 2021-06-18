@@ -22,7 +22,6 @@ import java.io.File;
 import java.util.Random;
 
 import org.openjump.core.apitools.LayerTools;
-import org.openjump.core.apitools.PlugInContextTools;
 import org.openjump.core.apitools.SelectionTools;
 import org.openjump.core.rasterimage.CurrentLayerIsRasterImageLayerCheck;
 import org.openjump.core.rasterimage.ImageAndMetadata;
@@ -256,7 +255,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         multiEnableCheck.add(checkFactory.createFenceMustBeDrawnCheck());
 
         EnableCheck enableCheck = new CurrentLayerIsRasterImageLayerCheck(
-                PlugInContextTools.getContext(workbenchContext));
+                workbenchContext.createPlugInContext());
         multiEnableCheck.add(enableCheck);
 
         return multiEnableCheck;
