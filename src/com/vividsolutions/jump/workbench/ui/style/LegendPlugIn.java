@@ -72,8 +72,7 @@ public class LegendPlugIn extends AbstractPlugIn {
 
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
-        final EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        final EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
                 .add(checkFactory.createTaskWindowMustBeActiveCheck())
                 .add(checkFactory.createAtLeastNLayersMustExistCheck(1))

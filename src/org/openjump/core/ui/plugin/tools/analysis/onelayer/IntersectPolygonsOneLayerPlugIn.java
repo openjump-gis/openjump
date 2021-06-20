@@ -67,9 +67,9 @@ public class IntersectPolygonsOneLayerPlugIn extends ThreadedBasePlugIn {
 				false,
 				null,
 				new MultiEnableCheck().add(
-						new EnableCheckFactory(context.getWorkbenchContext())
+						EnableCheckFactory.getInstance(context.getWorkbenchContext())
 								.createTaskWindowMustBeActiveCheck()).add(
-						new EnableCheckFactory(context.getWorkbenchContext())
+						EnableCheckFactory.getInstance(context.getWorkbenchContext())
 								.createAtLeastNLayersMustExistCheck(1)));
 		// -- reset in execute to correct language
 		this.sDescription = I18N.getInstance().get("org.openjump.plugin.tools.analysis.onelayer.IntersectPolygonsOneLayerPlugIn.sDescription");

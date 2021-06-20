@@ -99,8 +99,7 @@ public class EditDataStoreQueryPlugIn extends RunDatastoreQueryPlugIn {
 
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
     final WorkbenchContext wc = workbenchContext;
-    EnableCheckFactory enableCheckFactory = new EnableCheckFactory(
-        workbenchContext);
+    EnableCheckFactory enableCheckFactory = EnableCheckFactory.getInstance(workbenchContext);
     MultiEnableCheck enableCheck = new MultiEnableCheck();
     enableCheck.add(enableCheckFactory
         .createWindowWithLayerManagerMustBeActiveCheck());

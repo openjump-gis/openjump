@@ -44,7 +44,7 @@ public class SaveDatasetAsFilePlugIn extends AbstractSaveDatasetAsPlugIn {
             // Call #getCanonicalFile to validate that the layer name is a valid filename. [Jon Aquino 2005-07-28[]
             try {
                 return new File(currentDirectory, getContext()
-                        .createPlugInContext().getSelectedLayer(0).getName()).getCanonicalFile();
+                        .getSelectedLayer(0).getName()).getCanonicalFile();
             } catch (IOException e) {
                 return null;
             }

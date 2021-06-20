@@ -94,11 +94,9 @@ public class MeasureSelectedPlugIn extends AbstractPlugIn {
 
     public static EnableCheck createEnableCheck(final WorkbenchContext context) {
         MultiEnableCheck mec = new MultiEnableCheck();
-
-        mec.add(new EnableCheckFactory(context)
-                .createWindowWithSelectionManagerMustBeActiveCheck());
-        mec.add(new EnableCheckFactory(context)
-                .createExactlyNFeaturesMustBeSelectedCheck(1));
+        EnableCheckFactory f = EnableCheckFactory.getInstance(context);
+        mec.add(f.createWindowWithSelectionManagerMustBeActiveCheck());
+        mec.add(f.createExactlyNFeaturesMustBeSelectedCheck(1));
 
         mec.add(new EnableCheck() {
             public String check(JComponent component) {

@@ -44,6 +44,7 @@ import javax.swing.ImageIcon;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool.ModifierKeySpec;
@@ -62,8 +63,8 @@ public class SelectOneItemTool extends SelectTool implements ShortcutsDescriptor
     Feature botFeature = null;
     boolean featureSelected = false;
     
-    public SelectOneItemTool() {
-        super(FeatureSelectionRenderer.CONTENT_ID);
+    public SelectOneItemTool(WorkbenchContext context) {
+        super(context, FeatureSelectionRenderer.CONTENT_ID);
     }
 
     public Icon getIcon() {

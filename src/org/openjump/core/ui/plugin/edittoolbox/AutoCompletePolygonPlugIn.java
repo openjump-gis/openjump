@@ -83,7 +83,7 @@ public class AutoCompletePolygonPlugIn extends AbstractPlugIn
     {
         try
         {
-            CursorTool polyTool = AutoCompletePolygonCursorTool.create((LayerNamePanelProxy) context.getActiveInternalFrame());
+            CursorTool polyTool = AutoCompletePolygonCursorTool.create(context.getWorkbenchContext());
             context.getLayerViewPanel().setCurrentCursorTool(polyTool); 
             return true;
         }

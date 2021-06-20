@@ -84,7 +84,7 @@ public class DrawConstrainedCirclePlugIn extends AbstractPlugIn
     {
         try
         {
-            CursorTool circleTool = DrawConstrainedCircleTool.create((LayerNamePanelProxy) context.getActiveInternalFrame());
+            CursorTool circleTool = DrawConstrainedCircleTool.create(context.getWorkbenchContext()/*(LayerNamePanelProxy) context.getActiveInternalFrame()*/);
             context.getLayerViewPanel().setCurrentCursorTool(circleTool); 
             return true;
         }

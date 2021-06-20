@@ -17,13 +17,18 @@ import org.locationtech.jts.operation.distance.DistanceOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.CollectionUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.snap.SnapManager;
 
 public class SplitLineStringTool extends AbstractClickSelectedLineStringsTool {
 
-	Coordinate snapCoord = null;		
+	public SplitLineStringTool(WorkbenchContext context) {
+    super(context);
+  }
+
+  Coordinate snapCoord = null;		
 	
     public String getName() {
         return I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.cursortool.SplitLineStringTool.Split-LinesStrings");

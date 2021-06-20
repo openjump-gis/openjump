@@ -42,6 +42,8 @@ import java.awt.geom.Point2D;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+
 
 /**
  *  The default implementation draws a selection box, but this can be overridden
@@ -56,7 +58,10 @@ public abstract class DragTool extends AbstractCursorTool {
     protected Coordinate modelDestination = null;
     private boolean dragApproved = false;
 
-    
+    public DragTool(WorkbenchContext context) {
+      super(context);
+    }
+
     public void deactivate() {
       cancelGesture();
       super.deactivate();

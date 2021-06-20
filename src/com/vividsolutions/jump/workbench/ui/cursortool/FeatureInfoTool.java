@@ -54,6 +54,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
@@ -64,7 +65,9 @@ import com.vividsolutions.wms.FeatureInfoRequest;
 public class FeatureInfoTool extends SpecifyFeaturesTool {
 
     public static final ImageIcon ICON = IconLoader.icon("information_20x20.png");
-    public FeatureInfoTool() {
+
+    public FeatureInfoTool(WorkbenchContext context) {
+        super(context);
         setColor(Color.magenta);
     }
 

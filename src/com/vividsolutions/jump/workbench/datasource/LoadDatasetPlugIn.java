@@ -229,7 +229,7 @@ public class LoadDatasetPlugIn extends ThreadedBasePlugIn {
     //[sstein 26.08.2006] added for toolbar
     public static MultiEnableCheck createEnableCheck(
         final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
         return new MultiEnableCheck().add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck());
     }

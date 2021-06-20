@@ -46,8 +46,6 @@ import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 import javax.swing.undo.UndoableEdit;
 
-import org.junit.Assert;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.Logger;
@@ -232,7 +230,9 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
       } while (m==null && (c=c.getSuperclass())!=null);
       if (m != null) {
         m.setAccessible(true);
-        return (EnableCheck) m.invoke(this, getContext().getWorkbenchContext());
+        PlugInContext pc = getContext();
+        if (pc==null) throw new IllegalArgumentException(getName());
+        return (EnableCheck) m.invoke(this, pc.getWorkbenchContext());
       }
     } catch (SecurityException|IllegalArgumentException|IllegalAccessException|InvocationTargetException e) {
       Logger.error(e);
@@ -424,19 +424,12 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
         .receive(command.toUndoableEdit());
   }
 
-  /**
-   * Utility method to fetch enable checks from enablechecked plugins.
-   * 
-   * @param plugin a PlugIn
-   * @return enable check
-   */
-  public static EnableCheck getEnableCheck(PlugIn plugin) {
-    return plugin instanceof EnableChecked ? ((EnableChecked) plugin)
-        .getEnableCheck() : null;
+  protected PlugInContext getContext() {
+    if (context == null) throw new RuntimeException("Add super.initialize() to your AbstractPlugIn.initialize() implementation!\n"+this.getClass().getName());
+    return context;
   }
 
-  private PlugInContext getContext() {
-    Assert.assertNotNull("Add super.initialize() to your AbstractPlugIn.initialize() implementation!",context);
-    return context;
+  protected WorkbenchContext getWorkbenchContext() {
+    return getContext().getWorkbenchContext();
   }
 }

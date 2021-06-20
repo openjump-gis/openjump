@@ -90,7 +90,7 @@ import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.model.Disposable;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 
-public class MrSIDReferencedImage extends WindowAdapter implements
+public class MrSIDReferencedImage implements
     ReferencedImage, Disposable {
 
   private SIDInfo sidInfo;
@@ -103,13 +103,6 @@ public class MrSIDReferencedImage extends WindowAdapter implements
   public MrSIDReferencedImage(SIDInfo info, String sidFilename) {
     this.sidInfo = info;
     this.sidFilename = sidFilename;
-    // cleanup handler
-    JUMPWorkbench.getInstance().getFrame().addWindowListener(this);
-  }
-
-  public void windowClosing(WindowEvent e) {
-    // cleanup
-    dispose();
   }
 
   public Envelope getEnvelope() {

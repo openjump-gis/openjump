@@ -50,20 +50,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class RedoPlugIn extends AbstractPlugIn {
-  private MultiEnableCheck check = new MultiEnableCheck().add(
-      EnableCheckFactory.getInstance()
-          .createWindowWithLayerManagerMustBeActiveCheck()).add(
-      new EnableCheck() {
-        public String check(JComponent component) {
-          UndoManager undoManager = ((LayerManagerProxy) JUMPWorkbench
-              .getInstance().getFrame().getActiveInternalFrame())
-              .getLayerManager().getUndoableEditReceiver().getUndoManager();
-          if (component != null)
-            component.setToolTipText(undoManager.getRedoPresentationName());
-          return (!undoManager.canRedo()) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn.nothing-to-redo") : null;
-        }
-      });;
-
   private ImageIcon icon = IconLoader.icon("Redo.gif");
 
   public RedoPlugIn() {
@@ -81,11 +67,21 @@ public class RedoPlugIn extends AbstractPlugIn {
     return true;
   }
 
-  public MultiEnableCheck createEnableCheck(
-      final WorkbenchContext workbenchContext) {
-    return check;
+  public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+    return new MultiEnableCheck().add(EnableCheckFactory.getInstance(workbenchContext).createWindowWithLayerManagerMustBeActiveCheck())
+        .add(new EnableCheck() {
+          public String check(JComponent component) {
+            UndoManager undoManager = ((LayerManagerProxy) JUMPWorkbench.getInstance().getFrame()
+                .getActiveInternalFrame()).getLayerManager().getUndoableEditReceiver().getUndoManager();
+            if (component != null)
+              component.setToolTipText(undoManager.getRedoPresentationName());
+            return (!undoManager.canRedo())
+                ? I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.RedoPlugIn.nothing-to-redo")
+                : null;
+          }
+        });
   }
-  
+
   public ImageIcon getIcon() {
     return icon;
   }

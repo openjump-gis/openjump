@@ -112,7 +112,7 @@ public class CopySchemaPlugIn extends AbstractPlugIn {
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
             .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
             .add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1));

@@ -116,7 +116,7 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
     Color fillColor = layerManager.generateLayerFillColor();
     FeatureCollection featureCollection = AddNewLayerPlugIn.createBlankFeatureCollection();
     Layer layer = new SpatialDSLayer(dsLayer.getFullName(), fillColor, featureCollection,
-        layerManager);
+        layerManager, workbenchContext);
     
     String geometryAttributeName = dsLayer.getGeoCol().getName();
     String whereClause = dsLayer.getWhereClause();

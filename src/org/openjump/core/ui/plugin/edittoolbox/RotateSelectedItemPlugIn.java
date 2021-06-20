@@ -85,7 +85,7 @@ public class RotateSelectedItemPlugIn extends AbstractPlugIn
         if (!rotateItemButtonAdded)
         {
             final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
-            toolbox.add(new RotateSelectedItemTool(new EnableCheckFactory(toolbox.getContext())));
+            toolbox.add(new RotateSelectedItemTool(context.getWorkbenchContext()));
             toolbox.finishAddingComponents();
             toolbox.validate();
             rotateItemButtonAdded = true;

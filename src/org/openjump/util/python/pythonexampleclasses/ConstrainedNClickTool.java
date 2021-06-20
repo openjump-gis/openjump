@@ -34,6 +34,8 @@ import java.awt.event.MouseEvent;
 
 import org.openjump.core.ui.plugin.edittoolbox.cursortools.ConstrainedMultiClickTool;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+
 import org.locationtech.jts.geom.Coordinate;
 
 /**
@@ -43,10 +45,10 @@ import org.locationtech.jts.geom.Coordinate;
 public abstract class ConstrainedNClickTool extends ConstrainedMultiClickTool {
     protected int n = 1; //number of clicks at which to finish the drawing
 
-    public ConstrainedNClickTool() 
-    {
+    public ConstrainedNClickTool(WorkbenchContext context) {
+      super(context);
     }
-    
+
     protected Coordinate getModelSource() {
         return (Coordinate) getCoordinates().get(0);
     }

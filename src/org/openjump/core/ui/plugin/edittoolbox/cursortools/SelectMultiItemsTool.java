@@ -4,6 +4,7 @@ import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.AbstractSelection;
 import com.vividsolutions.jump.workbench.ui.FeatureSelection;
@@ -37,8 +38,8 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
     private LayerViewPanel layerViewPanel;
     int x, y;
 
-    public SelectMultiItemsTool() {
-        super(FeatureSelectionRenderer.CONTENT_ID);
+    public SelectMultiItemsTool(WorkbenchContext context) {
+        super(context, FeatureSelectionRenderer.CONTENT_ID);
     }
 
     public Icon getIcon() {

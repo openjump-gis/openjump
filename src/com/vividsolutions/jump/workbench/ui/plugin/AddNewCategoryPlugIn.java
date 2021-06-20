@@ -97,7 +97,7 @@ public class AddNewCategoryPlugIn extends AbstractPlugIn {
     }
 
     public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-      return EnableCheckFactory.getInstance()
+      return EnableCheckFactory.getInstance(workbenchContext)
           .createWindowWithLayerViewPanelMustBeActiveCheck();
     }
   

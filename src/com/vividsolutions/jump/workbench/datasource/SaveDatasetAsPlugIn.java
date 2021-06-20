@@ -80,19 +80,20 @@ public class SaveDatasetAsPlugIn extends AbstractSaveDatasetAsPlugIn {
     }
     private DataSourceQueryChooserDialog getDialog() {
         String KEY = getClass().getName() + " - DIALOG";
-        if (null == getContext().getWorkbench().getBlackboard().get(KEY)) {
-            getContext().getWorkbench().getBlackboard().put(
+        WorkbenchContext context = getContext().getWorkbenchContext();
+        if (null == context.getBlackboard().get(KEY)) {
+           context.getBlackboard().put(
                     KEY,
                     new DataSourceQueryChooserDialog(
                             DataSourceQueryChooserManager
                                     .get(
-                                            getContext().getWorkbench()
+                                            context.getWorkbench()
                                                     .getBlackboard())
                                     .getSaveDataSourceQueryChoosers(),
-                            getContext().getWorkbench().getFrame(), getName(),
+                            context.getWorkbench().getFrame(), getName(),
                             true));
         }
-        DataSourceQueryChooserDialog dialog = (DataSourceQueryChooserDialog) getContext().getWorkbench().getBlackboard().get(KEY);
+        DataSourceQueryChooserDialog dialog = (DataSourceQueryChooserDialog) context.getWorkbench().getBlackboard().get(KEY);
         //dialog.getCurrentChooser().getComponent();
         dialog.setDialogTask(DataSourceQueryChooserDialog.SAVEDIALOG);
         return dialog;

@@ -37,6 +37,7 @@ import java.awt.geom.NoninvertibleTransformException;
 
 import javax.swing.Icon;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.AbstractVectorLayerFinder;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
@@ -45,7 +46,8 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class DrawIncrementalWarpingVectorTool extends VectorTool {
 
-    public DrawIncrementalWarpingVectorTool(WarpingPanel warpingPanel) {
+    public DrawIncrementalWarpingVectorTool(WorkbenchContext context, WarpingPanel warpingPanel) {
+        super(context);
         setColor(IncrementalWarpingVectorLayerFinder.COLOR);
         this.warpingPanel = warpingPanel;
     }

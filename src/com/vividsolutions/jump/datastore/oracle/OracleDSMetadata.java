@@ -13,6 +13,7 @@ import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
 import com.vividsolutions.jump.datastore.spatialdatabases.*;
 import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 
 import java.sql.Array;
 import java.sql.ResultSet;
@@ -190,8 +191,8 @@ public class OracleDSMetadata extends SpatialDatabasesDSMetadata {
             // Nico Ribot: TODO: returns a custom Ex ?
             if (this.missingGeoException(e)) {
                 // TODO: logger + I18N
-                JUMPWorkbench.getInstance().getFrame().log("not a " + this.getSpatialDbName()
-                        + " db or bad search_path", this.getClass());
+                Logger.error("not a " + this.getSpatialDbName()
+                        + " db or bad search_path", e);
             } else {
                 e.printStackTrace();
             }

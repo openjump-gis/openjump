@@ -61,6 +61,7 @@ import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.geom.CoordUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
@@ -80,8 +81,9 @@ public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescript
     private boolean shiftDown = false;
     private Cursor rotateCursor = createCursor(IconLoader.icon("RotateSelCursor.gif").getImage());;
 
-    public MoveSelectedItemsTool(EnableCheckFactory checkFactory) {
-        this.checkFactory = checkFactory;
+    public MoveSelectedItemsTool(WorkbenchContext context) {
+        super(context);
+        this.checkFactory = EnableCheckFactory.getInstance(context);
         setStroke(
             // change dashed line to solid line to fix bug id 3560828
             new BasicStroke(

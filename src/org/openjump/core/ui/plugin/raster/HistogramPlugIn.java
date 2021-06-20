@@ -142,19 +142,20 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         context.getFeatureInstaller().addMainMenuPlugin(this,
                 new String[] { MenuNames.RASTER }, NAME + "...", false, // checkbox
                 null, // icon
-                check());
+                check(context));
     }
 
     public Icon getIcon() {
         return ICON;
     }
 
-    public static MultiEnableCheck check() {
+    public static MultiEnableCheck check( PlugInContext c) {
         final EnableCheckFactory checkFactory = EnableCheckFactory
-                .getInstance();
+                .getInstance(c.getWorkbenchContext());
         return new MultiEnableCheck()
                 .add(checkFactory
                         .createWindowWithAssociatedTaskFrameMustBeActiveCheck())

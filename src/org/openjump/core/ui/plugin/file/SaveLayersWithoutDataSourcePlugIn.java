@@ -88,6 +88,7 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     }
     
     public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
       fileChooser = new JFCWithEnterAction();
       fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
       fileChooser.setDialogTitle(FILECHOOSER);
@@ -208,8 +209,7 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
      */
     public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
       final WorkbenchContext wc = workbenchContext;
-      EnableCheckFactory enableCheckFactory = new EnableCheckFactory(
-          workbenchContext);
+      EnableCheckFactory enableCheckFactory = EnableCheckFactory.getInstance(workbenchContext);
       MultiEnableCheck enableCheck = new MultiEnableCheck();
       enableCheck.add(enableCheckFactory
           .createWindowWithLayerManagerMustBeActiveCheck());

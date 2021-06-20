@@ -16,12 +16,14 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 
 public abstract class AbstractClickSelectedLineStringsTool extends
 		SpecifyFeaturesTool {
-	public AbstractClickSelectedLineStringsTool() {
+	public AbstractClickSelectedLineStringsTool(WorkbenchContext context) {
+	super(context);
 		setViewClickBuffer(10);
 	}
 
@@ -77,7 +79,7 @@ public abstract class AbstractClickSelectedLineStringsTool extends
 	}
 
 	private EnableCheckFactory checkFactory() {
-		return new EnableCheckFactory(getWorkbench().getContext());
+		return EnableCheckFactory.getInstance(getWorkbench().getContext());
 	}
 
 	protected abstract void gestureFinished(Collection nearbyLineStringFeatures)

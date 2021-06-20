@@ -49,8 +49,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
 
     public void initialize( PlugInContext context ) throws Exception {
         this.context = context;
-        EnableCheckFactory enableCheckFactory = new EnableCheckFactory( context
-            .getWorkbenchContext() );
+        EnableCheckFactory enableCheckFactory = context.getCheckFactory();
 
         EnableCheck enableCheck = new MultiEnableCheck()
                 .add(enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck())

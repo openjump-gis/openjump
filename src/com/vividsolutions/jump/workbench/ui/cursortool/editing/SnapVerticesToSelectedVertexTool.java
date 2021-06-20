@@ -39,6 +39,7 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
@@ -59,8 +60,8 @@ public class SnapVerticesToSelectedVertexTool extends QuasimodeTool {
         return NAME;
     }
 
-    public SnapVerticesToSelectedVertexTool(EnableCheckFactory checkFactory) {
-      super(new DrawRectangleFenceTool() {
+    public SnapVerticesToSelectedVertexTool(WorkbenchContext context) {
+      super(new DrawRectangleFenceTool(context) {
         public String getName() {
           return NAME;
         }
@@ -82,7 +83,7 @@ public class SnapVerticesToSelectedVertexTool extends QuasimodeTool {
         }
       });
       add(new ModifierKeySpec(false, true, false),
-          new SnapVerticesToSelectedVertexClickTool(checkFactory) {
+          new SnapVerticesToSelectedVertexClickTool(context) {
             public Cursor getCursor() {
               return SHIFT_DOWN_CURSOR;
             }

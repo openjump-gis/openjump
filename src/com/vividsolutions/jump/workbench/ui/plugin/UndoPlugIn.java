@@ -50,21 +50,6 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class UndoPlugIn extends AbstractPlugIn {
-  private MultiEnableCheck check = new MultiEnableCheck().add(
-      EnableCheckFactory.getInstance()
-          .createWindowWithLayerManagerMustBeActiveCheck()).add(
-      new EnableCheck() {
-        public String check(JComponent component) {
-          UndoManager undoManager = ((LayerManagerProxy) JUMPWorkbench
-              .getInstance().getFrame().getActiveInternalFrame())
-              .getLayerManager().getUndoableEditReceiver().getUndoManager();
-          if (component != null)
-            component.setToolTipText(undoManager.getUndoPresentationName());
-          return (!undoManager.canUndo()) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn.nothing-to-undo")
-              : null;
-        }
-      });
-
   private ImageIcon icon = IconLoader.icon("Undo.gif");
 
   public UndoPlugIn() {
@@ -82,9 +67,19 @@ public class UndoPlugIn extends AbstractPlugIn {
     return true;
   }
 
-  public MultiEnableCheck createEnableCheck(
-      final WorkbenchContext workbenchContext) {
-    return check;
+  public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+    return new MultiEnableCheck().add(EnableCheckFactory.getInstance(workbenchContext).createWindowWithLayerManagerMustBeActiveCheck())
+        .add(new EnableCheck() {
+          public String check(JComponent component) {
+            UndoManager undoManager = ((LayerManagerProxy) JUMPWorkbench.getInstance().getFrame()
+                .getActiveInternalFrame()).getLayerManager().getUndoableEditReceiver().getUndoManager();
+            if (component != null)
+              component.setToolTipText(undoManager.getUndoPresentationName());
+            return (!undoManager.canUndo())
+                ? I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn.nothing-to-undo")
+                : null;
+          }
+        });
   }
 
   public ImageIcon getIcon() {

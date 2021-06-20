@@ -57,7 +57,7 @@ import com.vividsolutions.jump.workbench.ui.warp.WarpingVectorLayerFinder;
 public class CopySelectedLayersToWarpingVectorsPlugIn extends AbstractPlugIn {
 
     public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
             .add(checkFactory.createTaskWindowMustBeActiveCheck())
             .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1))

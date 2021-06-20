@@ -38,6 +38,7 @@ import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -60,9 +61,9 @@ public class MoveVertexTool extends DragTool {
 
     private EnableCheckFactory checkFactory;
 
-    public MoveVertexTool(EnableCheckFactory checkFactory) {
-    	
-        this.checkFactory = checkFactory;
+    public MoveVertexTool(WorkbenchContext context) {
+        super(context);
+        this.checkFactory = EnableCheckFactory.getInstance(context);
         setColor(new Color(194, 179, 205));
         setStroke(new BasicStroke(5));
         allowSnapping();

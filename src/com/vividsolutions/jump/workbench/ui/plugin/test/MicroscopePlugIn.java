@@ -53,7 +53,7 @@ public class MicroscopePlugIn extends AbstractPlugIn {
     }
     public void initialize(PlugInContext context) throws Exception {
         EnableCheckFactory checkFactory =
-            new EnableCheckFactory(context.getWorkbenchContext());
+            EnableCheckFactory.getInstance(context.getWorkbenchContext());
         context
             .getFeatureInstaller()
 			.addMainMenuItem(

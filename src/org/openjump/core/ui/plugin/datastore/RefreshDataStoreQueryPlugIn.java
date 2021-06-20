@@ -101,7 +101,7 @@ public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
      */
     public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
 	    final WorkbenchContext wc = workbenchContext;
-	    EnableCheckFactory enableCheckFactory = new EnableCheckFactory(workbenchContext);
+	    EnableCheckFactory enableCheckFactory = EnableCheckFactory.getInstance(workbenchContext);
 	    MultiEnableCheck enableCheck = new MultiEnableCheck();
 	    enableCheck.add(enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck());
 	    enableCheck.add(enableCheckFactory.createAtLeastNLayerablesMustBeSelectedCheck(1, Layerable.class));

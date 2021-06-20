@@ -78,6 +78,7 @@ public class PythonToolsPlugIn extends ToolboxPlugInV2 {
   }
 
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
     context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.CUSTOMIZE });
   }
 
@@ -154,7 +155,7 @@ public class PythonToolsPlugIn extends ToolboxPlugInV2 {
 
   @Override
   public EnableCheck getEnableCheck() {
-    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance();
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(getWorkbenchContext());
     // add parent's enablecheck as well to switch en/disable states properly
     return new MultiEnableCheck().add(super.getEnableCheck()).add(checkFactory
         .createTaskWindowMustBeActiveCheck());

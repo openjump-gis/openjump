@@ -45,6 +45,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageFactory;
@@ -101,8 +102,7 @@ public class MrSIDImageFactory implements ReferencedImageFactory {
       return false;
     }
 
-    JUMPWorkbench.getInstance().getFrame()
-        .log("found Mrsid binaries in path", this.getClass());
+    Logger.info("found Mrsid binaries in path");
     return true;
   }
 

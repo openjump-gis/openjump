@@ -42,15 +42,6 @@ public class PasteItemsAtPlugIn extends PasteItemsPlugIn {
     this.setShortcutModifiers(KeyEvent.CTRL_MASK+KeyEvent.SHIFT_MASK);
   }
 
-  public void initialize(PlugInContext context) throws Exception {
-//    WorkbenchContext workbenchContext = context.getWorkbenchContext();
-//    FeatureInstaller featureInstaller = context.getFeatureInstaller();
-//    JPopupMenu popupMenu = LayerViewPanel.popupMenu();
-//    featureInstaller.addPopupMenuItem(popupMenu, this, getNameWithMnemonic()
-//        + "{pos:10}", false, this.getIcon(),
-//        this.createEnableCheck(workbenchContext));
-  }
-
   public boolean execute(final PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
 

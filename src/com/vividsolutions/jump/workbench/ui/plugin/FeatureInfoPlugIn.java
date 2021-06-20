@@ -64,7 +64,7 @@ public class FeatureInfoPlugIn extends AbstractPlugIn {
     public static EnableCheck createEnableCheck(
         WorkbenchContext workbenchContext) {
       if (checker == null) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         checker = new MultiEnableCheck()
             .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
             .add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck())

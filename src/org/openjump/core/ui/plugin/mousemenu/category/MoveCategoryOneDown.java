@@ -79,7 +79,7 @@ public class MoveCategoryOneDown extends AbstractPlugIn {
     
     public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
                 
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
         
         multiEnableCheck.add(checkFactory.createAtLeastNCategoriesMustBeSelectedCheck(1) );

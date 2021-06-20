@@ -51,6 +51,7 @@ import org.locationtech.jts.util.Assert;
 import org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintManager;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
@@ -74,11 +75,11 @@ public abstract class ConstrainedMultiClickTool extends AbstractCursorTool
     private ConstraintManager constraintManager;
 //    private LayerViewPanel panel;
     private WorkbenchFrame frame;
-     
-    public ConstrainedMultiClickTool()
-    {
-    	
+
+    public ConstrainedMultiClickTool(WorkbenchContext context) {
+      super(context);
     }
+
     /*    
     public boolean isRightMouseButtonUsed() //we want the right click to close the poly
     {
@@ -325,7 +326,7 @@ public abstract class ConstrainedMultiClickTool extends AbstractCursorTool
     public void activate(LayerViewPanel layerViewPanel)
     {
         super.activate(layerViewPanel);
-        constraintManager = new ConstraintManager(getContext());
+        constraintManager = new ConstraintManager(getWorkbenchContext());
         
         //following added to handle Backspace key deletes last vertex
         panel = layerViewPanel;

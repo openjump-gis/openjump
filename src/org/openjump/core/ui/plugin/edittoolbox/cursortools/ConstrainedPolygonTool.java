@@ -40,12 +40,15 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.valid.IsValidOp;
+
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public abstract class ConstrainedPolygonTool extends ConstrainedMultiClickTool {
-    public ConstrainedPolygonTool() 
+    public ConstrainedPolygonTool(WorkbenchContext context) 
     {
+        super(context);
         drawClosed = true;
     }
 

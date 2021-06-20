@@ -48,7 +48,7 @@ public class SelectMultiItemsPlugIn extends AbstractPlugIn {
         if (!selectMultiItemsButtonAdded) {
             final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
             toolbox.addToolBar();
-            toolbox.add(new SelectMultiItemsTool());
+            toolbox.add(new SelectMultiItemsTool(context.getWorkbenchContext()));
             toolbox.finishAddingComponents();
             toolbox.validate();
             selectMultiItemsButtonAdded = true;

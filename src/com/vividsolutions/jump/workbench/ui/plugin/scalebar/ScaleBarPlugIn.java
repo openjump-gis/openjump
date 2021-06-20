@@ -61,7 +61,7 @@ public class ScaleBarPlugIn extends AbstractPlugIn {
 
   @Override
   public EnableCheck getEnableCheck() {
-    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance();
+    EnableCheckFactory checkFactory = getContext().getCheckFactory();
     final WorkbenchContext workbenchContext = JUMPWorkbench.getInstance()
         .getContext();
     return new MultiEnableCheck().add(

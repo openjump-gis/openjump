@@ -118,7 +118,7 @@ public class SaveStylePlugIn extends ThreadedBasePlugIn {
     }
 
     public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        final EnableCheckFactory ecf = new EnableCheckFactory(workbenchContext);
+        final EnableCheckFactory ecf = EnableCheckFactory.getInstance(workbenchContext);
         final MultiEnableCheck mec = new MultiEnableCheck().add(
                 ecf.createWindowWithLayerNamePanelMustBeActiveCheck())
                 .add(ecf.createExactlyNLayerablesMustBeSelectedCheck(1,

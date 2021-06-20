@@ -42,6 +42,8 @@ import org.openjump.core.geomutils.Arc;
 import org.openjump.core.geomutils.GeoUtils;
 import org.openjump.core.geomutils.MathVector;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 
@@ -53,7 +55,11 @@ public abstract class ConstrainedMultiClickArcTool extends ConstrainedMultiClick
 {
     protected boolean clockwise = true;
     protected double fullAngle = 0.0;
-    
+
+    public ConstrainedMultiClickArcTool(WorkbenchContext context) {
+      super(context);
+    }
+
     protected Shape getShape() throws NoninvertibleTransformException
     {
         if (coordinates.size() > 1)

@@ -286,7 +286,7 @@ public class ReplaceValuePlugIn extends AbstractPlugIn implements ThreadedPlugIn
   }
 
   public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-  	EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+  	EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
   	return new MultiEnableCheck()
         .add(checkFactory.createExactlyOneSelectedLayerMustBeEditableCheck())
         .add(new EnableCheck(){

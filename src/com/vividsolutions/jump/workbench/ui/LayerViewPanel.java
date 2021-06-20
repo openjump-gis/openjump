@@ -423,6 +423,7 @@ public class LayerViewPanel extends JPanel
     Window window = SwingUtilities.windowForComponent(this);
     // Will not be a WorkbenchFrame in apps that don't use the workbench
     // e.g. LayerViewPanelDemoFrame. [Jon Aquino]
+    Assert.isTrue(window != null, "LayerViewPanel should have a parent WorkbenchFrame");
     return (window instanceof WorkbenchFrame) ? (WorkbenchFrame) window : null;
   }
 

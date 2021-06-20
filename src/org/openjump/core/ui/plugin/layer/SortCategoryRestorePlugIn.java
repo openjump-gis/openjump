@@ -73,6 +73,7 @@ public class SortCategoryRestorePlugIn extends AbstractPlugIn {
 	private String menuLabel = "Restore";
 
 	public void initialize(PlugInContext context) throws Exception {
+	  super.initialize(context);
 
 		menuLabel = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategoryRestorePlugIn.Restore");
 

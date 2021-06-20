@@ -69,7 +69,7 @@ public class CopyThisCoordinatePlugIn extends AbstractPlugIn {
     public static MultiEnableCheck createEnableCheck(
         WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory =
-            new EnableCheckFactory(workbenchContext);
+            EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck().add(
             checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
     }

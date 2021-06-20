@@ -112,10 +112,10 @@ public abstract class AbstractSpatialDatabasesDSDriver implements
       InstantiationException, IllegalAccessException, ClassNotFoundException {
     // we always use the plugin classloader to find jdbc jars
     // under lib/ext/<subfolder>/
-    ClassLoader cl = JUMPWorkbench.getInstance().getPlugInManager()
-        .getClassLoader();
-    jdbcDriver = (Driver) Class.forName(this.getJdbcClass(), true, cl)
-        .newInstance();
+//  [ede 202106] should be obsolete, PluginClassloader is default system classloader since some time now
+//    ClassLoader cl = JUMPWorkbench.getInstance().getPlugInManager()
+//        .getClassLoader();
+    jdbcDriver = (Driver) Class.forName(this.getJdbcClass()).newInstance();
     // DriverManager insists on jdbc drivers loaded with the default
     // classloader, so we wrap our foreign one into a simple wrapper
     // see

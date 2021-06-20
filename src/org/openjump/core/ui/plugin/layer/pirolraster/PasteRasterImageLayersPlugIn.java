@@ -100,7 +100,7 @@ public class PasteRasterImageLayersPlugIn extends LayerableClipboardPlugIn {
     }
 
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
         return new MultiEnableCheck().add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck());
         		//-- [sstein] 28.Feb.2009 -- commented this part to enable pasting 

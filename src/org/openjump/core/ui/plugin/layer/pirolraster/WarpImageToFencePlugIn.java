@@ -160,8 +160,7 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
             final WorkbenchContext workbenchContext) {
 
         MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         multiEnableCheck.add(checkFactory
                 .createExactlyNLayerablesMustBeSelectedCheck(1,
                         RasterImageLayer.class));

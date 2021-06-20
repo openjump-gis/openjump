@@ -42,6 +42,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -49,8 +50,8 @@ import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
 public class SnapVerticesToSelectedVertexClickTool extends NClickTool {
     private EnableCheckFactory checkFactory;
     private GeometryFactory factory = new GeometryFactory();
-    public SnapVerticesToSelectedVertexClickTool(EnableCheckFactory checkFactory) {
-        super(1);
+    public SnapVerticesToSelectedVertexClickTool(WorkbenchContext context) {
+        super(context, 1);
         this.checkFactory = checkFactory;
     }
     public Icon getIcon() {

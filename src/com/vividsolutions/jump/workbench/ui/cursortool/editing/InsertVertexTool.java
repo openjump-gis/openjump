@@ -53,6 +53,7 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.CoordUtil;
 import com.vividsolutions.jump.util.CoordinateArrays;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
@@ -63,9 +64,9 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 public class InsertVertexTool extends NClickTool {
 	private static final int PIXEL_RANGE = 5;
 	private EnableCheckFactory checkFactory;
-	public InsertVertexTool(EnableCheckFactory checkFactory) {
-		super(1);
-		this.checkFactory = checkFactory;
+	public InsertVertexTool(WorkbenchContext context) {
+		super(context, 1);
+		this.checkFactory = EnableCheckFactory.getInstance(context);
 	}
 	private double modelRange() {
 		return PIXEL_RANGE / getPanel().getViewport().getScale();

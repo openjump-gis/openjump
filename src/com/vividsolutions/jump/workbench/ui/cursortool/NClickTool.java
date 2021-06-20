@@ -36,6 +36,8 @@ import java.awt.event.MouseEvent;
 
 import org.locationtech.jts.geom.Coordinate;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+
 
 /**
  * Whereas a MultiClickTool looks for a double-click to end the gesture,
@@ -45,7 +47,8 @@ public abstract class NClickTool extends MultiClickTool {
     //This class has been tested only with n=1 and n=2. [Jon Aquino]
     private int n;
 
-    public NClickTool(int n) {
+    public NClickTool(WorkbenchContext context, int n) {
+        super(context);
         this.n = n;
     }
     

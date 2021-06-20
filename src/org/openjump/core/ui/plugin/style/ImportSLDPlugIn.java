@@ -49,7 +49,6 @@ import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.xml.parsers.DocumentBuilderFactory.newInstance;
-import static org.apache.log4j.Logger.getLogger;
 import static org.openjump.util.SLDImporter.getBasicStyle;
 import static org.openjump.util.SLDImporter.getColorThemingStyle;
 import static org.openjump.util.SLDImporter.getLabelStyle;
@@ -393,7 +392,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
      * @return the enable check
      */
     public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory ecf = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory ecf = EnableCheckFactory.getInstance(workbenchContext);
         MultiEnableCheck mec = new MultiEnableCheck()
             .add(ecf.createWindowWithLayerNamePanelMustBeActiveCheck())
             .add(ecf.createExactlyNLayerablesMustBeSelectedCheck(1, Layerable.class));

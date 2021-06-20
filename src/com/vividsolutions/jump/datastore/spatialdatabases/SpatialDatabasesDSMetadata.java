@@ -10,6 +10,7 @@ import com.vividsolutions.jump.datastore.jdbc.ResultSetBlock;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -294,8 +295,8 @@ public class SpatialDatabasesDSMetadata implements DataStoreMetadata {
       // Nico Ribot: TODO: returns a custom Ex ?
       if (this.missingGeoException(e)) {
         // TODO: logger + I18N
-        JUMPWorkbench.getInstance().getFrame().log("not a " + this.getSpatialDbName()
-                + " db or bad search_path", this.getClass());
+        Logger.error("not a " + this.getSpatialDbName()
+                + " db or bad search_path", e);
       } else {
         e.printStackTrace();
       }

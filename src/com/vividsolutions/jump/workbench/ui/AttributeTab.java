@@ -226,7 +226,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
     	
     	
     	/*
-    	EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    	EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
     	
     	  SaveDatasetsPlugIn saveDatasetsPlugIn = new SaveDatasetsPlugIn();
           toolBar.add(

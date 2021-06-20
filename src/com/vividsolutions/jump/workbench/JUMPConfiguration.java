@@ -167,7 +167,7 @@ public class JUMPConfiguration implements Setup {
     workbenchContext.getWorkbench().getBlackboard()
         .put(SnapToVerticesPolicy.ENABLED_KEY, true);
 
-    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
     FeatureInstaller featureInstaller = FeatureInstaller.getInstance(workbenchContext);
     configureToolBar(workbenchContext, checkFactory);
     configureMainMenus(workbenchContext, checkFactory, featureInstaller);
@@ -294,11 +294,11 @@ public class JUMPConfiguration implements Setup {
     frame.getToolBar().addPlugIn(newTaskPlugIn.getIcon(20), newTaskPlugIn,
         NewTaskPlugIn.createEnableCheck(workbenchContext), workbenchContext);
     frame.getToolBar().addSeparator();
-    add(new ZoomTool(), workbenchContext);
-    add(new PanTool(), workbenchContext);
+    add(new ZoomTool(workbenchContext), workbenchContext);
+    add(new PanTool(workbenchContext), workbenchContext);
     // Test for the new Zoom/Pan tool, comment the following line out, if it
     // makes problems
-    add(new SuperZoomPanTool(), workbenchContext);
+    add(new SuperZoomPanTool(workbenchContext), workbenchContext);
     frame.getToolBar().addSeparator();
     frame.getToolBar().addPlugIn(zoomToFullExtentPlugIn.getIcon(new Dimension(20, 20)),
         zoomToFullExtentPlugIn,
@@ -308,7 +308,7 @@ public class JUMPConfiguration implements Setup {
         zoomToSelectedItemsPlugIn,
         ZoomToSelectedItemsPlugIn.createEnableCheck(workbenchContext),
         workbenchContext);
-    add(new ZoomRealtimeTool(), workbenchContext); // TODO: move to
+    add(new ZoomRealtimeTool(workbenchContext), workbenchContext); // TODO: move to
                                                    // OpenJumpConfiguration if
                                                    // possible
     frame.getToolBar().addPlugIn(
@@ -333,7 +333,7 @@ public class JUMPConfiguration implements Setup {
         workbenchContext);
     frame.getToolBar().addSeparator();
 
-    SelectFeaturesTool sft = new SelectFeaturesTool();
+    SelectFeaturesTool sft = new SelectFeaturesTool(workbenchContext);
     add( sft, workbenchContext);
     // [mmichaud 2012-07-12] by default, the first CursorTool (zoom) is
     // activated. After that, the SelectTool button will be selected.
@@ -350,9 +350,9 @@ public class JUMPConfiguration implements Setup {
       public String getName() {
         return I18N.getInstance().get("JUMPConfiguration.fence");
       }
-    }.add(new DrawRectangleFenceTool()).add(new DrawPolygonFenceTool()),
+    }.add(new DrawRectangleFenceTool(workbenchContext)).add(new DrawPolygonFenceTool(workbenchContext)),
         workbenchContext);
-    add(new FeatureInfoTool(), workbenchContext);
+    add(new FeatureInfoTool(workbenchContext), workbenchContext);
     frame.getToolBar().addSeparator();
     configureEditingButton(workbenchContext);
     frame.getToolBar().addSeparator();

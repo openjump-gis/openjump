@@ -75,9 +75,9 @@ public class DrawCustomTool extends ConstrainedNClickTool {
     private ActivationListener activationListener = null;
     private DeActivationListener deActivationListener = null;
     
-    public DrawCustomTool(FeatureDrawingUtil featureDrawingUtil)
+    public DrawCustomTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil)
     {
-    	super();
+    	super(context);
     	drawClosed = false;
     	this.featureDrawingUtil = featureDrawingUtil;
     }

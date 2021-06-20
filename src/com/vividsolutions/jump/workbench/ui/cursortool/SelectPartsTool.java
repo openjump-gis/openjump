@@ -34,14 +34,15 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import javax.swing.Icon;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.PartSelectionRenderer;
 
 public class SelectPartsTool extends SelectTool {
 
-    public SelectPartsTool() {
-        super(PartSelectionRenderer.CONTENT_ID);
+    public SelectPartsTool(WorkbenchContext context) {
+        super(context, PartSelectionRenderer.CONTENT_ID);
     }
 
     public Icon getIcon() {

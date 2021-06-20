@@ -97,10 +97,10 @@ public class RasterQueryDragTool extends RectangleTool {
  
     RasterImageLayer rLayer;
 
-    public RasterQueryDragTool() {
-    	setColor(Color.red);
-   	 	setStroke(new BasicStroke(1.5F));
-
+    public RasterQueryDragTool(WorkbenchContext context) {
+      super(context);
+      setColor(Color.red);
+      setStroke(new BasicStroke(1.5F));
     }
 
     @Override
@@ -154,8 +154,7 @@ public class RasterQueryDragTool extends RectangleTool {
 
     public MultiEnableCheck createEnableCheck(
             final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         /*
          * Works only with one selected RasterImageLayer
          */

@@ -47,6 +47,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -92,8 +94,8 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
 	private String sAccuracy = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Circle-Accuracy");
 	private String sReset = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.too-small-tolerance-reset-to-300-segments");
 	    
-	private DrawCircleWithGivenRadiusTool(FeatureDrawingUtil featureDrawingUtil) {
-		super(1);
+	private DrawCircleWithGivenRadiusTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil) {
+		super(context, 1);
 		this.featureDrawingUtil = featureDrawingUtil;
         setStroke(
                 new BasicStroke(
@@ -106,11 +108,11 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
         this.allowSnapping();       
 	}
 		
-    public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy) {
-        FeatureDrawingUtil featureDrawingUtil = new FeatureDrawingUtil(layerNamePanelProxy);
+    public static CursorTool create(WorkbenchContext context) {
+        FeatureDrawingUtil featureDrawingUtil = new FeatureDrawingUtil(context);
         
         return featureDrawingUtil.prepare(
-        		new DrawCircleWithGivenRadiusTool(featureDrawingUtil), true);
+        		new DrawCircleWithGivenRadiusTool(context, featureDrawingUtil), true);
     }
 
     /******************  events ********************************/
@@ -152,7 +154,7 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
             getPanel().getContext().warnUser(isValidOp.getValidationError()
                                                       .getMessage());
 
-            if (PersistentBlackboardPlugIn.get(getContext())
+            if (PersistentBlackboardPlugIn.get(getWorkbenchContext())
 					.get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
                 return false;
             }

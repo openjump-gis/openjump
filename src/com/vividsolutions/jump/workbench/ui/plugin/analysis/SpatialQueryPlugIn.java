@@ -94,13 +94,14 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
   }
 
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
     context.getFeatureInstaller().addMainMenuPlugin(this,
         new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QUERIES });
 
   }
   
   public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+      EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
       return new MultiEnableCheck()
                       .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())

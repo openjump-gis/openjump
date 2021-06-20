@@ -60,6 +60,7 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -72,13 +73,15 @@ public class ConstrainedMoveVertexTool extends ConstrainedDragTool {
     final static String  noEditableSelectionHandlesHere =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexTool.No-editable-selection-handles-here");
     
     public final static int TOLERANCE = 5;
-    private EnableCheckFactory checkFactory;
+
     //private int vertexIndex; //used in getShape
     private Coordinate prevPoint = null; //used in getShape
     private Coordinate nextPoint = null; //used in getShape
+    private EnableCheckFactory checkFactory;
 
-    public ConstrainedMoveVertexTool(EnableCheckFactory checkFactory) {
-        this.checkFactory = checkFactory;
+    public ConstrainedMoveVertexTool(WorkbenchContext context) {
+        super(context);
+        checkFactory = EnableCheckFactory.getInstance(context);
         setColor(new Color(194, 179, 205));
         setStroke(new BasicStroke(5));
         allowSnapping();

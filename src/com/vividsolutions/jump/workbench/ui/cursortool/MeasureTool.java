@@ -38,6 +38,7 @@ import java.util.ArrayList;
 
 import javax.swing.Icon;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 
@@ -52,7 +53,8 @@ public class MeasureTool
     extends MultiClickTool
 {
 
-  public MeasureTool() {
+  public MeasureTool(WorkbenchContext context) {
+    super(context);
     allowSnapping();
     setMetricsDisplay(new CoordinateListMetrics());
     setCloseRing(true);

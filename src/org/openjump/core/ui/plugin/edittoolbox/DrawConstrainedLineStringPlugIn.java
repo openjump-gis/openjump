@@ -85,7 +85,7 @@ public class DrawConstrainedLineStringPlugIn extends AbstractPlugIn
     {
         try
         {
-            CursorTool linestringTool = DrawConstrainedLineStringTool.create((LayerNamePanelProxy) context.getActiveInternalFrame());
+            CursorTool linestringTool = DrawConstrainedLineStringTool.create(context.getWorkbenchContext());
             context.getLayerViewPanel().setCurrentCursorTool(linestringTool); 
             return true;
         }

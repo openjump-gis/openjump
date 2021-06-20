@@ -74,6 +74,9 @@
     <plug-in>
         org.openjump.core.ui.plugin.datastore.postgis2.SaveToPostGIS2PlugIn
     </plug-in>
+    <extension>
+        com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool$Setup
+    </extension>
     <!--extension>
         de.latlon.deejump.wfs.WFSExtension
     </extension-->

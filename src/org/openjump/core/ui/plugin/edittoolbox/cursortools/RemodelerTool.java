@@ -25,7 +25,8 @@ import java.util.List;
 
 public class RemodelerTool extends MultiClickTool {
 
-  public RemodelerTool() {
+  public RemodelerTool(WorkbenchContext context) {
+    super(context);
     setColor(Color.red);
     setStroke(new BasicStroke(1.5f, // Width
             BasicStroke.CAP_SQUARE,        // End cap

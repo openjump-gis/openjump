@@ -432,8 +432,7 @@ public class SchemaPanel extends JPanel {
 
     public static MultiEnableCheck createPasteEnableCheck(
             WorkbenchContext workbenchContext) {
-        final EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        final EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
         return new MultiEnableCheck()
 

@@ -39,6 +39,8 @@ import java.util.Collection;
 import javax.swing.Icon;
 
 import org.locationtech.jts.util.Assert;
+
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.AbstractVectorLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
@@ -47,8 +49,9 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class DeleteIncrementalWarpingVectorTool extends AbstractDeleteVectorTool {
 
-    public DeleteIncrementalWarpingVectorTool(WarpingPanel warpingPanel) {
-        this.warpingPanel = warpingPanel;
+    public DeleteIncrementalWarpingVectorTool(WorkbenchContext context, WarpingPanel warpingPanel) {
+      super(context);
+      this.warpingPanel = warpingPanel;
     }
 
     private WarpingPanel warpingPanel;

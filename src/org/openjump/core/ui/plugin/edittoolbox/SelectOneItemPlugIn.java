@@ -84,7 +84,7 @@ public class SelectOneItemPlugIn extends AbstractPlugIn
         if (!selectOneItemButtonAdded)
         {
             final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
-            toolbox.add(new SelectOneItemTool());
+            toolbox.add(new SelectOneItemTool(context.getWorkbenchContext()));
             toolbox.finishAddingComponents();
             toolbox.validate();
             selectOneItemButtonAdded = true;

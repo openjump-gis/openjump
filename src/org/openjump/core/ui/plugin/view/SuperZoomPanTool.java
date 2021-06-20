@@ -30,6 +30,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
@@ -75,7 +76,8 @@ public class SuperZoomPanTool extends DragTool implements MouseWheelListener {
     private int indicatorMode = INDICATOR_MODE_IMAGE;
     private Point imagePosition = null;
 
-	public SuperZoomPanTool() {
+	public SuperZoomPanTool(WorkbenchContext context) {
+	  super(context);
 	}
 
 	@Override

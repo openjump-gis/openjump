@@ -49,6 +49,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -71,7 +72,8 @@ public class ZoomRealtimeTool extends AbstractZoomTool
   private boolean rightMouse = false;
   private static final String sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ZoomRealtimeTool.Zoom-Realtime");
 
-  public ZoomRealtimeTool() {
+  public ZoomRealtimeTool(WorkbenchContext context) {
+    super(context);
   }
 
   public Cursor getCursor() {

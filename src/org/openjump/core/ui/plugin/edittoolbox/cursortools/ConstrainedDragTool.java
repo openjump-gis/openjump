@@ -48,6 +48,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintManager;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
 
@@ -56,11 +57,11 @@ import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
  *  (even to draw nothing).
  */
 public abstract class ConstrainedDragTool extends AbstractCursorTool {
-	
-	final static String lengthST =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.length");
-	final static String angleST =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.angle");
-	final static String degrees =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
-	
+
+    final static String lengthST = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.length");
+    final static String angleST = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.angle");
+    final static String degrees = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
+  
     public static final int DEFAULT_VIEW_CLICK_BUFFER = 2;
     private int viewClickBuffer = DEFAULT_VIEW_CLICK_BUFFER;
     /** Modify using #setSource */
@@ -68,11 +69,16 @@ public abstract class ConstrainedDragTool extends AbstractCursorTool {
     /** Modify using #setDestination */
     protected Coordinate modelDestination = null;
     private boolean dragApproved = false;
-
+  
     protected List coordinates = new ArrayList();
     private Coordinate tentativeCoordinate;
     private ConstraintManager constraintManager;
-   /**
+
+    public ConstrainedDragTool(WorkbenchContext context) {
+      super(context);
+    }
+
+  /**
      * Begins handling of the drag. Subclasses can prevent handling of the drag
      * by overriding this method and not calling it.
      */
@@ -241,6 +247,6 @@ public abstract class ConstrainedDragTool extends AbstractCursorTool {
     public void activate(LayerViewPanel layerViewPanel)
     {
         super.activate(layerViewPanel);
-        constraintManager = new ConstraintManager(getContext());
+        constraintManager = new ConstraintManager(getWorkbenchContext());
     }
 }

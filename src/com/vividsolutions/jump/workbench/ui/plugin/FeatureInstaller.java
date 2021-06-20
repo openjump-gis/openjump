@@ -137,7 +137,7 @@ public class FeatureInstaller {
 
   private FeatureInstaller(WorkbenchContext workbenchContext) {
     this.workbenchContext = workbenchContext;
-    checkFactory = new EnableCheckFactory(workbenchContext);
+    checkFactory = EnableCheckFactory.getInstance(workbenchContext);
   }
 
   public static FeatureInstaller getInstance( WorkbenchContext context ) {
@@ -549,7 +549,7 @@ public class FeatureInstaller {
       updateSeparatorsFromProps(menu, menu);
 
     // fetch a check, if none already
-    enableCheck = enableCheck == null && plugin instanceof EnableChecked ? ((EnableChecked) plugin)
+    enableCheck = ( enableCheck == null && plugin instanceof EnableChecked ) ? ((EnableChecked) plugin)
         .getEnableCheck() : enableCheck;
 
     if (enableCheck != null) {

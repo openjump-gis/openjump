@@ -88,7 +88,7 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
   }
   
   public EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+      EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
       return new MultiEnableCheck()
           .add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck())
           .add(checkFactory.createAtLeastNLayersMustExistCheck(1));

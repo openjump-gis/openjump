@@ -33,9 +33,7 @@ import com.vividsolutions.wms.WMService;
 public class ZoomToWMSLayerPlugIn extends AbstractPlugIn {
 
     public void initialize( PlugInContext context ) throws Exception {
-        EnableCheckFactory enableCheckFactory = new EnableCheckFactory( context
-            .getWorkbenchContext() );
-
+        EnableCheckFactory enableCheckFactory = context.getCheckFactory();
 
         EnableCheck enableCheck = new MultiEnableCheck()
             .add(enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck())

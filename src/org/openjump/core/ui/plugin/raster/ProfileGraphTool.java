@@ -48,6 +48,7 @@ import org.openjump.core.rasterimage.RasterImageLayer;
 
 import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -67,7 +68,8 @@ public class ProfileGraphTool extends MultiClickTool {
     public static Coordinate currCoord;
     public Coordinate[] coordinates;
 
-    public ProfileGraphTool() {
+    public ProfileGraphTool(WorkbenchContext context) {
+        super(context);
         allowSnapping();
     }
 

@@ -71,7 +71,7 @@ public class DuplicateItemPlugIn extends AbstractPlugIn {
 		 
 		 new CopySelectedItemsPlugIn().execute(context);
 		 new PasteItemsPlugIn().execute(context);
-         context.getLayerViewPanel().setCurrentCursorTool(new MoveSelectedItemsTool(context.getCheckFactory())); 
+         context.getLayerViewPanel().setCurrentCursorTool(new MoveSelectedItemsTool(context.getWorkbenchContext())); 
         
          return true;
 	 }
@@ -86,7 +86,7 @@ public class DuplicateItemPlugIn extends AbstractPlugIn {
 	    }
 	
 	 public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-	        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+	        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
 	        return new MultiEnableCheck()
 	            .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())

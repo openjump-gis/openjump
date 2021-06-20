@@ -83,7 +83,7 @@ public class FillPolygonTool extends NClickTool {
   final JDialog progressDialog;
 
   public FillPolygonTool(WorkbenchContext context) {
-    super(1);
+    super(context, 1);
     this.context = context;
     okCancelDialog = new OKCancelDialog(
           context.getWorkbench().getFrame(),

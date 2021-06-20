@@ -92,7 +92,7 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn {
     }
 
     public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance();
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
         
         multiEnableCheck.add( checkFactory.createAtLeastNCategoriesMustBeSelectedCheck(1) );

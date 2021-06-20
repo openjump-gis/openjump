@@ -65,7 +65,7 @@ public class SelectablePlugIn extends AbstractPlugIn implements CheckBoxed{
     }
 
     public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
             .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
             .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1))

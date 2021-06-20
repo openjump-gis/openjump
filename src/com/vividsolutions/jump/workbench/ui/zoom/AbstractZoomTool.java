@@ -35,6 +35,8 @@ package com.vividsolutions.jump.workbench.ui.zoom;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
+
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -55,14 +57,18 @@ public abstract class AbstractZoomTool extends DragTool {
     static final int BOX_TOLERANCE = 4;
     static final double ZOOM_IN_FACTOR = 2;
     
-	protected Image origImage;
-	protected Image auxImage = null;
-	protected double scale = 1d;
-	protected int mouseWheelCount = 0;
-	protected Point2D.Double zoomTo = new Point2D.Double(0,0);
-    private boolean isAnimatingZoom = false;  //deafult to no zoom animation
-	private Timer mouseWheelUpdateTimer = null;
-    
+    protected Image origImage;
+    protected Image auxImage = null;
+    protected double scale = 1d;
+    protected int mouseWheelCount = 0;
+    protected Point2D.Double zoomTo = new Point2D.Double(0, 0);
+    private boolean isAnimatingZoom = false; // deafult to no zoom animation
+    private Timer mouseWheelUpdateTimer = null;
+
+    public AbstractZoomTool(WorkbenchContext context) {
+      super(context);
+    }
+
     public boolean setAnimatingZoom(boolean animating) {
     	boolean previousValue = isAnimatingZoom;
     	isAnimatingZoom = animating;

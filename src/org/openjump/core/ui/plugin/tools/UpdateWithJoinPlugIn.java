@@ -65,7 +65,7 @@ public class UpdateWithJoinPlugIn extends AbstractThreadedUiPlugIn {
     }
 
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
                 .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck())
                 .add(checkFactory.createAtLeastNLayersMustExistCheck(2));

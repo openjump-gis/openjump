@@ -120,7 +120,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     public void initialize(PlugInContext context) throws Exception {
         context.getFeatureInstaller().addMainMenuPlugin(this,
                 new String[] { MenuNames.RASTER }, getName() + "...", false,
-                getIcon(), check());
+                getIcon(), check(context));
     }
 
     @Override
@@ -128,9 +128,9 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
     	return sName;
     }
     
-    public static MultiEnableCheck check() {
+    public static MultiEnableCheck check(PlugInContext c) {
         final EnableCheckFactory checkFactory = EnableCheckFactory
-                .getInstance();
+                .getInstance(c.getWorkbenchContext());
         return new MultiEnableCheck()
                 .add(checkFactory
                         .createWindowWithAssociatedTaskFrameMustBeActiveCheck())
@@ -297,7 +297,7 @@ public class ProfileGraphPlugIn extends ThreadedBasePlugIn {
             }
         }
         if (drawnType) {
-            final ProfileGraphTool profileTool = new ProfileGraphTool();
+            final ProfileGraphTool profileTool = new ProfileGraphTool(context.getWorkbenchContext());
 
             context.getLayerViewPanel().setCurrentCursorTool(profileTool);
         } else if (selectedType) {

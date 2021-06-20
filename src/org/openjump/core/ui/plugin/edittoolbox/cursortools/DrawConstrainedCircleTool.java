@@ -51,6 +51,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
@@ -64,17 +65,18 @@ public class DrawConstrainedCircleTool extends ConstrainedMultiClickTool {
     final static String theCircleMustHaveAtLeast2Points = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedCircleTool.The-circle-must-have-at-least-2-points");
     final static String sArea = I18N.getInstance().get("ui.cursortool.CoordinateListMetrics.Area");
 
-    private DrawConstrainedCircleTool(FeatureDrawingUtil featureDrawingUtil) {
+    private DrawConstrainedCircleTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil) {
+        super(context);
         drawClosed = true;
         this.featureDrawingUtil = featureDrawingUtil;
     }
 
-    public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy) {
+    public static CursorTool create(WorkbenchContext context) {
         FeatureDrawingUtil featureDrawingUtil = new FeatureDrawingUtil(
-                layerNamePanelProxy);
+                context);
 
         return featureDrawingUtil.prepare(new DrawConstrainedCircleTool(
-                featureDrawingUtil), true);
+                context,featureDrawingUtil), true);
     }
 
     @Override
