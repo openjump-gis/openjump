@@ -38,12 +38,15 @@ import java.awt.geom.NoninvertibleTransformException;
 import javax.swing.Icon;
 
 import org.locationtech.jts.geom.Polygon;
+
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 
 public class DrawPolygonFenceTool extends PolygonTool {
-    public DrawPolygonFenceTool() {
+    public DrawPolygonFenceTool(WorkbenchContext context) {
+        super(context);
         setColor(DrawRectangleFenceTool.COLOR);
     }
 

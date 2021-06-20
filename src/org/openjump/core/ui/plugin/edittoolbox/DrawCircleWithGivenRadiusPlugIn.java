@@ -91,7 +91,7 @@ public class DrawCircleWithGivenRadiusPlugIn extends AbstractPlugIn{
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);        
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);        
         return new MultiEnableCheck()
 						.add(checkFactory.createSelectedLayersMustBeEditableCheck());        
     }
@@ -100,7 +100,7 @@ public class DrawCircleWithGivenRadiusPlugIn extends AbstractPlugIn{
 	public boolean execute(PlugInContext context) throws Exception{	    
         try
         {
-            CursorTool circleTool = DrawCircleWithGivenRadiusTool.create((LayerNamePanelProxy) context.getActiveInternalFrame());
+            CursorTool circleTool = DrawCircleWithGivenRadiusTool.create(context.getWorkbenchContext());
             context.getLayerViewPanel().setCurrentCursorTool(circleTool); 
 
         }

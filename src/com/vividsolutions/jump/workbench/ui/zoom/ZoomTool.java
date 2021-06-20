@@ -44,6 +44,7 @@ import javax.swing.SwingUtilities;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.MathUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
@@ -56,8 +57,9 @@ public class ZoomTool extends AbstractZoomTool {
      */
     public static final String ZOOM_TOOL_NAME = I18N.getInstance().get("ui.zoom.ZoomTool.zoom-in-out");
 
-    public ZoomTool() {                        
-        setColor(Color.black);
+    public ZoomTool(WorkbenchContext context) {
+      super(context);
+      setColor(Color.black);
     }
 
     public Icon getIcon() {                         

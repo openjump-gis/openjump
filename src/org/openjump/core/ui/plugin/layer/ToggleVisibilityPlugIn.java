@@ -61,6 +61,7 @@ public class ToggleVisibilityPlugIn extends AbstractPlugIn {
   private final static String layerName = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Layer-Name");
 
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
     WorkbenchContext workbenchContext = context.getWorkbenchContext();
 
     FeatureInstaller featureInstaller = context.getFeatureInstaller();
@@ -114,7 +115,7 @@ public class ToggleVisibilityPlugIn extends AbstractPlugIn {
   // /** @deprecated */
   // public static MultiEnableCheck createEnableCheck(
   // WorkbenchContext workbenchContext) {
-  // EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+  // EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
   // return new MultiEnableCheck().add(
   // checkFactory.createWindowWithSelectionManagerMustBeActiveCheck()).add(
   // checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
@@ -122,7 +123,7 @@ public class ToggleVisibilityPlugIn extends AbstractPlugIn {
 
   public static MultiEnableCheck createEnableCheck(
       final WorkbenchContext workbenchContext) {
-    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
     MultiEnableCheck mec = new MultiEnableCheck();
 
     mec.add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck());

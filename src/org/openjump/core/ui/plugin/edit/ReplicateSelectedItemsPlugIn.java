@@ -88,7 +88,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
     }
 
     public void initialize(PlugInContext context) throws Exception {
-
+        super.initialize(context);
         /*
          * context.getFeatureInstaller().addPopupMenuItem(
          * LayerViewPanel.popupMenu(), this,
@@ -111,8 +111,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
 
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
         return new MultiEnableCheck().add(checkFactory
                 .createAtLeastNItemsMustBeSelectedCheck(1));

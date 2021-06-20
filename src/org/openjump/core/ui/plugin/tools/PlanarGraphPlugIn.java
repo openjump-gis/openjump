@@ -207,8 +207,8 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
                 new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT},
                 this.getName(), false, null, 
                 new MultiEnableCheck()
-                        .add(new EnableCheckFactory(context.getWorkbenchContext()).createTaskWindowMustBeActiveCheck())
-                        .add(new EnableCheckFactory(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(1))
+                        .add(EnableCheckFactory.getInstance(context.getWorkbenchContext()).createTaskWindowMustBeActiveCheck())
+                        .add(EnableCheckFactory.getInstance(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(1))
                 ); 
     }
    

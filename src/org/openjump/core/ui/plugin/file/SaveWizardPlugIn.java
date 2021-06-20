@@ -128,7 +128,7 @@ public class SaveWizardPlugIn extends AbstractThreadedUiPlugIn {
   }
 
   public EnableCheck getEnableCheck() {
-    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance();
+    EnableCheckFactory checkFactory = getContext().getCheckFactory();
     return new MultiEnableCheck().add(
         checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck()).add(
         checkFactory.createExactlyNLayersMustBeSelectedCheck(1));

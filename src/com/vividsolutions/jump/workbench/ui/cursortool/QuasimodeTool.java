@@ -47,7 +47,12 @@ import javax.swing.KeyStroke;
 import org.openjump.core.CheckOS;
 import org.openjump.core.ui.plugin.edittoolbox.cursortools.RotateSelectedItemTool;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
+import com.vividsolutions.jump.workbench.plugin.Configuration;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
+import com.vividsolutions.jump.workbench.plugin.Extension;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.DeleteVertexTool;
@@ -69,46 +74,51 @@ public class QuasimodeTool extends DelegatingTool {
   private DummyTool dummytool = new DummyTool();
   // switch defaults on/off
   private boolean useDefaults = false;
-  // default tools - keep one instance only per default shortcut
-  private static CursorTool zoom = new ZoomTool();
-  private static CursorTool pan = new PanTool();
-  private static CursorTool selectFeaturesTool = new SelectFeaturesTool() {
-    protected boolean selectedLayersOnly() {
-      return false;
-    }
-  };
-  // create default tools
-  private static CursorTool info = new FeatureInfoTool();
-  private static CursorTool insVertex = new InsertVertexTool(EnableCheckFactory.getInstance());
-  private static CursorTool delVertex = new DeleteVertexTool(EnableCheckFactory.getInstance());
-  private static CursorTool movVertex = new MoveVertexTool(EnableCheckFactory.getInstance());
-  private static CursorTool moveItem = new MoveSelectedItemsTool(EnableCheckFactory.getInstance());
-  private static CursorTool rotateItem = new RotateSelectedItemTool(EnableCheckFactory.getInstance());
-  // add default tools, keep adding order for documentation later
+  // map of default tools, keep adding order for documentation later
   private static HashMap<ModifierKeySpec,CursorTool> defaultToolsMap= new LinkedHashMap();
-  static {
-    addDefaultTool(new ModifierKeySpec(false, false, true), zoom);
-    // KNOWN ISSUE: shortcut is used by Ubuntu
-    addDefaultTool(new ModifierKeySpec(false, true, true), pan);
-    // using Ctrl+Shift we can actually add to the selection or deselect
-    selectFeaturesTool = addDefaultTool(new ModifierKeySpec(true, false, false),
-        selectFeaturesTool);
-    addDefaultTool(new ModifierKeySpec(true, true, false),
-        selectFeaturesTool);
-    addDefaultTool(new ModifierKeySpec(true, false, true), info);
-    // add edit vertex modes 
-    addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_A}), insVertex);
-    addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_X}), delVertex);
-    addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_V}), movVertex);
-    // move item
-    addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_M}), moveItem);
-    // rotate (use identical instance for setting rotation center)
-    rotateItem = addDefaultTool(
-        new ModifierKeySpec(new int[] { KeyEvent.VK_R }), rotateItem);
-    addDefaultTool(new ModifierKeySpec(new int[] { KeyEvent.VK_R,
-        KeyEvent.VK_SHIFT }), rotateItem);
-  }
 
+  public static class Setup implements Configuration {
+    @Override
+    public void configure(PlugInContext context) throws Exception {
+      WorkbenchContext workbenchContext = context.getWorkbenchContext();
+      // default tools - keep one instance only per default shortcut
+      CursorTool zoom = new ZoomTool(workbenchContext);
+      CursorTool pan = new PanTool(workbenchContext);
+      CursorTool selectFeaturesTool = new SelectFeaturesTool(workbenchContext) {
+        protected boolean selectedLayersOnly() {
+          return false;
+        }
+      };
+      // create default tools
+      CursorTool info = new FeatureInfoTool(workbenchContext);
+      CursorTool insVertex = new InsertVertexTool(workbenchContext);
+      CursorTool delVertex = new DeleteVertexTool(workbenchContext);
+      CursorTool movVertex = new MoveVertexTool(workbenchContext);
+      CursorTool moveItem = new MoveSelectedItemsTool(workbenchContext);
+      CursorTool rotateItem = new RotateSelectedItemTool(workbenchContext);
+
+      addDefaultTool(new ModifierKeySpec(false, false, true), zoom);
+      // KNOWN ISSUE: shortcut is used by Ubuntu
+      addDefaultTool(new ModifierKeySpec(false, true, true), pan);
+      // using Ctrl+Shift we can actually add to the selection or deselect
+      selectFeaturesTool = addDefaultTool(new ModifierKeySpec(true, false, false),
+          selectFeaturesTool);
+      addDefaultTool(new ModifierKeySpec(true, true, false),
+          selectFeaturesTool);
+      addDefaultTool(new ModifierKeySpec(true, false, true), info);
+      // add edit vertex modes 
+      addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_A}), insVertex);
+      addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_X}), delVertex);
+      addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_V}), movVertex);
+      // move item
+      addDefaultTool(new ModifierKeySpec(new int[]{KeyEvent.VK_M}), moveItem);
+      // rotate (use identical instance for setting rotation center)
+      rotateItem = addDefaultTool(
+          new ModifierKeySpec(new int[] { KeyEvent.VK_R }), rotateItem);
+      addDefaultTool(new ModifierKeySpec(new int[] { KeyEvent.VK_R,
+          KeyEvent.VK_SHIFT }), rotateItem);
+    }
+  }
 
   // a tool that has delegates enabled via KEY events
   public QuasimodeTool(CursorTool defaultTool) {

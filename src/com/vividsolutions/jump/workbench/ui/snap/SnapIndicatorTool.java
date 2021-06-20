@@ -43,6 +43,8 @@ import java.util.Collection;
 import javax.swing.Icon;
 
 import org.locationtech.jts.util.Assert;
+
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
 
 
@@ -55,12 +57,13 @@ public class SnapIndicatorTool extends AbstractCursorTool {
     private Color unsnappedColor;
     private double diameter;
 
-    public SnapIndicatorTool(Collection snapPolicies) {
-        this(Color.green, Color.red, 8, snapPolicies);
+    public SnapIndicatorTool(Collection snapPolicies, WorkbenchContext context) {
+        this(Color.green, Color.red, 8, snapPolicies, context);
     }
 
     public SnapIndicatorTool(Color snappedColor, Color unsnappedColor,
-        double diameter, Collection snapPolicies) {
+        double diameter, Collection snapPolicies, WorkbenchContext context) {
+      super(context);
       getSnapManager().addPolicies(snapPolicies);
       setFilling(true);
       this.snappedColor = snappedColor;

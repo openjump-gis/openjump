@@ -101,9 +101,8 @@ public class RasterQueryCursorTool extends NClickTool {
     PlugInContext context;
     LayerNamePanel namePanel;
 
-    public RasterQueryCursorTool() {
-        super(1);
-
+    public RasterQueryCursorTool(WorkbenchContext context) {
+        super(context, 1);
     }
 
     @Override
@@ -272,8 +271,7 @@ public class RasterQueryCursorTool extends NClickTool {
 
     public MultiEnableCheck createEnableCheck(
             final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         /*
          * Works only with one selected RasterImageLayer
          */

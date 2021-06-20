@@ -372,7 +372,7 @@ public class GCPlugin extends ExtCorePlugIn {
 	}
 
 	public EnableCheck createEnableCheck() {
-		EnableCheckFactory checkFactory = new EnableCheckFactory(this.wbc);
+		EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(this.wbc);
 		MultiEnableCheck checker = new MultiEnableCheck();
 
 		// taskframe must be active

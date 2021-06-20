@@ -36,14 +36,15 @@ import java.awt.Cursor;
 
 import javax.swing.Icon;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.AbstractVectorLayerFinder;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class DeleteWarpingVectorTool extends AbstractDeleteVectorTool {
 
-    public DeleteWarpingVectorTool() {
-        super();
+    public DeleteWarpingVectorTool(WorkbenchContext context) {
+        super(context);
     }
 
     protected AbstractVectorLayerFinder createVectorLayerFinder(LayerManagerProxy layerManagerProxy) {

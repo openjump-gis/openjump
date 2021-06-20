@@ -67,101 +67,103 @@ import com.vividsolutions.jump.workbench.model.Layer;
 import java.util.Collection;
 
 /**
- * Simplifies a selected line, criterion is a maximal line displacement <p>
- * it uses JTS TopologyPreservingSimplifier.
- * n.b.: since version &gt; 1.9.1 the plugin handles all geometry types
+ * Simplifies a selected line, criterion is a maximal line displacement
+ * <p>
+ * it uses JTS TopologyPreservingSimplifier. n.b.: since version &gt; 1.9.1 the
+ * plugin handles all geometry types
  *
  * @author sstein, mmichaud
  *
  **/
-public class SimplifyWithJTSAlgorithmPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
+public class SimplifyWithJTSAlgorithmPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
-    private final static String sSimplifyJTSAlgorithm = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn");
-    private final static String sidebarText=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Line-simplification-for-a-selected-line-or-polygon");
-    private final static String sItem=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Item");
-    private final static String sSimplificationFinalized=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.simplification-finalized");
-    private static String T3=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Maximum-point-displacement-in-model-units");
-    double maxPDisp = 0;
+  private final static String sSimplifyJTSAlgorithm = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn");
+  private final static String sidebarText = I18N.getInstance().get(
+      "org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Line-simplification-for-a-selected-line-or-polygon");
+  private final static String sItem = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Item");
+  private final static String sSimplificationFinalized = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.simplification-finalized");
+  private static String T3 = I18N.getInstance().get(
+      "org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Maximum-point-displacement-in-model-units");
+  double maxPDisp = 0;
 
-    public void initialize(PlugInContext context) throws Exception {
-        FeatureInstaller featureInstaller = context.getFeatureInstaller();
-    	featureInstaller.addMainMenuPlugin(
-    	        this,								//exe
-				new String[] {MenuNames.TOOLS, MenuNames.TOOLS_GENERALIZATION }, 	//menu path
-                sSimplifyJTSAlgorithm , //name methode .getName recieved by AbstractPlugIn 
-                false,			//checkbox
-                null,			//icon
-                createEnableCheck(context.getWorkbenchContext())); //enable check        
+  public void initialize(PlugInContext context) throws Exception {
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
+    featureInstaller.addMainMenuPlugin(this, // exe
+        new String[] { MenuNames.TOOLS, MenuNames.TOOLS_GENERALIZATION }, // menu path
+        sSimplifyJTSAlgorithm, // name methode .getName recieved by AbstractPlugIn
+        false, // checkbox
+        null, // icon
+        createEnableCheck(context.getWorkbenchContext())); // enable check
+  }
+
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+
+    return new MultiEnableCheck().add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+        .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))
+        .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+    this.reportNothingToUndoYet(context);
+    MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
+    setDialogValues(dialog, context);
+    GUIUtil.centreOnWindow(dialog);
+    dialog.setVisible(true);
+    if (!dialog.wasOKPressed()) {
+      return false;
     }
-    
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    getDialogValues(dialog);
+    return true;
+  }
 
-        return new MultiEnableCheck()
-                        .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-                        .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))
-						.add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
+  private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
+    dialog.setSideBarDescription(sidebarText);
+    dialog.addDoubleField(T3, 1.0, 5);
+  }
+
+  private void getDialogValues(MultiInputDialog dialog) {
+    this.maxPDisp = dialog.getDouble(T3);
+
+  }
+
+  protected Layer layer(PlugInContext context) {
+    return (Layer) context.getLayerViewPanel().getSelectionManager().getLayersWithSelectedItems().iterator().next();
+  }
+
+  public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+
+    monitor.allowCancellationRequests();
+    this.simplify(context, this.maxPDisp, monitor);
+    System.gc();
+  }
+
+  private boolean simplify(PlugInContext context, double maxDisp, TaskMonitor monitor) throws Exception {
+
+    // -- get selected items
+    final Collection features = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
+
+    EditTransaction transaction = new EditTransaction(features, this.getName(), layer(context),
+        this.isRollingBackInvalidEdits(context), false, context.getWorkbenchFrame());
+
+    int count = 0;
+    int noItems = features.size();
+    Geometry resultgeom = null;
+    // --get single object in selection to analyse
+    for (Iterator iter = features.iterator(); iter.hasNext();) {
+      count++;
+      Feature f = (Feature) iter.next();
+      resultgeom = TopologyPreservingSimplifier.simplify(f.getGeometry(), Math.abs(maxDisp));
+      String mytext = sItem + ": " + count + " / " + noItems + " : " + sSimplificationFinalized;
+      monitor.report(mytext);
+      // -- commit changes to undo history
+      transaction.setGeometry(f, resultgeom);
     }
-    
-	public boolean execute(PlugInContext context) throws Exception{
-	    this.reportNothingToUndoYet(context);
-	    MultiInputDialog dialog = new MultiInputDialog(
-	            context.getWorkbenchFrame(), getName(), true);
-	        setDialogValues(dialog, context);
-	        GUIUtil.centreOnWindow(dialog);
-	        dialog.setVisible(true);
-	        if (! dialog.wasOKPressed()) { return false; }
-	        getDialogValues(dialog);
-	        return true;
-	}
-	
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
-	  {
-	    dialog.setSideBarDescription(sidebarText);
-	    dialog.addDoubleField(T3,1.0,5);
-	  }
+    transaction.commit();
+    return true;
+  }
 
-	private void getDialogValues(MultiInputDialog dialog) {
-	    this.maxPDisp = dialog.getDouble(T3);
-
-	  }
-
-	protected Layer layer(PlugInContext context) {
-		return (Layer) context.getLayerViewPanel().getSelectionManager()
-				.getLayersWithSelectedItems().iterator().next();
-	}
-	
-    public void run(TaskMonitor monitor, PlugInContext context) throws Exception{
-        
-    		monitor.allowCancellationRequests();
-    	    this.simplify(context, this.maxPDisp, monitor);
-    	    System.gc();    		
-    	}
-	
-
-	private boolean simplify(PlugInContext context, double maxDisp, TaskMonitor monitor) throws Exception{
-
-	    //-- get selected items
-	    final Collection features = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
-
-		EditTransaction transaction = new EditTransaction(features, this.getName(), layer(context),
-						this.isRollingBackInvalidEdits(context), false, context.getWorkbenchFrame());
-	    
-	    int count=0; 
-	    int noItems = features.size(); 
-	    Geometry resultgeom = null;
-	    //--get single object in selection to analyse
-      	for (Iterator iter = features.iterator(); iter.hasNext();) {
-      		count++;
-      		Feature f = (Feature)iter.next();
-			resultgeom = TopologyPreservingSimplifier.simplify(f.getGeometry(), Math.abs(maxDisp));
-			String mytext = sItem + ": " + count + " / " + noItems + " : " + sSimplificationFinalized;
-			monitor.report(mytext);
-			//-- commit changes to undo history
-			transaction.setGeometry(f, resultgeom);
-      	}
-		transaction.commit();
-        return true;        
-	}
-	  
 }

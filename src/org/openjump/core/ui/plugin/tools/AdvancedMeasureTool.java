@@ -78,6 +78,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 	 * @param context the workbench context
 	 */
 	public AdvancedMeasureTool(WorkbenchContext context) {
+	  super(context);
 		this.context = context;
 		allowSnapping();
 		setMetricsDisplay(new CoordinateListMetrics());

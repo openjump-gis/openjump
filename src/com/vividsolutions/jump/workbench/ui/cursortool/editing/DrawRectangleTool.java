@@ -35,6 +35,7 @@ package com.vividsolutions.jump.workbench.ui.cursortool.editing;
 
 import javax.swing.Icon;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.RectangleTool;
@@ -43,16 +44,17 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 public class DrawRectangleTool extends RectangleTool {
 	private FeatureDrawingUtil featureDrawingUtil;
 
-	private DrawRectangleTool(FeatureDrawingUtil featureDrawingUtil) {
+	private DrawRectangleTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil) {
+		super(context);
 		this.featureDrawingUtil = featureDrawingUtil;
 	}
 
-	public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy) {
+	public static CursorTool create(WorkbenchContext context) {
 		FeatureDrawingUtil featureDrawingUtil =
-			new FeatureDrawingUtil(layerNamePanelProxy);
+			new FeatureDrawingUtil(context);
 
 		return featureDrawingUtil.prepare(
-			new DrawRectangleTool(featureDrawingUtil),
+			new DrawRectangleTool(context, featureDrawingUtil),
 			true);
 	}
 

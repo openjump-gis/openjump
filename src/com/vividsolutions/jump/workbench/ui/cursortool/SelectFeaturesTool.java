@@ -35,14 +35,16 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import javax.swing.Icon;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.FeatureSelectionRenderer;
 
 
 public class SelectFeaturesTool extends SelectTool {
-    public SelectFeaturesTool() {
-        super(FeatureSelectionRenderer.CONTENT_ID);
+
+    public SelectFeaturesTool(WorkbenchContext context) {
+      super(context, FeatureSelectionRenderer.CONTENT_ID);
     }
 
     public Icon getIcon() {

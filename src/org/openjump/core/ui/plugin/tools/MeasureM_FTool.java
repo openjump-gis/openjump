@@ -45,6 +45,7 @@ import javax.swing.ImageIcon;
 
 import org.locationtech.jts.geom.Coordinate;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;
 
@@ -57,8 +58,9 @@ public class MeasureM_FTool extends MultiClickTool
     private List savedCoordinates = new ArrayList();
     private Coordinate currCoord;
     
-    public MeasureM_FTool() 
+    public MeasureM_FTool(WorkbenchContext context) 
     {
+        super(context);
         allowSnapping();
     }
 

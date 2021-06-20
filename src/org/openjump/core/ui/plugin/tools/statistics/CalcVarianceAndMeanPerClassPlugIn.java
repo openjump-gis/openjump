@@ -78,28 +78,29 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
     private String sCalcRatios = "calculating ratios";
 	
     /**
-     * this method is called on the startup by JUMP/OpenJUMP.
-     * We set here the menu entry for calling the function.
+     * this method is called on the startup by JUMP/OpenJUMP. We set here the menu
+     * entry for calling the function.
      */
-    public void initialize(PlugInContext context) throws Exception {    	
-    	
-        sidetext = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.descriptiontext");
-        OLAYER = GenericNames.SELECT_LAYER;
-        ATTRIBUTEA = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.Select-attribute-to-calculate-statistics-from");
-        ATTRIBUTEB = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.Select-attribute-with-classification");
-        sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn");
-        sWrongDataType = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
-        sCalcRatios = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.calculating-statistics");
-    	
-    	FeatureInstaller featureInstaller = context.getFeatureInstaller();
-    	featureInstaller.addMainMenuPlugin(
-    			this,
-    			new String[] {MenuNames.TOOLS, MenuNames.STATISTICS},
-    			this.sName + "...",
-    			false,              //checkbox
-    			null,               //icon
-    			createEnableCheck(context.getWorkbenchContext())); //enable check   
-        	
+    public void initialize(PlugInContext context) throws Exception {
+
+      sidetext = I18N.getInstance()
+          .get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.descriptiontext");
+      OLAYER = GenericNames.SELECT_LAYER;
+      ATTRIBUTEA = I18N.getInstance().get(
+          "org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.Select-attribute-to-calculate-statistics-from");
+      ATTRIBUTEB = I18N.getInstance().get(
+          "org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.Select-attribute-with-classification");
+      sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn");
+      sWrongDataType = I18N.getInstance()
+          .get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
+      sCalcRatios = I18N.getInstance()
+          .get("org.openjump.core.ui.plugin.tools.statistics.CalcVarianceAndMeanPerClassPlugIn.calculating-statistics");
+
+      context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.TOOLS, MenuNames.STATISTICS },
+          this.sName + "...", false, // checkbox
+          null, // icon
+          createEnableCheck(context.getWorkbenchContext())); // enable check
+
     }
 
     /**
@@ -108,7 +109,7 @@ public class CalcVarianceAndMeanPerClassPlugIn extends AbstractPlugIn implements
      * if one layer exists.
      */
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
         return new MultiEnableCheck()
                 .add(checkFactory.createWindowWithAssociatedTaskFrameMustBeActiveCheck())

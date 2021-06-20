@@ -86,7 +86,7 @@ public class ScaleSelectedItemsPlugIn extends AbstractPlugIn
         {
             final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
             //toolbox.addToolBar();
-            toolbox.add(new ScaleSelectedItemsTool(new EnableCheckFactory(toolbox.getContext())));
+            toolbox.add(new ScaleSelectedItemsTool(context.getWorkbenchContext()));
             toolbox.finishAddingComponents();
             toolbox.validate();
             itemButtonAdded = true;

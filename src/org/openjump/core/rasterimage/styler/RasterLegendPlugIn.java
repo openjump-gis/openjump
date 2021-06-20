@@ -286,8 +286,7 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
             final WorkbenchContext workbenchContext) {
 
         final MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
-        final EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        final EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         multiEnableCheck.add(checkFactory
                 .createWindowWithLayerNamePanelMustBeActiveCheck());
         multiEnableCheck.add(checkFactory

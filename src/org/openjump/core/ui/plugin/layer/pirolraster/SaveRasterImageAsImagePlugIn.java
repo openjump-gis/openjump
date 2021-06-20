@@ -187,8 +187,7 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
         multiEnableCheck.add(checkFactory
                 .createExactlyNLayerablesMustBeSelectedCheck(1,

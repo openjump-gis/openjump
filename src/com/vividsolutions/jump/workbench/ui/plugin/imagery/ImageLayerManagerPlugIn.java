@@ -77,7 +77,7 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
   public static EnableCheck createEnableCheck(final WorkbenchContext context) {
     MultiEnableCheck mec = new MultiEnableCheck();
 
-    mec.add(new EnableCheckFactory(context)
+    mec.add(EnableCheckFactory.getInstance(context)
         .createExactlyNLayersMustBeSelectedCheck(1));
     mec.add(new EnableCheck() {
       public String check(JComponent component) {

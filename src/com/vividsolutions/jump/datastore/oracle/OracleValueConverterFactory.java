@@ -40,8 +40,10 @@ public class OracleValueConverterFactory extends SpatialDatabasesValueConverterF
       // jars under lib/ext/<subfolder>/ , additionally we apply some
       // reflection to allow the dependencies to be only available
       // during runtime
-      ClassLoader cl = JUMPWorkbench.getInstance().getPlugInManager()
-          .getClassLoader();
+// [ede 202106] should be obsolete, PluginClassloader is default system classloader since some time now
+//      ClassLoader cl = JUMPWorkbench.getInstance().getPlugInManager()
+//          .getClassLoader();
+      ClassLoader cl = this.getClass().getClassLoader();
       Class converterClazz = Class.forName(
           "org.geotools.data.oracle.sdo.GeometryConverter", true, cl);
       Class connectionClazz = Class.forName("oracle.jdbc.OracleConnection",

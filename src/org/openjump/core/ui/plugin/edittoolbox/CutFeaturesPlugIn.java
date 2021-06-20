@@ -67,7 +67,7 @@ public class CutFeaturesPlugIn extends AbstractPlugIn {
 	            final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
 	            
 				// Add a new bar in the Toolbox
-	            toolbox.add(new CutFeaturesTool(context));
+	            toolbox.add(new CutFeaturesTool(context.getWorkbenchContext()));
 	            toolbox.finishAddingComponents();
 	            toolbox.validate();
 	            CutPolygonButtonAdded = true;

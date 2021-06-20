@@ -39,6 +39,8 @@ import javax.swing.Icon;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
@@ -48,8 +50,8 @@ public class DrawPointTool extends NClickTool {
 
 	private FeatureDrawingUtil featureDrawingUtil;
 
-	private DrawPointTool(FeatureDrawingUtil featureDrawingUtil) {
-		super(1);
+	private DrawPointTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil) {
+		super(context, 1);
 		this.featureDrawingUtil = featureDrawingUtil;
 	}
 	
@@ -58,9 +60,9 @@ public class DrawPointTool extends NClickTool {
 		return null;
 	}
 
-	public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy) {
+	public static CursorTool create(WorkbenchContext context) {
 		FeatureDrawingUtil featureDrawingUtil =
-			new FeatureDrawingUtil(layerNamePanelProxy);
+			new FeatureDrawingUtil(context);
 
 		//Don't allow snapping. The user will get confused if he tries to draw
 		//a point near another point and sees nothing happen because
@@ -70,7 +72,7 @@ public class DrawPointTool extends NClickTool {
         //With transparency and points appearing different from simple vertices
         //I feel that adding snapped points is not so confusing [mmichaud 2007-08-16]
 		return featureDrawingUtil.prepare(
-			new DrawPointTool(featureDrawingUtil), true);
+			new DrawPointTool(context,featureDrawingUtil), true);
 	}
 
 	public Icon getIcon() {

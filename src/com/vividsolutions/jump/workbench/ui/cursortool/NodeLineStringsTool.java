@@ -18,11 +18,17 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class NodeLineStringsTool extends AbstractClickSelectedLineStringsTool {
-	private class Intersection implements Comparable {
+
+  public NodeLineStringsTool(WorkbenchContext context) {
+    super(context);
+  }
+
+  private class Intersection implements Comparable {
 		public Intersection(Coordinate coordinate, Feature featureA,
 				Layer layerA, Feature featureB, Layer layerB) {
 			this.coordinate = coordinate;

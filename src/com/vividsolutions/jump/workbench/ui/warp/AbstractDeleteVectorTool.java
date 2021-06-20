@@ -41,6 +41,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.AbstractVectorLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
@@ -50,8 +51,8 @@ import com.vividsolutions.jump.workbench.ui.cursortool.SpecifyFeaturesTool;
 
 public abstract class AbstractDeleteVectorTool extends SpecifyFeaturesTool {
 
-    public AbstractDeleteVectorTool() {
-        super();
+    public AbstractDeleteVectorTool(WorkbenchContext context) {
+        super(context);
         //The cursor is big and the pin icons are big, so make the click buffer big. [Jon Aquino]
         setViewClickBuffer(6);
     }

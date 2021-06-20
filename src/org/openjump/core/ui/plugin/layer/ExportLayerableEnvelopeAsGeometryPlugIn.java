@@ -82,8 +82,7 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
     }
 
     public MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
         return new MultiEnableCheck().add(
                 checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())

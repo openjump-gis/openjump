@@ -44,6 +44,7 @@ public class MacroPlugIn extends AbstractPlugIn {
     }
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         for (int i = 0; i < plugIns.length; i++) {
             plugIns[i].initialize(context);
         }

@@ -44,6 +44,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.cursortool.*;
@@ -58,16 +59,17 @@ import com.vividsolutions.jump.workbench.ui.snap.SnapToVerticesPolicy;
 public class DrawLineStringTool extends MultiClickTool {
     private FeatureDrawingUtil featureDrawingUtil;
 
-    private DrawLineStringTool(FeatureDrawingUtil featureDrawingUtil) {
+    private DrawLineStringTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil) {
+        super(context);
         this.featureDrawingUtil = featureDrawingUtil;
         setMetricsDisplay(new CoordinateListMetrics());
     }
 
-    public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy) {
-        FeatureDrawingUtil featureDrawingUtil = new FeatureDrawingUtil(layerNamePanelProxy);
+    public static CursorTool create(WorkbenchContext context) {
+        FeatureDrawingUtil featureDrawingUtil = new FeatureDrawingUtil(context);
 
         return featureDrawingUtil.prepare(new DrawLineStringTool(
-                featureDrawingUtil), true);
+                context, featureDrawingUtil), true);
     }
 
     public String getName() {

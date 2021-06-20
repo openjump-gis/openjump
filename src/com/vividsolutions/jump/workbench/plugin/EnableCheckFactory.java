@@ -33,6 +33,8 @@
 package com.vividsolutions.jump.workbench.plugin;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
@@ -69,20 +71,21 @@ import com.vividsolutions.jump.workbench.ui.warp.WarpingVectorLayerFinder;
 public class EnableCheckFactory {
 
     private final WorkbenchContext workbenchContext;
-    private static EnableCheckFactory instance = null;
+    private static Map<WorkbenchContext, EnableCheckFactory> instances = new HashMap<WorkbenchContext, EnableCheckFactory>();
 
-    public EnableCheckFactory(WorkbenchContext workbenchContext) {
+    private EnableCheckFactory(WorkbenchContext workbenchContext) {
         Assert.isTrue(workbenchContext != null);
         this.workbenchContext = workbenchContext;
     }
 
-    public static EnableCheckFactory getInstance() {
-        if (instance == null) {
-            instance = new EnableCheckFactory(JUMPWorkbench.getInstance()
-                    .getContext());
-        }
-        return instance;
-    }
+    public static EnableCheckFactory getInstance( WorkbenchContext workbenchContext ) {
+      EnableCheckFactory instance = instances.get(workbenchContext);
+      if (instance == null) {
+        instance = new EnableCheckFactory(workbenchContext);
+        instances.put(workbenchContext, instance);
+      }
+      return instance;
+    } 
 
     // <<TODO:WORKAROUND>> I came across a bug in the JBuilder 4 compiler
     // (bcj.exe)

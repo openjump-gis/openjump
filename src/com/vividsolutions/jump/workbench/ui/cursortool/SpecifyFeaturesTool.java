@@ -35,6 +35,7 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeIntersector;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 
 import java.awt.event.MouseEvent;
@@ -47,10 +48,11 @@ import java.util.*;
  */
 public abstract class SpecifyFeaturesTool extends DragTool {
 
-	public SpecifyFeaturesTool() {
-	}
+	public SpecifyFeaturesTool(WorkbenchContext context) {
+    super(context);
+  }
 
-	protected Iterator<Layer> candidateLayersIterator() {
+  protected Iterator<Layer> candidateLayersIterator() {
 		return getPanel().getLayerManager().iterator(Layer.class);
 	}
 

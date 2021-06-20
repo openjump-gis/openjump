@@ -78,8 +78,8 @@ public class SpatialJoinPlugIn extends ThreadedBasePlugIn {
 		public void initialize(PlugInContext context) throws Exception {
 	        context.getFeatureInstaller().addMainMenuItem(this,new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES}, 
 	    			this.getName(), false, null, 
-	    			new MultiEnableCheck().add(new EnableCheckFactory(context.getWorkbenchContext()).createTaskWindowMustBeActiveCheck())
-					.add(new EnableCheckFactory(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(2))
+	    			new MultiEnableCheck().add(EnableCheckFactory.getInstance(context.getWorkbenchContext()).createTaskWindowMustBeActiveCheck())
+					.add(EnableCheckFactory.getInstance(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(2))
 					); 
 	    }
 	 

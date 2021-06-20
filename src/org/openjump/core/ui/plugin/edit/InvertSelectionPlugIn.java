@@ -67,9 +67,6 @@ public class InvertSelectionPlugIn extends AbstractPlugIn {
         this.setShortcutModifiers(KeyEvent.CTRL_MASK);
     }
 
-    public void initialize(PlugInContext context) throws Exception {
-    }
-
     public boolean execute(final PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         
@@ -105,7 +102,7 @@ public class InvertSelectionPlugIn extends AbstractPlugIn {
 
     public MultiEnableCheck createEnableCheck(
         final WorkbenchContext workbenchContext) {
-      EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+      EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
       return new MultiEnableCheck().add(
           checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck()).add(
           checkFactory.createAtLeastNItemsMustBeSelectedCheck(1));

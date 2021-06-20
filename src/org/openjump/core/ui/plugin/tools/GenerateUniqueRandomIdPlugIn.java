@@ -45,7 +45,7 @@ public class GenerateUniqueRandomIdPlugIn extends AbstractUiPlugIn {
   }
 
   public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
     return new MultiEnableCheck()
             .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
             .add(checkFactory.createAtLeastNLayersMustBeEditableCheck(1))

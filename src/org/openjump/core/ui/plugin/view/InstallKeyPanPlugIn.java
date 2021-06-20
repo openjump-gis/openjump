@@ -78,10 +78,7 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
         KeyEvent.VK_ADD, KeyEvent.VK_SUBTRACT, 
         KeyEvent.VK_0 };
     
-    private static EnableCheck check = EnableCheckFactory.getInstance()
-        .createTaskWindowMustBeActiveCheck();
-
-    /**
+   /**
      * Default constructor 
      */
     public InstallKeyPanPlugIn() {
@@ -185,6 +182,9 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
           this.mode = mode;
           this.name = name;
         }
+        public void initialize(PlugInContext context) throws Exception {
+          super.initialize(context);
+        }
         public boolean execute(PlugInContext context) throws Exception {
           return pan( context.getWorkbenchFrame().getActiveInternalFrame(), mode );
         }
@@ -192,7 +192,8 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
           return name;
         }
         public EnableCheck getEnableCheck(){
-          return check;
+          return EnableCheckFactory.getInstance(getWorkbenchContext())
+              .createTaskWindowMustBeActiveCheck();
         }
     }
 

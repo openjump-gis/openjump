@@ -26,7 +26,7 @@ public class AddNewLayerViewPlugIn extends AbstractPlugIn {
 
   @Override
   public EnableCheck getEnableCheck() {
-    return EnableCheckFactory.getInstance()
+    return EnableCheckFactory.getInstance(getWorkbenchContext())
             .createExactlyNLayersMustBeSelectedCheck(1);
   }
 

@@ -57,7 +57,7 @@ public class NorthArrowPlugIn extends AbstractPlugIn {
 		NorthArrowInstallRenderer northArrowInstallRenderer = new NorthArrowInstallRenderer();
 		northArrowInstallRenderer.initialize(new PlugInContext(workbenchContext, 
 				null, null, null, null));
-		EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+		EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 		featureInstaller.addMainMenuItem(this,
 				new String[]  {MenuNames.VIEW, MenuNames.MAP_DECORATIONS},
 				getName(),

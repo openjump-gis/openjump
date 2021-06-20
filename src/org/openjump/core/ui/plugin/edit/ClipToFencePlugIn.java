@@ -52,7 +52,7 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 				new String[] {MenuNames.EDIT}, getName()+ "...",
 				false, null,
 				new MultiEnableCheck()
-						.add(new EnableCheckFactory(context.getWorkbenchContext()).createTaskWindowMustBeActiveCheck())
+						.add(EnableCheckFactory.getInstance(context.getWorkbenchContext()).createTaskWindowMustBeActiveCheck())
 						.add(fenceLayerMustBePresent()));
         
         DIALOGWARNING=I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.This-operation-is-not-undoable");

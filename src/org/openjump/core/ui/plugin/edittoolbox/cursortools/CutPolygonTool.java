@@ -46,16 +46,17 @@ public class CutPolygonTool extends PolygonTool {
 	
 	private FeatureDrawingUtil featureDrawingUtil;
 					
-	protected CutPolygonTool(FeatureDrawingUtil featureDrawingUtil) {
-	    this.featureDrawingUtil = featureDrawingUtil;
+	protected CutPolygonTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil) {
+	  super(context);
+	  this.featureDrawingUtil = featureDrawingUtil;
 	}
 
-	public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy) {
+	public static CursorTool create(WorkbenchContext context) {
 		FeatureDrawingUtil featureDrawingUtil =
-				new FeatureDrawingUtil(layerNamePanelProxy);
+				new FeatureDrawingUtil(context);
 
 			return featureDrawingUtil.prepare(
-				new CutPolygonTool(featureDrawingUtil),
+				new CutPolygonTool(context, featureDrawingUtil),
 				true);
 	}
 

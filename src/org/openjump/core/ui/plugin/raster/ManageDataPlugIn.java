@@ -148,8 +148,7 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
 
     public MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
-        final EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        final EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
                 .add(checkFactory
                         .createWindowWithAssociatedTaskFrameMustBeActiveCheck())

@@ -358,7 +358,7 @@ public class MultiRingBufferSelectedPlugIn extends AbstractPlugIn
     }
   
     public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
             .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
             .add(checkFactory.createAtLeastNFeaturesMustHaveSelectedItemsCheck(1));

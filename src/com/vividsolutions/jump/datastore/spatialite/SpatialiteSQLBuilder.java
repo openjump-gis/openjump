@@ -132,9 +132,8 @@ public class SpatialiteSQLBuilder extends SpatialDatabasesSQLBuilder {
         ret = String.format(Locale.US, "st_envIntersects(st_geomFromText(%s), %f,%f,%f,%f)", query.getGeometryAttributeName(), env.getMinX(),
             env.getMinY(), env.getMaxX(), env.getMaxY());
       } else {
-        JUMPWorkbench.getInstance().getFrame().log(
-          "Spatialite SQL builder: invalid geometric column type: " + gcType ,
-            this.getClass());
+        Logger.error(
+          "Spatialite SQL builder: invalid geometric column type: " + gcType );
       }
     }
     ret += indexQuery;

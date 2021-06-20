@@ -14,6 +14,7 @@ import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
+import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -46,12 +47,16 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn {
   }
 
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+
     if (desktopPane == null)
       desktopPane = context.getWorkbenchFrame().getDesktopPane();
 
-    for (int i = 1; i <= 4; i++) {
+    for (int i = 1; arrangeType == 0 && i <= 4; i++) {
+      PlugIn p = new ArrangeViewsPlugIn(i);
+      p.initialize(context);
       context.getFeatureInstaller().addMainMenuPlugin(
-          new ArrangeViewsPlugIn(i), new String[] { MenuNames.WINDOW });
+          p , new String[] { MenuNames.WINDOW });
     }
   }
 
@@ -88,7 +93,7 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn {
   }
 
   public static EnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
     MultiEnableCheck check = new MultiEnableCheck();
     check.add(checkFactory

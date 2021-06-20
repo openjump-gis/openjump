@@ -71,7 +71,7 @@ public class JoinTablePlugIn extends ThreadedBasePlugIn {
 				I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Join_data")+"{pos:14}" , 
 				false, 
 				null, 
-				new EnableCheckFactory(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(1));
+				EnableCheckFactory.getInstance(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(1));
 		*/
 		
 		FeatureInstaller featureInstaller = context.getFeatureInstaller();
@@ -81,7 +81,7 @@ public class JoinTablePlugIn extends ThreadedBasePlugIn {
 				this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
 				false,			//checkbox
 				null,			//icon
-				new EnableCheckFactory(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(1)); //enable check        
+				EnableCheckFactory.getInstance(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(1)); //enable check        
 
 		fileChooser = GUIUtil.createJFileChooserWithExistenceChecking();
 		fileChooser.setDialogTitle(I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Choose_file_data_to_join"));

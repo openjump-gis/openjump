@@ -84,7 +84,7 @@ public class DrawConstrainedArcPlugIn extends AbstractPlugIn
     {
         try
         {
-            CursorTool arcTool = DrawConstrainedArcTool.create((LayerNamePanelProxy) context.getActiveInternalFrame());
+            CursorTool arcTool = DrawConstrainedArcTool.create(context.getWorkbenchContext());
             context.getLayerViewPanel().setCurrentCursorTool(arcTool); 
             return true;
         }

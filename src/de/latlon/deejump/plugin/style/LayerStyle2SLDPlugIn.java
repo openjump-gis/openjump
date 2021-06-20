@@ -402,7 +402,7 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
      * @return the EnableCheck object to enable/disable the PlugIn
      */
     public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory ecf = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory ecf = EnableCheckFactory.getInstance(workbenchContext);
         MultiEnableCheck mec = new MultiEnableCheck()
             .add(ecf.createWindowWithLayerNamePanelMustBeActiveCheck())
             .add(ecf.createExactlyNLayerablesMustBeSelectedCheck(1, Layer.class));

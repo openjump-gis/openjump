@@ -8,10 +8,13 @@ import java.awt.event.MouseEvent;
 
 import org.locationtech.jts.geom.Coordinate;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+
 public abstract class ConstrainedNClickTool extends ConstrainedMultiClickTool {
     protected int n;
 
-    public ConstrainedNClickTool(int n) {
+    public ConstrainedNClickTool(WorkbenchContext context, int n) {
+        super(context);
         this.n = n;
     }
 

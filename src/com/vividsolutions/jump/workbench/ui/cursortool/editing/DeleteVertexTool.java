@@ -41,6 +41,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
@@ -54,8 +55,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn;
 public class DeleteVertexTool extends SpecifyFeaturesTool {
     private EnableCheckFactory checkFactory;
     private GeometryEditor geometryEditor = new GeometryEditor();
-    public DeleteVertexTool(EnableCheckFactory checkFactory) {
-        this.checkFactory = checkFactory;
+    public DeleteVertexTool(WorkbenchContext context) {
+        super(context);
+        this.checkFactory = EnableCheckFactory.getInstance(context);
         setViewClickBuffer(5);
     }
     protected void gestureFinished() throws java.lang.Exception {

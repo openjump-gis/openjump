@@ -107,14 +107,13 @@ public class EditingPlugIn extends ToolboxPlugIn {
     toolbox.setResizable(false);
     toolbox.setInitialLocation(new GUIUtil.Location(20, true, 20, false));
 
-    EnableCheckFactory checkFactory = new EnableCheckFactory(
-        toolbox.getContext());
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(toolbox.getContext());
     // Null out the quasimodes for [Ctrl] because the Select tools will handle
     // that case. [Jon Aquino]
-    toolbox.add(new SelectFeaturesTool());
-    toolbox.add(new SelectPartsTool());
-    toolbox.add(new SelectLineStringsTool());
-    toolbox.add(new SelectMultiItemsTool());
+    toolbox.add(new SelectFeaturesTool(toolbox.getContext()));
+    toolbox.add(new SelectPartsTool(toolbox.getContext()));
+    toolbox.add(new SelectLineStringsTool(toolbox.getContext()));
+    toolbox.add(new SelectMultiItemsTool(toolbox.getContext()));
 
     toolbox.addToolBar();
     toolbox.add(DrawRectangleTool.create(toolbox.getContext()));
@@ -123,24 +122,24 @@ public class EditingPlugIn extends ToolboxPlugIn {
     toolbox.add(DrawPointTool.create(toolbox.getContext()));
 
     toolbox.addToolBar();
-    CursorTool insVertex = new InsertVertexTool(checkFactory);
-    CursorTool delVertex = new DeleteVertexTool(checkFactory);
-    CursorTool movVertex = new MoveVertexTool(checkFactory);
+    CursorTool insVertex = new InsertVertexTool(toolbox.getContext());
+    CursorTool delVertex = new DeleteVertexTool(toolbox.getContext());
+    CursorTool movVertex = new MoveVertexTool(toolbox.getContext());
     toolbox.add(insVertex);
     toolbox.add(delVertex);
     toolbox.add(movVertex);
 
     // -- [sstein: 11.12.2006] added here to fill toolbox
     toolbox.addToolBar();
-    toolbox.add(new SnapVerticesTool(checkFactory));
-    toolbox.add(new SnapVerticesToSelectedVertexTool(checkFactory));
-    toolbox.add(new SplitLineStringTool());
-    toolbox.add(new NodeLineStringsTool());
+    toolbox.add(new SnapVerticesTool(toolbox.getContext()));
+    toolbox.add(new SnapVerticesToSelectedVertexTool(toolbox.getContext()));
+    toolbox.add(new SplitLineStringTool(toolbox.getContext()));
+    toolbox.add(new NodeLineStringsTool(toolbox.getContext()));
 
     toolbox.addToolBar();
-    toolbox.add(new MoveSelectedItemsTool(checkFactory));
-    toolbox.add(new ScaleSelectedItemsTool(checkFactory));
-    toolbox.add(new RotateSelectedItemTool(checkFactory));
+    toolbox.add(new MoveSelectedItemsTool(toolbox.getContext()));
+    toolbox.add(new ScaleSelectedItemsTool(toolbox.getContext()));
+    toolbox.add(new RotateSelectedItemTool(toolbox.getContext()));
 
     optionsButton.addActionListener(AbstractPlugIn.toActionListener(
         new OptionsPlugIn(), toolbox.getContext(), null));

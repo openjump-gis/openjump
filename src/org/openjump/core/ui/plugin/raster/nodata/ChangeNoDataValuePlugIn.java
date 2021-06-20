@@ -292,8 +292,7 @@ public class ChangeNoDataValuePlugIn extends ThreadedBasePlugIn {
 
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
 
         multiEnableCheck.add(

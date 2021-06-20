@@ -40,12 +40,14 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public abstract class PolygonTool extends MultiClickTool {
-    public PolygonTool()
+    public PolygonTool(WorkbenchContext context)
     {
+      super(context);
       setCloseRing(true);
       setMetricsDisplay(new CoordinateListMetrics());
     }

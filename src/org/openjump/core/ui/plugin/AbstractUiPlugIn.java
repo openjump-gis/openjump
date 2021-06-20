@@ -76,6 +76,7 @@ public abstract class AbstractUiPlugIn extends AbstractPlugIn implements ActionL
    * @param context The plug-in context.
    */
   public void initialize(final PlugInContext context) throws Exception {
+    super.initialize(context);
     this.workbenchContext = context.getWorkbenchContext();
   }
 

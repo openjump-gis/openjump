@@ -38,6 +38,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUtil;
@@ -45,20 +46,22 @@ import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUti
 public class DrawConstrainedPolygonTool extends ConstrainedPolygonTool
 {
     private FeatureDrawingUtil featureDrawingUtil;
+
     final static String drawConstrainedPolygon =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedPolygonTool.Draw-Constrained-Polygon");
-    
-    protected DrawConstrainedPolygonTool(FeatureDrawingUtil featureDrawingUtil)
+
+    protected DrawConstrainedPolygonTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil)
     {
+        super(context);
         this.featureDrawingUtil = featureDrawingUtil;
     }
-    
-    public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy)
+
+    public static CursorTool create(WorkbenchContext context)
     {
         FeatureDrawingUtil featureDrawingUtil =
-        new FeatureDrawingUtil(layerNamePanelProxy);
+        new FeatureDrawingUtil(context);
         
         return featureDrawingUtil.prepare(
-        new DrawConstrainedPolygonTool(featureDrawingUtil),
+        new DrawConstrainedPolygonTool(context,featureDrawingUtil),
         true);
     }
     

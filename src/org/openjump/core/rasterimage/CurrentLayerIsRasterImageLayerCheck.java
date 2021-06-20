@@ -36,7 +36,7 @@ public class CurrentLayerIsRasterImageLayerCheck implements EnableCheck {
     public CurrentLayerIsRasterImageLayerCheck(PlugInContext context) {
         super();
         this.context = context;
-        this.checker = new EnableCheckFactory(context.getWorkbenchContext()).createExactlyNLayerablesMustBeSelectedCheck(1, RasterImageLayer.class);
+        this.checker = EnableCheckFactory.getInstance(context.getWorkbenchContext()).createExactlyNLayerablesMustBeSelectedCheck(1, RasterImageLayer.class);
     }
     
     /**

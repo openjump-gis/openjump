@@ -137,7 +137,7 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
   }
 
   public EnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
     MultiEnableCheck mec = new MultiEnableCheck();
 
     mec.add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck());

@@ -52,7 +52,7 @@ public class RemodelerPlugIn extends AbstractPlugIn {
 
       // Add a new bar in the Toolbox
       toolbox.addToolBar();
-      toolbox.add(new RemodelerTool());
+      toolbox.add(new RemodelerTool(context.getWorkbenchContext()));
       toolbox.finishAddingComponents();
       toolbox.validate();
       ModelerButtonAdded = true;

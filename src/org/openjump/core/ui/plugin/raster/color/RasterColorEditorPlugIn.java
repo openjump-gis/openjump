@@ -40,11 +40,11 @@ public class RasterColorEditorPlugIn extends AbstractPlugIn {
 				IconLoader.icon("color_wheel.png"),
 				new MultiEnableCheck()
 						.add(
-								new EnableCheckFactory(context.getWorkbenchContext())
+								EnableCheckFactory.getInstance(context.getWorkbenchContext())
 										.createWindowWithLayerViewPanelMustBeActiveCheck()
 						)
 						.add(
-								new EnableCheckFactory(context.getWorkbenchContext())
+								EnableCheckFactory.getInstance(context.getWorkbenchContext())
 										.createAtLeastNLayerablesMustBeSelectedCheck(
 												1, RasterImageLayer.class)
 				)

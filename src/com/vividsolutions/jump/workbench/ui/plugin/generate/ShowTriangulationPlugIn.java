@@ -89,7 +89,7 @@ public class ShowTriangulationPlugIn extends AbstractPlugIn {
     public void initialize(PlugInContext context) throws Exception {}
 
     public EnableCheck createEnableCheck(WorkbenchContext context) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(context);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(context);
         return new MultiEnableCheck().add(
             checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
     }

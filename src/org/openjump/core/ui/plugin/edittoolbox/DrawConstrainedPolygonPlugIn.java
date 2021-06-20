@@ -93,7 +93,7 @@ public class DrawConstrainedPolygonPlugIn extends AbstractPlugIn
     {
         try
         {
-            CursorTool polyTool = DrawConstrainedPolygonTool.create((LayerNamePanelProxy) context.getActiveInternalFrame());
+            CursorTool polyTool = DrawConstrainedPolygonTool.create(context.getWorkbenchContext());
             context.getLayerViewPanel().setCurrentCursorTool(polyTool); 
             return true;
         }

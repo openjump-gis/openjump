@@ -57,8 +57,9 @@ public class AutoCompletePolygonCursorTool extends PolygonTool {
 
    private FeatureDrawingUtil featureDrawingUtil;
 
-   protected AutoCompletePolygonCursorTool(FeatureDrawingUtil featureDrawingUtil)
+   protected AutoCompletePolygonCursorTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil)
    {
+       super(context);
        this.featureDrawingUtil = featureDrawingUtil;
    }
    
@@ -67,18 +68,19 @@ public class AutoCompletePolygonCursorTool extends PolygonTool {
       return sAutoComplete;
    }
 
-   public AutoCompletePolygonCursorTool(EnableCheckFactory checkFactory) {
-       this.checkFactory = checkFactory;
+   public AutoCompletePolygonCursorTool(WorkbenchContext context) {
+       super(context);
+       this.checkFactory = EnableCheckFactory.getInstance(context);
        allowSnapping();
    }
 
-   public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy)
+   public static CursorTool create(WorkbenchContext context)
    {
        FeatureDrawingUtil featureDrawingUtil =
-       new FeatureDrawingUtil(layerNamePanelProxy);
+       new FeatureDrawingUtil(context);
        
        return featureDrawingUtil.prepare(
-       new AutoCompletePolygonCursorTool(featureDrawingUtil),
+       new AutoCompletePolygonCursorTool(context, featureDrawingUtil),
        true);
    }
    

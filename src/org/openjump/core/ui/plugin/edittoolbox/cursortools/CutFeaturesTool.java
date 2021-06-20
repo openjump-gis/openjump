@@ -42,7 +42,8 @@ import javax.swing.JOptionPane;
   
 public class CutFeaturesTool extends MultiClickTool {
 
-    public CutFeaturesTool(PlugInContext context) {
+    public CutFeaturesTool(WorkbenchContext context) {
+      super(context);
       setColor(Color.red);
       setStroke(new BasicStroke(1.5f,    // Width
               BasicStroke.CAP_SQUARE,    // End cap

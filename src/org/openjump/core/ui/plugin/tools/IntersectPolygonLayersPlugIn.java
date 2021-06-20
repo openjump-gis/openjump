@@ -90,9 +90,9 @@ public class IntersectPolygonLayersPlugIn extends ThreadedBasePlugIn {
 				false,
 				null,
 				new MultiEnableCheck().add(
-						new EnableCheckFactory(context.getWorkbenchContext())
+						EnableCheckFactory.getInstance(context.getWorkbenchContext())
 								.createTaskWindowMustBeActiveCheck()).add(
-						new EnableCheckFactory(context.getWorkbenchContext())
+						EnableCheckFactory.getInstance(context.getWorkbenchContext())
 								.createAtLeastNLayersMustExistCheck(1)));
 
 		this.sDescription = I18N.getInstance().get("org.openjump.plugin.tools.IntersectPolygonLayersPlugIn.sDescrition");

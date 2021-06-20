@@ -44,6 +44,8 @@ import java.awt.geom.Point2D;
 import javax.swing.Icon;
 
 import org.locationtech.jts.geom.Envelope;
+
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 /**
@@ -60,7 +62,8 @@ public class PanTool extends AbstractZoomTool
 //  private Image origImage;
 //  private Image auxImage = null;
 
-  public PanTool() {
+  public PanTool(WorkbenchContext workbenchContext) {
+    super(workbenchContext);
   }
 
   public Cursor getCursor() {

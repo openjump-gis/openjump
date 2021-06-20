@@ -46,7 +46,6 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
 import com.vividsolutions.jump.workbench.ui.plugin.DeleteSelectedItemsPlugIn;
 
-
 public class CutSelectedItemsPlugIn extends MacroPlugIn {
     public CutSelectedItemsPlugIn() {
         super(new PlugIn[] {

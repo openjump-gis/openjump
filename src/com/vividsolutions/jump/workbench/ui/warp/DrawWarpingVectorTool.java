@@ -36,6 +36,7 @@ import java.awt.Cursor;
 
 import javax.swing.Icon;
 
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.AbstractVectorLayerFinder;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.ui.cursortool.VectorTool;
@@ -43,7 +44,8 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class DrawWarpingVectorTool extends VectorTool {
 
-    public DrawWarpingVectorTool() {
+    public DrawWarpingVectorTool(WorkbenchContext context) {
+        super(context);
         setColor(WarpingVectorLayerFinder.COLOR);
     }
 

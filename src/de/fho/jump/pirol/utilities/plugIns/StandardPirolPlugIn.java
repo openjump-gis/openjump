@@ -104,7 +104,7 @@ public abstract class StandardPirolPlugIn extends AbstractPlugIn implements Erro
 
     public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext, boolean needFence) {
         if (StandardPirolPlugIn.checkFactory == null){
-            StandardPirolPlugIn.checkFactory = new EnableCheckFactory(workbenchContext);
+            StandardPirolPlugIn.checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         }
         MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
         

@@ -42,9 +42,11 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import com.vividsolutions.jump.geom.CoordUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 
 public abstract class RectangleTool extends DragTool {
-    public RectangleTool() {
+    public RectangleTool(WorkbenchContext context) {
+      super(context);
     }
 
     protected Polygon getRectangle() throws NoninvertibleTransformException {

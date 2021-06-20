@@ -43,6 +43,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.AbstractVectorLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
@@ -50,8 +51,8 @@ import com.vividsolutions.jump.workbench.model.UndoableCommand;
 
 public abstract class VectorTool extends NClickTool {
 
-    public VectorTool() {
-        super(2);
+    public VectorTool(WorkbenchContext context) {
+        super(context, 2);
         setStroke(new BasicStroke(1));
         allowSnapping();
     }

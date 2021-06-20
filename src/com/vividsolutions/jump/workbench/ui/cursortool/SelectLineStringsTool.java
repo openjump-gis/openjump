@@ -35,6 +35,7 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 import javax.swing.Icon;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.LineStringSelectionRenderer;
@@ -42,8 +43,8 @@ import com.vividsolutions.jump.workbench.ui.renderer.LineStringSelectionRenderer
 
 public class SelectLineStringsTool extends SelectTool {
 
-    public SelectLineStringsTool() {
-        super(LineStringSelectionRenderer.CONTENT_ID);
+    public SelectLineStringsTool(WorkbenchContext context) {
+        super(context, LineStringSelectionRenderer.CONTENT_ID);
     }
 
     public Icon getIcon() {

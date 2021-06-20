@@ -342,11 +342,12 @@ public class CTSPlugIn extends ThreadedBasePlugIn implements Iconified, EnableCh
     }
 
     EnableCheck createEnableCheck(final WorkbenchContext context) {
+        EnableCheckFactory f = EnableCheckFactory.getInstance(context);
         return new MultiEnableCheck()
-                .add(EnableCheckFactory.getInstance().createTaskWindowMustBeActiveCheck())
-                .add(EnableCheckFactory.getInstance().createAtLeastNLayersMustBeSelectedCheck(1))
-                .add(EnableCheckFactory.getInstance().createSelectedLayersMustBeEditableCheck())
-                .add(EnableCheckFactory.getInstance().createSelectedLayerablesMustBeVectorLayers())
+                .add(f.createTaskWindowMustBeActiveCheck())
+                .add(f.createAtLeastNLayersMustBeSelectedCheck(1))
+                .add(f.createSelectedLayersMustBeEditableCheck())
+                .add(f.createSelectedLayerablesMustBeVectorLayers())
                 .add(new EnableCheck() {
                     @Override
                     public String check(JComponent component) {

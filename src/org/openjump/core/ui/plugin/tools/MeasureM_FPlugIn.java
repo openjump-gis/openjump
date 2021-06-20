@@ -64,7 +64,7 @@ public class MeasureM_FPlugIn extends AbstractPlugIn
 				false, 
 				null,
 				createEnableCheck(context.getWorkbenchContext()));
-        measureTool = new MeasureM_FTool();
+        measureTool = new MeasureM_FTool(context.getWorkbenchContext());
    }
     
     public boolean execute(PlugInContext context) throws Exception
@@ -89,7 +89,7 @@ public class MeasureM_FPlugIn extends AbstractPlugIn
     }  
     
     public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
             .add(checkFactory.createTaskWindowMustBeActiveCheck());
     }

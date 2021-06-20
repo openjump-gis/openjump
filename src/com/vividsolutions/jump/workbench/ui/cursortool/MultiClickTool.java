@@ -46,6 +46,8 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.util.Assert;
+
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 
 /**
@@ -63,7 +65,8 @@ public abstract class MultiClickTool extends AbstractCursorTool {
   private boolean closeRing = false;
   private CoordinateListMetrics metrics = null;
 
-  public MultiClickTool() {
+  public MultiClickTool(WorkbenchContext context) {
+    super(context);
   }
 
   protected void setMetricsDisplay(CoordinateListMetrics metrics) {

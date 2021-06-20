@@ -235,8 +235,7 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn {
 
     public MultiEnableCheck createEnableCheck(
             final WorkbenchContext workbenchContext) {
-        final EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        final EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck().add(
                 checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
                 .add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1));

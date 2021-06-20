@@ -59,11 +59,11 @@ public class WarpingPlugIn extends ToolboxPlugIn {
     protected void initializeToolbox(ToolboxDialog toolbox) {
         WarpingPanel warpingPanel = new WarpingPanel(toolbox);
         toolbox.getCenterPanel().add(warpingPanel, BorderLayout.CENTER);
-        add(new DrawWarpingVectorTool(), false, toolbox, warpingPanel);
-        add(new DeleteWarpingVectorTool(), false, toolbox, warpingPanel);
+        add(new DrawWarpingVectorTool(toolbox.getContext()), false, toolbox, warpingPanel);
+        add(new DeleteWarpingVectorTool(toolbox.getContext()), false, toolbox, warpingPanel);
         toolbox.getToolBar().addSeparator();
-        add(new DrawIncrementalWarpingVectorTool(warpingPanel), true, toolbox, warpingPanel);
-        add(new DeleteIncrementalWarpingVectorTool(warpingPanel), true, toolbox, warpingPanel);
+        add(new DrawIncrementalWarpingVectorTool(toolbox.getContext(), warpingPanel), true, toolbox, warpingPanel);
+        add(new DeleteIncrementalWarpingVectorTool(toolbox.getContext(), warpingPanel), true, toolbox, warpingPanel);
         //Set y so it is positioned below Editing toolbox. [Jon Aquino]
         toolbox.setInitialLocation(new GUIUtil.Location(20, true, 175, false));   
     }

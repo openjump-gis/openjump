@@ -146,6 +146,8 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn {
   }
 
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+
     WorkbenchContext workbenchContext = context.getWorkbenchContext();
     WorkbenchFrame frame = workbenchContext.getWorkbench().getFrame();
     FeatureInstaller featureInstaller = context.getFeatureInstaller();
@@ -492,7 +494,7 @@ public class SaveDatasetsPlugIn extends AbstractPlugIn {
 
   public static MultiEnableCheck createEnableCheck(
       final WorkbenchContext workbenchContext) {
-    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
     return new MultiEnableCheck()
         .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())

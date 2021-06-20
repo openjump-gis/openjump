@@ -83,6 +83,7 @@ public class RotatePlugIn extends AbstractPlugIn {
     }
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         /*
          * workbenchContext = context.getWorkbenchContext(); FeatureInstaller
          * featureInstaller = context.getFeatureInstaller(); JPopupMenu
@@ -196,8 +197,7 @@ public class RotatePlugIn extends AbstractPlugIn {
 
     public MultiEnableCheck createEnableCheck(
             final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
                 .add(checkFactory
                         .createWindowWithLayerViewPanelMustBeActiveCheck())

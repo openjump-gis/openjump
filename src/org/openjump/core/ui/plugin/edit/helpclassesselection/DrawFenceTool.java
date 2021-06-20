@@ -48,6 +48,7 @@ import javax.swing.Icon;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
@@ -57,19 +58,18 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class DrawFenceTool extends PolygonTool {
 	private FenceDrawingUtil myfDrawingUtil;
-	private PlugInContext context;
 
 	//sst: change: PlugInContext added
-	protected DrawFenceTool(FenceDrawingUtil featureDrawingUtil, PlugInContext context) {
+	protected DrawFenceTool(WorkbenchContext context, FenceDrawingUtil featureDrawingUtil) {
+	  super(context);
 		this.myfDrawingUtil = featureDrawingUtil;
-		this.context = context;
 	}
 	
 	//static method to use class (sst: change: PlugInContext added)
-	public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy, PlugInContext context) {
-		FenceDrawingUtil fDUtil = new FenceDrawingUtil(layerNamePanelProxy);
+	public static CursorTool create(WorkbenchContext context) {
+		FenceDrawingUtil fDUtil = new FenceDrawingUtil(context);
 		//return fDUtil.prepare(new DrawFenceTool(fDUtil, context),true);
-		return fDUtil.prepare(new DrawFenceTool(fDUtil, context),false); // no snap!
+		return fDUtil.prepare(new DrawFenceTool(context,fDUtil),false); // no snap!
 	}
 
 	public Icon getIcon() {
@@ -91,6 +91,7 @@ public class DrawFenceTool extends PolygonTool {
 			getPanel());
         **/
 		int count = 0;
+		PlugInContext context = getWorkbenchContext().createPlugInContext();
 		Layer[] selectedLayers = context.getLayerNamePanel().getSelectedLayers();
 		for (int i = 0; i < selectedLayers.length; i++) {
 			Layer actualLayer = selectedLayers[i]; 		

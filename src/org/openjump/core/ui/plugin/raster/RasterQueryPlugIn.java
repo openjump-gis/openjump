@@ -94,7 +94,7 @@ public class RasterQueryPlugIn extends AbstractPlugIn {
 				public String getName() {
                    return "Test dragging to retrive a set of values";
                  }
-               }).add(new RasterQueryCursorTool()).add(new RasterQueryDragTool())));
+               }).add(new RasterQueryCursorTool(context.getWorkbenchContext())).add(new RasterQueryDragTool(context.getWorkbenchContext()))));
         	
         	 
        //     context.getLayerViewPanel().setCurrentCursorTool(
@@ -121,8 +121,7 @@ public class RasterQueryPlugIn extends AbstractPlugIn {
 
     public MultiEnableCheck createEnableCheck(
             final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck().add(
                 checkFactory.createTaskWindowMustBeActiveCheck()).add(
                 checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1,

@@ -245,8 +245,7 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
             final WorkbenchContext workbenchContext) {
 
         MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
-        EnableCheckFactory checkFactory = new EnableCheckFactory(
-                workbenchContext);
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         multiEnableCheck.add(checkFactory
                 .createExactlyNLayerablesMustBeSelectedCheck(1,
                         RasterImageLayer.class));
@@ -257,10 +256,6 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
         multiEnableCheck.add(enableCheck);
 
         return multiEnableCheck;
-    }
-
-    @Override
-	public void initialize(PlugInContext context) throws Exception {
     }
 
 }

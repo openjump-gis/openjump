@@ -84,7 +84,7 @@ public class NoteToolPlugIn extends AbstractPlugIn {
             final ToolboxDialog toolbox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
             // wrap in a qmtool with disabled default modes, 
             // we don't want e.g. a,x,v to interrupt note adding
-            toolbox.add(new QuasimodeTool(new NoteTool()));
+            toolbox.add(new QuasimodeTool(new NoteTool(context.getWorkbenchContext())));
             toolbox.finishAddingComponents();
             toolbox.validate();
             noteToolButtonAdded = true;

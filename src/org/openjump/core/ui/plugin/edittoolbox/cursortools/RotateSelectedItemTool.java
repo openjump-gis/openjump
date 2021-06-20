@@ -62,6 +62,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
@@ -122,9 +123,9 @@ public class RotateSelectedItemTool extends DragTool implements ShortcutsDescrip
   // createCursor(new
   // ImageIcon(getClass().getResource("CrossHairCursor.gif")).getImage());
 
-  public RotateSelectedItemTool(EnableCheckFactory checkFactory) {
-    super();
-    this.checkFactory = checkFactory;
+  public RotateSelectedItemTool(WorkbenchContext context) {
+    super(context);
+    this.checkFactory = EnableCheckFactory.getInstance(context);
   }
 
   public void activate(LayerViewPanel layerViewPanel) {

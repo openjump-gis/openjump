@@ -50,6 +50,7 @@ import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
@@ -63,8 +64,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn;
 public class SnapVerticesTool extends SpecifyFeaturesTool {
     private EnableCheckFactory checkFactory;
 
-    public SnapVerticesTool(EnableCheckFactory checkFactory) {
-        this.checkFactory = checkFactory;
+    public SnapVerticesTool(WorkbenchContext context) {
+        super(context);
+        this.checkFactory = EnableCheckFactory.getInstance(context);
         setColor(Color.green.darker());
         setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_BEVEL, 0));
@@ -105,7 +107,7 @@ public class SnapVerticesTool extends SpecifyFeaturesTool {
                 getBoxInModelCoordinates()), editableLayers,
             isRollingBackInvalidEdits(), getPanel(), getTaskFrame().getTask(),
             suggestedTarget, targetFeature,
-            getContext().getBlackboard().get(SnapVerticesOp.INSERT_VERTICES_IF_NECESSARY_KEY,
+            getWorkbenchContext().getBlackboard().get(SnapVerticesOp.INSERT_VERTICES_IF_NECESSARY_KEY,
                 true));
     }
 

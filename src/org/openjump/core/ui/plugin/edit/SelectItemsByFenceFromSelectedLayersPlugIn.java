@@ -61,7 +61,7 @@ public class SelectItemsByFenceFromSelectedLayersPlugIn extends AbstractPlugIn{
 		}
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);        
+        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);        
         return new MultiEnableCheck()
                         .add(checkFactory.createAtLeastNLayersMustExistCheck(1));        
     }
@@ -71,7 +71,7 @@ public class SelectItemsByFenceFromSelectedLayersPlugIn extends AbstractPlugIn{
 		this.reportNothingToUndoYet(context);
         try
         {
-            CursorTool polyTool = DrawFenceTool.create((LayerNamePanelProxy) context.getActiveInternalFrame(), context);
+            CursorTool polyTool = DrawFenceTool.create(context.getWorkbenchContext());
             context.getLayerViewPanel().setCurrentCursorTool(polyTool);
         }
         catch (Exception e)

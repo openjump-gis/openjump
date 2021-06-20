@@ -17,6 +17,8 @@ public abstract class AbstractLoadSaveDatasetPlugIn extends ThreadedBasePlugIn {
     protected String getLastDirectoryKey() { return getClass().getName() + " - LAST DIRECTORY"; }    
 
     public void initialize(final PlugInContext context) throws Exception {
+        super.initialize(context);
+        
         this.context = context.getWorkbenchContext();
         //Give other plug-ins a chance to add DataSourceQueryChoosers
         //before the dialog is realized. [Jon Aquino]
@@ -33,9 +35,7 @@ public abstract class AbstractLoadSaveDatasetPlugIn extends ThreadedBasePlugIn {
 
     protected abstract void setSelectedFormat(String format);
     protected abstract String getSelectedFormat();
-    protected WorkbenchContext getContext() {
-        return context;
-    }
+
     private Collection<DataSourceQuery> dataSourceQueries;
 
     public boolean execute(PlugInContext context) throws Exception {

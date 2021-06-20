@@ -192,7 +192,7 @@ public class PlugInContext implements LayerViewPanelProxy,
     }
 
     public EnableCheckFactory getCheckFactory() {
-        return EnableCheckFactory.getInstance();
+        return EnableCheckFactory.getInstance(workbenchContext);
     }
 
     public FeatureInstaller getFeatureInstaller() {

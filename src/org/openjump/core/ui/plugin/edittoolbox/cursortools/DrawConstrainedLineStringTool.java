@@ -43,6 +43,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
@@ -54,16 +55,17 @@ public class DrawConstrainedLineStringTool extends ConstrainedMultiClickTool {
     final static String drawConstrainedLineString =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedLineStringTool.Draw-Constrained-LineString");
     final static String TheLinestringMustHaveAtLeast2Points =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedLineStringTool.The-linestring-must-have-at-least-2-points");
     
-    protected DrawConstrainedLineStringTool(FeatureDrawingUtil featureDrawingUtil) {
+    protected DrawConstrainedLineStringTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil) {
+        super(context);
         drawClosed = false;
         this.featureDrawingUtil = featureDrawingUtil;
     }
 
-    public static CursorTool create(LayerNamePanelProxy layerNamePanelProxy) {
-        FeatureDrawingUtil featureDrawingUtil = new FeatureDrawingUtil(layerNamePanelProxy);
+    public static CursorTool create(WorkbenchContext context) {
+        FeatureDrawingUtil featureDrawingUtil = new FeatureDrawingUtil(context);
 
         return featureDrawingUtil.prepare(new DrawConstrainedLineStringTool(
-                featureDrawingUtil), true);
+                context,featureDrawingUtil), true);
     }
 
     public String getName() {

@@ -27,16 +27,13 @@ public class SimpleQueryPlugIn extends AbstractPlugIn {
     private static QueryDialog queryDialog;
 
     public void initialize(PlugInContext context) throws Exception {
-
-            context.getFeatureInstaller().addMainMenuPlugin (this,
-                    new String[]{MenuNames.TOOLS, MenuNames.TOOLS_QUERIES},
-                    this.getName() + "...", false,
-                    IconLoader.icon("simple_query.png"),
-                    getEnableCheck());
+      super.initialize(context);
+      context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QUERIES },
+          this.getName() + "...", false, IconLoader.icon("simple_query.png"), getEnableCheck());
     }
 
     public EnableCheck getEnableCheck() {
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance();
+        EnableCheckFactory checkFactory = getContext().getCheckFactory();
 
         return new MultiEnableCheck()
                 .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())

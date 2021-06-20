@@ -58,6 +58,7 @@ import org.locationtech.jts.geom.Point;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.cursortool.DragTool;
@@ -67,13 +68,12 @@ public class SelectItemsByCircleTool extends DragTool {
     private Shape selectedFeaturesShape;
     private GeometryFactory geometryFactory = new GeometryFactory();
     private List verticesToSnap = null;
-    private PlugInContext context = null;
     private double diameter=0; //in m
     private Point mp = null;
 
-    public SelectItemsByCircleTool(PlugInContext context, double diameter, Coordinate initCoo) {
-    	this.context =context;
-    	this.diameter = diameter;
+    public SelectItemsByCircleTool(WorkbenchContext context, double diameter, Coordinate initCoo) {
+      super(context);
+      this.diameter = diameter;
         setStroke(
             new BasicStroke(
                 1,
@@ -161,8 +161,8 @@ public class SelectItemsByCircleTool extends DragTool {
 
            //-- B does work
             
-           Enumeration buttons = context.getWorkbenchContext().getWorkbench().
-		   		getFrame().getToolBar().getButtonGroup().getElements();
+           Enumeration buttons = getWorkbenchContext().getWorkbench().
+               getFrame().getToolBar().getButtonGroup().getElements();
            
            AbstractButton myButton = (AbstractButton)buttons.nextElement();
            //System.out.println(myButton.getClass());
@@ -265,7 +265,7 @@ public class SelectItemsByCircleTool extends DragTool {
     	geomArray[0] = buffer;
     	GeometryCollection gc = geometryFactory.createGeometryCollection(geomArray);
     	try{
-    		this.selectedFeaturesShape = this.context.getLayerViewPanel().getJava2DConverter().toShape(gc);
+    		this.selectedFeaturesShape = getWorkbenchContext().getLayerViewPanel().getJava2DConverter().toShape(gc);
     	}
     	catch(NoninvertibleTransformException e){
     		System.out.println("SelectItemsByCircleTool:Exception " + e);
@@ -279,6 +279,7 @@ public class SelectItemsByCircleTool extends DragTool {
      */
     private void selectItems(Geometry circle){
 		int count = 0;
+		PlugInContext context = getWorkbenchContext().createPlugInContext();
 		Layer[] selectedLayers = context.getLayerNamePanel().getSelectedLayers();
 		for (int i = 0; i < selectedLayers.length; i++) {
 			Layer actualLayer = selectedLayers[i]; 		

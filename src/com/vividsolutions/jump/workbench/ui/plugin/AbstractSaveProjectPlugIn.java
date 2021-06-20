@@ -139,6 +139,6 @@ public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
 
   @Override
   public EnableCheck getEnableCheck() {
-    return EnableCheckFactory.getInstance().createTaskWindowMustBeActiveCheck();
+    return EnableCheckFactory.getInstance(getContext().getWorkbenchContext()).createTaskWindowMustBeActiveCheck();
   }
 }

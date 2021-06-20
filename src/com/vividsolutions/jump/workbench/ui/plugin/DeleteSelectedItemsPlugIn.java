@@ -91,7 +91,7 @@ public class DeleteSelectedItemsPlugIn extends AbstractPlugIn {
 
   public static MultiEnableCheck createEnableCheck(
       WorkbenchContext workbenchContext) {
-    EnableCheckFactory checkFactory = new EnableCheckFactory(workbenchContext);
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
     return new MultiEnableCheck()
         .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
         .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))

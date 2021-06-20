@@ -26,6 +26,7 @@ import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FeatureEventType;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
@@ -140,8 +141,8 @@ public class NoteTool extends NClickTool {
     }
   }
 
-  public NoteTool() {
-    super(1);
+  public NoteTool(WorkbenchContext context) {
+    super(context, 1);
     panel = getPanel();
     getSnapManager().addPolicies(
         Collections.singleton(new SnapToFeaturesPolicy()));
