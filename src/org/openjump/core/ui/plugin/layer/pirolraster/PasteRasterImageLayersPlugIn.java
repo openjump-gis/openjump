@@ -68,7 +68,7 @@ public class PasteRasterImageLayersPlugIn extends LayerableClipboardPlugIn {
      * @inheritDoc
      */
     public String getName() {
-        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.PasteRasterImageLayersPlugIn.Paste-Raster-Image-Layers");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.PasteRasterImageLayersPlugIn.Paste-Raster-Image-Layers");
     }
     
     public boolean execute(PlugInContext context) throws Exception {
@@ -112,12 +112,12 @@ public class PasteRasterImageLayersPlugIn extends LayerableClipboardPlugIn {
                                                                            .getSystemClipboard());
 
                     if (transferable == null) {
-                        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.PasteRasterImageLayersPlugIn.Clipboard-must-not-be-empty");
+                        return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.PasteRasterImageLayersPlugIn.Clipboard-must-not-be-empty");
                     }
 
                     if (!transferable.isDataFlavorSupported(
                                 CollectionOfLayerablesTransferable.COLLECTION_OF_LAYERABLES_FLAVOR)) {
-                        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.PasteRasterImageLayersPlugIn.Clipboard-contents-must-be-layers");
+                        return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.PasteRasterImageLayersPlugIn.Clipboard-contents-must-be-layers");
                     }
 
                     return null;

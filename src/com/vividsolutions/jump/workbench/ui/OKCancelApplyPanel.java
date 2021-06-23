@@ -39,34 +39,34 @@ import com.vividsolutions.jump.I18N;
 public class OKCancelApplyPanel extends OKCancelPanel {
 
     public OKCancelApplyPanel() {
-        super(new String[] {I18N.get("ui.OKCancelPanel.ok"), 
-                            I18N.get("ui.OKCancelPanel.cancel"),
-                            I18N.get("ui.OKCancelApplyPanel.apply")});
+        super(new String[] {I18N.getInstance().get("ui.OKCancelPanel.ok"), 
+                            I18N.getInstance().get("ui.OKCancelPanel.cancel"),
+                            I18N.getInstance().get("ui.OKCancelApplyPanel.apply")});
         setApplyVisible(false);
     }
 
     public boolean wasApplyPressed() {
-        return getSelectedButton() == getButton(I18N.get("ui.OKCancelApplyPanel.apply"));
+        return getSelectedButton() == getButton(I18N.getInstance().get("ui.OKCancelApplyPanel.apply"));
     }
     
     public void setApplyPressed(boolean applyPressed) {
       if (applyPressed)
-        setSelectedButton(getButton(I18N.get("ui.OKCancelApplyPanel.apply")));
+        setSelectedButton(getButton(I18N.getInstance().get("ui.OKCancelApplyPanel.apply")));
       else
         setSelectedButton(null);
     }
     
     public void setApplyEnabled(boolean applyEnabled) {
-        getButton(I18N.get("ui.OKCancelApplyPanel.apply")).setEnabled(applyEnabled);
+        getButton(I18N.getInstance().get("ui.OKCancelApplyPanel.apply")).setEnabled(applyEnabled);
     }
 
     public void setApplyVisible(boolean applyVisible) {
-        if (applyVisible && !innerButtonPanel.isAncestorOf(getButton( I18N.get("ui.OKCancelApplyPanel.apply")))) {
-            innerButtonPanel.add(getButton( I18N.get("ui.OKCancelApplyPanel.apply")), null);
+        if (applyVisible && !innerButtonPanel.isAncestorOf(getButton( I18N.getInstance().get("ui.OKCancelApplyPanel.apply")))) {
+            innerButtonPanel.add(getButton( I18N.getInstance().get("ui.OKCancelApplyPanel.apply")), null);
         }
     
-        if (!applyVisible && innerButtonPanel.isAncestorOf(getButton( I18N.get("ui.OKCancelApplyPanel.apply")))) {
-            innerButtonPanel.remove(getButton( I18N.get("ui.OKCancelApplyPanel.apply")));
+        if (!applyVisible && innerButtonPanel.isAncestorOf(getButton( I18N.getInstance().get("ui.OKCancelApplyPanel.apply")))) {
+            innerButtonPanel.remove(getButton( I18N.getInstance().get("ui.OKCancelApplyPanel.apply")));
         }
     }
 }

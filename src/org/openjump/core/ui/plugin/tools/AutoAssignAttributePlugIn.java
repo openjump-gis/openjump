@@ -107,26 +107,26 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
 	    	  this.getName(), false, null,
 	    	  createEnableCheck(context.getWorkbenchContext()));
 	      
-    SELECTED_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Selected-features-only");
-    TARGET_ATTRIBUTE_COMBO_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Target-attribute");
+    SELECTED_CHECK_BOX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Selected-features-only");
+    TARGET_ATTRIBUTE_COMBO_BOX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Target-attribute");
         
-    SOURCE_COMBO_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Source-attribute");
-    FROM_SOURCE_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-from-other-attribute");
-    FROM_SOURCE_DESCRIPTION = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.From-source-description");
-    SOURCE_DIFF_DESTINATION = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Source-and-destination-atributes-must-be-different");
+    SOURCE_COMBO_BOX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Source-attribute");
+    FROM_SOURCE_CHECK_BOX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-from-other-attribute");
+    FROM_SOURCE_DESCRIPTION = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.From-source-description");
+    SOURCE_DIFF_DESTINATION = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Source-and-destination-atributes-must-be-different");
         
-    AUTOINC_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment");
-    AUTOINC_PATTERN_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment-pattern");
-    INC_VALUE_EDIT_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Increment-by");
-    AUTOINC_DESCRIPTION_1 = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment-description-1");
-    AUTOINC_DESCRIPTION_2 = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment-description-2");
+    AUTOINC_CHECK_BOX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment");
+    AUTOINC_PATTERN_BOX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment-pattern");
+    INC_VALUE_EDIT_BOX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Increment-by");
+    AUTOINC_DESCRIPTION_1 = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment-description-1");
+    AUTOINC_DESCRIPTION_2 = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Auto-increment-description-2");
         
-    ASSIGN_VALUE_CHECK_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-fixed-value");
-    ASSIGN_VALUE_TEXT_BOX = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-value");
-    ASSIGN_VALUE_DESCRIPTION = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-value-description");
+    ASSIGN_VALUE_CHECK_BOX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-fixed-value");
+    ASSIGN_VALUE_TEXT_BOX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-value");
+    ASSIGN_VALUE_DESCRIPTION = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Assign-value-description");
         
-    SELECT_ONLY_ON_ONE_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Select-features-on-only-one-layer");
-    DESCRIPTION = I18N.get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Description");
+    SELECT_ONLY_ON_ONE_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Select-features-on-only-one-layer");
+    DESCRIPTION = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AutoAssignAttributePlugIn.Description");
 	}
 	
 	public boolean execute(PlugInContext context) throws Exception {
@@ -427,7 +427,7 @@ public class AutoAssignAttributePlugIn extends AbstractUiPlugIn {
     layer.getLayerManager().getUndoableEditReceiver().startReceiving();
     try {
       UndoableCommand command =
-              new UndoableCommand(I18N.get(AutoAssignAttributePlugIn.class.getName())) {
+              new UndoableCommand(I18N.getInstance().get(AutoAssignAttributePlugIn.class.getName())) {
         public void execute() {
           Iterator i = newFeatures.iterator();
           for (Feature f : features) {

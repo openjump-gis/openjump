@@ -60,8 +60,8 @@ import javax.swing.JComponent;
 
 public class PasteLayersPlugIn extends LayerableClipboardPlugIn {
     
-    public static final String MUST_NOT_BE_EMPTY = I18N.get("ui.plugin.PasteLayersPlugIn.clipboard-must-not-be-empty");
-    public static final String MUST_BE_LAYERS = I18N.get("ui.plugin.PasteLayersPlugIn.clipboard-must-contain-layers");
+    public static final String MUST_NOT_BE_EMPTY = I18N.getInstance().get("ui.plugin.PasteLayersPlugIn.clipboard-must-not-be-empty");
+    public static final String MUST_BE_LAYERS = I18N.getInstance().get("ui.plugin.PasteLayersPlugIn.clipboard-must-contain-layers");
   
     //Note: Need to copy the data twice: once when the user hits Copy, so she is
     //free to modify the original afterwards, and again when the user hits Paste,

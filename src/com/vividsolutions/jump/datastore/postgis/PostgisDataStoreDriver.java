@@ -40,7 +40,7 @@ public class PostgisDataStoreDriver
         Properties connectionProps = new Properties();
         connectionProps.put(
             "ApplicationName", 
-            I18N.get("JUMPWorkbench.jump") + " " + JUMPVersion.CURRENT_VERSION);
+            I18N.getInstance().get("JUMPWorkbench.jump") + " " + JUMPVersion.CURRENT_VERSION);
         Connection conn = super.createJdbcConnection(params, connectionProps);
         return new PostgisDSConnection(conn);
     }

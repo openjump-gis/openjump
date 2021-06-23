@@ -53,7 +53,7 @@ public class SaveProjectPlugIn extends SaveProjectAsPlugIn {
     }
     
     public String getName() {
-        return I18N.get("ui.plugin.SaveProjectPlugIn.save-project");
+        return I18N.getInstance().get("ui.plugin.SaveProjectPlugIn.save-project");
     }    
 
     public boolean execute(PlugInContext context) throws Exception {

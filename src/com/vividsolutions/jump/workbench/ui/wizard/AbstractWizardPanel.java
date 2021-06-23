@@ -24,8 +24,8 @@ public class AbstractWizardPanel extends JPanel implements WizardPanelV2 {
 
   public AbstractWizardPanel() {
     id = getClass().getName();
-    title = I18N.get(id);
-    instructions = I18N.get(id + ".instructions");
+    title = I18N.getInstance().get(id);
+    instructions = I18N.getInstance().get(id + ".instructions");
   }
 
   public AbstractWizardPanel(final String id, final String title,

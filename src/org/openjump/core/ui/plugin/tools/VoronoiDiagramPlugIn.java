@@ -73,13 +73,13 @@ import javax.swing.JCheckBox;
  */
 public class VoronoiDiagramPlugIn extends AbstractThreadedUiPlugIn{
 
-    //public static String VORONOI_DIAGRAM     = I18N.get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.voronoi-diagram");
-    public static String TRIANGULATE         = I18N.get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.triangulate");
-    public static String VORONOI             = I18N.get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.voronoi");
-    public static String SITES_LAYER         = I18N.get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.sites-layer");
-    public static String TRANSFER_ATTRIBUTES = I18N.get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.transfer-attributes");
-    public static String TOLERANCE           = I18N.get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.tolerance");
-    public static String DESCRIPTION         = I18N.get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.description");         
+    //public static String VORONOI_DIAGRAM     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.voronoi-diagram");
+    public static String TRIANGULATE         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.triangulate");
+    public static String VORONOI             = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.voronoi");
+    public static String SITES_LAYER         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.sites-layer");
+    public static String TRANSFER_ATTRIBUTES = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.transfer-attributes");
+    public static String TOLERANCE           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.tolerance");
+    public static String DESCRIPTION         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.VoronoiDiagramPlugIn.description");         
 
 	String sitesLayer;
 	boolean transferAttributes = false;

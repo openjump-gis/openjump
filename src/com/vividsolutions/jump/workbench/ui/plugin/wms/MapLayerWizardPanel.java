@@ -52,7 +52,7 @@ public class MapLayerWizardPanel extends JPanel implements WizardPanel {
     public static final String FORMAT_LIST_KEY = "FORMAT_LIST";
     public static final String STYLE_LIST_KEY = "STYLE_LIST";
     public final static String INITIAL_LAYER_NAMES_KEY = "INITIAL_LAYER_NAMES";
-    public final static String NO_COMMON_SRS_MESSAGE = I18N.get("ui.plugin.wms.MapLayerWizardPanel.the-chosen-layers-do-not-have-a-common-epsg-coordinate-reference-system");
+    public final static String NO_COMMON_SRS_MESSAGE = I18N.getInstance().get("ui.plugin.wms.MapLayerWizardPanel.the-chosen-layers-do-not-have-a-common-epsg-coordinate-reference-system");
 
     private final MapLayerPanel addRemovePanel = new MapLayerPanel();
     private Map<String,Object> dataMap;
@@ -78,7 +78,7 @@ public class MapLayerWizardPanel extends JPanel implements WizardPanel {
     public String getInstructions() {
         // return "Please choose the WMS layers that should appear on the image. You " +
         // "can change the ordering of the WMS layers using the up and down buttons.";
-        return I18N.get("ui.plugin.wms.MapLayerWizardPanel.please-choose-the-wms-layers-that-should-appear-on-the-image");
+        return I18N.getInstance().get("ui.plugin.wms.MapLayerWizardPanel.please-choose-the-wms-layers-that-should-appear-on-the-image");
     }
 
     public void exitingToRight() throws WorkbenchException {
@@ -105,7 +105,7 @@ public class MapLayerWizardPanel extends JPanel implements WizardPanel {
     }
 
     public String getTitle() {
-        return I18N.get("ui.plugin.wms.MapLayerWizardPanel.choose-wms-layers");
+        return I18N.getInstance().get("ui.plugin.wms.MapLayerWizardPanel.choose-wms-layers");
     }
 
     public String getID() {

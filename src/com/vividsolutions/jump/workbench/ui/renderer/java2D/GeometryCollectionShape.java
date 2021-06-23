@@ -93,13 +93,13 @@ public class GeometryCollectionShape implements Shape {
     public boolean contains(double x, double y) {
         /**@todo Implement this java.awt.Shape method*/
         throw new java.lang.UnsupportedOperationException(
-        		I18N.get("ui.renderer.GeometryCollectionShape.method-contains-not-yet-implemented"));
+        		I18N.getInstance().get("ui.renderer.GeometryCollectionShape.method-contains-not-yet-implemented"));
     }
 
     public boolean contains(Point2D p) {
         /**@todo Implement this java.awt.Shape method*/
         throw new java.lang.UnsupportedOperationException(
-        		I18N.get("ui.renderer.GeometryCollectionShape.method-contains-not-yet-implemented"));
+        		I18N.getInstance().get("ui.renderer.GeometryCollectionShape.method-contains-not-yet-implemented"));
     }
 
     public boolean intersects(double x, double y, double w, double h) {

@@ -75,12 +75,12 @@ public class IndexedFeatureCollection extends FeatureCollectionWrapper {
 
     @Override
     public void add(Feature feature) {
-        throw new UnsupportedOperationException(I18N.get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
+        throw new UnsupportedOperationException(I18N.getInstance().get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
     }
 
     @Override
     public void remove(Feature feature) {
-        throw new UnsupportedOperationException(I18N.get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
+        throw new UnsupportedOperationException(I18N.getInstance().get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
     }
 
     @Override
@@ -112,16 +112,16 @@ public class IndexedFeatureCollection extends FeatureCollectionWrapper {
 
     @Override
     public void addAll(Collection<Feature> features) {
-        throw new UnsupportedOperationException(I18N.get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
+        throw new UnsupportedOperationException(I18N.getInstance().get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
     }
 
     @Override
     public Collection<Feature> remove(Envelope env) {
-        throw new UnsupportedOperationException(I18N.get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
+        throw new UnsupportedOperationException(I18N.getInstance().get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
     }
 
     @Override
     public void removeAll(Collection<Feature> features) {
-        throw new UnsupportedOperationException(I18N.get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
+        throw new UnsupportedOperationException(I18N.getInstance().get("feature.IndexedFeatureCollection.index-cannot-be-modified"));
     }
 }

@@ -63,12 +63,9 @@ public class SortCategoryByNamePlugIn extends SortCategoryAbstractPlugIn impleme
 	@Override
 	protected void addMenuOptions(PlugInContext context) {
 
-		this.submenuLabel = I18N
-				.get("org.openjump.core.ui.plugin.layer.SortCategoryByNamePlugIn.By-Name");
-		this.descending = I18N
-				.get("org.openjump.core.ui.plugin.layer.SortCategoryByNamePlugIn.Descending");
-		this.ascending = I18N
-				.get("org.openjump.core.ui.plugin.layer.SortCategoryByNamePlugIn.Ascending");
+		this.submenuLabel = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategoryByNamePlugIn.By-Name");
+		this.descending = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategoryByNamePlugIn.Descending");
+		this.ascending = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategoryByNamePlugIn.Ascending");
 
 //addMainMenuItemWithJava14Fix causing error with ja_JP language, but worked with others
 //		context.getFeatureInstaller().addMainMenuItem(this,

@@ -60,10 +60,9 @@ public class LegendPlugIn extends AbstractPlugIn {
 
     private JScrollPane scrollPane = new JScrollPane();
 
-    String taskString = I18N.get("ui.WorkbenchFrame.task");
-    String layerString = I18N.get("ui.plugin.analysis.BufferPlugIn.layer");
-    String labelString = I18N
-            .get("ui.renderer.style.ColorThemingTableModel.label");
+    String taskString = I18N.getInstance().get("ui.WorkbenchFrame.task");
+    String layerString = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.layer");
+    String labelString = I18N.getInstance().get("ui.renderer.style.ColorThemingTableModel.label");
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
@@ -98,17 +97,16 @@ public class LegendPlugIn extends AbstractPlugIn {
             JOptionPane
                     .showMessageDialog(
                             frame,
-                            I18N.get("org.openjump.core.ui.plugin.wms.WMSLegendPlugIn.message")
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.wms.WMSLegendPlugIn.message")
                                     + " ("
-                                    + I18N.get("com.vividsolutions.jump.workbench.imagery.ReferencedImagesLayer")
+                                    + I18N.getInstance().get("com.vividsolutions.jump.workbench.imagery.ReferencedImagesLayer")
                                     + ", "
-                                    + I18N.get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Null-Geometries")
-                                    + ",...)", I18N
-                                    .get("ui.WorkbenchFrame.warning"),
+                                    + I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Null-Geometries")
+                                    + ",...)", I18N.getInstance().get("ui.WorkbenchFrame.warning"),
                             JOptionPane.WARNING_MESSAGE);
         } else {
             AdditionalResults.addAdditionalResultAndShow(
-                    getName() + "-" + I18N.get("ui.WorkbenchFrame.task") + ": "
+                    getName() + "-" + I18N.getInstance().get("ui.WorkbenchFrame.task") + ": "
                             + context.getTask().getName(), legend(context));
         }
 
@@ -116,16 +114,11 @@ public class LegendPlugIn extends AbstractPlugIn {
 
     }
 
-    private final static String EMPTY = I18N
-            .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.empty");
-    private final static String POINT = I18N
-            .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.point");
-    private final static String POLYLINE = I18N
-            .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polyline");
-    private final static String POLYGON = I18N
-            .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polygon");
-    private final static String GEOMETRYCOLLECTION = I18N
-            .get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.geometrycollection");
+    private final static String EMPTY = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.empty");
+    private final static String POINT = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.point");
+    private final static String POLYLINE = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polyline");
+    private final static String POLYGON = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.polygon");
+    private final static String GEOMETRYCOLLECTION = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByGeometry.geometrycollection");
 
     private LegendPanel legendPanel(final Layer layer, final BasicStyle style,
             FeatureCollection featureCollection) {
@@ -164,7 +157,7 @@ public class LegendPlugIn extends AbstractPlugIn {
 
                     fc.showDialog(
                             labelValue.getParent(),
-                            I18N.get("org.openjump.core.ui.plugin.style.LegendPlugIn.modify-label"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.style.LegendPlugIn.modify-label"));
                     final Font labelFont = fc.getSelectedFont();
                     if (fc.wasOKPressed()) {
                         labelValue.setFont(labelFont);
@@ -383,7 +376,7 @@ public class LegendPlugIn extends AbstractPlugIn {
 
     @Override
     public String getName() {
-        return I18N.get("org.openjump.core.ui.plugin.style.LegendPlugIn");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.style.LegendPlugIn");
     }
 
     public static class ColorThemingValue {

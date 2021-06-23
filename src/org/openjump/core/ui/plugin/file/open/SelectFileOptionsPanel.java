@@ -65,13 +65,13 @@ public class SelectFileOptionsPanel extends JPanel implements WizardPanel {
 
   public static final String KEY = SelectFileOptionsPanel.class.getName();
 
-  public static final String TITLE = I18N.get(KEY);
+  public static final String TITLE = I18N.getInstance().get(KEY);
 
-  public static final String FILE_TYPE = I18N.get(KEY + ".file-type");
+  public static final String FILE_TYPE = I18N.getInstance().get(KEY + ".file-type");
 
-  public static final String INSTRUCTIONS = I18N.get(KEY + ".instructions");
+  public static final String INSTRUCTIONS = I18N.getInstance().get(KEY + ".instructions");
 
-  public static final String USE_SAME_SETTINGS_FOR = I18N.get(KEY
+  public static final String USE_SAME_SETTINGS_FOR = I18N.getInstance().get(KEY
     + ".use-same-settings-for");
 
   private final JPanel mainPanel;
@@ -164,7 +164,7 @@ public class SelectFileOptionsPanel extends JPanel implements WizardPanel {
       filePanel.setBorder(BorderFactory.createTitledBorder(state.getFileName(file)));
       for (Option option : optionFields) {
         final String name = option.getName();
-        String label = I18N.get(loader.getClass().getName() + "." + name);
+        String label = I18N.getInstance().get(loader.getClass().getName() + "." + name);
         filePanel.add(new JLabel(label));
 
         String type = option.getType();
@@ -209,7 +209,7 @@ public class SelectFileOptionsPanel extends JPanel implements WizardPanel {
 
     for (Option option : optionFields) {
       final String name = option.getName();
-      String label = I18N.get(loader.getClass().getName() + "." + name);
+      String label = I18N.getInstance().get(loader.getClass().getName() + "." + name);
       panel.add(new JLabel(label));
 
       String type = option.getType();

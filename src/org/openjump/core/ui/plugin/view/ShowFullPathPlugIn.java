@@ -56,10 +56,8 @@ import com.vividsolutions.jump.workbench.ui.TaskFrame;
 public class ShowFullPathPlugIn extends AbstractPlugIn {
 
   PlugInContext gContext;
-  final static String sErrorSeeOutputWindow = I18N
-      .get("org.openjump.core.ui.plugin.view.ShowFullPathPlugIn.Error-See-Output-Window");
-  final static String sNumberSelected = I18N
-      .get("org.openjump.core.ui.plugin.view.ShowFullPathPlugIn.NumberSelected");
+  final static String sErrorSeeOutputWindow = I18N.getInstance().get("org.openjump.core.ui.plugin.view.ShowFullPathPlugIn.Error-See-Output-Window");
+  final static String sNumberSelected = I18N.getInstance().get("org.openjump.core.ui.plugin.view.ShowFullPathPlugIn.NumberSelected");
 
   private LayerNamePanelListener layerNamePanelListener = new LayerNamePanelListener() {
     public void layerSelectionChanged() {
@@ -153,7 +151,7 @@ public class ShowFullPathPlugIn extends AbstractPlugIn {
       context
           .getWorkbenchFrame()
           .warnUser(
-              I18N.get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.Error-See-Output-Window"));
+              I18N.getInstance().get("org.openjump.core.ui.plugin.layer.AddSIDLayerPlugIn.Error-See-Output-Window"));
       context.getWorkbenchFrame().getOutputFrame().createNewDocument();
       context.getWorkbenchFrame().getOutputFrame()
           .addText("ShowFullPathPlugIn Exception:" + e.toString());

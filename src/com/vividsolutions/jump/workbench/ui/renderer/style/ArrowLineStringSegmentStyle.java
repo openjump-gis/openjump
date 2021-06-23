@@ -125,21 +125,21 @@ public class ArrowLineStringSegmentStyle extends LineStringSegmentStyle {
 
     public static class Open extends ArrowLineStringSegmentStyle {
         public Open() {        	
-            super(I18N.get("ui.renderer.style.ArrowLineStringSegmentStyle.Segment-Mid-Arrow-Open"), "ArrowMidOpen.gif", MEDIUM_ANGLE,
+            super(I18N.getInstance().get("ui.renderer.style.ArrowLineStringSegmentStyle.Segment-Mid-Arrow-Open"), "ArrowMidOpen.gif", MEDIUM_ANGLE,
                 MEDIUM_LENGTH, false);
         }
     }
 
     public static class Solid extends ArrowLineStringSegmentStyle {
         public Solid() {
-            super(I18N.get("ui.renderer.style.ArrowLineStringSegmentStyle.Segment-Mid-Arrow-Solid"), "ArrowMidSolid.gif",
+            super(I18N.getInstance().get("ui.renderer.style.ArrowLineStringSegmentStyle.Segment-Mid-Arrow-Solid"), "ArrowMidSolid.gif",
                 MEDIUM_ANGLE, MEDIUM_LENGTH, true);
         }
     }
 
     public static class NarrowSolid extends ArrowLineStringSegmentStyle {
         public NarrowSolid() {
-            super(I18N.get("ui.renderer.style.ArrowLineStringSegmentStyle.Segment-Mid-Arrow-Solid-Narrow"),
+            super(I18N.getInstance().get("ui.renderer.style.ArrowLineStringSegmentStyle.Segment-Mid-Arrow-Solid-Narrow"),
                 "ArrowMidSolidNarrow.gif", SMALL_ANGLE, LARGE_LENGTH, true);
         }
     }

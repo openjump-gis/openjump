@@ -86,17 +86,12 @@ public class CreateHistogramPlugIn extends AbstractPlugIn implements
     public void initialize(PlugInContext context) throws Exception {
 
         ATTRIBUTE = GenericNames.SELECT_ATTRIBUTE;
-        T2 = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Number-of-ranges");
+        T2 = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Number-of-ranges");
         CLAYER = GenericNames.SELECT_LAYER;
-        sHistogram = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Histogram-Plot");
-        sCount = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.count");
-        sName = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn");
-        sWrongDataType = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
+        sHistogram = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Histogram-Plot");
+        sCount = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.count");
+        sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn");
+        sWrongDataType = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
 
         final FeatureInstaller featureInstaller = new FeatureInstaller(
                 context.getWorkbenchContext());

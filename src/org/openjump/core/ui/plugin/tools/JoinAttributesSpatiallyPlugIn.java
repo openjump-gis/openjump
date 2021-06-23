@@ -74,15 +74,15 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	
 
-  private String sidebartext = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Joins-attributes-of-source-layer-according-to-a-spatial-and-a-statistic-criterion");
-	private String SRC_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.source-layer");
-	private String TGT_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.target-layer");	
-	private String SRC_ATTRIB = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-attribute");
-	private String ATTRIB_OP = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-attribute-operation");	
-	private String SPATIAL_OP = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-spatial-operation");	
-	private String joinresult = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.join-result");
-	private String notimplemented= I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.not-implemented");
-	private String BUFFER_RADIUS = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.buffer-radius");
+  private String sidebartext = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Joins-attributes-of-source-layer-according-to-a-spatial-and-a-statistic-criterion");
+	private String SRC_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.source-layer");
+	private String TGT_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.target-layer");	
+	private String SRC_ATTRIB = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-attribute");
+	private String ATTRIB_OP = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-attribute-operation");	
+	private String SPATIAL_OP = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-spatial-operation");	
+	private String joinresult = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.join-result");
+	private String notimplemented= I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.not-implemented");
+	private String BUFFER_RADIUS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.buffer-radius");
 	//-- vars
 	private Layer srcLayer = null;
 	private Layer targetLayer = null;
@@ -109,7 +109,7 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	}
 	
 	public String getName(){
-		return I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially");
+		return I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Join-Attributes-Spatially");
 	}
 	
 	public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -126,15 +126,15 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	 */
 	public boolean execute(PlugInContext context) throws Exception {
 	    
-			sidebartext = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Joins-attributes-of-source-layer-according-to-a-spatial-and-a-statistic-criterion");
-			SRC_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.source-layer");
-			TGT_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.target-layer");	
-			SRC_ATTRIB = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-attribute");
-			ATTRIB_OP = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-attribute-operation");	
-			SPATIAL_OP = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-spatial-operation");	
-			joinresult = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.join-result");
-			notimplemented= I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.not-implemented");
-			BUFFER_RADIUS = I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.buffer-radius");
+			sidebartext = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.Joins-attributes-of-source-layer-according-to-a-spatial-and-a-statistic-criterion");
+			SRC_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.source-layer");
+			TGT_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.target-layer");	
+			SRC_ATTRIB = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-attribute");
+			ATTRIB_OP = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-attribute-operation");	
+			SPATIAL_OP = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.select-spatial-operation");	
+			joinresult = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.join-result");
+			notimplemented= I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.not-implemented");
+			BUFFER_RADIUS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.buffer-radius");
 
 	    	this.generateOpLists();
 	    	
@@ -266,15 +266,15 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	    // public final static int COUNT = 8;
 
 	    this.attrOpList.clear(); //because function may be called several times
-	    this.attrOpList.add(AttributeOp.MAJORITY,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.majority"));
-	    this.attrOpList.add(AttributeOp.MINORITY,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minority"));
-	    this.attrOpList.add(AttributeOp.MEAN,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.mean"));
-	    this.attrOpList.add(AttributeOp.MEDIAN,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.median"));
-	    this.attrOpList.add(AttributeOp.MIN,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum"));
-	    this.attrOpList.add(AttributeOp.MAX,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum"));
-	    this.attrOpList.add(AttributeOp.STD,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev"));
-	    this.attrOpList.add(AttributeOp.SUM,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum"));
-	    this.attrOpList.add(AttributeOp.COUNT,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.count"));
+	    this.attrOpList.add(AttributeOp.MAJORITY,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.majority"));
+	    this.attrOpList.add(AttributeOp.MINORITY,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minority"));
+	    this.attrOpList.add(AttributeOp.MEAN,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.mean"));
+	    this.attrOpList.add(AttributeOp.MEDIAN,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.median"));
+	    this.attrOpList.add(AttributeOp.MIN,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum"));
+	    this.attrOpList.add(AttributeOp.MAX,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum"));
+	    this.attrOpList.add(AttributeOp.STD,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev"));
+	    this.attrOpList.add(AttributeOp.SUM,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum"));
+	    this.attrOpList.add(AttributeOp.COUNT,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.count"));
 	    
 	    // the available operations are defined in SpatialRelationOp.java
 	    /** copy from SpatialRelationOp
@@ -282,9 +282,9 @@ public class JoinAttributesSpatiallyPlugIn extends ThreadedBasePlugIn{
 	    public final static int INTERSECTS = 1;
 	    **/
 	    this.spatialOpList.clear();
-	    this.spatialOpList.add(SpatialRelationOp.CONTAINS,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.source-features-contained-in-a-target-feature"));
-	    this.spatialOpList.add(SpatialRelationOp.INTERSECTS,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.source-features-intersecting-a-target-feature"));
-	    this.spatialOpList.add(SpatialRelationOp.COVEREDBY,I18N.get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.target-feature-covered-by-source-features"));	    
+	    this.spatialOpList.add(SpatialRelationOp.CONTAINS,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.source-features-contained-in-a-target-feature"));
+	    this.spatialOpList.add(SpatialRelationOp.INTERSECTS,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.source-features-intersecting-a-target-feature"));
+	    this.spatialOpList.add(SpatialRelationOp.COVEREDBY,I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.target-feature-covered-by-source-features"));	    
 	}
 	
 	//============================================================

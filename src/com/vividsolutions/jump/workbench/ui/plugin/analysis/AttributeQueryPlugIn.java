@@ -69,17 +69,17 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 public class AttributeQueryPlugIn extends AbstractPlugIn 
                                   implements ThreadedPlugIn {
   
-  private static String ATTR_GEOMETRY_AREA = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Area");
-  private static String ATTR_GEOMETRY_LENGTH = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Length");
-  private static String ATTR_GEOMETRY_NUMPOINTS = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumPoints");
-  private static String ATTR_GEOMETRY_NUMCOMPONENTS = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumComponents");
-  private static String ATTR_GEOMETRY_NUMHOLES = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumHoles");
-  private static String ATTR_GEOMETRY_ISCLOSED = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsClosed");
-  private static String ATTR_GEOMETRY_ISEMPTY = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsEmpty");
-  private static String ATTR_GEOMETRY_ISSIMPLE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsSimple");
-  private static String ATTR_GEOMETRY_ISVALID = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsValid");
-  private static String ATTR_GEOMETRY_TYPE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Type");
-  private static String ATTR_GEOMETRY_DIMENSION = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Dimension");
+  private static String ATTR_GEOMETRY_AREA = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Area");
+  private static String ATTR_GEOMETRY_LENGTH = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Length");
+  private static String ATTR_GEOMETRY_NUMPOINTS = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumPoints");
+  private static String ATTR_GEOMETRY_NUMCOMPONENTS = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumComponents");
+  private static String ATTR_GEOMETRY_NUMHOLES = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.NumHoles");
+  private static String ATTR_GEOMETRY_ISCLOSED = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsClosed");
+  private static String ATTR_GEOMETRY_ISEMPTY = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsEmpty");
+  private static String ATTR_GEOMETRY_ISSIMPLE = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsSimple");
+  private static String ATTR_GEOMETRY_ISVALID = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.IsValid");
+  private static String ATTR_GEOMETRY_TYPE = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Type");
+  private static String ATTR_GEOMETRY_DIMENSION = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Geometry.Dimension");
 
 
   private Collection<String> functionNames;
@@ -120,7 +120,7 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   }
   
   public String getName(){
-    return I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Attribute-Query");
+    return I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Attribute-Query");
   }
 
   public ImageIcon getIcon(){
@@ -151,7 +151,7 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
       throws Exception {
     monitor.allowCancellationRequests();
 
-    monitor.report(I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Executing-query")+"...");
+    monitor.report(I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Executing-query")+"...");
 
     FeatureCollection sourceFC = srcLayer.getFeatureCollectionWrapper();
 
@@ -260,20 +260,20 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   }
 
   private static String LAYER = GenericNames.SOURCE_LAYER;
-  private static String ATTRIBUTE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Attribute");
-  private static String PREDICATE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Condition");
-  private static String VALUE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Value");
-  private static String DIALOG_CASE_INSENSITIVE = I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Case-Insensitive");
-  private static String DIALOG_COMPLEMENT = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Complement-Result");
+  private static String ATTRIBUTE = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Attribute");
+  private static String PREDICATE = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Condition");
+  private static String VALUE = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Value");
+  private static String DIALOG_CASE_INSENSITIVE = I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Case-Insensitive");
+  private static String DIALOG_COMPLEMENT = I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Complement-Result");
 
-  private static String UPDATE_SRC = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
-  private static String CREATE_LYR = I18N.get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
+  private static String UPDATE_SRC = I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Select-features-in-the-source-layer");
+  private static String CREATE_LYR = I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Create-a-new-layer-for-the-results");
 
   private JComboBox<String> attrComboBox;
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context){
     dialog.setSideBarDescription(
-    		I18N.get("ui.plugin.analysis.AttributeQueryPlugIn.Finds-the-Source-features-which-have-attribute-values-satisfying-a-given-condition"));
+    		I18N.getInstance().get("ui.plugin.analysis.AttributeQueryPlugIn.Finds-the-Source-features-which-have-attribute-values-satisfying-a-given-condition"));
 
     //Set initial layer values to the first and second layers in the layer list.
     //In #initialize we've already checked that the number of layers >= 1. [Jon Aquino]

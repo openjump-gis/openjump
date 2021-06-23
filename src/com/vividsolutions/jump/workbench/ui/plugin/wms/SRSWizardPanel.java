@@ -88,17 +88,17 @@ public class SRSWizardPanel extends JPanel implements WizardPanel {
     }
 
     public String getInstructions() {
-        return I18N.get("ui.plugin.wms.SRSWizardPanel.the-layers-you-chosen-support-more-than-one-coordinate-reference");
+        return I18N.getInstance().get("ui.plugin.wms.SRSWizardPanel.the-layers-you-chosen-support-more-than-one-coordinate-reference");
     }
 
     void jbInit() {
-        JLabel srsLabel = new JLabel(I18N.get(
+        JLabel srsLabel = new JLabel(I18N.getInstance().get(
                 "ui.plugin.wms.SRSWizardPanel.coordinate-reference-system"));
-        JLabel formatLabel = new JLabel(I18N.get(
+        JLabel formatLabel = new JLabel(I18N.getInstance().get(
                 "ui.plugin.wms.SRSWizardPanel.image-format"));
-        JLabel styleLabel = new JLabel(I18N.get(
+        JLabel styleLabel = new JLabel(I18N.getInstance().get(
                 "ui.plugin.wms.SRSWizardPanel.style"));
-        JLabel moreParamLabel = new JLabel(I18N.get(
+        JLabel moreParamLabel = new JLabel(I18N.getInstance().get(
                 "ui.plugin.wms.SRSWizardPanel.more-parameters"));
         //formatBox = new JComboBox();
         GridBagLayout gridBagLayout1 = new GridBagLayout();
@@ -202,7 +202,7 @@ public class SRSWizardPanel extends JPanel implements WizardPanel {
     }
 
     public String getTitle() {
-        return I18N.get("ui.plugin.wms.SRSWizardPanel.select-coordinate-reference-system");
+        return I18N.getInstance().get("ui.plugin.wms.SRSWizardPanel.select-coordinate-reference-system");
     }
 
     public String getID() {

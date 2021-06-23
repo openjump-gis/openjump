@@ -55,7 +55,7 @@ public class GenerateLogPlugIn extends AbstractPlugIn {
   }
 
   public String getName() {
-    return I18N.get("ui.plugin.GenerateLogPlugIn.log");
+    return I18N.getInstance().get("ui.plugin.GenerateLogPlugIn.log");
   }
 
   public ImageIcon getIcon() {
@@ -98,7 +98,7 @@ public class GenerateLogPlugIn extends AbstractPlugIn {
 
       f.createNewDocument();
       f.addHeader(1, file.getName());
-      f.addHeader(2, I18N.get("ui.plugin.GenerateLogPlugIn.generated") + " "
+      f.addHeader(2, I18N.getInstance().get("ui.plugin.GenerateLogPlugIn.generated") + " "
           + new Date());
       f.append(buf.toString());
 

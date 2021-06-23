@@ -67,8 +67,7 @@ import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 public class ImageLayerManagerPlugIn extends AbstractPlugIn {
 
   public ImageLayerManagerPlugIn() {
-    super(I18N
-        .get("ui.plugin.imagery.ImageLayerManagerPlugIn.Image-Layer-Manager"));
+    super(I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerPlugIn.Image-Layer-Manager"));
   }
 
   public Icon getIcon() {
@@ -83,8 +82,7 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
     mec.add(new EnableCheck() {
       public String check(JComponent component) {
         return context.getLayerNamePanel().getSelectedLayers()[0]
-            .getStyle(ReferencedImageStyle.class) == null ? I18N
-            .get("ui.plugin.imagery.ImageLayerManagerPlugIn.Layer-must-be-an-Imagery-layer")
+            .getStyle(ReferencedImageStyle.class) == null ? I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerPlugIn.Layer-must-be-an-Imagery-layer")
             : null;
       }
     });
@@ -131,8 +129,7 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
     public ImageLayerManagerDialog(PlugInContext context) {
       super(context.getWorkbenchFrame());
       this.context = context;
-      setTitle(I18N
-          .get("ui.plugin.imagery.ImageLayerManagerDialog.Image-Layer-Manager"));
+      setTitle(I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Image-Layer-Manager"));
 
       layer = context.getSelectedLayer(0);
 
@@ -248,7 +245,7 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
       buttonPanel.setLayout(new GridBagLayout());
 
       JButton button = new JButton(
-          I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Add") + "...",
+          I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Add") + "...",
           GUIUtil.toSmallIcon(IconLoader.icon("Plus.gif")));
       button.addActionListener(new AddButtonListener());
       buttonPanel.add(button, new GridBagConstraints(0, buttonNumber++, 1, 1,
@@ -256,7 +253,7 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
           new Insets(2, 2, 2, 2), 0, 0));
 
       button = new JButton(
-          I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Delete"),
+          I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Delete"),
           GUIUtil.toSmallIcon(IconLoader.icon("Delete.gif")));
       button.addActionListener(new DeleteButtonListener());
       buttonPanel.add(button, new GridBagConstraints(0, buttonNumber++, 1, 1,
@@ -264,7 +261,7 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
           new Insets(2, 2, 2, 2), 0, 0));
 
       button = new JButton(
-          I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Close"));
+          I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Close"));
       button.addActionListener(new CloseButtonListener(this));
       buttonPanel.add(button, new GridBagConstraints(0, buttonNumber++, 1, 1,
           0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
@@ -325,20 +322,20 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
 
     private void appendMetadata(Feature imageFeat, StringBuffer buf) {
       buf.append("  "
-          + I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Uri")
+          + I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Uri")
           + ": \t" + imageFeat.getAttribute(ImageryLayerDataset.ATTR_URI)
           + "\n");
-      // buf.append("  "+I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Format")+": \t"
+      // buf.append("  "+I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Format")+": \t"
       // + imageFeat.getAttribute(ImageryLayerDataset.ATTR_FORMAT) + "\n");
       buf.append("  "
-          + I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Factory")
+          + I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Factory")
           + ": \t" + imageFeat.getAttribute(ImageryLayerDataset.ATTR_FACTORY)
           + "\n");
       buf.append("  "
-          + I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Type") + ": \t"
+          + I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Type") + ": \t"
           + imageFeat.getAttribute(ImageryLayerDataset.ATTR_TYPE) + "\n");
       buf.append("  "
-          + I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Loader")
+          + I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Loader")
           + ": \t" + imageFeat.getAttribute(ImageryLayerDataset.ATTR_LOADER)
           + "\n");
       appendEnvelope(imageFeat.getGeometry().getEnvelopeInternal(), buf);
@@ -346,10 +343,10 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
 
     private void appendEnvelope(Envelope env, StringBuffer buf) {
       buf.append("  "
-          + I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Lower-Left")
+          + I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Lower-Left")
           + ":  \t" + env.getMinX() + ", " + env.getMinY() + "\n");
       buf.append("  "
-          + I18N.get("ui.plugin.imagery.ImageLayerManagerDialog.Upper-Right")
+          + I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Upper-Right")
           + ": \t" + env.getMaxX() + ", " + env.getMaxY() + "\n");
     }
 

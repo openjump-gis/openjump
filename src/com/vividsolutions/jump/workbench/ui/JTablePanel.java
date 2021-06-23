@@ -32,10 +32,8 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class JTablePanel extends JPanel {
 
-    private final String sSaved = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
-    private final String SCouldNotSave = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
+    private final String sSaved = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    private final String SCouldNotSave = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
     /**
      * [Giuseppe Aruta 2018-07-06] A generic panel to show JTables. With an
      * option to save table to file ( to .csv) and a search panel. The style
@@ -75,12 +73,11 @@ public class JTablePanel extends JPanel {
 
     private void jbInit() throws Exception {
         setLayout(new BorderLayout());
-        jLabel.setText(I18N
-                .get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.rows")
+        jLabel.setText(I18N.getInstance().get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.rows")
                 + ": "
                 + model.getRowCount()
                 + " - "
-                + I18N.get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.columns")
+                + I18N.getInstance().get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.columns")
                 + ": " + model.getColumnCount());
         jLabel.setFont(jLabel.getFont().deriveFont(Font.BOLD));
         setTableModel(model);
@@ -125,7 +122,7 @@ public class JTablePanel extends JPanel {
         final JPanel save = new JPanel();
         save.setLayout(new FlowLayout(FlowLayout.RIGHT));
         final JButton saveButton = new JButton(
-                I18N.get("deejump.plugin.SaveLegendPlugIn.Save"));
+                I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save"));
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

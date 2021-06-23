@@ -35,20 +35,20 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
     private final static Dimension MEDIUM = new Dimension(22,22);
     private final static Dimension NARROW = new Dimension(22,22);
 
-    private final static String SOURCE_LAYER              = I18N.get(KEY + ".source-layer");
-    private final static String DESCRIPTION               = I18N.get(KEY + ".description");
-    private final static String KEY_ATTRIBUTES            = I18N.get(KEY + ".key-attributes");
-    private final static String ADD_KEY_ATTRIBUTE         = I18N.get(KEY + ".add-key-attribute");
-    private final static String AGGREGATORS               = I18N.get(KEY + ".aggregators");
-    private final static String AGGREGATE_FUNCTION        = I18N.get(KEY + ".aggregate-function");
-    private final static String AGGREGATE_FUNCTIONS       = I18N.get(KEY + ".aggregate-functions");
-    private final static String ADD_AGGREGATE_FUNCTION    = I18N.get(KEY + ".add-aggregate-function");
-    private final static String REMOVE_AGGREGATE_FUNCTION = I18N.get(KEY + ".remove-aggregate-function");
-    private final static String IGNORE_NULL               = I18N.get(KEY + ".ignore-null");
-    private final static String PARAMETER                 = I18N.get(KEY + ".parameter");
-    private final static String OUTPUT_NAME               = I18N.get(KEY + ".output-name");
-    private final static String INPUT_ATTRIBUTE           = I18N.get(KEY + ".input-attribute");
-    private final static String GEOMETRY_AGGREGATOR       = I18N.get(KEY + ".geometry-aggregator");
+    private final static String SOURCE_LAYER              = I18N.getInstance().get(KEY + ".source-layer");
+    private final static String DESCRIPTION               = I18N.getInstance().get(KEY + ".description");
+    private final static String KEY_ATTRIBUTES            = I18N.getInstance().get(KEY + ".key-attributes");
+    private final static String ADD_KEY_ATTRIBUTE         = I18N.getInstance().get(KEY + ".add-key-attribute");
+    private final static String AGGREGATORS               = I18N.getInstance().get(KEY + ".aggregators");
+    private final static String AGGREGATE_FUNCTION        = I18N.getInstance().get(KEY + ".aggregate-function");
+    private final static String AGGREGATE_FUNCTIONS       = I18N.getInstance().get(KEY + ".aggregate-functions");
+    private final static String ADD_AGGREGATE_FUNCTION    = I18N.getInstance().get(KEY + ".add-aggregate-function");
+    private final static String REMOVE_AGGREGATE_FUNCTION = I18N.getInstance().get(KEY + ".remove-aggregate-function");
+    private final static String IGNORE_NULL               = I18N.getInstance().get(KEY + ".ignore-null");
+    private final static String PARAMETER                 = I18N.getInstance().get(KEY + ".parameter");
+    private final static String OUTPUT_NAME               = I18N.getInstance().get(KEY + ".output-name");
+    private final static String INPUT_ATTRIBUTE           = I18N.getInstance().get(KEY + ".input-attribute");
+    private final static String GEOMETRY_AGGREGATOR       = I18N.getInstance().get(KEY + ".geometry-aggregator");
 
 
     private Layer layer;
@@ -58,7 +58,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
     }
 
     public String getName() {
-        return I18N.get(KEY);
+        return I18N.getInstance().get(KEY);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                                 .getSelectedLayers()[0]
                                 .getFeatureCollectionWrapper()
                                 .getFeatureSchema()
-                                .getAttributeCount() > 1 ? null : I18N.get(KEY + ".dataset-must-have-attributes");
+                                .getAttributeCount() > 1 ? null : I18N.getInstance().get(KEY + ".dataset-must-have-attributes");
                     }
                 });
     }
@@ -191,7 +191,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
         }
         try {
             if (geometryTypeCount != 1) {
-                throw new Exception(I18N.get(KEY + ".exactly-one-geometry-attribute-is-required"));
+                throw new Exception(I18N.getInstance().get(KEY + ".exactly-one-geometry-attribute-is-required"));
             }
             fca = new FeatureCollectionAggregator(layer.getFeatureCollectionWrapper(), keyAttributes, aggregators);
         } catch(Exception e) {
@@ -267,7 +267,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
         public void setSchema(final FeatureSchema schema) throws Exception {
             this.schema = schema;
             if (schema.getAttributeCount()<2) {
-                throw new Exception(I18N.get(KEY + ".no-available-attribute-to-group-by"));
+                throw new Exception(I18N.getInstance().get(KEY + ".no-available-attribute-to-group-by"));
             }
             keyAttributesPanel.removeAll();
             keyAttributesPanel.add(new KeyAttributePanel(this, schema));
@@ -345,7 +345,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                 if (set.contains(schema.getAttributeName(i))) continue;
                 return schema.getAttributeName(i);
             }
-            throw new Exception(I18N.get(KEY + ".no-more-candidate-attribute"));
+            throw new Exception(I18N.getInstance().get(KEY + ".no-more-candidate-attribute"));
         }
     }
 

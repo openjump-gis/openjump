@@ -93,7 +93,7 @@ public class Function {
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer(I18N.get("org.openjump.core.ui.plugin.queries.Function."+key));
+        StringBuffer sb = new StringBuffer(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.Function."+key));
         if(this==BUFF) {return sb.toString() + " ("+arg+")";}
         else if (this==SUBS && args.length==1) {return sb.toString() + " ("+args[0] + ")";}
         else if (this==SUBS && args.length==2) {return sb.toString() + " ("+args[0]+","+args[1]+")";}

@@ -61,17 +61,17 @@ import javax.swing.event.ChangeListener;
 public class BlendLineStringsPlugIn extends AbstractPlugIn {
 
 
-    private final String THE_BLEND_TOLERANCE_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.The-blend-tolerance");
-    private final String NEW_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.New");
-    private final String TOLERANCE = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Tolerance");
-    private final String PLUGIN_NAME = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn");
+    private final String THE_BLEND_TOLERANCE_TOOLTIP = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.The-blend-tolerance");
+    private final String NEW_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.New");
+    private final String TOLERANCE = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Tolerance");
+    private final String PLUGIN_NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn");
 
-	private final String REMOVE_SOURCE_LINES = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.remove-source-lines");
-	private final String REMOVE_SOURCE_LINES_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.The-source-lines-will-be-removed");
-	private final String TRANSFER_FIRST_ATTRIBUTES_TO_ALL_RESULTING_LINE_STRINGS = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.transfer-first-attributes-to-all-resulting-linesstrings");
-	private final String TRANSFER_FIRST_ATTRIBUTES_TO_ALL_RESULTING_LINE_STRINGS_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.the-attributes-of-the-first-linestring-will-be-transfered");
-	private String CREATE_NEW_LAYER = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Create-a-new-layer-for-the-results");
-	private final String CREATE_NEW_LAYER_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.A-new-layer-will-be-created-for-the-results");
+	private final String REMOVE_SOURCE_LINES = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.remove-source-lines");
+	private final String REMOVE_SOURCE_LINES_TOOLTIP = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.The-source-lines-will-be-removed");
+	private final String TRANSFER_FIRST_ATTRIBUTES_TO_ALL_RESULTING_LINE_STRINGS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.transfer-first-attributes-to-all-resulting-linesstrings");
+	private final String TRANSFER_FIRST_ATTRIBUTES_TO_ALL_RESULTING_LINE_STRINGS_TOOLTIP = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.the-attributes-of-the-first-linestring-will-be-transfered");
+	private String CREATE_NEW_LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.Create-a-new-layer-for-the-results");
+	private final String CREATE_NEW_LAYER_TOOLTIP = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.BlendLineStringsPlugIn.A-new-layer-will-be-created-for-the-results");
     
     private double blendTolerance = 0.1;
 	private boolean removeSourceLines = false;
@@ -182,7 +182,7 @@ public class BlendLineStringsPlugIn extends AbstractPlugIn {
         layer.getLayerManager().getUndoableEditReceiver().startReceiving();
         try {
             UndoableCommand command =
-                    new UndoableCommand(I18N.get(AutoAssignAttributePlugIn.class.getName())) {
+                    new UndoableCommand(I18N.getInstance().get(AutoAssignAttributePlugIn.class.getName())) {
                         public void execute() {
                             if (removeSourceLines) {
                                 layer.getFeatureCollectionWrapper().removeAll(remove);

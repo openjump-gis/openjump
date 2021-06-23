@@ -78,7 +78,7 @@ public class BasicFileDriverPanel extends AbstractDriverPanel {
     void jbInit() throws Exception {
         this.setLayout(borderLayout1);
         innerCentrePanel.setLayout(gridBagLayout1);
-        fileNamePanel.setUpperDescription(I18N.get("ui.BasicFileDriverPanel.file-description-goes-here"));
+        fileNamePanel.setUpperDescription(I18N.getInstance().get("ui.BasicFileDriverPanel.file-description-goes-here"));
         centrePanel.setLayout(gridBagLayout2);
         this.add(okCancelPanel, BorderLayout.SOUTH);
         this.add(centrePanel, BorderLayout.CENTER);

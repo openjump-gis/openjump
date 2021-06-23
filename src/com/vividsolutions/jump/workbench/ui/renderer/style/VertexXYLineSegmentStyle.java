@@ -76,7 +76,7 @@ public class VertexXYLineSegmentStyle extends LineStringVertexStyle
 
   public static class VertexXY extends VertexXYLineSegmentStyle {
     public VertexXY() {
-      super(I18N.get("ui.renderer.style.VertexZValueStyle.Vertex-XY"), "VertexXYDecorator.gif");
+      super(I18N.getInstance().get("ui.renderer.style.VertexZValueStyle.Vertex-XY"), "VertexXYDecorator.gif");
     }
   }
 

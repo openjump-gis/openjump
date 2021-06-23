@@ -165,10 +165,10 @@ public class EnterWKTDialog extends JDialog {
         actionListeners.add(l);
     }
     void jbInit() throws Exception {
-        formatButton.setToolTipText(I18N.get("com.vividsolutions.jump.workbench.ui.EnterWKTDialog.beautify"));
+        formatButton.setToolTipText(I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.EnterWKTDialog.beautify"));
         mainPanel.setLayout(borderLayout1);
         buttonPanel.setLayout(gridBagLayout1);
-        formatButton.setText(I18N.get("com.vividsolutions.jump.workbench.ui.EnterWKTDialog.format"));
+        formatButton.setText(I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.EnterWKTDialog.format"));
         formatButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 formatButton_actionPerformed(e);
@@ -179,7 +179,7 @@ public class EnterWKTDialog extends JDialog {
                 okCancelPanel_actionPerformed(e);
             }
         });
-        compressButton.setText(I18N.get("com.vividsolutions.jump.workbench.ui.EnterWKTDialog.compress"));
+        compressButton.setText(I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.EnterWKTDialog.compress"));
         compressButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 compressButton_actionPerformed(e);

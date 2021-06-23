@@ -187,7 +187,7 @@ public class RandomTrianglesPlugIn extends AbstractPlugIn {
 		Layer layer =
 			context.addLayer(
 				StandardCategoryNames.WORKING,
-				I18N.get("ui.test.RandomTriangle.random-triangles"),
+				I18N.getInstance().get("ui.test.RandomTriangle.random-triangles"),
 				featureCollection);
 		layer.setDescription("ABCDE");
 	}

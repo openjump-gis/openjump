@@ -85,7 +85,7 @@ public class ZoomNextPlugIn extends AbstractPlugIn {
                     return ( layerViewPanel == null || //[UT] 20.10.2005 not quite the error mesg
                                     !layerViewPanel.getViewport()
                                              .getZoomHistory().hasNext())
-                    ? I18N.get("ui.zoom.ZoomNextPlugIn.already-at-end") : null;
+                    ? I18N.getInstance().get("ui.zoom.ZoomNextPlugIn.already-at-end") : null;
                 }
             });
     }

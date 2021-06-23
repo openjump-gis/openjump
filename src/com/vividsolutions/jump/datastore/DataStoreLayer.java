@@ -26,7 +26,7 @@ public class DataStoreLayer {
         this.limit = 0;
         this.caching = true;
         this.where = "";
-        this.schema = I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Default");
+        this.schema = I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Default");
         
         // find schema and name from qualified name schema.name
         // If no schema found -> Default

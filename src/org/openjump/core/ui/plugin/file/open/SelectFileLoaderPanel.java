@@ -64,13 +64,13 @@ public class SelectFileLoaderPanel extends JPanel implements WizardPanel {
   private static final long serialVersionUID = -3105562554743126639L;
 
   public static final String KEY = SelectFileLoaderPanel.class.getName();
-  public static final String TITLE = I18N.get(KEY);
+  public static final String TITLE = I18N.getInstance().get(KEY);
 
-  public static final String FILE_TYPE = I18N.get(KEY + ".file-type");
+  public static final String FILE_TYPE = I18N.getInstance().get(KEY + ".file-type");
 
-  public static final String INSTRUCTIONS = I18N.get(KEY + ".instructions");
+  public static final String INSTRUCTIONS = I18N.getInstance().get(KEY + ".instructions");
 
-  public static final String USE_SAME_SETTINGS_FOR = I18N.get(KEY
+  public static final String USE_SAME_SETTINGS_FOR = I18N.getInstance().get(KEY
     + ".use-same-settings-for");
 
   private Map<String, JPanel> extensionPanelMap = new HashMap<String, JPanel>();

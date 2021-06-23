@@ -137,26 +137,19 @@ import java.util.List;
 public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         ViewportListener, ErrorHandler {
 
-    private String EXIT_OPENJUMP = I18N.get("ui.WorkbenchFrame.exit-jump");
-    private String CLOSE_PROJECT = I18N.get("ui.WorkbenchFrame.close-task");
-    private String CLOSE_PROJECT_QUESTION = I18N
-            .get("ui.WorkbenchFrame.do-you-want-to-close-project");
-    private String SAVE_PROJECT = I18N
-            .get("ui.WorkbenchFrame.save-project-before-closing-openjump");
-    private String PROJECT_SAVED = I18N
-            .get("ui.WorkbenchFrame.save-project-saved");
+    private static I18N i18n = I18N.getInstance();
+    private String EXIT_OPENJUMP = I18N.getInstance().get("ui.WorkbenchFrame.exit-jump");
+    private String CLOSE_PROJECT = I18N.getInstance().get("ui.WorkbenchFrame.close-task");
+    private String CLOSE_PROJECT_QUESTION = I18N.getInstance().get("ui.WorkbenchFrame.do-you-want-to-close-project");
+    private String SAVE_PROJECT = I18N.getInstance().get("ui.WorkbenchFrame.save-project-before-closing-openjump");
+    private String PROJECT_SAVED = I18N.getInstance().get("ui.WorkbenchFrame.save-project-saved");
     // To translate
-    public static String MEMORY_GC = I18N
-            .get("ui.WorkbenchFrame.started-garbage-collection");
-    public static String MEMORY_TIPS = I18N
-            .get("ui.WorkbenchFrame.click-to-garbage-collector");
-    public static String COORDINATES = I18N
-            .get("ui.WorkbenchFrame.coordinates");
-    public static String COORDINATES_TIPS = I18N
-            .get("ui.WorkbenchFrame.click-to-zoom-to-coordinates");
-    public static String SCALE = I18N.get("ui.WorkbenchFrame.scale");
-    public static String SCALE_TIPS = I18N
-            .get("ui.WorkbenchFrame.click-to-change-view-scale");
+    public static String MEMORY_GC = I18N.getInstance().get("ui.WorkbenchFrame.started-garbage-collection");
+    public static String MEMORY_TIPS = I18N.getInstance().get("ui.WorkbenchFrame.click-to-garbage-collector");
+    public static String COORDINATES = I18N.getInstance().get("ui.WorkbenchFrame.coordinates");
+    public static String COORDINATES_TIPS = I18N.getInstance().get("ui.WorkbenchFrame.click-to-zoom-to-coordinates");
+    public static String SCALE = I18N.getInstance().get("ui.WorkbenchFrame.scale");
+    public static String SCALE_TIPS = I18N.getInstance().get("ui.WorkbenchFrame.click-to-change-view-scale");
 
     BorderLayout borderLayout1 = new BorderLayout();
 
@@ -185,7 +178,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 
     public class ExitPlugin extends AbstractPlugIn {
         public ExitPlugin() {
-            super(I18N.get("ui.WorkbenchFrame.exit"));
+            super(I18N.getInstance().get("ui.WorkbenchFrame.exit"));
             this.setShortcutKeys(KeyEvent.VK_Q);
             this.setShortcutModifiers(KeyEvent.CTRL_MASK);
         }
@@ -292,7 +285,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     setTitle((panel.selectedNodes(Layer.class).size() != 1) ? ("("
                             + panel.selectedNodes(Layer.class).size()
                             + " "
-                            + I18N.get("ui.WorkbenchFrame.layers-selected") + ")")
+                            + I18N.getInstance().get("ui.WorkbenchFrame.layers-selected") + ")")
                             : ((Layerable) panel.selectedNodes(Layer.class)
                                     .iterator().next()).getName());
                 }
@@ -315,7 +308,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     setTitle((panel.selectedNodes(WMSLayer.class).size() != 1) ? ("("
                             + panel.selectedNodes(WMSLayer.class).size()
                             + " "
-                            + I18N.get("ui.WorkbenchFrame.wms-layers-selected") + ")")
+                            + I18N.getInstance().get("ui.WorkbenchFrame.wms-layers-selected") + ")")
                             : ((Layerable) panel.selectedNodes(WMSLayer.class)
                                     .iterator().next()).getName());
                 }
@@ -445,7 +438,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         new Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String msg = getMBCommittedMemory() + " MB "
-                        + I18N.get("ui.WorkbenchFrame.committed-memory");
+                        + I18N.getInstance().get("ui.WorkbenchFrame.committed-memory");
                 memoryLabel.setText(msg);
                 memoryLabel.setToolTipText("<html><body>"
                         + GUIUtil.escapeHTML(msg) + "<br><br>"
@@ -453,7 +446,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 
                 // memoryLabel.setToolTipText(LayerManager.layerManagerCount() +
                 // " "
-                // + I18N.get("ui.WorkbenchFrame.layer-manager")
+                // + I18N.getInstance().get("ui.WorkbenchFrame.layer-manager")
                 // + StringUtil.s(LayerManager.layerManagerCount()));
             }
         }).start();
@@ -708,8 +701,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         messageText.setToolTipText("<html><body>"
                 + GUIUtil.escapeHTML(message)
                 + "<br><br>"
-                + GUIUtil.escapeHTML(I18N
-                        .get("ui.WorkbenchFrame.copy-to-clipboard"))
+                + GUIUtil.escapeHTML(I18N.getInstance().get("ui.WorkbenchFrame.copy-to-clipboard"))
                 + "</body></html>");
     }
 
@@ -823,7 +815,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                 }
 
                 {
-                    super.setTitle(I18N.get("ui.WorkbenchFrame.output"));
+                    super.setTitle(I18N.getInstance().get("ui.WorkbenchFrame.output"));
                 }
             };
         return outputFrame;
@@ -1095,7 +1087,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         // (e.g. in OpenProjectPlugIn). [Jon Aquino]
         task.getLayerManager().addCategory(StandardCategoryNames.WORKING);
         task.getLayerManager().addCategory(StandardCategoryNames.SYSTEM);
-        task.setName(I18N.get("ui.WorkbenchFrame.task") + " " + taskSequence++);
+        task.setName(I18N.getInstance().get("ui.WorkbenchFrame.task") + " " + taskSequence++);
         return task;
     }
 
@@ -1143,7 +1135,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 
                     public void undoHistoryTruncated() {
                         toolBar.updateEnabledState();
-                        log(I18N.get("ui.WorkbenchFrame.undo-history-was-truncated"));
+                        log(I18N.getInstance().get("ui.WorkbenchFrame.undo-history-was-truncated"));
                     }
                 });
         // fire TaskListener's
@@ -1265,12 +1257,12 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     public static String toMessage(Throwable t) {
         String message;
         if (t.getLocalizedMessage() == null) {
-            message = I18N.get("ui.WorkbenchFrame.no-description-was-provided");
+            message = I18N.getInstance().get("ui.WorkbenchFrame.no-description-was-provided");
         } else if (t.getLocalizedMessage().toLowerCase()
-                .indexOf(I18N.get("ui.WorkbenchFrame.side-location-conflict")) > -1) {
+                .indexOf(I18N.getInstance().get("ui.WorkbenchFrame.side-location-conflict")) > -1) {
             message = t.getLocalizedMessage()
                     + " -- "
-                    + I18N.get("ui.WorkbenchFrame.check-for-invalid-geometries");
+                    + I18N.getInstance().get("ui.WorkbenchFrame.check-for-invalid-geometries");
         } else {
             message = t.getLocalizedMessage();
         }
@@ -1300,7 +1292,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     }
 
     public void warnUser(String warning) {
-        log(I18N.get("ui.WorkbenchFrame.warning") + ": " + warning);
+        log(I18N.getInstance().get("ui.WorkbenchFrame.warning") + ": " + warning);
         setStatusMessage(warning, 15000, Color.YELLOW, true);
     }
 
@@ -1361,7 +1353,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         if (windowMenu.getItemCount() == addedMenuItems) {
             // For ezLink [Jon Aquino]
             windowMenu.add(new JMenuItem("("
-                    + I18N.get("ui.WorkbenchFrame.no-windows") + ")"));
+                    + I18N.getInstance().get("ui.WorkbenchFrame.no-windows") + ")"));
         }
     }
 
@@ -1379,7 +1371,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 
     private void closeApplication() {
       // ask if we wanna save save and really exit first
-      if (!confirmClose(I18N.get("ui.WorkbenchFrame.exit-jump"), getLayersWithModifiedFeatureCollections(),
+      if (!confirmClose(I18N.getInstance().get("ui.WorkbenchFrame.exit-jump"), getLayersWithModifiedFeatureCollections(),
           getGeneratedLayers(), WorkbenchFrame.this))
         return;
 
@@ -1951,7 +1943,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     .getLayersWithModifiedFeatureCollections();
             Collection generatedItems = layerManager
                     .getLayersWithNullDataSource();
-            if (confirmClose(I18N.get("ui.WorkbenchFrame.close-task"),
+            if (confirmClose(I18N.getInstance().get("ui.WorkbenchFrame.close-task"),
                     modifiedItems, generatedItems, taskFrame)) {
 
                 // Giuseppe Aruta -June 30 2015 - simple warning that a project
@@ -1973,11 +1965,11 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                     // Confirm you want to close them first
                     if (confirmClose(
                             StringUtil.split(
-                                    I18N.get("ui.WorkbenchFrame.other-internal-frames-depend-on-this-task-frame")
+                                    I18N.getInstance().get("ui.WorkbenchFrame.other-internal-frames-depend-on-this-task-frame")
                                             + " "
-                                            + I18N.get("ui.WorkbenchFrame.do-you-want-to-close-them-also"),
+                                            + I18N.getInstance().get("ui.WorkbenchFrame.do-you-want-to-close-them-also"),
                                     60),
-                            I18N.get("ui.WorkbenchFrame.close-all"))) {
+                            I18N.getInstance().get("ui.WorkbenchFrame.close-all"))) {
                         for (java.util.Iterator it = associatedFrames
                                 .iterator(); it.hasNext();) {
                             GUIUtil.dispose((JInternalFrame) it.next(),
@@ -1999,10 +1991,10 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                 // Confirm you want to close them first
                 if (confirmClose(
                         StringUtil.split(
-                                I18N.get("ui.WorkbenchFrame.other-internal-frames-depend-on-this-task-frame")
+                                I18N.getInstance().get("ui.WorkbenchFrame.other-internal-frames-depend-on-this-task-frame")
                                         + " "
-                                        + I18N.get("ui.WorkbenchFrame.do-you-want-to-close-them-also"),
-                                60), I18N.get("ui.WorkbenchFrame.close-all"))) {
+                                        + I18N.getInstance().get("ui.WorkbenchFrame.do-you-want-to-close-them-also"),
+                                60), I18N.getInstance().get("ui.WorkbenchFrame.close-all"))) {
                     for (java.util.Iterator it = associatedFrames.iterator(); it
                             .hasNext();) {
                         GUIUtil.dispose((JInternalFrame) it.next(), desktopPane);
@@ -2043,14 +2035,12 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
              * + ")";
              */
             if (container instanceof WorkbenchFrame) {
-                message = I18N
-                        .getMessage(
+                message = I18N.getInstance().get(
                                 "ui.WorkbenchFrame.do-you-really-want-to-close-openjump",
                                 new Object[] { Integer.valueOf(generatedLayers
                                         .size()) });
             } else if (container instanceof TaskFrame) {
-                message = I18N
-                        .getMessage(
+                message = I18N.getInstance().get(
                                 "ui.WorkbenchFrame.do-you-really-want-to-close-the-project",
                                 new Object[] { Integer.valueOf(generatedLayers
                                         .size()) });
@@ -2058,7 +2048,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
             pane.setMessage(message);
             pane.setMessageType(JOptionPane.QUESTION_MESSAGE);
             pane.setOptions(new String[] { action,
-                    I18N.get("ui.WorkbenchFrame.cancel") });
+                    I18N.getInstance().get("ui.WorkbenchFrame.cancel") });
             pane.createDialog(this, "OpenJUMP").setVisible(true);
             return pane.getValue().equals(action);
         }
@@ -2066,22 +2056,21 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                 StringUtil.split(
                         modifiedLayers.size()
                                 + " "
-                                + I18N.get("ui.WorkbenchFrame.dataset")
+                                + I18N.getInstance().get("ui.WorkbenchFrame.dataset")
                                 + StringUtil.s(modifiedLayers.size())
                                 + " "
-                                + ((modifiedLayers.size() > 1) ? I18N
-                                        .get("ui.WorkbenchFrame.have-been-modified")
-                                        : I18N.get("ui.WorkbenchFrame.has-been-modified"))
+                                + ((modifiedLayers.size() > 1) ? I18N.getInstance().get("ui.WorkbenchFrame.have-been-modified")
+                                        : I18N.getInstance().get("ui.WorkbenchFrame.has-been-modified"))
                                 + " ("
                                 + ((modifiedLayers.size() > 3) ? "e.g. " : "")
                                 + StringUtil.toCommaDelimitedString(new ArrayList(
                                         modifiedLayers).subList(0,
                                         Math.min(3, modifiedLayers.size())))
                                 + ").\n"
-                                + I18N.get("ui.WorkbenchFrame.continue"), 80),
+                                + I18N.getInstance().get("ui.WorkbenchFrame.continue"), 80),
                 JOptionPane.WARNING_MESSAGE);
         pane.setOptions(new String[] { action,
-                I18N.get("ui.WorkbenchFrame.cancel") });
+                I18N.getInstance().get("ui.WorkbenchFrame.cancel") });
         pane.createDialog(this, "OpenJUMP").setVisible(true);
         return pane.getValue().equals(action);
     }
@@ -2090,7 +2079,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         javax.swing.JOptionPane pane = new javax.swing.JOptionPane(question,
                 javax.swing.JOptionPane.WARNING_MESSAGE);
         pane.setOptions(new String[] { action,
-                com.vividsolutions.jump.I18N.get("ui.WorkbenchFrame.cancel") });
+                com.vividsolutions.jump.I18N.getInstance().get("ui.WorkbenchFrame.cancel") });
         pane.createDialog(this, "OpenJUMP").setVisible(true);
         return pane.getValue().equals(action);
     }

@@ -148,7 +148,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
          * Giuseppe Aruta 2015_01_03 Add Button to save view as HTML
          */
         saveButton = new JButton(
-                I18N.get("deejump.plugin.SaveLegendPlugIn.Save")); //$NON-NLS-1$
+                I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save")); //$NON-NLS-1$
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -181,7 +181,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
         chooser = GUIUtil.createJFileChooserWithOverwritePrompting();
         chooser.setMultiSelectionEnabled(false);
         chooser.setFileFilter(GUIUtil.createFileFilter(
-                I18N.get("org.openjump.core.ui.plugin.file.open.SelectFileLoaderPanel.file-type"), new String[] { "htm" })); //$NON-NLS-1$//$NON-NLS-2$
+                I18N.getInstance().get("org.openjump.core.ui.plugin.file.open.SelectFileLoaderPanel.file-type"), new String[] { "htm" })); //$NON-NLS-1$//$NON-NLS-2$
         int returned = chooser.showSaveDialog(JUMPWorkbench.getInstance()
                 .getFrame());
 
@@ -203,7 +203,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
                         .getInstance()
                         .getFrame()
                         .warnUser(
-                                I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                                I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
                 JUMPWorkbench.getInstance().getFrame().getOutputFrame()
                         .createNewDocument();
                 JUMPWorkbench

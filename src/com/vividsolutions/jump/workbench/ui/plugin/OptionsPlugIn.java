@@ -84,20 +84,20 @@ public class OptionsPlugIn extends AbstractPlugIn {
       return;
 
     dialog(context).addTab(
-        I18N.get("ui.plugin.OptionsPlugIn.view-edit"),
+        I18N.getInstance().get("ui.plugin.OptionsPlugIn.view-edit"),
         GUIUtil.resize(IconLoader.icon("edit.gif"), 16),
         new EditOptionsPanel(PersistentBlackboardPlugIn.get(context.getWorkbenchContext())));
     dialog(context).addTab(
-        I18N.get("ui.plugin.OptionsPlugIn.snap-vertices-tools"),
+        I18N.getInstance().get("ui.plugin.OptionsPlugIn.snap-vertices-tools"),
         GUIUtil.resize(IconLoader.icon("QuickSnap.gif"), 16),
         new SnapVerticesToolsOptionsPanel(context.getWorkbenchContext()
             .getWorkbench().getBlackboard()));
     // [Matthias Scholz 3. Sept 2010] SelectionStyllingOptionsPanel added
-    dialog(context).addTab(I18N.get("ui.plugin.OptionsPlugIn.selection-style"),
+    dialog(context).addTab(I18N.getInstance().get("ui.plugin.OptionsPlugIn.selection-style"),
         GUIUtil.resize(IconLoader.icon("Select.gif"), 16),
         new SelectionStyllingOptionsPanel(context.getWorkbenchContext()));
     // [Matthias Scholz 15. Sept 2010] DatasetOptionsPanel added
-    dialog(context).addTab(I18N.get("ui.DatasetOptionsPanel.datasetOptions"),
+    dialog(context).addTab(I18N.getInstance().get("ui.DatasetOptionsPanel.datasetOptions"),
         new DatasetOptionsPanel(context.getWorkbenchContext()));
     // add proxy panel
     OptionsPanelV2 proxypanel = ProxySettingsOptionsPanel.getInstance();

@@ -112,8 +112,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
     public static final int NONE = 0;
 
     /** Attribute combobox message displayed if no valid attribute is available. */
-    public static final String NO_VALID_ATTRIBUTE = I18N
-            .get("ui.MultiInputDialog.no-valid-attribute");
+    public static final String NO_VALID_ATTRIBUTE = I18N.getInstance().get("ui.MultiInputDialog.no-valid-attribute");
 
     /**
      * @param frame
@@ -146,7 +145,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                     return "\""
                             + getText(fieldName).trim()
                             + "\" "
-                            + I18N.get("ui.MultiInputDialog.is-an-invalid-double")
+                            + I18N.getInstance().get("ui.MultiInputDialog.is-an-invalid-double")
                             + " (" + fieldName + ")";
                 }
             }
@@ -165,7 +164,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                     return "\""
                             + getText(fieldName).trim()
                             + "\" "
-                            + I18N.get("ui.MultiInputDialog.is-an-invalid-integer")
+                            + I18N.getInstance().get("ui.MultiInputDialog.is-an-invalid-integer")
                             + " (" + fieldName + ")";
                 }
             }
@@ -181,7 +180,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                     return null;
                 }
                 return "\"" + getText(fieldName).trim() + "\" "
-                        + I18N.get("ui.MultiInputDialog.must-be") + " > 0"
+                        + I18N.getInstance().get("ui.MultiInputDialog.must-be") + " > 0"
                         + " (" + fieldName + ")";
             }
         };
@@ -196,7 +195,7 @@ public abstract class AbstractMultiInputDialog extends JDialog {
                     return null;
                 }
                 return "\"" + getText(fieldName).trim() + "\" "
-                        + I18N.get("ui.MultiInputDialog.must-be") + " >= 0"
+                        + I18N.getInstance().get("ui.MultiInputDialog.must-be") + " >= 0"
                         + " (" + fieldName + ")";
             }
         };

@@ -101,7 +101,7 @@ public class QueryDialog extends BDialog {
     	component = super.createComponent(context.getWorkbenchFrame(), "", false);
         addEventLink(WindowClosingEvent.class, this, "exit");
         this.context = context;
-        setTitle(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.query-builder"));
+        setTitle(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.query-builder"));
         initUI(context);
     }
 
@@ -168,24 +168,24 @@ public class QueryDialog extends BDialog {
                     managerPanel.setDefaultLayout(nwBoth1);
                     BOutline managerPanelB = new BOutline(managerPanel, 
                                   BorderFactory.createTitledBorder(border,
-                                		  I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.query-manager")));
+                                		  I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.query-manager")));
                     // ATTRIBUTE FILTER
                     FormContainer attributeFilterPanel = new FormContainer(2,4);
                     attributeFilterPanel.setDefaultLayout(nwBoth1);
                     BOutline attributeFilterPanelB = new BOutline(attributeFilterPanel,
                                   BorderFactory.createTitledBorder(border,
-                                		  I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.filter-on-attribute-type")));
+                                		  I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.filter-on-attribute-type")));
                     // RESULT OPTIONS
                     FormContainer resultPanel = new FormContainer(1,3);
                     resultPanel.setDefaultLayout(nwBoth1);
                     BOutline resultPanelB = new BOutline(resultPanel,
                                   BorderFactory.createTitledBorder(border,
-                                		  I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.results")));
+                                		  I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.results")));
                 // QUERY CONSTRUCTOR
                 //FormContainer queryConstructorPanel = new FormContainer(5,3);
                 FormContainer queryConstructorPanel = new FormContainer(2,7);
                 queryConstructorPanel.setBackground(Color.decode(
-                		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.color1")
+                		I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.color1")
                 ));
                 queryConstructorPanel.setDefaultLayout(centerNone3);
                 BOutline queryConstructorPanelB = new BOutline(queryConstructorPanel, border2);
@@ -197,48 +197,48 @@ public class QueryDialog extends BDialog {
             FormContainer southPanel = new FormContainer(7,1);
         
         // SET THE MANAGER BUTTONS
-        BButton openButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.open"));
+        BButton openButton = new BButton(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.open"));
             openButton.addEventLink(CommandEvent.class, this, "open");
             managerPanel.add(openButton, 1, 0, centerH3);
-        BButton saveasButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.save-as"));
+        BButton saveasButton = new BButton(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.save-as"));
             saveasButton.addEventLink(CommandEvent.class, this, "saveas");
             managerPanel.add(saveasButton, 1, 2, centerH3);
                 
         // SET THE ATTRIBUTE FILTER CHECKBOXES
-        charFilter = new BCheckBox(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.string"), true);
+        charFilter = new BCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.string"), true);
             charFilter.addEventLink(ValueChangedEvent.class, this, "charFilterChanged");
             attributeFilterPanel.add(charFilter, 0, 0);
-        caseSensitive = new BCheckBox(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.case-sensitive"), false);
+        caseSensitive = new BCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.case-sensitive"), false);
             //caseSensitive.addEventLink(ValueChangedEvent.class, this, "caseSensitiveChanged");
             attributeFilterPanel.add(caseSensitive, 1, 0, centerNone3);
-        numFilter = new BCheckBox(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.numeric"), true);
+        numFilter = new BCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.numeric"), true);
             numFilter.addEventLink(ValueChangedEvent.class, this, "numFilterChanged");
             attributeFilterPanel.add(numFilter, 0, 1);
-        geoFilter = new BCheckBox(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.geometric"), true);
+        geoFilter = new BCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.geometric"), true);
             geoFilter.addEventLink(ValueChangedEvent.class, this, "geoFilterChanged");
             attributeFilterPanel.add(geoFilter, 0, 2);
-        booFilter = new BCheckBox(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.boolean"), true);
+        booFilter = new BCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.boolean"), true);
             booFilter.addEventLink(ValueChangedEvent.class, this, "booFilterChanged");
             attributeFilterPanel.add(booFilter, 0, 3);
             
         // SET THE RESULT OPTIONS
-        display = new BCheckBox(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.display-the-table"), false);
+        display = new BCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.display-the-table"), false);
             resultPanel.add(display, 0, 0);
-        select = new BCheckBox(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.select-the-result"), true);
+        select = new BCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.select-the-result"), true);
             resultPanel.add(select, 0, 1);
-        create = new BCheckBox(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.create-a-new-layer"), false);
+        create = new BCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.create-a-new-layer"), false);
             resultPanel.add(create, 0, 2);
         
         // SET THE COMBO BOXES
-        BLabel layerLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.layer"), BLabel.EAST);
+        BLabel layerLabel = new BLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.layer"), BLabel.EAST);
             queryConstructorPanel.add(layerLabel, 0, 0, rightAlign);
-        BLabel attributeLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.attribute"), BLabel.EAST);
+        BLabel attributeLabel = new BLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.attribute"), BLabel.EAST);
             queryConstructorPanel.add(attributeLabel, 0, 1, rightAlign);
-        BLabel functionLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.function"), BLabel.EAST);
+        BLabel functionLabel = new BLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.function"), BLabel.EAST);
             queryConstructorPanel.add(functionLabel, 0, 2, rightAlign);
-        BLabel operatorLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.operator"), BLabel.EAST);
+        BLabel operatorLabel = new BLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.operator"), BLabel.EAST);
             queryConstructorPanel.add(operatorLabel, 0, 3, rightAlign);
-        BLabel valueLabel = new BLabel(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.value"), BLabel.EAST);
+        BLabel valueLabel = new BLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.value"), BLabel.EAST);
             queryConstructorPanel.add(valueLabel, 0, 4, rightAlign);
             
         layerCB = new BComboBox();
@@ -287,13 +287,13 @@ public class QueryDialog extends BDialog {
         centerPanel.add(progressBarPanel, 0, 2);
         
         // SET THE OK/CANCEL BUTTONS
-        okButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.ok"));
+        okButton = new BButton(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.ok"));
             okButton.addEventLink(CommandEvent.class, this, "ok");
-        //cancelButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.cancel"));
+        //cancelButton = new BButton(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.cancel"));
         //    cancelButton.addEventLink(CommandEvent.class, this, "cancel");
-        stopButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.stop"));
+        stopButton = new BButton(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.stop"));
             stopButton.addEventLink(CommandEvent.class, this, "stop");
-        refreshButton = new BButton(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.refresh"));
+        refreshButton = new BButton(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.refresh"));
             refreshButton.addEventLink(CommandEvent.class, this, "refresh");
         
         southPanel.add(okButton, 2, 0);
@@ -341,9 +341,9 @@ public class QueryDialog extends BDialog {
         layerListCellRenderer.setProgressIconLabelVisible(false);
         
         layerCB.removeAll();
-        layerCB.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.all-layers"));
-        layerCB.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.selection"));
-        layerCB.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.selected-layers"));
+        layerCB.add(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.all-layers"));
+        layerCB.add(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.selection"));
+        layerCB.add(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.selected-layers"));
         
         List<Layer> layers = context.getLayerManager().getLayers();
         for (Layer layer : layers) {
@@ -602,7 +602,7 @@ public class QueryDialog extends BDialog {
                         operatorCB.setSelectedValue(Operator.WDIST);
                     }
                     else {
-                        context.getWorkbenchFrame().warnUser(I18N.getMessage("org.openjump.core.ui.plugin.queries.SimpleQuery.illegal-argument-for", operator));
+                        context.getWorkbenchFrame().warnUser(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.illegal-argument-for", operator));
                         return false;
                     }
                 }
@@ -616,7 +616,7 @@ public class QueryDialog extends BDialog {
                         operatorCB.setSelectedValue(Operator.RELAT);
                     }
                     else {
-                        context.getWorkbenchFrame().warnUser(I18N.getMessage("org.openjump.core.ui.plugin.queries.SimpleQuery.illegal-argument-for", operator));
+                        context.getWorkbenchFrame().warnUser(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.illegal-argument-for", operator));
                         return false;
                     }
                 }
@@ -640,8 +640,8 @@ public class QueryDialog extends BDialog {
     private void updateValues() {
         if(function.type == 'B') {
                valueCB.setContents(new String[]{
-            		   I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.true"),
-            		   I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.false")
+            		   I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.true"),
+            		   I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.false")
                });
                valueCB.setEditable(false);
         }
@@ -665,7 +665,7 @@ public class QueryDialog extends BDialog {
             valueCB.setContents(availableStrings(attribute, 256));
             if (operator==Operator.MATC || operator==Operator.FIND) {
                 valueCB.setContents(new String[]{
-                		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.regular-expression")
+                		I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.regular-expression")
                 });
             }
             valueCB.setEditable(true);
@@ -682,9 +682,9 @@ public class QueryDialog extends BDialog {
     
     private List<String> availableTargets() {
         List<String> list = new ArrayList<>();
-        list.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.all-layers"));
-        list.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.selection"));
-        list.add(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.selected-layers"));
+        list.add(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.all-layers"));
+        list.add(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.selection"));
+        list.add(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.selected-layers"));
         for (Layer layer : context.getLayerManager().getLayers()) {
             list.add(layer.getName());
         }
@@ -709,7 +709,7 @@ public class QueryDialog extends BDialog {
     
     private void open() {
         BFileChooser bfc = new BFileChooser(BFileChooser.OPEN_FILE,
-        		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.open"));
+        		I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.open"));
         Properties prop = new Properties();
         if (bfc.showDialog(this)) {
             try {
@@ -738,7 +738,7 @@ public class QueryDialog extends BDialog {
         else layerCB.setSelectedValue(layerName);
         if(!layerName.equals(layerCB.getSelectedValue().toString())) {
             context.getWorkbenchFrame().warnUser(layerName + " " +
-            		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.does-not-exist"));
+            		I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.does-not-exist"));
             return;
         }
         layerChanged();
@@ -748,7 +748,7 @@ public class QueryDialog extends BDialog {
         attributeCB.setSelectedValue(attributeName);
         if(!attributeName.equals(attributeCB.getSelectedValue().toString())) {
             context.getWorkbenchFrame().warnUser(attributeName + " " +
-            		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.does-not-exist"));
+            		I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.does-not-exist"));
             return;
         }
         attributeChanged();
@@ -767,7 +767,7 @@ public class QueryDialog extends BDialog {
             }
             else {
                 context.getWorkbenchFrame().warnUser(functionName + " " +
-                		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.does-not-exist"));
+                		I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.does-not-exist"));
                 return;
             }
         }
@@ -783,7 +783,7 @@ public class QueryDialog extends BDialog {
             }
             else {
                 context.getWorkbenchFrame().warnUser(operatorName + " " +
-                		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.does-not-exist"));
+                		I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.does-not-exist"));
                 return;
             }
         }
@@ -816,7 +816,7 @@ public class QueryDialog extends BDialog {
         prop.setProperty("value", ""+valueCB.getSelectedValue());
         
         BFileChooser bfc = new BFileChooser(BFileChooser.SAVE_FILE,
-        		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.save-as"));
+        		I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.save-as"));
         if (bfc.showDialog(this)) {
             try {
                 File f = bfc.getSelectedFile();
@@ -848,9 +848,9 @@ public class QueryDialog extends BDialog {
                 Condition condition = new Condition(queryDialog, context);
                 
                 comments.setText("<html>" +
-                    I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.select-from") +
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.select-from") +
                     " \"" + layerCB.getSelectedValue() + "\" " + 
-                    I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.features-where") + " " +
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.features-where") + " " +
                     condition + "...</html>"
                 );
                 
@@ -978,18 +978,18 @@ public class QueryDialog extends BDialog {
                 }
                 if (cancelQuery) {
                     initVariables();
-                    comments.setText(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.query-interrupted")); 
+                    comments.setText(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.query-interrupted")); 
                     return;
                 }
-                progressBarTitle.setText(I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.result-display"));
+                progressBarTitle.setText(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.result-display"));
                 progressBar.setIndeterminate(true);
                 
                 comments.setText("<html>" +
-                		I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.select-from") +
+                		I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.select-from") +
                     " \"" + layerCB.getSelectedValue() + "\" " + 
-                    I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.features-where") + " " +
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.features-where") + " " +
                     condition + " : " + featuresfound + " " +
-                    I18N.get("org.openjump.core.ui.plugin.queries.SimpleQuery.features-found") + "</html>"
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.features-found") + "</html>"
                 );
                 
                 // update the selection attribute

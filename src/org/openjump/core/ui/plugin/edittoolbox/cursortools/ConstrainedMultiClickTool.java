@@ -64,9 +64,9 @@ public abstract class ConstrainedMultiClickTool extends AbstractCursorTool
     
     //24.iii.03 Dropped drag handling because it's too easy to do a micro-drag when
     //we mean a click. [Jon Aquino]
-	final static String lengthST =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.length");
-	final static String angleST =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.angle");
-	final static String degrees =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
+	final static String lengthST =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.length");
+	final static String angleST =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.angle");
+	final static String degrees =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
 	
     protected List coordinates = new ArrayList();
     protected Coordinate tentativeCoordinate;

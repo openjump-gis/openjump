@@ -1,7 +1,5 @@
 package org.openjump.core.ui.plugin.raster;
 
-import static com.vividsolutions.jump.I18N.get;
-
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,23 +35,14 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
 public class VectorizeToPolygonsPlugIn extends ThreadedBasePlugIn {
 
-    private final String PROCESSING = I18N
-            .get("jump.plugin.edit.NoderPlugIn.processing");
-
-    private final String sLayer = I18N.get("ui.GenericNames.Source-Layer");
-
-    private final String sExplode = I18N
-            .get("ui.plugin.raster.VectorizeToPolygonsPlugIn.explode-multipolygons");
-    private final String NAME = I18N
-            .get("ui.plugin.raster.VectorizeToPolygonsPlugIn.Name");
-    private final String sStyle = I18N
-            .get("ui.plugin.raster.VectorizeToContoursPlugIn.apply-random-style");
-    private final String sValue = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
-    private final String algorithms = I18N
-            .get("ui.plugin.raster.VectorizeToPolygonsPlugIn.algorithms");
-    private final String sSimplify = I18N
-        .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.simplify");
+    private final String PROCESSING = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.processing");
+    private final String sLayer = I18N.getInstance().get("ui.GenericNames.Source-Layer");
+    private final String sExplode = I18N.getInstance().get("ui.plugin.raster.VectorizeToPolygonsPlugIn.explode-multipolygons");
+    private final String NAME = I18N.getInstance().get("ui.plugin.raster.VectorizeToPolygonsPlugIn.Name");
+    private final String sStyle = I18N.getInstance().get("ui.plugin.raster.VectorizeToContoursPlugIn.apply-random-style");
+    private final String sValue = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
+    private final String algorithms = I18N.getInstance().get("ui.plugin.raster.VectorizeToPolygonsPlugIn.algorithms");
+    private final String sSimplify = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.simplify");
 
     String alg1 = "AdbToolbox";
     String alg2 = "Sextante";
@@ -225,13 +214,9 @@ public class VectorizeToPolygonsPlugIn extends ThreadedBasePlugIn {
                         if (!mLayer.isEmpty()) {
                             return null;
                         }
-                        return get(CHECK_FILE);
+                        return I18N.getInstance().get("plugin.EnableCheckFactory.at-least-one-single-banded-layer-should-exist");
                     }
                 });
     }
 
-    private final static String CHECK_FILE = I18N
-            .get("plugin.EnableCheckFactory.at-least-one-single-banded-layer-should-exist");
-
- 
 }

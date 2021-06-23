@@ -58,16 +58,16 @@ import java.util.regex.Pattern;
 
 public class SearchAllAttributes extends AbstractPlugIn
 {
-	private final static String SEARCHFOR = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-for"); 
-	private final static String SEARCHALLATTRIBUTES = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-all-attributes");
-	private final static String INCLUDEGEOMETRY = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.include-geometry");
-	private final static String MATCHOR = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.match-any-search-word");
-	private final static String MATCHAND = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.match-all-search-words");
-	private final static String MATCHHINT = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.all-search-words-must-be-ina-single-attribute");
-	private final static String CASESENSITIVE = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.case-sensitive");
-	private final static String WHOLEWORD = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.whole-word");
-	private final static String SIDEBARTEXT = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-for-text-in-any-attribute");
-	private final static String REGULAREXPRESSIONS = I18N.get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.regular-expressions"); 
+	private final static String SEARCHFOR = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-for"); 
+	private final static String SEARCHALLATTRIBUTES = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-all-attributes");
+	private final static String INCLUDEGEOMETRY = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.include-geometry");
+	private final static String MATCHOR = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.match-any-search-word");
+	private final static String MATCHAND = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.match-all-search-words");
+	private final static String MATCHHINT = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.all-search-words-must-be-ina-single-attribute");
+	private final static String CASESENSITIVE = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.case-sensitive");
+	private final static String WHOLEWORD = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.whole-word");
+	private final static String SIDEBARTEXT = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-for-text-in-any-attribute");
+	private final static String REGULAREXPRESSIONS = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.regular-expressions"); 
 //		+" and select matching map objects.\n\n"
 //		+"Uses Java Pattern matcher which supports:\n"
 //		+". - Match any character\n"

@@ -115,12 +115,11 @@ public abstract class AbstractSaveProjectPlugIn extends AbstractPlugIn {
 
     if (!ignoredLayers.isEmpty()) {
 
-      Logger.info(I18N
-              .get("ui.plugin.AbstractSaveProjectPlugIn.some-layers-were-not-saved-to-the-task-file"));
+      Logger.info(I18N.getInstance().get("ui.plugin.AbstractSaveProjectPlugIn.some-layers-were-not-saved-to-the-task-file"));
 
       for (Layer ignoredLayer : ignoredLayers) {
         Logger.info("- " + ignoredLayer.getName() + " (" +
-                I18N.get("ui.plugin.AbstractSaveProjectPlugIn.data-source-is-write-only") + ")");
+                I18N.getInstance().get("ui.plugin.AbstractSaveProjectPlugIn.data-source-is-write-only") + ")");
       }
 
     }

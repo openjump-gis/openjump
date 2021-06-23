@@ -31,8 +31,6 @@
  */
 package com.vividsolutions.jump.workbench.ui.style;
 
-import static com.vividsolutions.jump.I18N.get;
-import static com.vividsolutions.jump.I18N.getMessage;
 import static de.latlon.deejump.plugin.style.BitmapVertexStyle.getUpdatedSVGImage;
 import static de.latlon.deejump.plugin.style.BitmapVertexStyle.toHexColor;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
@@ -229,7 +227,7 @@ public class BasicStylePanel extends JPanel {
         {
             setMaximumRowCount(24);
             setEditable(false);
-            this.setToolTipText(I18N.get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
+            this.setToolTipText(I18N.getInstance().get("ui.style.RenderingStylePanel.tip-after-selecting-a-pattern-use-your-keyboard"));
             addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     updateControls();
@@ -312,9 +310,9 @@ public class BasicStylePanel extends JPanel {
         } catch (MalformedURLException e1) {
             // eat it, it's not gonna happen
         } catch (IOException e1) {
-            showMessageDialog(getParent(), getMessage(
+            showMessageDialog(getParent(), I18N.getInstance().get(
                     "com.vividsolutions.jump.workbench.ui.style.BasicStylePanel.error-opening-file", new Object[] { e1
-                            .getMessage() }), get("com.vividsolutions.jump.workbench.ui.style.BasicStylePanel.error"),
+                            .getMessage() }), I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.style.BasicStylePanel.error"),
                     ERROR_MESSAGE);
         }
     }
@@ -397,8 +395,8 @@ public class BasicStylePanel extends JPanel {
         lineWidthSlider.setMaximum(30);
         lineWidthSlider.setMinorTickSpacing(1);
         setLayout(new GridBagLayout());
-        linePatternCheckBox.setText(I18N.get("ui.style.BasicStylePanel.line-pattern"));
-        fillPatternCheckBox.setText(I18N.get("ui.style.BasicStylePanel.fill-pattern"));
+        linePatternCheckBox.setText(I18N.getInstance().get("ui.style.BasicStylePanel.line-pattern"));
+        fillPatternCheckBox.setText(I18N.getInstance().get("ui.style.BasicStylePanel.fill-pattern"));
         linePatternCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 linePatternCheckBox_actionPerformed(e);
@@ -413,7 +411,7 @@ public class BasicStylePanel extends JPanel {
                 new Insets(2, 2, 2, 2), 0, 0));
         add(new JPanel(), new GridBagConstraints(3, 0, 1, 1, 1, 0, GridBagConstraints.WEST,
                 GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
-        add(new JLabel(I18N.get("ui.style.BasicStylePanel.presets")), new GridBagConstraints(2, 0, 1, 1, 0, 0,
+        add(new JLabel(I18N.getInstance().get("ui.style.BasicStylePanel.presets")), new GridBagConstraints(2, 0, 1, 1, 0, 0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 30, 0, 0), 0, 0));
         add(palettePanel, new GridBagConstraints(2, 1, 1, 1, 0, 1, GridBagConstraints.WEST,
                 GridBagConstraints.VERTICAL, new Insets(0, 30, 0, 0), 0, 0));
@@ -429,19 +427,19 @@ public class BasicStylePanel extends JPanel {
                 lineColorChooserPanel_actionPerformed(e);
             }
         });
-        synchronizeCheckBox.setText(I18N.get("ui.style.BasicStylePanel.sync-line-colour-with-fill-colour"));
+        synchronizeCheckBox.setText(I18N.getInstance().get("ui.style.BasicStylePanel.sync-line-colour-with-fill-colour"));
         synchronizeCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 synchronizeCheckBox_actionPerformed(e);
             }
         });
-        fillCheckBox.setText(I18N.get("ui.style.BasicStylePanel.fill"));
+        fillCheckBox.setText(I18N.getInstance().get("ui.style.BasicStylePanel.fill"));
         fillCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 fillCheckBox_actionPerformed(e);
             }
         });
-        lineCheckBox.setText(I18N.get("ui.style.BasicStylePanel.line"));
+        lineCheckBox.setText(I18N.getInstance().get("ui.style.BasicStylePanel.line"));
         lineCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 lineCheckBox_actionPerformed(e);
@@ -460,8 +458,8 @@ public class BasicStylePanel extends JPanel {
                 fillColorChooserPanel_actionPerformed(e);
             }
         });
-        lineWidthLabel.setText(I18N.get("ui.style.BasicStylePanel.line-width"));
-        interiorBorderCheckBox.setText(I18N.get("ui.style.BasicStylePanel.interior-border"));
+        lineWidthLabel.setText(I18N.getInstance().get("ui.style.BasicStylePanel.line-width"));
+        interiorBorderCheckBox.setText(I18N.getInstance().get("ui.style.BasicStylePanel.interior-border"));
         interiorBorderCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (interiorBorderCheckBox.isSelected())
@@ -469,7 +467,7 @@ public class BasicStylePanel extends JPanel {
                 updateControls();
             }
         });
-        transparencyLabel.setText(I18N.get("ui.style.BasicStylePanel.transparency"));
+        transparencyLabel.setText(I18N.getInstance().get("ui.style.BasicStylePanel.transparency"));
         centerPanel.add(synchronizeCheckBox, new GridBagConstraints(0, 18, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
         centerPanel.add(transparencyLabel, new GridBagConstraints(0, 23, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,

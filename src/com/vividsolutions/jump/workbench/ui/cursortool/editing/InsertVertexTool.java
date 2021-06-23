@@ -197,13 +197,13 @@ public class InsertVertexTool extends NClickTool {
 		}
 		HashMap layerToFeaturesInRangeMap = layerToFeaturesInRangeMap();
 		if (layerToFeaturesInRangeMap.isEmpty()) {
-			getPanel().getContext().warnUser(I18N.get("ui.cursortool.editing.InsertVertexTool.no-selected-editable-items-here"));
+			getPanel().getContext().warnUser(I18N.getInstance().get("ui.cursortool.editing.InsertVertexTool.no-selected-editable-items-here"));
 			return;
 		}
 		SegmentContext segment = findSegment(layerToFeaturesInRangeMap,
 				modelClickCoordinate());
 		if (segment == null) {
-			getPanel().getContext().warnUser(I18N.get("ui.cursortool.editing.InsertVertexTool.no-selected-line-segments-here"));
+			getPanel().getContext().warnUser(I18N.getInstance().get("ui.cursortool.editing.InsertVertexTool.no-selected-line-segments-here"));
 			return;
 		}
 		final Coordinate newVertex = newVertex(segment.getSegment(),

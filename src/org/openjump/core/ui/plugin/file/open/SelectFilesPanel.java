@@ -65,17 +65,17 @@ public class SelectFilesPanel extends JFCWithEnterAction implements WizardPanelV
 
   public static final String KEY = SelectFilesPanel.class.getName();
 
-  public static final String TITLE = I18N.get(KEY);
+  public static final String TITLE = I18N.getInstance().get(KEY);
 
-  public static final String INSTRUCTIONS = I18N.get(KEY + ".instructions");
+  public static final String INSTRUCTIONS = I18N.getInstance().get(KEY + ".instructions");
 
-  public static final String ALL_FILES = I18N.get(KEY + ".all-files");
+  public static final String ALL_FILES = I18N.getInstance().get(KEY + ".all-files");
   
-  public static final String ALL_SUPPORTED_FILES = I18N.get(KEY + ".all-supported-files");
+  public static final String ALL_SUPPORTED_FILES = I18N.getInstance().get(KEY + ".all-supported-files");
   
-  public static final String ARCHIVED_FILES = I18N.get(KEY + ".archived-files");
+  public static final String ARCHIVED_FILES = I18N.getInstance().get(KEY + ".archived-files");
 
-  public static final String COMPRESSED_FILES = I18N.get(KEY + ".compressed-files");
+  public static final String COMPRESSED_FILES = I18N.getInstance().get(KEY + ".compressed-files");
 
   private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
 

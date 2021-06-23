@@ -73,7 +73,7 @@ public class ZoomToFencePlugIn extends AbstractPlugIn {
 
 //    @Override
 //    public String getName() {
-//      return I18N.get("JUMPConfiguration.fence");
+//      return I18N.getInstance().get("JUMPConfiguration.fence");
 //    }
  
 }

@@ -37,7 +37,7 @@ public class ChangeSRIDPlugIn extends AbstractPlugIn {
   }
 
   public String getName() {
-    return I18N.get("org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn.Change-SRID");
+    return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ChangeSRIDPlugIn.Change-SRID");
   }
 
   public boolean execute(PlugInContext context) throws Exception {
@@ -47,7 +47,7 @@ public class ChangeSRIDPlugIn extends AbstractPlugIn {
     final int oldSRID = sridStyle.getSRID();
     String input = "";
 
-    final JButton okay = new JButton(I18N.get("ui.OKCancelPanel.ok"));
+    final JButton okay = new JButton(I18N.getInstance().get("ui.OKCancelPanel.ok"));
     okay.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -56,7 +56,7 @@ public class ChangeSRIDPlugIn extends AbstractPlugIn {
       }
     });
     okay.setEnabled(false);
-    final JButton cancel = new JButton(I18N.get("ui.OKCancelPanel.cancel"));
+    final JButton cancel = new JButton(I18N.getInstance().get("ui.OKCancelPanel.cancel"));
     cancel.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {

@@ -30,7 +30,7 @@ public class CopyStylesPlugIn extends AbstractPlugIn {
   }
 
   public String getName() {
-    return I18N.get("ui.style.CopyStylesPlugIn.copy-styles");
+    return I18N.getInstance().get("ui.style.CopyStylesPlugIn.copy-styles");
   }
   
   public ImageIcon getIcon() {

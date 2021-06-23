@@ -149,7 +149,7 @@ public class URLConnectionProvider {
   }
 
   private boolean askIfUserAllowsInvalidCertificate(URL url) {
-    String text = I18N.getMessage(
+    String text = I18N.getInstance().get(
         "com.vididsolutions.wms.WMService.UnverifiedCertificate",
         UriUtil.urlStripPassword(url.toString()));
 

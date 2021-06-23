@@ -1221,7 +1221,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader, TaskMonitor
       milliSeconds = now;
       TaskMonitorUtil.report(
           getTaskMonitor(),
-          I18N.getMessage("Reader.parsed-{0}-features",
+          I18N.getInstance().get("Reader.parsed-{0}-features",
               String.format("%,10d", num)));
     }
   }

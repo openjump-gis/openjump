@@ -605,7 +605,7 @@ public class GUIUtil {
    */
   public static boolean showConfirmOverwriteDialog(Component parent, File file) {
     int response = JOptionPane
-        .showConfirmDialog(parent, I18N.getMessage(
+        .showConfirmDialog(parent, I18N.getInstance().get(
             "ui.GUIUtil.overwrite-prompting", file.getName()),
             "JUMP", JOptionPane.YES_NO_OPTION);
 
@@ -1543,7 +1543,7 @@ public class GUIUtil {
     }
 
     return Toolkit.getDefaultToolkit().createCustomCursor(image, hotSpot,
-        I18N.get("ui.GUIUtil.jump-workbench-custom-cursor"));
+        I18N.getInstance().get("ui.GUIUtil.jump-workbench-custom-cursor"));
   }
 
   /**

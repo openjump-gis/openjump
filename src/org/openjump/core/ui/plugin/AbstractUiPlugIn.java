@@ -118,7 +118,7 @@ public abstract class AbstractUiPlugIn extends AbstractPlugIn implements ActionL
       if (workbench != null) {
         WorkbenchFrame frame = workbench.getFrame();
         frame.setStatusMessage("");
-        Logger.info(I18N.get("plugin.AbstractPlugIn.executing") + " " + getName());
+        Logger.info(I18N.getInstance().get("plugin.AbstractPlugIn.executing") + " " + getName());
       }
 
       PlugInContext plugInContext = workbenchContext.createPlugInContext();
@@ -145,7 +145,7 @@ public abstract class AbstractUiPlugIn extends AbstractPlugIn implements ActionL
 
       if (workbench != null) {
         WorkbenchFrame frame = workbench.getFrame();
-        Logger.info(I18N.get("plugin.AbstractPlugIn.done-current-committed-memory") +
+        Logger.info(I18N.getInstance().get("plugin.AbstractPlugIn.done-current-committed-memory") +
                 frame.getMBCommittedMemory() + " MB");
       }
     } catch (Throwable t) {

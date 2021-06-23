@@ -32,7 +32,7 @@ public class CopyImagePlugIn extends ExportImagePlugIn {
       context
           .getWorkbenchFrame()
           .warnUser(
-              I18N.get("ui.plugin.clipboard.CopyImagePlugIn.could-not-copy-the-image-for-some-reason"));
+              I18N.getInstance().get("ui.plugin.clipboard.CopyImagePlugIn.could-not-copy-the-image-for-some-reason"));
       return false;
     }
     Toolkit.getDefaultToolkit().getSystemClipboard()

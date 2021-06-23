@@ -162,13 +162,13 @@ public class MeasurementStyle implements Style {
 		double x = centerPoint.getX();
 		double y = centerPoint.getY();
 		if (paintSummaryLength) {
-			layout = new TextLayout(I18N.get("org.openjump.core.ui.plugin.tools.MeasurementStyle.distance") + " " + decimalFormat.format(length) + "m", summaryFont, g.getFontRenderContext());
+			layout = new TextLayout(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasurementStyle.distance") + " " + decimalFormat.format(length) + "m", summaryFont, g.getFontRenderContext());
 			x -= layout.getAdvance() / 2;
 			layout.draw(g, (float) x, (float) y);
 			y += layout.getAscent();
 		}
 		if (area > 0 && paintSummaryArea) {
-			layout = new TextLayout(I18N.get("org.openjump.core.ui.plugin.tools.MeasurementStyle.area") + " " + decimalFormat.format(area) + "m\u00B2", summaryFont, g.getFontRenderContext());
+			layout = new TextLayout(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasurementStyle.area") + " " + decimalFormat.format(area) + "m\u00B2", summaryFont, g.getFontRenderContext());
 			if (!paintSummaryLength) x -= layout.getAdvance() / 2;
 			layout.draw(g, (float) x, (float) y);
 		}

@@ -50,7 +50,7 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
         SaveProjectAsPlugIn.class.getName() + " - FILE CHOOSER DIRECTORY";
     
     public static final FileFilter JUMP_PROJECT_FILE_FILTER =
-        GUIUtil.createFileFilter(I18N.get("ui.plugin.SaveProjectAsPlugIn.jump-project-files"),
+        GUIUtil.createFileFilter(I18N.getInstance().get("ui.plugin.SaveProjectAsPlugIn.jump-project-files"),
                                  new String[]{"jmp", "jcs"});
     
         
@@ -85,7 +85,7 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
         //        at javax.swing.JFileChooser.<init>(JFileChooser.java:320)
         //[Jon Aquino 2004-01-12]
         fileChooser = GUIUtil.createJFileChooserWithOverwritePrompting("jmp");
-        fileChooser.setDialogTitle(I18N.get("ui.plugin.SaveProjectAsPlugIn.save-project"));
+        fileChooser.setDialogTitle(I18N.getInstance().get("ui.plugin.SaveProjectAsPlugIn.save-project"));
         GUIUtil.removeChoosableFileFilters(fileChooser);
         fileChooser.addChoosableFileFilter(JUMP_PROJECT_FILE_FILTER);
         fileChooser.addChoosableFileFilter(GUIUtil.ALL_FILES_FILTER);
@@ -102,7 +102,7 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
     }
     
     public String getName() {
-        return I18N.get("ui.plugin.SaveProjectAsPlugIn.save-project-as");
+        return I18N.getInstance().get("ui.plugin.SaveProjectAsPlugIn.save-project-as");
     }
     
     public boolean execute(PlugInContext context) throws Exception {

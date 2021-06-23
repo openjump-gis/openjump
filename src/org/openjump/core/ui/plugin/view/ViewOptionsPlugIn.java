@@ -31,14 +31,14 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
 
     public static final String SELECTION_SYNC_KEY = ViewOptionsPlugIn.class.getName() + " - SELECTION_SYNCHRONIZATION";
 
-    private static final String VIEW_OPTIONS = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn");
+    private static final String VIEW_OPTIONS = I18N.getInstance().get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn");
 
-    private static final String ATTRIBUTES_FORMAT = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Attributes-format-in-attribute-table");
-    private static final String DATE_FORMAT = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Date-format");
+    private static final String ATTRIBUTES_FORMAT = I18N.getInstance().get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Attributes-format-in-attribute-table");
+    private static final String DATE_FORMAT = I18N.getInstance().get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Date-format");
     private JComboBox dateFormatChooser;
 
-    private static final String SELECTION_SYNCHRONIZATION = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Selection-synchronization");
-    private static final String SYNC = I18N.get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Synchronize");
+    private static final String SELECTION_SYNCHRONIZATION = I18N.getInstance().get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Selection-synchronization");
+    private static final String SYNC = I18N.getInstance().get("org.openjump.core.ui.plugin.view.ViewOptionsPlugIn.Synchronize");
     private JCheckBox synchronizationCheckBox;
 
     private Blackboard blackBoard;

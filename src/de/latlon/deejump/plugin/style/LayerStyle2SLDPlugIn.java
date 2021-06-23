@@ -133,8 +133,7 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
 
     @Override
     public String getName() {
-        return I18N
-            .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Transform-layer-style-into-sld");
+        return I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Transform-layer-style-into-sld");
     }
 
     /**
@@ -198,18 +197,12 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
         // why the field name given when constructing the dialog are used both
         // for the label and
         // for the key is beyond me
-        wmsLayerName = dialog.getText(I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"));
-        styleName = dialog.getText(I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"));
-        styleTitle = dialog.getText(I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"));
-        featureTypeStyle = dialog.getText(I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"));
-        geomProperty = dialog.getText(I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"));
-        namespace = dialog.getText(I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"));
+        wmsLayerName = dialog.getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"));
+        styleName = dialog.getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"));
+        styleTitle = dialog.getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"));
+        featureTypeStyle = dialog.getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"));
+        geomProperty = dialog.getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"));
+        namespace = dialog.getText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"));
         //prefix = namespace.substring(namespace.lastIndexOf('/') + 1);
 
         if (fileChooser == null) {
@@ -217,10 +210,8 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
             if (fileName != null) {
                 fileChooser.setCurrentDirectory(new File(fileName).getParentFile());
             }
-            fileChooser.setApproveButtonText(I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Save"));
-            fileChooser.setDialogTitle(I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Save-style-as-SLD"));
+            fileChooser.setApproveButtonText(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Save"));
+            fileChooser.setDialogTitle(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Save-style-as-SLD"));
         }
 
         if (JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog(context
@@ -245,57 +236,45 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
 
             dialog = new MultiInputDialog(
                 context.getWorkbenchFrame(),
-                I18N.get("deejump.pluging.style.LayerStyle2SLDPlugIn.SLD-Parameters"),
+                I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.SLD-Parameters"),
                 true);
 
             dialog.addSeparator();
 
-            dialog.addTextField(I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"),
+            dialog.addTextField(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"),
                     geomProperty,
                     25,
                     null,
-                    I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Input-the-name-of-the-geometry-property"));
+                    I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Input-the-name-of-the-geometry-property"));
 
             dialog.addSeparator();
             String name = context.getCandidateLayer(0).getName();
 
-            dialog.addTextField(I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"),
+            dialog.addTextField(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"),
                     name,
                     25,
                     null,
-                    I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"));
-            dialog.addTextField(I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"),
+                    I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.WMS-Layer-name"));
+            dialog.addTextField(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"),
                     name,
                     25,
                     null,
-                    I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"));
-            dialog.addTextField(I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"),
+                    I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-name"));
+            dialog.addTextField(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"),
                     name,
                     25,
                     null,
-                    I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"));
-            dialog.addTextField(I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"),
+                    I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Style-title"));
+            dialog.addTextField(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"),
                     name,
                     25,
                     null,
-                    I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"));
-            dialog.addTextField(I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"),
+                    I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Feature-Type-Style"));
+            dialog.addTextField(I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"),
                     "http://www.deegree.org/app",
                     25,
                     null,
-                    I18N
-                    .get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"));
+                    I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.Namespace"));
             GUIUtil.centreOnWindow(dialog);
         }
     }
@@ -306,7 +285,7 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
         // TODO don't assume has 1 item!!!
         // Should create this condition in EnableCheckFactory
         if (layer.getFeatureCollectionWrapper().getFeatures().size() == 0) {
-            throw new Exception(I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
+            throw new Exception(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
         }
         BasicFeature bf = (BasicFeature) layer.getFeatureCollectionWrapper()
                 .getFeatures().get(0);

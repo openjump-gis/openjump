@@ -35,7 +35,7 @@ public abstract class SegmentDownhillArrowStyle extends LineStringSegmentStyle {
 
   public SegmentDownhillArrowStyle(String name, String iconFile,
     double finAngle, double finLength, boolean filled) {
-    super(I18N.get(SegmentDownhillArrowStyle.class.getName()
+    super(I18N.getInstance().get(SegmentDownhillArrowStyle.class.getName()
       + "." + name), IconLoader.icon(iconFile));
     this.finAngle = finAngle;
     this.finLength = finLength;

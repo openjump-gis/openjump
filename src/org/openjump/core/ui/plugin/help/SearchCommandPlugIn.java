@@ -26,9 +26,9 @@ import java.util.List;
  */
 public class SearchCommandPlugIn extends AbstractPlugIn {
 
-    static final String VIEW_POPUP = I18N.get("ui.MenuNames.LAYERVIEWPANEL_POPUP");
-    static final String LAYER_POPUP = I18N.get("ui.MenuNames.LAYERNAMEPANEL_LAYER_POPUP");
-    static final String CATEGORY_POPUP = I18N.get("ui.MenuNames.LAYERNAMEPANEL_CATEGORY_POPUP");
+    static final String VIEW_POPUP = I18N.getInstance().get("ui.MenuNames.LAYERVIEWPANEL_POPUP");
+    static final String LAYER_POPUP = I18N.getInstance().get("ui.MenuNames.LAYERNAMEPANEL_LAYER_POPUP");
+    static final String CATEGORY_POPUP = I18N.getInstance().get("ui.MenuNames.LAYERNAMEPANEL_CATEGORY_POPUP");
 
     public void initialize(PlugInContext context) throws Exception {
 
@@ -58,9 +58,9 @@ public class SearchCommandPlugIn extends AbstractPlugIn {
         for (String s : GeometryFunction.getNames()) {
             //print(s);
             commands.add(s + " [" +
-                    I18N.get("ui.MenuNames.TOOLS") + ">" +
-                    I18N.get("ui.MenuNames.TOOLS.ANALYSIS") + ">" +
-                    I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn") + "]");
+                    I18N.getInstance().get("ui.MenuNames.TOOLS") + ">" +
+                    I18N.getInstance().get("ui.MenuNames.TOOLS.ANALYSIS") + ">" +
+                    I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.analysis.GeometryFunctionPlugIn") + "]");
         }
 
         // Gather Toolbox Cursor Tools
@@ -68,7 +68,7 @@ public class SearchCommandPlugIn extends AbstractPlugIn {
                 .get("com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn");
         for (AbstractButton b : editingPlugIn.getToolbox().getButtons()) {
             commands.add(b.getToolTipText() + " [" +
-                    I18N.get("ui.cursortool.editing.EditingPlugIn.editing-toolbox") + "]");
+                    I18N.getInstance().get("ui.cursortool.editing.EditingPlugIn.editing-toolbox") + "]");
         }
 
         // Gather main toolbar tools
@@ -78,7 +78,7 @@ public class SearchCommandPlugIn extends AbstractPlugIn {
                 AbstractButton b = (AbstractButton) component;
                 if (b.getToolTipText() != null) {
                     commands.add(b.getToolTipText() + " [" +
-                            I18N.get("Toolbar") + "]");
+                            I18N.getInstance().get("Toolbar") + "]");
                 }
             }
         }

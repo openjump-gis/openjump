@@ -60,7 +60,7 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 public class SelectAllModifiedFeaturesPlugIn extends AbstractPlugIn {
 
   public SelectAllModifiedFeaturesPlugIn() {
-    super(I18N.get("org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn.select-all-modified-features"));
+    super(I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectAllModifiedFeaturesPlugIn.select-all-modified-features"));
     this.setShortcutKeys(KeyEvent.VK_A);
     this.setShortcutModifiers(KeyEvent.CTRL_MASK+KeyEvent.SHIFT_MASK);
   }

@@ -65,11 +65,11 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class OverlayPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     
-    private String POLYGON_OUTPUT = I18N.get("ui.plugin.analysis.OverlayPlugIn.limit-output-to-polygons-only");
-    private String FIRST_LAYER = I18N.get("ui.plugin.analysis.OverlayPlugIn.first-layer");
-    private String SECOND_LAYER = I18N.get("ui.plugin.analysis.OverlayPlugIn.second-layer");
-    private String TRANSFER_ATTRIBUTES_FROM_FIRST_LAYER = I18N.get("ui.plugin.analysis.OverlayPlugIn.transfer-attributes-from-first-layer");
-    private String TRANSFER_ATTRIBUTES_FROM_SECOND_LAYER = I18N.get("ui.plugin.analysis.OverlayPlugIn.transfer-attributes-from-second-layer");
+    private String POLYGON_OUTPUT = I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.limit-output-to-polygons-only");
+    private String FIRST_LAYER = I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.first-layer");
+    private String SECOND_LAYER = I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.second-layer");
+    private String TRANSFER_ATTRIBUTES_FROM_FIRST_LAYER = I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.transfer-attributes-from-first-layer");
+    private String TRANSFER_ATTRIBUTES_FROM_SECOND_LAYER = I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.transfer-attributes-from-second-layer");
     private MultiInputDialog dialog;
     private OverlayEngine overlayEngine;
 
@@ -101,11 +101,11 @@ public class OverlayPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     
     public boolean execute(PlugInContext context) throws Exception {
     	//[sstein, 15.07.2006] placed here again otherwise language settings wont work for i18n 
-		POLYGON_OUTPUT = I18N.get("ui.plugin.analysis.OverlayPlugIn.limit-output-to-polygons-only");
-		FIRST_LAYER = I18N.get("ui.plugin.analysis.OverlayPlugIn.first-layer");
-		SECOND_LAYER = I18N.get("ui.plugin.analysis.OverlayPlugIn.second-layer");
-		TRANSFER_ATTRIBUTES_FROM_FIRST_LAYER = I18N.get("ui.plugin.analysis.OverlayPlugIn.transfer-attributes-from-first-layer");
-		TRANSFER_ATTRIBUTES_FROM_SECOND_LAYER = I18N.get("ui.plugin.analysis.OverlayPlugIn.transfer-attributes-from-second-layer");
+		POLYGON_OUTPUT = I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.limit-output-to-polygons-only");
+		FIRST_LAYER = I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.first-layer");
+		SECOND_LAYER = I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.second-layer");
+		TRANSFER_ATTRIBUTES_FROM_FIRST_LAYER = I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.transfer-attributes-from-first-layer");
+		TRANSFER_ATTRIBUTES_FROM_SECOND_LAYER = I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.transfer-attributes-from-second-layer");
 
         overlayEngine = prompt(context);
 
@@ -133,12 +133,12 @@ public class OverlayPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         dialog = new MultiInputDialog(context.getWorkbenchFrame(),
                 getName(), true);
         dialog.setSideBarImage(IconLoader.icon("Overlay.gif"));
-        dialog.setSideBarDescription(I18N.get("ui.plugin.analysis.OverlayPlugIn.create-new-layer-containing-intersections-of-all-pairs-of-input-features"));
+        dialog.setSideBarDescription(I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.create-new-layer-containing-intersections-of-all-pairs-of-input-features"));
         String fieldName = FIRST_LAYER;
         JComboBox addLayerComboBox = dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
         String fieldName1 = SECOND_LAYER;
         JComboBox addLayerComboBox1 = dialog.addLayerComboBox(fieldName1, context.getCandidateLayer(1), null, context.getLayerManager());
-        dialog.addCheckBox(POLYGON_OUTPUT, true, I18N.get("ui.plugin.analysis.OverlayPlugIn.splits-multipolygons-and-geometry-and-filters-out-non-polygons"));
+        dialog.addCheckBox(POLYGON_OUTPUT, true, I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.splits-multipolygons-and-geometry-and-filters-out-non-polygons"));
         dialog.addCheckBox(TRANSFER_ATTRIBUTES_FROM_FIRST_LAYER,
             true);
         dialog.addCheckBox(TRANSFER_ATTRIBUTES_FROM_SECOND_LAYER,
@@ -154,7 +154,7 @@ public class OverlayPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         FeatureCollection overlay = overlayEngine.overlay(a, b, mapping(a, b),
                 monitor);
         context.getLayerManager().addCategory(categoryName);
-        context.addLayer(categoryName, I18N.get("ui.plugin.analysis.OverlayPlugIn.overlay"), overlay);
+        context.addLayer(categoryName, I18N.getInstance().get("ui.plugin.analysis.OverlayPlugIn.overlay"), overlay);
     }
 
     private AttributeMapping mapping(FeatureCollection a, FeatureCollection b) {

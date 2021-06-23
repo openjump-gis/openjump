@@ -90,54 +90,31 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  * @author Giuseppe Aruta
  */
 public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
-    private final String sSaved = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
-    private final String SCouldNotSave = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
-    private final String NAME = I18N
-            .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn");
-    private final String CLAYER = I18N.get("ui.GenericNames.Source-Layer");
-    private final String HISTOGRAM_PLOT = I18N
-            .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Histogram-Plot");
-    private final String HISTOGRAM_OPTIONS = I18N
-            .get("com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn");
-    private final String NUM_CLASS = I18N
-            .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes");
-    private final String LAYER_STATISTICS = I18N
-            .get("com.vividsolutions.jump.workbench.ui.plugin.LayerStatisticsPlugIn");
-    private final String NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
-    private final static String VALUES = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values");
-    private final String DESCRIPTION = I18N
-            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.description");
-    private final String MAXMINPINS = I18N
-            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.max-min-pins");
-    private final String MEDIANPIN = I18N
-            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.median-25-75-pins");
-    private final String SHOW_FREQUENCY = I18N
-            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.show-frequency");
-    private final String SHOW_STATISTICS = I18N
-            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.show-descriptive-stat");
-    private final String SELECT_BAND = I18N
-            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.select-one-band");
-    private final String FREQUENCY = I18N
-            .get("com.vividsolutions.jump.util.Frequency.frequency");
-    private final String CLASSIFICATION_METHOD = I18N
-            .get("ui.renderer.style.ColorThemingStylePanel.Classification-Method");
-    private final String COLOR = I18N
-            .get("ui.renderer.style.ColorThemingTableModel.colour");
-    private final String CHOOSE_COLOR = I18N
-            .get("ui.ColorChooserPanel.choose-color");
-    private final String EXECUTING = I18N
-            .get("plugin.AbstractPlugIn.executing");
+    private final String sSaved = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    private final String SCouldNotSave = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
+    private final String NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn");
+    private final String CLAYER = I18N.getInstance().get("ui.GenericNames.Source-Layer");
+    private final String HISTOGRAM_PLOT = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Histogram-Plot");
+    private final String HISTOGRAM_OPTIONS = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.OptionsPlugIn");
+    private final String NUM_CLASS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes");
+    private final String LAYER_STATISTICS = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.LayerStatisticsPlugIn");
+    private final String NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
+    private final static String VALUES = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values");
+    private final String DESCRIPTION = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.description");
+    private final String MAXMINPINS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.max-min-pins");
+    private final String MEDIANPIN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.median-25-75-pins");
+    private final String SHOW_FREQUENCY = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.show-frequency");
+    private final String SHOW_STATISTICS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.show-descriptive-stat");
+    private final String SELECT_BAND = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.select-one-band");
+    private final String FREQUENCY = I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.frequency");
+    private final String CLASSIFICATION_METHOD = I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Classification-Method");
+    private final String COLOR = I18N.getInstance().get("ui.renderer.style.ColorThemingTableModel.colour");
+    private final String CHOOSE_COLOR = I18N.getInstance().get("ui.ColorChooserPanel.choose-color");
+    private final String EXECUTING = I18N.getInstance().get("plugin.AbstractPlugIn.executing");
 
-    private final String ANALISYS_INTERVAL = I18N
-            .get("ui.GenericNames.interval-of-data-analysis");
-    private final String HIST_AS_LINE = I18N
-            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.show-histogram-as-line");
-    private final String UNIQUE_VALUES = I18N
-            .get("ui.GenericNames.unique-values");
+    private final String ANALISYS_INTERVAL = I18N.getInstance().get("ui.GenericNames.interval-of-data-analysis");
+    private final String HIST_AS_LINE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.show-histogram-as-line");
+    private final String UNIQUE_VALUES = I18N.getInstance().get("ui.GenericNames.unique-values");
 
     private Color color = Color.blue.brighter();
     private static ColorChooserPanel colorChooserPanel = new ColorChooserPanel();
@@ -557,26 +534,25 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
                 final Object[] objs = numberIntervals;
                 final DefaultTableModel dtm = (DefaultTableModel) jTable
                         .getModel();
-                dtm.addColumn(I18N
-                        .get("com.vividsolutions.jump.util.Frequency.classes"),
+                dtm.addColumn(I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.classes"),
                         objs);
                 dtm.addColumn(
-                        I18N.get("com.vividsolutions.jump.util.Frequency.lower-value"),
+                        I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.lower-value"),
                         minObject);
                 dtm.addColumn(
-                        I18N.get("com.vividsolutions.jump.util.Frequency.mean-value"),
+                        I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.mean-value"),
                         meanObject);
                 dtm.addColumn(
-                        I18N.get("com.vividsolutions.jump.util.Frequency.upper-value"),
+                        I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.upper-value"),
                         maxObject);
                 dtm.addColumn(
-                        I18N.get("com.vividsolutions.jump.util.Frequency.absolute-frequency"),
+                        I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.absolute-frequency"),
                         absoluteFrequencyObject);
                 dtm.addColumn(
-                        I18N.get("com.vividsolutions.jump.util.Frequency.cumulative-frequency"),
+                        I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.cumulative-frequency"),
                         cumulativeFrequencyObject);
                 dtm.addColumn(
-                        I18N.get("com.vividsolutions.jump.util.Frequency.relative-frequency"),
+                        I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.relative-frequency"),
                         relativeFrequencyObject);
                 final JTablePanel jTablePanel = new JTablePanel(dtm);
                 jTablePanel.getCommandPanel().setVisible(false);
@@ -612,9 +588,9 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
         final DefaultTableModel model = new DefaultTableModel(
                 new Object[] {
                         VALUES,
-                        I18N.get("com.vividsolutions.jump.util.Frequency.absolute-frequency"),
-                        I18N.get("com.vividsolutions.jump.util.Frequency.cumulative-frequency"),
-                        I18N.get("com.vividsolutions.jump.util.Frequency.relative-frequency") },
+                        I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.absolute-frequency"),
+                        I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.cumulative-frequency"),
+                        I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.relative-frequency") },
                 0);
         double frqValue = 0;
         double sum = 0;
@@ -647,7 +623,7 @@ public class HistogramPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
     protected void notsaved(File file) {
         JOptionPane.showMessageDialog(null,
-                SCouldNotSave + ": " + file.getName(), I18N.get(NAME),
+                SCouldNotSave + ": " + file.getName(), I18N.getInstance().get(NAME),
                 JOptionPane.WARNING_MESSAGE);
     }
 

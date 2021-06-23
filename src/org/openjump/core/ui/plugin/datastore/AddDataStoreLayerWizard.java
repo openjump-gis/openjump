@@ -44,7 +44,7 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
   private final ChooseProjectPanel chooseProjectPanel;
 
   public AddDataStoreLayerWizard(WorkbenchContext workbenchContext) {
-    super(I18N.get(KEY), IconLoader.icon("database_add.png"),
+    super(I18N.getInstance().get(KEY), IconLoader.icon("database_add.png"),
         AddDataStoreLayerWizardPanel.class.getName());
     this.workbenchContext = workbenchContext;
     dataStoreWizardPanel = new AddDataStoreLayerWizardPanel(workbenchContext);

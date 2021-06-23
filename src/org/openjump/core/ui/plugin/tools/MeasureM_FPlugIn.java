@@ -50,8 +50,8 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 public class MeasureM_FPlugIn extends AbstractPlugIn
 {
     MeasureM_FTool measureTool;    
-    private final static String sMeasureInFeets = I18N.get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Measure-In-Feets");
-    private final static String sErrorSeeOutputWindow= I18N.get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
+    private final static String sMeasureInFeets = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Measure-In-Feets");
+    private final static String sErrorSeeOutputWindow= I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
 	
     public void initialize(PlugInContext context) throws Exception
     {    

@@ -92,10 +92,8 @@ public class RasterQueryDragTool extends RectangleTool {
 
    
     protected Coordinate tentativeCoordinate;
-    public static final String LAYER_NAME = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.values");
-    public static final String LAYER = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.layer");
+    public static final String LAYER_NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.values");
+    public static final String LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.layer");
  
     RasterImageLayer rLayer;
 
@@ -176,7 +174,7 @@ public class RasterQueryDragTool extends RectangleTool {
     
     @Override
     public String getName() {
-    	return  I18N.get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn");
+    	return  I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn");
     }
     
     
@@ -229,14 +227,14 @@ public class RasterQueryDragTool extends RectangleTool {
         pan.add( savePanel(jTablePanel.getTable()), BorderLayout.SOUTH);
        
       
-      JOptionPane.showOptionDialog(null, pan, I18N.get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn"), JOptionPane.DEFAULT_OPTION,JOptionPane.PLAIN_MESSAGE, null, 
+      JOptionPane.showOptionDialog(null, pan, I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn"), JOptionPane.DEFAULT_OPTION,JOptionPane.PLAIN_MESSAGE, null, 
     		  new Object[]{}, null);
      }
     private JPanel savePanel(JTable jTable) {
         final JPanel save = new JPanel();
         save.setLayout(new FlowLayout(FlowLayout.RIGHT));
         final JButton saveButton = new JButton(
-                I18N.get("deejump.plugin.SaveLegendPlugIn.Save"));
+                I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save"));
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -340,9 +338,7 @@ public class RasterQueryDragTool extends RectangleTool {
     
  
     
-    private final String sSaved = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
-    private final String SCouldNotSave = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
+    private final String sSaved = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    private final String SCouldNotSave = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
 
 }

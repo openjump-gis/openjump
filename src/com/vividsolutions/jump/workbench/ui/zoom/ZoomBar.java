@@ -664,7 +664,7 @@ public class ZoomBar extends LazyJPanel implements Java2DConverter.PointConverte
     this.setLayout(new BorderLayout());
     label.setText(" ");
     slider.setPaintLabels(true);
-    slider.setToolTipText(I18N.get("ui.zoom.ZoomBar.zoom"));
+    slider.setToolTipText(I18N.getInstance().get("ui.zoom.ZoomBar.zoom"));
     slider.setMaximum(1000);
 
     this.add(slider, BorderLayout.CENTER);
@@ -708,10 +708,10 @@ public class ZoomBar extends LazyJPanel implements Java2DConverter.PointConverte
             return;
           }
           // try {
-          slider.setToolTipText(I18N.get("ui.zoom.ZoomBar.zoom-to") + " "
+          slider.setToolTipText(I18N.getInstance().get("ui.zoom.ZoomBar.zoom-to") + " "
               + chooseGoodIncrement(toScale(((BasicSliderUI) slider.getUI()).valueForXPosition(e.getX()))).toString());
           // } catch (NoninvertibleTransformException x) {
-          // slider.setToolTipText(I18N.get("ui.zoom.ZoomBar.zoom"));
+          // slider.setToolTipText(I18N.getInstance().get("ui.zoom.ZoomBar.zoom"));
           // }
         }
       });

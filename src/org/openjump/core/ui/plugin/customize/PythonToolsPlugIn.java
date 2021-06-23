@@ -74,8 +74,7 @@ public class PythonToolsPlugIn extends ToolboxPlugInV2 {
       .icon("famfam/application_python.png");
 
   public String getName() {
-    return I18N
-        .get("org.openjump.core.ui.plugin.customize.PythonToolsPlugIn.Python-Console-and-Tools");
+    return I18N.getInstance().get("org.openjump.core.ui.plugin.customize.PythonToolsPlugIn.Python-Console-and-Tools");
   }
 
   public void initialize(PlugInContext context) throws Exception {

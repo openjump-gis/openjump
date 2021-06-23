@@ -348,7 +348,7 @@ public class JUMPConfiguration implements Setup {
         workbenchContext);
     add(new OrCompositeTool() {
       public String getName() {
-        return I18N.get("JUMPConfiguration.fence");
+        return I18N.getInstance().get("JUMPConfiguration.fence");
       }
     }.add(new DrawRectangleFenceTool()).add(new DrawPolygonFenceTool()),
         workbenchContext);
@@ -367,7 +367,7 @@ public class JUMPConfiguration implements Setup {
     OptionsDialog
         .instance(workbenchContext.getWorkbench())
         .addTab(
-            I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin.OptionPanelTitle"),
+            I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasurePlugin.OptionPanelTitle"),
             new AdvancedMeasureOptionsPanel(workbenchContext));
 
     frame.getToolBar().addSeparator();

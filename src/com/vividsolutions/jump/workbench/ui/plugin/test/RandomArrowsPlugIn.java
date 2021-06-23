@@ -86,7 +86,7 @@ public class RandomArrowsPlugIn extends AbstractPlugIn {
 
     private void addLayer(FeatureCollection featureCollection,
         PlugInContext context) {
-        Layer layer = new Layer(I18N.get("ui.test.RandomArrowsPlugIn.random-arrows"),
+        Layer layer = new Layer(I18N.getInstance().get("ui.test.RandomArrowsPlugIn.random-arrows"),
                 context.getLayerManager().generateLayerFillColor(),
                 featureCollection, context.getLayerManager());
         //Can't fire events because this Layer hasn't been added to the

@@ -100,8 +100,8 @@ public class GMLDataSourceQueryChooserInstaller {
         if (!templateFileNamePanel.isInputValid()) {
             JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(
                     templateFileNamePanel),
-                    I18N.get("datasource.GMLDataSourceQueryChooserInstaller.template-file")+" " + templateFileNamePanel.getValidationError(),
-                    I18N.get("datasource.GMLDataSourceQueryChooserInstaller.error"), JOptionPane.ERROR_MESSAGE);
+                    I18N.getInstance().get("datasource.GMLDataSourceQueryChooserInstaller.template-file")+" " + templateFileNamePanel.getValidationError(),
+                    I18N.getInstance().get("datasource.GMLDataSourceQueryChooserInstaller.error"), JOptionPane.ERROR_MESSAGE);
 
             return false;
         }
@@ -158,7 +158,7 @@ public class GMLDataSourceQueryChooserInstaller {
 
     private FileNamePanel createTemplateFileNamePanel(String description,
         final JFileChooser fileChooser, ErrorHandler errorHandler) {
-        return new TemplateFileNamePanel(I18N.get("datasource.GMLDataSourceQueryChooserInstaller.input-template")+" ", errorHandler) {
+        return new TemplateFileNamePanel(I18N.getInstance().get("datasource.GMLDataSourceQueryChooserInstaller.input-template")+" ", errorHandler) {
 
                 {
                     setFileMustExist(true);

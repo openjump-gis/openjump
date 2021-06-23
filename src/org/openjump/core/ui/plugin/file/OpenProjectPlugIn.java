@@ -44,7 +44,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class OpenProjectPlugIn extends AbstractWizardPlugin {
   private static final String KEY = OpenProjectPlugIn.class.getName();
-  private static final String FILE_DOES_NOT_EXIST = I18N.get(KEY
+  private static final String FILE_DOES_NOT_EXIST = I18N.getInstance().get(KEY
     + ".file-does-not-exist");
   public static final ImageIcon ICON = IconLoader.icon("folder_page_oj_16.v9.png");
 

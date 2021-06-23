@@ -76,11 +76,11 @@ import java.util.Collection;
  **/
 public class SimplifyWithJTSAlgorithmPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
 
-    private final static String sSimplifyJTSAlgorithm = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn");
-    private final static String sidebarText=I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Line-simplification-for-a-selected-line-or-polygon");
-    private final static String sItem=I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Item");
-    private final static String sSimplificationFinalized=I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.simplification-finalized");
-    private static String T3=I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Maximum-point-displacement-in-model-units");
+    private final static String sSimplifyJTSAlgorithm = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn");
+    private final static String sidebarText=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Line-simplification-for-a-selected-line-or-polygon");
+    private final static String sItem=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Item");
+    private final static String sSimplificationFinalized=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.simplification-finalized");
+    private static String T3=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Maximum-point-displacement-in-model-units");
     double maxPDisp = 0;
 
     public void initialize(PlugInContext context) throws Exception {

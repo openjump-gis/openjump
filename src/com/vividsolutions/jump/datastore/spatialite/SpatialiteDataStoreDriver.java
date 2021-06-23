@@ -66,7 +66,7 @@ public class SpatialiteDataStoreDriver extends AbstractSpatialDatabasesDSDriver 
     // File must exists
     File sqliteFile = new File(database);
     if (!sqliteFile.exists() || !sqliteFile.canRead()) {
-      throw new Exception(I18N.getMessage(
+      throw new Exception(I18N.getInstance().get(
               "com.vividsolutions.jump.datastore.spatialite.SpatialiteDataStoreDriver.file-does-not-exist",
               database));
     }

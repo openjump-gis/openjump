@@ -77,11 +77,11 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
  */
 public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
 	
-    private static String LAYER_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.layer");
-    private static String AREA_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.area-attribute-name");
-    private static String LENGTH_COMBO_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.length-attribute-name");
-    private static String LENGTH_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-length");
-    private static String AREA_CHECK_BOX = I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-area");
+    private static String LAYER_COMBO_BOX = I18N.getInstance().get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.layer");
+    private static String AREA_COMBO_BOX = I18N.getInstance().get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.area-attribute-name");
+    private static String LENGTH_COMBO_BOX = I18N.getInstance().get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.length-attribute-name");
+    private static String LENGTH_CHECK_BOX = I18N.getInstance().get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-length");
+    private static String AREA_CHECK_BOX = I18N.getInstance().get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-area");
 
     public void initialize(PlugInContext context) throws Exception {
         FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
@@ -152,7 +152,7 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
                                 && dialog.getBoolean(LENGTH_CHECK_BOX)
                                 && dialog.getText(AREA_COMBO_BOX).equals(
                                     dialog.getText(LENGTH_COMBO_BOX))
-                                        ? I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.area-and-length-attribute-names-must-be-different")
+                                        ? I18N.getInstance().get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.area-and-length-attribute-names-must-be-different")
                                         : null;
                 }
             }
@@ -242,7 +242,7 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
                         }
                     }
                     if (candidateLayerFound) return null;
-                    return I18N.get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.no-editable-layer-with-required-attributes");
+                    return I18N.getInstance().get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.no-editable-layer-with-required-attributes");
                 }
             });
     }

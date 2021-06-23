@@ -263,7 +263,7 @@ public class ShapefileWriter implements JUMPWriter {
         }
 
         if (shpfileName == null) {
-            throw new IllegalParametersException(I18N.get("io.ShapefileWriter.no-output-filename-specified"));
+            throw new IllegalParametersException(I18N.getInstance().get("io.ShapefileWriter.no-output-filename-specified"));
         }
 
         shpfileName = new File(shpfileName).getPath(); // write the path with the native file separator
@@ -272,7 +272,7 @@ public class ShapefileWriter implements JUMPWriter {
         if (loc == -1) {
             // probably using the wrong path separator character.
             throw new Exception(
-                I18N.getMessage("io.ShapefileWriter.path-separator-not-found", 
+                I18N.getInstance().get("io.ShapefileWriter.path-separator-not-found", 
                                 File.separatorChar));
         } else {
             path = shpfileName.substring(0, loc + 1); // ie. "/data1/hills.shp" -> "/data1/"
@@ -282,7 +282,7 @@ public class ShapefileWriter implements JUMPWriter {
         loc = fname.lastIndexOf(".");
 
         if (loc == -1) {
-            throw new IllegalParametersException(I18N.get("io.ShapefileWriter.filename-must-end-in-shp"));
+            throw new IllegalParametersException(I18N.getInstance().get("io.ShapefileWriter.filename-must-end-in-shp"));
         }
 
         fname_withoutextention = fname.substring(0, loc); // ie. "hills.shp" -> "hills."
@@ -335,7 +335,7 @@ public class ShapefileWriter implements JUMPWriter {
                 shapeType = 4;
             } else {
                 throw new IllegalParametersException(
-                    I18N.get("io.ShapefileWriter.unknown-type"));
+                    I18N.getInstance().get("io.ShapefileWriter.unknown-type"));
             }
         } else {
             if (gc.getNumGeometries() > 0) {
@@ -515,8 +515,8 @@ public class ShapefileWriter implements JUMPWriter {
                         else {
                             truncate = false;
                             throw new Exception(
-                                I18N.get("io.ShapefileWriter.export-cancelled") + " " +
-                                I18N.get("io.ShapefileWriter.more-than-255-characters-field-found"));
+                                I18N.getInstance().get("io.ShapefileWriter.export-cancelled") + " " +
+                                I18N.getInstance().get("io.ShapefileWriter.more-than-255-characters-field-found"));
                         }
                     }
                 }
@@ -557,8 +557,8 @@ public class ShapefileWriter implements JUMPWriter {
 	                        else {
 	                            truncate = false;
 	                            throw new Exception(
-	                                I18N.get("io.ShapefileWriter.export-cancelled") + " " +
-	                                I18N.get("io.ShapefileWriter.more-than-255-characters-field-found"));
+	                                I18N.getInstance().get("io.ShapefileWriter.export-cancelled") + " " +
+	                                I18N.getInstance().get("io.ShapefileWriter.more-than-255-characters-field-found"));
 	                        }
 	                    }
 	                }
@@ -568,7 +568,7 @@ public class ShapefileWriter implements JUMPWriter {
 	               f++;
             	}
             } else {
-                throw new Exception(I18N.get("io.ShapefileWriter.unsupported-attribute-type") + " : " + columnType.toString() );
+                throw new Exception(I18N.getInstance().get("io.ShapefileWriter.unsupported-attribute-type") + " : " + columnType.toString() );
             }
         }
 
@@ -882,7 +882,7 @@ public class ShapefileWriter implements JUMPWriter {
 					}
 					else{
 			           throw new IllegalParametersException(
-			               I18N.get("io.ShapefileWriter.unsupported-mixed-geometry-type"));
+			               I18N.getInstance().get("io.ShapefileWriter.unsupported-mixed-geometry-type"));
 			        }
 				}
 			}
@@ -974,7 +974,7 @@ public class ShapefileWriter implements JUMPWriter {
 
         if (geomtype == 31) {
             throw new Exception(
-                I18N.get("io.ShapefileWriter.unsupported-geometry-collection"));
+                I18N.getInstance().get("io.ShapefileWriter.unsupported-geometry-collection"));
         }
 
         List features = fc.getFeatures();
@@ -1065,12 +1065,12 @@ public class ShapefileWriter implements JUMPWriter {
     }
     
     private OKCancelDialog getLongFieldManagementDialogBox() {
-        return new OKCancelDialog((JFrame)null, I18N.get("io.ShapefileWriter.fields-too-long"), true, 
+        return new OKCancelDialog((JFrame)null, I18N.getInstance().get("io.ShapefileWriter.fields-too-long"), true, 
             new JLabel(
                 "<html><br/>" +
-                I18N.get("io.ShapefileWriter.more-than-255-characters-field-found") +
+                I18N.getInstance().get("io.ShapefileWriter.more-than-255-characters-field-found") +
                 "<br/><br/>" +
-                I18N.get("io.ShapefileWriter.truncate-option") +
+                I18N.getInstance().get("io.ShapefileWriter.truncate-option") +
                 "<br/></html>"), null);
     }
 

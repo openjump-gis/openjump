@@ -59,8 +59,7 @@ import com.vividsolutions.jump.workbench.ui.SelectionManager;
  */
 public class InvertSelectionPlugIn extends AbstractPlugIn {
 
-    private String name = I18N
-        .get("org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn.invert-selection");
+    private String name = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.InvertSelectionPlugIn.invert-selection");
 
     public InvertSelectionPlugIn() {
         super();

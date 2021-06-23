@@ -61,7 +61,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
 
     public AddWritableDataStoreLayerWizard(WorkbenchContext workbenchContext,
             String txManagerName) {
-        super(I18N.get(KEY), IconLoader.icon("database_writable_add.png"),
+        super(I18N.getInstance().get(KEY), IconLoader.icon("database_writable_add.png"),
                 AddWritableDataStoreLayerWizardPanel.class.getName());
         this.txManagerName = txManagerName;
         this.workbenchContext = workbenchContext;

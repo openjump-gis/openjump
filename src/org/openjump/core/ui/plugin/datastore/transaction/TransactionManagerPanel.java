@@ -73,8 +73,8 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
         //c.gridwidth = 2;
         //panel.add(experimental, c);
 
-        JButton inspectButton = new JButton(I18N.get(KEY + ".inspect"));
-        inspectButton.setToolTipText(I18N.get(KEY + ".inspect-tooltip"));
+        JButton inspectButton = new JButton(I18N.getInstance().get(KEY + ".inspect"));
+        inspectButton.setToolTipText(I18N.getInstance().get(KEY + ".inspect-tooltip"));
         inspectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 transactionManager.inspect(getTaskFrame());
@@ -86,8 +86,8 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
         c.fill = GridBagConstraints.HORIZONTAL;
         panel.add(inspectButton, c);
 
-        JButton updateButton = new JButton(I18N.get(KEY + ".update"));
-        updateButton.setToolTipText(I18N.get(KEY + ".update-tooltip"));
+        JButton updateButton = new JButton(I18N.getInstance().get(KEY + ".update"));
+        updateButton.setToolTipText(I18N.getInstance().get(KEY + ".update-tooltip"));
         updateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 transactionManager.update(getTaskFrame());
@@ -97,8 +97,8 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
         c.gridy += 1;
         panel.add(updateButton, c);
 
-        JButton commitButton = new JButton(I18N.get(KEY + ".commit"));
-        commitButton.setToolTipText(I18N.get(KEY + ".commit-tooltip"));
+        JButton commitButton = new JButton(I18N.getInstance().get(KEY + ".commit"));
+        commitButton.setToolTipText(I18N.getInstance().get(KEY + ".commit-tooltip"));
         commitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -140,7 +140,7 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
                         updateTextArea(task);
                     }
                     else {
-                        Logger.error(I18N.get(KEY + ".layer-with-irrelevant-datastore-datasource"));
+                        Logger.error(I18N.getInstance().get(KEY + ".layer-with-irrelevant-datastore-datasource"));
                     }
                 }
             }
@@ -178,9 +178,9 @@ public class TransactionManagerPanel extends JPanel  implements WorkbenchContext
                     if (evo.getType() == Evolution.Type.MODIFICATION) m++;
                 }
                 if (c+m+s>0) textArea.append(layer.getName()+":\n");
-                if (c>0) textArea.append(I18N.getMessage(KEY + ".creations", c) + "\n");
-                if (s>0) textArea.append(I18N.getMessage(KEY + ".suppressions", s) + "\n");
-                if (m>0) textArea.append(I18N.getMessage(KEY + ".modifications", m) + "\n");
+                if (c>0) textArea.append(I18N.getInstance().get(KEY + ".creations", c) + "\n");
+                if (s>0) textArea.append(I18N.getInstance().get(KEY + ".suppressions", s) + "\n");
+                if (m>0) textArea.append(I18N.getInstance().get(KEY + ".modifications", m) + "\n");
             }
         }
     }

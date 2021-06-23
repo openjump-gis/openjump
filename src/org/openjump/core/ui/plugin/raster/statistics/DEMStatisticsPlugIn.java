@@ -87,34 +87,20 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
  *         Allow selection of multiple layers on plugin dialog.
  */
 public class DEMStatisticsPlugIn extends ThreadedBasePlugIn {
-    private static final String R_MAX = I18N
-            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum");
-    private static final String R_MIN = I18N
-            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum");
-    private static final String R_MEAN = I18N
-            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.mean");
-    private static final String R_STD = I18N
-            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev");
-    private final static String NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
-    private final static String NODATACELLS = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.nodatacell");
-    private final static String VALIDCELLS = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.validcells");
-    private final static String XMIN = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.xmin");
-    private final static String YMIN = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.ymin");
-    private final static String CELL_SIZE = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_cell");
-    private final static String COLUMNS = I18N
-            .get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.columns");
-    private final static String ROWS = I18N
-            .get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.rows");
-    private final static String RASTER_BANDS = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.bands_number");
-    private final static String AREA = I18N
-            .get("ui.plugin.LayerStatisticsPlugIn.area");
+    private static final String R_MAX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum");
+    private static final String R_MIN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum");
+    private static final String R_MEAN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.mean");
+    private static final String R_STD = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev");
+    private final static String NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
+    private final static String NODATACELLS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.nodatacell");
+    private final static String VALIDCELLS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.validcells");
+    private final static String XMIN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.xmin");
+    private final static String YMIN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.ymin");
+    private final static String CELL_SIZE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_cell");
+    private final static String COLUMNS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.columns");
+    private final static String ROWS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.rows");
+    private final static String RASTER_BANDS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.bands_number");
+    private final static String AREA = I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.area");
 
     public static MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
@@ -172,9 +158,8 @@ public class DEMStatisticsPlugIn extends ThreadedBasePlugIn {
             PlugInContext context) {
         final Collection<RasterImageLayer> rlayers = context.getTask()
                 .getLayerManager().getLayerables(RasterImageLayer.class);
-        dialog.addSubTitle(I18N.get("ui.GenericNames.select-layers"));
-        dialog.addLabel(I18N
-                .get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.select-multiple-layers"));
+        dialog.addSubTitle(I18N.getInstance().get("ui.GenericNames.select-layers"));
+        dialog.addLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.select-multiple-layers"));
         listModel.removeAllElements();
         for (final RasterImageLayer currentLayer : rlayers) {
             listModel.addElement(currentLayer);
@@ -207,8 +192,7 @@ public class DEMStatisticsPlugIn extends ThreadedBasePlugIn {
 
     @Override
     public String getName() {
-        return I18N
-                .get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.name");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.raster.DEMStatisticsPlugIn.name");
     }
 
     public Icon getIcon() {
@@ -233,7 +217,7 @@ public class DEMStatisticsPlugIn extends ThreadedBasePlugIn {
         monitor.allowCancellationRequests();
         monitor.report(getName()
                 + ": "
-                + I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.computing"));
+                + I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.computing"));
         final Locale locale = new Locale("en", "UK");
         final String pattern = "###.########";
         final DecimalFormat df = (DecimalFormat) NumberFormat
@@ -257,7 +241,7 @@ public class DEMStatisticsPlugIn extends ThreadedBasePlugIn {
                     CELL_SIZE, AREA, RASTER_BANDS, R_MIN, R_MAX, R_MEAN, R_STD,
                     NODATA, VALIDCELLS, NODATACELLS,
                     StatisticIndices.NUM_CLASSES };
-            dtm.addColumn(I18N.get("jump.plugin.qa.DiffGeometryPlugIn.Layer")
+            dtm.addColumn(I18N.getInstance().get("jump.plugin.qa.DiffGeometryPlugIn.Layer")
                     .toUpperCase(), header);
             // .getSelectedObjects();
 

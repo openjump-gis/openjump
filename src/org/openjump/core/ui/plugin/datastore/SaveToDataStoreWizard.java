@@ -30,7 +30,7 @@ public class SaveToDataStoreWizard extends AbstractWizardGroup {
   private PlugInContext context;
 
   public SaveToDataStoreWizard(final PlugInContext context, DataStoreTransactionManager txManager) {
-    super(I18N.get(KEY), IconLoaderFamFam.icon("database_save.png"), SaveToDataStorePanel.KEY);
+    super(I18N.getInstance().get(KEY), IconLoaderFamFam.icon("database_save.png"), SaveToDataStorePanel.KEY);
     this.txManager = txManager;
     this.context = context;
   }

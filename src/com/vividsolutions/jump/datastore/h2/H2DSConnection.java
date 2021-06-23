@@ -72,12 +72,12 @@ public class H2DSConnection extends SpatialDatabasesDSConnection {
             fs = ifs.getFeatureSchema();
         } catch (Exception e) {
             throw new Exception(
-                    I18N.get(SpatialDatabasesDSConnection.class.getName()
+                    I18N.getInstance().get(SpatialDatabasesDSConnection.class.getName()
                             + ".SQL-error") + e.getMessage());
         }
 
         if (fs.getGeometryIndex() < 0) {
-            throw new Exception(I18N.get(SpatialDatabasesDSConnection.class.getName()
+            throw new Exception(I18N.getInstance().get(SpatialDatabasesDSConnection.class.getName()
                     +".resultset-must-have-a-geometry-column"));
         }
         return ifs;

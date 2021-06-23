@@ -68,59 +68,59 @@ import java.util.List;
 
 public class Add3DGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 
-    private static String LAYER               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.layer");
+    private static String LAYER               = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.layer");
 
-    private static String GEOM_ATTRIBUTES     = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.3d-geometry-attributes");
+    private static String GEOM_ATTRIBUTES     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.3d-geometry-attributes");
 
-    private static String COMPUTE_ATTRIBUTES  = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.compute-attributes");
+    private static String COMPUTE_ATTRIBUTES  = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.compute-attributes");
 
-    private static String START_Z             = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.start-z");
-    private static String ADD_START_Z         = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-start-z");
+    private static String START_Z             = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.start-z");
+    private static String ADD_START_Z         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-start-z");
 
-    private static String END_Z               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.end-z");
-    private static String ADD_END_Z           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-end-z");
+    private static String END_Z               = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.end-z");
+    private static String ADD_END_Z           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-end-z");
 
-    private static String MIN_Z               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.min-z");
-    private static String ADD_MIN_Z           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-min-z");
+    private static String MIN_Z               = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.min-z");
+    private static String ADD_MIN_Z           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-min-z");
 
-    private static String MAX_Z               = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-z");
-    private static String ADD_MAX_Z           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-z");
+    private static String MAX_Z               = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-z");
+    private static String ADD_MAX_Z           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-z");
 
-    private static String WEIGHTED_MEAN_Z     = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.weighted-mean-z");
-    private static String ADD_WEIGHTED_MEAN_Z = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-weighted-mean-z");
+    private static String WEIGHTED_MEAN_Z     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.weighted-mean-z");
+    private static String ADD_WEIGHTED_MEAN_Z = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-weighted-mean-z");
 
-    private static String LENGTH_3D           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.length-3d");
-    private static String ADD_LENGTH_3D       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-length-3d");
+    private static String LENGTH_3D           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.length-3d");
+    private static String ADD_LENGTH_3D       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-length-3d");
 
-    private static String MAX_DOWN_SLOPE      = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-downslope");
-    private static String ADD_MAX_DOWNSLOPE   = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-downslope");
+    private static String MAX_DOWN_SLOPE      = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-downslope");
+    private static String ADD_MAX_DOWNSLOPE   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-downslope");
 
-    private static String MAX_UPSLOPE         = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-upslope");
-    private static String ADD_MAX_UPSLOPE     = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-upslope");
+    private static String MAX_UPSLOPE         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-upslope");
+    private static String ADD_MAX_UPSLOPE     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-upslope");
 
-    private static String MAX_SLOPE           = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-slope");
-    private static String ADD_MAX_SLOPE       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-slope");
+    private static String MAX_SLOPE           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.max-slope");
+    private static String ADD_MAX_SLOPE       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-max-slope");
 
-    private static String NB_NAN_Z            = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-nan-z");
-    private static String ADD_NB_NAN_Z        = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-nan-z");
+    private static String NB_NAN_Z            = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-nan-z");
+    private static String ADD_NB_NAN_Z        = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-nan-z");
 
-    private static String NB_NEGATIVE_Z       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-negative-z");
-    private static String ADD_NB_NEGATIVE_Z   = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-negative-z");
+    private static String NB_NEGATIVE_Z       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-negative-z");
+    private static String ADD_NB_NEGATIVE_Z   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-negative-z");
 
-    private static String NB_0_Z              = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-0-z");
-    private static String ADD_NB_0_Z          = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-0-z");
+    private static String NB_0_Z              = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-0-z");
+    private static String ADD_NB_0_Z          = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-0-z");
 
-    private static String NB_POSITIVE_Z       = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-positive-z");
-    private static String ADD_NB_POSITIVE_Z   = I18N.get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-positive-z");
+    private static String NB_POSITIVE_Z       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.nb-positive-z");
+    private static String ADD_NB_POSITIVE_Z   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.Add3DGeometryAttributesPlugIn.add-nb-positive-z");
     // 
     // // MORPHOLOGY
-    // public static String ADD_ORIENTATION     = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-orientation");
+    // public static String ADD_ORIENTATION     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-orientation");
     // // http://iahs.info/hsj/470/hysj_47_06_0921.pdf
     // // http://www.ipublishing.co.in/jggsvol1no12010/voltwo/EIJGGS3022.pdf
-    // public static String ADD_GRAVELIUS          = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-miller");
-    // public static String ADD_MILLER          = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-miller");
+    // public static String ADD_GRAVELIUS          = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-miller");
+    // public static String ADD_MILLER          = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-miller");
     
-    // public static String ADD_SINUOSITY       = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-miller");
+    // public static String ADD_SINUOSITY       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-miller");
 
     String layer;
     

@@ -59,7 +59,7 @@ public class AddWMSDemoBoxEasterEggPlugIn extends AbstractPlugIn {
                     if (SwingUtilities.isRightMouseButton(e) &&
                             (e.getClickCount() == 3)) {
                         Layer layer = panel.getLayerManager().addLayer(StandardCategoryNames.WORKING,
-                        		I18N.get("ui.plugin.AddWMSDemoBoxEasterEggPlugIn.wms-demo-box"),
+                        		I18N.getInstance().get("ui.plugin.AddWMSDemoBoxEasterEggPlugIn.wms-demo-box"),
                                 AddNewLayerPlugIn.createBlankFeatureCollection());
                         BasicFeature feature = new BasicFeature(layer.getFeatureCollectionWrapper()
                                                                      .getFeatureSchema());

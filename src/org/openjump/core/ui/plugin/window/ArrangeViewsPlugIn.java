@@ -20,8 +20,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ArrangeViewsPlugIn extends AbstractPlugIn {
 
-  public static final String NAME = I18N
-      .get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.name");
+  public static final String NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.name");
 
   public static final Icon HORIZONTAL_ICON = IconLoader
       .icon("application_tile_horizontal.png");
@@ -70,20 +69,16 @@ public class ArrangeViewsPlugIn extends AbstractPlugIn {
 
     switch (this.arrangeType) {
     case 1:
-      name = I18N
-          .get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.distribute-views-horizontally");
+      name = I18N.getInstance().get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.distribute-views-horizontally");
       break;
     case 2:
-      name = I18N
-          .get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.distribute-views-vertically");
+      name = I18N.getInstance().get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.distribute-views-vertically");
       break;
     case 3:
-      name = I18N
-          .get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.cascade-views");
+      name = I18N.getInstance().get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.cascade-views");
       break;
     case 4:
-      name = I18N
-          .get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.arrange-views");
+      name = I18N.getInstance().get("org.openjump.core.ui.plugin.window.ArrangeViewsPlugIn.arrange-views");
       break;
     default:
       name = NAME;

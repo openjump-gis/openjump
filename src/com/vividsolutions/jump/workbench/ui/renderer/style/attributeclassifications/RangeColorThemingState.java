@@ -75,11 +75,11 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
         RangeColorThemingState.class.getName() + " - RANGE COUNT";
 
     public String getAllOtherValuesDescription() {
-        return I18N.get("ui.renderer.style.RangeColorThemingState.values-below-these-values");
+        return I18N.getInstance().get("ui.renderer.style.RangeColorThemingState.values-below-these-values");
     }
 
     public String getAttributeValueColumnTitle() {
-        return I18N.get("ui.renderer.style.RangeColorThemingState.minimum-attribute-values");
+        return I18N.getInstance().get("ui.renderer.style.RangeColorThemingState.minimum-attribute-values");
     }
 
     private int getRangeCount() {
@@ -192,7 +192,7 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
         });
     }
 
-    private JButton reverseButton = new JButton(I18N.get("ui.renderer.style.RangeColorThemingState.reverse-colors"));
+    private JButton reverseButton = new JButton(I18N.getInstance().get("ui.renderer.style.RangeColorThemingState.reverse-colors"));
 
     private void addComboBoxItems() {
         int maxColorSchemeSize = -1;
@@ -217,7 +217,7 @@ public class RangeColorThemingState implements ColorThemingStylePanel.State {
 
     private JComboBox comboBox = new JComboBox(comboBoxModel);
 
-    private JLabel label = new JLabel(I18N.get("ui.renderer.style.RangeColorThemingState.range-count"));
+    private JLabel label = new JLabel(I18N.getInstance().get("ui.renderer.style.RangeColorThemingState.range-count"));
 
     public JComponent getPanel() {
         return panel;

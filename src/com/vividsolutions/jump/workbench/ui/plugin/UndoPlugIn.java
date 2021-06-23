@@ -60,8 +60,7 @@ public class UndoPlugIn extends AbstractPlugIn {
               .getLayerManager().getUndoableEditReceiver().getUndoManager();
           if (component != null)
             component.setToolTipText(undoManager.getUndoPresentationName());
-          return (!undoManager.canUndo()) ? I18N
-              .get("com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn.nothing-to-undo")
+          return (!undoManager.canUndo()) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.UndoPlugIn.nothing-to-undo")
               : null;
         }
       });

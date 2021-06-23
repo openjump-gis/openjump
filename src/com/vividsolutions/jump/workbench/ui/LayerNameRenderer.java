@@ -103,8 +103,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer<Object
 
     public static String PROGRESS_ICON_KEY = "PROGRESS_ICON";
 
-    public static String FEATURE_COUNT = I18N
-            .get("ui.LayerNameRenderer.feature-count");
+    public static String FEATURE_COUNT = I18N.getInstance().get("ui.LayerNameRenderer.feature-count");
 
     private final DefaultListCellRenderer defaultListCellRenderer = new DefaultListCellRenderer();
     private RenderingManager renderingManager;
@@ -123,26 +122,17 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer<Object
     private final ImageIcon sextante_rasterIcon2 = IconLoader.icon("mapSv2_13bw.png");
     private ImageIcon table_Icon = IconLoader.icon("Table.gif");
 
-    private final static String LAYER_NAME = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Name");
-    private final static String FILE_NAME = I18N.get("ui.MenuNames.FILE");
-    private final static String MODIFIED = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Modified");
-    private final static String SRS = I18N
-            .get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system");
+    private final static String LAYER_NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Name");
+    private final static String FILE_NAME = I18N.getInstance().get("ui.MenuNames.FILE");
+    private final static String MODIFIED = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Modified");
+    private final static String SRS = I18N.getInstance().get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system");
     private final static String URL = "Url";
-    private final static String NODATASOURCELAYER = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.nodatasourcelayer.message");
-    private final static String SOURCE_PATH = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path");
-    private final static String SEXTANTE = I18N
-            .get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image");
-    private final static String DATASOURCE_CLASS = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.DataSource-Class");
-    private final static String EXTENT = I18N
-            .get("ui.plugin.analysis.GeometryFunction.Envelope");
-    private final static String MULTIPLESOURCE = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-Sources");
+    private final static String NODATASOURCELAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.nodatasourcelayer.message");
+    private final static String SOURCE_PATH = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path");
+    private final static String SEXTANTE = I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image");
+    private final static String DATASOURCE_CLASS = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.DataSource-Class");
+    private final static String EXTENT = I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Envelope");
+    private final static String MULTIPLESOURCE = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-Sources");
 
     public LayerNameRenderer() {
         super();
@@ -750,7 +740,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer<Object
                	File image = new File(layer.getImageFileName());
                 String type = filetype(image);
                 String path = StringUtil.split(image.toString(), 350);
-                //String temporallayer =I18N.get("ui.GenericNames.Temporal-layer");
+                //String temporallayer =I18N.getInstance().get("ui.GenericNames.Temporal-layer");
                 tooltip = "<HTML><BODY><DIV style=\"width: 400px; text-justification: justify;\">";
                 tooltip += "<b>" + LAYER_NAME + ": </b>" + layer.getName()+ "<br>";
                 tooltip += "<b>" + DATASOURCE_CLASS + ": </b>" + ":  " + type + " (" + SEXTANTE + ")<br>";

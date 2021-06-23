@@ -109,15 +109,14 @@ public class MoveLayerablePlugIn extends AbstractPlugIn {
       }
   
       public String getName() {
-        return I18N.get("ui.plugin.MoveLayerablePlugIn.move-layer-up");
+        return I18N.getInstance().get("ui.plugin.MoveLayerablePlugIn.move-layer-up");
       }
   
       public MultiEnableCheck createEnableCheck(
           final WorkbenchContext workbenchContext) {
         return super.createEnableCheck(workbenchContext).add(new EnableCheck() {
           public String check(JComponent component) {
-            return (index(selectedLayerable(workbenchContext.getLayerableNamePanel())) == 0) ? I18N
-                .get("ui.plugin.MoveLayerablePlugIn.layer-is-already-at-the-top")
+            return (index(selectedLayerable(workbenchContext.getLayerableNamePanel())) == 0) ? I18N.getInstance().get("ui.plugin.MoveLayerablePlugIn.layer-is-already-at-the-top")
                 : null;
           }
         });
@@ -132,7 +131,7 @@ public class MoveLayerablePlugIn extends AbstractPlugIn {
       }
   
       public String getName() {
-        return I18N.get("ui.plugin.MoveLayerablePlugIn.move-layer-down");
+        return I18N.getInstance().get("ui.plugin.MoveLayerablePlugIn.move-layer-down");
       }
   
       public MultiEnableCheck createEnableCheck(
@@ -144,8 +143,7 @@ public class MoveLayerablePlugIn extends AbstractPlugIn {
                 .getLayerManager()
                 .getCategory(
                     selectedLayerable(workbenchContext.getLayerableNamePanel()))
-                .getLayerables().size() - 1)) ? I18N
-                .get("ui.plugin.MoveLayerablePlugIn.layer-is-already-at-the-bottom")
+                .getLayerables().size() - 1)) ? I18N.getInstance().get("ui.plugin.MoveLayerablePlugIn.layer-is-already-at-the-bottom")
                 : null;
           }
         });

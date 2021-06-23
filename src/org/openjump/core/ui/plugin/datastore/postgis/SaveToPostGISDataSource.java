@@ -292,8 +292,8 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     private boolean confirmOverwrite() {
         int opt = JOptionPane.showConfirmDialog(
                 getWorkbenchContext().getWorkbench().getFrame(),
-                I18N.get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.overwrite-dialog-message"),
-                I18N.get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.overwrite-dialog-title"),
+                I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.overwrite-dialog-message"),
+                I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.overwrite-dialog-title"),
                 JOptionPane.YES_NO_OPTION);
         return (opt != JOptionPane.NO_OPTION);
     }
@@ -301,8 +301,8 @@ public class SaveToPostGISDataSource extends DataStoreQueryDataSource {
     private boolean confirmWriteDespiteDifferentSchemas() {
         int opt = JOptionPane.showConfirmDialog(
                 getWorkbenchContext().getWorkbench().getFrame(),
-                I18N.get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.schema-mismatch-dialog-message"),
-                I18N.get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.schema-mismatch-dialog-title"),
+                I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.schema-mismatch-dialog-message"),
+                I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.postgis.SaveToPostGISDataSource.schema-mismatch-dialog-title"),
                 JOptionPane.YES_NO_OPTION);                        
         return (opt != JOptionPane.NO_OPTION);
     }

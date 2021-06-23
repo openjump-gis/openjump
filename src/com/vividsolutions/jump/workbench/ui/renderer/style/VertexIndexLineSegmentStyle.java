@@ -76,7 +76,7 @@ public class VertexIndexLineSegmentStyle extends LineStringVertexStyle
 
   public static class VertexIndex extends VertexIndexLineSegmentStyle {
     public VertexIndex() {
-      super(I18N.get("ui.renderer.style.VertexIndexLineSegmentStyle.Vertex-Index"), "VertexIndexDecorator.gif");
+      super(I18N.getInstance().get("ui.renderer.style.VertexIndexLineSegmentStyle.Vertex-Index"), "VertexIndexDecorator.gif");
     }
   }
 

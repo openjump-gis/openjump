@@ -81,28 +81,28 @@ import java.util.*;
  */
 public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     
-    private final static String PROCESSED_DATA          = I18N.get("jump.plugin.edit.NoderPlugIn.processed-data");
+    private final static String PROCESSED_DATA          = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.processed-data");
     private final static String SRC_LAYER               = GenericNames.SOURCE_LAYER;
     private final static String SELECTED_ONLY           = GenericNames.USE_SELECTED_FEATURES_ONLY;
     
-    private final static String PROCESSING              = I18N.get("jump.plugin.edit.NoderPlugIn.processing");
+    private final static String PROCESSING              = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.processing");
     
-    private final static String FIND_INTERSECTIONS      = I18N.get("jump.plugin.edit.NoderPlugIn.find-intersections");
-    private final static String FIND_DESCRIPTION        = I18N.get("jump.plugin.edit.NoderPlugIn.create-new-layer-with-missing-intersections");
-    private final static String LINE_OPTIONS            = I18N.get("jump.plugin.edit.NoderPlugIn.line-options");
-    private final static String POLYGON_OPTIONS         = I18N.get("jump.plugin.edit.NoderPlugIn.polygon-options");
+    private final static String FIND_INTERSECTIONS      = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.find-intersections");
+    private final static String FIND_DESCRIPTION        = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.create-new-layer-with-missing-intersections");
+    private final static String LINE_OPTIONS            = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.line-options");
+    private final static String POLYGON_OPTIONS         = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.polygon-options");
                                                         
-    private final static String ADVANCED_OPTIONS        = I18N.get("jump.plugin.edit.NoderPlugIn.advanced-options");
-    private final static String SNAP_ROUNDING           = I18N.get("jump.plugin.edit.NoderPlugIn.snap-rounding");
-    private final static String SNAP_ROUNDING_TOOLTIP   = I18N.get("jump.plugin.edit.NoderPlugIn.snap-rounding-makes-noding-algorithm-fully-robust");
-    private final static String SNAP_ROUNDING_DP        = I18N.get("jump.plugin.edit.NoderPlugIn.snap-rounding-decimal-places");
-    private final static String DECIMAL_DIGITS_TOOLTIP  = I18N.get("jump.plugin.edit.NoderPlugIn.number-of-decimal-digits");
+    private final static String ADVANCED_OPTIONS        = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.advanced-options");
+    private final static String SNAP_ROUNDING           = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.snap-rounding");
+    private final static String SNAP_ROUNDING_TOOLTIP   = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.snap-rounding-makes-noding-algorithm-fully-robust");
+    private final static String SNAP_ROUNDING_DP        = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.snap-rounding-decimal-places");
+    private final static String DECIMAL_DIGITS_TOOLTIP  = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.number-of-decimal-digits");
     
-    private final static String INTERPOLATE_Z           = I18N.get("jump.plugin.edit.NoderPlugIn.interpolate-z");
-    private final static String INTERPOLATED_Z_DP       = I18N.get("jump.plugin.edit.NoderPlugIn.interpolated-z-decimal-places");
+    private final static String INTERPOLATE_Z           = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.interpolate-z");
+    private final static String INTERPOLATED_Z_DP       = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.interpolated-z-decimal-places");
     
-    private final static String INTERSECTIONS           = I18N.get("jump.plugin.edit.NoderPlugIn.intersections");
-    private final static String NODED                   = I18N.get("jump.plugin.edit.NoderPlugIn.noded");
+    private final static String INTERSECTIONS           = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.intersections");
+    private final static String NODED                   = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.noded");
     
     /**
      * Enumeration to choose if elements are processed and if they are only
@@ -113,7 +113,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         DO_NOT_PROCESS, NODE, SPLIT;
         
         public String toString() {
-            return I18N.get("jump.plugin.edit.NoderPlugIn." + 
+            return I18N.getInstance().get("jump.plugin.edit.NoderPlugIn." + 
                             name().toLowerCase().replaceAll("_","-"));
         }
     }
@@ -176,7 +176,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         monitor.allowCancellationRequests();
-        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding-input"));
+        monitor.report(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.noding-input"));
         
         // Test if features are selected
         int selectedFeaturesNb = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
@@ -198,7 +198,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
 
         // Short-circuit if inputFeatures is empty
         if (inputAll.isEmpty()) {
-            context.getWorkbenchFrame().warnUser(I18N.get("jump.plugin.edit.NoderPlugIn.no-data-to-process"));
+            context.getWorkbenchFrame().warnUser(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.no-data-to-process"));
             return;
         }
         
@@ -211,7 +211,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             gf = (inputAll.iterator().next()).getGeometry().getFactory();
         }
         
-        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding"));
+        monitor.report(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.noding"));
         
         // Segments strings are extracted from the input dataset, keeping a
         // link to their parent feature
@@ -221,7 +221,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
         // If inputFeatures contains only 0-dim features, segmentString will be
         // empty and the process should stop !
         if (segmentStrings.isEmpty()) {
-            context.getWorkbenchFrame().warnUser(I18N.get("jump.plugin.edit.NoderPlugIn.no-data-to-process"));
+            context.getWorkbenchFrame().warnUser(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.no-data-to-process"));
             return;
         }
         
@@ -333,7 +333,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                 context.addLayer(
                     StandardCategoryNames.RESULT, layerName + " " + NODED, fc
                 );
-            } else context.getWorkbenchFrame().warnUser(I18N.get("jump.plugin.edit.NoderPlugIn.no-output-data"));
+            } else context.getWorkbenchFrame().warnUser(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.no-output-data"));
         }
         
         //if (monitor.isCancelRequested()) return;
@@ -460,7 +460,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
                                      Map<Feature,Layer> featureToLayer, 
                                      Map<Layer,Collection<Feature>> outputFeatures) {
         
-        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.split-lines"));
+        monitor.report(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.split-lines"));
         int count = 0, total = nodedSubstring.size();
         List<Feature> list = new ArrayList<>();
         for (Object line : nodedSubstring) {
@@ -510,7 +510,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
             Map<Feature,Layer> featureToLayer, 
             Map<Layer,Collection<Feature>> outputFeatures) {
     
-        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.split-polygons"));
+        monitor.report(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.split-polygons"));
         int count = 0 , total = geomStructureMap.size();
         List<Feature> list = new ArrayList<>();
         
@@ -668,7 +668,7 @@ public class NoderPlugIn extends AbstractThreadedUiPlugIn {
     private void setDialogValues(final MultiInputDialog dialog, PlugInContext context) {
         int n = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
         dialog.setSideBarImage(IconLoader.icon("Noder.png"));
-        dialog.setSideBarDescription(I18N.get("jump.plugin.edit.NoderPlugIn.sidebar-description"));
+        dialog.setSideBarDescription(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.sidebar-description"));
         dialog.addSubTitle(PROCESSED_DATA);
         final JComboBox addLayerComboBox = dialog.addLayerComboBox(SRC_LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
         // Hide the layer chooser component if some features are selected

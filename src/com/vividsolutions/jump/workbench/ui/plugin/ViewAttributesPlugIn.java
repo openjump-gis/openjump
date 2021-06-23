@@ -89,7 +89,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
 
   @Override
   public String getName() {
-    return I18N.get("ui.plugin.ViewAttributesPlugIn.view-edit-attributes");
+    return I18N.getInstance().get("ui.plugin.ViewAttributesPlugIn.view-edit-attributes");
   }
 
   @Override
@@ -218,7 +218,7 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
       Assert
           .isTrue(
               !(this instanceof CloneableInternalFrame),
-              I18N.get("ui.plugin.ViewAttributesPlugIn.there-can-be-no-other-views-on-the-InfoModels"));
+              I18N.getInstance().get("ui.plugin.ViewAttributesPlugIn.there-can-be-no-other-views-on-the-InfoModels"));
     }
 
     public OneLayerAttributeTab getOneLayerAttributeTab() {
@@ -236,12 +236,12 @@ public class ViewAttributesPlugIn extends AbstractPlugIn {
     private void updateTitle(Layer layer) {
       String editView;
       if (layer.isEditable()) {
-        editView = I18N.get("ui.plugin.ViewAttributesPlugIn.edit");
+        editView = I18N.getInstance().get("ui.plugin.ViewAttributesPlugIn.edit");
       } else {
-        editView = I18N.get("ui.plugin.ViewAttributesPlugIn.view");
+        editView = I18N.getInstance().get("ui.plugin.ViewAttributesPlugIn.view");
       }
 
-      setTitle(" " + I18N.get("ui.plugin.ViewAttributesPlugIn.attributes")
+      setTitle(" " + I18N.getInstance().get("ui.plugin.ViewAttributesPlugIn.attributes")
           + ": " + getTaskFrame().getTask().getName() + ":" + layer.getName());
     }
 

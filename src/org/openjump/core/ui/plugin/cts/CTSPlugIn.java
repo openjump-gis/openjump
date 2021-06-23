@@ -42,24 +42,24 @@ import java.util.List;
  */
 public class CTSPlugIn extends ThreadedBasePlugIn implements Iconified, EnableChecked {
 
-    private final String REGISTRY           = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.registry");
-    private final String SOURCE_LABEL       = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.srcCRS");
-    private final String TARGET_LABEL       = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.tgtCRS");
-    private final String OP_NOT_FOUND       = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.op-not-found");
-    private final String HETEROGEN_SRC      = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.heterogeneous-sources");
-    private final String TRANSFORM          = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.transform");
-    private final String REPLACE            = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.replace");
-    private final String SOURCE_DATUM       = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.srcDatum");
-    private final String TARGET_DATUM       = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.tgtDatum");
-    private final String SOURCE_SPHEROID    = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.srcSpheroid");
-    private final String TARGET_SPHEROID    = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.tgtSpheroid");
-    private final String SOURCE_TOWGS84     = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.srcToWgs84");
-    private final String TARGET_TOWGS84     = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.tgtToWgs84");
-    private final String TRANSFORMED_LAYERS = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.transformed-layers");
-    private final String INVALID_SRC_CRS    = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.invalid-src-crs");
-    private final String INVALID_TGT_CRS    = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.invalid-tgt-crs");
-    private final String SOURCE_PROJECTION  = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.srcProjection");
-    private final String TARGET_PROJECTION  = I18N.get("org.openjump.core.ui.plugin.cts.CTSPlugIn.tgtProjection");
+    private final String REGISTRY           = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.registry");
+    private final String SOURCE_LABEL       = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.srcCRS");
+    private final String TARGET_LABEL       = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.tgtCRS");
+    private final String OP_NOT_FOUND       = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.op-not-found");
+    private final String HETEROGEN_SRC      = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.heterogeneous-sources");
+    private final String TRANSFORM          = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.transform");
+    private final String REPLACE            = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.replace");
+    private final String SOURCE_DATUM       = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.srcDatum");
+    private final String TARGET_DATUM       = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.tgtDatum");
+    private final String SOURCE_SPHEROID    = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.srcSpheroid");
+    private final String TARGET_SPHEROID    = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.tgtSpheroid");
+    private final String SOURCE_TOWGS84     = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.srcToWgs84");
+    private final String TARGET_TOWGS84     = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.tgtToWgs84");
+    private final String TRANSFORMED_LAYERS = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.transformed-layers");
+    private final String INVALID_SRC_CRS    = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.invalid-src-crs");
+    private final String INVALID_TGT_CRS    = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.invalid-tgt-crs");
+    private final String SOURCE_PROJECTION  = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.srcProjection");
+    private final String TARGET_PROJECTION  = I18N.getInstance().get("org.openjump.core.ui.plugin.cts.CTSPlugIn.tgtProjection");
 
     private static final String EPSG = "EPSG";
     private static final String IGNF = "IGNF";

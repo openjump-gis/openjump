@@ -67,15 +67,15 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     
     private static final String KEY = SaveLayersWithoutDataSourcePlugIn.class.getName();
     
-    private static final String LAYERS_WITHOUT_DATASOURCE = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.layers-without-datasource-management");
+    private static final String LAYERS_WITHOUT_DATASOURCE = I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.layers-without-datasource-management");
 
-    private static final String DONOTSAVE = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.do-not-save");
-    private static final String SAVEASJML = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.save-as-jml");
-    private static final String SAVEASSHP = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.save-as-shp");
+    private static final String DONOTSAVE = I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.do-not-save");
+    private static final String SAVEASJML = I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.save-as-jml");
+    private static final String SAVEASSHP = I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.save-as-shp");
 
-    private static final String FILECHOOSER = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.directory-chooser");
+    private static final String FILECHOOSER = I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.directory-chooser");
 
-    private static final String WARN_USER = I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.every-layer-has-a-datasource");
+    private static final String WARN_USER = I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.every-layer-has-a-datasource");
     
     public static final ImageIcon ICON = IconLoader.icon("disks_dots.png");
     private JFileChooser fileChooser;
@@ -84,7 +84,7 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     }
     
     public String getName() {
-        return I18N.get(KEY);
+        return I18N.getInstance().get(KEY);
     }
     
     public void initialize(PlugInContext context) throws Exception {
@@ -118,10 +118,10 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
                          java.util.Arrays.toString(collection.toArray(new Object[0])).replaceAll(",","<br>") +
                          "</html>";
         
-        dialog.addSubTitle(I18N.getMessage("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.layers-without-datasource", 
+        dialog.addSubTitle(I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.layers-without-datasource", 
             collection.size()))
             .setToolTipText(tooltip);
-        dialog.addLabel(I18N.get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.hover-the-label-to-see-the-list"))
+        dialog.addLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.hover-the-label-to-see-the-list"))
             .setToolTipText(tooltip);
         dialog.addRadioButton(DONOTSAVE, "ACTION", true, "");
         dialog.addRadioButton(SAVEASJML, "ACTION", false, "");
@@ -216,8 +216,7 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
       enableCheck.add(new EnableCheck() {
         public String check(javax.swing.JComponent component) {
           return layersWithoutDataSource(wc.getTask()).size() > 0 ? null
-              : I18N
-                  .get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.a-layer-without-datasource-must-exist");
+              : I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveLayersWithoutDataSourcePlugIn.a-layer-without-datasource-must-exist");
         }
       });
       return enableCheck;

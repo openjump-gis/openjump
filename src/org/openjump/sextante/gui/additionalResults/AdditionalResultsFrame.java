@@ -77,36 +77,21 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
 
     // Main components of a AdditionalResultsFrame
 
-    private final String name = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Result-viewer");
-    private final String sMenu = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Menu");
-    private final String sRemove = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Remove");
-    private final String sRename = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Rename");
-    private final String sSave = I18N
-            .get("deejump.plugin.SaveLegendPlugIn.Save");
-    private final String sWriteName = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Write-name");
-    private final String sChangeName = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Change-name");
-    private final String sSaved = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
-    private final String SCouldNotSave = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
-    private final String sProcessing = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Processing");
-    private final String sResult = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Result");
-    private final String SAVE = I18N
-            .get("deejump.plugin.SaveLegendPlugIn.Save");
-    private final String CLOSE = I18N
-            .get("ui.plugin.imagery.ImageLayerManagerDialog.Close");
-    public final static String HEIGHT = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values");
-    public final static String WIDTH = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.2d-distance");
+    private final String name = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Result-viewer");
+    private final String sMenu = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Menu");
+    private final String sRemove = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Remove");
+    private final String sRename = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Rename");
+    private final String sSave = I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save");
+    private final String sWriteName = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Write-name");
+    private final String sChangeName = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Change-name");
+    private final String sSaved = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    private final String SCouldNotSave = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
+    private final String sProcessing = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Processing");
+    private final String sResult = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Result");
+    private final String SAVE = I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save");
+    private final String CLOSE = I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Close");
+    public final static String HEIGHT = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values");
+    public final static String WIDTH = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.2d-distance");
 
     private static final long serialVersionUID = 1L;
     private JSplitPane jSplitPane;
@@ -497,7 +482,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
                     final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
                     if (oad.getDescription()
                             .contains(
-                                    I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot"))) {
+                                    I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot"))) {
                         fc.setFileFilter(filter2);
                     }
                     fc.setFileFilter(filter);
@@ -612,7 +597,7 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
     }
 
     protected void notsaved() {
-        JOptionPane.showMessageDialog(null, SCouldNotSave, I18N.get(name),
+        JOptionPane.showMessageDialog(null, SCouldNotSave, I18N.getInstance().get(name),
                 JOptionPane.WARNING_MESSAGE);
     }
 

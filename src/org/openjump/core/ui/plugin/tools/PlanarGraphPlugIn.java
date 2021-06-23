@@ -55,18 +55,18 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
  */
 public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
     
-    private final static String EDGE = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Edge");
-    private final static String FACE = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Face");
-    private final static String NODE = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Node");
-    private final static String CATEGORY = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Graph");
-    private final static String MAPPING  = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Mapping");
+    private final static String EDGE = I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Edge");
+    private final static String FACE = I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Face");
+    private final static String NODE = I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Node");
+    private final static String CATEGORY = I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Graph");
+    private final static String MAPPING  = I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Mapping");
     
-    private final static String TITLE               = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Topologic-Analysis");
-    private final static String SELECT_LAYER        = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Select-layer-to-analyse");
-    private final static String CALCULATE_NODES     = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Calculate-nodes");
-    private final static String CALCULATE_FACES     = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Calculate-faces");
-    private final static String CALCULATE_RELATIONS = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Calculate-the-relations-arcs-nodes-and-/or-arcs-faces");
-    private final static String KEEP_ATTRIBUTES     = I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Keep-attributes");
+    private final static String TITLE               = I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Topologic-Analysis");
+    private final static String SELECT_LAYER        = I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Select-layer-to-analyse");
+    private final static String CALCULATE_NODES     = I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Calculate-nodes");
+    private final static String CALCULATE_FACES     = I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Calculate-faces");
+    private final static String CALCULATE_RELATIONS = I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Calculate-the-relations-arcs-nodes-and-/or-arcs-faces");
+    private final static String KEEP_ATTRIBUTES     = I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Keep-attributes");
     
     private final static Integer MINUS_ONE          = -1;
     
@@ -112,35 +112,35 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
         attributesb = mid.getBoolean(KEEP_ATTRIBUTES); 
         
         // Get linear elements from all geometries in the layer
-        monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Searching-for-linear-elements"));
+        monitor.report(I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Searching-for-linear-elements"));
         List list = getLines(fcSource);
-        monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Number-of-found-elements") + ": " + list.size());
+        monitor.report(I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Number-of-found-elements") + ": " + list.size());
         
         // Union the lines (unioning is the most expensive operation)
-        monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Generate-layer-of-arcs"));
+        monitor.report(I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Generate-layer-of-arcs"));
         FeatureCollection fcEdge = createEdgeLayer(
             layer.getFeatureCollectionWrapper(), nodeb, faceb, relb);
         if (fcEdge.size() > 0) {
             context.getLayerManager().addLayer(CATEGORY, layerName + "_" + EDGE, fcEdge);
         } else {context.getWorkbenchFrame().warnUser("No edge found");}
-        monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Arc-layer-generated"));
+        monitor.report(I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Arc-layer-generated"));
         
         // Create the node Layer
-        monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Create-nodes"));
+        monitor.report(I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Create-nodes"));
         if (nodeb) {
             FeatureCollection fcNode = createNodeLayer(fcEdge, relb);
             if (fcNode.size() > 0) {
                 context.getLayerManager().addLayer(CATEGORY, layerName + "_" + NODE, fcNode);
             } else {context.getWorkbenchFrame().warnUser("No node found");}
         }
-        monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Layer-with-nodes-generated"));
+        monitor.report(I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Layer-with-nodes-generated"));
         
         // Create face Layer from edges with Polygonizer
-        monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Create-faces"));
+        monitor.report(I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Create-faces"));
         //if (faceb) {
         //    fcFace = createFaceLayer(fcEdge, context, relb);
         //}
-        monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Layer-of-faces-generated"));
+        monitor.report(I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Layer-of-faces-generated"));
     
         //Erwan aout 2005
         // Here, one process the result dataset to get attributes from source layer
@@ -157,7 +157,7 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
                 // Use mapping to get the attributes
                 mapping = new AttributeMapping(new FeatureSchema(), new FeatureSchema());
                 List<Feature> aFeatures = new ArrayList<>();
-                monitor.report(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Transfer-of-attributes"));
+                monitor.report(I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Transfer-of-attributes"));
                 if (FeatureCollectionUtil.getFeatureCollectionDimension(fcSource)==2){
                     mapping = new AttributeMapping(fcSource.getFeatureSchema(), fcFace.getFeatureSchema());
                     aFeatures = fcFace.getFeatures();
@@ -167,7 +167,7 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
                     aFeatures = fcEdge.getFeatures();
                 }
                 else {context.getWorkbenchFrame().warnUser(
-                    I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Cannot-transfer-attributes"));
+                    I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Cannot-transfer-attributes"));
                 }
                         
                 FeatureDataset fcRecup = new FeatureDataset(mapping.createSchema("GEOMETRY"));
@@ -220,7 +220,7 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
     }
 
     public String getName(){
-    	return I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Planar-Graph") + "...";	
+    	return I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.Planar-Graph") + "...";	
     }
     
     private void initDialog(PlugInContext context) {
@@ -234,7 +234,7 @@ public class PlanarGraphPlugIn extends ThreadedBasePlugIn {
             src_layer = context.getLayerManager().getLayer(layerName);
         }
         mid.addLayerComboBox(SELECT_LAYER, src_layer, context.getLayerManager());
-        mid.addLabel(I18N.get("org.openjump.sigle.plugin.PlanarGraphPlugIn.The-layer-of-arcs-is-always-generated"));
+        mid.addLabel(I18N.getInstance().get("org.openjump.sigle.plugin.PlanarGraphPlugIn.The-layer-of-arcs-is-always-generated"));
         mid.addCheckBox(CALCULATE_NODES, nodeb);
         mid.addCheckBox(CALCULATE_FACES, faceb);
         mid.addCheckBox(CALCULATE_RELATIONS, relb);

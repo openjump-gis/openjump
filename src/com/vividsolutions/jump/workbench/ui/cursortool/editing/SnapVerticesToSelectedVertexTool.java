@@ -53,8 +53,7 @@ public class SnapVerticesToSelectedVertexTool extends QuasimodeTool {
     private static final Cursor SHIFT_NOT_DOWN_CURSOR =
         AbstractCursorTool.createCursor(
             IconLoader.icon("SnapVerticesTogetherCursor4.gif").getImage());
-    private static final String NAME = I18N
-        .get("com.vividsolutions.jump.workbench.ui.cursortool.editing.SnapVerticesToSelectedVertexTool");
+    private static final String NAME = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.cursortool.editing.SnapVerticesToSelectedVertexTool");
 
     public String getName() {
         return NAME;
@@ -69,8 +68,7 @@ public class SnapVerticesToSelectedVertexTool extends QuasimodeTool {
         public void mouseClicked(final MouseEvent e) {
           if (!check(new EnableCheck() {
             public String check(JComponent component) {
-              return (!e.isShiftDown()) ? I18N
-                  .get("ui.cursortool.editing.SnapVerticesToSelectedVertexTool.shift-click-the-vertex-to-snap-to")
+              return (!e.isShiftDown()) ? I18N.getInstance().get("ui.cursortool.editing.SnapVerticesToSelectedVertexTool.shift-click-the-vertex-to-snap-to")
                   : null;
             }
           })) {

@@ -90,7 +90,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
      *            The workbench context.
      */
     public OpenProjectWizard(final WorkbenchContext workbenchContext) {
-        super(I18N.get(KEY), OpenProjectPlugIn.ICON,
+        super(I18N.getInstance().get(KEY), OpenProjectPlugIn.ICON,
                 SelectProjectFilesPanel.KEY);
         this.workbenchContext = workbenchContext;
     }
@@ -191,7 +191,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             Logger.error(file.getPath() + " can not be loaded", e);
             workbenchFrame.warnUser("Missing class: " + e.getCause());
         } catch (Exception cause) {
-            Exception e = new Exception(I18N.getMessage(KEY
+            Exception e = new Exception(I18N.getInstance().get(KEY
                     + ".could-not-open-project-file-{0}-with-error-{1}",
                     file, cause.getLocalizedMessage()), cause);
             monitor.report(e);
@@ -213,7 +213,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                 context.getWorkbench()
                         .getFrame()
                         .warnUser(
-                                I18N.getMessage(KEY + ".datasource-not-found",
+                                I18N.getInstance().get(KEY + ".datasource-not-found",
                                         layer.getName()));
                 // context.getWorkbench().getFrame().warnUser("DataSource not found for "
                 // + layer.getName());
@@ -229,7 +229,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                             .showConfirmDialog(
                                     workbenchContext.getWorkbench().getFrame(),
                                     "<html>"
-                                            + I18N.getMessage(KEY
+                                            + I18N.getInstance().get(KEY
                                                     + ".opening-datasource-{0}-failed-with-error",
                                                     layer.getName())
                                             + "<br>"
@@ -238,7 +238,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                                                             80).replaceAll(
                                                             "\n", "<br>")
                                             + "<br>"
-                                            + I18N.get(KEY
+                                            + I18N.getInstance().get(KEY
                                                     + ".click-yes-to-continue-or-no-to-remove-layer")
                                             + "</html>", "OpenJUMP",
                                     JOptionPane.YES_NO_OPTION,
@@ -272,9 +272,8 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             oldProjectFile = new File(oldProjectPath);
             if (!oldProjectFile.equals(newTask.getProjectFile())) {
                 JCheckBox checkbox = new JCheckBox(
-                        I18N.get("ui.plugin.OpenProjectPlugIn.Only-for-missing-resources"));
-                String message = I18N
-                        .get("ui.plugin.OpenProjectPlugIn."
+                        I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.Only-for-missing-resources"));
+                String message = I18N.getInstance().get("ui.plugin.OpenProjectPlugIn."
                                 + "The-project-has-been-moved-Do-you-want-to-update-paths-below-the-project-folder");
                 Object[] params = { message, checkbox };
                 int answer = JOptionPane.showConfirmDialog(workbenchFrame,
@@ -300,8 +299,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
 
                 for (Layerable layerable : layerables) {
                     if (monitor != null) {
-                        monitor.report(I18N
-                                .get("ui.plugin.OpenProjectPlugIn.loading")
+                        monitor.report(I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.loading")
                                 + " " + layerable.getName());
                     }
                     layerable.setLayerManager(newLayerManager);
@@ -333,9 +331,9 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                                 int response = JOptionPane
                                         .showConfirmDialog(
                                                 workbenchFrame,
-                                                I18N.get("ui.plugin.OpenProjectPlugIn.At-least-one-file-in-the-task-could-not-be-found")
+                                                I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.At-least-one-file-in-the-task-could-not-be-found")
                                                         + "\n"
-                                                        + I18N.get("ui.plugin.OpenProjectPlugIn.Do-you-want-to-locate-it-and-continue-loading-the-task"),
+                                                        + I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.Do-you-want-to-locate-it-and-continue-loading-the-task"),
                                                 "OpenJUMP",
                                                 JOptionPane.YES_NO_OPTION);
 
@@ -449,12 +447,12 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         Raster raster = ril.getRasterData(null);
         MetaInformationHandler mih = new MetaInformationHandler(ril);
 
-        mih.addMetaInformation(I18N.get("file-name"), "");
-        mih.addMetaInformation(I18N.get("resolution"), raster.getWidth()
+        mih.addMetaInformation(I18N.getInstance().get("file-name"), "");
+        mih.addMetaInformation(I18N.getInstance().get("resolution"), raster.getWidth()
                 + " (px) x " + raster.getHeight() + " (px)");
-        mih.addMetaInformation(I18N.get("real-world-width"), ril
+        mih.addMetaInformation(I18N.getInstance().get("real-world-width"), ril
                 .getWholeImageEnvelope().getWidth());
-        mih.addMetaInformation(I18N.get("real-world-height"), ril
+        mih.addMetaInformation(I18N.getInstance().get("real-world-height"), ril
                 .getWholeImageEnvelope().getHeight());
         mih.addMetaInformation("srid", ril.getSrsInfo().getCode());
         if (ril.getSrsInfo().getCode().equals("0")) {

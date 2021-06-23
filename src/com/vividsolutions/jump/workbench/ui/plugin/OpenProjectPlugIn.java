@@ -77,7 +77,7 @@ public class OpenProjectPlugIn extends ThreadedBasePlugIn {
     }
 
 	public String getName() {
-		return I18N.get("ui.plugin.OpenProjectPlugIn.open-project");
+		return I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.open-project");
 	}
 
     public void initialize(PlugInContext context) throws Exception {
@@ -92,7 +92,7 @@ public class OpenProjectPlugIn extends ThreadedBasePlugIn {
       //we sometimes get a WindowsFileChooserUI NullPointerException [Jon
       // Aquino 12/10/2003]
       fileChooser = GUIUtil.createJFileChooserWithExistenceChecking();
-      fileChooser.setDialogTitle(I18N.get("ui.plugin.OpenProjectPlugIn.open-project"));
+      fileChooser.setDialogTitle(I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.open-project"));
       fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
       fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
       fileChooser.setMultiSelectionEnabled(false);
@@ -204,7 +204,7 @@ public class OpenProjectPlugIn extends ThreadedBasePlugIn {
             for (Iterator j = layerables.iterator(); j.hasNext();) {
                 Layerable layerable = (Layerable) j.next();
                 if ( monitor != null ){
-                    monitor.report(I18N.get("ui.plugin.OpenProjectPlugIn.loading") + " " + layerable.getName());
+                    monitor.report(I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.loading") + " " + layerable.getName());
                 }
                 layerable.setLayerManager(newLayerManager);
 
@@ -221,8 +221,8 @@ public class OpenProjectPlugIn extends ThreadedBasePlugIn {
                 			displayDialog = false;
                 			
 	        				int response = JOptionPane.showConfirmDialog(context.getWorkbenchFrame(), 
-	        						I18N.get("ui.plugin.OpenProjectPlugIn.At-least-one-file-in-the-task-could-not-be-found") + "\n" +
-	        						I18N.get("ui.plugin.OpenProjectPlugIn.Do-you-want-to-locate-it-and-continue-loading-the-task"), 
+	        						I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.At-least-one-file-in-the-task-could-not-be-found") + "\n" +
+	        						I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.Do-you-want-to-locate-it-and-continue-loading-the-task"), 
 	        						"JUMP", JOptionPane.YES_NO_OPTION);
 	
 	    	                if (response != JOptionPane.YES_OPTION)

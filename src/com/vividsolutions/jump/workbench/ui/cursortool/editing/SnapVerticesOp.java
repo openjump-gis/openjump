@@ -69,7 +69,7 @@ public class SnapVerticesOp {
         SnapVerticesOp.class.getName() + " - INSERT_VERTICES_IF_NECESSARY";
 
     private final static String NO_TARGET_VERTICES_IN_FENCE_WARNING =
-    	I18N.get("ui.cursortool.editing.SnapVerticesOp.fence-contains-no-vertices-of-the-selected-feature-part-or-linestring");
+    	I18N.getInstance().get("ui.cursortool.editing.SnapVerticesOp.fence-contains-no-vertices-of-the-selected-feature-part-or-linestring");
 
     public SnapVerticesOp() {}
 
@@ -123,7 +123,7 @@ public class SnapVerticesOp {
             CollectionUtil.concatenate(editableLayerToFeaturesInFenceMap.values());
 
         if (editableFeatures.isEmpty()) {
-            panel.getContext().warnUser(I18N.get("ui.cursortool.editing.SnapVerticesOp.fence-contains-no-features-from-editable-layers"));
+            panel.getContext().warnUser(I18N.getInstance().get("ui.cursortool.editing.SnapVerticesOp.fence-contains-no-features-from-editable-layers"));
             return false;
         }
 
@@ -148,7 +148,7 @@ public class SnapVerticesOp {
             EditTransaction transaction =
                 new EditTransaction(
                     featuresInFence,
-                    I18N.get("ui.cursortool.editing.SnapVerticesOp.snap-vertices-together"),
+                    I18N.getInstance().get("ui.cursortool.editing.SnapVerticesOp.snap-vertices-together"),
                     editableLayer,
                     rollingBackInvalidEdits,
                     false,

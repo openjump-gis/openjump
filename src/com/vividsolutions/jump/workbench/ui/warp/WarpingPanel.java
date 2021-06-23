@@ -384,7 +384,7 @@ public class WarpingPanel extends JPanel {
                         warpingVectorLayerFinder().getLayerName(),
                         toolbox.getContext(),
                         new UndoableCommand(
-                                I18N.get("ui.warp.WarpingPanel.generate-warping-vectors-from-incremental-warping-vectors")) {
+                                I18N.getInstance().get("ui.warp.WarpingPanel.generate-warping-vectors-from-incremental-warping-vectors")) {
                             @Override
                             public void execute() {
                                 try {
@@ -423,8 +423,7 @@ public class WarpingPanel extends JPanel {
                 .startReceiving();
         try {
             UndoableCommand command = ShowTriangulationPlugIn.addUndo(
-                    new UndoableCommand(I18N
-                            .get("ui.warp.WarpingPanel.hide-triangulation")) {
+                    new UndoableCommand(I18N.getInstance().get("ui.warp.WarpingPanel.hide-triangulation")) {
                         @Override
                         public void execute() {
                             if (toolbox
@@ -498,7 +497,7 @@ public class WarpingPanel extends JPanel {
     }
 
     private String outputLayerName(String sourceLayerName) {
-        return I18N.get("ui.warp.WarpingPanel.warped") + " " + sourceLayerName;
+        return I18N.getInstance().get("ui.warp.WarpingPanel.warped") + " " + sourceLayerName;
     }
 
     private void setWarpingFlag() {
@@ -643,8 +642,7 @@ public class WarpingPanel extends JPanel {
                                 .getFeatureCollectionWrapper().getFeatures()
                                 .get(0);
                         if (f.getGeometry() instanceof Point) {
-                            String sWarning = I18N
-                                    .get("ui.warp.WarpingPanel.initerror-for-one-point");
+                            String sWarning = I18N.getInstance().get("ui.warp.WarpingPanel.initerror-for-one-point");
                             toolbox.getContext().getWorkbench().getFrame()
                                     .warnUser(sWarning);
                         }
@@ -860,15 +858,13 @@ public class WarpingPanel extends JPanel {
         layerListCellRenderer.setProgressIconLabelVisible(false);
         sourceLayerComboBox.setRenderer(layerListCellRenderer);
         warpButton.setIcon(IconLoader.icon("GoalFlag.gif"));
-        layerLabel.setText(I18N.get("ui.warp.WarpingPanel.source-layer"));
+        layerLabel.setText(I18N.getInstance().get("ui.warp.WarpingPanel.source-layer"));
         transformLabel.setText(TransformationType);
         this.setLayout(gridBagLayout1);
         warpIncrementallyCheckBox
-                .setToolTipText(I18N
-                        .get("ui.warp.WarpingPanel.warps-relative-to-the-output-layer-as-soon-as-a-vector-is-drawn"));
+                .setToolTipText(I18N.getInstance().get("ui.warp.WarpingPanel.warps-relative-to-the-output-layer-as-soon-as-a-vector-is-drawn"));
         warpIncrementallyCheckBox.setSelected(false);
-        warpIncrementallyCheckBox.setText(I18N
-                .get("ui.warp.WarpingPanel.warp-incrementally"));
+        warpIncrementallyCheckBox.setText(I18N.getInstance().get("ui.warp.WarpingPanel.warp-incrementally"));
         warpIncrementallyCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -885,18 +881,16 @@ public class WarpingPanel extends JPanel {
         buttonPanel.setLayout(gridLayout1);
         gridLayout1.setColumns(1);
         gridLayout1.setRows(2);
-        warpButton.setText(I18N.get("ui.warp.WarpingPanel.warp"));
+        warpButton.setText(I18N.getInstance().get("ui.warp.WarpingPanel.warp"));
         warpButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 warpButton_actionPerformed(e);
             }
         });
-        clearOutputButton.setText(I18N
-                .get("ui.warp.WarpingPanel.clear-all-vectors"));
+        clearOutputButton.setText(I18N.getInstance().get("ui.warp.WarpingPanel.clear-all-vectors"));
         clearOutputButton
-                .setToolTipText(I18N
-                        .get("ui.warp.WarpingPanel.deletes-the-warp-output-layer-and-the-vectors"));
+                .setToolTipText(I18N.getInstance().get("ui.warp.WarpingPanel.deletes-the-warp-output-layer-and-the-vectors"));
         clearOutputButton
                 .addActionListener(new java.awt.event.ActionListener() {
                     @Override
@@ -905,16 +899,12 @@ public class WarpingPanel extends JPanel {
                     }
                 });
         autoHideCheckBox
-                .setToolTipText(I18N
-                        .get("ui.warp.WarpingPanel.auto-hides-the-source-layer-and-the-warping-vectors"));
+                .setToolTipText(I18N.getInstance().get("ui.warp.WarpingPanel.auto-hides-the-source-layer-and-the-warping-vectors"));
         autoHideCheckBox.setSelected(true);
-        autoHideCheckBox.setText(I18N
-                .get("ui.warp.WarpingPanel.auto-hide-layers"));
+        autoHideCheckBox.setText(I18N.getInstance().get("ui.warp.WarpingPanel.auto-hide-layers"));
         triangulationCheckBox
-                .setToolTipText(I18N
-                        .get("ui.warp.WarpingPanel.shows-the-initial-and-final-triangulation-layers"));
-        triangulationCheckBox.setText(I18N
-                .get("ui.warp.WarpingPanel.display-triangulation"));
+                .setToolTipText(I18N.getInstance().get("ui.warp.WarpingPanel.shows-the-initial-and-final-triangulation-layers"));
+        triangulationCheckBox.setText(I18N.getInstance().get("ui.warp.WarpingPanel.display-triangulation"));
         triangulationCheckBox
                 .addActionListener(new java.awt.event.ActionListener() {
                     @Override
@@ -923,10 +913,8 @@ public class WarpingPanel extends JPanel {
                     }
                 });
         copyLayerButton
-                .setToolTipText(I18N
-                        .get("ui.warp.WarpingPanel.copies-the-feature-in-the-selected-layer-to-the-warping-vectors-layer"));
-        copyLayerButton.setText(I18N
-                .get("ui.warp.WarpingPanel.copy-layer-to-vectors"));
+                .setToolTipText(I18N.getInstance().get("ui.warp.WarpingPanel.copies-the-feature-in-the-selected-layer-to-the-warping-vectors-layer"));
+        copyLayerButton.setText(I18N.getInstance().get("ui.warp.WarpingPanel.copy-layer-to-vectors"));
         copyLayerButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1245,19 +1233,13 @@ public class WarpingPanel extends JPanel {
 
     // [Giuseppe Aruta 2017-11-10] New strings and componets to add for Affine
     // and Projective transformations
-    private static String TransformationType = I18N
-            .get("ui.warp.WarpingPanel.transformation") + ":";
-    private static String Affine = I18N.get("ui.warp.WarpingPanel.affine");
-    private static String Perspective = I18N
-            .get("ui.warp.WarpingPanel.perspective");
-    private static String Bilinear = I18N
-            .get("ui.warp.WarpingPanel.bilinear_interpolated");
-    private static String AffineTooltip = I18N
-            .get("ui.warp.WarpingPanel.warning_1");
-    private static String PerspectiveTooltip = I18N
-            .get("You must draw exactly 4 vectors to apply a perspective transformation");
-    private static String BilinearTooltip = I18N
-            .get("ui.warp.WarpingPanel.bilinear_interpolated");
+    private static String TransformationType = I18N.getInstance().get("ui.warp.WarpingPanel.transformation") + ":";
+    private static String Affine = I18N.getInstance().get("ui.warp.WarpingPanel.affine");
+    private static String Perspective = I18N.getInstance().get("ui.warp.WarpingPanel.perspective");
+    private static String Bilinear = I18N.getInstance().get("ui.warp.WarpingPanel.bilinear_interpolated");
+    private static String AffineTooltip = I18N.getInstance().get("ui.warp.WarpingPanel.warning_1");
+    private static String PerspectiveTooltip = I18N.getInstance().get("You must draw exactly 4 vectors to apply a perspective transformation");
+    private static String BilinearTooltip = I18N.getInstance().get("ui.warp.WarpingPanel.bilinear_interpolated");
     public static String[] transformations = { Affine, Perspective, Bilinear };
     public static String[] transformationsTooltips = { AffineTooltip,
             PerspectiveTooltip, BilinearTooltip };
@@ -1631,7 +1613,7 @@ public class WarpingPanel extends JPanel {
                         .getLayerViewPanel()
                         .getContext()
                         .warnUser(
-                                I18N.get("ui.warp.AffineTransformPlugIn.some-geometries-are-not-valid"));
+                                I18N.getInstance().get("ui.warp.AffineTransformPlugIn.some-geometries-are-not-valid"));
 
                 return;
             }

@@ -52,8 +52,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 public class LoadStylePlugIn extends ThreadedBasePlugIn {
 
     public final static ImageIcon ICON = IconLoader.icon("style_in.png");
-    private final String name = I18N
-            .get("org.openjump.core.ui.plugin.style.StylePlugIns.import-style");
+    private final String name = I18N.getInstance().get("org.openjump.core.ui.plugin.style.StylePlugIns.import-style");
 
     @Override
     public String getName() {
@@ -117,8 +116,7 @@ public class LoadStylePlugIn extends ThreadedBasePlugIn {
 
     private void monitor(TaskMonitor monitor, File file) {
         monitor.allowCancellationRequests();
-        monitor.report(I18N
-                .get("com.vividsolutions.jump.workbench.plugin.PlugInManager.loading")
+        monitor.report(I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.PlugInManager.loading")
                 + ": " + file.getAbsolutePath());
     }
 

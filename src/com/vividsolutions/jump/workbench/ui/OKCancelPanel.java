@@ -39,7 +39,7 @@ import com.vividsolutions.jump.I18N;
 public class OKCancelPanel extends ButtonPanel {
 
     public OKCancelPanel() {
-        super(new String[] {I18N.get("ui.OKCancelPanel.ok"), I18N.get("ui.OKCancelPanel.cancel")});
+        super(new String[] {I18N.getInstance().get("ui.OKCancelPanel.ok"), I18N.getInstance().get("ui.OKCancelPanel.cancel")});
     }
     
     public OKCancelPanel(String[] buttonNames) {
@@ -47,35 +47,35 @@ public class OKCancelPanel extends ButtonPanel {
     }
 
     public boolean wasOKPressed() {
-        return getSelectedButton() == getButton(I18N.get("ui.OKCancelPanel.ok"));
+        return getSelectedButton() == getButton(I18N.getInstance().get("ui.OKCancelPanel.ok"));
     }
 
     public void setOKPressed(boolean okPressed) {
       if (okPressed)
-        setSelectedButton(getButton(I18N.get("ui.OKCancelPanel.ok")));
+        setSelectedButton(getButton(I18N.getInstance().get("ui.OKCancelPanel.ok")));
       else
         setSelectedButton(null);
     }
 
     public void setOKVisible(boolean okVisible) {
-      getButton(I18N.get("ui.OKCancelPanel.ok")).setVisible(okVisible);
+      getButton(I18N.getInstance().get("ui.OKCancelPanel.ok")).setVisible(okVisible);
     }
 
     public void setOKEnabled(boolean okEnabled) {
-        getButton(I18N.get("ui.OKCancelPanel.ok")).setEnabled(okEnabled);
+        getButton(I18N.getInstance().get("ui.OKCancelPanel.ok")).setEnabled(okEnabled);
     }
 
     public void setCancelVisible(boolean cancelVisible) {
-        if (cancelVisible && !innerButtonPanel.isAncestorOf(getButton( I18N.get("ui.OKCancelPanel.cancel")))) {
-            innerButtonPanel.add(getButton( I18N.get("ui.OKCancelPanel.cancel")), null);
+        if (cancelVisible && !innerButtonPanel.isAncestorOf(getButton( I18N.getInstance().get("ui.OKCancelPanel.cancel")))) {
+            innerButtonPanel.add(getButton( I18N.getInstance().get("ui.OKCancelPanel.cancel")), null);
         }
 
-        if (!cancelVisible && innerButtonPanel.isAncestorOf(getButton( I18N.get("ui.OKCancelPanel.cancel")))) {
-            innerButtonPanel.remove(getButton( I18N.get("ui.OKCancelPanel.cancel")));
+        if (!cancelVisible && innerButtonPanel.isAncestorOf(getButton( I18N.getInstance().get("ui.OKCancelPanel.cancel")))) {
+            innerButtonPanel.remove(getButton( I18N.getInstance().get("ui.OKCancelPanel.cancel")));
         }
     }
 
     public void setCancelEnabled(boolean enabled) {
-      getButton(I18N.get("ui.OKCancelPanel.cancel")).setEnabled(enabled);
+      getButton(I18N.getInstance().get("ui.OKCancelPanel.cancel")).setEnabled(enabled);
     }
 }

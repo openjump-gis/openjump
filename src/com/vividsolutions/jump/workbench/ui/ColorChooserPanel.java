@@ -74,7 +74,7 @@ public class ColorChooserPanel extends JPanel {
         try {
             jbInit();
             colorPanel.setLineColor(null);
-            changeButton.setToolTipText(I18N.get("ui.ColorChooserPanel.browse"));
+            changeButton.setToolTipText(I18N.getInstance().get("ui.ColorChooserPanel.browse"));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -110,7 +110,7 @@ public class ColorChooserPanel extends JPanel {
     }
 
     void changeButton_actionPerformed(ActionEvent e) {
-        Color newColor = JColorChooser.showDialog(SwingUtilities.windowForComponent(this), I18N.get("ui.ColorChooserPanel.choose-color"), color);
+        Color newColor = JColorChooser.showDialog(SwingUtilities.windowForComponent(this), I18N.getInstance().get("ui.ColorChooserPanel.choose-color"), color);
 
         if (newColor == null) {
             return;

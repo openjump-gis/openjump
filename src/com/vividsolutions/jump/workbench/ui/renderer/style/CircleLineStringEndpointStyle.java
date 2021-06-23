@@ -67,13 +67,13 @@ public abstract class CircleLineStringEndpointStyle extends LineStringEndpointSt
 
     public static class Start extends CircleLineStringEndpointStyle {
         public Start() {
-            super(I18N.get("ui.renderer.style.CircleLineStringEndpointStyle.Start-Circle"), true, "CircleStart.gif");
+            super(I18N.getInstance().get("ui.renderer.style.CircleLineStringEndpointStyle.Start-Circle"), true, "CircleStart.gif");
         }
     }
 
     public static class End extends CircleLineStringEndpointStyle {
         public End() {
-            super(I18N.get("ui.renderer.style.CircleLineStringEndpointStyle.End-Circle"), false, "CircleEnd.gif");
+            super(I18N.getInstance().get("ui.renderer.style.CircleLineStringEndpointStyle.End-Circle"), false, "CircleEnd.gif");
         }
     }
 }

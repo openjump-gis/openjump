@@ -99,81 +99,45 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
     private String proj_file_path;
     private String proj_coordinate;
 
-    private final static String PLUGIN_NAME = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn");
-    private final static String LAYER_PROPERTIES = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Properties");
-    private static final String INFO = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Info");
-    private final static String PROPORTIONAL_TRANSPARENCY_ADJUSTER = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Proportional-Transparency-Adjustment");
-    private final static String TRANSPARENCY = I18N
-            .get("ui.renderer.style.ColorThemingPanel.transparency");
-    private final static String FILE = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.namefile");
-    private final static String FILE_NAME = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path");
-    private final static String FILE_TYPE = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.type");
-    private final static String FILE_DIMENSION = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension");
-    private final static String RASTER = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.raster");
-    private final static String RASTER_BANDS = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.bands_number");
+    private final static String PLUGIN_NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn");
+    private final static String LAYER_PROPERTIES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Properties");
+    private static final String INFO = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Info");
+    private final static String PROPORTIONAL_TRANSPARENCY_ADJUSTER = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Proportional-Transparency-Adjustment");
+    private final static String TRANSPARENCY = I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.transparency");
+    private final static String FILE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.namefile");
+    private final static String FILE_NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path");
+    private final static String FILE_TYPE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.type");
+    private final static String FILE_DIMENSION = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension");
+    private final static String RASTER = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.raster");
+    private final static String RASTER_BANDS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.bands_number");
     private final static String RASTER_DPI = "DPI";
-    private final static String RASTER_DATATYPE = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.datatype");
-    private final static String RASTER_COLORDEPTH = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.colordepth");
-    private final static String RASTER_NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
-    private final static String EXTENT = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.extent");
-    private final static String EXTENT_XMIN = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.xmin");
-    private final static String EXTENT_YMIN = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.ymin");
-    private final static String EXTENT_XMAX = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.xmax");
-    private final static String EXTENT_YMAX = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.ymax");
-    private final static String EXTENT_SIZE = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_raster");
-    private final static String EXTENT_CELL_SIZE = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_cell");
-    private final static String EXTENT_CELL_NUM = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cellnum");
-    private final static String EXTENT_CELL_NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.nodatacell");
-    private final static String EXTENT_CELL_VALID = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.validcells");
-    private final static String EXTENT_AREA = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.area");
-    private final static String BAND = I18N
-            .get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
-    private static final String LAYER = I18N
-            .get("com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn.name");
-    private static final String NAME = I18N
-            .get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Name");
-    private static final String SEXTANTE = I18N
-            .get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image");
-    private static final String NOT_SAVED = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not-Saved");
-    private static final String CANCEL = I18N.get("ui.OKCancelPanel.cancel");
-    private static final String OK = I18N.get("ui.OKCancelPanel.ok");
-    private static final String COORDINATE_SYSTEM = I18N
-            .get("datasource.FileDataSourceQueryChooser.coordinate-system-of-file");
-    private static final String R_MAX = I18N
-            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum");
-    private static final String R_MIN = I18N
-            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum");
-    private static final String R_MEAN = I18N
-            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.mean");
-    private static final String R_STD = I18N
-            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev");
-    private static final String PROJECTION = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.projection");
+    private final static String RASTER_DATATYPE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.datatype");
+    private final static String RASTER_COLORDEPTH = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.colordepth");
+    private final static String RASTER_NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
+    private final static String EXTENT = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.extent");
+    private final static String EXTENT_XMIN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.xmin");
+    private final static String EXTENT_YMIN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.ymin");
+    private final static String EXTENT_XMAX = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.xmax");
+    private final static String EXTENT_YMAX = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.ymax");
+    private final static String EXTENT_SIZE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_raster");
+    private final static String EXTENT_CELL_SIZE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_cell");
+    private final static String EXTENT_CELL_NUM = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cellnum");
+    private final static String EXTENT_CELL_NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.nodatacell");
+    private final static String EXTENT_CELL_VALID = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.validcells");
+    private final static String EXTENT_AREA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.area");
+    private final static String BAND = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.CreatePolygonGridFromSelectedImageLayerPlugIn.band");
+    private static final String LAYER = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn.name");
+    private static final String NAME = I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Name");
+    private static final String SEXTANTE = I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.Sextante-Raster-Image");
+    private static final String NOT_SAVED = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not-Saved");
+    private static final String CANCEL = I18N.getInstance().get("ui.OKCancelPanel.cancel");
+    private static final String OK = I18N.getInstance().get("ui.OKCancelPanel.ok");
+    private static final String COORDINATE_SYSTEM = I18N.getInstance().get("datasource.FileDataSourceQueryChooser.coordinate-system-of-file");
+    private static final String R_MAX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum");
+    private static final String R_MIN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum");
+    private static final String R_MEAN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.mean");
+    private static final String R_STD = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev");
+    private static final String PROJECTION = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.projection");
 
     private Envelope extent;
 

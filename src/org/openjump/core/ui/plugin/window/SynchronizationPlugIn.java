@@ -75,13 +75,13 @@ public class SynchronizationPlugIn extends AbstractUiPlugIn {
         super.initialize(context);
 
         final JRadioButtonMenuItem desynchronizeMI = new JRadioButtonMenuItem(
-                I18N.get("org.openjump.core.ui.plugin.window.SyncronizationPlugIn.Desynchronize"));
+                I18N.getInstance().get("org.openjump.core.ui.plugin.window.SyncronizationPlugIn.Desynchronize"));
         final JRadioButtonMenuItem synchronizePanMI = new JRadioButtonMenuItem(
-                I18N.get("org.openjump.core.ui.plugin.window.SyncronizationPlugIn.Synchronize-pan-only"));
+                I18N.getInstance().get("org.openjump.core.ui.plugin.window.SyncronizationPlugIn.Synchronize-pan-only"));
         final JRadioButtonMenuItem synchronizeZoomMI = new JRadioButtonMenuItem(
-                I18N.get("org.openjump.core.ui.plugin.window.SyncronizationPlugIn.Synchronize-zoom-only"));
+                I18N.getInstance().get("org.openjump.core.ui.plugin.window.SyncronizationPlugIn.Synchronize-zoom-only"));
         final JRadioButtonMenuItem synchronizeAllMI = new JRadioButtonMenuItem(
-                I18N.get("org.openjump.core.ui.plugin.window.SyncronizationPlugIn.Synchronize-pan-and-zoom"));
+                I18N.getInstance().get("org.openjump.core.ui.plugin.window.SyncronizationPlugIn.Synchronize-pan-and-zoom"));
 
         ButtonGroup bgroup = new ButtonGroup();
         bgroup.add(desynchronizeMI);
@@ -135,8 +135,7 @@ public class SynchronizationPlugIn extends AbstractUiPlugIn {
 
     @Override
     public String getName() {
-        return I18N
-                .get("org.openjump.core.ui.plugin.window.SyncronizationPlugIn.Synchronization");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.window.SyncronizationPlugIn.Synchronization");
     }
 
     @Override

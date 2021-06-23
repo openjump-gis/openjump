@@ -79,7 +79,7 @@ public class GradientLabelLegendComponent extends JComponent {
         // final JLabel jLabel_NoDataTitle = new JLabel(
         // bundle.getString("LegendDialog.NoDataValue.text"));
         final JLabel jLabel_NoDataTitle = new JLabel(
-                I18N.get("org.openjump.core.ui.plugin.raster.nodata.nodata"));
+                I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.nodata"));
         final JLabel jLabel_NoDataColor = new JLabel();
         final JLabel jLabel_NoDataValue = new JLabel(
                 Double.toString(noDataValue));

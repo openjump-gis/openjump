@@ -32,9 +32,6 @@
 
 package com.vividsolutions.jump.workbench.plugin;
 
-import static com.vividsolutions.jump.I18N.get;
-import static com.vividsolutions.jump.I18N.getMessage;
-
 import java.util.Collection;
 
 import javax.swing.JComponent;
@@ -44,6 +41,8 @@ import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import org.locationtech.jts.util.Assert;
+
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImagesLayer;
@@ -115,7 +114,7 @@ public class EnableCheckFactory {
             @Override
             public String check(JComponent component) {
                 return (!(workbenchContext.getWorkbench().getFrame()
-                        .getActiveInternalFrame() instanceof TaskFrame)) ? get("com.vividsolutions.jump.workbench.plugin.A-Task-Window-must-be-active")
+                        .getActiveInternalFrame() instanceof TaskFrame)) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.A-Task-Window-must-be-active")
                         : null;
             }
         };
@@ -126,7 +125,7 @@ public class EnableCheckFactory {
             @Override
             public String check(JComponent component) {
                 return (!(workbenchContext.getWorkbench().getFrame()
-                        .getActiveInternalFrame() instanceof SelectionManagerProxy)) ? get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-selection-manager-must-be-active")
+                        .getActiveInternalFrame() instanceof SelectionManagerProxy)) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-selection-manager-must-be-active")
                         : null;
             }
         };
@@ -137,7 +136,7 @@ public class EnableCheckFactory {
             @Override
             public String check(JComponent component) {
                 return (!(workbenchContext.getWorkbench().getFrame()
-                        .getActiveInternalFrame() instanceof LayerManagerProxy)) ? get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-layer-manager-must-be-active")
+                        .getActiveInternalFrame() instanceof LayerManagerProxy)) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-layer-manager-must-be-active")
                         : null;
             }
         };
@@ -148,7 +147,7 @@ public class EnableCheckFactory {
             @Override
             public String check(JComponent component) {
                 return (!(workbenchContext.getWorkbench().getFrame()
-                        .getActiveInternalFrame() instanceof TaskFrameProxy)) ? get("com.vividsolutions.jump.workbench.plugin.A-window-with-an-associated-task-frame-must-be-active")
+                        .getActiveInternalFrame() instanceof TaskFrameProxy)) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.A-window-with-an-associated-task-frame-must-be-active")
                         : null;
             }
         };
@@ -159,7 +158,7 @@ public class EnableCheckFactory {
             @Override
             public String check(JComponent component) {
                 return (!(workbenchContext.getWorkbench().getFrame()
-                        .getActiveInternalFrame() instanceof LayerNamePanelProxy)) ? get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-layer-name-panel-must-be-active")
+                        .getActiveInternalFrame() instanceof LayerNamePanelProxy)) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-layer-name-panel-must-be-active")
                         : null;
             }
         };
@@ -170,7 +169,7 @@ public class EnableCheckFactory {
             @Override
             public String check(JComponent component) {
                 return (!(workbenchContext.getWorkbench().getFrame()
-                        .getActiveInternalFrame() instanceof LayerViewPanelProxy)) ? get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-layer-view-panel-must-be-active")
+                        .getActiveInternalFrame() instanceof LayerViewPanelProxy)) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.A-window-with-a-layer-view-panel-must-be-active")
                         : null;
             }
         };
@@ -185,7 +184,7 @@ public class EnableCheckFactory {
                         .getSelectionManager().getFeatureSelection()
                         .getLayersWithSelectedItems();
 
-                return (layersWithSelectedFeatures.size() > 1) ? get("com.vividsolutions.jump.workbench.plugin.Only-one-layer-may-have-selected-features")
+                return (layersWithSelectedFeatures.size() > 1) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Only-one-layer-may-have-selected-features")
                         : null;
             }
         };
@@ -198,7 +197,7 @@ public class EnableCheckFactory {
                 final Collection layersWithSelectedItems = ((SelectionManagerProxy) workbenchContext
                         .getWorkbench().getFrame().getActiveInternalFrame())
                         .getSelectionManager().getLayersWithSelectedItems();
-                return (layersWithSelectedItems.size() > 1) ? get("com.vividsolutions.jump.workbench.plugin.Only-one-layer-may-have-selected-items")
+                return (layersWithSelectedItems.size() > 1) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Only-one-layer-may-have-selected-items")
                         : null;
             }
         };
@@ -212,7 +211,7 @@ public class EnableCheckFactory {
                         .getWorkbench().getFrame().getActiveInternalFrame())
                         .getSelectionManager().getLayersWithSelectedItems()) {
                     if (!layer.isEditable()) {
-                        return getMessage(
+                        return I18N.getInstance().get(
                                 "com.vividsolutions.jump.workbench.plugin.Selected-items-layers-must-be-editable",
                                 layer.getName());
                     }
@@ -229,9 +228,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-category-must-be-selected");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-category-must-be-selected");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.Exactly-n-categories-must-be-selected",
                             n);
                 }
@@ -255,9 +254,9 @@ public class EnableCheckFactory {
 
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.Exactly-n-layers-must-be-selected",
                             n);
                 }
@@ -277,9 +276,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-category-must-be-selected");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-one-category-must-be-selected");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.At-least-n-categories-must-be-selected",
                             n);
                 }
@@ -298,9 +297,9 @@ public class EnableCheckFactory {
                         .getLayerableNamePanel();
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-selected");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-selected");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.At-least-n-layers-must-be-selected",
                             n);
                 }
@@ -321,9 +320,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-editable");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-be-editable");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.At-least-n-layers-must-be-editable",
                             n);
                 }
@@ -343,7 +342,7 @@ public class EnableCheckFactory {
                         return null;
                     }
                 }
-                return get("plugin.EnableCheckFactory.at-least-one-visible-layer-must-be-editable");
+                return I18N.getInstance().get("plugin.EnableCheckFactory.at-least-one-visible-layer-must-be-editable");
             }
         };
     }
@@ -352,7 +351,7 @@ public class EnableCheckFactory {
         return new EnableCheck() {
             @Override
             public String check(JComponent component) {
-                final String msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-selected-layer-must-be-editable");
+                final String msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-selected-layer-must-be-editable");
                 final Layer[] layers = workbenchContext.getLayerableNamePanel()
                         .getSelectedLayers();
                 int countSelectedEditable = 0;
@@ -374,9 +373,9 @@ public class EnableCheckFactory {
                         .getLayerManager();
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layerables-must-exist");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-one-layerables-must-exist");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.At-least-n-layerables-must-exist",
                             n);
                 }
@@ -394,9 +393,9 @@ public class EnableCheckFactory {
                         .getLayerManager();
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-exist");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-one-layer-must-exist");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.At-least-n-layers-must-exist",
                             n);
                 }
@@ -412,9 +411,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-most-one-layer-must-exist");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-most-one-layer-must-exist");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.At-most-n-layers-must-exist",
                             n);
                 }
@@ -430,9 +429,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-vector-must-be-drawn");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-vector-must-be-drawn");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.Exactly-n-vectors-must-be-drawn",
                             n);
                 }
@@ -449,9 +448,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-vector-must-be-drawn");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-one-vector-must-be-drawn");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.At-least-n-vectors-must-be-drawn",
                             n);
                 }
@@ -466,9 +465,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-feature-must-be-selected");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-one-feature-must-be-selected");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.At-least-n-features-must-be-selected",
                             n);
                 }
@@ -510,9 +509,9 @@ public class EnableCheckFactory {
                 String retVal;
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-item-must-be-selected");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-one-item-must-be-selected");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.At-least-n-items-must-be-selected",
                             n);
                 }
@@ -532,9 +531,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-feature-must-be-selected");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-feature-must-be-selected");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.Exactly-n-features-must-be-selected",
                             n);
                 }
@@ -552,9 +551,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-item-must-be-selected");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-item-must-be-selected");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.Exactly-n-items-must-be-selected",
                             n);
                 }
@@ -573,9 +572,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-have-selected-items");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-have-selected-items");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.Exactly-n-layers-must-have-selected-items",
                             n);
                 }
@@ -594,9 +593,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.Exactly-one-feature-must-have-selected-items");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-feature-must-have-selected-items");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.Exactly-n-features-must-have-selected-items",
                             n);
                 }
@@ -615,7 +614,7 @@ public class EnableCheckFactory {
                 for (final Layer layer : workbenchContext
                         .getLayerableNamePanel().getSelectedLayers()) {
                     if (!layer.isEditable()) {
-                        return getMessage(
+                        return I18N.getInstance().get(
                                 "com.vividsolutions.jump.workbench.plugin.Selected-layers-must-be-editable",
                                 layer.getName());
                     }
@@ -633,7 +632,7 @@ public class EnableCheckFactory {
                         .getLayerViewPanel();
                 return (layerViewPanel == null || // [UT] 20.10.2005 not quite
                                                   // the error mesg
-                null == layerViewPanel.getFence()) ? get("com.vividsolutions.jump.workbench.plugin.A-fence-must-be-drawn")
+                null == layerViewPanel.getFence()) ? I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.A-fence-must-be-drawn")
                         : null;
             }
         };
@@ -644,7 +643,7 @@ public class EnableCheckFactory {
         return new EnableCheck() {
             @Override
             public String check(JComponent component) {
-                return ((vectorCount() > max) || (vectorCount() < min)) ? getMessage(
+                return ((vectorCount() > max) || (vectorCount() < min)) ? I18N.getInstance().get(
                         "com.vividsolutions.jump.workbench.plugin.Between-and-vectors-must-be-drawn",
                         min, max)
                         : null;
@@ -664,9 +663,9 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 String msg;
                 if (n == 1) {
-                    msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-feature-must-have-selected-items");
+                    msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-one-feature-must-have-selected-items");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "com.vividsolutions.jump.workbench.plugin.At-least-n-features-must-have-selected-items",
                             n);
                 }
@@ -697,19 +696,19 @@ public class EnableCheckFactory {
             public String check(JComponent component) {
                 final StringBuilder types = new StringBuilder("[");
                 for (final Class clz : classes) {
-                    final String clzName = get(clz.getCanonicalName());
+                    final String clzName = I18N.getInstance().get(clz.getCanonicalName());
                     types.append(types.length() > 1 ? ", " + clzName : clzName);
                 }
                 types.append("]");
                 final StringBuilder exclusion = new StringBuilder("[");
                 for (final Class clz : excluded) {
-                    final String clzName = get(clz.getCanonicalName());
+                    final String clzName = I18N.getInstance().get(clz.getCanonicalName());
                     exclusion.append(exclusion.length() > 1 ? ", " + clzName
                             : clzName);
                 }
                 exclusion.append("]");
 
-                final String msg = getMessage(
+                final String msg = I18N.getInstance().get(
                         "plugin.EnableCheckFactory.selected-layers-must-be-of-type",
                         types, exclusion);
 
@@ -800,9 +799,9 @@ public class EnableCheckFactory {
 
                 String msg;
                 if (n == 1) {
-                    msg = get("plugin.EnableCheckFactory.exactly-1-band-must-exist-on-selected-raster-layer");
+                    msg = I18N.getInstance().get("plugin.EnableCheckFactory.exactly-1-band-must-exist-on-selected-raster-layer");
                 } else {
-                    msg = getMessage(
+                    msg = I18N.getInstance().get(
                             "plugin.EnableCheckFactory.exactly-{0}-bands-must-exist-on-selected-raster-layer",
                             n);
                 }
@@ -832,10 +831,10 @@ public class EnableCheckFactory {
           // or not. tell the user
           String msg;
           if (n == 1) {
-            msg = get("com.vividsolutions.jump.workbench.plugin.At-least-one-layerables-must-exist") + ": "
+            msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-one-layerables-must-exist") + ": "
                 + type.getSimpleName();
           } else {
-            msg = getMessage("com.vividsolutions.jump.workbench.plugin.At-least-n-layerables-must-exist",
+            msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.At-least-n-layerables-must-exist",
                 new Object[] { n }) + ": " + type.getSimpleName();
           }
           return msg;

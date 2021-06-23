@@ -93,14 +93,14 @@ public class MapToolTipPlugIn extends AbstractPlugIn
     }
     
     PlugInContext gContext;
-	final static String sErrorSeeOutputWindow =I18N.get("org.openjump.core.ui.plugin.view.MapToolTipPlugIn.Error-See-Output-Window");
-	final static String sPoint =I18N.get("org.openjump.core.ui.plugin.view.MapToolTipPlugIn.Point");
-	final static String sSide =I18N.get("org.openjump.core.ui.plugin.view.MapToolTipPlugIn.Side");	
-	final static String sLength =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.length");
-	final static String sAngle =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.angle");
-	final static String sDegrees =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
-	final static String sNoData =I18N.get("org.openjump.core.ui.plugin.view.MapToolTipPlugIn.No-Data");
-	final static String sArea =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.area");
+	final static String sErrorSeeOutputWindow =I18N.getInstance().get("org.openjump.core.ui.plugin.view.MapToolTipPlugIn.Error-See-Output-Window");
+	final static String sPoint =I18N.getInstance().get("org.openjump.core.ui.plugin.view.MapToolTipPlugIn.Point");
+	final static String sSide =I18N.getInstance().get("org.openjump.core.ui.plugin.view.MapToolTipPlugIn.Side");	
+	final static String sLength =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.length");
+	final static String sAngle =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.angle");
+	final static String sDegrees =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
+	final static String sNoData =I18N.getInstance().get("org.openjump.core.ui.plugin.view.MapToolTipPlugIn.No-Data");
+	final static String sArea =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.area");
 	
 	final static String pictureSuffix = "_p";
 	

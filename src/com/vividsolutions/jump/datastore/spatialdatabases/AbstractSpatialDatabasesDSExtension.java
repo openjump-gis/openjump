@@ -87,8 +87,8 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
    * the default version is 'svn revision (build date)'
    */
   public String getVersion() {
-    return "rev." + I18N.get("JUMPWorkbench.version.revision") + "("
-        + I18N.get("JUMPWorkbench.version.buildDate") + ")";
+    return "rev." + I18N.getInstance().get("JUMPWorkbench.version.revision") + "("
+        + I18N.getInstance().get("JUMPWorkbench.version.buildDate") + ")";
   }
 
   /**
@@ -120,11 +120,11 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
       }
     }
     if (!msg.isEmpty())
-      msg = I18N.getMessage(I18NPREFIX + ".missing-dependency-jars", msg);
+      msg = I18N.getInstance().get(I18NPREFIX + ".missing-dependency-jars", msg);
 
     if (!others.isEmpty())
       msg += (!msg.isEmpty() ? " " : "")
-          + I18N.getMessage(I18NPREFIX + ".there-were-errors", others);
+          + I18N.getInstance().get(I18NPREFIX + ".there-were-errors", others);
 
     return errorMessage = msg;
   }
@@ -167,7 +167,7 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
             dsDriver);
       }
     } else {
-      Logger.warn(I18N.getMessage(I18NPREFIX + ".datastore-disabled",
+      Logger.warn(I18N.getInstance().get(I18NPREFIX + ".datastore-disabled",
           getName(), isAvailable()));
     }
   }

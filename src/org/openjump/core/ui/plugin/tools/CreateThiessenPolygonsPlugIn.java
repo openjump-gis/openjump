@@ -113,16 +113,16 @@ public class CreateThiessenPolygonsPlugIn extends AbstractPlugIn implements Thre
     
     public void initialize(PlugInContext context) throws Exception {
     		
-    		this.CLAYER = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.select-point-layer");
-       		this.BLAYER = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.background-layer-to-estimate-the-thiessen-polygon-size");
-      		this.sUseBGD = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.use-background-layer");    		 
-       		this.sName = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn");
-    	    this.sideBarText = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Creates-a-Delaunay-triangulation-and-returns-the-Voronoi-regions");
-    	    this.msgCreateDG = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.create-triangulation");
-    	    this.msgCreatePolys = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.create-polygons-from-voronoi-edges");
-    	    this.msgNoPoint =I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.no-point-geometry");
-    	    this.msgAddAttributesPolys = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.add-attributes-from-points");
-    	    this.msgMultiplePointsInPoly = I18N.get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Error-found-multiple-points-in-polygon");
+    		this.CLAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.select-point-layer");
+       		this.BLAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.background-layer-to-estimate-the-thiessen-polygon-size");
+      		this.sUseBGD = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.use-background-layer");    		 
+       		this.sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn");
+    	    this.sideBarText = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Creates-a-Delaunay-triangulation-and-returns-the-Voronoi-regions");
+    	    this.msgCreateDG = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.create-triangulation");
+    	    this.msgCreatePolys = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.create-polygons-from-voronoi-edges");
+    	    this.msgNoPoint =I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.no-point-geometry");
+    	    this.msgAddAttributesPolys = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.add-attributes-from-points");
+    	    this.msgMultiplePointsInPoly = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.CreateThiessenPolygonsPlugIn.Error-found-multiple-points-in-polygon");
     	    	
     		this.pcontext = context;
     	    

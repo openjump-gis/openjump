@@ -66,8 +66,7 @@ import de.fho.jump.pirol.utilities.attributes.AttributeInfo;
  */
 public class StatisticOverViewPlugIn extends AbstractPlugIn {
 
-    private static final String sStatisticsOverview = I18N
-            .get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Attribute-Statistics-Overview");
+    private static final String sStatisticsOverview = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Attribute-Statistics-Overview");
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
@@ -106,7 +105,7 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn {
         if (features.length == 0) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
             return false;
         }
         // final StatisticOverViewTableModel tableModel = new StatisticOverViewTableModel(
@@ -180,21 +179,14 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn {
 
         saveAttrIndex = 0;
 
-        dtm.addColumn(I18N
-                .get("org.openjump.core.ui.plugin.queries.SimpleQuery.attribute"));
-        dtm.addColumn(I18N
-                .get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-type"));
+        dtm.addColumn(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.attribute"));
+        dtm.addColumn(I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Attribute-type"));
 
-        dtm.addColumn(I18N
-                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum"));
-        dtm.addColumn(I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewTableModel.mean-mode"));
-        dtm.addColumn(I18N
-                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum"));
-        dtm.addColumn(I18N
-                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev"));
-        dtm.addColumn(I18N
-                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum"));
+        dtm.addColumn(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum"));
+        dtm.addColumn(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewTableModel.mean-mode"));
+        dtm.addColumn(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum"));
+        dtm.addColumn(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev"));
+        dtm.addColumn(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum"));
 
         for (final AttributeInfo attrInfo : attrInfos) {
             if (attrInfo.getAttributeType().equals(AttributeType.GEOMETRY)) {

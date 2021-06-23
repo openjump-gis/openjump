@@ -78,7 +78,7 @@ public class PasteSchemaPlugIn extends AbstractPlugIn {
                 .getWorkbench().getFrame().getLayerNamePopupMenu();
 
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, this,
-                new String[] { I18N.get("ui.MenuNames.SCHEMA") }, getName(),
+                new String[] { I18N.getInstance().get("ui.MenuNames.SCHEMA") }, getName(),
                 false, getIcon(),
                 CopySchemaPlugIn.createEnableCheck(workbenchContext));
     }

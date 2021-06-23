@@ -64,57 +64,36 @@ public class TaskPropertiesPlugIn extends AbstractPlugIn {
                 new String[] { MenuNames.EDIT });
     }
 
-    public static String NAME = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.name");
-    public static String PROJ_METADATA = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.proj-metadata");
-    public static String PROJ_STATUS = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.proj-status");
-    public static String NOT_SAVED = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.not-saved");
-    public static String NOT_SET = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.not-set");
-    public static String LAST_MODIFICATION = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.last-modification");
-    public static String PROJ_DESCRIPTION = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.srs-description");
-    public static String SEARCH_SRID = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.search-srid");
-    public static String NUMBER_LAYERS = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.number-of-layers");
-    public static String EDIT_METADATA = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.edit-metadata");
-    public static String TOOLTIP = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.tooltip");
-    public static String UNIT = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.unit");
+    public static String NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.name");
+    public static String PROJ_METADATA = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.proj-metadata");
+    public static String PROJ_STATUS = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.proj-status");
+    public static String NOT_SAVED = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.not-saved");
+    public static String NOT_SET = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.not-set");
+    public static String LAST_MODIFICATION = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.last-modification");
+    public static String PROJ_DESCRIPTION = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.srs-description");
+    public static String SEARCH_SRID = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.search-srid");
+    public static String NUMBER_LAYERS = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.number-of-layers");
+    public static String EDIT_METADATA = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.edit-metadata");
+    public static String TOOLTIP = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.tooltip");
+    public static String UNIT = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.unit");
     public static String MODIFIED_LAYERS = "(*)"
-            + I18N.get("ui.GenericNames.MODIFIED-LAYERS");
+            + I18N.getInstance().get("ui.GenericNames.MODIFIED-LAYERS");
     public static String TEMPORARY_LAYERS = "(**)"
-            + I18N.get("ui.GenericNames.TEMPORARY-LAYERS");
+            + I18N.getInstance().get("ui.GenericNames.TEMPORARY-LAYERS");
 
     private boolean editInfo = false;
-    public static String FILE = I18N.get("ui.MenuNames.FILE");
-    public static String INFO = I18N.get("ui.AboutDialog.info");
+    public static String FILE = I18N.getInstance().get("ui.MenuNames.FILE");
+    public static String INFO = I18N.getInstance().get("ui.AboutDialog.info");
 
-    public static String XMIN = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmin");
-    public static String YMIN = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymin");
-    public static String XMAX = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmax");
-    public static String YMAX = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymax");
-    public static String EXTENT = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.extent");
-    public static String SOURCE_PATH = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path");
-    public static String DATASOURCE_CLASS = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.DataSource-Class");
-    private static String LAYER_NAME = I18N
-            .get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Name");
-    public static String SRS = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.SRS");
+    public static String XMIN = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmin");
+    public static String YMIN = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymin");
+    public static String XMAX = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmax");
+    public static String YMAX = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymax");
+    public static String EXTENT = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.extent");
+    public static String SOURCE_PATH = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path");
+    public static String DATASOURCE_CLASS = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.DataSource-Class");
+    private static String LAYER_NAME = I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionDescriptorPanel.Name");
+    public static String SRS = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.SRS");
 
     JLabel fileT = new JLabel(FILE);
     JLabel sridLabel = new JLabel(SEARCH_SRID);

@@ -73,31 +73,19 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
 
     // Language codes: 12
 
-    private static String INVERSE = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.Inverse");
-    private static String REVERSE_TOOLTIP = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.tooltips");
-    private static String CHANGE = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.change");
-    private static String PLUGINNAME = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.name");
-    private static String FROM = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.from");
-    private static String TO = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.to");
-    private String SUBMENU = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.menu");
-    private static String OUTPUT_FILE = I18N
-            .get("driver.DriverManager.file-to-save") + ": ";
+    private static String INVERSE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.Inverse");
+    private static String REVERSE_TOOLTIP = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.tooltips");
+    private static String CHANGE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.change");
+    private static String PLUGINNAME = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.name");
+    private static String FROM = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.from");
+    private static String TO = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.to");
+    private String SUBMENU = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.menu");
+    private static String OUTPUT_FILE = I18N.getInstance().get("driver.DriverManager.file-to-save") + ": ";
 
-    private static String STATISTICS = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
-    private static String NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.nodata");
-    private static String MIN = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.min");
-    private static String MAX = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.max");
+    private static String STATISTICS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
+    private static String NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.nodata");
+    private static String MIN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.min");
+    private static String MAX = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.max");
 
     private static ImageIcon icon16 = IconLoader
             .icon("fugue/folder-horizontal-open_16.png");
@@ -134,7 +122,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
     @Override
     public void run(TaskMonitor monitor, PlugInContext context)
             throws Exception {
-        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.processing"));
+        monitor.report(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.processing"));
         reportNothingToUndoYet(context);
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
@@ -349,7 +337,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()
@@ -427,7 +415,7 @@ public class ChangeRangeValuesToNoDataPlugIn extends ThreadedBasePlugIn {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()

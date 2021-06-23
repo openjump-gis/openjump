@@ -107,8 +107,7 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
 
     @Override
     public String getName() {
-        return I18N
-                .get("com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn");
+        return I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn");
     }
 
     @Override
@@ -139,7 +138,7 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
             JOptionPane
                     .showMessageDialog(
                             null,
-                            I18N.get("com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn.message1"),
+                            I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn.message1"),
                             null, JOptionPane.INFORMATION_MESSAGE);
             return false;
             // WE exclude WMS layer
@@ -147,7 +146,7 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
             JOptionPane
                     .showMessageDialog(
                             null,
-                            I18N.get("com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn.message2"),
+                            I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn.message2"),
                             null, JOptionPane.INFORMATION_MESSAGE);
             return false;
 
@@ -166,7 +165,7 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
                 .getSelectedLayer(0).getFeatureCollectionWrapper());
         context.getLayerManager().addLayer(
                 StandardCategoryNames.WORKING,
-                I18N.get("ui.warp.AffineTransformPlugIn.affined") + " "
+                I18N.getInstance().get("ui.warp.AffineTransformPlugIn.affined") + " "
                         + context.getSelectedLayer(0).getName(),
                 featureCollection);
         checkValid(featureCollection, context);
@@ -186,7 +185,7 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
             JOptionPane
                     .showMessageDialog(
                             null,
-                            I18N.get("com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn.message3"),
+                            I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.warp.AffineTransformPlugIn.message3"),
                             null, JOptionPane.INFORMATION_MESSAGE);
             return;
         }
@@ -194,7 +193,7 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
         Random rnd = new Random();
         int n = 1000 + rnd.nextInt(9000);
         String random = Integer.toString(n);
-        String part = I18N.get("ui.warp.AffineTransformPlugIn.affined") + " ";
+        String part = I18N.getInstance().get("ui.warp.AffineTransformPlugIn.affined") + " ";
         String fileName = part + rLayer.getName() + "_" + random + ".tif";
         File outFile = new File(System.getProperty("java.io.tmpdir")
                 .concat(File.separator).concat(fileName));
@@ -280,7 +279,7 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
                 context.getLayerViewPanel()
                         .getContext()
                         .warnUser(
-                                I18N.get("ui.warp.AffineTransformPlugIn.some-geometries-are-not-valid"));
+                                I18N.getInstance().get("ui.warp.AffineTransformPlugIn.some-geometries-are-not-valid"));
 
                 return;
             }
@@ -375,7 +374,7 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
 
         JUMPWorkbench.getInstance().getFrame().getContext().getLayerViewPanel()
                 .getContext()
-                .warnUser(I18N.get("ui.warp.WarpingPanel.warning_1"));
+                .warnUser(I18N.getInstance().get("ui.warp.WarpingPanel.warning_1"));
 
         return null;
     }

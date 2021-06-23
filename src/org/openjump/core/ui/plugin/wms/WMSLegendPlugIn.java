@@ -228,18 +228,14 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
     }
 
     protected void notsaved() {
-        JOptionPane.showMessageDialog(null, SCouldNotSave, I18N.get(getName()),
+        JOptionPane.showMessageDialog(null, SCouldNotSave, I18N.getInstance().get(getName()),
                 JOptionPane.WARNING_MESSAGE);
     }
 
-    private final String sSaved = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
-    private final String SCouldNotSave = I18N
-            .get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
-    private final String SAVE = I18N
-            .get("deejump.plugin.SaveLegendPlugIn.Save");
-    private final String CLOSE = I18N
-            .get("ui.plugin.imagery.ImageLayerManagerDialog.Close");
+    private final String sSaved = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+    private final String SCouldNotSave = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
+    private final String SAVE = I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save");
+    private final String CLOSE = I18N.getInstance().get("ui.plugin.imagery.ImageLayerManagerDialog.Close");
 
     public JPanel getLegendPanel(PlugInContext context) throws IOException {
 
@@ -257,7 +253,7 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
             final String layerTitle = StringUtils.isNotEmpty(mapLayer
                     .getTitle()) ? mapLayer.getTitle() : layerName;
             final JLabel nameLabel = new JLabel(
-                    I18N.getMessage(
+                    I18N.getInstance().get(
                             "org.openjump.core.ui.plugin.queries.SimpleQuery.layer" + ": {0}", //$NON-NLS-1$
                             layerTitle));
             nameLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -306,12 +302,9 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
         return ICON;
     }
 
-    private final String PLUGIN = I18N
-            .get("org.openjump.core.ui.plugin.wms.WMSLegendPlugIn");
-    private final String PANEL = I18N
-            .get("org.openjump.core.ui.plugin.wms.WMSLegendPlugIn.panel");
-    private final String MESSAGE = I18N
-            .get("org.openjump.core.ui.plugin.wms.WMSLegendPlugIn.message");
+    private final String PLUGIN = I18N.getInstance().get("org.openjump.core.ui.plugin.wms.WMSLegendPlugIn");
+    private final String PANEL = I18N.getInstance().get("org.openjump.core.ui.plugin.wms.WMSLegendPlugIn.panel");
+    private final String MESSAGE = I18N.getInstance().get("org.openjump.core.ui.plugin.wms.WMSLegendPlugIn.message");
 }
 
 class LegendRequest extends AbstractWMSRequest {

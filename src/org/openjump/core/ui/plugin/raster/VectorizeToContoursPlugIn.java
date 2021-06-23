@@ -1,7 +1,5 @@
 package org.openjump.core.ui.plugin.raster;
 
-import static com.vividsolutions.jump.I18N.get;
-
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,33 +49,23 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
 
 public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
 
-    private final String PROCESSING = I18N
-            .get("jump.plugin.edit.NoderPlugIn.processing");
-    private static String sLayer = I18N.get("ui.GenericNames.Source-Layer");
-    private static String NAME = I18N
-            .get("ui.plugin.raster.VectorizeToContoursPlugIn.Name");
-    private static String sValue = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
+    private static I18N i18n = I18N.getInstance();
+    private static String PROCESSING = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.processing");
+    private static String sLayer = I18N.getInstance().get("ui.GenericNames.Source-Layer");
+    private static String NAME = I18N.getInstance().get("ui.plugin.raster.VectorizeToContoursPlugIn.Name");
+    private static String sValue = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
 
-    private static String sStyle = I18N
-            .get("ui.plugin.raster.VectorizeToContoursPlugIn.apply-random-style");
+    private static String sStyle = I18N.getInstance().get("ui.plugin.raster.VectorizeToContoursPlugIn.apply-random-style");
 
-    public static String contour_baseContour = I18N
-            .get("ui.plugin.raster.VectorizeToContoursPlugIn.base-contour");
-    public static String contour_distanceContours = I18N
-            .get("ui.plugin.raster.VectorizeToContoursPlugIn.interval");
+    public static String contour_baseContour = I18N.getInstance().get("ui.plugin.raster.VectorizeToContoursPlugIn.base-contour");
+    public static String contour_distanceContours = I18N.getInstance().get("ui.plugin.raster.VectorizeToContoursPlugIn.interval");
     //  public static String contour_zeroElevation = RasterMenuNames.contour_zeroElevation;
-    public static String contour_minContour = I18N
-            .get("ui.plugin.raster.VectorizeToContoursPlugIn.min-contour");
-    public static String contour_maxcontour = I18N
-            .get("ui.plugin.raster.VectorizeToContoursPlugIn.max-contour");
-    public static String contour_contourNumber = I18N
-            .get("ui.plugin.raster.VectorizeToContoursPlugIn.contour-number");
+    public static String contour_minContour = I18N.getInstance().get("ui.plugin.raster.VectorizeToContoursPlugIn.min-contour");
+    public static String contour_maxcontour = I18N.getInstance().get("ui.plugin.raster.VectorizeToContoursPlugIn.max-contour");
+    public static String contour_contourNumber = I18N.getInstance().get("ui.plugin.raster.VectorizeToContoursPlugIn.contour-number");
 
-    private final String MIN = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.min");
-    private final String MAX = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.max");
+    private final String MIN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.min");
+    private final String MAX = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.max");
 
     JTextField jTextField_ContBase, jTextField_ContIntv, jTextField_ContMin,
             jTextField_ContMax, jTextField_ContCount, max, min;
@@ -368,16 +356,11 @@ public class VectorizeToContoursPlugIn extends ThreadedBasePlugIn {
                         }
                         String msg = null;
                         if (mLayer.isEmpty()) {
-                            msg = get(CHECK_FILE);
+                            msg = I18N.getInstance().get("plugin.EnableCheckFactory.at-least-one-single-banded-layer-should-exist");;
                         }
                         return msg;
                     }
                 });
     }
-
-    private final static String CHECK_FILE = I18N
-            .get("plugin.EnableCheckFactory.at-least-one-single-banded-layer-should-exist");
-
-  
 
 }

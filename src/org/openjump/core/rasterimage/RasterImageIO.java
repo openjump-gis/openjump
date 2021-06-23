@@ -448,7 +448,7 @@ public class RasterImageIO {
 
 		if (imageDimensions == null) {
 			throw new Exception(
-					I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.can-not-determine-image-dimensions"));
+					I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.can-not-determine-image-dimensions"));
 		}
 
 		if (worldFileHandler.isWorldFileExistentForImage() != null) {
@@ -575,14 +575,14 @@ public class RasterImageIO {
 
 			if (!isGeoTiff || env == null) {
 				// logger.printDebug(PirolPlugInMessages.getString("no-worldfile-found"));
-				// context.getWorkbench().getFrame().warnUser(I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
+				// context.getWorkbench().getFrame().warnUser(I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
 				throw new Exception(
-						I18N.get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
+						I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
 				// WizardDialog d = new WizardDialog(
 				// context.getWorkbench().getFrame(),
-				// I18N.get("RasterImagePlugIn.34")
+				// I18N.getInstance().get("RasterImagePlugIn.34")
 				// + worldFileHandler.getWorldFileName()
-				// + I18N.get("RasterImagePlugIn.35"),
+				// + I18N.getInstance().get("RasterImagePlugIn.35"),
 				// context.getErrorHandler());
 				// d.init(new WizardPanel[] { new RasterImageWizardPanel() });
 				// //Set size after #init, because #init calls #pack. [Jon

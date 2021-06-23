@@ -117,7 +117,7 @@ public class DataSourceQueryChooserDialog extends JDialog {
             //Can't use DataSourceQueryChooser name because several DataSourceQueryChoosers may
             //share a component (e.g. FileDataSourceQueryChooser). [Jon Aquino]
             j++;
-            componentToNameMap.put(component, I18N.get("datasource.DataSourceQueryChooserDialog.card")+" "+ j);
+            componentToNameMap.put(component, I18N.getInstance().get("datasource.DataSourceQueryChooserDialog.card")+" "+ j);
             mainPanel.add(component, name(component));
         }
     }
@@ -130,7 +130,7 @@ public class DataSourceQueryChooserDialog extends JDialog {
         this.getContentPane().setLayout(borderLayout2);
         formatPanel.setLayout(gridBagLayout1);
         formatPanel.setBorder(BorderFactory.createEtchedBorder());
-        formatLabel.setText( I18N.get("datasource.DataSourceQueryChooserDialog.format"));
+        formatLabel.setText( I18N.getInstance().get("datasource.DataSourceQueryChooserDialog.format"));
         formatComboBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     formatComboBox_actionPerformed(e);

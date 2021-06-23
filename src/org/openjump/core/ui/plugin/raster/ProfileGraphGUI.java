@@ -57,62 +57,38 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ProfileGraphGUI {
 
-    private final static String NAME = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
-    public final String LAYER_NAME = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.layer_name");
-    public final static String MIN = I18N
-            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum");
-    public final static String MEAN = I18N
-            .get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewTableModel.mean-mode");
-    public final static String MAX = I18N
-            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum");
-    public final static String SUM = I18N
-            .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum");
-    public final static String CELL_SIZE = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_cell");
-    public final static String PLOT = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot");
-    public final static String PROFILEPTS = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.profile-pts");
-    public final static String PROFILE_INFO = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Info");
-    public final static String PROFILE_LENGTH = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-length");
-    public final static String STARTING_POINT = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.starting-point");
-    public final static String ENDING_POINT = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.ending-point");
-    public final static String MEAN_SLOPE = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.mean-slope");
-    public final static String TIMES = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Travel-time");
-    public final static String SLOPE = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Slope");
-    public final static String DEGREES = I18N
-            .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
-    public final static String TABLE_VIEW = I18N
-            .get("org.openjump.core.ui.plugin.queries.SimpleQuery.display-the-table");
+    private final static String NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphPlugIn.Profile-Graph");
+    public final String LAYER_NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.layer_name");
+    public final static String MIN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum");
+    public final static String MEAN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewTableModel.mean-mode");
+    public final static String MAX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum");
+    public final static String SUM = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum");
+    public final static String CELL_SIZE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.dimension_cell");
+    public final static String PLOT = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot");
+    public final static String PROFILEPTS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.profile-pts");
+    public final static String PROFILE_INFO = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Info");
+    public final static String PROFILE_LENGTH = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-length");
+    public final static String STARTING_POINT = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.starting-point");
+    public final static String ENDING_POINT = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.ending-point");
+    public final static String MEAN_SLOPE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.mean-slope");
+    public final static String TIMES = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Travel-time");
+    public final static String SLOPE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Slope");
+    public final static String DEGREES = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.degrees");
+    public final static String TABLE_VIEW = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SimpleQuery.display-the-table");
 
-    public final static String RELATIVE_SLOPE = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Relative-slope");
-    public final static String ABSOLUTE_SLOPE = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Absolute-slope");
-    public final static String TYPE_SLOPE = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Choose-slope-profile");
-    public final static String HOURS = I18N.get("ui.GenericNames.hours");
-    public final static String MINUTES = I18N.get("ui.GenericNames.minutes");
-    public final static String FLAT = I18N.get("ui.GenericNames.flat");
-    public final static String UPHILL = I18N.get("ui.GenericNames.uphill");
-    public final static String DOWNHILL = I18N.get("ui.GenericNames.downhill");
-    public final static String CALCULATE_TIMES = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.calculate-travel-time");
+    public final static String RELATIVE_SLOPE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Relative-slope");
+    public final static String ABSOLUTE_SLOPE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Absolute-slope");
+    public final static String TYPE_SLOPE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Choose-slope-profile");
+    public final static String HOURS = I18N.getInstance().get("ui.GenericNames.hours");
+    public final static String MINUTES = I18N.getInstance().get("ui.GenericNames.minutes");
+    public final static String FLAT = I18N.getInstance().get("ui.GenericNames.flat");
+    public final static String UPHILL = I18N.getInstance().get("ui.GenericNames.uphill");
+    public final static String DOWNHILL = I18N.getInstance().get("ui.GenericNames.downhill");
+    public final static String CALCULATE_TIMES = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.calculate-travel-time");
 
-    public final static String UNIT = I18N
-            .get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.srs-unit");
+    public final static String UNIT = I18N.getInstance().get("org.openjump.core.ui.plugin.file.ProjectInfoPlugIn.srs-unit");
 
-    public final static String TIMES_TOOLTIP = I18N
-            .get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.travel-time-tooltip");
+    public final static String TIMES_TOOLTIP = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.travel-time-tooltip");
 
     public static WorkbenchFrame wFrame = JUMPWorkbench.getInstance()
             .getFrame();

@@ -26,7 +26,7 @@ public class SplitLineStringTool extends AbstractClickSelectedLineStringsTool {
 	Coordinate snapCoord = null;		
 	
     public String getName() {
-        return I18N.get("com.vividsolutions.jump.workbench.ui.cursortool.SplitLineStringTool.Split-LinesStrings");
+        return I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.cursortool.SplitLineStringTool.Split-LinesStrings");
     }
     
 	protected void gestureFinished(Collection nearbyLineStringFeatures)

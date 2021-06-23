@@ -70,8 +70,8 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 
     public String getName(){
         //exchanged plugin with SIGLE plugin
-        return I18N.get("ui.plugin.analysis.SpatialJoinPlugIn.Spatial-Join");
-        //return I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes");
+        return I18N.getInstance().get("ui.plugin.analysis.SpatialJoinPlugIn.Spatial-Join");
+        //return I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes");
     }
   
     public void setCategoryName(String value) {
@@ -114,7 +114,7 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
         if (srcLayerB == null) return;
 
         monitor.report(
-            I18N.get("ui.plugin.analysis.SpatialJoinPlugIn.Executing-join") +
+            I18N.getInstance().get("ui.plugin.analysis.SpatialJoinPlugIn.Executing-join") +
                      " " + functionToRun.getName() + "...");
 
         FeatureCollection tgtAFC = tgtLayerA.getFeatureCollectionWrapper();
@@ -127,7 +127,7 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 
         if (monitor.isCancelRequested()) return;
 
-        String outputLayerName = I18N.get("ui.plugin.analysis.SpatialJoinPlugIn.Join")+ "-" + funcNameToRun;
+        String outputLayerName = I18N.getInstance().get("ui.plugin.analysis.SpatialJoinPlugIn.Join")+ "-" + funcNameToRun;
         context.getLayerManager().addCategory(categoryName);
         context.addLayer(categoryName, outputLayerName, resultFC);
     
@@ -146,7 +146,7 @@ public class SpatialJoinPlugIn extends AbstractPlugIn implements ThreadedPlugIn 
     
         //[sstein 31March2008] replaced sidebar description by better description use in SIGLE plugin
         dialog.setSideBarDescription(
-            I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfers-the-attributes-of-Layer-B-to-Layer-A-using-a-spatial-criterion")
+            I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfers-the-attributes-of-Layer-B-to-Layer-A-using-a-spatial-criterion")
         );
 
         //Set initial layer values to the first and second layers in the layer list.
