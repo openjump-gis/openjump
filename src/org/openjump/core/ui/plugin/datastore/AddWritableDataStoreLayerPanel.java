@@ -105,7 +105,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
             if (selectedItem instanceof PrimaryKeyColumn) {
                 return (PrimaryKeyColumn) identifierAttributeComboBox.getSelectedItem();
             } else {
-                throw new SQLException(I18N.get(KEY + ".invalid-primary-key"));
+                throw new SQLException(I18N.getInstance().get(KEY + ".invalid-primary-key"));
             }
         } else {
             return null;
@@ -163,17 +163,17 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
             return validation;
         }
         if (((String) LangUtil.ifNull(getDatasetName(), "")).length() == 0) {
-            return I18N.get(KEY + ".missing-dataset-name");
+            return I18N.getInstance().get(KEY + ".missing-dataset-name");
         }
         if (((String)LangUtil.ifNull(getGeometryAttributeName(), "")).length() == 0) {
-            return I18N.get(KEY + ".missing-geometry-column-name");
+            return I18N.getInstance().get(KEY + ".missing-geometry-column-name");
         }
         try {
             if (((String) LangUtil.ifNull(getIdentifierAttributeName(), "")).length() == 0) {
-                return I18N.get(KEY + ".missing-pk-name");
+                return I18N.getInstance().get(KEY + ".missing-pk-name");
             }
         } catch(Exception e) {
-            return I18N.get(KEY + ".invalid-primary-key");
+            return I18N.getInstance().get(KEY + ".invalid-primary-key");
         }
         return null;
     }
@@ -267,9 +267,9 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
     //private JCheckBox getCachingCheckBox() {
     //    if ( cachingCheckBox == null ) {
     //        cachingCheckBox = new JCheckBox();
-    //        cachingCheckBox.setText( I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Cache-features"));
-    //        String s1= I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Prevents-unnecessary-queries-to-the-datastore");
-    //        String s2= I18N.get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.The-recommended-setting-is-to-leave-this-checked");
+    //        cachingCheckBox.setText( I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Cache-features"));
+    //        String s1= I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.Prevents-unnecessary-queries-to-the-datastore");
+    //        String s2= I18N.getInstance().get("jump.workbench.ui.plugin.datastore.AddDatastoreLayerPanel.The-recommended-setting-is-to-leave-this-checked");
     //        cachingCheckBox.setToolTipText( "<html>"+ s1 + "<br>"+s2+"</html>" );
     //        cachingCheckBox.setSelected( true );
     //    }
@@ -279,8 +279,8 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
     private JCheckBox getLimitedToViewCheckBox() {
         if (limitedToViewCheckBox == null) {
             limitedToViewCheckBox = new JCheckBox();
-            limitedToViewCheckBox.setText( I18N.get(KEY + ".limit-to-view"));
-            String s1= I18N.get(KEY + ".limited-updates-to-the-viewport");
+            limitedToViewCheckBox.setText( I18N.getInstance().get(KEY + ".limit-to-view"));
+            String s1= I18N.getInstance().get(KEY + ".limited-updates-to-the-viewport");
             limitedToViewCheckBox.setToolTipText("<html>" + s1 + "</html>");
             limitedToViewCheckBox.setSelected(false);
         }
@@ -290,8 +290,8 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
     private JCheckBox getManageConflictsCheckBox() {
         if (manageConflictsCheckBox == null) {
             manageConflictsCheckBox = new JCheckBox();
-            manageConflictsCheckBox.setText( I18N.get(KEY + ".manage-conflicts"));
-            String s1= I18N.get(KEY + ".manage-conflicts-tooltip");
+            manageConflictsCheckBox.setText( I18N.getInstance().get(KEY + ".manage-conflicts"));
+            String s1= I18N.getInstance().get(KEY + ".manage-conflicts-tooltip");
             manageConflictsCheckBox.setToolTipText("<html>" + s1 + "</html>");
             manageConflictsCheckBox.setSelected(true);
         }
@@ -398,7 +398,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         // that the user can kill the thread if desired
         // [Jon Aquino 2005-03-16]
         return runInKillableThread(
-                I18N.get(KEY + ".retrieving-list-of-geometry-attributes"), getContext(),
+                I18N.getInstance().get(KEY + ".retrieving-list-of-geometry-attributes"), getContext(),
                 new Block<List<GeometryColumn>>() {
                     public List<GeometryColumn> yield() throws Exception {
                         try {
@@ -426,7 +426,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         // that the user can kill the thread if desired
         // [Jon Aquino 2005-03-16]
         return runInKillableThread(
-                I18N.get(KEY + ".retrieving-list-of-geometry-attributes"), getContext(),
+                I18N.getInstance().get(KEY + ".retrieving-list-of-geometry-attributes"), getContext(),
                 new Block<List<PrimaryKeyColumn>>() {
                     public List<PrimaryKeyColumn> yield() throws Exception {
                         try {
@@ -457,7 +457,7 @@ public class AddWritableDataStoreLayerPanel extends ConnectionPanel {
         // that the user can kill the thread if desired
         // [Jon Aquino 2005-03-11]
         String[] datasetNames = runInKillableThread(
-                I18N.get(KEY + ".retrieving-list-of-tables"), getContext(),
+                I18N.getInstance().get(KEY + ".retrieving-list-of-tables"), getContext(),
                 new Block<String[]>() {
                     public String[] yield() throws Exception {
                         return new PasswordPrompter().getOpenConnection(

@@ -93,28 +93,18 @@ public class LabelStyle implements Style {
     // an image in the vertical alignment ComboBox used [mmichaud 2007-06-02]
     // Disabled image in ComboBox and replaced with existing I18N text [LDB
     // 2007-08-27]
-    public static String DEFAULT_TEXT = I18N
-            .get("ui.renderer.style.LabelStyle.default");
-    public static String ABOVE_TEXT = I18N
-            .get("ui.renderer.style.LabelStyle.above");
-    public static String MIDDLE_TEXT = I18N
-            .get("ui.renderer.style.LabelStyle.middle");
-    public static String BELOW_TEXT = I18N
-            .get("ui.renderer.style.LabelStyle.below");
+    public static String DEFAULT_TEXT = I18N.getInstance().get("ui.renderer.style.LabelStyle.default");
+    public static String ABOVE_TEXT = I18N.getInstance().get("ui.renderer.style.LabelStyle.above");
+    public static String MIDDLE_TEXT = I18N.getInstance().get("ui.renderer.style.LabelStyle.middle");
+    public static String BELOW_TEXT = I18N.getInstance().get("ui.renderer.style.LabelStyle.below");
 
-    public final static String LEFT_SIDE_TEXT = I18N
-            .get("ui.renderer.style.LabelStyle.left-side");
-    public final static String CENTER_TEXT = I18N
-            .get("ui.renderer.style.LabelStyle.center");
-    public final static String RIGHT_SIDE_TEXT = I18N
-            .get("ui.renderer.style.LabelStyle.right-side");
+    public final static String LEFT_SIDE_TEXT = I18N.getInstance().get("ui.renderer.style.LabelStyle.left-side");
+    public final static String CENTER_TEXT = I18N.getInstance().get("ui.renderer.style.LabelStyle.center");
+    public final static String RIGHT_SIDE_TEXT = I18N.getInstance().get("ui.renderer.style.LabelStyle.right-side");
 
-    public final static String JUSTIFY_CENTER_TEXT = I18N
-            .get("ui.renderer.style.LabelStyle.centered");
-    public final static String JUSTIFY_LEFT_TEXT = I18N
-            .get("ui.renderer.style.LabelStyle.left-alignment");
-    public final static String JUSTIFY_RIGHT_TEXT = I18N
-            .get("ui.renderer.style.LabelStyle.right-alignment");
+    public final static String JUSTIFY_CENTER_TEXT = I18N.getInstance().get("ui.renderer.style.LabelStyle.centered");
+    public final static String JUSTIFY_LEFT_TEXT = I18N.getInstance().get("ui.renderer.style.LabelStyle.left-alignment");
+    public final static String JUSTIFY_RIGHT_TEXT = I18N.getInstance().get("ui.renderer.style.LabelStyle.right-alignment");
     public final static int JUSTIFY_CENTER = 0; // LDB: in retrospect, should
                                                 // have used text lookup as
                                                 // above

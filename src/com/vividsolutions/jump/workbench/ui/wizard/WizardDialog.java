@@ -111,7 +111,7 @@ public class WizardDialog extends JDialog implements WizardContext,
       }
 
       Assert.isTrue(ids.contains(panel.getNextID()),
-        I18N.get("ui.wizard.WizardDialog.required-panel-missing") + " "
+        I18N.getInstance().get("ui.wizard.WizardDialog.required-panel-missing") + " "
           + panel.getNextID());
     }
   }
@@ -149,8 +149,8 @@ public class WizardDialog extends JDialog implements WizardContext,
   private void updateButtons() {
     backButton.setEnabled(!completedWizardPanels.isEmpty());
     nextButton.setEnabled(getCurrentWizardPanel().isInputValid());
-    nextButton.setText((getCurrentWizardPanel().getNextID() == null) ? I18N.get("ui.wizard.WizardDialog.finish")
-      : I18N.get("ui.wizard.WizardDialog.next") + " >");
+    nextButton.setText((getCurrentWizardPanel().getNextID() == null) ? I18N.getInstance().get("ui.wizard.WizardDialog.finish")
+      : I18N.getInstance().get("ui.wizard.WizardDialog.next") + " >");
   }
 
   public void inputChanged() {
@@ -222,12 +222,12 @@ public class WizardDialog extends JDialog implements WizardContext,
     buttonPanel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
     contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
-    backButton.setText("< " + I18N.get("ui.wizard.WizardDialog.back"));
+    backButton.setText("< " + I18N.getInstance().get("ui.wizard.WizardDialog.back"));
     backButton.addActionListener(new InvokeMethodActionListener(this,
       "previous"));
     buttonPanel.add(backButton);
 
-    nextButton.setText(I18N.get("ui.wizard.WizardDialog.next") + " >");
+    nextButton.setText(I18N.getInstance().get("ui.wizard.WizardDialog.next") + " >");
     nextButton.addActionListener(new InvokeMethodActionListener(this, "next"));
     buttonPanel.add(nextButton);
     getRootPane().setDefaultButton(nextButton);
@@ -236,7 +236,7 @@ public class WizardDialog extends JDialog implements WizardContext,
     spacer.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
     buttonPanel.add(spacer);
 
-    cancelButton.setText(I18N.get("ui.wizard.WizardDialog.cancel"));
+    cancelButton.setText(I18N.getInstance().get("ui.wizard.WizardDialog.cancel"));
     cancelButton.addActionListener(new InvokeMethodActionListener(this,
       "cancel"));
     buttonPanel.add(cancelButton);

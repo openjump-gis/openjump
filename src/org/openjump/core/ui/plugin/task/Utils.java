@@ -492,8 +492,7 @@ public class Utils {
     try {
         inputStream = new FileInputStream(file);
     } catch (FileNotFoundException e1) {
-       context.getWorkbenchFrame().warnUser(I18N
-                .get("org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn.File-not-found"));
+       context.getWorkbenchFrame().warnUser(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.SaveRasterImageAsImagePlugIn.File-not-found"));
     }
     PlugInManager plugInManager = context.getWorkbenchContext()
             .getWorkbench().getPlugInManager();

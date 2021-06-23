@@ -25,11 +25,11 @@ public class H2SaveDataSourceQueryChooser implements DataSourceQueryChooser {
 
     public static final String KEY = H2SaveDataSourceQueryChooser.class.getName();
 
-    static final String ERROR = I18N.get(KEY + ".error");
-    static final String NO_CONNECTION_CHOOSEN     = I18N.get(KEY + ".no-connection-choosen");
-    static final String NO_TABLE_CHOOSEN          = I18N.get(KEY + ".no-table-choosen");
-    static final String CONNECTION_IS_NOT_H2      = I18N.get(KEY + ".selected-connection-is-not-h2");
-    static final String GID_ALREADY_EXISTS        = I18N.get(KEY + ".gid-already-exists");
+    static final String ERROR = I18N.getInstance().get(KEY + ".error");
+    static final String NO_CONNECTION_CHOOSEN     = I18N.getInstance().get(KEY + ".no-connection-choosen");
+    static final String NO_TABLE_CHOOSEN          = I18N.getInstance().get(KEY + ".no-table-choosen");
+    static final String CONNECTION_IS_NOT_H2      = I18N.getInstance().get(KEY + ".selected-connection-is-not-h2");
+    static final String GID_ALREADY_EXISTS        = I18N.getInstance().get(KEY + ".gid-already-exists");
 
     private PlugInContext context;
     // We can reuse the PostGISSaveDriverPanel as UI for PostGIS and H2GIS are similar
@@ -175,6 +175,6 @@ public class H2SaveDataSourceQueryChooser implements DataSourceQueryChooser {
      * Returns the String displayed in the Format Chooser.
      */
     public String toString() {
-        return I18N.get(KEY + ".H2-Table");
+        return I18N.getInstance().get(KEY + ".H2-Table");
     }
 }

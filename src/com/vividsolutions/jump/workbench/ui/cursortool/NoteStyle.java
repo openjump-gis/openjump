@@ -18,9 +18,9 @@ public class NoteStyle implements Style {
 	
 	public static final int WIDTH = 80;
 	public static final int HEIGHT = 30;
-	public static final String CREATED = I18N.get("ui.cursortool.NoteStyle.CREATED");
-	public static final String MODIFIED = I18N.get("ui.cursortool.NoteStyle.MODIFIED");
-	public static final String TEXT = I18N.get("ui.cursortool.NoteStyle.TEXT");
+	public static final String CREATED = I18N.getInstance().get("ui.cursortool.NoteStyle.CREATED");
+	public static final String MODIFIED = I18N.getInstance().get("ui.cursortool.NoteStyle.MODIFIED");
+	public static final String TEXT = I18N.getInstance().get("ui.cursortool.NoteStyle.TEXT");
 	public static final String GEOMETRY = "GEOMETRY";
    	
 	private JTextArea myTextArea = createTextArea();

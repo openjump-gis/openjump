@@ -38,7 +38,6 @@
 
 package org.openjump.core.ui.plugin.style;
 
-import static com.vividsolutions.jump.I18N.get;
 import static com.vividsolutions.jump.workbench.ui.MenuNames.LAYER;
 import static com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn.get;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
@@ -56,6 +55,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -84,7 +84,7 @@ public class ImportArcMapStylePlugIn extends AbstractPlugIn {
                 enableCheckFactory.createExactlyNLayerablesMustBeSelectedCheck(1, Layerable.class));
 
         context.getFeatureInstaller().addMainMenuItem(this, new String[] { LAYER },
-                get("org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn.name"), false, null, enableCheck);
+                I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn.name"), false, null, enableCheck);
     }
 
     private static File findArcMap2SLD(WorkbenchFrame wbframe, Blackboard bb) throws IOException, InterruptedException {
@@ -126,8 +126,8 @@ public class ImportArcMapStylePlugIn extends AbstractPlugIn {
         });
 
         showMessageDialog(wbframe,
-                get("org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn.Must-Select-Location-Of-Tool"),
-                get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), INFORMATION_MESSAGE);
+                I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn.Must-Select-Location-Of-Tool"),
+                I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), INFORMATION_MESSAGE);
         if (arcmap2sld != null) {
             chooser.setSelectedFile(new File(arcmap2sld));
         }
@@ -162,8 +162,8 @@ public class ImportArcMapStylePlugIn extends AbstractPlugIn {
         // zero
 
         showMessageDialog(wbframe,
-                get("org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn.Must-Select-Location-Of-SLD"),
-                get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), INFORMATION_MESSAGE);
+                I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn.Must-Select-Location-Of-SLD"),
+                I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportSLDPlugIn.Question"), INFORMATION_MESSAGE);
 
         JFileChooser chooser = new JFileChooser();
 
@@ -191,7 +191,7 @@ public class ImportArcMapStylePlugIn extends AbstractPlugIn {
 
     @Override
     public String getName() {
-        return get("org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn.name");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn.name");
     }
 
 }

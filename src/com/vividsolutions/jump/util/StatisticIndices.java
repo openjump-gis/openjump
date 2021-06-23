@@ -201,37 +201,22 @@ public class StatisticIndices {
      */
     public static List<String> getIndices() {
 
-        StatisticIndices.MAX = I18N
-                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum");
-        StatisticIndices.MIN = I18N
-                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum");
-        StatisticIndices.MEAN = I18N
-                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.mean");
-        StatisticIndices.STANDARD_DEV = I18N
-                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev");
-        StatisticIndices.MEDIAN = I18N
-                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.median");
-        StatisticIndices.COUNT = I18N
-                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.count");
-        StatisticIndices.SUM = I18N
-                .get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum");
+        StatisticIndices.MAX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.maximum");
+        StatisticIndices.MIN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.minimum");
+        StatisticIndices.MEAN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.mean");
+        StatisticIndices.STANDARD_DEV = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.standard-dev");
+        StatisticIndices.MEDIAN = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.median");
+        StatisticIndices.COUNT = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.count");
+        StatisticIndices.SUM = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinAttributesSpatiallyPlugIn.sum");
 
-        StatisticIndices.COEF_VARIATION = I18N
-                .get("com.vividsolutions.jump.util.StatisticIndices.Coefficient-of-variation");
-        StatisticIndices.RMS = I18N
-                .get("com.vividsolutions.jump.util.StatisticIndices.Root-mean-squared");
-        StatisticIndices.PERCENTILE_25 = I18N
-                .get("com.vividsolutions.jump.util.StatisticIndices.25-percentile");
-        StatisticIndices.PERCENTILE_75 = I18N
-                .get("com.vividsolutions.jump.util.StatisticIndices.75-percentile");
-        StatisticIndices.SKEWNESS = I18N
-                .get("com.vividsolutions.jump.util.StatisticIndices.Skewness");
-        StatisticIndices.KURTOSIS = I18N
-                .get("com.vividsolutions.jump.util.StatisticIndices.Kurtosis");
-        StatisticIndices.VARIANCE = I18N
-                .get("com.vividsolutions.jump.util.StatisticIndices.variance");
-        StatisticIndices.NUM_CLASSES = I18N
-                .get("corg.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes");
+        StatisticIndices.COEF_VARIATION = I18N.getInstance().get("com.vividsolutions.jump.util.StatisticIndices.Coefficient-of-variation");
+        StatisticIndices.RMS = I18N.getInstance().get("com.vividsolutions.jump.util.StatisticIndices.Root-mean-squared");
+        StatisticIndices.PERCENTILE_25 = I18N.getInstance().get("com.vividsolutions.jump.util.StatisticIndices.25-percentile");
+        StatisticIndices.PERCENTILE_75 = I18N.getInstance().get("com.vividsolutions.jump.util.StatisticIndices.75-percentile");
+        StatisticIndices.SKEWNESS = I18N.getInstance().get("com.vividsolutions.jump.util.StatisticIndices.Skewness");
+        StatisticIndices.KURTOSIS = I18N.getInstance().get("com.vividsolutions.jump.util.StatisticIndices.Kurtosis");
+        StatisticIndices.VARIANCE = I18N.getInstance().get("com.vividsolutions.jump.util.StatisticIndices.variance");
+        StatisticIndices.NUM_CLASSES = I18N.getInstance().get("corg.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes");
 
         final List<String> classifierList = new ArrayList<String>();
         classifierList.add(StatisticIndices.COUNT);

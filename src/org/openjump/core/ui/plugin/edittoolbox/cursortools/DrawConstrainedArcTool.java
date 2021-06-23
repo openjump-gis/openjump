@@ -54,8 +54,8 @@ import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUti
 
 public class DrawConstrainedArcTool extends ConstrainedMultiClickArcTool {
     private FeatureDrawingUtil featureDrawingUtil;
-    final static String drawConstrainedArc =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedArcTool.Draw-Constrained-Arc");
-    final static String theArcMustHaveAtLeast3Points=I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedArcTool.The-arc-must-have-at-least-3-points");
+    final static String drawConstrainedArc =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedArcTool.Draw-Constrained-Arc");
+    final static String theArcMustHaveAtLeast3Points=I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedArcTool.The-arc-must-have-at-least-3-points");
 
 
     private DrawConstrainedArcTool(FeatureDrawingUtil featureDrawingUtil) {

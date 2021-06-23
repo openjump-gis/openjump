@@ -260,7 +260,7 @@ public class RasterImageIOUtils {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()
@@ -331,7 +331,7 @@ public class RasterImageIOUtils {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()
@@ -425,7 +425,7 @@ public class RasterImageIOUtils {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()
@@ -536,7 +536,7 @@ public class RasterImageIOUtils {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()
@@ -630,7 +630,7 @@ public class RasterImageIOUtils {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()
@@ -708,7 +708,7 @@ public class RasterImageIOUtils {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()
@@ -947,7 +947,7 @@ public class RasterImageIOUtils {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()
@@ -1032,7 +1032,7 @@ public class RasterImageIOUtils {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()

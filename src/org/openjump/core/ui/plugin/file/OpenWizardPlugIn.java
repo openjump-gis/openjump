@@ -37,7 +37,7 @@ public class OpenWizardPlugIn extends AbstractThreadedUiPlugIn {
       .icon("fugue/folder-horizontal-open_24x20.png");
   
   public OpenWizardPlugIn() {
-    super(I18N.get(KEY), icon16);
+    super(I18N.getInstance().get(KEY), icon16);
     this.setShortcutKeys(KeyEvent.VK_O);
     this.setShortcutModifiers(KeyEvent.CTRL_MASK);
   }

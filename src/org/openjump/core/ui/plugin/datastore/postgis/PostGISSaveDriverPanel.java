@@ -50,23 +50,23 @@ public class PostGISSaveDriverPanel extends AbstractDriverPanel implements Actio
 	
 	public static final String KEY = PostGISSaveDriverPanel.class.getName();
 	
-	static final String CREATE_HELP_STRING  = I18N.get(KEY + ".create-or-replace-help-string");
-	static final String REPLACE_HELP_STRING = I18N.get(KEY + ".replace-table-rows-help-string");
-	static final String INSERT_HELP_STRING  = I18N.get(KEY + ".insert-only-help-string");
-	static final String UPDATE_HELP_STRING  = I18N.get(KEY + ".insert-or-update-help-string");
-	static final String DELETE_HELP_STRING  = I18N.get(KEY + ".insert-update-or-delete-help-string");
+	static final String CREATE_HELP_STRING  = I18N.getInstance().get(KEY + ".create-or-replace-help-string");
+	static final String REPLACE_HELP_STRING = I18N.getInstance().get(KEY + ".replace-table-rows-help-string");
+	static final String INSERT_HELP_STRING  = I18N.getInstance().get(KEY + ".insert-only-help-string");
+	static final String UPDATE_HELP_STRING  = I18N.getInstance().get(KEY + ".insert-or-update-help-string");
+	static final String DELETE_HELP_STRING  = I18N.getInstance().get(KEY + ".insert-update-or-delete-help-string");
 	
-	static final String TITLE   = I18N.get(KEY + ".title");
-	static final String SELECT_SAVE_METHOD = I18N.get(KEY + ".select-save-method");
-	static final String CREATE  = I18N.get(KEY + ".create-or-replace");
-	static final String REPLACE = I18N.get(KEY + ".replace-table-rows");
-	static final String INSERT  = I18N.get(KEY + ".insert-only");
-	static final String UPDATE  = I18N.get(KEY + ".insert-or-update");
-	static final String DELETE  = I18N.get(KEY + ".insert-update-or-delete");
+	static final String TITLE   = I18N.getInstance().get(KEY + ".title");
+	static final String SELECT_SAVE_METHOD = I18N.getInstance().get(KEY + ".select-save-method");
+	static final String CREATE  = I18N.getInstance().get(KEY + ".create-or-replace");
+	static final String REPLACE = I18N.getInstance().get(KEY + ".replace-table-rows");
+	static final String INSERT  = I18N.getInstance().get(KEY + ".insert-only");
+	static final String UPDATE  = I18N.getInstance().get(KEY + ".insert-or-update");
+	static final String DELETE  = I18N.getInstance().get(KEY + ".insert-update-or-delete");
 
-	//static final String GEOMETRY_COLUMN = I18N.get(KEY + ".geometry-Column");
-	static final String CHOOSE_PK    = I18N.get(KEY + ".primary_key");
-	static final String CREATE_DB_PK = I18N.get("org.openjump.core.ui.plugin.datastore.DataStoreSaveDriverPanel.create-database-primary-key");
+	//static final String GEOMETRY_COLUMN = I18N.getInstance().get(KEY + ".geometry-Column");
+	static final String CHOOSE_PK    = I18N.getInstance().get(KEY + ".primary_key");
+	static final String CREATE_DB_PK = I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.DataStoreSaveDriverPanel.create-database-primary-key");
 	
 	// UI elements
 	private ButtonGroup methodButtons;

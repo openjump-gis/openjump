@@ -88,7 +88,7 @@ public class SplitLinesNodePolygonsPlugIn extends AbstractThreadedUiPlugIn {
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         
         monitor.allowCancellationRequests();
-        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.noding-input"));
+        monitor.report(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.noding-input"));
         
         final Layer layer = context.getLayerNamePanel().chooseEditableLayer();
         

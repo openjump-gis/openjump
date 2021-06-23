@@ -53,7 +53,7 @@ import com.vividsolutions.jump.workbench.ui.renderer.FeatureSelectionRenderer;
 
 public class SelectOneItemTool extends SelectTool implements ShortcutsDescriptor{
 	
-    final static String sSelectOneItem =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectOneItemTool.Select-One-Item");
+    final static String sSelectOneItem =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectOneItemTool.Select-One-Item");
     
     private LayerViewPanel layerViewPanel;
     private int maxFID = 2147483647;

@@ -511,10 +511,10 @@ public class Shapefile implements TaskMonitorSupport {
         lastUpdateCount = count;
         if (totalCount >= 0)
           TaskMonitorV2Util.report(getTaskMonitor(),
-              I18N.getMessage("Reader.parsed-{0}-of-totally-{1}-features", String.format("%,10d", count), totalCount));
+              I18N.getInstance().get("Reader.parsed-{0}-of-totally-{1}-features", String.format("%,10d", count), totalCount));
         else
           TaskMonitorV2Util.report(getTaskMonitor(),
-              I18N.getMessage("Reader.parsed-{0}-features", String.format("%,10d", count)));
+              I18N.getInstance().get("Reader.parsed-{0}-features", String.format("%,10d", count)));
       }
     }
 

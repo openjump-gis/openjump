@@ -181,7 +181,7 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
     public Map<ModifierKeySpec, String> describeShortcuts() {
       Map map = new HashMap();
       map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_SHIFT }),
-          I18N.get(this.getClass().getName() + ".add-to-selection"));
+          I18N.getInstance().get(this.getClass().getName() + ".add-to-selection"));
       return map;
     }
 }

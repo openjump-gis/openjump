@@ -131,7 +131,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 
     public OffsetCurvePlugIn() {
         super(
-            I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.OffsetCurvePlugIn") + "...",
+            I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.analysis.OffsetCurvePlugIn") + "...",
             IconLoader.icon("offset.png")
         );
     }
@@ -160,32 +160,32 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
   
     public boolean execute(PlugInContext context) throws Exception {
 
-	    MAIN_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.main-options");
-	    PROCESSED_DATA = I18N.get("ui.plugin.analysis.BufferPlugIn.processed-data");
-	    LAYER = I18N.get("ui.plugin.analysis.BufferPlugIn.layer");
-        SELECTION = I18N.get("ui.plugin.analysis.BufferPlugIn.selection");
-        SELECTION_HELP = I18N.get("ui.plugin.analysis.BufferPlugIn.selection-help");
+	    MAIN_OPTIONS = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.main-options");
+	    PROCESSED_DATA = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.processed-data");
+	    LAYER = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.layer");
+        SELECTION = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.selection");
+        SELECTION_HELP = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.selection-help");
   
-        DISTANCE = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.distance");
-	    FIXED_DISTANCE = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.fixed-distance");
-	    FROM_ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.get-distance-from-attribute-value");
-	    ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use");
-	    ATTRIBUTE_TOOLTIP = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use-tooltip");
-	    ROUGH_OFFSET_CURVE = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.rough-offset-curve");
-	    ROUGH_OFFSET_CURVE_TOOLTIP = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.rough-offset-curve-tooltip");
-	    OFFSET = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.offset");;
+        DISTANCE = I18N.getInstance().get("ui.plugin.analysis.OffsetCurvePlugIn.distance");
+	    FIXED_DISTANCE = I18N.getInstance().get("ui.plugin.analysis.OffsetCurvePlugIn.fixed-distance");
+	    FROM_ATTRIBUTE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.get-distance-from-attribute-value");
+	    ATTRIBUTE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.attribute-to-use");
+	    ATTRIBUTE_TOOLTIP = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.attribute-to-use-tooltip");
+	    ROUGH_OFFSET_CURVE = I18N.getInstance().get("ui.plugin.analysis.OffsetCurvePlugIn.rough-offset-curve");
+	    ROUGH_OFFSET_CURVE_TOOLTIP = I18N.getInstance().get("ui.plugin.analysis.OffsetCurvePlugIn.rough-offset-curve-tooltip");
+	    OFFSET = I18N.getInstance().get("ui.plugin.analysis.OffsetCurvePlugIn.offset");;
 	    
-	    OTHER_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.other-options");
-        QUADRANT_SEGMENTS = I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Number-of-segments-per-circle-quarter");
+	    OTHER_OPTIONS = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.other-options");
+        QUADRANT_SEGMENTS = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Number-of-segments-per-circle-quarter");
 	    
-	    ADVANCED_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.advanced-options");
+	    ADVANCED_OPTIONS = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.advanced-options");
 	    
-	    JOIN_STYLE_TITLE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-style-subtitle");
-	    JOIN_STYLE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-style");
-        JOIN_BEVEL = I18N.get("ui.plugin.analysis.BufferPlugIn.join-bevel");
-        JOIN_MITRE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-mitre");
-        JOIN_ROUND = I18N.get("ui.plugin.analysis.BufferPlugIn.join-round");
-        MITRE_LIMIT = I18N.get("ui.plugin.analysis.BufferPlugIn.mitre-join-limit");
+	    JOIN_STYLE_TITLE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-style-subtitle");
+	    JOIN_STYLE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-style");
+        JOIN_BEVEL = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-bevel");
+        JOIN_MITRE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-mitre");
+        JOIN_ROUND = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-round");
+        MITRE_LIMIT = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.mitre-join-limit");
         
 	    joinStyles = new ArrayList();
 	    joinStyles.add(JOIN_BEVEL);
@@ -196,7 +196,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 	        context.getWorkbenchFrame(), getName(), MAIN_OPTIONS, true);
 	    int n = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems().size();
 	    useSelected = (n > 0);
-		sideBarText = I18N.get("ui.plugin.analysis.OffsetCurvePlugIn.description");
+		sideBarText = I18N.getInstance().get("ui.plugin.analysis.OffsetCurvePlugIn.description");
 	    setDialogValues(dialog, context);
 	    updateControls(dialog);
 	    GUIUtil.centreOnWindow(dialog);
@@ -227,7 +227,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         FeatureDataset inputFD = new FeatureDataset(inputC, featureSchema);
         if (inputFD.isEmpty()) {
 	    	context.getWorkbenchFrame()
-	    	       .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
+	    	       .warnUser(I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
 	    	return;
 	    }
 	    // Create offsets for each input feature
@@ -247,7 +247,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         resultFC = resultFeatureColl;
 	    if (resultFC.isEmpty()) {
 	    	context.getWorkbenchFrame()
-	    	       .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
+	    	       .warnUser(I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
 	    	return;
 	    }
         context.getLayerManager().addCategory(categoryName);
@@ -255,7 +255,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         if (!useSelected)
         	name = layer.getName();
         else
-        	name = I18N.get("ui.MenuNames.SELECTION");
+        	name = I18N.getInstance().get("ui.MenuNames.SELECTION");
         name = name + "-" + OFFSET + "-" + offsetDistance;
         context.addLayer(categoryName, name, resultFC);
     }
@@ -265,7 +265,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         int count = 0;
         Collection resultColl = new ArrayList();
         for (Iterator ia = fcA.iterator(); ia.hasNext(); ) {
-            monitor.report(count++, total, I18N.get("com.vividsolutions.jump.qa.diff.DiffGeometry.features"));
+            monitor.report(count++, total, I18N.getInstance().get("com.vividsolutions.jump.qa.diff.DiffGeometry.features"));
             if (monitor.isCancelRequested()) break;
             Feature fa = (Feature) ia.next();
             Geometry ga = fa.getGeometry();
@@ -281,7 +281,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
                 Geometry result = runOffset(ga);
                 resultColl.add(result);
             } catch (Exception e) {
-                String errorMessage = I18N.getMessage(
+                String errorMessage = I18N.getInstance().get(
                     "ui.plugin.analysis.BufferPlugIn.error-found",
                     new Object[]{fa.getID(), ga.getCoordinate().x, ga.getCoordinate().x});
                 context.getWorkbenchFrame().warnUser(errorMessage);

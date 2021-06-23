@@ -19,8 +19,7 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 
 public class BeanShellPlugIn extends ToolboxPlugIn {
 
-  private static final String sName = I18N
-      .get("com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn.BeanShell-Console");
+  private static final String sName = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn.BeanShell-Console");
   private static final ImageIcon icon = IconLoader
       .icon("famfam/application_bean.png");
 
@@ -44,11 +43,9 @@ public class BeanShellPlugIn extends ToolboxPlugIn {
       final JConsole console = new JConsole();
       console.setPreferredSize(new Dimension(430, 240));
       console
-          .print(I18N
-              .get("ui.plugin.BeanShellPlugIn.the-workbenchcontext-may-be-referred-to-as-wc"));
+          .print(I18N.getInstance().get("ui.plugin.BeanShellPlugIn.the-workbenchcontext-may-be-referred-to-as-wc"));
       console
-          .print(I18N
-              .get("ui.plugin.BeanShellPlugIn.warning-pasting-in-multiple-statements-may-cause-the-application-to-freeze"));
+          .print(I18N.getInstance().get("ui.plugin.BeanShellPlugIn.warning-pasting-in-multiple-statements-may-cause-the-application-to-freeze"));
       toolbox.getCenterPanel().add(console, BorderLayout.CENTER);
       Interpreter interpreter = new Interpreter(console);
       interpreter.setClassLoader(toolbox.getContext().getWorkbench()

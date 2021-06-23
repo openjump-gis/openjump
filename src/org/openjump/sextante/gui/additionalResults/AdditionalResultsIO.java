@@ -62,10 +62,8 @@ import it.betastudio.adbtoolbox.libs.DxfExport;
 
 public class AdditionalResultsIO {
 
-	private final static String sSaved = I18N
-			.get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
-	private final static String SCouldNotSave = I18N
-			.get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
+	private final static String sSaved = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.file.saved");
+	private final static String SCouldNotSave = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Could-not-save-selected-result");
 
 
 	static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
@@ -224,7 +222,7 @@ public class AdditionalResultsIO {
 					final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting();
 					if (oad.getDescription()
 							.contains(
-									I18N.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot"))) {
+									I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.Profile-Plot"))) {
 						fc.setFileFilter(filter2);
 					}
 					fc.setFileFilter(filter);
@@ -358,7 +356,7 @@ public class AdditionalResultsIO {
 	}
 
 	protected static void notsaved() {
-		JOptionPane.showMessageDialog(null, SCouldNotSave, I18N.get(SCouldNotSave),
+		JOptionPane.showMessageDialog(null, SCouldNotSave, I18N.getInstance().get(SCouldNotSave),
 				JOptionPane.WARNING_MESSAGE);
 	}
 
@@ -417,10 +415,8 @@ public class AdditionalResultsIO {
 		return svgGenerator;
 	}
 
-	public final static String HEIGHT = I18N
-			.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values");
-	public final static String WIDTH = I18N
-			.get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.2d-distance");
+	public final static String HEIGHT = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.values");
+	public final static String WIDTH = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.ProfileGraphTool.2d-distance");
 
 	public static Integer round100(Integer b) {
 		return b - (b % 100);

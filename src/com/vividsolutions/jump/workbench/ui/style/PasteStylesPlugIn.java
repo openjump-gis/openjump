@@ -41,7 +41,7 @@ public class PasteStylesPlugIn extends AbstractPlugIn {
   }
 
   public String getName() {
-  	return I18N.get("ui.style.PasteStylesPlugIn.paste-styles");
+  	return I18N.getInstance().get("ui.style.PasteStylesPlugIn.paste-styles");
   }
   
   public ImageIcon getIcon() {

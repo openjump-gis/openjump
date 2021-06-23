@@ -97,7 +97,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
     }
     
     public String getName() {
-        return I18N.get("ui.plugin.ViewSchemaPlugIn.view-edit-schema");
+        return I18N.getInstance().get("ui.plugin.ViewSchemaPlugIn.view-edit-schema");
     }
 
     private void applyChanges(final Layer layer, final SchemaPanel panel, final WorkbenchFrame workbenchFrame)
@@ -363,7 +363,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
     }
 
     private ConversionException conversionException(String type, Object obj, String name) {
-        return new ConversionException(I18N.get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-" + type) +
+        return new ConversionException(I18N.getInstance().get("ui.plugin.ViewSchemaPlugIn.cannot-convert-to-" + type) +
                 " \"" + limitLength(obj) + "\" (" + name + ")");
     }
 
@@ -768,7 +768,7 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
                         }
 
                         switch (JOptionPane.showConfirmDialog(EditSchemaFrame.this,
-                            I18N.get("ui.plugin.ViewSchemaPlugIn.apply-changes-to-schema"), "JUMP",
+                            I18N.getInstance().get("ui.plugin.ViewSchemaPlugIn.apply-changes-to-schema"), "JUMP",
                             JOptionPane.YES_NO_CANCEL_OPTION,
                             JOptionPane.WARNING_MESSAGE)) {
                         case JOptionPane.YES_OPTION:
@@ -801,9 +801,9 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
 
         private void updateTitle(Layer layer) {
             setTitle((layer.isEditable() ? 
-                    I18N.get("ui.plugin.ViewSchemaPlugIn.edit") : 
-                    I18N.get("ui.plugin.ViewSchemaPlugIn.view")) 
-                    + " "+I18N.get("ui.plugin.ViewSchemaPlugIn.schema")+": " +
+                    I18N.getInstance().get("ui.plugin.ViewSchemaPlugIn.edit") : 
+                    I18N.getInstance().get("ui.plugin.ViewSchemaPlugIn.view")) 
+                    + " "+I18N.getInstance().get("ui.plugin.ViewSchemaPlugIn.schema")+": " +
                 layer.getName());
         }
 

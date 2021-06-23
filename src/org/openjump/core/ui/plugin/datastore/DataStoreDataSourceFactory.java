@@ -38,7 +38,7 @@ public class DataStoreDataSourceFactory {
                     context);
             source.setTableAlreadyCreated(tableAlreadyCreated);
         } else {
-            throw new Exception(I18N.getMessage(KEY + ".no-writable-datastore-datasource", driverName));
+            throw new Exception(I18N.getInstance().get(KEY + ".no-writable-datastore-datasource", driverName));
         }
         return source;
     }

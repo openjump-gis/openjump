@@ -66,7 +66,7 @@ public class DeleteEmptyGeometriesPlugIn extends AbstractPlugIn
     private boolean selectedLayersOnly = true;
     protected AbstractSelection selection;
     
-    String sDeleteEmptyGeometries=I18N.get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
+    String sDeleteEmptyGeometries=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
 
     public void initialize(PlugInContext context) throws Exception
     {     
@@ -82,7 +82,7 @@ public class DeleteEmptyGeometriesPlugIn extends AbstractPlugIn
     
     public boolean execute(final PlugInContext context) throws Exception
     {
-        String sDeleteEmptyGeometries=I18N.get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
+        String sDeleteEmptyGeometries=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
         
         reportNothingToUndoYet(context);
         ArrayList featuresToDelete = new ArrayList();

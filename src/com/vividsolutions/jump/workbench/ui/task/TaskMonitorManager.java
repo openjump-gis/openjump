@@ -74,12 +74,12 @@ public class TaskMonitorManager {
             public void windowClosing(WindowEvent e) {
                 if (JOptionPane.NO_OPTION == JOptionPane.showConfirmDialog(
                         progressDialog,
-                        I18N.get("com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager.kill-process-warning"),
+                        I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager.kill-process-warning"),
                         //    StringUtil
                         //            .split(  "Warning: Killing the process may result in data corruption or data loss. "
                         //          + "Are you sure you want to kill the process?", 80), 
 
-                        I18N.get("com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager.kill-process"),
+                        I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager.kill-process"),
                         //"Kill Process",
                         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)) {
                     return;

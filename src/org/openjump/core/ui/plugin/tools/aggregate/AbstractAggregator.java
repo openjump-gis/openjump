@@ -52,7 +52,7 @@ abstract class AbstractAggregator<T> implements Aggregator<T> {
     @Override
     public String getName() {
         String simpleName = getClass().getSimpleName();
-        return I18N.get(Aggregator.class.getName() + "." + simpleName.substring(simpleName.indexOf('$')+1));
+        return I18N.getInstance().get(Aggregator.class.getName() + "." + simpleName.substring(simpleName.indexOf('$')+1));
     }
 
     @Override

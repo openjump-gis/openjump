@@ -243,7 +243,7 @@ public abstract class FileDataSourceQueryChooser implements DataSourceQueryChoos
         private Component southComponent1;
         private Component southComponent2;
         private JComboBox coordinateSystemComboBox = new JComboBox();
-        private JLabel coordinateSystemLabel = new JLabel(I18N.get("datasource.FileDataSourceQueryChooser.coordinate-system-of-file")+" ") {
+        private JLabel coordinateSystemLabel = new JLabel(I18N.getInstance().get("datasource.FileDataSourceQueryChooser.coordinate-system-of-file")+" ") {
 
                 {
                     setDisplayedMnemonic('r');

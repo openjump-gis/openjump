@@ -76,12 +76,9 @@ public class EasyPanel extends JPanel {
   // private final String UNUSED_BUTTON_NAME = "Right Click to Assign Button F";
   // private final String RIGHT_CLICK_MENU = "Map Right Click";
 
-  private String UNUSED_BUTTON_NAME = I18N
-      .get("org.openjump.core.ui.plugin.view.EasyPanel.Right-Click-to-Assign-Button-F");
-  private String UNSET_BUTTON = I18N
-      .get("org.openjump.core.ui.plugin.view.EasyPanel.unset-assignment");
-  private String BUTTON_EMPTY = I18N
-      .get("org.openjump.core.ui.plugin.view.EasyPanel.not-assigned");
+  private String UNUSED_BUTTON_NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.view.EasyPanel.Right-Click-to-Assign-Button-F");
+  private String UNSET_BUTTON = I18N.getInstance().get("org.openjump.core.ui.plugin.view.EasyPanel.unset-assignment");
+  private String BUTTON_EMPTY = I18N.getInstance().get("org.openjump.core.ui.plugin.view.EasyPanel.not-assigned");
 
   private JPanel buttonPanel = new JPanel();
   private GridLayout gridLayout1 = new GridLayout();

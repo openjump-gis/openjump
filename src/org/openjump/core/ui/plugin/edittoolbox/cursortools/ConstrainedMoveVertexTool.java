@@ -68,8 +68,8 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ConstrainedMoveVertexTool extends ConstrainedDragTool {
 	
-	final static String  constrainedMoveVertex =I18N.get("org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexTool.Constrained-Move-Vertex");
-    final static String  noEditableSelectionHandlesHere =I18N.get("org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexTool.No-editable-selection-handles-here");
+	final static String  constrainedMoveVertex =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexTool.Constrained-Move-Vertex");
+    final static String  noEditableSelectionHandlesHere =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.ConstrainedMoveVertexTool.No-editable-selection-handles-here");
     
     public final static int TOLERANCE = 5;
     private EnableCheckFactory checkFactory;

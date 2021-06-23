@@ -85,27 +85,23 @@ public class RasterizePlugIn extends AbstractPlugIn
   private final ImageIcon icon16 = IconLoader
       .icon("fugue/folder-horizontal-open_16.png");
   JTextField jTextField_RasterOut = new JTextField();
-  private final String OUTPUT_FILE = I18N
-      .get("driver.DriverManager.file-to-save");
-  private final String CHECK = I18N.get("ui.GenericNames.check-field");
-  private final static String SOURCE_LAYER = I18N
-      .get("ui.GenericNames.Source-Layer");
-  private final static String TARGET_LAYER = I18N
-      .get("ui.GenericNames.Target-Layer");
-  private final static String CELL_SIZE = I18N
-      .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.size");
+  private final String OUTPUT_FILE = I18N.getInstance().get("driver.DriverManager.file-to-save");
+  private final String CHECK = I18N.getInstance().get("ui.GenericNames.check-field");
+  private final static String SOURCE_LAYER = I18N.getInstance().get("ui.GenericNames.Source-Layer");
+  private final static String TARGET_LAYER = I18N.getInstance().get("ui.GenericNames.Target-Layer");
+  private final static String CELL_SIZE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.size");
   public static final Icon ICON = IconLoader.icon("rasterize.png");
 
-  private final static String RASTERIZE_VECTOR = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.Name");
-  private final static String RASTERIZING_VECTOR = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.rasterizing-layer");
-  private final static String PREPARING_VECTOR = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.preparing-layer");
-  private final static String USE_EXTERNAL_EXTENT = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.use-extent");
-  private final static String DESCRIPTION = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.description");
+  private final static String RASTERIZE_VECTOR = I18N.getInstance().get("ui.plugin.tools.generate.RasterizePlugIn.Name");
+  private final static String RASTERIZING_VECTOR = I18N.getInstance().get("ui.plugin.tools.generate.RasterizePlugIn.rasterizing-layer");
+  private final static String PREPARING_VECTOR = I18N.getInstance().get("ui.plugin.tools.generate.RasterizePlugIn.preparing-layer");
+  private final static String USE_EXTERNAL_EXTENT = I18N.getInstance().get("ui.plugin.tools.generate.RasterizePlugIn.use-extent");
+  private final static String DESCRIPTION = I18N.getInstance().get("ui.plugin.tools.generate.RasterizePlugIn.description");
 
   //TODO internationalize
-  private final static String EXPAND_ONE_CELL = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.expand-one-cell");
-  private final static String EXPAND_ONE_CELL_TIP = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.expand-one-cell-tip");
-  private final static String LOAD_RASTER_INTO_VIEW = I18N.get("ui.plugin.tools.generate.RasterizePlugIn.load-raster");
+  private final static String EXPAND_ONE_CELL = I18N.getInstance().get("ui.plugin.tools.generate.RasterizePlugIn.expand-one-cell");
+  private final static String EXPAND_ONE_CELL_TIP = I18N.getInstance().get("ui.plugin.tools.generate.RasterizePlugIn.expand-one-cell-tip");
+  private final static String LOAD_RASTER_INTO_VIEW = I18N.getInstance().get("ui.plugin.tools.generate.RasterizePlugIn.load-raster");
 
   @Override
   public boolean execute(PlugInContext context) throws Exception {

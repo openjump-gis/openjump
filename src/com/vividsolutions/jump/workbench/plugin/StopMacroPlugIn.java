@@ -16,8 +16,8 @@ import java.io.*;
  */
 public class StopMacroPlugIn extends AbstractPlugIn implements MacroManager {
 
-    private static final String MACRO_NAME = I18N.get("com.vividsolutions.jump.workbench.plugin.macro-name");
-    private static final String MACRO_NAME_TOOLTIP = I18N.get("com.vividsolutions.jump.workbench.plugin.macro-name-tooltip");
+    private static final String MACRO_NAME = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.macro-name");
+    private static final String MACRO_NAME_TOOLTIP = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.macro-name-tooltip");
 
     public StopMacroPlugIn() {
     }

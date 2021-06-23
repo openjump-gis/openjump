@@ -87,7 +87,7 @@ public class SnapVerticesTool extends SpecifyFeaturesTool {
         if (!check(new EnableCheck() {
                     public String check(JComponent component) {
                         return targetFeature == null
-                            ? I18N.get("ui.cursortool.editing.SnapVerticesTool.no-vertices-or-edges-here") : null;
+                            ? I18N.getInstance().get("ui.cursortool.editing.SnapVerticesTool.no-vertices-or-edges-here") : null;
                     }
                 })
         ) {

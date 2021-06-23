@@ -22,7 +22,7 @@ public class RefreshDataStoreLayerPlugin extends AbstractPlugIn {
     public static final ImageIcon ICON = IconLoader.icon("arrow_refresh.png");
 
     public RefreshDataStoreLayerPlugin() {
-        //super(I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Refresh-Layer"));
+        //super(I18N.getInstance().get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Refresh-Layer"));
     }
     
     public static EnableCheck createEnableCheck(final WorkbenchContext context) {
@@ -36,10 +36,10 @@ public class RefreshDataStoreLayerPlugin extends AbstractPlugIn {
                     DataSourceQuery dsq =  context.getLayerableNamePanel().getSelectedLayers()[0].getDataSourceQuery();
                     if(dsq != null){
                     	return dsq.getDataSource() == null ?
-                    	    I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Layer-must-have-a-Data-Source"):
-                    		dsq.getDataSource() instanceof DataStoreDataSource?null:I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Layer-must-be-a-DataStore");
+                    	    I18N.getInstance().get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Layer-must-have-a-Data-Source"):
+                    		dsq.getDataSource() instanceof DataStoreDataSource?null:I18N.getInstance().get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Layer-must-be-a-DataStore");
                     }else{
-                    	return I18N.get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Layer-must-have-a-Data-Source");
+                    	return I18N.getInstance().get("ui.plugin.datastore.RefreshDataStoreLayerPlugin.Layer-must-have-a-Data-Source");
                     }
                 }
             }

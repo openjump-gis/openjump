@@ -124,8 +124,8 @@ import de.latlon.deejump.plugin.style.DeeRenderingStylePanel;
  */
 public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
-    private static final String CUSTOM_ENTRY = I18N.get("ui.renderer.style.ColorThemingPanel.custom");
-    public static final String TITLE = I18N.get("ui.renderer.style.ColorThemingPanel.colour-theming");
+    private static final String CUSTOM_ENTRY = I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.custom");
+    public static final String TITLE = I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.colour-theming");
     private static final String COLOR_SCHEME_KEY = ColorThemingStylePanel.class.getName() + " - COLOR SCHEME";
 
     private static final Dimension SLIDER_DIMENSION = new Dimension(130, 28);
@@ -142,7 +142,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     final private JComboBox attributeNameComboBox = new JComboBox();
     private String lastAttributeName;
 
-    final private JLabel classificationLabel = new JLabel(I18N.get("ui.renderer.style.ColorThemingStylePanel.Classification-Method"));
+    final private JLabel classificationLabel = new JLabel(I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Classification-Method"));
     final private JComboBox classificationComboBox = new JComboBox();
 
     final private JLabel colorSchemeLabel = new JLabel();
@@ -157,7 +157,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
     final private JLabel lineWidthLabel = new JLabel();
     final private JCheckBox lineWidthCheckBox = new JCheckBox();
     final private JSlider lineWidthSlider = new JSlider();
-    final private JLabel vertexStyleLabel = new JLabel(I18N.get("ui.renderer.style.ColorThemingStylePanel.display-vertices"));
+    final private JLabel vertexStyleLabel = new JLabel(I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.display-vertices"));
     final private JCheckBox vertexStyleEnableCheckBox = new JCheckBox();
 
     final private DefaultTableCellRenderer allOtherValuesRenderer = new DefaultTableCellRenderer();
@@ -292,7 +292,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     final private MyPlugIn insertPlugIn = new MyPlugIn() {
             public String getName() {
-                return I18N.get("ui.renderer.style.ColorThemingPanel.insert-row");
+                return I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.insert-row");
             }
 
             public Icon getIcon() {
@@ -325,7 +325,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
     final private MyPlugIn deletePlugIn = new MyPlugIn() {
             public String getName() {
-                return I18N.get("ui.renderer.style.ColorThemingPanel.delete-row");
+                return I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.delete-row");
             }
 
             public Icon getIcon() {
@@ -546,21 +546,21 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         EnableCheck atLeast1RowMustBeSelectedCheck = new EnableCheck() {
                 public String check(JComponent component) {
                     return (table.getSelectedRowCount() == 0)
-                    ? I18N.get("ui.renderer.style.ColorThemingPanel.at-least-1-row-must-be-selected") : null;
+                    ? I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.at-least-1-row-must-be-selected") : null;
                 }
             };
 
         EnableCheck layerMustHaveAtLeast1AttributeCheck = new EnableCheck() {
                 public String check(JComponent component) {
                     return (attributeNameComboBox.getItemCount() == 0)
-                    ? I18N.get("ui.renderer.style.ColorThemingPanel.layer-must-have-at-least-1-attribute") : null;
+                    ? I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.layer-must-have-at-least-1-attribute") : null;
                 }
             };
 
         EnableCheck colorThemingMustBeEnabledCheck = new EnableCheck() {
                 public String check(JComponent component) {
                     return (!enableColorThemingCheckBox.isSelected())
-                    ? I18N.get("ui.renderer.style.ColorThemingPanel.colour-theming-must-be-enabled") : null;
+                    ? I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.colour-theming-must-be-enabled") : null;
                 }
             };
 
@@ -620,10 +620,10 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
             //Give the "Cannot colour-theme layer" message priority. [Jon Aquino]
             if (!setErrorMessage(new ErrorMessage(
-                    I18N.get("ui.renderer.style.ColorThemingPanel.cannot-colour-theme-layer-with-no-attributes")),
+                    I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.cannot-colour-theme-layer-with-no-attributes")),
                     attributeNameComboBox.getItemCount() == 0)) {
                 setErrorMessage(new ErrorMessage(
-                    I18N.get("ui.renderer.style.ColorThemingPanel.table-must-not-be-empty")),
+                    I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.table-must-not-be-empty")),
                     table.getRowCount() == 0);
             }
 
@@ -663,7 +663,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
         OKCancelPanel okCancelPanel = new OKCancelPanel();
         final JDialog dialog = new JDialog((JDialog) SwingUtilities.windowForComponent(
-                    this), I18N.get("ui.renderer.style.ColorThemingPanel.custom"), true);
+                    this), I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.custom"), true);
         dialog.getContentPane().setLayout(new BorderLayout());
         dialog.getContentPane().add(deeRenderingStylePanel, BorderLayout.CENTER);
         dialog.getContentPane().add(okCancelPanel, BorderLayout.SOUTH);
@@ -749,11 +749,11 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
                     Object duplicateAttributeValue = tableModel()
                                                          .findDuplicateAttributeValue();
                     setErrorMessage(new ErrorMessage(
-                            I18N.get("ui.renderer.style.ColorThemingPanel.table-must-not-have-duplicate-attribute-values"),
+                            I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.table-must-not-have-duplicate-attribute-values"),
                             "(" + duplicateAttributeValue + ")"),
                         duplicateAttributeValue != null);
                     setErrorMessage(new ErrorMessage(
-                            I18N.get("ui.renderer.style.ColorThemingPanel.table-must-not-have-null-attribute-values")),
+                            I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.table-must-not-have-null-attribute-values")),
                         tableModel().containsNullAttributeValues());
                 }
             });
@@ -859,11 +859,11 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
         this.setLayout(new GridBagLayout());
         jPanel1.setLayout(new GridBagLayout());
         jPanel2.setLayout(new GridBagLayout());
-        enableColorThemingCheckBox.setText(I18N.get("ui.renderer.style.ColorThemingPanel.enable-colour-theming"));
-        attributeLabel.setText(I18N.get("ui.renderer.style.ColorThemingPanel.attribute")+" ");
+        enableColorThemingCheckBox.setText(I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.enable-colour-theming"));
+        attributeLabel.setText(I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.attribute")+" ");
         statusLabel.setBorder(BorderFactory.createLoweredBevelBorder());
         statusLabel.setText(" ");
-        colorSchemeLabel.setText(I18N.get("ui.renderer.style.ColorThemingPanel.colour-scheme")+" ");
+        colorSchemeLabel.setText(I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.colour-scheme")+" ");
         attributeNameComboBox.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     attributeNameComboBox_actionPerformed(e);
@@ -887,13 +887,13 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             });
 
 		initClassificationComboBox(getAttributeType());
-        transparencyLabel.setText(I18N.get("ui.style.BasicStylePanel.transparency"));
+        transparencyLabel.setText(I18N.getInstance().get("ui.style.BasicStylePanel.transparency"));
         transparencyCheckBox.setSelected(false);
         transparencySlider.setMaximum(255);
         transparencySlider.setPreferredSize(SLIDER_DIMENSION);
         //Don't get squished by overlong status messages. [Jon Aquino]
         transparencySlider.setMinimumSize(SLIDER_DIMENSION);
-        transparencySlider.setToolTipText(I18N.get("ui.renderer.style.ColorThemingPanel.transparency"));
+        transparencySlider.setToolTipText(I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.transparency"));
         transparencySlider.addChangeListener(new javax.swing.event.ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
                     if (isGlobalTransparencyEnabled()) {
@@ -908,7 +908,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
             });
         transparencySlider.setEnabled(false);
 
-        lineWidthLabel.setText(I18N.get("ui.style.BasicStylePanel.line-width"));
+        lineWidthLabel.setText(I18N.getInstance().get("ui.style.BasicStylePanel.line-width"));
         lineWidthCheckBox.setSelected(false);
         lineWidthSlider.setMajorTickSpacing(5);
         lineWidthSlider.setMinorTickSpacing(1);
@@ -918,7 +918,7 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 
         //Don't get squished by overlong status messages. [Jon Aquino]
         lineWidthSlider.setMinimumSize(SLIDER_DIMENSION);
-        //lineWidthSlider.setToolTipText(I18N.get("ui.style.BasicStylePanel.line-width"));
+        //lineWidthSlider.setToolTipText(I18N.getInstance().get("ui.style.BasicStylePanel.line-width"));
         lineWidthSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 if (isGlobalLineWidthEnabled()) {
@@ -1444,14 +1444,14 @@ public class ColorThemingStylePanel extends JPanel implements StylePanel {
 	private void initClassificationComboBox(AttributeType type) {
 	    classificationComboBox.removeItemListener(classificationListener);
 	    classificationComboBox.removeAllItems();
-		classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Unique-value"));
+		classificationComboBox.addItem(I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Unique-value"));
 		if (type == AttributeType.INTEGER || type == AttributeType.DOUBLE) {
-		    classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Equal-Interval"));
-		    classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Quantile-Equal-Number"));
+		    classificationComboBox.addItem(I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Equal-Interval"));
+		    classificationComboBox.addItem(I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Quantile-Equal-Number"));
 		    // -- [sstein 15.Feb.2009]
-		    classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Mean-Standard-Deviation"));
-		    classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Maximal-Breaks"));
-		    classificationComboBox.addItem(I18N.get("ui.renderer.style.ColorThemingStylePanel.Jenks-Optimal-Method"));
+		    classificationComboBox.addItem(I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Mean-Standard-Deviation"));
+		    classificationComboBox.addItem(I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Maximal-Breaks"));
+		    classificationComboBox.addItem(I18N.getInstance().get("ui.renderer.style.ColorThemingStylePanel.Jenks-Optimal-Method"));
 		}
 		classificationComboBox.addItemListener(classificationListener);
 		if (classificationComboBox.getItemCount() == 1 &&

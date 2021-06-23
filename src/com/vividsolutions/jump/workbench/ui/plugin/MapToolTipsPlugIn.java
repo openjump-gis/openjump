@@ -25,7 +25,7 @@ public class MapToolTipsPlugIn extends AbstractPlugIn {
     public String getName() {
         //Can't use auto-naming, which produces "Map Tool Tips"; and Unix/Windows
         //CVS issues will occur if I rename MapToolTipsPlugIn to MapTooltipsPlugIn. [Jon Aquino]
-		return I18N.get("ui.plugin.MapToolTipsPlugIn.map-tooltips");
+		return I18N.getInstance().get("ui.plugin.MapToolTipsPlugIn.map-tooltips");
 	}
     public boolean execute(PlugInContext context) throws Exception {
         context.getLayerViewPanel().getToolTipWriter().setEnabled(

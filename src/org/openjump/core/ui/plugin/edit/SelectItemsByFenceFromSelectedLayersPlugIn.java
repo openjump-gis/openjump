@@ -55,7 +55,7 @@ public class SelectItemsByFenceFromSelectedLayersPlugIn extends AbstractPlugIn{
     public void initialize(PlugInContext context) throws Exception {
 		    context.getFeatureInstaller().addMainMenuPlugin(this,
 		        new String[] {MenuNames.EDIT, MenuNames.SELECTION},
-				I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn.select-features-by-polygon-from-selected-layers"), 
+				I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectItemsByFenceFromSelectedLayersPlugIn.select-features-by-polygon-from-selected-layers"), 
 				false, null,
 				createEnableCheck(context.getWorkbenchContext()));
 		}

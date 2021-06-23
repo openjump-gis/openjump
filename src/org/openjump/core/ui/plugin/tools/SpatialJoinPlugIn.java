@@ -43,12 +43,12 @@ public class SpatialJoinPlugIn extends ThreadedBasePlugIn {
 	private final static String LAYER1 = GenericNames.LAYER_A;
 	  private final static String LAYER2 = GenericNames.LAYER_B;
 	  //-- reset in execute to correct language 
-	  private static String METHODS = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.spatial-operation");
+	  private static String METHODS = I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.spatial-operation");
 
-	  private static String METHOD_EQUAL = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal");
-	  private static String METHOD_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.within") +" B";
-	  private static String METHOD_EQUAL_AND_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-AND-within" +" B");
-	  private static String METHOD_EQUAL_OR_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-OR-within" +" B");
+	  private static String METHOD_EQUAL = I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal");
+	  private static String METHOD_WITHIN = "A " + I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.within") +" B";
+	  private static String METHOD_EQUAL_AND_WITHIN = "A " + I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-AND-within" +" B");
+	  private static String METHOD_EQUAL_OR_WITHIN = "A " + I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-OR-within" +" B");
 	 
 	  private static Collection getSpatialJoinMethodNames()
 	  {
@@ -85,11 +85,11 @@ public class SpatialJoinPlugIn extends ThreadedBasePlugIn {
 	 
 
 	  public boolean execute(PlugInContext context) throws Exception {
-		 METHODS = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.spatial-operation");
-		 METHOD_EQUAL = I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal");
-		 METHOD_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.within" +" B");
-		 METHOD_EQUAL_AND_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-AND-within" +" B");
-		 METHOD_EQUAL_OR_WITHIN = "A " + I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-OR-within" +" B");
+		 METHODS = I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.spatial-operation");
+		 METHOD_EQUAL = I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal");
+		 METHOD_WITHIN = "A " + I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.within" +" B");
+		 METHOD_EQUAL_AND_WITHIN = "A " + I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-AND-within" +" B");
+		 METHOD_EQUAL_OR_WITHIN = "A " + I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.equal-OR-within" +" B");
 	  	
 	    MultiInputDialog dialog = new MultiInputDialog(
 	        context.getWorkbenchFrame(), getName(), true);
@@ -102,7 +102,7 @@ public class SpatialJoinPlugIn extends ThreadedBasePlugIn {
 	  }
 
 	  public String getName(){
-	  	return I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes");
+	  	return I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfer-Attributes");
 	  }
 	  
 	  public void run(TaskMonitor monitor, PlugInContext context)
@@ -115,9 +115,9 @@ public class SpatialJoinPlugIn extends ThreadedBasePlugIn {
 	        layer2.getFeatureCollectionWrapper(),
 	        methodNameToRun);
 	  if (resultColl.size()>0)
-	    context.addLayer(StandardCategoryNames.WORKING, I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Result") + methodNameToRun, resultColl);
+	    context.addLayer(StandardCategoryNames.WORKING, I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Result") + methodNameToRun, resultColl);
 	    if (exceptionThrown)
-	      context.getWorkbenchFrame().warnUser(I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Error-while-executing-spatial-function"));
+	      context.getWorkbenchFrame().warnUser(I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Error-while-executing-spatial-function"));
 	  }
 
 	  private FeatureCollection runSpatialJoinMethod(FeatureCollection fcA,
@@ -226,7 +226,7 @@ public class SpatialJoinPlugIn extends ThreadedBasePlugIn {
 	  private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
 	  {
 	    //dialog.setSideBarImage(new ImageIcon(getClass().getResource("DiffGeometry.png")));
-	    dialog.setSideBarDescription(I18N.get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfers-the-attributes-of-Layer-B-to-Layer-A-using-a-spatial-criterion"));
+	    dialog.setSideBarDescription(I18N.getInstance().get("org.openjump.sigle.plugin.SpatialJoinPlugIn.Transfers-the-attributes-of-Layer-B-to-Layer-A-using-a-spatial-criterion"));
 	    //Set initial layer values to the first and second layers in the layer list.
 	    //In #initialize we've already checked that the number of layers >= 2. [Jon Aquino]
 	    dialog.addLayerComboBox(LAYER1, layer1, context.getLayerManager());

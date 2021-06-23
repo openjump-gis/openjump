@@ -49,7 +49,7 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 
 public class AddNewCategoryPlugIn extends AbstractPlugIn {
-    private final static String NEW_CATEGORY_NAME = I18N.get("ui.plugin.AbstractNewCategoryPlugIn.new-category");
+    private final static String NEW_CATEGORY_NAME = I18N.getInstance().get("ui.plugin.AbstractNewCategoryPlugIn.new-category");
 
     public AddNewCategoryPlugIn() {
       this.setShortcutKeys(KeyEvent.VK_L);
@@ -71,7 +71,7 @@ public class AddNewCategoryPlugIn extends AbstractPlugIn {
 //                public void unexecute() {
 //                    Assert.isTrue(context.getLayerManager()
 //                                         .getCategory(categoryName).isEmpty(),
-//                       I18N.get("ui.plugin.AbstractNewCategoryPlugIn.this-can-happen-when-a-plug-in-calls"));
+//                       I18N.getInstance().get("ui.plugin.AbstractNewCategoryPlugIn.this-can-happen-when-a-plug-in-calls"));
 //                    context.getLayerManager().removeIfEmpty(context.getLayerManager()
 //                                                                   .getCategory(categoryName));
 //                }

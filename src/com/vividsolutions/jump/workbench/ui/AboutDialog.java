@@ -113,7 +113,7 @@ public class AboutDialog extends JDialog {
     private ExtensionsAboutPanel extensionsAboutPanel;
 
     private AboutDialog(WorkbenchFrame frame) {
-        super(frame, I18N.get("ui.AboutDialog.about-jump"), true);
+        super(frame, I18N.getInstance().get("ui.AboutDialog.about-jump"), true);
         try {
             setIconImage(AboutPlugIn.ICON.getImage());
         } catch (NoSuchMethodError e) {
@@ -143,7 +143,7 @@ public class AboutDialog extends JDialog {
 
         ImageIcon splash = JUMPWorkbench.splashImage();
         JPanel splashPanel =
-                new SplashPanelV2(splash, I18N.get("ui.AboutDialog.version")+" " + JUMPVersion.CURRENT_VERSION);
+                new SplashPanelV2(splash, I18N.getInstance().get("ui.AboutDialog.version")+" " + JUMPVersion.CURRENT_VERSION);
         aboutPanel.add(splashPanel,new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH,GridBagConstraints.NONE,
                 new Insets(0, 0, 0, 0), 0, 0));
 
@@ -198,40 +198,40 @@ public class AboutDialog extends JDialog {
         pref_h = pref_h < min_h ? min_h : pref_h;
         // fixed width splash width + 25px for scrollbar
         aboutScroll.setMinimumSize(new Dimension (splash.getIconWidth() + 25, min_h));
-        jTabbedPane1.addTab(I18N.get("ui.AboutDialog.about"), aboutScroll);
+        jTabbedPane1.addTab(I18N.getInstance().get("ui.AboutDialog.about"), aboutScroll);
 
         /* Info Panel ********************************************************/
         infoPanel.setLayout( new GridBagLayout() );
 
-        JLabel lbl_sysinfo = createLabel( I18N.get("ui.AboutDialog.system-info") );
+        JLabel lbl_sysinfo = createLabel( I18N.getInstance().get("ui.AboutDialog.system-info") );
         lbl_sysinfo.setFont(lbl_sysinfo.getFont().deriveFont( Font.ITALIC | Font.BOLD , 12f));
         lbl_sysinfo.setHorizontalAlignment(SwingConstants.LEFT);
         panelAdd( lbl_sysinfo, infoPanel, 0, 0, GridBagConstraints.CENTER);
 
-        JLabel lbl_java = createLabel(I18N.get("ui.AboutDialog.java-version"));
+        JLabel lbl_java = createLabel(I18N.getInstance().get("ui.AboutDialog.java-version"));
         lbl_java.setFont(lbl_java.getFont().deriveFont( Font.ITALIC ));
         panelAdd( lbl_java, infoPanel, 1, 0, GridBagConstraints.WEST);
 
-        JLabel lbl_os = createLabel(I18N.get("ui.AboutDialog.os"));
+        JLabel lbl_os = createLabel(I18N.getInstance().get("ui.AboutDialog.os"));
         lbl_os.setFont(lbl_java.getFont());
         panelAdd( lbl_os, infoPanel, 1, 1, GridBagConstraints.WEST);
         
-        JLabel lbl_memmax = createLabel(I18N.get("ui.AboutDialog.maximum-memory"));
+        JLabel lbl_memmax = createLabel(I18N.getInstance().get("ui.AboutDialog.maximum-memory"));
         lbl_memmax.setFont(lbl_java.getFont());
         panelAdd( lbl_memmax, infoPanel, 1, 2, GridBagConstraints.WEST);
         
-        JLabel lbl_memtotal = createLabel(I18N.get("ui.AboutDialog.total-memory"));
+        JLabel lbl_memtotal = createLabel(I18N.getInstance().get("ui.AboutDialog.total-memory"));
         lbl_memtotal.setFont(lbl_java.getFont());
         panelAdd( lbl_memtotal, infoPanel, 1, 3, GridBagConstraints.WEST);
         
-        JLabel lbl_memcom = createLabel(I18N.get("ui.AboutDialog.comitted-memory"));
+        JLabel lbl_memcom = createLabel(I18N.getInstance().get("ui.AboutDialog.comitted-memory"));
         lbl_memcom.setFont(lbl_java.getFont());
         panelAdd( lbl_memcom, infoPanel, 1, 4, GridBagConstraints.WEST);
         
         panelAdd(Box.createRigidArea(new Dimension(10, 10)), infoPanel, 1, 6,
             GridBagConstraints.WEST);
         
-        JLabel lbl_userdir = createLabel( I18N.get("ui.AboutDialog.user-dir") );
+        JLabel lbl_userdir = createLabel( I18N.getInstance().get("ui.AboutDialog.user-dir") );
         lbl_userdir.setFont(lbl_java.getFont());
         panelAdd( lbl_userdir, infoPanel, 1, 7, GridBagConstraints.WEST);
         
@@ -257,14 +257,14 @@ public class AboutDialog extends JDialog {
         lblUserDir.setText("x");
         panelAdd( lblUserDir, infoPanel, 2, 7, GridBagConstraints.WEST);
 
-        btnGC.setText(I18N.get("ui.AboutDialog.garbage-collect"));
+        btnGC.setText(I18N.getInstance().get("ui.AboutDialog.garbage-collect"));
         btnGC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 btnGC_actionPerformed(e);
             }
         });
 
-        btnCopyCB.setText(I18N.get("ui.AboutDialog.copy-clipboard"));
+        btnCopyCB.setText(I18N.getInstance().get("ui.AboutDialog.copy-clipboard"));
         btnCopyCB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 btnCopyCB_actionPerformed(e);
@@ -288,14 +288,14 @@ public class AboutDialog extends JDialog {
         pnlButtons.add(btnGC, null);
         pnlButtons.add(btnCopyCB, null);
 
-        jTabbedPane1.addTab(I18N.get("ui.AboutDialog.info"), infoPanel);
+        jTabbedPane1.addTab(I18N.getInstance().get("ui.AboutDialog.info"), infoPanel);
 
 
         /* Extensions Panel **************************************************/
         extScroll = new JScrollPane(extensionsAboutPanel);
         extScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         extScroll.setBorder(BorderFactory.createEmptyBorder());
-        jTabbedPane1.addTab(I18N.get("ui.AboutDialog.Extensions"), extScroll);
+        jTabbedPane1.addTab(I18N.getInstance().get("ui.AboutDialog.Extensions"), extScroll);
 
         extScroll.addAncestorListener(new AncestorListener() {
           int h = 0, v = 0;
@@ -332,7 +332,7 @@ public class AboutDialog extends JDialog {
 
         /* OK Button */
 
-        okButton.setText(I18N.get("ui.OKCancelPanel.ok"));
+        okButton.setText(I18N.getInstance().get("ui.OKCancelPanel.ok"));
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 okButton_actionPerformed(e);
@@ -407,17 +407,17 @@ public class AboutDialog extends JDialog {
 
     void btnCopyCB_actionPerformed(ActionEvent e) {
         String info = new StringBuilder()
-                .append(I18N.get("ui.AboutDialog.java-version"))
+                .append(I18N.getInstance().get("ui.AboutDialog.java-version"))
                 .append(":\t" + lblJavaVersion.getText() + "\n")
-                .append((I18N.get("ui.AboutDialog.os")))
+                .append((I18N.getInstance().get("ui.AboutDialog.os")))
                 .append(":\t"  + lblOSVersion.getText() + "\n")
-                .append(I18N.get("ui.AboutDialog.maximum-memory"))
+                .append(I18N.getInstance().get("ui.AboutDialog.maximum-memory"))
                 .append(":\t" + lblMaxMemory.getText() + "\n")
-                .append(I18N.get("ui.AboutDialog.total-memory"))
+                .append(I18N.getInstance().get("ui.AboutDialog.total-memory"))
                 .append(":\t" + lblTotalMemory.getText() + "\n")
-                .append(I18N.get("ui.AboutDialog.comitted-memory"))
+                .append(I18N.getInstance().get("ui.AboutDialog.comitted-memory"))
                 .append(":\t" + lblCommittedMemory.getText() + "\n")
-                .append(I18N.get("ui.AboutDialog.user-dir"))
+                .append(I18N.getInstance().get("ui.AboutDialog.user-dir"))
                 .append(":\t" + System.getProperty("user.dir") + "\n\n")
                 .toString();
         StringSelection selection = new StringSelection(info);

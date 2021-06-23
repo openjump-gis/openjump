@@ -56,8 +56,7 @@ public class EditDataStoreQueryPlugIn extends RunDatastoreQueryPlugIn {
   }
 
   public String getName() {
-    return I18N
-        .get("org.openjump.core.ui.plugin.datastore.EditDataStoreQueryPlugIn.Edit-datastore-query");
+    return I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.EditDataStoreQueryPlugIn.Edit-datastore-query");
   }
 
   public boolean execute(final PlugInContext context) throws Exception {
@@ -114,8 +113,7 @@ public class EditDataStoreQueryPlugIn extends RunDatastoreQueryPlugIn {
         for (Layer layer : selectedLayers) {
           if (layer.getDataSourceQuery() == null
               || !(layer.getDataSourceQuery().getDataSource() instanceof DataStoreQueryDataSource)) {
-            return I18N
-                .get("org.openjump.core.ui.plugin.datastore.EditDataStoreQueryPlugIn.Exactly-one-datastore-query-layer-must-be-selected");
+            return I18N.getInstance().get("org.openjump.core.ui.plugin.datastore.EditDataStoreQueryPlugIn.Exactly-one-datastore-query-layer-must-be-selected");
           }
         }
         return null;

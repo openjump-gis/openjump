@@ -63,51 +63,51 @@ import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 
-    private static String LAYER               = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.layer");
+    private static String LAYER               = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.layer");
 
-    private static String X                   = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.x");
-    private static String Y                   = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.y");
-    private static String ADD_XY              = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-xy");
+    private static String X                   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.x");
+    private static String Y                   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.y");
+    private static String ADD_XY              = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-xy");
 
-    private static String Z                   = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.z");
-    private static String ADD_Z               = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-z");
+    private static String Z                   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.z");
+    private static String ADD_Z               = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-z");
 
-    private static String NB_POINTS           = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-points");
-    private static String ADD_NB_POINTS       = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-points");
+    private static String NB_POINTS           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-points");
+    private static String ADD_NB_POINTS       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-points");
 
-    private static String NB_HOLES            = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-of-holes");
-    private static String ADD_NB_HOLES        = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-holes");
+    private static String NB_HOLES            = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-of-holes");
+    private static String ADD_NB_HOLES        = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-holes");
 
-    private static String NB_COMPONENTS       = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-of-components");
-    private static String ADD_NB_COMPONENTS   = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-components");
+    private static String NB_COMPONENTS       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-of-components");
+    private static String ADD_NB_COMPONENTS   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-components");
 
-    private static String LENGTH              = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.length");
-    private static String ADD_LENGTH          = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-length");
+    private static String LENGTH              = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.length");
+    private static String ADD_LENGTH          = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-length");
 
-    private static String AREA                = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.area");
-    private static String ADD_AREA            = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-area");
+    private static String AREA                = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.area");
+    private static String ADD_AREA            = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-area");
 
-    private static String GEOM_TYPE           = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.geo-type");
-    private static String ADD_GEOMETRY_TYPE   = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-geom-type");
+    private static String GEOM_TYPE           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.geo-type");
+    private static String ADD_GEOMETRY_TYPE   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-geom-type");
 
-    private static String WKT                 = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.wkt");
-    private static String ADD_WKT             = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-wkt");
+    private static String WKT                 = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.wkt");
+    private static String ADD_WKT             = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-wkt");
 
-    private static String POLY_WIDTH          = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.poly-width");
-    private static String ADD_POLY_WIDTH      = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-poly-width");
+    private static String POLY_WIDTH          = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.poly-width");
+    private static String ADD_POLY_WIDTH      = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-poly-width");
 
-    private static String POLY_LENGTH         = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.poly-length");
-    private static String ADD_POLY_LENGTH     = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-poly-length");
+    private static String POLY_LENGTH         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.poly-length");
+    private static String ADD_POLY_LENGTH     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-poly-length");
 
-    private static String CIRCULARITY         = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.circularity");
-    private static String ADD_CIRCULARITY     = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-circularity");
+    private static String CIRCULARITY         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.circularity");
+    private static String ADD_CIRCULARITY     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-circularity");
 
-    private static String COMPACITY           = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.compacity");
-    private static String ADD_COMPACITY       = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-compacity");
+    private static String COMPACITY           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.compacity");
+    private static String ADD_COMPACITY       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-compacity");
 
-    private static String GEOM_ATTRIBUTES     = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.geometry-attributes");
+    private static String GEOM_ATTRIBUTES     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.geometry-attributes");
 
-    private static String COMPUTE_ATTRIBUTES  = I18N.get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.compute-attributes");
+    private static String COMPUTE_ATTRIBUTES  = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.compute-attributes");
 
 
     String layer;

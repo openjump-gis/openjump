@@ -58,12 +58,12 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
 
         context.getFeatureInstaller().addMainMenuPlugin(
                 this, new String[] { MenuNames.VIEW },
-                I18N.get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer" ) + "{pos:8}",
+                I18N.getInstance().get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer" ) + "{pos:8}",
                 false, null, enableCheck );
         // Add PlugIn to WMSPopupMenu
         context.getFeatureInstaller().addPopupMenuPlugin(
             context.getWorkbenchFrame().getWMSLayerNamePopupMenu(), this,
-            I18N.get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer" ), false,
+            I18N.getInstance().get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer" ), false,
             null, enableCheck );
         
     }
@@ -86,7 +86,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
     }
     
     public String getName() {
-        return I18N.get("org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.zoom-to-wms-layer");
     }
 
     private WMSLayer[] getSelectedWMSLayer( PlugInContext context ) {
@@ -139,8 +139,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
         WMSLayer[] wmsLayers = getSelectedWMSLayer( context );
 
         if ( wmsLayers == null ) {
-            JOptionPane.showMessageDialog( context.getWorkbenchFrame(), I18N
-                .get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.no-wms-layer-selected" ) );
+            JOptionPane.showMessageDialog( context.getWorkbenchFrame(), I18N.getInstance().get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.no-wms-layer-selected" ) );
             return null;
         }
 
@@ -205,8 +204,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
             int anzBB = boundingBoxList.size();
 
             if ( anzBB == 0 ) {
-                System.out.println( I18N
-                    .get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.no-bounding-box" )
+                System.out.println( I18N.getInstance().get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.no-bounding-box" )
                     + mapLayer.getTitle() );
             } else {
                 // If double key - count up.
@@ -244,8 +242,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
             comboBox = new JComboBox<>( keys );
         } 
         else {
-            comboBox.addItem( I18N
-                    .get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.no-bounding-boxes-available" ) );
+            comboBox.addItem( I18N.getInstance().get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.no-bounding-boxes-available" ) );
         }
         return comboBox;
     }
@@ -267,8 +264,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
         jp.add( comboBox );
         jp.add( jb );
 
-        int back = JOptionPane.showConfirmDialog( context.getWorkbenchFrame(), jp, I18N
-            .get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.bounding-box-for" )
+        int back = JOptionPane.showConfirmDialog( context.getWorkbenchFrame(), jp, I18N.getInstance().get( "org.openjump.core.ui.plugin.wms.ZoomToWMSPlugIn.bounding-box-for" )
             + " " + selectedSRS + tmpLatLon, JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.INFORMATION_MESSAGE );
 

@@ -61,7 +61,7 @@ public class OkCancelButtonPanel extends JPanel {
 	public JButton getCancelButton() {
 		if (cancelButton == null) {
 			cancelButton = new JButton();
-			cancelButton.setText(I18N.get("ui.OKCancelPanel.cancel"));
+			cancelButton.setText(I18N.getInstance().get("ui.OKCancelPanel.cancel"));
 			cancelButton.setActionCommand(CANCEL_BUTTON_ACTION_COMMAND);
 			cancelButton.setFocusPainted(false);
 		}
@@ -76,7 +76,7 @@ public class OkCancelButtonPanel extends JPanel {
 	public JButton getOkButton() {
 		if (okButton == null) {
 			okButton = new JButton();
-			okButton.setText(I18N.get("ui.OKCancelPanel.ok"));
+			okButton.setText(I18N.getInstance().get("ui.OKCancelPanel.ok"));
 			okButton.setActionCommand(OK_BUTTON_ACTION_COMMAND);
 			okButton.setFocusPainted(false);
 		}

@@ -56,22 +56,22 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 public class ExtractLayersByAttribute extends AbstractPlugIn {
 
 	private final static String EXTRACT_LAYERS_BY_ATTRIBUTE = 
-		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Extract-Layer-by-Attribute");
+		I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Extract-Layer-by-Attribute");
     private static final String LAYER_ATTRIBUTE = 
-    	I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Attribute");
+    	I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Attribute");
 	private static final String DIALOGMSG = 
-    	I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Extracts-layers-using-a-common-attribute");
+    	I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Extracts-layers-using-a-common-attribute");
 	private static final String LAYER = 
-		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.LAYER");	
+		I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.LAYER");	
 	//private static final String TEXT =
-	//	I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.TEXT");
+	//	I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.TEXT");
 	private static final String EXTRACT = 
-		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Extract");
+		I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute.Extract");
 	// NULL has not to be translated
 	private static final String NULL = 
-		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute._NULL_");
+		I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute._NULL_");
     private static final String EMPTY = 
-		I18N.get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute._EMPTY_");
+		I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayersByAttribute._EMPTY_");
 	
 	private Layer sourceLayer = null;
 	 	 
@@ -97,10 +97,10 @@ public class ExtractLayersByAttribute extends AbstractPlugIn {
                 public String check(JComponent component) {
                     Layer[] lyrs = workbenchContext.getLayerableNamePanel().getSelectedLayers();
                     if (lyrs.length == 0) {
-                        return I18N.get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected");
+                        return I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected");
                     }
                     else if (lyrs[0].getFeatureCollectionWrapper().getFeatureSchema().getAttributeCount() < 2) {
-                        return I18N.get("ui.renderer.style.ColorThemingPanel.layer-must-have-at-least-1-attribute");
+                        return I18N.getInstance().get("ui.renderer.style.ColorThemingPanel.layer-must-have-at-least-1-attribute");
                     }
                     return null;
                 }

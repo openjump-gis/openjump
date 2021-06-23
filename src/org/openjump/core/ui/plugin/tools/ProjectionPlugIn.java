@@ -41,7 +41,7 @@ public class ProjectionPlugIn extends AbstractPlugIn
 {
     private WorkbenchContext workbenchContext;
     
-    //final static String sDeleteEmptyGeometries=I18N.get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
+    //final static String sDeleteEmptyGeometries=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
     final static String sName="test projections";
 
     public void initialize(PlugInContext context) throws Exception

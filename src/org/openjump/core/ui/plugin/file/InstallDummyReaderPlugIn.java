@@ -27,7 +27,7 @@ import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
 public class InstallDummyReaderPlugIn extends AbstractPlugIn {
 
     private static final String KEY = DummyDataSource.class.getName();
-    public static final String DUMMY_READER_DESC = I18N.get(KEY)+".description";
+    public static final String DUMMY_READER_DESC = I18N.getInstance().get(KEY)+".description";
 
     /**
      * Construct the main Open File plug-in.

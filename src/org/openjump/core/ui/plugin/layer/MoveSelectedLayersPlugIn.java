@@ -35,15 +35,14 @@ public class MoveSelectedLayersPlugIn extends AbstractPlugIn {
 	// - Extended the Plugin to WMS layers and Sextante Raster layers
 	// TODO: make undoable
 	
-	private final static String CATEGORIES = I18N
-		      .get("ui.plugin.MoveLayerablePlugIn.destination-category");
+	private final static String CATEGORIES = I18N.getInstance().get("ui.plugin.MoveLayerablePlugIn.destination-category");
 
 	private boolean moveToTop = true;
 
 	public static final ImageIcon ICON = IconLoader.icon("bullet_arrow_up_down.png");
 
 	public String getName() {
-		return I18N.get("ui.plugin.MoveLayerablePlugIn.move-to-category");
+		return I18N.getInstance().get("ui.plugin.MoveLayerablePlugIn.move-to-category");
 	}
 
 	// Initialized through through Default-Plugins.xml
@@ -60,14 +59,11 @@ public class MoveSelectedLayersPlugIn extends AbstractPlugIn {
             for (Iterator i = layerManager.getCategories().iterator(); i.hasNext();)
             	categoryArray.add(((Category)i.next()).getName());
     
-        	JComboBox comboBox = dialog.addComboBox(CATEGORIES, "", categoryArray, I18N
-        		      .get("ui.plugin.MoveLayerablePlugIn.destination-category"));
+        	JComboBox comboBox = dialog.addComboBox(CATEGORIES, "", categoryArray, I18N.getInstance().get("ui.plugin.MoveLayerablePlugIn.destination-category"));
         	comboBox.setEditable(true);
         	comboBox.setPrototypeDisplayValue("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); //to increase the with of the combo box
-        	dialog.addRadioButton(I18N
-        		      .get("ui.plugin.MoveLayerablePlugIn.move-to-top"), "position", moveToTop, "Insert at top of category");
-        	dialog.addRadioButton(I18N
-        		      .get("ui.plugin.MoveLayerablePlugIn.move-to-bottom"), "position", !moveToTop, "Insert at bottom of category");
+        	dialog.addRadioButton(I18N.getInstance().get("ui.plugin.MoveLayerablePlugIn.move-to-top"), "position", moveToTop, "Insert at top of category");
+        	dialog.addRadioButton(I18N.getInstance().get("ui.plugin.MoveLayerablePlugIn.move-to-bottom"), "position", !moveToTop, "Insert at bottom of category");
 			GUIUtil.centreOnWindow(dialog);
 			dialog.setVisible(true);
     		if (! dialog.wasOKPressed()) 
@@ -77,8 +73,7 @@ public class MoveSelectedLayersPlugIn extends AbstractPlugIn {
     		else
     		{
     			String categoryName = dialog.getText(CATEGORIES).trim();
-    			moveToTop = dialog.getRadioButton(I18N
-    				      .get("ui.plugin.MoveLayerablePlugIn.move-to-top")).isSelected();
+    			moveToTop = dialog.getRadioButton(I18N.getInstance().get("ui.plugin.MoveLayerablePlugIn.move-to-top")).isSelected();
     			if (categoryName.length() == 0) return false;
     			if (layerManager.getCategory(categoryName) == null) 
     				layerManager.addCategory(categoryName);

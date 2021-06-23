@@ -94,8 +94,8 @@ public class ShowTriangulationPlugIn extends AbstractPlugIn {
             checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck());
     }
 
-    public final static String SOURCE_LAYER_NAME = I18N.get("ui.plugin.generate.ShowTriangulationPlugIn.initial-triangulation");
-    public final static String DESTINATION_LAYER_NAME = I18N.get("ui.plugin.generate.ShowTriangulationPlugIn.final-triangulation");
+    public final static String SOURCE_LAYER_NAME = I18N.getInstance().get("ui.plugin.generate.ShowTriangulationPlugIn.initial-triangulation");
+    public final static String DESTINATION_LAYER_NAME = I18N.getInstance().get("ui.plugin.generate.ShowTriangulationPlugIn.final-triangulation");
     private Layer sourceLayer(LayerManagerProxy layerManagerProxy) {
         return layerManagerProxy.getLayerManager().getLayer(SOURCE_LAYER_NAME);
     }

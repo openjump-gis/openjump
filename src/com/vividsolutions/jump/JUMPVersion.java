@@ -56,14 +56,14 @@ public class JUMPVersion {
   }
 
   public static String getVersionNumber() {
-    return I18N.get("JUMPWorkbench.version.number");
+    return I18N.getInstance().get("JUMPWorkbench.version.number");
   }
 
   public static String getRelease() {
-    return I18N.get("JUMPWorkbench.version.release");
+    return I18N.getInstance().get("JUMPWorkbench.version.release");
   }
 
   public static String getRevision() {
-    return I18N.get("JUMPWorkbench.version.revision");
+    return I18N.getInstance().get("JUMPWorkbench.version.revision");
   }
 }

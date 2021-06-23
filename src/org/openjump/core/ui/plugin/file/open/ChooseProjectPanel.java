@@ -51,11 +51,11 @@ public class ChooseProjectPanel extends AbstractWizardPanel {
     setLayout(new BorderLayout());
     JPanel view = new JPanel(new SpringLayout());
 
-    newButton = new JRadioButton(I18N.get("org.openjump.core.ui.plugin.file.open.ChooseProjectPanel.new-project"));
+    newButton = new JRadioButton(I18N.getInstance().get("org.openjump.core.ui.plugin.file.open.ChooseProjectPanel.new-project"));
     newButton.setSelected(true);
     view.add(newButton);
 
-    existingButton = new JRadioButton(I18N.get("org.openjump.core.ui.plugin.file.open.ChooseProjectPanel.existing-project"));
+    existingButton = new JRadioButton(I18N.getInstance().get("org.openjump.core.ui.plugin.file.open.ChooseProjectPanel.existing-project"));
     view.add(existingButton);
 
     ButtonGroup group = new ButtonGroup();

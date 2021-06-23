@@ -53,11 +53,11 @@ public class SelectProjectFilesPanel extends JFCWithEnterAction implements Wizar
 
   public static final String KEY = SelectProjectFilesPanel.class.getName();
 
-  public static final String TITLE = I18N.get("ui.plugin.OpenProjectPlugIn.open-project");
+  public static final String TITLE = I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.open-project");
 
-  public static final String INSTRUCTIONS = I18N.get(KEY + ".instructions");
+  public static final String INSTRUCTIONS = I18N.getInstance().get(KEY + ".instructions");
 
-  public static final String ALL_FILES = I18N.get(KEY + ".all-files");
+  public static final String ALL_FILES = I18N.getInstance().get(KEY + ".all-files");
 
   private Set<InputChangedListener> listeners = new LinkedHashSet<InputChangedListener>();
 

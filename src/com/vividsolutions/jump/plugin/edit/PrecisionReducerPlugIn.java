@@ -56,21 +56,21 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
 
   private static final double EXAMPLE_VALUE = 1234567.123123123123;
 
-  private final static String LAYER = I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Layer");
-  private final static String DECIMAL_PLACES = I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Decimal-Places");
-  private final static String SCALE_FACTOR = I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Scale-Factor");
+  private final static String LAYER = I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Layer");
+  private final static String DECIMAL_PLACES = I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Decimal-Places");
+  private final static String SCALE_FACTOR = I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Scale-Factor");
   private final static String PRESERVE_POLYGONAL_TOPOLOGY =
-      I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Preserve-polygonal-topology");
+      I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Preserve-polygonal-topology");
   private final static String PRESERVE_POLYGONAL_TOPOLOGY_TT =
-      I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Preserve-polygonal-topology-TT");
+      I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Preserve-polygonal-topology-TT");
   private final static String CHANGE_GEOMETRY_PM =
-      I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Change-geometry-precision-model");
+      I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Change-geometry-precision-model");
   private final static String CHANGE_GEOMETRY_PM_TT =
-      I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Change-geometry-precision-model-TT");
+      I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Change-geometry-precision-model-TT");
   private final static String REMOVE_COLLAPSED_GEOMETRY =
-      I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Remove-collapsed-geometry");
+      I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Remove-collapsed-geometry");
   private final static String REMOVE_COLLAPSED_GEOMETRY_TT =
-      I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Remove-collapsed-geometry-TT");
+      I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Remove-collapsed-geometry-TT");
 
   private JTextField decimalPlacesField;
   private JTextField scaleFactorField;
@@ -89,7 +89,7 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
    * @return the name of this task
    */
   public String getName() { 
-      return I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Precision-Reducer"); 
+      return I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Precision-Reducer"); 
   }
 
   public void initialize(PlugInContext context) throws Exception {
@@ -121,7 +121,7 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
 
   public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
     monitor.allowCancellationRequests();
-    monitor.report(I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Reducing-Precision") + "...");
+    monitor.report(I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Reducing-Precision") + "...");
 
     Layer layer = context.getLayerManager().getLayer(layerName);
     FeatureCollection fc = layer.getFeatureCollectionWrapper();
@@ -152,7 +152,7 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
         invalidInput.add(feature.clone(true));
         invalidOutput.add(g2);
       }
-      monitor.report(++count, fc.size(), I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.features"));
+      monitor.report(++count, fc.size(), I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.features"));
     }
 
     transaction.commit();
@@ -164,13 +164,13 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
 
     if (invalidInput.size() > 0) {
       Layer lyr = context.getLayerManager().addLayer(StandardCategoryNames.QA,
-      		I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Invalid-Input-Geometries"),
+      		I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Invalid-Input-Geometries"),
             invalidInput);
       LayerStyleUtil.setLinearStyle(lyr, Color.red, 2, 0);
       lyr.fireAppearanceChanged();
 
       Layer lyr2 = context.getLayerManager().addLayer(StandardCategoryNames.QA,
-      		I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Invalid-Reduced-Geometries"),
+      		I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Invalid-Reduced-Geometries"),
             FeatureDatasetFactory.createFromGeometry(invalidOutput));
       lyr2.getBasicStyle().setFillColor( ColorUtil.GOLD);
       lyr2.getBasicStyle().setLineColor( Layer.defaultLineColor(ColorUtil.GOLD));
@@ -205,7 +205,7 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
   //  int total = fc.size();
   //  int count = 0;
   //  for (Iterator i = fc.iterator(); i.hasNext(); ) {
-  //    monitor.report(count++, total, I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.features"));
+  //    monitor.report(count++, total, I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.features"));
 //
   //    Feature f = (Feature) i.next();
   //    Geometry g = f.getGeometry();
@@ -225,15 +225,15 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
 
   private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
     dialog.setSideBarImage(new ImageIcon(getClass().getResource("PrecisionReducer.png")));
-    dialog.setSideBarDescription(I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Reduces-the-precision-of-the-coordinates-in-a-layer"));
+    dialog.setSideBarDescription(I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Reduces-the-precision-of-the-coordinates-in-a-layer"));
     dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
 
     scaleFactorField = dialog.addIntegerField(SCALE_FACTOR, scaleFactor, 8,
-    		I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.The-scale-factor-to-multiply-by-before-rounding-(-Negative-for-left-of-decimal-point-,-0-if-not-used-)"));
+    		I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.The-scale-factor-to-multiply-by-before-rounding-(-Negative-for-left-of-decimal-point-,-0-if-not-used-)"));
     scaleFactorField.getDocument().addDocumentListener(new ScaleFactorDocumentListener());
 
     decimalPlacesField = dialog.addIntegerField(DECIMAL_PLACES, decimalPlaces, 4,
-    		I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.The-number-of-decimal-places-to-round-to-(-Negative-for-left-of-decimal-point-)"));
+    		I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.The-number-of-decimal-places-to-round-to-(-Negative-for-left-of-decimal-point-)"));
     decimalPlacesField.getDocument().addDocumentListener(new DecimalPlacesDocumentListener());
 
     dialog.addCheckBox(PRESERVE_POLYGONAL_TOPOLOGY, preservePolygonalTopology, PRESERVE_POLYGONAL_TOPOLOGY_TT);
@@ -241,7 +241,7 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
     dialog.addCheckBox(REMOVE_COLLAPSED_GEOMETRY, removeCollapsedGeometry, REMOVE_COLLAPSED_GEOMETRY_TT);
 
     dialog.addLabel("");
-    dialog.addLabel(I18N.get("ui.plugin.edit.PrecisionReducerPlugIn.Example") + "  " + EXAMPLE_VALUE);
+    dialog.addLabel(I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.Example") + "  " + EXAMPLE_VALUE);
     exampleLabel = dialog.addLabel("");
 
     updateExample();

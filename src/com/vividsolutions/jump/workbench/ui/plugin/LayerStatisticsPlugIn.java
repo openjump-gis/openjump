@@ -91,7 +91,7 @@ public class LayerStatisticsPlugIn extends AbstractPlugIn {
         out.setRecordNavigationControlVisible(false);
         out.createNewDocument();
         out.addHeader(1,
-                I18N.get("ui.plugin.LayerStatisticsPlugIn.layer-statistics"));
+                I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.layer-statistics"));
 
         final LayerStatistics totalStats = new LayerStatistics();
         final Envelope totalEnv = new Envelope();
@@ -99,12 +99,12 @@ public class LayerStatisticsPlugIn extends AbstractPlugIn {
         for (final Layer layer : selectedLayers) {
             final LayerStatistics ls = layerStatistics(layer, totalStats);
 
-            out.addHeader(2, I18N.get("ui.plugin.LayerStatisticsPlugIn.layer")
+            out.addHeader(2, I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.layer")
                     + " " + layer.getName());
 
             final Envelope layerEnv = layer.getFeatureCollectionWrapper()
                     .getEnvelope();
-            out.addField(I18N.get("ui.plugin.LayerStatisticsPlugIn.envelope"),
+            out.addField(I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.envelope"),
                     layerEnv.toString());
             totalEnv.expandToInclude(layerEnv);
             output(ls, out);
@@ -113,8 +113,8 @@ public class LayerStatisticsPlugIn extends AbstractPlugIn {
         if (selectedLayers.length > 1) {
             out.addHeader(
                     2,
-                    I18N.get("ui.plugin.LayerStatisticsPlugIn.summary-for-all-layers"));
-            out.addField(I18N.get("ui.plugin.LayerStatisticsPlugIn.envelope"),
+                    I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.summary-for-all-layers"));
+            out.addField(I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.envelope"),
                     totalEnv.toString());
             output(totalStats, out);
         }
@@ -173,32 +173,32 @@ public class LayerStatisticsPlugIn extends AbstractPlugIn {
 
         out.append("<table border='1'>");
         out.append("<tr><td bgcolor=#CCCCCC>&nbsp;</td><td  bgcolor=#CCCCCC align='center'> Min </td><td  bgcolor=#CCCCCC align='center'> Max </td><td  bgcolor=#CCCCCC align='center'> "
-                + I18N.get("ui.plugin.LayerStatisticsPlugIn.avg")
+                + I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.avg")
                 + " </td><td  bgcolor=#CCCCCC align='center'> Total </td></tr>");
         out.append("<tr><td bgcolor=#CCCCCC> Pts </td><td align='right'>"
                 + ls.minCoord + "</td><td align='right'>" + ls.maxCoord
                 + "</td><td align='right'>" + ls.avgCoord()
                 + "</td><td align='right'>" + ls.totalCoord + "</td></tr>");
         out.append("<tr><td bgcolor=#CCCCCC> "
-                + I18N.get("ui.plugin.LayerStatisticsPlugIn.holes")
+                + I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.holes")
                 + " </td><td align='right'>" + ls.minHoles
                 + "</td><td align='right'>" + ls.maxHoles
                 + "</td><td align='right'>" + ls.avgHoles()
                 + "</td><td align='right'>" + ls.totalHoles + "</td></tr>");
         out.append("<tr><td bgcolor=#CCCCCC> "
-                + I18N.get("ui.plugin.LayerStatisticsPlugIn.components")
+                + I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.components")
                 + " </td><td align='right'>" + ls.minComp
                 + "</td><td align='right'>" + ls.maxComp
                 + "</td><td align='right'>" + ls.avgComp()
                 + "</td><td align='right'>" + ls.totalComp + "</td></tr>");
         out.append("<tr><td bgcolor=#CCCCCC> "
-                + I18N.get("ui.plugin.LayerStatisticsPlugIn.area")
+                + I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.area")
                 + " </td><td align='right'>" + ls.minArea
                 + "</td><td align='right'>" + ls.maxArea
                 + "</td><td align='right'>" + ls.avgArea()
                 + "</td><td align='right'>" + ls.totalArea + "</td></tr>");
         out.append("<tr><td bgcolor=#CCCCCC> "
-                + I18N.get("ui.plugin.LayerStatisticsPlugIn.length")
+                + I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.length")
                 + " </td><td align='right'>" + ls.minLength
                 + "</td><td align='right'>" + ls.maxLength
                 + "</td><td align='right'>" + ls.avgLength()

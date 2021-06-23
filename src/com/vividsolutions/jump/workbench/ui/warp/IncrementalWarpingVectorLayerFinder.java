@@ -47,7 +47,7 @@ public class IncrementalWarpingVectorLayerFinder extends AbstractVectorLayerFind
     /** Same colour as pin icons */
     public static final Color COLOR = Color.green.darker().darker();
     public IncrementalWarpingVectorLayerFinder(LayerManagerProxy layerManagerProxy) {
-        super(I18N.get("ui.warp.IncrementalWarpingVectorLayerFinder.sincremental-warping-vectors"), layerManagerProxy, COLOR);
+        super(I18N.getInstance().get("ui.warp.IncrementalWarpingVectorLayerFinder.sincremental-warping-vectors"), layerManagerProxy, COLOR);
     }    
     protected void applyStyles(Layer layer) {
         super.applyStyles(layer);

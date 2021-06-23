@@ -46,7 +46,7 @@ import com.vividsolutions.jump.feature.FeatureSchema;
  */
 public class FenceLayerFinder extends SystemLayerFinder {
 
-    public static final String LAYER_NAME = I18N.get("model.FenceLayerFinder.fence");
+    public static final String LAYER_NAME = I18N.getInstance().get("model.FenceLayerFinder.fence");
     public FenceLayerFinder(LayerManagerProxy layerManagerProxy) {
         super(LAYER_NAME, layerManagerProxy);
     }

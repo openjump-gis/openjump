@@ -117,44 +117,26 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements
     @Override
     public void initialize(PlugInContext context) throws Exception {
 
-        sideBarText = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.descriptiontext");
-        CLASSIFIER = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Select-classification-method");
-        T2 = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes");
+        sideBarText = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.descriptiontext");
+        CLASSIFIER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Select-classification-method");
+        T2 = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Number-of-classes");
         CLAYER = GenericNames.SELECT_LAYER;
         ATTRIBUTE = GenericNames.SELECT_ATTRIBUTE;
-        OPTIMIZEWITHKMEANS = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Optimize-with-k-means");
-        PROCESSNULLASZERO = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Process-null-as-zero");
-        sClassbreaks = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.class-breaks");
-        sDatapoints = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.data-points");
-        sCount = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.count");
-        sHistogram = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Histogram-Plot");
-        sCalculateBreaks = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Calculating-Breaks");
-        sDisplayBreaks = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Displaying-Breaks");
-        sClassifying = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.classifying");
-        sAddingField = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.create-output-field");
-        sName = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Classify-Attribute");
-        sWarning = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Error-during-classification");
-        sNotEnoughValuesWarning = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Not-enough-values");
-        sWrongDataType = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
-        sNoAttributeChoosen = I18N
-                .get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.No-attribute-choosen");
+        OPTIMIZEWITHKMEANS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Optimize-with-k-means");
+        PROCESSNULLASZERO = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Process-null-as-zero");
+        sClassbreaks = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.class-breaks");
+        sDatapoints = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.data-points");
+        sCount = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.count");
+        sHistogram = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Histogram-Plot");
+        sCalculateBreaks = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Calculating-Breaks");
+        sDisplayBreaks = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Displaying-Breaks");
+        sClassifying = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.classifying");
+        sAddingField = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.create-output-field");
+        sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Classify-Attribute");
+        sWarning = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Error-during-classification");
+        sNotEnoughValuesWarning = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Not-enough-values");
+        sWrongDataType = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateBarPlotPlugIn.Wrong-datatype-of-chosen-attribute");
+        sNoAttributeChoosen = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.No-attribute-choosen");
 
         final FeatureInstaller featureInstaller = new FeatureInstaller(
                 context.getWorkbenchContext());
@@ -224,7 +206,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements
         final LayerManager currentLM = context.getLayerManager();
         monitor.allowCancellationRequests();
         if (selAttribute == null) {
-            context.getWorkbenchFrame().warnUser(I18N.get(sNoAttributeChoosen));
+            context.getWorkbenchFrame().warnUser(I18N.getInstance().get(sNoAttributeChoosen));
             return;
         }
         final javax.swing.JInternalFrame internalFrame = context
@@ -233,7 +215,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements
         context.getWorkbenchFrame().activateFrame(internalFrame);
         if (result == null) {
             context.getWorkbenchFrame().warnUser(
-                    I18N.get(sNotEnoughValuesWarning));
+                    I18N.getInstance().get(sNotEnoughValuesWarning));
         } else if (result.size() > 0) {
             final String name = selAttribute + "_" + selClassifier;
             currentLM.addLayer(StandardCategoryNames.WORKING, name, result);

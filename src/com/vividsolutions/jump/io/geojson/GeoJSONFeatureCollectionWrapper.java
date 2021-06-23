@@ -251,7 +251,7 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
     String[] featureFields = new String[] { GeoJSONConstants.TYPE,
         GeoJSONConstants.PROPERTIES, GeoJSONConstants.GEOMETRY };
     TaskMonitorUtil.report(monitor,
-        I18N.getMessage("Writer.writing-features"));
+        I18N.getInstance().get("Writer.writing-features"));
     for (Feature feature : featureCollection.getFeatures()) {
 
       if (TaskMonitorUtil.isCancelRequested(monitor))

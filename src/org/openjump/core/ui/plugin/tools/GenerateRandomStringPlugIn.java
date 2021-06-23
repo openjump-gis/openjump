@@ -23,25 +23,25 @@ import java.util.*;
  */
 public class GenerateRandomStringPlugIn extends AbstractUiPlugIn {
 
-    private static String LAYER         = I18N.get("ui.GenericNames.select-layer");
-    private static String ATTRIBUTE     = I18N.get("ui.GenericNames.select-attribute");
-    private static String RANDOM        = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandom");
-    private static String MIN_LENGTH    = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.min-length");
-    private static String MIN_LENGTH_TT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.min-length-tooltip");
-    private static String MAX_LENGTH    = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.max-length");
-    private static String MAX_LENGTH_TT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.max-length-tooltip");
+    private static String LAYER         = I18N.getInstance().get("ui.GenericNames.select-layer");
+    private static String ATTRIBUTE     = I18N.getInstance().get("ui.GenericNames.select-attribute");
+    private static String RANDOM        = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandom");
+    private static String MIN_LENGTH    = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.min-length");
+    private static String MIN_LENGTH_TT = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.min-length-tooltip");
+    private static String MAX_LENGTH    = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.max-length");
+    private static String MAX_LENGTH_TT = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.max-length-tooltip");
 
-    private static String LETTER_BASED  = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.letter-based");
-    private static String WORD_BASED    = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.word-based");
-    private static String DIGITS        = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.digits");
-    private static String HEXA          = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.hexa");
-    private static String ASCII         = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.ascii");
-    private static String CITIES        = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.cities");
-    private static String NAMES         = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.names");
+    private static String LETTER_BASED  = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.letter-based");
+    private static String WORD_BASED    = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.word-based");
+    private static String DIGITS        = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.digits");
+    private static String HEXA          = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.hexa");
+    private static String ASCII         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.ascii");
+    private static String CITIES        = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.cities");
+    private static String NAMES         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.names");
 
-    private static String NO_CANDIDATE  = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.no-editable-layer-with-string-attribute");
-    private static String NON_EMPTY_ATT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.non-empty-attribute");
-    private static String OVERWRITE_PROMPT = I18N.get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.overwrite-prompt");
+    private static String NO_CANDIDATE  = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.no-editable-layer-with-string-attribute");
+    private static String NON_EMPTY_ATT = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.non-empty-attribute");
+    private static String OVERWRITE_PROMPT = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.GenerateRandomStringPlugIn.overwrite-prompt");
 
     private Layer layer;
     private String attribute;
@@ -127,7 +127,7 @@ public class GenerateRandomStringPlugIn extends AbstractUiPlugIn {
         context.getLayerManager().getUndoableEditReceiver().startReceiving();
         try {
             UndoableCommand command =
-                    new UndoableCommand(I18N.get(AutoAssignAttributePlugIn.class.getName())) {
+                    new UndoableCommand(I18N.getInstance().get(AutoAssignAttributePlugIn.class.getName())) {
 
                         public void execute() {
                             Iterator<Feature> newFeatIterator = newFeatures.iterator();

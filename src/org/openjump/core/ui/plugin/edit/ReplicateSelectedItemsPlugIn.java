@@ -84,8 +84,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
     private boolean copyAsGeometry = false;
 
     public String getName() {
-        return I18N
-                .get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn");
     }
 
     public void initialize(PlugInContext context) throws Exception {
@@ -93,7 +92,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
         /*
          * context.getFeatureInstaller().addPopupMenuItem(
          * LayerViewPanel.popupMenu(), this,
-         * I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn"
+         * I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn"
          * ) + "...", false, this.getIcon(),
          * createEnableCheck(context.getWorkbenchContext()));
          */
@@ -101,15 +100,13 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
         /*
          * context.getFeatureInstaller() .addMainMenuItem( this, new String[] {
          * MenuNames.EDIT },
-         * I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn"
+         * I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn"
          * ) + "..." + "{pos:16}", false, this.getIcon(),
          * createEnableCheck(context.getWorkbenchContext()));
          */
 
-        this.T1 = I18N
-                .get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.replicate-to-new-layer");
-        this.CLAYER = I18N
-                .get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.otherwise-select-target-layer");
+        this.T1 = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.replicate-to-new-layer");
+        this.CLAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.otherwise-select-target-layer");
     }
 
     public static MultiEnableCheck createEnableCheck(
@@ -136,8 +133,7 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
     }
 
     private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
-        String sidebarString = I18N
-                .get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.replicates-selected-items-if-all-have-same-attribute-schema");
+        String sidebarString = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.replicates-selected-items-if-all-have-same-attribute-schema");
         dialog.setSideBarDescription(sidebarString);
         // "Replicates selected items if all have same feature schema"
         dialog.addCheckBox(T1, true);
@@ -158,10 +154,8 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
 
     private boolean replicate(PlugInContext context, TaskMonitor monitor,
             boolean newLayer) throws Exception {
-        String statusMessage1 = I18N
-                .get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.item");
-        String statusMessage2 = I18N
-                .get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.no-replication-because-different-attribute-schema");
+        String statusMessage1 = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.item");
+        String statusMessage2 = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.no-replication-because-different-attribute-schema");
 
         boolean hasBeenCalled = false;
         // --------------------------
@@ -235,19 +229,17 @@ public class ReplicateSelectedItemsPlugIn extends AbstractPlugIn implements
             }
             context.addLayer(
                     StandardCategoryNames.WORKING,
-                    I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.new"),
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.new"),
                     myCollA);
         }
         return true;
     }
 
     private void askWhatToDo(PlugInContext context) {
-        String dialog1 = I18N
-                .get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.attribute-schemas-are-different");
-        String dialog2 = I18N
-                .get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.copy-only-geometry");
+        String dialog1 = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.attribute-schemas-are-different");
+        String dialog2 = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.copy-only-geometry");
         String dialog3 = "("
-                + I18N.get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.on-ok-attributes-will-be-lost-on-cancel-items-are-not-copied")
+                + I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ReplicateSelectedItemsPlugIn.on-ok-attributes-will-be-lost-on-cancel-items-are-not-copied")
                 + ")";
 
         MultiInputDialog dialog = new MultiInputDialog(

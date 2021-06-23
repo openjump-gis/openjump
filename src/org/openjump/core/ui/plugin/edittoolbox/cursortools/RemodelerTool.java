@@ -42,7 +42,7 @@ public class RemodelerTool extends MultiClickTool {
   }
 
   public String getName() {
-    return I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.RemodelerTool");
+    return I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.RemodelerTool");
   }
 
   public Cursor getCursor() {
@@ -63,8 +63,8 @@ public class RemodelerTool extends MultiClickTool {
     for (Layer activeLayer : selectionManager.getLayersWithSelectedItems()) {
       if (!activeLayer.isEditable()) {
         JOptionPane.showMessageDialog(null,
-                I18N.getMessage("plugin.EnableCheckFactory.selected-items-layers-must-be-editable", 1),
-                I18N.get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.WARNING_MESSAGE);
+                I18N.getInstance().get("plugin.EnableCheckFactory.selected-items-layers-must-be-editable", 1),
+                I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.Information"), JOptionPane.WARNING_MESSAGE);
         return;
       }
     }
@@ -95,7 +95,7 @@ public class RemodelerTool extends MultiClickTool {
             }
             if ((geomSelected.getClass().getSimpleName().equals("GeometryCollection"))) {
               context.getWorkbench().getFrame().warnUser(
-                      I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.RemodelerTool.geometrycollection-cannot-be-processed"));
+                      I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.RemodelerTool.geometrycollection-cannot-be-processed"));
             }
             else if (newPath.intersects(geomSelected)) {
               if (geomSelected instanceof MultiPolygon) {

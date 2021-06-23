@@ -76,14 +76,14 @@ public class JoinTableDataSourceCSV implements JoinTableDataSource {
 				line= bufferedReader.readLine();
 				nl++;
 				if (line==null)
-						throw (new Exception(I18N.get("org.openjump.sigle.plugin.joinTable.Empty_file")));
+						throw (new Exception(I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Empty_file")));
 				nl=1;
 				while (line!=null) {
 					if (line.trim().length() > 0) {
 						valeurs = line.split(DELIMITATEURS, -1);
 						// verification de la coherence du nombre de colonnes de l'entete et de la ligne 
 						if ((valeurs.length)!=fieldCount)
-								throw (new Exception(I18N.get("org.openjump.sigle.plugin.joinTable.Field_problem_at_line") + nl));
+								throw (new Exception(I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Field_problem_at_line") + nl));
 						    
 						for (int i = 0 ; i < valeurs.length; i++) {
 						    s = (String) valeurs[i]; 
@@ -109,7 +109,7 @@ public class JoinTableDataSourceCSV implements JoinTableDataSource {
 				}
 			}
 			catch(Exception e) {
-				String msg = I18N.get("org.openjump.sigle.plugin.joinTable.Error_while_reading_file") + filePath +" (" + e.getMessage() + ").";
+				String msg = I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Error_while_reading_file") + filePath +" (" + e.getMessage() + ").";
 				throw (new ParseException(msg));
 			}		
 			finally {
@@ -139,7 +139,7 @@ public class JoinTableDataSourceCSV implements JoinTableDataSource {
 				// boucle de chargement des nom de champs
 				firstLine = bufferedReader.readLine();
 				if (firstLine==null)
-					throw (new Exception(I18N.get("org.openjump.sigle.plugin.joinTable.Empty_file")));
+					throw (new Exception(I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Empty_file")));
 				champs = firstLine.split(DELIMITATEURS);	
 				
 				// boucle de qualification unique des noms de colonne				
@@ -175,7 +175,7 @@ public class JoinTableDataSourceCSV implements JoinTableDataSource {
 				fieldCount = fieldNames.size(); 
 			}
 			catch(Exception e) {
-				String msg = I18N.get("org.openjump.sigle.plugin.joinTable.Error_while_reading_fields_in_file") + filePath +"(" + e.getMessage() + ").";
+				String msg = I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Error_while_reading_fields_in_file") + filePath +"(" + e.getMessage() + ").";
 				throw (new ParseException(msg));
 			}		
 			finally {

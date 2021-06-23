@@ -36,20 +36,20 @@ import java.util.*;
  */
 public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
 
-    public static String LAYER_A             = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.source-layer");
-    public static String LAYER_B             = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.eraser-layer");
-    public static String DESCRIPTION         = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.description");
-    public static String SHOW_NEW_VERTICES   = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.show-new-vertices");
-    public static String DECOMPOSE_MULTI     = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.decompose-multi");
-    public static String MINUS               = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.minus");
-    public static String VERTEX_LAYER_SUFFIX = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.vertex-layer-suffix");
+    public static String LAYER_A             = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.source-layer");
+    public static String LAYER_B             = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.eraser-layer");
+    public static String DESCRIPTION         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.description");
+    public static String SHOW_NEW_VERTICES   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.show-new-vertices");
+    public static String DECOMPOSE_MULTI     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.decompose-multi");
+    public static String MINUS               = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.minus");
+    public static String VERTEX_LAYER_SUFFIX = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.vertex-layer-suffix");
 
-    private static String UPDATE_SRC         = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Update-Source-features-with-result");
-    private static String CREATE_LYR         = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-new-layer-for-result");
-    private static String OVERLAY_NG         = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.use-overlay-ng");
-    private static String OVERLAY_NG_TT      = I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.use-overlay-ng-tt");
+    private static String UPDATE_SRC         = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.Update-Source-features-with-result");
+    private static String CREATE_LYR         = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-new-layer-for-result");
+    private static String OVERLAY_NG         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.use-overlay-ng");
+    private static String OVERLAY_NG_TT      = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.use-overlay-ng-tt");
 
-    private static String sFeatures          = I18N.get("ui.GenericNames.features");
+    private static String sFeatures          = I18N.getInstance().get("ui.GenericNames.features");
 
     private Layer layerA;
     private Layer layerB;
@@ -62,7 +62,7 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
     }
 
     public String getName() {
-        return I18N.get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn");
     }
 
     @Override
@@ -101,11 +101,11 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
         final JComboBox layerComboBoxA    = dialog.addLayerComboBox(LAYER_A, candidateA, context.getLayerManager());
         final JComboBox layerComboBoxB    = dialog.addLayerComboBox(LAYER_B, candidateB, context.getLayerManager());
 
-        final String OUTPUT_GROUP = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Match-Type");
+        final String OUTPUT_GROUP = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.Match-Type");
         final JRadioButton createNewLayerRB = dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, !updateMode,
-                I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-a-new-layer-for-the-results"));
+                I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-a-new-layer-for-the-results"));
         final JRadioButton updateSourceRB = dialog.addRadioButton(UPDATE_SRC, OUTPUT_GROUP, updateMode,
-                I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.Replace-the-geometry-of-Source-features-with-the-result-geometry") + "  ");
+                I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.Replace-the-geometry-of-Source-features-with-the-result-geometry") + "  ");
 
         final JCheckBox showNewVerticesCB = dialog.addCheckBox(SHOW_NEW_VERTICES, showNewVertices, SHOW_NEW_VERTICES);
         final JCheckBox decomposeMultiCB  = dialog.addCheckBox(DECOMPOSE_MULTI, decomposeMulti, DECOMPOSE_MULTI);

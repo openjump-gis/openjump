@@ -19,8 +19,6 @@
 */
 package org.openjump.core.ui.plugin.raster;
 
-import static com.vividsolutions.jump.I18N.get;
-
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -84,33 +82,21 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
 
     public static WorkbenchFrame frame = JUMPWorkbench.getInstance().getFrame();
 
-    private final String CHANGE_NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn.name");
-    private final String CHANGE_INTERVAL_TO_NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.name");
-    private final String FROM = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.from");
-    private final String TO = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.to");
-    private final String LOWER_VALUE = I18N
-            .get("com.vividsolutions.jump.util.Frequency.lower-value");
-    private final String UPPER_VALUE = I18N
-            .get("com.vividsolutions.jump.util.Frequency.upper-value");
-    private final String STATISTICS = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
-    private final String NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.nodata");
-    private final String MIN = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.min");
-    private final String MAX = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.max");
-    private final String ERROR = I18N.get("ui.GenericNames.Error");
-    private final String SELECT_BAND = I18N
-            .get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.select-one-band");
-    private final static String CHECK_FILE = I18N
-            .get("plugin.EnableCheckFactory.at-least-one-single-banded-layer-should-exist");
-    private final String NO_OVERWRITE = I18N
-            .get("ui.GenericNames.cannot-overwrite-input-layer");
+    private I18N i18n = I18N.getInstance();
+    private final String CHANGE_NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.ChangeNoDataValuePlugIn.name");
+    private final String CHANGE_INTERVAL_TO_NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.ChangeRangeValuesToNoDataPlugIn.name");
+    private final String FROM = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.from");
+    private final String TO = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.to");
+    private final String LOWER_VALUE = I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.lower-value");
+    private final String UPPER_VALUE = I18N.getInstance().get("com.vividsolutions.jump.util.Frequency.upper-value");
+    private final String STATISTICS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
+    private final String NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.nodata");
+    private final String MIN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.min");
+    private final String MAX = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.max");
+    private final String ERROR = I18N.getInstance().get("ui.GenericNames.Error");
+    private final String SELECT_BAND = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.HistogramPlugIn.select-one-band");
+    private final String CHECK_FILE = I18N.getInstance().get("plugin.EnableCheckFactory.at-least-one-single-banded-layer-should-exist");
+    private final String NO_OVERWRITE = I18N.getInstance().get("ui.GenericNames.cannot-overwrite-input-layer");
     private final ImageIcon icon16 = IconLoader
             .icon("fugue/folder-horizontal-open_16.png");
     private JTextField target_nodata, source_nodata, lv_field, uv_field, nd,
@@ -140,40 +126,27 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
     Envelope fix = new Envelope();
     private MultiInputDialog dialog;
 
-    private final String CLAYER = I18N.get("ui.GenericNames.Source-Layer");
-    private final String OUTPUT_FILE = I18N
-            .get("driver.DriverManager.file-to-save");
-    private final String PROCESSING = I18N
-            .get("jump.plugin.edit.NoderPlugIn.processing");
-    private final String NAME = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.Name");
-    private final String CHECK = I18N.get("ui.GenericNames.check-field");
-    private final String ACTION = I18N.get("ui.GenericNames.choose-an-action");
+    private final String CLAYER = I18N.getInstance().get("ui.GenericNames.Source-Layer");
+    private final String OUTPUT_FILE = I18N.getInstance().get("driver.DriverManager.file-to-save");
+    private final String PROCESSING = I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.processing");
+    private final String NAME = I18N.getInstance().get("ui.plugin.raster.ManageDataPlugIn.Name");
+    private final String CHECK = I18N.getInstance().get("ui.GenericNames.check-field");
+    private final String ACTION = I18N.getInstance().get("ui.GenericNames.choose-an-action");
 
-    private final String CHANGE_NODATA_TIP = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.change-nodata-and-tag-tip");
-    private final String CHANGE_INTERVAL_TO_NODATA_TIP = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.Mask-with-no-data-tip");
-    private final String EXTRACT_INTERVAL_TIP = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.Extract-range-data-tip");
-    private final String EXTRACT_INTERVAL = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.Extract-range-data");
-    private final String RESET_NODATA_TAG_TIP = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.Stretch-raster-tip");
-    private final String RESET_NODATA_TAG = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.Stretch-raster");
-    private final String SET_DECIMAL = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.Set-decimals");
-    private final String SET_DECIMAL_TIP = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.Set-decimals-tip");
-    private final String RESET_TO_MIN = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.Stretch-to-min");
-    private final String RESET_TO_MAX = I18N
-            .get("ui.plugin.raster.ManageDataPlugIn.Stretch-to-max");
+    private final String CHANGE_NODATA_TIP = I18N.getInstance().get("ui.plugin.raster.ManageDataPlugIn.change-nodata-and-tag-tip");
+    private final String CHANGE_INTERVAL_TO_NODATA_TIP = I18N.getInstance().get("ui.plugin.raster.ManageDataPlugIn.Mask-with-no-data-tip");
+    private final String EXTRACT_INTERVAL_TIP = I18N.getInstance().get("ui.plugin.raster.ManageDataPlugIn.Extract-range-data-tip");
+    private final String EXTRACT_INTERVAL = I18N.getInstance().get("ui.plugin.raster.ManageDataPlugIn.Extract-range-data");
+    private final String RESET_NODATA_TAG_TIP = I18N.getInstance().get("ui.plugin.raster.ManageDataPlugIn.Stretch-raster-tip");
+    private final String RESET_NODATA_TAG = I18N.getInstance().get("ui.plugin.raster.ManageDataPlugIn.Stretch-raster");
+    private final String SET_DECIMAL = I18N.getInstance().get("ui.plugin.raster.ManageDataPlugIn.Set-decimals");
+    private final String SET_DECIMAL_TIP = I18N.getInstance().get("ui.plugin.raster.ManageDataPlugIn.Set-decimals-tip");
+    private final String RESET_TO_MIN = I18N.getInstance().get("ui.plugin.raster.ManageDataPlugIn.Stretch-to-min");
+    private final String RESET_TO_MAX = I18N.getInstance().get("ui.plugin.raster.ManageDataPlugIn.Stretch-to-max");
 
     List<RasterImageLayer> fLayers = new ArrayList<RasterImageLayer>();
 
-    public static MultiEnableCheck createEnableCheck(
+    public MultiEnableCheck createEnableCheck(
             WorkbenchContext workbenchContext) {
         final EnableCheckFactory checkFactory = new EnableCheckFactory(
                 workbenchContext);
@@ -198,7 +171,7 @@ public class ManageDataPlugIn extends ThreadedBasePlugIn {
                         }
                         String msg = null;
                         if (mLayer.isEmpty()) {
-                            msg = get(CHECK_FILE);
+                            msg = I18N.getInstance().get(CHECK_FILE);
                         }
                         return msg;
                     }

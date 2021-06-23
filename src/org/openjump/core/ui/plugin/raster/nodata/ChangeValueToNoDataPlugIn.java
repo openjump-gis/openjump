@@ -66,26 +66,17 @@ public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
 
 
     // Language codes: 11
-    public static final String PLUGINNAME = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.name");
-    private String CHANGE = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.change");
-    private String TONODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.tonodata");
-    private static String INVERSE = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.Inverse");
-    private static String REVERSE_TOOLTIP = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.tooltips");
-    private String OUTPUT_FILE = I18N.get("driver.DriverManager.file-to-save")
+    public static final String PLUGINNAME = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.name");
+    private String CHANGE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.change");
+    private String TONODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.tonodata");
+    private static String INVERSE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.Inverse");
+    private static String REVERSE_TOOLTIP = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.ChangeValueToNoDataPlugIn.tooltips");
+    private String OUTPUT_FILE = I18N.getInstance().get("driver.DriverManager.file-to-save")
             + ": ";
-    private static String STATISTICS = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
-    private static String NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.nodata");
-    private static String MIN = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.min");
-    private static String MAX = I18N
-            .get("org.openjump.core.ui.plugin.raster.nodata.max");
+    private static String STATISTICS = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.CellStatistics");
+    private static String NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.nodata");
+    private static String MIN = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.min");
+    private static String MAX = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.nodata.max");
 
     private Properties properties = null;
   //  private static String propertiesFile = LoadSextanteRasterImagePlugIn
@@ -116,7 +107,7 @@ public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
     @Override
     public void run(TaskMonitor monitor, PlugInContext context)
             throws Exception {
-        monitor.report(I18N.get("jump.plugin.edit.NoderPlugIn.processing"));
+        monitor.report(I18N.getInstance().get("jump.plugin.edit.NoderPlugIn.processing"));
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);
         String nome = getName() + " (" + rLayer.getName() + ")";
@@ -289,7 +280,7 @@ public class ChangeValueToNoDataPlugIn extends ThreadedBasePlugIn {
         } catch (Exception e) {
             context.getWorkbenchFrame()
                     .warnUser(
-                            I18N.get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
+                            I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SaveDatasetsPlugIn.Error-See-Output-Window"));
             context.getWorkbenchFrame().getOutputFrame().createNewDocument();
             context.getWorkbenchFrame()
                     .getOutputFrame()

@@ -76,7 +76,7 @@ public class CopySchemaPlugIn extends AbstractPlugIn {
             .getLayerNamePopupMenu();
        	        
         featureInstaller.addPopupMenuItem(layerNamePopupMenu, this, 
-        		new String[] { I18N.get("ui.MenuNames.SCHEMA") }, 
+        		new String[] { I18N.getInstance().get("ui.MenuNames.SCHEMA") }, 
         		getName(), 
                 false, 
                 getIcon(),

@@ -104,14 +104,14 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 
     private String ADVANCED_OPTIONS;
     private String END_CAP_STYLE;
-    private String S_CAP_FLAT   = I18N.get("ui.plugin.analysis.BufferPlugIn.cap-flat");
-    private String S_CAP_ROUND  = I18N.get("ui.plugin.analysis.BufferPlugIn.cap-round");
-    private String S_CAP_SQUARE = I18N.get("ui.plugin.analysis.BufferPlugIn.cap-square");
+    private String S_CAP_FLAT   = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.cap-flat");
+    private String S_CAP_ROUND  = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.cap-round");
+    private String S_CAP_SQUARE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.cap-square");
 
     private String JOIN_STYLE;
-    private String S_JOIN_BEVEL = I18N.get("ui.plugin.analysis.BufferPlugIn.join-bevel");
-    private String S_JOIN_MITRE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-mitre");
-    private String S_JOIN_ROUND = I18N.get("ui.plugin.analysis.BufferPlugIn.join-round");
+    private String S_JOIN_BEVEL = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-bevel");
+    private String S_JOIN_MITRE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-mitre");
+    private String S_JOIN_ROUND = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-round");
     private String MITRE_LIMIT;
 
     private String LEFT_SINGLE_SIDED;
@@ -181,7 +181,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
 
     public BufferPlugIn() {
         super(
-            I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn") + "...",
+            I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn") + "...",
             IconLoader.icon("buffer.gif")
         );
     }
@@ -206,32 +206,32 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
     public boolean execute(PlugInContext context) throws Exception {
         // [sstein, 16.07.2006] set again to obtain correct language
         // [LDB: 31.08.2007] moved all initialization of strings here
-        MAIN_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.main-options");
-        PROCESSED_DATA = I18N.get("ui.plugin.analysis.BufferPlugIn.processed-data");
-        LAYER = I18N.get("ui.plugin.analysis.BufferPlugIn.layer");
-        SELECTION = I18N.get("ui.plugin.analysis.BufferPlugIn.selection");
-        SELECTION_HELP = I18N.get("ui.plugin.analysis.BufferPlugIn.selection-help");
-        UPDATE_SOURCE = I18N.get("ui.plugin.analysis.BufferPlugIn.update-source");
-        UPDATE_SOURCE_HELP = I18N.get("ui.plugin.analysis.BufferPlugIn.update-source-help");
+        MAIN_OPTIONS = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.main-options");
+        PROCESSED_DATA = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.processed-data");
+        LAYER = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.layer");
+        SELECTION = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.selection");
+        SELECTION_HELP = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.selection-help");
+        UPDATE_SOURCE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.update-source");
+        UPDATE_SOURCE_HELP = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.update-source-help");
 
-        DISTANCE = I18N.get("ui.plugin.analysis.BufferPlugIn.distance");
-        FIXED_DISTANCE = I18N.get("ui.plugin.analysis.BufferPlugIn.fixed-distance");
-        FROM_ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.get-distance-from-attribute-value");
-        ATTRIBUTE = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use");
-        ATTRIBUTE_TOOLTIP = I18N.get("ui.plugin.analysis.BufferPlugIn.attribute-to-use-tooltip");
+        DISTANCE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.distance");
+        FIXED_DISTANCE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.fixed-distance");
+        FROM_ATTRIBUTE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.get-distance-from-attribute-value");
+        ATTRIBUTE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.attribute-to-use");
+        ATTRIBUTE_TOOLTIP = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.attribute-to-use-tooltip");
 
-        OTHER_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.other-options");
-        QUADRANT_SEGMENTS = I18N.get(
+        OTHER_OPTIONS = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.other-options");
+        QUADRANT_SEGMENTS = I18N.getInstance().get(
                 "org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawCircleWithGivenRadiusTool.Number-of-segments-per-circle-quarter");
-        UNION_RESULT = I18N.get("ui.plugin.analysis.UnionPlugIn.union");
-        COPY_ATTRIBUTES = I18N.get("ui.plugin.analysis.BufferPlugIn.preserve-attributes");
+        UNION_RESULT = I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.union");
+        COPY_ATTRIBUTES = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.preserve-attributes");
 
-        ADVANCED_OPTIONS = I18N.get("ui.plugin.analysis.BufferPlugIn.advanced-options");
-        END_CAP_STYLE = I18N.get("ui.plugin.analysis.BufferPlugIn.end-cap-style");
-        JOIN_STYLE = I18N.get("ui.plugin.analysis.BufferPlugIn.join-style");
-        MITRE_LIMIT = I18N.get("ui.plugin.analysis.BufferPlugIn.mitre-join-limit");
-        LEFT_SINGLE_SIDED = I18N.get("ui.plugin.analysis.BufferPlugIn.left-single-sided");
-        RIGHT_SINGLE_SIDED = I18N.get("ui.plugin.analysis.BufferPlugIn.right-single-sided");
+        ADVANCED_OPTIONS = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.advanced-options");
+        END_CAP_STYLE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.end-cap-style");
+        JOIN_STYLE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-style");
+        MITRE_LIMIT = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.mitre-join-limit");
+        LEFT_SINGLE_SIDED = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.left-single-sided");
+        RIGHT_SINGLE_SIDED = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.right-single-sided");
 
         endCapStyles = new ArrayList();
         endCapStyles.add(S_CAP_FLAT);
@@ -251,7 +251,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         if (useSelection) {
             sideBarText = SELECTION;
         } else {
-            sideBarText = I18N.get("ui.plugin.analysis.BufferPlugIn.buffers-all-geometries-in-the-input-layer");
+            sideBarText = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.buffers-all-geometries-in-the-input-layer");
         }
         dialog.setSideBarDescription(sideBarText);
         addParameter(P_USE_SELECTION, useSelection);
@@ -302,7 +302,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
             FeatureDataset inputFD = new FeatureDataset(inputC, featureSchema);
             if (inputFD.isEmpty()) {
                 context.getWorkbenchFrame()
-                        .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
+                        .warnUser(I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
                 return;
             }
 
@@ -342,7 +342,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
             resultFC = FeatureDatasetFactory.createFromGeometry(resultMap.values());
         }
         if ((Boolean)getParameter(P_UNION_RESULT)) {
-            monitor.report(I18N.get("ui.plugin.analysis.BufferPlugIn.union-buffered-features"));
+            monitor.report(I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.union-buffered-features"));
             Collection geoms = FeatureUtil.toGeometries(resultFC.getFeatures());
             Geometry g = UnaryUnionOp.union(geoms);
             geoms.clear();
@@ -351,7 +351,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         }
         if (resultFC.isEmpty()) {
             context.getWorkbenchFrame()
-                    .warnUser(I18N.get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
+                    .warnUser(I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.empty-result-set"));
             return;
         }
         context.getLayerManager().addCategory(StandardCategoryNames.RESULT);
@@ -359,8 +359,8 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         if (!(Boolean) getParameter("UseSelection"))
             name = (String)getParameter(P_LAYER_NAME);
         else
-            name = I18N.get("ui.MenuNames.SELECTION");
-        name = I18N.get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn") + "-" + name;
+            name = I18N.getInstance().get("ui.MenuNames.SELECTION");
+        name = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.analysis.BufferPlugIn") + "-" + name;
         context.addLayer(StandardCategoryNames.RESULT, name, resultFC);
     }
 
@@ -399,7 +399,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         if (leftSingleSided) side += LEFT;
         if (rightSingleSided) side += RIGHT;
         for (Iterator ia = fcA.iterator(); ia.hasNext(); ) {
-            monitor.report(count++, total, I18N.get("com.vividsolutions.jump.qa.diff.DiffGeometry.features"));
+            monitor.report(count++, total, I18N.getInstance().get("com.vividsolutions.jump.qa.diff.DiffGeometry.features"));
             if (monitor.isCancelRequested()) break;
             Feature fa = (Feature) ia.next();
             Geometry ga = fa.getGeometry();
@@ -429,7 +429,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
                     map.put(fa.getID(), left.getFactory().createGeometryCollection(new Geometry[]{left,right}));
                 }
             } catch (Exception e) {
-                String errorMessage = I18N.getMessage(
+                String errorMessage = I18N.getInstance().get(
                     "ui.plugin.analysis.BufferPlugIn.error-found",
                     new Object[]{fa.getID(), ga.getCoordinate().x, ga.getCoordinate().x});
                 context.getWorkbenchFrame().warnUser(errorMessage);

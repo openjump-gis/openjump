@@ -85,71 +85,46 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
 public class LayerPropertiesPlugIn extends AbstractPlugIn {
   private final static String LAST_TAB_KEY = LayerPropertiesPlugIn.class
       .getName() + " - LAST TAB";
-  private final static String LAYER_PROPERTIES = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Properties");
-  private final static String INFO = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Info"); // information
-  private final static String LAYER_NAME = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Name");
-  private final static String NUMBER_OF_LAYERS = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Number-of-Layers");
-  private final static String NUMBER_OF_FEATURES = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Number-of-Features");
-  private final static String NUMBER_OF_POINTS = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Number-of-Points");
-  private final static String GEOMETRY_TYPE = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Geometry-Type"); // Polygon,
+  private final static String LAYER_PROPERTIES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Properties");
+  private final static String INFO = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Info"); // information
+  private final static String LAYER_NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Layer-Name");
+  private final static String NUMBER_OF_LAYERS = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Number-of-Layers");
+  private final static String NUMBER_OF_FEATURES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Number-of-Features");
+  private final static String NUMBER_OF_POINTS = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Number-of-Points");
+  private final static String GEOMETRY_TYPE = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Geometry-Type"); // Polygon,
                                                                                      // Polyline,
                                                                                      // etc.
-  private final static String NUMBER_OF_ATTRIBUTES = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Number-of-Attributes");
-  private final static String DATASOURCE_CLASS = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.DataSource-Class"); // class
+  private final static String NUMBER_OF_ATTRIBUTES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Number-of-Attributes");
+  private final static String DATASOURCE_CLASS = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.DataSource-Class"); // class
                                                                                         // name
-  private final static String SOURCE_PATH = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path"); // directory
+  private final static String SOURCE_PATH = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path"); // directory
                                                                                    // path
                                                                                    // of
                                                                                    // source
                                                                                    // layer
-  private final static String NO_FEATURES = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.No-Features"); // no
+  private final static String NO_FEATURES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.No-Features"); // no
                                                                                    // features
                                                                                    // were
                                                                                    // found
-  private final static String MULTIPLE_GEOMETRY_TYPES = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-geometry-types"); // mixed
-  private final static String MULTIPLE_SOURCE_TYPES = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-Source-Types");
-  private final static String NULL_GEOMETRIES = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Null-Geometries");
-  private final static String NOT_SAVED = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not-Saved"); // the
+  private final static String MULTIPLE_GEOMETRY_TYPES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-geometry-types"); // mixed
+  private final static String MULTIPLE_SOURCE_TYPES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-Source-Types");
+  private final static String NULL_GEOMETRIES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Null-Geometries");
+  private final static String NOT_SAVED = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not-Saved"); // the
                                                                                  // layer
                                                                                  // is
                                                                                  // unsaved
   private final static String AVERAGE_PER_LAYER = " ("
-      + I18N
-          .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.average-per-layer")
+      + I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.average-per-layer")
       + ")";
-  private final static String MULTIPLE_SOURCES = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-Sources");
-  private final static String STYLES = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Styles");
-  private final static String PROPORTIONAL_TRANSPARENCY_ADJUSTER = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Proportional-Transparency-Adjustment");
-  private final static String CHARSET = I18N
-      .get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset");
-  private final static String EXTENT = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.extent");
-  private final static String XMIN = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmin");
-  private final static String YMIN = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymin");
-  private final static String XMAX = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmax");
-  private final static String YMAX = I18N
-      .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymax");
+  private final static String MULTIPLE_SOURCES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-Sources");
+  private final static String STYLES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Styles");
+  private final static String PROPORTIONAL_TRANSPARENCY_ADJUSTER = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Proportional-Transparency-Adjustment");
+  private final static String CHARSET = I18N.getInstance().get("org.openjump.core.ui.io.file.DataSourceFileLayerLoader.charset");
+  private final static String EXTENT = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.extent");
+  private final static String XMIN = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmin");
+  private final static String YMIN = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymin");
+  private final static String XMAX = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.xmax");
+  private final static String YMAX = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.ymax");
   private WorkbenchContext workbenchContext;
   private InfoPanel infoPanel;
   private StylePanel stylePanel;

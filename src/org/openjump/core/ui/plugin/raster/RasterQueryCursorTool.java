@@ -90,17 +90,13 @@ public class RasterQueryCursorTool extends NClickTool {
      */
 
     protected Coordinate tentativeCoordinate;
-    public static final String LAYER_NAME = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.values");
-    public static final String LAYER = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.layer");
-    private final static String RASTER_NODATA = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
+    public static final String LAYER_NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.values");
+    public static final String LAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.layer");
+    private final static String RASTER_NODATA = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterImageLayerPropertiesPlugIn.cell.nodata");
     private String lastClick = "-";
     // protected int width, height; // The dimensions of the image
 
-    private String VALUE = I18N
-            .get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
+    private String VALUE = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.value");
     private String name;
     PlugInContext context;
     LayerNamePanel namePanel;
@@ -193,13 +189,13 @@ public class RasterQueryCursorTool extends NClickTool {
                 getPanel()
                         .getContext()
                         .warnUser(
-                                I18N.get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.message"));
+                                I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn.message"));
             }
         } else
             getPanel()
                     .getContext()
                     .warnUser(
-                            I18N.get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.Select-Raster-Image"));
+                            I18N.getInstance().get("org.openjump.core.rasterimage.SelectRasterImageFilesPanel.Select-Raster-Image"));
 
     }
 
@@ -354,6 +350,6 @@ public class RasterQueryCursorTool extends NClickTool {
 
     @Override
     public String getName() {
-    	return  I18N.get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn");
+    	return  I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn");
     }
 }

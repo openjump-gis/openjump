@@ -49,19 +49,19 @@ public class MergePolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn {
 
   public void initialize(PlugInContext context) throws Exception {
 
-    sMergeTwoPolys = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merge-Selected-Polygons-with-Neighbours");
-    sFeaturesFromDifferentLayer = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.features-from-different-layers");
-    sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.description");
-    sUseArea = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-with-neighbor-that-has-the-largest-area");
-    sUseBoder = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-with-neighbor-with-the-longest-common-edge");
-    sChoseMergeMethod = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Please-chose-the-merge-method");
-    sMerged = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merged");
-    sSearchingForMergeCandidates = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Searching-for-merge-candidates");
-    sMergingPolygons = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merging-polygons");
-    sUseAttribute = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Use-attribute");
-    sUseAttributeTooltip = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Use-attribute-tooltip");
-    sAttributeToUse = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Attribute");
-    //sInvalidFeatureMessage = I18N.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Features-must-be-valid");
+    sMergeTwoPolys = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merge-Selected-Polygons-with-Neighbours");
+    sFeaturesFromDifferentLayer = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.features-from-different-layers");
+    sSidebar = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.description");
+    sUseArea = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-with-neighbor-that-has-the-largest-area");
+    sUseBoder = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-with-neighbor-with-the-longest-common-edge");
+    sChoseMergeMethod = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Please-chose-the-merge-method");
+    sMerged = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merged");
+    sSearchingForMergeCandidates = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Searching-for-merge-candidates");
+    sMergingPolygons = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merging-polygons");
+    sUseAttribute = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Use-attribute");
+    sUseAttributeTooltip = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Use-attribute-tooltip");
+    sAttributeToUse = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Attribute");
+    //sInvalidFeatureMessage = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Features-must-be-valid");
 
     FeatureInstaller featureInstaller = new FeatureInstaller(context.getWorkbenchContext());
     featureInstaller.addMainMenuPlugin(
@@ -238,7 +238,7 @@ public class MergePolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn {
       monitor.report(++count, total, "polygons");
       if (f.getGeometry().getDimension() != 2) continue;
       if (!f.getGeometry().isValid())
-        throw new Exception(I18N.getMessage("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Features-must-be-valid", f.getID()));
+        throw new Exception(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Features-must-be-valid", f.getID()));
       validated.add(f.getID());
       List<Feature> candidates = index.query(f.getGeometry().getEnvelopeInternal());
       int fid = f.getID();
@@ -249,7 +249,7 @@ public class MergePolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn {
         if (cid == fid) continue;
         if (candidate.getGeometry().getDimension() != 2) continue;
         if (!validated.contains(cid) && !candidate.getGeometry().isValid())
-          throw new Exception(I18N.getMessage("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Features-must-be-valid", candidate.getID()));
+          throw new Exception(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Features-must-be-valid", candidate.getID()));
         validated.add(cid);
         if (attribute != null && !Objects.equals(f.getAttribute(attribute), candidate.getAttribute(attribute))) continue;
         if (f.getGeometry().intersects(candidate.getGeometry())) {

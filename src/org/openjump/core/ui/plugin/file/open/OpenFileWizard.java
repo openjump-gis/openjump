@@ -63,7 +63,7 @@ public class OpenFileWizard extends AbstractWizardGroup {
    *          The workbench context.
    */
   public OpenFileWizard(final WorkbenchContext workbenchContext) {
-    super(I18N.get(KEY), IconLoader.icon("folder_page.png"),
+    super(I18N.getInstance().get(KEY), IconLoader.icon("folder_page.png"),
         SelectFilesPanel.KEY);
   }
 

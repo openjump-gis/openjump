@@ -148,7 +148,7 @@ public class CommandLine {
         parVec.add(args[i]);
         i++;
       } else
-        throw new ParseException(I18N.getMessage(getClass().getName()
+        throw new ParseException(I18N.getInstance().get(getClass().getName()
             + ".unknown-option-or-file-not-found-{0}", args[i]));
     }
 

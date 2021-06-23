@@ -59,7 +59,7 @@ public class WMSTransparencyPanel extends JPanel {
     private JLabel transparencyLabel = new JLabel();
 
     public String getTitle() {
-        return I18N.get("ui.plugin.wms.EditWMSQueryPanel.transparency");
+        return I18N.getInstance().get("ui.plugin.wms.EditWMSQueryPanel.transparency");
     }
 
     private WMSLayer layer;
@@ -99,13 +99,12 @@ public class WMSTransparencyPanel extends JPanel {
         this.setBorder(border1);
         this.setToolTipText("");
 
-        transparencyLabel.setText(I18N
-                .get("ui.plugin.wms.EditWMSQueryPanel.transparency"));
+        transparencyLabel.setText(I18N.getInstance().get("ui.plugin.wms.EditWMSQueryPanel.transparency"));
 
         Insets defaultInsets = new Insets(3, 3, 3, 3);
 
         this.add(new JLabel(
-                " "     + I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageLayerControllPanel.set-overall-transparency")));
+                " "     + I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RasterImageLayerControllPanel.set-overall-transparency")));
 
         for (int i = 0; i <= 100; i += 25) {
             this.sliderLabelDictionary.put(new Integer(i), new JLabel(i + "%"));

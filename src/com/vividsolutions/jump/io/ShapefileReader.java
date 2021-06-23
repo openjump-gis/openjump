@@ -128,7 +128,7 @@ public class ShapefileReader extends AbstractJUMPReader {
         }
 
         if (shpFileName == null) {
-            throw new IllegalParametersException(I18N.get("io.ShapefileReader.no-file-property-specified"));
+            throw new IllegalParametersException(I18N.getInstance().get("io.ShapefileReader.no-file-property-specified"));
         }
 
         // okay, we have .shp and .dbf file paths, lets create Shapefile and DbfFile
@@ -204,7 +204,7 @@ public class ShapefileReader extends AbstractJUMPReader {
                 // [mmichaud 2013-10-07] if the number of shapes is greater than the number of records
                 // it is better to go on and create features with a geometry and null attributes
                 if (collection.getNumGeometries() > mydbf.getLastRec()) {
-                    String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-gt-dbf",
+                    String message = I18N.getInstance().get("com.vividsolutions.jump.io.ShapefileReader.shp-gt-dbf",
                             shpFileName, collection.getNumGeometries(), mydbf.getLastRec());
                     Logger.error(message);
                     getExceptions().add(new Exception(message));
@@ -216,7 +216,7 @@ public class ShapefileReader extends AbstractJUMPReader {
                     }
                 }
                 if (collection.getNumGeometries() < mydbf.getLastRec()) {
-                    String message = I18N.getMessage("com.vividsolutions.jump.io.ShapefileReader.shp-lt-dbf",
+                    String message = I18N.getInstance().get("com.vividsolutions.jump.io.ShapefileReader.shp-lt-dbf",
                             shpFileName, collection.getNumGeometries(), mydbf.getLastRec());
                     Logger.error(message);
                     getExceptions().add(new Exception(message));

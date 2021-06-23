@@ -164,7 +164,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
       DataSourceQuery dataSourceQuery = new DataSourceQuery(dataSource, null,
               layerName);
       ArrayList exceptions = new ArrayList();
-      monitor.report(I18N.get("datasource.LoadDatasetPlugIn.loading")+" " + layerName + "...");
+      monitor.report(I18N.getInstance().get("datasource.LoadDatasetPlugIn.loading")+" " + layerName + "...");
 
       Connection connection = dataSourceQuery.getDataSource().getConnection();
       try {
@@ -251,7 +251,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
           outputFrame.createNewDocument();
           ExceptionUtil.reportExceptions(exceptions, dataSourceQuery,
                   workbenchFrame, outputFrame);
-          workbenchFrame.warnUser(I18N.get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
+          workbenchFrame.warnUser(I18N.getInstance().get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
           return false;
       }
 
@@ -365,7 +365,7 @@ public class DataSourceFileLayerLoader extends AbstractFileLayerLoader implement
       outputFrame.createNewDocument();
       ExceptionUtil.reportExceptions(exceptions, dataSourceQuery,
         workbenchFrame, outputFrame);
-      workbenchFrame.warnUser(I18N.get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
+      workbenchFrame.warnUser(I18N.getInstance().get("datasource.LoadDatasetPlugIn.problems-were-encountered"));
       return false;
     }
 

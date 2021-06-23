@@ -255,7 +255,7 @@ public abstract class AbstractCursorTool implements CursorTool {
   }
 
   public void activate(LayerViewPanel new_panel) {
-    Logger.info(I18N.get("ui.cursortool.AbstractCursorTool.activating") + " " + getName());
+    Logger.debug(I18N.getInstance().get("ui.cursortool.AbstractCursorTool.activating") + " '" + getName() + "' -> " + this.getClass().getSimpleName() );
 
     LayerViewPanel old_panel = getPanel();
     // cancel ongoing possibly gestures if we switch LayerViews (switch Tasks)
@@ -583,8 +583,7 @@ public abstract class AbstractCursorTool implements CursorTool {
       WorkbenchFrame workbenchFrame = (WorkbenchFrame) SwingUtilities
           .getAncestorOfClass(WorkbenchFrame.class, getTaskFrame());
       if (workbenchFrame != null) {
-        Logger.info(I18N
-                .get("ui.cursortool.AbstractCursorTool.gesture-finished")
+        Logger.info(I18N.getInstance().get("ui.cursortool.AbstractCursorTool.gesture-finished")
                 + ": "
                 + getName());
       }
@@ -669,12 +668,12 @@ public abstract class AbstractCursorTool implements CursorTool {
       while (key.contains("$") && (c = tool.getClass().getSuperclass()) != null) {
         key = c.getName();
       }
-      return I18N.get(key);
+      return I18N.getInstance().get(key);
     } catch (java.util.MissingResourceException e) {
       // No I18N for the PlugIn so log it, but don't stop
       Logger.error(e.getMessage() + " " + tool.getClass().getName());
       return StringUtil.toFriendlyName(tool.getClass().getName(),
-          I18N.get("ui.cursortool.AbstractCursorTool.tool"));
+          I18N.getInstance().get("ui.cursortool.AbstractCursorTool.tool"));
     }
   }
 
@@ -750,7 +749,7 @@ public abstract class AbstractCursorTool implements CursorTool {
     }
 
     private void showMsg(String msg) {
-      getPanel().getWorkBenchFrame().setStatusMessage(I18N.get(msg), 5000);
+      getPanel().getWorkBenchFrame().setStatusMessage(I18N.getInstance().get(msg), 5000);
     }
 
     private boolean isSpace(KeyEvent e) {

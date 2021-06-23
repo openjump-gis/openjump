@@ -51,8 +51,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public class DrawConstrainedLineStringTool extends ConstrainedMultiClickTool {
     private FeatureDrawingUtil featureDrawingUtil;
-    final static String drawConstrainedLineString =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedLineStringTool.Draw-Constrained-LineString");
-    final static String TheLinestringMustHaveAtLeast2Points =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedLineStringTool.The-linestring-must-have-at-least-2-points");
+    final static String drawConstrainedLineString =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedLineStringTool.Draw-Constrained-LineString");
+    final static String TheLinestringMustHaveAtLeast2Points =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedLineStringTool.The-linestring-must-have-at-least-2-points");
     
     protected DrawConstrainedLineStringTool(FeatureDrawingUtil featureDrawingUtil) {
         drawClosed = false;

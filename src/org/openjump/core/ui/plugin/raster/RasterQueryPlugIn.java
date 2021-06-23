@@ -60,8 +60,7 @@ public class RasterQueryPlugIn extends AbstractPlugIn {
      *  SHIFT to display only last measure. Moving cursor on image shows raster
      *  cell value on lower panel
      */
-    private final static String sErrorSeeOutputWindow = I18N
-            .get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
+    private final static String sErrorSeeOutputWindow = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
 
     @Override
 	public void initialize(PlugInContext context) throws Exception {
@@ -80,7 +79,7 @@ public class RasterQueryPlugIn extends AbstractPlugIn {
 
     @Override
     public String getName() {
-    	return  I18N.get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn");
+    	return  I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn");
     }
     
     

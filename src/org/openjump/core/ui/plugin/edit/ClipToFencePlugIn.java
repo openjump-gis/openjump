@@ -42,7 +42,7 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 	private boolean visibleOnly = true;
 
     public String getName() {  //for the menu
-    	return I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Clip-Map-to-Fence");
+    	return I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Clip-Map-to-Fence");
     }
 
 	public void initialize( PlugInContext context ) throws Exception 
@@ -55,10 +55,10 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 						.add(new EnableCheckFactory(context.getWorkbenchContext()).createTaskWindowMustBeActiveCheck())
 						.add(fenceLayerMustBePresent()));
         
-        DIALOGWARNING=I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.This-operation-is-not-undoable");
-        VISIBLEONLY = I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Visible-Only-(-see-Warning-)");
-        DIALOGMSG=I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.description");
-        FENCELAYERMUSTBEPRESENT = I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Fence-layer-must-be-present");
+        DIALOGWARNING=I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.This-operation-is-not-undoable");
+        VISIBLEONLY = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Visible-Only-(-see-Warning-)");
+        DIALOGMSG=I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.description");
+        FENCELAYERMUSTBEPRESENT = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Fence-layer-must-be-present");
     }
     
     public boolean execute(PlugInContext context) throws Exception {
@@ -95,7 +95,7 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 			if (layer == fence) continue;
 	        FeatureCollection b = layer.getFeatureCollectionWrapper();
 	        if (hasDuplicateAttributeNames(b.getFeatureSchema())) {
-	            context.getWorkbenchFrame().warnUser(I18N.get(
+	            context.getWorkbenchFrame().warnUser(I18N.getInstance().get(
 	                "org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.duplicate-attribute-names-are-not-supported"));
 	            unprocessedLayers.add(layer);
 	        }
@@ -107,8 +107,8 @@ public class ClipToFencePlugIn extends AbstractPlugIn implements ThreadedPlugIn 
 		if (unprocessedLayers.size()>0) {
 		    HTMLFrame outputFrame = context.getWorkbenchFrame().getOutputFrame();
 		    outputFrame.createNewDocument();
-		    outputFrame.addHeader(1, I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Clip-Map-to-Fence"));
-		    outputFrame.addHeader(2, I18N.get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.unprocessed-layers"));
+		    outputFrame.addHeader(1, I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.Clip-Map-to-Fence"));
+		    outputFrame.addHeader(2, I18N.getInstance().get("org.openjump.core.ui.plugin.edit.ClipToFencePlugIn.unprocessed-layers"));
 		    for (Layer layer : unprocessedLayers) {
 		        outputFrame.append(layer.getName());
 		    }

@@ -103,7 +103,7 @@ public class MetricsLineStringSegmentStyle extends LineStringSegmentStyle {
 
     public static class LengthAngle extends MetricsLineStringSegmentStyle {
         public LengthAngle() {
-            super(I18N.get("ui.renderer.style.MetricsLineStringSegmentStyle.Segment-Metrics"), "LengthAngleDecorator.gif");
+            super(I18N.getInstance().get("ui.renderer.style.MetricsLineStringSegmentStyle.Segment-Metrics"), "LengthAngleDecorator.gif");
         }
     }
 

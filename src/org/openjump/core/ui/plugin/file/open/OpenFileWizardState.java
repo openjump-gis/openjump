@@ -75,7 +75,7 @@ public class OpenFileWizardState {
   public static FileLayerLoader IGNORELOADER = new DataSourceFileLayerLoader(
     JUMPWorkbench.getInstance().getContext(),
     DummyDataSource.class, 
-    I18N.get(OpenFileWizardState.class.getName()+".dummy-loader-description"),
+    I18N.getInstance().get(OpenFileWizardState.class.getName()+".dummy-loader-description"),
     Arrays.asList(new String[]{"*"}));
 
   private Map<String, Set<FileLayerLoader>> extensionLoaderMap = new HashMap<String, Set<FileLayerLoader>>();

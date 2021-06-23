@@ -54,12 +54,9 @@ import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 
 public class EditSelectedSidePlugIn extends AbstractPlugIn {
 
-    private final static String sEditSelectedSide = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Edit-Selected-Side");
-    private final static String sPointsDoNotHaveSides = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Points-do-not-have-sides");
-    private final static String sSelectOnlyOnePart = I18N
-            .get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Select-only-one-part");
+    private final static String sEditSelectedSide = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Edit-Selected-Side");
+    private final static String sPointsDoNotHaveSides = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Points-do-not-have-sides");
+    private final static String sSelectOnlyOnePart = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSidePlugIn.Select-only-one-part");
 
     public String getName() {
         return sEditSelectedSide;

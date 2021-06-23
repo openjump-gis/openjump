@@ -70,15 +70,15 @@ import java.util.*;
  */
 public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
     
-	private final static String LAYER             = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.layer");
-	private final static String SELECTION         = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.selection");
-	private final static String SELECTION_HELP    = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.selection-help");
+	private final static String LAYER             = I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.layer");
+	private final static String SELECTION         = I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.selection");
+	private final static String SELECTION_HELP    = I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.selection-help");
     
-    private final static String USE_ATTRIBUTE     = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.use-attribute");
-    private final static String ATTRIBUTE         = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.attribute");
-    private final static String IGNORE_EMPTY      = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.ignore-empty");
-    private final static String MERGE_LINESTRINGS = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.merge-linestrings");
-    private final static String AGG_UNUSED_FIELDS = I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.aggregate-unused-fields");
+    private final static String USE_ATTRIBUTE     = I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.use-attribute");
+    private final static String ATTRIBUTE         = I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.attribute");
+    private final static String IGNORE_EMPTY      = I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.ignore-empty");
+    private final static String MERGE_LINESTRINGS = I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.merge-linestrings");
+    private final static String AGG_UNUSED_FIELDS = I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.aggregate-unused-fields");
     
     private Layer layer;
     private boolean use_selection           = false;
@@ -94,7 +94,7 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
     }
     
     public String getName() {
-        return I18N.get("ui.plugin.analysis.UnionByAttributePlugIn");
+        return I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn");
     }
     
     @Override
@@ -135,7 +135,7 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
         //dialog.setSideBarDescription("");
         
         final JLabel processedDataLabel = dialog.addSubTitle(
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.processed-data"));
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.processed-data"));
         final JLabel selectionLabel = dialog.addLabel(SELECTION);
         final JLabel selectionHelpLabel = dialog.addLabel(SELECTION_HELP);
         final JComboBox layerComboBox = dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), context.getLayerManager());
@@ -146,9 +146,9 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
         dialog.addSeparator();
         
         final JCheckBox mergeLineStringsCheckBox = dialog.addCheckBox(MERGE_LINESTRINGS, merge_linestrings, 
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.merge-linestrings-tooltip"));
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.merge-linestrings-tooltip"));
         final JCheckBox aggUnusedFieldsCheckBox = dialog.addCheckBox(AGG_UNUSED_FIELDS, aggregate_unused_fields,
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.aggregation-tooltip"));
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.aggregation-tooltip"));
         
         updateControls(dialog);
         
@@ -212,12 +212,12 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
         
         if (use_selection) {
             dialog.setSideBarDescription(
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.union-selection-description"));
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.union-selection-description"));
             if (merge_linestrings) dialog.setSideBarImage(IconLoader.icon("union_selection_merge.png"));
             else dialog.setSideBarImage(IconLoader.icon("union_selection_no_merge.png"));
         }
         else if (!use_attribute || !has_attributes || use_selection) {
-            dialog.setSideBarDescription(I18N.getMessage(
+            dialog.setSideBarDescription(I18N.getInstance().get(
                 "ui.plugin.analysis.UnionByAttributePlugIn.union-layer-description", 
                 new Object[]{layer.getName()}
             ));
@@ -225,7 +225,7 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
             else dialog.setSideBarImage(IconLoader.icon("union_layer_no_merge.png"));
         }
         else {
-            dialog.setSideBarDescription(I18N.getMessage(
+            dialog.setSideBarDescription(I18N.getInstance().get(
                 "ui.plugin.analysis.UnionByAttributePlugIn.union-layer-by-attribute-description",
                 new Object[]{layer.getName(), attribute}
             ));
@@ -258,7 +258,7 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
         }
         else {
             context.getWorkbenchFrame().warnUser(
-                I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.needs-two-features-or-more"));
+                I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.needs-two-features-or-more"));
             return;
         }
         
@@ -287,7 +287,7 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
         
         // Order features by attribute value in a map
         Map map = new HashMap();
-        monitor.report(I18N.get("ui.plugin.analysis.UnionByAttributePlugIn"));
+        monitor.report(I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn"));
         for (Iterator i = inputFC.iterator() ; i.hasNext() ; ) {
             Feature f = (Feature)i.next();
             Object key = use_attribute ? f.getAttribute(attribute) : null;
@@ -308,7 +308,7 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
         int count = 1;
         FeatureCollection resultfc = new FeatureDataset(newSchema);
         for (Iterator i = map.keySet().iterator() ; i.hasNext() ; ) {
-            monitor.report(I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.computing-union") + " (" + count++ + "/" + map.size() + ")");
+            monitor.report(I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.computing-union") + " (" + count++ + "/" + map.size() + ")");
             Object key = i.next();
             FeatureCollection fca = (FeatureCollection)map.get(key);
             if (fca.size() > 0) {
@@ -327,8 +327,8 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
             (use_attribute ? ("-" + attribute + " (dissolve)") : " (union)");
         context.addLayer(StandardCategoryNames.RESULT, newLayerName, resultfc);
         context.getOutputFrame().append("<h3>"+
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.end-of-process") + " " +
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn") + "</h3>");
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.end-of-process") + " " +
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn") + "</h3>");
     }
     
    /**
@@ -343,9 +343,9 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
             Geometry g = f.getGeometry();
             if (!g.isValid()) {
                 context.getWorkbenchFrame().warnUser(
-                    I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.invalid-geometry-excluded"));
+                    I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.invalid-geometry-excluded"));
                 context.getOutputFrame().addText(
-                    I18N.getMessage("ui.plugin.analysis.UnionByAttributePlugIn.exclusion", new Object[]{f.getID()}));
+                    I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.exclusion", new Object[]{f.getID()}));
                 continue;
             }
             else geometries.add(g);
@@ -422,7 +422,7 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
             }
             else if (schema.getAttributeType(i) != AttributeType.GEOMETRY) {
                 context.getOutputFrame().addText(
-                    I18N.getMessage("ui.plugin.analysis.UnionByAttributePlugIn.cannot-be-aggregated", 
+                    I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.cannot-be-aggregated", 
                     new Object[]{schema.getAttributeName(i), schema.getAttributeType(i)}));
             }
         }
@@ -432,27 +432,27 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
     private void writeReport(PlugInContext context) {
         context.getOutputFrame().createNewDocument();
         context.getOutputFrame().append(
-            "<h1>" + I18N.get("ui.plugin.analysis.UnionByAttributePlugIn") + "</h1>");
+            "<h1>" + I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn") + "</h1>");
         context.getOutputFrame().addText(
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.processed-data") + " : " +
-            (use_selection ? I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.selection") : layer.getName()));
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.processed-data") + " : " +
+            (use_selection ? I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.selection") : layer.getName()));
         context.getOutputFrame().addText(
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.use-attribute") + " : " +
-            (use_attribute ? attribute : I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.no-attribute-used")));
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.use-attribute") + " : " +
+            (use_attribute ? attribute : I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.no-attribute-used")));
         context.getOutputFrame().addText(
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.empty-values") + " : " +
-            (ignore_empty ? I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.ignore") : 
-                            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.process")));
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.empty-values") + " : " +
+            (ignore_empty ? I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.ignore") : 
+                            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.process")));
         context.getOutputFrame().addText(
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.merge-linestrings") + " : " +
-            (merge_linestrings ? I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.yes") : 
-                                 I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.no")));
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.merge-linestrings") + " : " +
+            (merge_linestrings ? I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.yes") : 
+                                 I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.no")));
         context.getOutputFrame().addText(
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.aggregate-unused-fields") + " : " +
-            (aggregate_unused_fields ? I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.yes") : 
-                                 I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.no")));
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.aggregate-unused-fields") + " : " +
+            (aggregate_unused_fields ? I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.yes") : 
+                                 I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.no")));
         context.getOutputFrame().append("<h3>" + 
-            I18N.get("ui.plugin.analysis.UnionByAttributePlugIn.warnings") + "</h3>");
+            I18N.getInstance().get("ui.plugin.analysis.UnionByAttributePlugIn.warnings") + "</h3>");
     }
     
 }

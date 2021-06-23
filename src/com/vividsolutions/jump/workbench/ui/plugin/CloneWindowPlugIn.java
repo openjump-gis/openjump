@@ -73,7 +73,7 @@ public class CloneWindowPlugIn extends AbstractPlugIn {
       return new EnableCheck() {
         public String check(JComponent component) {
           return JUMPWorkbench.getInstance().getFrame().getActiveInternalFrame() instanceof CloneableInternalFrame 
-              ? null : I18N.get("JUMPConfiguration.not-available-for-the-current-window");
+              ? null : I18N.getInstance().get("JUMPConfiguration.not-available-for-the-current-window");
         }
       };
     }

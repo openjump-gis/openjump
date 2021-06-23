@@ -103,17 +103,17 @@ public class SimplifyPolygonCoveragePlugIn extends AbstractPlugIn implements Thr
         
     public void initialize(PlugInContext context) throws Exception {
     
-    		//this.sName = I18N.get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.Simplify-Polygon-Coverage");
-    		this.note = I18N.get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.note");
-    		this.sSidebar = I18N.get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.Simplifies-the-outlines-of-polygons-that-have-adjacent-polygons");
-	        this.sCreateGraph = I18N.get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.create-graph");
-	        this.LAYERREGIONS = I18N.get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.select-layer-with-polygons");
-    		this.sSimplify = I18N.get("ui.plugin.analysis.GeometryFunction.Simplify-(D-P)");
-    	    this.T3=I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Maximum-point-displacement-in-model-units");
-    	    this.sSimplificationFinalized=I18N.get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.simplification-finalized");
-    	    this.sPolygonize=I18N.get("jump.plugin.edit.PolygonizerPlugIn.Polygonization");
-    	    this.sLayerMustBePolygonal = I18N.get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.Layer-Must-Be-Polygonal");
-    	    this.sAttributeTransferNotExhaustive = I18N.get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.Attribute-Transfer-Not-Exhaustive");
+    		//this.sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyPolygonCoveragePlugIn.Simplify-Polygon-Coverage");
+    		this.note = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.note");
+    		this.sSidebar = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.Simplifies-the-outlines-of-polygons-that-have-adjacent-polygons");
+	        this.sCreateGraph = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.create-graph");
+	        this.LAYERREGIONS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.select-layer-with-polygons");
+    		this.sSimplify = I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Simplify-(D-P)");
+    	    this.T3=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.Maximum-point-displacement-in-model-units");
+    	    this.sSimplificationFinalized=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.SimplifyWithJTSAlgorithmPlugIn.simplification-finalized");
+    	    this.sPolygonize=I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Polygonization");
+    	    this.sLayerMustBePolygonal = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.Layer-Must-Be-Polygonal");
+    	    this.sAttributeTransferNotExhaustive = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn.Attribute-Transfer-Not-Exhaustive");
     	    
     	    this.sSidebar = this.sSidebar + "\n" + this.note;
     	    	

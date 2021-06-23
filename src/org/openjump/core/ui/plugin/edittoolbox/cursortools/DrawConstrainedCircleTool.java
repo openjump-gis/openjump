@@ -60,12 +60,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 public class DrawConstrainedCircleTool extends ConstrainedMultiClickTool {
     private FeatureDrawingUtil featureDrawingUtil;
-    final static String drawConstrainedCircle = I18N
-            .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedCircleTool.Draw-Constrained-Circle");
-    final static String theCircleMustHaveAtLeast2Points = I18N
-            .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedCircleTool.The-circle-must-have-at-least-2-points");
-    final static String sArea = I18N
-            .get("ui.cursortool.CoordinateListMetrics.Area");
+    final static String drawConstrainedCircle = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedCircleTool.Draw-Constrained-Circle");
+    final static String theCircleMustHaveAtLeast2Points = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedCircleTool.The-circle-must-have-at-least-2-points");
+    final static String sArea = I18N.getInstance().get("ui.cursortool.CoordinateListMetrics.Area");
 
     private DrawConstrainedCircleTool(FeatureDrawingUtil featureDrawingUtil) {
         drawClosed = true;

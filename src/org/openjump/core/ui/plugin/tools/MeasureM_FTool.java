@@ -50,9 +50,9 @@ import com.vividsolutions.jump.workbench.ui.cursortool.MultiClickTool;
 
 public class MeasureM_FTool extends MultiClickTool 
 {
-    private final static String sDistance = I18N.get("org.openjump.core.ui.plugin.tools.MeasureM_FTool.Distance");
-    private final static String sMeters = I18N.get("org.openjump.core.ui.plugin.tools.MeasureM_FTool.meters");
-    private final static String sFeet = I18N.get("org.openjump.core.ui.plugin.tools.MeasureM_FTool.feet");
+    private final static String sDistance = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasureM_FTool.Distance");
+    private final static String sMeters = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasureM_FTool.meters");
+    private final static String sFeet = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasureM_FTool.feet");
     
     private List savedCoordinates = new ArrayList();
     private Coordinate currCoord;

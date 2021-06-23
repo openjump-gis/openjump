@@ -49,7 +49,7 @@ public class DatasetOptionsPanel extends JPanel implements OptionsPanel {
 		GridBagConstraints gridBagConstraints;
 		mainPanel = new JPanel();
 		fillPanel = new JPanel();
-		charsetSelectionCheckBox = new JCheckBox(I18N.get("ui.DatasetOptionsPanel.ShowCharsetSelection"));
+		charsetSelectionCheckBox = new JCheckBox(I18N.getInstance().get("ui.DatasetOptionsPanel.ShowCharsetSelection"));
 
 		this.setLayout(new BorderLayout());
 		this.setBorder(new EmptyBorder(new Insets(5, 10, 5, 10)));

@@ -58,8 +58,8 @@ public class SelectItemsByCircleFromSelectedLayersPlugIn extends AbstractPlugIn{
 	
     public void initialize(PlugInContext context) throws Exception {
 
-		this.T1 = I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.cirlce-diameter") + ":";
-		this.sidebarstring = I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.select-features-within-a-circle-from-currently-selected-layers");
+		this.T1 = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.cirlce-diameter") + ":";
+		this.sidebarstring = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.select-features-within-a-circle-from-currently-selected-layers");
 		
 	    context.getFeatureInstaller().addMainMenuPlugin(this,
 	        new String[] {MenuNames.EDIT, MenuNames.SELECTION},
@@ -68,7 +68,7 @@ public class SelectItemsByCircleFromSelectedLayersPlugIn extends AbstractPlugIn{
     }
     
     public String getName() {
-        return I18N.get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.select-features-by-cirlce-from-selected-layers");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectItemsByCirlceFromSelectedLayersPlugIn.select-features-by-cirlce-from-selected-layers");
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

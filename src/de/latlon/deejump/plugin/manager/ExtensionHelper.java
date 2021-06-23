@@ -43,7 +43,7 @@ public class ExtensionHelper {
         
         PlugInManager manager = workbenchContext.getWorkbench().getPlugInManager();
         
-        monitor.report( I18N.get("deejump.pluging.manager.ExtensionHelper.Downloading-resources"));
+        monitor.report( I18N.getInstance().get("deejump.pluging.manager.ExtensionHelper.Downloading-resources"));
         
         File[] files = 
             downloadAndSaveResources( 
@@ -53,7 +53,7 @@ public class ExtensionHelper {
         
         URLClassLoader classLoader = new URLClassLoader( toURLs( files ) );
 
-        monitor.report( I18N.get("deejump.pluging.manager.ExtensionHelper.Loading-classes"));
+        monitor.report( I18N.getInstance().get("deejump.pluging.manager.ExtensionHelper.Loading-classes"));
         
         
         // list Extension and/or Configuration classes inside the zips/jars
@@ -70,7 +70,7 @@ public class ExtensionHelper {
             configs.add( configuration );
         }
         
-        monitor.report( I18N.get("deejump.pluging.manager.ExtensionHelper.Loading-extensions"));
+        monitor.report( I18N.getInstance().get("deejump.pluging.manager.ExtensionHelper.Loading-extensions"));
         
         
         //finally, load configs/extensions
@@ -93,7 +93,7 @@ public class ExtensionHelper {
                 if ( resourceList.contains( file.getName() ) ) {
 //                    System.out.println("will delete: " + file);
                     
-                    monitor.report( I18N.get("deejump.pluging.manager.ExtensionHelper.Deleting-file") + " " + file );
+                    monitor.report( I18N.getInstance().get("deejump.pluging.manager.ExtensionHelper.Deleting-file") + " " + file );
                     
                     boolean deleted = false;
                     
@@ -109,7 +109,7 @@ public class ExtensionHelper {
                     // hmm no exception thrown?
                     // file permissions?
                     // bye bye
-                     System.out.println(I18N.get("deejump.pluging.manager.ExtensionHelper.deleted") + " '" + file+ "': " +  deleted);
+                     System.out.println(I18N.getInstance().get("deejump.pluging.manager.ExtensionHelper.deleted") + " '" + file+ "': " +  deleted);
                    //???? above hasn't worked, file locked? del on exited didn'T work...
                      //put file on a list and finish it off?
                      // inlcude in a plug-in, listener --> workbench.isclosed -> del file!

@@ -79,7 +79,7 @@ public class MapLayerPanel extends JPanel {
     private final InputChangedFirer inputChangedFirer = new InputChangedFirer();
     private final GridBagLayout gridBagLayout1 = new GridBagLayout();
     private AddRemovePanel addRemovePanel;
-    private final JCheckBox checkBox = new JCheckBox(I18N.get("ui.plugin.wms.MapLayerPanel.sort"), true);
+    private final JCheckBox checkBox = new JCheckBox(I18N.getInstance().get("ui.plugin.wms.MapLayerPanel.sort"), true);
     // [mmichaud 2012-05-08] cache the fullSrs list associated to each MapLayer
     private final Map<String,String> fullSrsMap = new HashMap<>();
 
@@ -124,7 +124,7 @@ public class MapLayerPanel extends JPanel {
 
     void jbInit() {
         addRemovePanel = new AddRemovePanel(true);
-        addRemovePanel.setRightText(I18N.get("ui.plugin.wms.MapLayerPanel.chosen-layers"));
+        addRemovePanel.setRightText(I18N.getInstance().get("ui.plugin.wms.MapLayerPanel.chosen-layers"));
         this.setLayout(gridBagLayout1);
         this.add(addRemovePanel,
             new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
@@ -275,7 +275,7 @@ public class MapLayerPanel extends JPanel {
 
         JPanel leftLabelPanel = new JPanel();
         leftLabelPanel.setLayout(new GridBagLayout());
-        leftLabelPanel.add(new JLabel(I18N.get("ui.plugin.wms.MapLayerPanel.available-layers")),
+        leftLabelPanel.add(new JLabel(I18N.getInstance().get("ui.plugin.wms.MapLayerPanel.available-layers")),
             new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.WEST,
                 GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
         leftLabelPanel.add(new JPanel(),

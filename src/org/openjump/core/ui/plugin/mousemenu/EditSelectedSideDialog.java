@@ -104,19 +104,19 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.ArrowLineStringEndpoi
 //adapted from MultiInputDialog
 public class EditSelectedSideDialog extends JDialog
 {
-	final static String sIsAnInvalidDouble=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.is-an-invalid-double");
-	final static String sLength=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.length");
-	final static String sAngle=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.angle");
-	final static String sInteriorAngle=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.interior-angle");
-	final static String sSide=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Side");
-	final static String sChangeDirection=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Change-Direction");
-	final static String sZoomToSide=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Zoom-To-Side");
-	final static String sMakeSideOne=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Make-Side-One");
-	final static String sFront=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Front");
-	final static String sSelectedSide=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Selected-Side");
-	final static String sEditSelectedSide=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Edit-Selected-Side");
-	final static String sNA=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.NA");
-	final static String sLengthMustBeGreaterThanZero=I18N.get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Length-must-be-greater-than-zero");
+	final static String sIsAnInvalidDouble=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.is-an-invalid-double");
+	final static String sLength=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.length");
+	final static String sAngle=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.angle");
+	final static String sInteriorAngle=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.interior-angle");
+	final static String sSide=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Side");
+	final static String sChangeDirection=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Change-Direction");
+	final static String sZoomToSide=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Zoom-To-Side");
+	final static String sMakeSideOne=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Make-Side-One");
+	final static String sFront=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Front");
+	final static String sSelectedSide=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Selected-Side");
+	final static String sEditSelectedSide=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Edit-Selected-Side");
+	final static String sNA=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.NA");
+	final static String sLengthMustBeGreaterThanZero=I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.EditSelectedSideDialog.Length-must-be-greater-than-zero");
 	
     private final static int SIDEBAR_WIDTH = 150;
     OKCancelPanel okCancelPanel = new OKCancelPanel();

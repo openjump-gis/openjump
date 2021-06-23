@@ -55,7 +55,7 @@ public class SpatialDatabasesDSConnection implements DataStoreConnection {
     if (query instanceof AdhocQuery) {
       return executeAdhocQuery((AdhocQuery) query);
     }
-    throw new IllegalArgumentException(I18N.get(this.getClass().getName()
+    throw new IllegalArgumentException(I18N.getInstance().get(this.getClass().getName()
         + ".unsupported-query-type"));
   }
 

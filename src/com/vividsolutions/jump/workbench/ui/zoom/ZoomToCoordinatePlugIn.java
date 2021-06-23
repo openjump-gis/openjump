@@ -35,7 +35,7 @@ public class ZoomToCoordinatePlugIn extends AbstractPlugIn {
         String value = JOptionPane
             .showInputDialog(
                 context.getWorkbenchFrame(),
-                I18N.get("ui.zoom.ZoomToCoordinatePlugIn.enter-coordinate-to-zoom-to"),
+                I18N.getInstance().get("ui.zoom.ZoomToCoordinatePlugIn.enter-coordinate-to-zoom-to"),
                 lastCoordinate.x + ", " + lastCoordinate.y);
         if (value == null) {
           retry = false;
@@ -98,16 +98,16 @@ public class ZoomToCoordinatePlugIn extends AbstractPlugIn {
     StringTokenizer tokenizer = new StringTokenizer(s);
     if (tokenizer.countTokens() < 2) {
       throw new JUMPException(
-          I18N.get("ui.zoom.ZoomToCoordinatePlugIn.enter-two-values"));
+          I18N.getInstance().get("ui.zoom.ZoomToCoordinatePlugIn.enter-two-values"));
     }
 
     String x = tokenizer.nextToken();
     if (!StringUtil.isNumber(x))
-      throw new JUMPException(I18N.getMessage("ui.zoom.ZoomToCoordinatePlugIn.{0}-is-not-a-number", x));
+      throw new JUMPException(I18N.getInstance().get("ui.zoom.ZoomToCoordinatePlugIn.{0}-is-not-a-number", x));
 
     String y = tokenizer.nextToken();
     if (!StringUtil.isNumber(y))
-      throw new JUMPException(I18N.getMessage("ui.zoom.ZoomToCoordinatePlugIn.{0}-is-not-a-number", y));
+      throw new JUMPException(I18N.getInstance().get("ui.zoom.ZoomToCoordinatePlugIn.{0}-is-not-a-number", y));
 
     return new Coordinate(Double.parseDouble(x), Double.parseDouble(y));
   }

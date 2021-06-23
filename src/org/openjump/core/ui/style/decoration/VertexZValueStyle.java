@@ -142,7 +142,7 @@ public class VertexZValueStyle extends TextBasedVertexStyle {
 
     public static class VertexZValue extends VertexZValueStyle {
         public VertexZValue() {
-            super(I18N.get("ui.renderer.style.VertexZValueStyle.Vertex-Z"), "ZValueDecorator.gif");
+            super(I18N.getInstance().get("ui.renderer.style.VertexZValueStyle.Vertex-Z"), "ZValueDecorator.gif");
         }
     }
 

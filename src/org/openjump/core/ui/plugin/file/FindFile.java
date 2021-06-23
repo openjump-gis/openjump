@@ -17,7 +17,7 @@ public class FindFile {
     
     private static final String KEY = FindFile.class.getName();
 
-    private static final String CHOOSE_LOCATION = I18N.get(KEY
+    private static final String CHOOSE_LOCATION = I18N.getInstance().get(KEY
         + ".choose-current-location-of");
     
     private Vector prefixList = new Vector(5, 5);

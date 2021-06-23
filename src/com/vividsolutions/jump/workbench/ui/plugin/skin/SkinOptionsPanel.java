@@ -123,7 +123,7 @@ public class SkinOptionsPanel extends JPanel implements OptionsPanel {
 
   void jbInit() throws Exception {
     this.setLayout(gridBagLayout1);
-    label.setText(I18N.get("ui.plugin.skin.InstallSkinsPlugIn.skins") + ":");
+    label.setText(I18N.getInstance().get("ui.plugin.skin.InstallSkinsPlugIn.skins") + ":");
     this.add(comboBox, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
         GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0,
             10, 10), 0, 0));

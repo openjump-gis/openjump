@@ -28,7 +28,7 @@ public class ConnectionManagerToolboxPlugIn extends ToolboxPlugIn {
     public String getName() {
         // Specify name explicitly, as auto-name-generator
         // says "Connection Manager Toolbox" [Jon Aquino 2005-03-14]
-        return I18N.get("jump.workbench.ui.plugin.datastore.ConnectionManagerToolboxPlugIn.Connection-Manager");
+        return I18N.getInstance().get("jump.workbench.ui.plugin.datastore.ConnectionManagerToolboxPlugIn.Connection-Manager");
     }
 
     public static ConnectionManagerToolboxPlugIn instance(

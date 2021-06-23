@@ -69,7 +69,7 @@ public class EditingPlugIn extends ToolboxPlugIn {
   }
 
   public String getName() {
-    return I18N.get("ui.cursortool.editing.EditingPlugIn.editing-toolbox");
+    return I18N.getInstance().get("ui.cursortool.editing.EditingPlugIn.editing-toolbox");
   }
 
   // public static ImageIcon ICON =
@@ -85,7 +85,7 @@ public class EditingPlugIn extends ToolboxPlugIn {
   public void initialize(PlugInContext context) throws Exception {
     wbc = context.getWorkbenchContext();
     optionsButton = new JButton(
-        I18N.get("ui.cursortool.editing.EditingPlugIn.options"));
+        I18N.getInstance().get("ui.cursortool.editing.EditingPlugIn.options"));
   }
 
   public boolean execute(PlugInContext context) throws Exception {
@@ -103,7 +103,7 @@ public class EditingPlugIn extends ToolboxPlugIn {
 
     // The auto-generated title "Editing Toolbox" is too long to fit. [Jon
     // Aquino]
-    toolbox.setTitle(I18N.get("ui.cursortool.editing.EditingPlugIn.editing"));
+    toolbox.setTitle(I18N.getInstance().get("ui.cursortool.editing.EditingPlugIn.editing"));
     toolbox.setResizable(false);
     toolbox.setInitialLocation(new GUIUtil.Location(20, true, 20, false));
 

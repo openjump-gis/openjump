@@ -114,7 +114,7 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
         	loadedForms = new JPanel();
 	        loadedForms.setLayout(new BorderLayout());
 	        
-	        loadedForms.add(new JLabel(I18N.get("pirol.plugIns.FormulaEditingPanel.load-formula")+" : "), BorderLayout.WEST); //$NON-NLS-1$
+	        loadedForms.add(new JLabel(I18N.getInstance().get("pirol.plugIns.FormulaEditingPanel.load-formula")+" : "), BorderLayout.WEST); //$NON-NLS-1$
 	        
 	        String[] formulaNames = (String[])this.storedFormulas.keySet().toArray(new String[0]);
 	        
@@ -188,7 +188,7 @@ public class FormulaEditingPanel extends JPanel implements ActionListener, Value
         this.numberInputField.setDocument(new NumberInputDocument());
         
         numberInputPanel.add(this.numberInputField, BorderLayout.CENTER);
-        numberInputPanel.add( new JButton(new AddTextFieldTextToTextAreaOnClick_Action(this.numberInputField, this.formulaField, I18N.get("pirol.plugIns.FormulaEditingPanel.copy-value-to-formula"))), BorderLayout.EAST ); //$NON-NLS-1$
+        numberInputPanel.add( new JButton(new AddTextFieldTextToTextAreaOnClick_Action(this.numberInputField, this.formulaField, I18N.getInstance().get("pirol.plugIns.FormulaEditingPanel.copy-value-to-formula"))), BorderLayout.EAST ); //$NON-NLS-1$
         numberInputAndErrorPanel.add(numberInputPanel, BorderLayout.NORTH);
         
         this.errorMessages.setEditable(false);

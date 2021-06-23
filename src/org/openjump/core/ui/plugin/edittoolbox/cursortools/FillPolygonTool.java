@@ -70,14 +70,10 @@ import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUti
 
 public class FillPolygonTool extends NClickTool {
 
-  public static final String AREA_NOT_CLOSED = I18N
-      .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.clicked-area-is-not-closed");
-  public static final String EXTEND_SEARCH = I18N
-      .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.do-you-want-to-extend-search-out-of-the-view");
-  public static final String INTERRUPTION = I18N
-      .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.interrupted-operation");
-  public static final String COMPUTING = I18N
-      .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.computing");
+  public static final String AREA_NOT_CLOSED = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.clicked-area-is-not-closed");
+  public static final String EXTEND_SEARCH = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.do-you-want-to-extend-search-out-of-the-view");
+  public static final String INTERRUPTION = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.interrupted-operation");
+  public static final String COMPUTING = I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool.computing");
 
   private WorkbenchContext context;
   private static long START = 0;
@@ -91,7 +87,7 @@ public class FillPolygonTool extends NClickTool {
     this.context = context;
     okCancelDialog = new OKCancelDialog(
           context.getWorkbench().getFrame(),
-          I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool"),
+          I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool"),
           true, getOKCancelPanel(), null);
     progressDialog = new JDialog(context.getWorkbench().getFrame(), COMPUTING + "...", true);
     initProgressDialog();
@@ -139,8 +135,7 @@ public class FillPolygonTool extends NClickTool {
   }
 
   public String getName() {
-    return I18N
-        .get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool");
+    return I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.FillPolygonTool");
   }
 
   protected void gestureFinished() throws Exception {

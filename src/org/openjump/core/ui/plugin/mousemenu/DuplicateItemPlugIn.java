@@ -23,7 +23,7 @@ public class DuplicateItemPlugIn extends AbstractPlugIn {
 	public static ImageIcon ICON = IconLoader.icon("ItemDuplicate16.png");
 		
 	public String getName() {
-		return I18N.get("org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn");
+		return I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.DuplicateItemPlugIn");
 	}
 	
 	 /*
@@ -44,8 +44,8 @@ public class DuplicateItemPlugIn extends AbstractPlugIn {
 	        
 	         
 	        featureInstaller.addMainMenuItem(this,
-	      	        new String[] {I18N.get("Menu.Geometry"),I18N.get("Menu.Modify")}, 
-	      	      I18N.get("DuplicateItemsPlugIn.Duplicate.Item"), 
+	      	        new String[] {I18N.getInstance().get("Menu.Geometry"),I18N.getInstance().get("Menu.Modify")}, 
+	      	      I18N.getInstance().get("DuplicateItemsPlugIn.Duplicate.Item"), 
 	      	        false, 
 	      	      getIcon(),
 	      	    DuplicateItemPlugIn.createEnableCheck(workbenchContext));

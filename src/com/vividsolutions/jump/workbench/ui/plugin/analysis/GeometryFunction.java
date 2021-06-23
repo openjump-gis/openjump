@@ -63,15 +63,15 @@ public abstract class GeometryFunction
 {
   // [sstein, 16.07.2006] due to language setting problems loaded in corresponding class
   /*
-  private static final String METHOD_INTERSECTION = I18N.get("ui.plugin.analysis.GeometryFunction.intersection");
-  private static final String METHOD_UNION = I18N.get("ui.plugin.analysis.GeometryFunction.union");
-  private static final String METHOD_DIFFERENCE_AB = I18N.get("ui.plugin.analysis.GeometryFunction.difference-a-b");
-  private static final String METHOD_DIFFERENCE_BA = I18N.get("ui.plugin.analysis.GeometryFunction.difference-b-a");
-  private static final String METHOD_SYMDIFF = I18N.get("ui.plugin.analysis.GeometryFunction.symetric-difference");
-  private static final String METHOD_CENTROID_A = I18N.get("ui.plugin.analysis.GeometryFunction.centroid-of-a");
-  static final String METHOD_BUFFER = I18N.get("ui.plugin.analysis.GeometryFunction.buffer");
+  private static final String METHOD_INTERSECTION = I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.intersection");
+  private static final String METHOD_UNION = I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.union");
+  private static final String METHOD_DIFFERENCE_AB = I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.difference-a-b");
+  private static final String METHOD_DIFFERENCE_BA = I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.difference-b-a");
+  private static final String METHOD_SYMDIFF = I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.symetric-difference");
+  private static final String METHOD_CENTROID_A = I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.centroid-of-a");
+  static final String METHOD_BUFFER = I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.buffer");
   
-  private static final String sFunction = I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.function");
+  private static final String sFunction = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.function");
   */  
   private static GeometryFunction[] methods = {
     new IntersectionFunction(),
@@ -157,7 +157,7 @@ public abstract class GeometryFunction
 
   public GeometryFunction(String name, int nArgs, int nParams)
   {
-    this(name, nArgs, nParams, name + " " + I18N.get("ui.plugin.analysis.GeometryFunctionPlugIn.function"));
+    this(name, nArgs, nParams, name + " " + I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.function"));
   }
 
   public GeometryFunction(String name, int nArgs, int nParams,
@@ -192,7 +192,7 @@ public abstract class GeometryFunction
 
   private static class IntersectionFunction extends GeometryFunction {
     public IntersectionFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.intersection"), 2, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.intersection"), 2, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -203,7 +203,7 @@ public abstract class GeometryFunction
 
   private static class UnionFunction extends GeometryFunction {
     public UnionFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.union"), 2, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.union"), 2, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -214,7 +214,7 @@ public abstract class GeometryFunction
 
   private static class DifferenceABFunction extends GeometryFunction {
     public DifferenceABFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.difference-a-b"), 2, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.difference-a-b"), 2, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -225,7 +225,7 @@ public abstract class GeometryFunction
 
   private static class DifferenceBAFunction extends GeometryFunction {
     public DifferenceBAFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.difference-b-a"), 2, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.difference-b-a"), 2, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -236,7 +236,7 @@ public abstract class GeometryFunction
 
   private static class SymDifferenceFunction extends GeometryFunction {
     public SymDifferenceFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.symetric-difference"), 2, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.symetric-difference"), 2, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -247,7 +247,7 @@ public abstract class GeometryFunction
 
   private static class CentroidFunction extends GeometryFunction {
     public CentroidFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.centroid-of-a"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.centroid-of-a"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -258,7 +258,7 @@ public abstract class GeometryFunction
 
   private static class InteriorPointFunction extends GeometryFunction {
     public InteriorPointFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.interior-point"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.interior-point"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -269,7 +269,7 @@ public abstract class GeometryFunction
 
   private static class BufferFunction extends GeometryFunction {
     public BufferFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.buffer"), 1, 1);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.buffer"), 1, 1);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -280,8 +280,8 @@ public abstract class GeometryFunction
 
   private static class SimplifyFunction extends GeometryFunction {
     public SimplifyFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Simplify-(D-P)"), 1, 1, 
-      		I18N.get("ui.plugin.analysis.GeometryFunction.Simplifies-a-geometry-using-the-Douglas-Peucker-algorithm"));
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Simplify-(D-P)"), 1, 1, 
+      		I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Simplifies-a-geometry-using-the-Douglas-Peucker-algorithm"));
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -292,7 +292,7 @@ public abstract class GeometryFunction
 
   private static class SimplifyTopologyFunction extends GeometryFunction {
     public SimplifyTopologyFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Simplify-(preserve-topology)"), 1, 1);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Simplify-(preserve-topology)"), 1, 1);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -303,8 +303,8 @@ public abstract class GeometryFunction
 
   private static class SimplifyVWFunction extends GeometryFunction {
     public SimplifyVWFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Simplify-(Visvalingam-Whyatt)"), 1, 1,
-              I18N.get("ui.plugin.analysis.GeometryFunction.Simplifies-a-geometry-using-the-Visvalingam-Whyatt-algorithm"));
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Simplify-(Visvalingam-Whyatt)"), 1, 1,
+              I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Simplifies-a-geometry-using-the-Visvalingam-Whyatt-algorithm"));
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -315,7 +315,7 @@ public abstract class GeometryFunction
 
   private static class ConvexHullFunction extends GeometryFunction {
     public ConvexHullFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Convex-Hull"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Convex-Hull"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -327,7 +327,7 @@ public abstract class GeometryFunction
 
   private static class BoundaryFunction extends GeometryFunction {
     public BoundaryFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Boundary"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Boundary"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -338,7 +338,7 @@ public abstract class GeometryFunction
 
   private static class EnvelopeFunction extends GeometryFunction {
     public EnvelopeFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Envelope"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Envelope"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -350,7 +350,7 @@ public abstract class GeometryFunction
   // added on 2016-11-05 by mmichaud
   private static class WrapIntoMultiFunction extends GeometryFunction {
     public WrapIntoMultiFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.WrapIntoMulti"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.WrapIntoMulti"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -372,7 +372,7 @@ public abstract class GeometryFunction
   // added on 2016-11-05 by mmichaud
   private static class UnwrapSingleFunction extends GeometryFunction {
     public UnwrapSingleFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.UnwrapSingle"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.UnwrapSingle"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -385,7 +385,7 @@ public abstract class GeometryFunction
 
   private static class LineMergeFunction extends GeometryFunction {
     public LineMergeFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Line-Merge"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Line-Merge"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -399,7 +399,7 @@ public abstract class GeometryFunction
 
   private static class LineSequenceFunction extends GeometryFunction {
     public LineSequenceFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Line-Sequence"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Line-Sequence"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -412,7 +412,7 @@ public abstract class GeometryFunction
 
   private static class PolygonizeFunction extends GeometryFunction {
     public PolygonizeFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Polygonize"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Polygonize"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -428,7 +428,7 @@ public abstract class GeometryFunction
   // fixed 26 July 2011 by mmichaud
   private static class ReverseLinestringFunction extends GeometryFunction {
     public ReverseLinestringFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Reverse-Line-Direction"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Reverse-Line-Direction"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -441,7 +441,7 @@ public abstract class GeometryFunction
   // added on 2012-04-13 by mmichaud
   private static class DensifyFunction extends GeometryFunction {
     public DensifyFunction() {
-		  super(I18N.get("ui.plugin.analysis.GeometryFunction.Densify"), 1, 1);
+		  super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Densify"), 1, 1);
 	  }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -453,7 +453,7 @@ public abstract class GeometryFunction
   // added on 2013-06-17 by mmichaud
   private static class MinimumBoundingCircleFunction extends GeometryFunction {
     public MinimumBoundingCircleFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Minimum-Bounding-Circle"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Minimum-Bounding-Circle"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -465,7 +465,7 @@ public abstract class GeometryFunction
   // added on 2013-06-17 by mmichaud
   private static class MinimumDiameterFunction extends GeometryFunction {
     public MinimumDiameterFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Minimum-Diameter"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Minimum-Diameter"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -477,7 +477,7 @@ public abstract class GeometryFunction
   // added on 2013-06-17 by mmichaud
   private static class MinimumBoundingRectangleFunction extends GeometryFunction {
     public MinimumBoundingRectangleFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Minimum-Bounding-Rectangle"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Minimum-Bounding-Rectangle"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -489,7 +489,7 @@ public abstract class GeometryFunction
   // added on 2016-11-11 by mmichaud
   private static class RemoveHolesFunction extends GeometryFunction {
     public RemoveHolesFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Remove-Holes"), 1, 0);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Remove-Holes"), 1, 0);
     }
 
     public Geometry execute(Geometry[] geom, double[] param)
@@ -506,7 +506,7 @@ public abstract class GeometryFunction
   // added on 2016-11-11 by mmichaud
   private static class RemoveSmallHolesFunction extends GeometryFunction {
     public RemoveSmallHolesFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Remove-Small-Holes"), 1, 1);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Remove-Small-Holes"), 1, 1);
     }
 
     public Geometry execute(Geometry[] geom, final double[] param)
@@ -530,7 +530,7 @@ public abstract class GeometryFunction
   // added on 2016-11-11 by mmichaud
   private static class RemoveSmallSegmentsFunction extends GeometryFunction {
     public RemoveSmallSegmentsFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Remove-Small-Segments"), 1, 1);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Remove-Small-Segments"), 1, 1);
     }
 
     public Geometry execute(Geometry[] geom, final double[] param)
@@ -543,7 +543,7 @@ public abstract class GeometryFunction
   // added on 2021-05-30 by mmichaud
   private static class SnapToSelfFunction extends GeometryFunction {
     public SnapToSelfFunction() {
-      super(I18N.get("ui.plugin.analysis.GeometryFunction.Snap-To-Self"), 1, 1);
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.Snap-To-Self"), 1, 1);
     }
 
     public Geometry execute(Geometry[] geom, final double[] param)

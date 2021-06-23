@@ -34,8 +34,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;
 public class PasteItemsAtPlugIn extends PasteItemsPlugIn {
   public static ImageIcon ICON = IconLoader.icon("items_paste_here.png");
   WKTReader reader = new WKTReader();
-  private static final String PASTE_ITEMS_AT_POINT = I18N
-      .get("org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn.Paste-Items-At-Point");
+  private static final String PASTE_ITEMS_AT_POINT = I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.PasteItemsAtPlugIn.Paste-Items-At-Point");
 
   public PasteItemsAtPlugIn() {
     super(PASTE_ITEMS_AT_POINT);

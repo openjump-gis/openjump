@@ -45,7 +45,7 @@ import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUti
 public class DrawConstrainedPolygonTool extends ConstrainedPolygonTool
 {
     private FeatureDrawingUtil featureDrawingUtil;
-    final static String drawConstrainedPolygon =I18N.get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedPolygonTool.Draw-Constrained-Polygon");
+    final static String drawConstrainedPolygon =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.DrawConstrainedPolygonTool.Draw-Constrained-Polygon");
     
     protected DrawConstrainedPolygonTool(FeatureDrawingUtil featureDrawingUtil)
     {

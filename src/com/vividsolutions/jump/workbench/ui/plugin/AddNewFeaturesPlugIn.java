@@ -98,8 +98,8 @@ public class AddNewFeaturesPlugIn extends WKTPlugIn {
 
     protected EnterWKTDialog createDialog(PlugInContext context) {
         EnterWKTDialog d = super.createDialog(context);
-        d.setTitle(I18N.get("ui.plugin.AddNewFeaturesPlugIn.add-features-to")+" " + layer);
-        d.setDescription("<HTML>"+I18N.get("ui.plugin.AddNewFeaturesPlugIn.enter-well-known-text-for-one-or-more-geometries")+"</HTML>");
+        d.setTitle(I18N.getInstance().get("ui.plugin.AddNewFeaturesPlugIn.add-features-to")+" " + layer);
+        d.setDescription("<HTML>"+I18N.getInstance().get("ui.plugin.AddNewFeaturesPlugIn.enter-well-known-text-for-one-or-more-geometries")+"</HTML>");
 
         return d;
 

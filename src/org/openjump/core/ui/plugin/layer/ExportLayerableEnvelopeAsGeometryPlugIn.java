@@ -66,19 +66,16 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreDataSource
 
 public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
 
-    private final static String SOURCE_PATH = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path");
-    private final static String NOTSAVED = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not-Saved");
-    private final static String MULTIPLESOURCE = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-Sources");
+    private final static String SOURCE_PATH = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Source-Path");
+    private final static String NOTSAVED = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Not-Saved");
+    private final static String MULTIPLESOURCE = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-Sources");
     private final static String SRID = "SRID";
     private final static String minX = "minX";
     private final static String maxX = "maxX";
     private final static String minY = "minY";
     private final static String maxY = "maxY";
 
-    private final static String LAYER = I18N.get("ui.GenericNames.LAYER");
+    private final static String LAYER = I18N.getInstance().get("ui.GenericNames.LAYER");
 
     public Icon getIcon() {
         return IconLoader.icon("envelope.png");
@@ -109,11 +106,10 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
      */
     @Override
     public String getName() {
-        return I18N
-                .get("org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn.Export-Envelope-As-Geometry");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn.Export-Envelope-As-Geometry");
     }
 
-    String ENVELOPE = I18N.get("ui.plugin.LayerStatisticsPlugIn.envelope")
+    String ENVELOPE = I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.envelope")
             + "_";
 
     /**
@@ -137,7 +133,7 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
                 if (((Layer) slayer).getFeatureCollectionWrapper().isEmpty()) {
                     context.getWorkbenchFrame()
                             .warnUser(
-                                    I18N.get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-feature"));
+                                    I18N.getInstance().get("org.openjump.sigle.plugin.ReplaceValuePlugIn.Layer-has-no-feature"));
                     return false;
                 } else {
                     envelope.expandToInclude(((Layer) slayer)

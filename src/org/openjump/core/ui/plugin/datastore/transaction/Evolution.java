@@ -79,13 +79,13 @@ public class Evolution {
             Logger.info(" which final state is   : " + Arrays.toString(evo1New.getAttributes()));
             Logger.info("        with evolution  : " + this);
             Logger.info(" which initial state is : " + Arrays.toString(evo2Old.getAttributes()));
-            throw new EvolutionOperationException(I18N.get(KEY + ".cannot-merge-non-consecutive-evolutions"));
+            throw new EvolutionOperationException(I18N.getInstance().get(KEY + ".cannot-merge-non-consecutive-evolutions"));
         }
 
         // previous evolution was a CREATION
         if (type1 == Type.CREATION) {
             switch (type2) {
-                case CREATION : throw new EvolutionOperationException(I18N.get(KEY + ".cannot-merge-2-creations") +
+                case CREATION : throw new EvolutionOperationException(I18N.getInstance().get(KEY + ".cannot-merge-2-creations") +
                         " (" + previous.getNewFeature().getID() + " - " + getNewFeature().getID() + ")");
                 case MODIFICATION : return Evolution.createCreation(evo2New);
                 case SUPPRESSION : return null;
@@ -95,7 +95,7 @@ public class Evolution {
         // previous evolution was a MODIFICATION
         else if (type1 == Type.MODIFICATION) {
             switch (type2) {
-                case CREATION : throw new EvolutionOperationException(I18N.get(KEY + ".cannot-merge-a-modification-with-a-creation"));
+                case CREATION : throw new EvolutionOperationException(I18N.getInstance().get(KEY + ".cannot-merge-a-modification-with-a-creation"));
                 case MODIFICATION :
                     boolean unchanged = Arrays.equals(evo1Old.getAttributes(), evo2New.getAttributes());
                     return unchanged ? null : Evolution.createModification(evo2New, evo1Old);
@@ -112,8 +112,8 @@ public class Evolution {
                     Logger.debug("State after creation  " + Arrays.toString(evo2New.getAttributes()));
                     boolean unchanged = Arrays.equals(evo1Old.getAttributes(), evo2New.getAttributes());
                     return unchanged ? null : Evolution.createModification(evo2New, evo1Old);
-                case MODIFICATION : throw new EvolutionOperationException(I18N.get(KEY + ".cannot-merge-a-suppression-with-a-modification"));
-                case SUPPRESSION : throw new EvolutionOperationException(I18N.get(KEY + ".cannot-merge-a-suppression-with-a-suppression"));
+                case MODIFICATION : throw new EvolutionOperationException(I18N.getInstance().get(KEY + ".cannot-merge-a-suppression-with-a-modification"));
+                case SUPPRESSION : throw new EvolutionOperationException(I18N.getInstance().get(KEY + ".cannot-merge-a-suppression-with-a-suppression"));
                 default : return null;
             }
         }

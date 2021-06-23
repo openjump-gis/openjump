@@ -20,16 +20,16 @@ public class ExceptionUtil {
       1,
       exceptions.size()
         + " "
-        + I18N.get("datasource.LoadDatasetPlugIn.problem")
+        + I18N.getInstance().get("datasource.LoadDatasetPlugIn.problem")
         + StringUtil.s(exceptions.size())
         + " "
-        + I18N.get("datasource.LoadDatasetPlugIn.loading")
+        + I18N.getInstance().get("datasource.LoadDatasetPlugIn.loading")
         + " "
         + dataSourceQuery.toString()
         + "."
-        + ((exceptions.size() > 10) ? I18N.get("datasource.LoadDatasetPlugIn.first-and-last-five")
+        + ((exceptions.size() > 10) ? I18N.getInstance().get("datasource.LoadDatasetPlugIn.first-and-last-five")
           : ""));
-    outputFrame.addText(I18N.get("datasource.LoadDatasetPlugIn.see-view-log"));
+    outputFrame.addText(I18N.getInstance().get("datasource.LoadDatasetPlugIn.see-view-log"));
     outputFrame.append("<ul>");
 
     Collection<Throwable> exceptionsToReport = exceptions.size() <= 10 ?

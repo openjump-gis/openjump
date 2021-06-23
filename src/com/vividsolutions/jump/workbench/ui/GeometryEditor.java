@@ -72,7 +72,7 @@ public class GeometryEditor {
             return operation.edit(geometry);
         }
         Assert.shouldNeverReachHere(
-           I18N.get("ui.GeometryEditor.unsupported-geometry-classes-should-be-caught-in-the-GeometryEditorOperation"));
+           I18N.getInstance().get("ui.GeometryEditor.unsupported-geometry-classes-should-be-caught-in-the-GeometryEditorOperation"));
         return null;
     }
     private Polygon editPolygon(Polygon polygon, GeometryEditorOperation operation) {

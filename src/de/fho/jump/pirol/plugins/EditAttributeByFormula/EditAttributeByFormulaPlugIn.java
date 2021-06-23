@@ -134,7 +134,7 @@ public class EditAttributeByFormulaPlugIn extends AbstractPlugIn {
     }
     
     public String getName(){
-    	return I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.Attribute-Calculator");
+    	return I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.Attribute-Calculator");
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -169,12 +169,12 @@ public class EditAttributeByFormulaPlugIn extends AbstractPlugIn {
         Layer layer = StandardPirolPlugIn.getSelectedLayer(context);
         
         if (layer==null){
-            StandardPirolPlugIn.warnUser(context,I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected")); //$NON-NLS-1$
+            StandardPirolPlugIn.warnUser(context,I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected")); //$NON-NLS-1$
             //--[sstein 24.March 2007]: disabled since I changed from StandardPirolPlugIn to AbstractPlugIn
             return false;
             //return this.finishExecution(context, false);
         } else if (!layer.isEditable()) {
-            StandardPirolPlugIn.warnUser(context,I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.layer-not-editable")); //$NON-NLS-1$
+            StandardPirolPlugIn.warnUser(context,I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.layer-not-editable")); //$NON-NLS-1$
             //--[sstein 24.March 2007] disabled since I changed from StandardPirolPlugIn to AbstractPlugIn
             //return this.finishExecution(context, false);
             return false;
@@ -203,16 +203,16 @@ public class EditAttributeByFormulaPlugIn extends AbstractPlugIn {
         
         /* [sstein 24.March 2007] replaced - since we dont have stored formulas
         EditAttributeByFormulaDialog dialog = new EditAttributeByFormulaDialog(context.getWorkbenchFrame(), 
-        		I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.specify-attribute-and-formula"), 
+        		I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.specify-attribute-and-formula"), 
 				true, 
-				I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.editByFormula-explaining-text"), 
+				I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.editByFormula-explaining-text"), 
 				layer.getFeatureCollectionWrapper().getFeatureSchema(), 
 				EditAttributeByFormulaPlugIn.storedFormulas); //$NON-NLS-1$ //$NON-NLS-2$
         */
         EditAttributeByFormulaDialog dialog = new EditAttributeByFormulaDialog(context.getWorkbenchFrame(), 
-        		I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.specify-attribute-and-formula"), 
+        		I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.specify-attribute-and-formula"), 
 				true, 
-				I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.editByFormula-explaining-text"), 
+				I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.editByFormula-explaining-text"), 
 				layer.getFeatureCollectionWrapper().getFeatureSchema()); 
         
 		GUIUtil.centreOnWindow(dialog);
@@ -241,13 +241,13 @@ public class EditAttributeByFormulaPlugIn extends AbstractPlugIn {
             
             MetaInformationHandler metaInfHandler = new MetaInformationHandler(layer);
             metaInfHandler.addMetaInformation(
-            		I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.formula-for") + 
+            		I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.formula-for") + 
 					attrInfo.getUniqueAttributeName(), 
 					formula); //$NON-NLS-1$
 
             if (storedFormulas != null){
                 storedFormulas.setProperty(attrInfo.toString(), formula);
-                storedFormulas.store(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.editByFormula-properties-comment")); //$NON-NLS-1$
+                storedFormulas.store(I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.editByFormula-properties-comment")); //$NON-NLS-1$
             }
             
             

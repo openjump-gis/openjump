@@ -67,8 +67,8 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
     }
 
     private void initialize() {
-        JButton jbView = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.View"));
-        jbView.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.View-Help"));
+        JButton jbView = new JButton(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.View"));
+        jbView.setToolTipText(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.View-Help"));
         final LayerManager layerM = layerManager;
         jbView.addActionListener(new ActionListener() {
             public void actionPerformed( ActionEvent e ) {
@@ -77,8 +77,8 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
                 queryTextArea.requestFocusInWindow();
             }
         });
-        JButton jbFence = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Fence"));
-        jbFence.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Fence-Help"));
+        JButton jbFence = new JButton(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Fence"));
+        jbFence.setToolTipText(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Fence-Help"));
         jbFence.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int currentSRID = layerM.getBlackboard().get("SRID", 0);
@@ -86,8 +86,8 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
                 queryTextArea.requestFocusInWindow();
             }
         });
-        JButton jbSelection = new JButton(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Selection"));
-        jbSelection.setToolTipText(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Selection-Help"));
+        JButton jbSelection = new JButton(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Selection"));
+        jbSelection.setToolTipText(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Selection-Help"));
         jbSelection.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int currentSRID = layerM.getBlackboard().get("SRID", 0);
@@ -100,7 +100,7 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
         jpButtons.add(jbFence);
         jpButtons.add(jbSelection);
         addRow("Layer-Name", getLayerNameTextField(), null, false);
-        //addRow(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Max-Features"), getMaxFeaturesTextField(), null, false);
+        //addRow(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Max-Features"), getMaxFeaturesTextField(), null, false);
         addRow("Query", new JScrollPane(getQueryTextArea()) {
             {setPreferredSize(new Dimension(MAIN_COLUMN_WIDTH, 100));}
         }, jpButtons, true);
@@ -127,7 +127,7 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
     private JTextField getLayerNameTextField() {
         if (layerNameTextField == null) {
             layerNameTextField = new JTextField(
-                layerManager.uniqueLayerName(I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.New-Query-Layer"))
+                layerManager.uniqueLayerName(I18N.getInstance().get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.New-Query-Layer"))
             );
         }
         return layerNameTextField;
@@ -155,7 +155,7 @@ public class RunDatastoreQueryPanel extends ConnectionPanel
         String errMsg = super.validateInput();
         if (errMsg == null) {
             if (getQuery().length() == 0) {
-                errMsg = I18N.get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Required-field-missing-Query");
+                errMsg = I18N.getInstance().get("jump.workbench.ui.plugin.datastore.RunDatastoreQueryPanel.Required-field-missing-Query");
             }
         }
         return errMsg;

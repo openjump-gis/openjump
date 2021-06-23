@@ -84,9 +84,9 @@ public class NewAttributePanel extends JPanel implements ActionListener {
     
     protected PersonalLogger logger = new PersonalLogger(DebugUserIds.ALL);
     
-    protected String typeLabelText = I18N.get("pirol.ui.panels.type-of-new-attribute");
-    protected String nameLabelText = I18N.get("pirol.ui.panels.name-of-new-attribute");
-    protected String defValLabelText = I18N.get("pirol.ui.panels.default-value-for-new-attribute");
+    protected String typeLabelText = I18N.getInstance().get("pirol.ui.panels.type-of-new-attribute");
+    protected String nameLabelText = I18N.getInstance().get("pirol.ui.panels.name-of-new-attribute");
+    protected String defValLabelText = I18N.getInstance().get("pirol.ui.panels.default-value-for-new-attribute");
     
     protected JLabel nameLabel = new JLabel();
     protected JLabel defValLabel = new JLabel();

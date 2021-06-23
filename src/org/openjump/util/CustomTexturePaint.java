@@ -38,10 +38,6 @@
 
 package org.openjump.util;
 
-
-
-import static com.vividsolutions.jump.I18N.get;
-import static com.vividsolutions.jump.I18N.getMessage;
 import static java.awt.Color.black;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 
@@ -61,6 +57,7 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.Logger;
 
 /**
@@ -92,7 +89,7 @@ public class CustomTexturePaint implements Paint {
         BufferedImage img = new BufferedImage(300, 20, TYPE_INT_ARGB);
         Graphics g = img.getGraphics();
         g.setColor(black);
-        g.drawString(get("org.openjump.util.CustomTexturePaint.no-image-chosen"), 25, 10);
+        g.drawString(I18N.getInstance().get("org.openjump.util.CustomTexturePaint.no-image-chosen"), 25, 10);
         g.dispose();
         texturePaint = new TexturePaint(img, new Rectangle2D.Float(0, 0, img.getWidth(), img.getHeight()));
     }
@@ -109,7 +106,7 @@ public class CustomTexturePaint implements Paint {
             BufferedImage img = new BufferedImage(300, 20, TYPE_INT_ARGB);
             Graphics g = img.getGraphics();
             g.setColor(black);
-            g.drawString(get("org.openjump.util.CustomTexturePaint.no-image-chosen"), 25, 10);
+            g.drawString(I18N.getInstance().get("org.openjump.util.CustomTexturePaint.no-image-chosen"), 25, 10);
             g.dispose();
             texturePaint = new TexturePaint(img, new Rectangle2D.Float(0, 0, img.getWidth(), img.getHeight()));
         }
@@ -123,7 +120,7 @@ public class CustomTexturePaint implements Paint {
         this.url = new URL(url);
         BufferedImage img = ImageIO.read(this.url);
         if (img == null) {
-            throw new IOException(getMessage("org.openjump.util.CustomTexturePaint.the-url-does-not-point-to-an-image",
+            throw new IOException(I18N.getInstance().get("org.openjump.util.CustomTexturePaint.the-url-does-not-point-to-an-image",
                     new Object[] { url }));
         }
         texturePaint = new TexturePaint(img, new Rectangle2D.Float(0, 0, img.getWidth(), img.getHeight()));

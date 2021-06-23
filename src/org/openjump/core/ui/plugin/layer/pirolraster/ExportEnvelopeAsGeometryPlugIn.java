@@ -62,7 +62,7 @@ public class ExportEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
      * @inheritDoc
      */
     public String getName() {
-        return I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn.Export-Envelope-As-Geometry");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn.Export-Envelope-As-Geometry");
     }
     
     /**
@@ -72,7 +72,7 @@ public class ExportEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
         
         if (rLayer==null){
-            context.getWorkbenchFrame().warnUser(I18N.get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
+            context.getWorkbenchFrame().warnUser(I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
             return false;
         }
         
@@ -90,7 +90,7 @@ public class ExportEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
         
         newFeaturecollection.add(feature);
         
-        LayerTools.addStandardResultLayer(I18N.get("org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn.Geometry") + "-" + rLayer.getName(), newFeaturecollection, context, new RoleOutline() );
+        LayerTools.addStandardResultLayer(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn.Geometry") + "-" + rLayer.getName(), newFeaturecollection, context, new RoleOutline() );
         
         return false;
     }

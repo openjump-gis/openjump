@@ -38,17 +38,13 @@ import com.vividsolutions.jump.workbench.ui.plugin.datastore.DataStoreQueryDataS
 import de.latlon.deejump.plugin.style.LayerStyle2SLDPlugIn;
 
 public abstract class LayerableUtil {
-    private final static String NO_FEATURES = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.No-Features"); // no
+    private final static String NO_FEATURES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.No-Features"); // no
                                                                                          // features
                                                                                          // were
                                                                                          // found
-    private final static String NULL_GEOMETRIES = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Null-Geometries");
-    private final static String MULTIPLE_GEOMETRY_TYPES = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-geometry-types"); // mixed
-    private final static String NODATASOURCELAYER = I18N
-            .get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.nodatasourcelayer.message");
+    private final static String NULL_GEOMETRIES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Null-Geometries");
+    private final static String MULTIPLE_GEOMETRY_TYPES = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.Multiple-geometry-types"); // mixed
+    private final static String NODATASOURCELAYER = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.LayerPropertiesPlugIn.nodatasourcelayer.message");
 
     /*
      * methods for RasterImageLayer.class
@@ -716,7 +712,7 @@ public abstract class LayerableUtil {
         // Should create this condition in EnableCheckFactory
         if (layer.getFeatureCollectionWrapper().getFeatures().size() == 0) {
             throw new Exception(
-                    I18N.get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
+                    I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.StatisticOverViewPlugIn.Selected-layer-is-empty"));
         }
         final BasicFeature bf = (BasicFeature) layer
                 .getFeatureCollectionWrapper().getFeatures().get(0);
@@ -734,8 +730,7 @@ public abstract class LayerableUtil {
         map.put("styleName", name);
         map.put("styleTitle", name);
         map.put("geoType", geoType);
-        map.put("geomProperty", I18N
-                .get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"));
+        map.put("geomProperty", I18N.getInstance().get("deejump.pluging.style.LayerStyle2SLDPlugIn.geomProperty"));
         map.put("Namespace", "http://www.deegree.org/app");
         // map.put("NamespacePrefix", prefix + ":");
         // map.put("NamespacePrefixWithoutColon", prefix);

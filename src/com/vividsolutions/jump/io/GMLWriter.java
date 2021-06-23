@@ -228,7 +228,7 @@ public class GMLWriter implements JUMPWriter, TaskMonitorSupport {
         int count = 0;
         int size = featureCollection.size();
         TaskMonitorUtil.report(getTaskMonitor(),
-            I18N.getMessage("Writer.writing-features"));
+            I18N.getInstance().get("Writer.writing-features"));
         for (Iterator t = featureCollection.iterator(); t.hasNext() && !getTaskMonitor().isCancelRequested();) {
             f = (Feature) t.next();
 

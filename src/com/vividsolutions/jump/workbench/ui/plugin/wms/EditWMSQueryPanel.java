@@ -84,7 +84,7 @@ public class EditWMSQueryPanel extends JPanel {
 
   private final EnableCheck[] enableChecks = new EnableCheck[] {
           component -> mapLayerPanel.getChosenMapLayers().isEmpty() ?
-                  I18N.get("ui.plugin.wms.EditWMSQueryPanel.at-least-one-wms-must-be-chosen")
+                  I18N.getInstance().get("ui.plugin.wms.EditWMSQueryPanel.at-least-one-wms-must-be-chosen")
                   : null,
           component -> srsComboBox.getSelectedItem() == null ?
                   MapLayerWizardPanel.NO_COMMON_SRS_MESSAGE : null};
@@ -248,15 +248,15 @@ public class EditWMSQueryPanel extends JPanel {
 
   void jbInit() throws Exception {
     //final JLabel srsLabel =
-    //    new JLabel(I18N.get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system"));
+    //    new JLabel(I18N.getInstance().get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system"));
     //final JLabel formatLabel =
-    //    new JLabel(I18N.get("ui.plugin.wms.SRSWizardPanel.image-format"));
+    //    new JLabel(I18N.getInstance().get("ui.plugin.wms.SRSWizardPanel.image-format"));
     //final JLabel stylesLabel =
-    //    new JLabel(I18N.get("ui.plugin.wms.SRSWizardPanel.styles"));
+    //    new JLabel(I18N.getInstance().get("ui.plugin.wms.SRSWizardPanel.styles"));
     //final JLabel moreParametersLabel =
-    //    new JLabel(I18N.get("ui.plugin.wms.SRSWizardPanel.more-parameters"));
+    //    new JLabel(I18N.getInstance().get("ui.plugin.wms.SRSWizardPanel.more-parameters"));
     final JLabel transparencyLabel =
-        new JLabel(I18N.get("ui.plugin.wms.EditWMSQueryPanel.transparency"));
+        new JLabel(I18N.getInstance().get("ui.plugin.wms.EditWMSQueryPanel.transparency"));
 
     final Border border1 = BorderFactory.createEmptyBorder(10, 10, 10, 10);
     this.setLayout(new GridBagLayout());
@@ -343,7 +343,7 @@ public class EditWMSQueryPanel extends JPanel {
 
     JPanel versionPanel = URLWizardPanel.getInstance().createVersionPanel();
     versionPanel.setBorder(BorderFactory.createTitledBorder(
-            I18N.get("GenericNames.version")));
+            I18N.getInstance().get("GenericNames.version")));
     this.add(versionPanel, new GridBagConstraints(1, 1, 3, 1, 1.0, 0.0,
         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, zeroInsets,
         0, 0));
@@ -375,7 +375,7 @@ public class EditWMSQueryPanel extends JPanel {
       }
     });
 
-    connectButton = new JButton(I18N.get("GenericNames.reconnect"));
+    connectButton = new JButton(I18N.getInstance().get("GenericNames.reconnect"));
     connectButton.addActionListener(e -> reinitializeService());
     // only active if version or urlpanel components was changed
     connectButton.setEnabled(false);
@@ -388,13 +388,13 @@ public class EditWMSQueryPanel extends JPanel {
   private JPanel createParametersPanel() {
     JPanel panel = new JPanel(new FlowLayout());
     final JLabel srsLabel =
-        new JLabel(I18N.get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system"));
+        new JLabel(I18N.getInstance().get("ui.plugin.wms.EditWMSQueryPanel.coordinate-reference-system"));
     final JLabel formatLabel =
-        new JLabel(I18N.get("ui.plugin.wms.SRSWizardPanel.image-format"));
+        new JLabel(I18N.getInstance().get("ui.plugin.wms.SRSWizardPanel.image-format"));
     final JLabel stylesLabel =
-        new JLabel(I18N.get("ui.plugin.wms.SRSWizardPanel.styles"));
+        new JLabel(I18N.getInstance().get("ui.plugin.wms.SRSWizardPanel.styles"));
     final JLabel moreParametersLabel =
-        new JLabel(I18N.get("ui.plugin.wms.SRSWizardPanel.more-parameters"));
+        new JLabel(I18N.getInstance().get("ui.plugin.wms.SRSWizardPanel.more-parameters"));
 
     panel.add(srsLabel);
     panel.add(srsComboBox);

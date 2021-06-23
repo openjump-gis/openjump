@@ -112,9 +112,9 @@ public class FileNamePanel extends JPanel {
     private JLabel leftDescriptionLabel = new JLabel("");
 
     void jbInit() throws Exception {
-        upperDescriptionLabel.setText(I18N.get("ui.FileNamePanel.description-text-goes-here"));
+        upperDescriptionLabel.setText(I18N.getInstance().get("ui.FileNamePanel.description-text-goes-here"));
         this.setLayout(gridBagLayout1);
-        browseButton.setText(I18N.get("ui.FileNamePanel.browse"));
+        browseButton.setText(I18N.getInstance().get("ui.FileNamePanel.browse"));
         browseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 browseButton_actionPerformed(e);
@@ -218,34 +218,34 @@ public class FileNamePanel extends JPanel {
 
     public String getValidationError() {
         if (getComboBoxText().trim().equals("")) {
-            return I18N.get("ui.FileNamePanel.no-file-was-specified");
+            return I18N.getInstance().get("ui.FileNamePanel.no-file-was-specified");
         }
 
         File file = new File(getComboBoxText());
 
         if (fileMustExist && !file.exists()) {
-            return I18N.get("ui.FileNamePanel.specified-file-does-not-exist") +" "+ getComboBoxText();
+            return I18N.getInstance().get("ui.FileNamePanel.specified-file-does-not-exist") +" "+ getComboBoxText();
         }
 
         if (fileMustExist && file.isDirectory()) {
-            return I18N.get("ui.FileNamePanel.specified-file-is-a-directory")+" "+  getComboBoxText();
+            return I18N.getInstance().get("ui.FileNamePanel.specified-file-is-a-directory")+" "+  getComboBoxText();
         }
 
         if (fileMustExist && !file.isFile()) {
-            return I18N.get("ui.FileNamePanel.specified-file-is-not-normal") +" "+ getComboBoxText();
+            return I18N.getInstance().get("ui.FileNamePanel.specified-file-is-not-normal") +" "+ getComboBoxText();
         }
 
         if (!fileMustExist && (file.getParentFile() == null)) {
-            return I18N.get("ui.FileNamePanel.specified-parent-directory-is-not-specified")+" "
+            return I18N.getInstance().get("ui.FileNamePanel.specified-parent-directory-is-not-specified")+" "
                 + getComboBoxText();
         }
 
         if (!fileMustExist && !file.getParentFile().exists()) {
-            return I18N.get("ui.FileNamePanel.specified-parent-directory-does-not-exist")+" " + getComboBoxText();
+            return I18N.getInstance().get("ui.FileNamePanel.specified-parent-directory-does-not-exist")+" " + getComboBoxText();
         }
 
         if (!fileMustExist && !file.getParentFile().isDirectory()) {
-            return I18N.get("ui.FileNamePanel.specified-parent-is-not-a-directory")+" "
+            return I18N.getInstance().get("ui.FileNamePanel.specified-parent-is-not-a-directory")+" "
                 + getComboBoxText();
         }
 
@@ -288,7 +288,7 @@ public class FileNamePanel extends JPanel {
     //takes a minute or so to open. [Jon Aquino]
     private File browse() {
         JFileChooser fileChooser = fileMustExist ? GUIUtil.createJFileChooserWithExistenceChecking() : new JFCWithEnterAction();
-        fileChooser.setDialogTitle(I18N.get("ui.FileNamePanel.browse"));
+        fileChooser.setDialogTitle(I18N.getInstance().get("ui.FileNamePanel.browse"));
 
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 

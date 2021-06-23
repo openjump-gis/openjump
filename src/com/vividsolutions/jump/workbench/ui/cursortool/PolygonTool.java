@@ -69,7 +69,7 @@ public abstract class PolygonTool extends MultiClickTool {
 
     protected boolean checkPolygon() throws NoninvertibleTransformException {
         if (getCoordinates().size() < 3) {
-            getPanel().getContext().warnUser(I18N.get("ui.cursortool.PolygonTool.the-polygon-must-have-at-least-3-points"));
+            getPanel().getContext().warnUser(I18N.getInstance().get("ui.cursortool.PolygonTool.the-polygon-must-have-at-least-3-points"));
 
             return false;
         }

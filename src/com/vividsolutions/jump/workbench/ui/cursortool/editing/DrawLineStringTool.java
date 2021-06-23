@@ -72,7 +72,7 @@ public class DrawLineStringTool extends MultiClickTool {
 
     public String getName() {
     	//Specify name explicitly, otherwise it will be "Draw Line String" [Jon Aquino]
-        return I18N.get("ui.cursortool.editing.DrawLineString.draw-linestring");
+        return I18N.getInstance().get("ui.cursortool.editing.DrawLineString.draw-linestring");
     }
 
     public Icon getIcon() {
@@ -109,7 +109,7 @@ public class DrawLineStringTool extends MultiClickTool {
 
     protected boolean checkLineString() throws NoninvertibleTransformException {
         if (getCoordinates().size() < 2) {
-            getPanel().getContext().warnUser(I18N.get("ui.cursortool.editing.DrawLineString.the-linestring-must-have-at-least-2-points"));
+            getPanel().getContext().warnUser(I18N.getInstance().get("ui.cursortool.editing.DrawLineString.the-linestring-must-have-at-least-2-points"));
 
             return false;
         }

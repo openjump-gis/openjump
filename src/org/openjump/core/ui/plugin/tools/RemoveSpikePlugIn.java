@@ -28,14 +28,14 @@ import java.util.List;
  */
 public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
 
-    public static String SOURCE_LAYER            = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.source-layer");
-    public static String DESCRIPTION             = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.description");
-    public static String RESULT_LAYER_SUFFIX     = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.result-layer-suffix");
-    public static String DIST_TOLERANCE          = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.dist-tolerance");
-    public static String DIST_TOLERANCE_TOOLTIP  = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.dist-tolerance-tooltip");
-    public static String ANGLE_TOLERANCE         = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.angle-tolerance");
-    public static String ANGLE_TOLERANCE_TOOLTIP = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.angle-tolerance-tooltip");
-    public static String SPIKES_LOCALIZATION     = I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.spikes-localisation");
+    public static String SOURCE_LAYER            = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.source-layer");
+    public static String DESCRIPTION             = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.description");
+    public static String RESULT_LAYER_SUFFIX     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.result-layer-suffix");
+    public static String DIST_TOLERANCE          = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.dist-tolerance");
+    public static String DIST_TOLERANCE_TOOLTIP  = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.dist-tolerance-tooltip");
+    public static String ANGLE_TOLERANCE         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.angle-tolerance");
+    public static String ANGLE_TOLERANCE_TOOLTIP = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.angle-tolerance-tooltip");
+    public static String SPIKES_LOCALIZATION     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.spikes-localisation");
 
 
     private Layer layerA;
@@ -47,7 +47,7 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
     }
 
     public String getName() {
-        return I18N.get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn");
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn");
     }
 
     @Override

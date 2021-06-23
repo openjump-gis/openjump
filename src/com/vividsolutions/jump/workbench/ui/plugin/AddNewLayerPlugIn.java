@@ -73,7 +73,7 @@ public class AddNewLayerPlugIn extends AbstractPlugIn {
     Layer layer = context.addLayer(
             selectedCategories.isEmpty() ? StandardCategoryNames.WORKING
                 : selectedCategories.iterator().next().toString(),
-            I18N.get("ui.plugin.AddNewLayerPlugIn.new"),
+            I18N.getInstance().get("ui.plugin.AddNewLayerPlugIn.new"),
             createBlankFeatureCollection());
     layer.setFeatureCollectionModified(false);
     if (PersistentBlackboardPlugIn.get(context.getWorkbenchContext())

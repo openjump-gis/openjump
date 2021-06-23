@@ -64,13 +64,13 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
  */
 public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn{
 
-    private final String sSidebar =		    I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.descriptiontext");
-    private final String sLAYER = 			I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Layer-with-attribute-table");
-    private final String sXCoordAttrib = 	I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.select-attribute-with-East-coordinate");
-    private final String sYCoordAttrib = 	I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.select-attribute-with-North-coordinate");
-    private final String sZCoordAttrib = 	I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.select-attribute-with-Height");
-    private final String sHasZCoord = 		I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.data-have-a-z-coordinate-/-height-value");
-    private final String sPointsFrom =		I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Points-from");
+    private final String sSidebar =		    I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.descriptiontext");
+    private final String sLAYER = 			I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Layer-with-attribute-table");
+    private final String sXCoordAttrib = 	I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.select-attribute-with-East-coordinate");
+    private final String sYCoordAttrib = 	I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.select-attribute-with-North-coordinate");
+    private final String sZCoordAttrib = 	I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.select-attribute-with-Height");
+    private final String sHasZCoord = 		I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.data-have-a-z-coordinate-/-height-value");
+    private final String sPointsFrom =		I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Points-from");
     
     private Layer inputLayer = null;
 
@@ -80,8 +80,7 @@ public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn
     private boolean hasHeight = false;
 
 	public String getName() {
-		return I18N
-				.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn") + "...";
+		return I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn") + "...";
 	}
 	
     public void initialize(PlugInContext context) throws Exception {
@@ -130,7 +129,7 @@ public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn
 		int i = 0;
 		int numTransfers = inputFC.size();
 		for (Feature origFeature : inputFC.getFeatures()) {
-			monitor.report(i, numTransfers, I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.items-processed"));
+			monitor.report(i, numTransfers, I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.items-processed"));
 			if (origFeature.getAttribute(dXCoord) == null || origFeature.getAttribute(dYCoord) == null) {
 				continue;
 			}
@@ -156,7 +155,7 @@ public class PointLayerFromAttributeTablePlugIn extends AbstractThreadedUiPlugIn
 	private MultiInputDialog initDialog(final PlugInContext context) {
 
 		MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),
-				I18N.get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Create-Point-Layer"), true);
+				I18N.getInstance().get("org.openjump.core.ui.plugin.tools.generate.PointLayerFromAttributeTablePlugIn.Create-Point-Layer"), true);
         dialog.setSideBarDescription(sSidebar);
 
 		dialog.addLayerComboBox(sLAYER, context.getCandidateLayer(0), null, context.getLayerManager());

@@ -25,7 +25,7 @@ public class ZoomInPlugIn extends AbstractPlugIn {
         JPopupMenu popupMenu = LayerViewPanel.popupMenu();
   
         featureInstaller.addPopupMenuItem(popupMenu, this,
-            new String[] {I18N.get("ui.MenuNames.ZOOM")}, 
+            new String[] {I18N.getInstance().get("ui.MenuNames.ZOOM")}, 
             getName(),
             false, 
             GUIUtil.toSmallIcon(ICON),
@@ -42,7 +42,7 @@ public class ZoomInPlugIn extends AbstractPlugIn {
     }
     
     public String getName(){
-        return I18N.get("org.openjump.core.ui.plugin.mousemenu.ZoomInPlugIn"); 
+        return I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.ZoomInPlugIn"); 
     } 
          
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

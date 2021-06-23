@@ -60,15 +60,15 @@ public class JoinTablePlugIn extends ThreadedBasePlugIn {
 		
 				
 		// initialisation du filtre de fichier
-		JoinTablePlugIn.JOIN_TABLE_FILE_FILTER = GUIUtil.createFileFilter(I18N.get("org.openjump.sigle.plugin.joinTable.text_file"), new String[]{"txt", "text"});
-		LAYER_ATTRIBUTES = I18N.get("org.openjump.sigle.plugin.joinTable.layer_field");
-		TABLE_ATTRIBUTES = I18N.get("org.openjump.sigle.plugin.joinTable.table_field");
+		JoinTablePlugIn.JOIN_TABLE_FILE_FILTER = GUIUtil.createFileFilter(I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.text_file"), new String[]{"txt", "text"});
+		LAYER_ATTRIBUTES = I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.layer_field");
+		TABLE_ATTRIBUTES = I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.table_field");
 		
 		/*
 		context.getFeatureInstaller().addPopupMenuItem(
 				context.getWorkbenchContext().getWorkbench().getFrame().getLayerNamePopupMenu(), 
 			    this, 
-				I18N.get("org.openjump.sigle.plugin.joinTable.Join_data")+"{pos:14}" , 
+				I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Join_data")+"{pos:14}" , 
 				false, 
 				null, 
 				new EnableCheckFactory(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(1));
@@ -84,7 +84,7 @@ public class JoinTablePlugIn extends ThreadedBasePlugIn {
 				new EnableCheckFactory(context.getWorkbenchContext()).createAtLeastNLayersMustExistCheck(1)); //enable check        
 
 		fileChooser = GUIUtil.createJFileChooserWithExistenceChecking();
-		fileChooser.setDialogTitle(I18N.get("org.openjump.sigle.plugin.joinTable.Choose_file_data_to_join"));
+		fileChooser.setDialogTitle(I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Choose_file_data_to_join"));
 		fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileChooser.setMultiSelectionEnabled(false);
@@ -95,7 +95,7 @@ public class JoinTablePlugIn extends ThreadedBasePlugIn {
 	}
 	
 	public String getName(){
-		return I18N.get("org.openjump.sigle.plugin.joinTable.Join_data");
+		return I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Join_data");
 	}
 	
 	public boolean execute(PlugInContext context) throws Exception{
@@ -122,7 +122,7 @@ public class JoinTablePlugIn extends ThreadedBasePlugIn {
         }
 		//-- check if attributes exist
 		if (layer.getFeatureCollectionWrapper().getFeatureSchema().getAttributeCount()==0){
-			ErrorDialog.show(context.getWorkbenchFrame(), I18N.get("org.openjump.sigle.plugin.joinTable.Unable_to_join_data"), I18N.get("org.openjump.sigle.plugin.joinTable.Layer_has_no_field"), "");
+			ErrorDialog.show(context.getWorkbenchFrame(), I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Unable_to_join_data"), I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Layer_has_no_field"), "");
 			return false; 
 		}
 
@@ -161,9 +161,9 @@ public class JoinTablePlugIn extends ThreadedBasePlugIn {
 		for (int i=0; i<schema.getAttributeCount(); i++)
 			layerAttributes.add(i,schema.getAttributeName(i));	
 		
-		dialog = new MultiInputDialog(context.getWorkbenchFrame(), I18N.get("org.openjump.sigle.plugin.joinTable.Matching_fields"), true);
+		dialog = new MultiInputDialog(context.getWorkbenchFrame(), I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Matching_fields"), true);
 	
-		dialog.setSideBarDescription(I18N.get("org.openjump.sigle.plugin.joinTable.Choose_fields_to_join"));
+		dialog.setSideBarDescription(I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.Choose_fields_to_join"));
 				
 		dialog.addComboBox(LAYER_ATTRIBUTES,layerAttributes.get(0), layerAttributes, null);
 		dialog.addComboBox(TABLE_ATTRIBUTES,jt.getFieldName(0), jt.getFieldNames(), null);
@@ -175,7 +175,7 @@ public class JoinTablePlugIn extends ThreadedBasePlugIn {
 
         //dialog.setSideBarImage(IconLoader.icon("Overlay.gif"));
         layerdialog.setSideBarDescription(
-        		I18N.get("org.openjump.sigle.plugin.joinTable.MenuName"));
+        		I18N.getInstance().get("org.openjump.sigle.plugin.joinTable.MenuName"));
         String fieldName = sLAYER;
         JComboBox addLayerComboBox = layerdialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
         GUIUtil.centreOnWindow(layerdialog);

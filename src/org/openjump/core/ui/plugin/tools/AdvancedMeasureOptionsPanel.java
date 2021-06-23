@@ -162,7 +162,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		 * summary settings
 		 * ************************************************ */
 		JPanel summaryPanel = new JPanel(new GridBagLayout());
-		summaryPanel.setBorder(new TitledBorder(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.summary")));
+		summaryPanel.setBorder(new TitledBorder(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.summary")));
 		JPanel summaryContentPanel = new JPanel(new GridBagLayout());
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -170,13 +170,13 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		gridBagConstraints.weightx = 1.0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		summaryPanel.add(summaryContentPanel, gridBagConstraints);
-		summaryFontButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"));
-		summaryFontColorButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"));
+		summaryFontButton = new JButton(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"));
+		summaryFontColorButton = new JButton(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"));
 
 		// checkbox for paint the summary (distance and area)
 		// length checkbox
-		paintSummaryLengthCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-summary-length"));
-		paintSummaryAreaCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-summary-area"));
+		paintSummaryLengthCheckBox = new JCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-summary-length"));
+		paintSummaryAreaCheckBox = new JCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-summary-area"));
 		paintSummaryLengthCheckBox.addChangeListener(new ChangeListener() {
 
 			public void stateChanged(ChangeEvent e) {
@@ -210,7 +210,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 
 
 		// font label
-		JLabel summaryFontLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.font"));
+		JLabel summaryFontLabel = new JLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.font"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -221,7 +221,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		summaryFontButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				Font newFont = FontChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"), summaryFont, true);
+				Font newFont = FontChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"), summaryFont, true);
 				if (newFont != null) summaryFont = newFont;
 			}
 		});
@@ -234,7 +234,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
         summaryContentPanel.add(summaryFontButton, gridBagConstraints);
 
 		// font color label
-		JLabel fontColorLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.fontcolor"));
+		JLabel fontColorLabel = new JLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.fontcolor"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -245,7 +245,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		summaryFontColorButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				summaryFontColor = JColorChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"), summaryFontColor);
+				summaryFontColor = JColorChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"), summaryFontColor);
 			}
 		});
 		gridBagConstraints = new java.awt.GridBagConstraints();
@@ -267,7 +267,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		 * Vertex styling
 		 * ************************************************ */
 		JPanel vertexPanel = new JPanel(new GridBagLayout());
-		vertexPanel.setBorder(new TitledBorder(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.vertex")));
+		vertexPanel.setBorder(new TitledBorder(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.vertex")));
 		JPanel vertexContentPanel = new JPanel(new GridBagLayout());
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -275,10 +275,10 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		gridBagConstraints.weightx = 1.0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		vertexPanel.add(vertexContentPanel, gridBagConstraints);
-		vertexFontButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"));
-		vertexFontColorButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"));
-		paintVertexDistanceCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-vertex-distance"));
-		paintVertexDistanceRelativeCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-vertex-distance-relative"));
+		vertexFontButton = new JButton(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"));
+		vertexFontColorButton = new JButton(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"));
+		paintVertexDistanceCheckBox = new JCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-vertex-distance"));
+		paintVertexDistanceRelativeCheckBox = new JCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-vertex-distance-relative"));
 
 		// checkbox for paint the distance per vertex
 		paintVertexDistanceCheckBox.addChangeListener(new ChangeListener() {
@@ -313,7 +313,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
         vertexContentPanel.add(paintVertexDistanceRelativeCheckBox, gridBagConstraints);
 
 		// font label
-		JLabel vertexFontLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.font"));
+		JLabel vertexFontLabel = new JLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.font"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -325,7 +325,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		vertexFontButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				Font newFont = FontChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"), vertexFont, true);
+				Font newFont = FontChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-font"), vertexFont, true);
 				if (newFont != null) vertexFont = newFont;
 			}
 		});
@@ -338,7 +338,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
         vertexContentPanel.add(vertexFontButton, gridBagConstraints);
 
 		// font color label
-		JLabel vertexFontColorLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.fontcolor"));
+		JLabel vertexFontColorLabel = new JLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.fontcolor"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -349,7 +349,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		vertexFontColorButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				vertexFontColor = JColorChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"), vertexFontColor);
+				vertexFontColor = JColorChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"), vertexFontColor);
 			}
 		});
 		gridBagConstraints = new java.awt.GridBagConstraints();
@@ -361,9 +361,9 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
         vertexContentPanel.add(vertexFontColorButton, gridBagConstraints);
 
 		// vertex style
-		vertexStyleButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.change-style"));
+		vertexStyleButton = new JButton(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.change-style"));
 		// checkbox for paint vertex or not
-		paintVertexCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-vertex"));
+		paintVertexCheckBox = new JCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-vertex"));
 		paintVertexCheckBox.addChangeListener(new ChangeListener() {
 
 			public void stateChanged(ChangeEvent e) {
@@ -379,7 +379,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
         vertexContentPanel.add(paintVertexCheckBox, gridBagConstraints);
 
 		// vertex style label
-		JLabel vertexStyleLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.vertexstyle"));
+		JLabel vertexStyleLabel = new JLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.vertexstyle"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
@@ -389,9 +389,9 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		// dialog with the vertex style settings
 		vertexStylePanels = new JPanel(new FlowLayout());
 		vertexStylePanelFirst = new VertexStylePanel(false);
-		vertexStylePanelFirst.setBorder(new TitledBorder(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.first-vertex")));
+		vertexStylePanelFirst.setBorder(new TitledBorder(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.first-vertex")));
 		vertexStylePanelFollowing = new VertexStylePanel(false);
-		vertexStylePanelFollowing.setBorder(new TitledBorder(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.following-vertexes")));
+		vertexStylePanelFollowing.setBorder(new TitledBorder(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.following-vertexes")));
 		vertexStylePanels.add(vertexStylePanelFirst);
 		vertexStylePanels.add(vertexStylePanelFollowing);
 		// vertex style button
@@ -413,7 +413,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 				int followingVertexSize = vertexStylePanelFollowing.getVertexSize();
 				// create the dialog
 				OKCancelDialog vertexStyleDialog = new OKCancelDialog(context.getWorkbench().getFrame(), 
-						I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.change-style"),
+						I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.change-style"),
 						true, vertexStylePanels, new OKCancelDialog.Validator() {
 
 					public String validateInput(Component component) {
@@ -445,7 +445,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		 * line and fill settings
 		 * ************************************************ */
 		JPanel lineFillPanel = new JPanel(new GridBagLayout());
-		lineFillPanel.setBorder(new TitledBorder(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.line-and-fill")));
+		lineFillPanel.setBorder(new TitledBorder(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.line-and-fill")));
 		JPanel lineFillContentPanel = new JPanel(new GridBagLayout());
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -453,11 +453,11 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		gridBagConstraints.weightx = 1.0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		lineFillPanel.add(lineFillContentPanel, gridBagConstraints);
-		lineColorButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"));
-		fillColorButton = new JButton(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"));
+		lineColorButton = new JButton(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"));
+		fillColorButton = new JButton(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"));
 
 		// checkbox for paint lines or not
-		paintLineCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-line"));
+		paintLineCheckBox = new JCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.paint-line"));
 		paintLineCheckBox.addChangeListener(new ChangeListener() {
 
 			public void stateChanged(ChangeEvent e) {
@@ -473,7 +473,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
         lineFillContentPanel.add(paintLineCheckBox, gridBagConstraints);
 
 		// line color label
-		JLabel lineColorLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.linecolor"));
+		JLabel lineColorLabel = new JLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.linecolor"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -484,7 +484,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		lineColorButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				lineColor = JColorChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"), lineColor);
+				lineColor = JColorChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"), lineColor);
 			}
 		});
 		gridBagConstraints = new java.awt.GridBagConstraints();
@@ -496,7 +496,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
         lineFillContentPanel.add(lineColorButton, gridBagConstraints);
 
 		// checkbox for fill or not
-		paintFillCheckBox = new JCheckBox(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.filling"));
+		paintFillCheckBox = new JCheckBox(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.filling"));
 		paintFillCheckBox.addChangeListener(new ChangeListener() {
 
 			public void stateChanged(ChangeEvent e) {
@@ -512,7 +512,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
         lineFillContentPanel.add(paintFillCheckBox, gridBagConstraints);
 
 		// font color label
-		JLabel fillColorLabel = new JLabel(I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.fillcolor"));
+		JLabel fillColorLabel = new JLabel(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.fillcolor"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -523,7 +523,7 @@ public class AdvancedMeasureOptionsPanel extends JPanel implements OptionsPanel 
 		fillColorButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				fillColor = JColorChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"), fillColor);
+				fillColor = JColorChooser.showDialog(OptionsDialog.instance(context.getWorkbench()), I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AdvancedMeasureOptionsPanel.choose-color"), fillColor);
 			}
 		});
 		gridBagConstraints = new java.awt.GridBagConstraints();

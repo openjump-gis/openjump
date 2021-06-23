@@ -96,12 +96,12 @@ public class VertexStyleChooser extends JPanel {
     private void initGUI() {
         pointTypeComboBox = new JComboBox();
         pointTypeComboBox.setEditable(false);
-        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.square"));
-        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.circle"));
-        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.triangle"));
-        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.cross"));
-        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.star"));
-        pointTypeComboBox.addItem(I18N.get("deejump.ui.style.RenderingStylePanel.bitmap"));
+        pointTypeComboBox.addItem(I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.square"));
+        pointTypeComboBox.addItem(I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.circle"));
+        pointTypeComboBox.addItem(I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.triangle"));
+        pointTypeComboBox.addItem(I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.cross"));
+        pointTypeComboBox.addItem(I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.star"));
+        pointTypeComboBox.addItem(I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.bitmap"));
 
         pointTypeComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -111,7 +111,7 @@ public class VertexStyleChooser extends JPanel {
             }
         });
 
-        bitmapChangeButton = new JButton(I18N.get("deejump.ui.style.RenderingStylePanel.bitmap-change"));
+        bitmapChangeButton = new JButton(I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.bitmap-change"));
         bitmapChangeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 openFileChooser();
@@ -139,7 +139,7 @@ public class VertexStyleChooser extends JPanel {
             sizeSlider.setPreferredSize(new Dimension(130, 49));
         }
         JPanel oberstPanel = new JPanel();
-        oberstPanel.add(new JLabel(I18N.get("deejump.ui.style.RenderingStylePanel.point-display-type")));
+        oberstPanel.add(new JLabel(I18N.getInstance().get("deejump.ui.style.RenderingStylePanel.point-display-type")));
         oberstPanel.add(pointTypeComboBox);
         oberstPanel.add(bitmapChangeButton);
         JPanel sliderPanel = new JPanel(); // [sstein] always init although it

@@ -66,14 +66,14 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
 
     private WorkbenchContext workbenchContext;
     
-    private final static String sJoinWithArc = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Join-With-Arc");
-    private final static String sNew = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.New");
-    private final static String sTheArcRadius = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.The-arc-radius");
-    private final static String sBetween= I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Between");
-    private final static String sAnd= I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.and");
-    private final static String sFeaturesMustBeSelected= I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.features-must-be-selected");
+    private final static String sJoinWithArc = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Join-With-Arc");
+    private final static String sNew = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.New");
+    private final static String sTheArcRadius = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.The-arc-radius");
+    private final static String sBetween= I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Between");
+    private final static String sAnd= I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.and");
+    private final static String sFeaturesMustBeSelected= I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.features-must-be-selected");
 	
-    private final static String RADIUS = I18N.get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Radius");
+    private final static String RADIUS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Radius");
     private double arcRadius = 50.0;
 
     public void initialize(PlugInContext context) throws Exception

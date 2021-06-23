@@ -83,8 +83,7 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
   }
 
   public String getName() {
-    return I18N
-        .get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.save-image-in-svg-format");
+    return I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.save-image-in-svg-format");
   }
 
   public boolean execute(PlugInContext context) throws Exception {
@@ -167,11 +166,10 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
         labelArea.setOpaque(false);
         labelArea.setFont(new JLabel().getFont());
         labelArea
-            .setText(I18N
-                .get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.large-dataset-message"));
+            .setText(I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.large-dataset-message"));
         OKCancelDialog dialog = new OKCancelDialog(
             context.getWorkbenchFrame(),
-            I18N.get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.warning-message-title"),
+            I18N.getInstance().get("org.openjump.core.ui.plugin.file.SaveImageAsSVGPlugIn.warning-message-title"),
             true, labelArea, null);
         dialog.setVisible(true);
         if (!dialog.wasOKPressed())

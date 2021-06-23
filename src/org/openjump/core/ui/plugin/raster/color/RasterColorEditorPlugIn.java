@@ -30,7 +30,7 @@ public class RasterColorEditorPlugIn extends AbstractPlugIn {
 
 		super.initialize(context);
 
-		String sName = I18N.get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor");
+		String sName = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor");
 		
 		context.getFeatureInstaller().addMainMenuPlugin(
 				this,

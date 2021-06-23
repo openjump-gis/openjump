@@ -34,7 +34,7 @@ public class SaveToFileWizard extends AbstractWizardGroup {
   private File file;
 
   public SaveToFileWizard(final PlugInContext context) {
-    super(I18N.get(OpenFileWizard.KEY), IconLoader.icon("disk_dots.png"), SelectFilePanel.KEY);
+    super(I18N.getInstance().get(OpenFileWizard.KEY), IconLoader.icon("disk_dots.png"), SelectFilePanel.KEY);
 //    this.context = context;
   }
 

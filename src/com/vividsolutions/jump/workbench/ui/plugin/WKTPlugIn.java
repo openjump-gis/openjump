@@ -94,7 +94,7 @@ public abstract class WKTPlugIn extends AbstractPlugIn {
     
     protected EnterWKTDialog createDialog(final PlugInContext context) {
         final EnterWKTDialog d =
-            new EnterWKTDialog(context.getWorkbenchFrame(), I18N.get("ui.plugin.WKTPlugIn.enter-well-known-text"), true);
+            new EnterWKTDialog(context.getWorkbenchFrame(), I18N.getInstance().get("ui.plugin.WKTPlugIn.enter-well-known-text"), true);
         d.setPreferredSize(new Dimension(500, 400));
         d.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
