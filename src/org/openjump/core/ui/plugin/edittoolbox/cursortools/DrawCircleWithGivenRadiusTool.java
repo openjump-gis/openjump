@@ -64,7 +64,6 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanelContext;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
-import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.FeatureDrawingUtil;
@@ -128,7 +127,7 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
     		}
     		if(pts > 300){
     			pts = 300;
-    			AbstractCursorTool.workbenchFrame(this.getPanel()).warnUser(sReset);
+    			getWorkbenchFrame().warnUser(sReset);
     		}
     		this.points=pts;
     	}    	 
@@ -153,7 +152,7 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
             getPanel().getContext().warnUser(isValidOp.getValidationError()
                                                       .getMessage());
 
-            if (PersistentBlackboardPlugIn.get(getWorkbench().getContext())
+            if (PersistentBlackboardPlugIn.get(getContext())
 					.get(EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false)) {
                 return false;
             }

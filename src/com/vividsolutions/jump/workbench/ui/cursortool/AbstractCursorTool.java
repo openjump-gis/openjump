@@ -43,7 +43,6 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -58,11 +57,13 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
 import org.locationtech.jts.geom.Coordinate;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
@@ -254,11 +255,7 @@ public abstract class AbstractCursorTool implements CursorTool {
   }
 
   public void activate(LayerViewPanel new_panel) {
-    if (workbenchFrame(new_panel) != null) {
-      workbenchFrame(new_panel).log(
-          I18N.get("ui.cursortool.AbstractCursorTool.activating") + " "
-              + getName());
-    }
+    Logger.info(I18N.get("ui.cursortool.AbstractCursorTool.activating") + " " + getName());
 
     LayerViewPanel old_panel = getPanel();
     // cancel ongoing possibly gestures if we switch LayerViews (switch Tasks)
@@ -272,21 +269,13 @@ public abstract class AbstractCursorTool implements CursorTool {
     if (snappingAllowed && !snappingInitialized) {
       getSnapManager().addPolicies(
           createStandardSnappingPolicies(PersistentBlackboardPlugIn
-              .get(getWorkbench().getContext())));
+              .get(this.panel.getWorkBenchFrame().getContext())));
       snappingInitialized = true;
     }
 
     // following added to handle KEY shortcuts e.g. SPACEBAR snap switching
     WorkbenchFrame frame = this.panel.getWorkBenchFrame();
     frame.addEasyKeyListener(keyListener);
-  }
-
-  public static WorkbenchFrame workbenchFrame(LayerViewPanel layerViewPanel) {
-    Window window = SwingUtilities.windowForComponent(layerViewPanel);
-
-    // Will not be a WorkbenchFrame in apps that don't use the workbench
-    // e.g. LayerViewPanelDemoFrame. [Jon Aquino]
-    return (window instanceof WorkbenchFrame) ? (WorkbenchFrame) window : null;
   }
 
   protected List createStandardSnappingPolicies(Blackboard blackboard) {
@@ -297,7 +286,7 @@ public abstract class AbstractCursorTool implements CursorTool {
   }
 
   protected boolean isRollingBackInvalidEdits() {
-    return PersistentBlackboardPlugIn.get(getWorkbench().getContext()).get(
+    return PersistentBlackboardPlugIn.get(this.panel.getWorkBenchFrame().getContext()).get(
         EditTransaction.ROLLING_BACK_INVALID_EDITS_KEY, false);
   }
 
@@ -306,7 +295,7 @@ public abstract class AbstractCursorTool implements CursorTool {
     // cancelGesture();
 
     // following added to handle SPACEBAR snap switching
-    getWorkbenchFrame().removeEasyKeyListener(keyListener);
+    this.panel.getWorkBenchFrame().removeEasyKeyListener(keyListener);
   }
 
   public void mouseClicked(MouseEvent e) {
@@ -584,18 +573,6 @@ public abstract class AbstractCursorTool implements CursorTool {
         getPanel());
   }
 
-  public JUMPWorkbench getWorkbench() {
-    return workbench(getPanel());
-  }
-
-  public WorkbenchFrame getWorkbenchFrame() {
-    return workbench(getPanel()).getFrame();
-  }
-
-  public static JUMPWorkbench workbench(LayerViewPanel panel) {
-    return JUMPWorkbench.getInstance();
-  }
-
   protected abstract void gestureFinished() throws Exception;
 
   protected void fireGestureFinished() throws Exception {
@@ -669,6 +646,18 @@ public abstract class AbstractCursorTool implements CursorTool {
 
   protected void setPanel(LayerViewPanel panel) {
     this.panel = panel;
+  }
+
+  protected JUMPWorkbench getWorkbench() {
+    return getContext().getWorkbench();
+  }
+
+  protected WorkbenchContext getContext() {
+    return getWorkbenchFrame().getContext();
+  }
+  
+  protected WorkbenchFrame getWorkbenchFrame() {
+    return this.panel.getWorkBenchFrame();
   }
 
   public static String name(CursorTool tool) {

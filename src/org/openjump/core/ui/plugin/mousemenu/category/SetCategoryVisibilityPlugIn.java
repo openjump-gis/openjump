@@ -21,9 +21,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
-
-import org.openjump.core.apitools.PlugInContextTools;
-
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
@@ -145,7 +142,7 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn {
     
     private Category getClickedCategory() {
       // refresh context
-      PlugInContext context = PlugInContextTools.getContext(this.context);
+      PlugInContext context = this.context.getWorkbenchContext().createPlugInContext();
       LayerNamePanel lnp = context.getLayerNamePanel();
       Collection selCats = lnp.getSelectedCategories();
       Iterator iter = selCats.iterator();

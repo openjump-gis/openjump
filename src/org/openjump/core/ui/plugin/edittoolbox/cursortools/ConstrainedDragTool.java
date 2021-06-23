@@ -43,10 +43,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintManager;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
+import org.openjump.core.ui.plugin.edittoolbox.tab.ConstraintManager;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
@@ -241,6 +241,6 @@ public abstract class ConstrainedDragTool extends AbstractCursorTool {
     public void activate(LayerViewPanel layerViewPanel)
     {
         super.activate(layerViewPanel);
-        constraintManager = new ConstraintManager(getWorkbench().getContext());
+        constraintManager = new ConstraintManager(getContext());
     }
 }
