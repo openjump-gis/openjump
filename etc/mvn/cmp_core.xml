@@ -89,6 +89,10 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>${project.build.directory}/lib.ext.core/</directory>
+      <outputDirectory>/lib/ext/</outputDirectory>
+    </fileSet>
+    <fileSet>
       <!-- chose NOT to filter because maven killed special chars in the process
            same goes for the lineendings -->
       <!--lineEnding>crlf</lineEnding>

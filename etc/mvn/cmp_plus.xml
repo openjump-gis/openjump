@@ -54,6 +54,10 @@
       <directory>lib/plus</directory>
       <outputDirectory>/lib/ext</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/lib.ext.plus/</directory>
+      <outputDirectory>/lib/ext/</outputDirectory>
+    </fileSet>
     <!-- include batik in PLUS build via copying selected jars from lib/ folder
          to minimize distro size, pom deps pull in more files -->
     <!-- 
