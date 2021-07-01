@@ -42,7 +42,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.ResourceBundle.Control;
 
 import com.vividsolutions.jump.workbench.Logger;
 
@@ -223,7 +222,7 @@ public final class I18N {
   /**
    * Create & return the I18N instance for the given prefix
    * 
-   * @param a categoryPrefix e.g. "my.cool.extension"
+   * @param categoryPrefix e.g. "my.cool.extension"
    * @return I18N object for this category
    */
   public static I18N getInstance(String categoryPrefix) {
@@ -338,9 +337,7 @@ public final class I18N {
    * 
    * categoryPrefixOrPath = new File("language/wfs/messages") then resourcebundle
    * is looked up as /language/wfs/messages[_locale].properties
-   * 
-   * @param categoryPrefixOrPathOrI18n The categoryPrefix or path object or i18n
-   *                                   object.
+   *
    * @param label                      Label with argument insertion : {0}
    * @param objects                    values of parameters contained in the key
    * 
