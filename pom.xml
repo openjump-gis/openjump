@@ -77,8 +77,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/skyprinter-extension/releases/download/2.0-SNAPSHOT/skyprinter-extension-2.0.0-SNAPSHOT.zip</url>
-                      <sha1>d837327dfec6955ed1dd0a3135ea54318fd2d0a4</sha1>
+                      <url>https://github.com/openjump-gis/skyprinter-extension/releases/download/SNAPSHOT-41a887b/skyprinter-extension-2.0.0-SNAPSHOT.zip</url>
+                      <sha1>653272988759f52971ef40b7000ff37db911d14c</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${core.folder}</outputDirectory>
                     </configuration>
