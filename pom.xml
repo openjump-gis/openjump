@@ -872,7 +872,7 @@
         <finalName>${project.artifactId}-${version.string}</finalName>
         <sourceDirectory>src/</sourceDirectory>
         <outputDirectory>target/classes</outputDirectory>
-        <testSourceDirectory>src/</testSourceDirectory>
+        <testSourceDirectory>test/</testSourceDirectory>
         <testOutputDirectory>target/test-classes</testOutputDirectory>
         <resources>
             <resource>
@@ -975,18 +975,6 @@
                 </configuration>
               </execution>
 
-              <execution>
-                <id>add-junit-test-source</id>
-                <phase>generate-test-sources</phase>
-                <goals>
-                  <goal>add-test-source</goal>
-                </goals>
-                <configuration>
-                  <sources>
-                    <source>src/</source>
-                  </sources>
-                </configuration>
-              </execution>
             </executions>
           </plugin>
   
