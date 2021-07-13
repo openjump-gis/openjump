@@ -60,7 +60,7 @@ public class BeanShellPlugIn extends ToolboxPlugIn {
     }
   }
   
-  public static Icon getIcon(){
+  public Icon getIcon(){
     return icon;
   }
 }

@@ -342,7 +342,7 @@ public class JUMPConfiguration implements Setup {
     // LayerViewPanel to be initialized)
     frame.getToolBar().getButton(sft.getClass()).doClick();
 
-    frame.getToolBar().addPlugIn(ClearSelectionPlugIn.getIcon(),
+    frame.getToolBar().addPlugIn(clearSelectionPlugIn.getIcon(),
         clearSelectionPlugIn,
         clearSelectionPlugIn.createEnableCheck(workbenchContext),
         workbenchContext);

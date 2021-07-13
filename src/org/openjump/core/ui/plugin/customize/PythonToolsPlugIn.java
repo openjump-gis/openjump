@@ -149,7 +149,7 @@ public class PythonToolsPlugIn extends ToolboxPlugInV2 {
     return toolbox;
   }
 
-  public static Icon getIcon(){
+  public Icon getIcon(){
     return icon;
   }
 

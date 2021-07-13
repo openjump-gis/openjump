@@ -57,7 +57,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.*;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import java.awt.event.*;
 
@@ -235,7 +235,7 @@ public class LoadDatasetPlugIn extends ThreadedBasePlugIn {
     }
     
     //[sstein 26.08.2006] added for toolbar
-    public static ImageIcon getIcon() {
+    public Icon getIcon() {
         return IconLoader.icon("Plus.gif");
     }
 }

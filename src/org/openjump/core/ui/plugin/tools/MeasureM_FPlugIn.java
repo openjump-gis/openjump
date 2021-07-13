@@ -83,7 +83,7 @@ public class MeasureM_FPlugIn extends AbstractPlugIn
         }
     }
    
-    private Icon getIcon()
+    public Icon getIcon()
     {
         return new ImageIcon(getClass().getResource("RulerM_F.gif"));
     }  

@@ -241,6 +241,25 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
     return null;
   }
 
+  /**
+   * Plugin icon assumed to be 16x16 by default
+   */
+  public Icon getIcon() {
+    Icon icon = null;
+    Class c = this.getClass();
+    // find and reuse static legacy field ICON
+    try {
+      Field f = c.getDeclaredField("ICON");
+      if (Icon.class.isAssignableFrom(f.getType()))
+        icon = (Icon) f.get(this);
+    } catch (NoSuchFieldException e) {
+    } catch (SecurityException e) {
+    } catch (IllegalArgumentException e) {
+    } catch (IllegalAccessException e) {
+    }
+    return icon;
+  }
+  
   public Icon getIcon(int height) {
     return getIcon(new Dimension(height, height));
   }
@@ -252,40 +271,7 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
    * @return the Icon of this PlugIn
    */
   public Icon getIcon(Dimension dim) {
-    Icon icon = null;
-    Class c = this.getClass();
-    // find old method
-    try {
-      Method m = null;
-      do {
-        try {
-          //System.out.println("ap check "+c);
-          m = c.getDeclaredMethod("getIcon");
-        } catch (NoSuchMethodException e) {}
-      } while (m==null && (c=c.getSuperclass())!=null);
-      if (m != null) {
-        m.setAccessible(true);
-        icon = (Icon) m.invoke(this);
-      }
-    } catch (SecurityException e) {
-    } catch (IllegalArgumentException e) {
-    } catch (IllegalAccessException e) {
-    } catch (InvocationTargetException e) {
-    }
-    // find old field
-    if (icon==null) {
-      c = this.getClass();
-      try {
-        Field f = c.getDeclaredField("ICON");
-        if (Icon.class.isAssignableFrom(f.getType()))
-          icon = (Icon) f.get(this);
-      } catch (NoSuchFieldException e) {
-      } catch (SecurityException e) {
-      } catch (IllegalArgumentException e) {
-      } catch (IllegalAccessException e) {
-      }
-      
-    }
+    Icon icon = getIcon();
     // resize if requested (currently only one via height param)
     if (icon instanceof ImageIcon && dim != null
         && icon.getIconHeight() != dim.height) {

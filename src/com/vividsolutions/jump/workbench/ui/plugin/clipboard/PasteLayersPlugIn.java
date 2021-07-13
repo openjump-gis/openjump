@@ -123,7 +123,7 @@ public class PasteLayersPlugIn extends LayerableClipboardPlugIn {
             });
     }
     
-    public static Icon getIcon(){
+    public Icon getIcon(){
       return IconLoader.icon("famfam/page_white_put.png");
     }
 }
