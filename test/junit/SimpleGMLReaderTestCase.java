@@ -26,7 +26,7 @@ public class SimpleGMLReaderTestCase extends TestCase {
 
   public void test() throws Exception {
     List geometries;
-    FileInputStream fileInputStream = new FileInputStream(SimpleGMLReaderTestCase.class.getClassLoader().getResource("jumptest/data/3points.xml").toURI().getPath());
+    FileInputStream fileInputStream = new FileInputStream(SimpleGMLReaderTestCase.class.getClassLoader().getResource("data/3points.xml").toURI().getPath());
     try {
       geometries = new SimpleGMLReader().toGeometries(fileInputStream,
           "dataFeatures", "Feature", "gml:pointProperty");
