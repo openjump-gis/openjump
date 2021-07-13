@@ -871,9 +871,9 @@
     <build>
         <finalName>${project.artifactId}-${version.string}</finalName>
         <sourceDirectory>src/</sourceDirectory>
-        <outputDirectory>target/classes</outputDirectory>
+        <outputDirectory>target/classes/</outputDirectory>
         <testSourceDirectory>test/</testSourceDirectory>
-        <testOutputDirectory>target/test-classes</testOutputDirectory>
+        <testOutputDirectory>target/test-classes/</testOutputDirectory>
         <resources>
             <resource>
                 <directory>src</directory>
@@ -914,6 +914,14 @@
                 </includes>
             </resource>
         </resources>
+        <testResources>
+          <testResource>
+            <directory>${project.build.testSourceDirectory}</directory>
+            <excludes>
+              <exclude> **/*.java </exclude>
+            </excludes>
+          </testResource>
+        </testResources>
         <plugins>
 
           <plugin>
@@ -1173,9 +1181,6 @@ ${project.artifactId} ${project.version} Changelog
             <version>3.0.0-M5</version>
             <configuration>
               <argLine>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argLine>
-              <additionalClasspathElements>
-                <additionalClasspathElement>${project.build.testOutputDirectory}</additionalClasspathElement>
-              </additionalClasspathElements>
             </configuration>
           </plugin>
       </plugins>
