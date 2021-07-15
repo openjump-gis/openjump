@@ -60,6 +60,8 @@ public class ConnectionManagerPanel extends JPanel {
   // private static final Icon MYSQL_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)MYSQL_CONNECTED_ICON);
 //  private final Icon SQLSERVER_CONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
 //  private final Icon SQLSERVER_DISCONNECTED_ICON = IconLoader.icon("ok_sqlserver.png");
+  private static final Icon OCIENT_CONNECTED_ICON = IconLoader.icon("ok_ocient.png");
+  private static final Icon OCIENT_DISCONNECTED_ICON = GUIUtil.toGrayScale((ImageIcon)OCIENT_CONNECTED_ICON);
   
   private final Icon DBS_ICON = IconLoader.icon("famfam/database_edit.png");
   private final Icon NEW_DB_ICON = IconLoader.icon("famfam/database_add.png");
@@ -483,6 +485,10 @@ public class ConnectionManagerPanel extends JPanel {
       // match both H2 DataStoreDrivers
       else if (driverClassName.matches("(?i).+\\.H2\\w+Driver")) {
         return isClosed ? H2_DISCONNECTED_ICON : H2_CONNECTED_ICON;
+      }
+      else if (driverClassName.equals(com.vividsolutions.jump.datastore.ocient.OcientDataStoreDriver.class
+              .getName())) {
+        return isClosed ? OCIENT_DISCONNECTED_ICON : OCIENT_CONNECTED_ICON;
       }
       // Default
 
