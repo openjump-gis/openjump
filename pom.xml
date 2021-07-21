@@ -1379,9 +1379,16 @@ ${project.artifactId} ${project.version} Changelog
             <version>1.0.3</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter</artifactId>
+          <version>5.7.2</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.junit.vintage</groupId>
+          <artifactId>junit-vintage-engine</artifactId>
+          <version>5.7.2</version>
+          <scope>test</scope>
         </dependency>
         <!-- Version 2.2.1 is the last of the unmaintained 2.2 series
         There are 2.5.x and 2.7 versions but they  are much bigger
