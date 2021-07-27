@@ -44,7 +44,7 @@ import com.vividsolutions.jump.workbench.JUMPWorkbench;
 /**
  * Specifies the syntax for a single option on a command line.
  */
-public class OptionSpec {
+public class ParamSpec {
 
   private final static int NARGS_ZERO_OR_MORE = -1;
   private final static int NARGS_ONE_OR_MORE = -2;
@@ -55,9 +55,9 @@ public class OptionSpec {
   private final int nNeededArgs;
   private String syntaxPattern;
   private String doc; // option description
-  private final Vector<Option> options = new Vector<>();
+  private final Vector<Param> params = new Vector<>();
 
-  public OptionSpec(String[] optNames, int numberOfNeededArgs, String desc) {
+  public ParamSpec(String[] optNames, int numberOfNeededArgs, String desc) {
     for (String name : optNames) {
       names.add(name.toLowerCase());
     }
@@ -65,7 +65,7 @@ public class OptionSpec {
     nNeededArgs = numberOfNeededArgs;
   }
 
-  public OptionSpec(String optName, int needed, String desc) {
+  public ParamSpec(String optName, int needed, String desc) {
     this(new String[] { optName }, needed, desc);
   }
 
@@ -78,23 +78,23 @@ public class OptionSpec {
   }
 
   public int getNumOptions() {
-    return options.size();
+    return params.size();
   }
 
-  public Option getOption(int i) {
-    if (options.size() > 0) {
-      return options.elementAt(i);
+  public Param getOption(int i) {
+    if (params.size() > 0) {
+      return params.elementAt(i);
     }
 
     return null;
   }
 
   /**
-   * get last option from the options list
+   * @return last param, if at least one was defined, else null 
    */
-  public Option getOption() {
-    if (options.size() > 0) {
-      return options.lastElement();
+  public Param getParam() {
+    if (params.size() > 0) {
+      return params.lastElement();
     }
 
     return null;
@@ -108,21 +108,21 @@ public class OptionSpec {
    */
   public Iterator<String> getAllArguments() {
     Vector<String> all = new Vector<>();
-    for (Option option : options) {
+    for (Param option : params) {
       all.addAll(Arrays.asList(option.getArgs()));
     }
     return all.iterator();
   }
 
-  public boolean hasOption() {
-    return options.size() > 0;
+  public boolean hasArguments() {
+    return params.size() > 0;
   }
 
   final Vector<String> getNames() {
     return names;
   }
 
-  boolean matches(String name) {
+  public boolean matches(String name) {
     return names.contains(name.toLowerCase());
   }
 
@@ -156,13 +156,13 @@ public class OptionSpec {
     }
   }
 
-  public Option addOption(Vector<String> v) throws ParseException {
+  public Param addParam(Vector<String> v) throws ParseException {
     String[] args = v.toArray(new String[0]);
     checkNumArgs(args);
     String[] argsNeeded = new String[nNeededArgs];
     System.arraycopy(args, 0, argsNeeded, 0, nNeededArgs);
-    Option opt = new Option(this, argsNeeded);
-    options.add(opt);
+    Param opt = new Param(this, argsNeeded);
+    params.add(opt);
     return opt;
   }
 }

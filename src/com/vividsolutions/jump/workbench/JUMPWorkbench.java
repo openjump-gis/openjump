@@ -54,8 +54,8 @@ import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.util.Timer;
 import com.vividsolutions.jump.util.commandline.CommandLine;
-import com.vividsolutions.jump.util.commandline.Option;
-import com.vividsolutions.jump.util.commandline.OptionSpec;
+import com.vividsolutions.jump.util.commandline.Param;
+import com.vividsolutions.jump.util.commandline.ParamSpec;
 import com.vividsolutions.jump.util.commandline.ParseException;
 import com.vividsolutions.jump.workbench.driver.DriverManager;
 import com.vividsolutions.jump.workbench.plugin.PlugInManager;
@@ -128,12 +128,13 @@ public class JUMPWorkbench {
   public static final ArrayList<Image> APP_ICONS = appIcons();
   public static final ImageIcon APP_ICON = new ImageIcon(APP_ICONS.get(0));
   
-  // -- don't change the following strings
+  // -- don't change the following strings, they define command line option names
   public static final String PROPERTIES_OPTION = "properties";
   public static final String DEFAULT_PLUGINS = "default-plugins";
-  public static final String PLUG_IN_DIRECTORY_OPTION = "plug-in-directory";
+  public static final String EXTS_DIRECTORY_OPTION = "extensions-directory";
+  public static final String LIMIT_LOOKUP_OPTION = "limit-ext-lookup";
+  public static final String JARS_DIRECTORY_OPTION = "jars-directory";
   public static final String I18N_FILE = "i18n";
-  public static final String INITIAL_PROJECT_FILE = "project";
   public static final String I18NPREFIX = JUMPWorkbench.class.getPackage().getName()+".";
   public static final String STATE_OPTION = "state";
 
@@ -153,7 +154,6 @@ public class JUMPWorkbench {
   private final WorkbenchProperties properties;
   private final PlugInManager plugInManager;
   private final Blackboard blackboard = new Blackboard();
-
 
   /**
    * @param o a window to decorate with icon
@@ -206,8 +206,8 @@ public class JUMPWorkbench {
 
     boolean defaultFileExists = false; // [sstein 6.July.2008] new
     File defaultFile = null;
-    if (commandLine.hasOption(DEFAULT_PLUGINS)) {
-      defaultFile = new File(commandLine.getOption(DEFAULT_PLUGINS).getArg(0));
+    if (commandLine.hasParam(DEFAULT_PLUGINS)) {
+      defaultFile = new File(commandLine.getParam(DEFAULT_PLUGINS).getArg(0));
       if (defaultFile.exists()) {
         defaultFileExists = true;
         // [sstein 6.July.2008] disabled to enable loading of two properties
@@ -220,8 +220,8 @@ public class JUMPWorkbench {
     }
     boolean propertiesFileExists = false; // [sstein 6.July.2008] new
     File propertiesFile = null;
-    if (commandLine.hasOption(PROPERTIES_OPTION)) {
-      propertiesFile = new File(commandLine.getOption(PROPERTIES_OPTION)
+    if (commandLine.hasParam(PROPERTIES_OPTION)) {
+      propertiesFile = new File(commandLine.getParam(PROPERTIES_OPTION)
           .getArg(0));
       if (propertiesFile.exists()) {
         propertiesFileExists = true;
@@ -241,53 +241,47 @@ public class JUMPWorkbench {
     
     // -- end new
     
-    File extensionsDirectory = null;
-    List<File> moreDirs = new ArrayList<>();
-    if (commandLine.hasOption(PLUG_IN_DIRECTORY_OPTION)) {
-      // we support multiple -plug-in-directory definitions, where the first is set default
-      // and all others and contained jar/zip files get added to classpath below
-      // this mainly helps when run during development where lib/plus/ & lib/ext/ are different folders
-      Iterator<String> paths = commandLine.getAllArguments(PLUG_IN_DIRECTORY_OPTION);
-      while (paths.hasNext()) {
-        String path = paths.next();
-        if (extensionsDirectory == null) {
-          // first entry get's default
-          extensionsDirectory = new File(path);
-          Logger.debug("Set plugin-dir -> "+path);
-          continue;
-        }
-        // rest get's added to classloader
-        File dir = new File(path);
-        if (!dir.exists()) {
-          Logger.error("given parameter "+PLUG_IN_DIRECTORY_OPTION+" '"+path+"' does not exist.");
-          continue;
-        }
-        Logger.debug("Add plugin-dir -> "+path);
-        moreDirs.add(dir);
-      }
-    } else {
-      extensionsDirectory = new File("lib/ext");
-    }
+//    File extensionsDirectory = null;
+//    List<File> moreDirs = new ArrayList<>();
+//    if (commandLine.hasOption(PLUG_IN_DIRECTORY_OPTION)) {
+//      // we support multiple -plug-in-directory definitions, where the first is set as default (for mainly for )
+//      // and all others and contained jar/zip files get added to classpath below
+//      // this mainly helps when run during development where lib/plus/ & lib/ext/ are different folders
+//      Iterator<String> paths = commandLine.getAllArguments(PLUG_IN_DIRECTORY_OPTION);
+//
+//      while (paths.hasNext()) {
+//        String path = paths.next();
+//        if (extensionsDirectory == null) {
+//          // first entry get's default
+//          extensionsDirectory = new File(path);
+//          Logger.debug("Set plugin-dir -> "+path);
+//          continue;
+//        }
+//        // rest get's added to classloader
+//        File dir = new File(path);
+//        if (!dir.exists()) {
+//          Logger.error("given parameter "+PLUG_IN_DIRECTORY_OPTION+" '"+path+"' does not exist.");
+//          continue;
+//        }
+//        Logger.debug("Add plugin-dir -> "+path);
+//        moreDirs.add(dir);
+//      }
+//    } else {
+//      // add default "lib/ext/"
+//      extensionsDirectory = new File("lib/ext");
+//    }
 
-    if (extensionsDirectory != null && !extensionsDirectory.exists()) {
-      // Added further information so that debug user will know where
-      // it is actually looking for as the extension directory. [Ed Deen]
-      Logger.error("Extensions directory does not exist: "
-              + extensionsDirectory + " where homedir = ["
-              + System.getProperty("user.dir") + "]");
-      extensionsDirectory = null;
-    }
+//    if (extensionsDirectory != null && !extensionsDirectory.exists()) {
+//      // Added further information so that debug user will know where
+//      // it is actually looking for as the extension directory. [Ed Deen]
+//      Logger.error("Extensions directory does not exist: "
+//              + extensionsDirectory + " where homedir = ["
+//              + System.getProperty("user.dir") + "]");
+//      extensionsDirectory = null;
+//    }
 
-    // [ede 12.2012] deprecated -project option
-    if (commandLine.hasOption(INITIAL_PROJECT_FILE)) {
-      String task = commandLine.getOption(INITIAL_PROJECT_FILE).getArg(0);
-      this.getBlackboard().put(INITIAL_PROJECT_FILE, task);
-    }
-
-    // open files from command line takes place in FirstTaskFramePlugIn
-
-    if (commandLine.hasOption(STATE_OPTION)) {
-      File option = new File(commandLine.getOption(STATE_OPTION).getArg(0));
+    if (commandLine.hasParam(STATE_OPTION)) {
+      File option = new File(commandLine.getParam(STATE_OPTION).getArg(0));
       if (option.isDirectory()) {
         PersistentBlackboardPlugIn.setPersistenceDirectory(option.getPath());
       }
@@ -299,13 +293,29 @@ public class JUMPWorkbench {
     }
 
     // create plugin manager
-    plugInManager = new PlugInManager(context, extensionsDirectory, monitor);
+    plugInManager = new PlugInManager(context, monitor);
     // add secondary extension folders (mainly for dev where we have lib/ext/ & lib/plus/)
-    for (File dir : moreDirs) {
-      plugInManager.addExtensionDir(dir);
+//    for (File dir : moreDirs) {
+//      plugInManager.addExtensionDir(dir);
+//    }
+
+    // iterate over params, order matters, limit-ext-lookup is on/off switchable
+    Iterator<Param> params = commandLine.getParams();
+    while (params.hasNext()) {
+      Param param = params.next();
+      if (param.getSpec().matches(EXTS_DIRECTORY_OPTION)) {
+        String folder = param.getArg(0);
+        plugInManager.addExtensionsFolder(new File(folder));
+      }
+      else if (param.getSpec().matches(LIMIT_LOOKUP_OPTION)) {
+        String trueFalse = param.getArg(0);
+        plugInManager.setLimitExtensionLookup(trueFalse.toLowerCase().equals("true"));
+      }
+      else if (param.getSpec().matches(JARS_DIRECTORY_OPTION)) {
+        String folder = param.getArg(0);
+        plugInManager.addJarsFolder(new File(folder));
+      }
     }
-    // debugging output of all urls in our classloader
-    Logger.debug("Classpath -> "+Arrays.toString(plugInManager.getPlugInClassLoader().getURLs()));
 
     // Load drivers before initializing the frame because part of the frame
     // initialization is the initialization of the driver dialogs. [Jon
@@ -325,8 +335,8 @@ public class JUMPWorkbench {
       // first fetch parameters, locale might be changed with -i18n switch
       parseCommandLine(args);
       // load i18n specified in command line ( '-i18n translation' )
-      if (commandLine.hasOption(I18N_FILE)) {
-        I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
+      if (commandLine.hasParam(I18N_FILE)) {
+        I18N_SETLOCALE = commandLine.getParam(I18N_FILE).getArg(0);
         // initialize I18N
         Locale loc = I18N.fromCode(I18N_SETLOCALE);
         I18N.applyToRuntime(loc);
@@ -338,22 +348,22 @@ public class JUMPWorkbench {
         System.setProperty("http.agent", I18N.getInstance().get("JUMPWorkbench.jump") + " "
             + JUMPVersion.CURRENT_VERSION);
 
-      if (commandLine.hasOption("help")) {
+      if (commandLine.hasParam("help")) {
         printProperly(commandLine.printDoc());
         System.exit(0);
-      } else if (commandLine.hasOption("version")) {
+      } else if (commandLine.hasParam("version")) {
         printProperly(I18N.getInstance().get("JUMPWorkbench.jump") + " "
             + I18N.getInstance().get("ui.AboutDialog.version") + " "
             + JUMPVersion.CURRENT_VERSION);
         System.exit(0);
-      } else if (commandLine.hasOption("print-properties")) {
+      } else if (commandLine.hasParam("print-properties")) {
         printProperties("args[]=" + Arrays.toString(args));
         System.exit(0);
       }
       
       // set logging level according to parameter
-      if (commandLine.hasOption("verbosity")) {
-        Option v = commandLine.getOption("verbosity");
+      if (commandLine.hasParam("verbosity")) {
+        Param v = commandLine.getParam("verbosity");
         if (v.getNumArgs() < 1) {
           printProperly(I18N.getInstance().get(v.getSpec().getDesc()));
           System.exit(1);
@@ -625,37 +635,38 @@ public class JUMPWorkbench {
   }
 
   private static void parseCommandLine(String[] args) {
-    commandLine = new CommandLine('-');
-    commandLine.addOptionSpec(new OptionSpec(PROPERTIES_OPTION, 1,
+    commandLine = new CommandLine();
+    commandLine.addParamSpec(new ParamSpec(PROPERTIES_OPTION, 1,
         "workbench property file (activate extensions and plugins)"));
-    commandLine.addOptionSpec(new OptionSpec(DEFAULT_PLUGINS, 1,
+    commandLine.addParamSpec(new ParamSpec(DEFAULT_PLUGINS, 1,
         "property file (default OpenJUMP extensions and plugins)"));
-    commandLine.addOptionSpec(new OptionSpec(PLUG_IN_DIRECTORY_OPTION, 1,
-        "plugin folder location, default './lib/ext'"));
+    commandLine.addParamSpec(new ParamSpec(EXTS_DIRECTORY_OPTION, 1,
+        "extensions folder location, can be defined multiple times\n default './lib/ext'"));
+    commandLine.addParamSpec(new ParamSpec(LIMIT_LOOKUP_OPTION, 1,
+        "limit extension class lookup to jars in extension folders' root"));
+    commandLine.addParamSpec(new ParamSpec(JARS_DIRECTORY_OPTION, 1,
+        "adds jar files recursively to classpath, for development"));
     commandLine
-        .addOptionSpec(new OptionSpec(
+        .addParamSpec(new ParamSpec(
             I18N_FILE,
             1,
-            "switch language and number formatting by overriding system's default locale setting, e.g en_US"));
-    // [UT] 17.08.2005
-    commandLine.addOptionSpec(new OptionSpec(INITIAL_PROJECT_FILE, 1,
-        "deprecated, simply add files as parameter"));
+            "switch language and number formatting by overriding system's default locale setting, e.g. en_US"));
     commandLine
-        .addOptionSpec(new OptionSpec(
+        .addParamSpec(new ParamSpec(
             STATE_OPTION,
             1,
             "where to save workbench settings, default OJ_HOME folder or USER_HOME/.openjump/"));
     // add logging
-    commandLine.addOptionSpec(new OptionSpec(new String[] { "v", "verbosity" }, 1,
+    commandLine.addParamSpec(new ParamSpec(new String[] { "v", "verbosity" }, 1,
         "logging verbosity, either: off, error, warn, info, debug, trace, all"));
     // add help
-    commandLine.addOptionSpec(new OptionSpec(new String[] { "h", "help", "-help" }, 0,
+    commandLine.addParamSpec(new ParamSpec(new String[] { "h", "help", "-help" }, 0,
         "show this help"));
     // add version
-    commandLine.addOptionSpec(new OptionSpec(new String[] { "version", "-version" },
+    commandLine.addParamSpec(new ParamSpec(new String[] { "version", "-version" },
         0, "show version information"));
     // show properties (for debugging purposes)
-    commandLine.addOptionSpec(new OptionSpec(new String[] { "p",
+    commandLine.addParamSpec(new ParamSpec(new String[] { "p",
         "print-properties" }, 0, "print a list of runtime properties"));
 
     try {

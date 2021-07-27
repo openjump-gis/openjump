@@ -74,35 +74,12 @@ public class FirstTaskFramePlugIn extends AbstractPlugIn {// AbstractPlugIn {
         // GUIUtil.setLocation
         // will throw an IllegalComponentStateException. [Jon Aquino]
         // UT skip this; see 1st if there is a filename available
-        // if so, load it
-        String filename = (String) context.getWorkbenchContext()
-            .getBlackboard().get(JUMPWorkbench.INITIAL_PROJECT_FILE);
-        File f;
-
-        // load -project
-        if (filename != null ) {// create empty task
-          Logger.info("Found initial '-project' file: " + filename);
-          f = new File(filename);
-
-          try {
-            // switch to new OpenProjectPlugIn [Matthias Scholz 11. Dec. 2011]
-            OpenProjectPlugIn openProjectPlugIn = new OpenProjectPlugIn(
-                workbenchContext, f);
-            AbstractPlugIn.toActionListener(openProjectPlugIn,
-                workbenchContext, new TaskMonitorManager()).actionPerformed(
-                new ActionEvent(this, 0, ""));
-          } catch (Exception ex) {
-            String mesg = I18N.getInstance().get(this.getClass().getName()+".could-not-load-file-{0}", f);
-            Logger.error(mesg);
-            context.getWorkbenchFrame().warnUser(mesg);
-          }
-        }
 
         // load files from commandline
-        Iterator files = context.getWorkbenchContext().getWorkbench().getCommandLine().getParams();
+        Iterator files = context.getWorkbenchContext().getWorkbench().getCommandLine().getArguments();
         while (files.hasNext()) {
-          filename = (String) files.next();
-          f = new File(filename);
+          String filename = (String) files.next();
+          File f = new File(filename);
           try {
             // try project
             if (SaveProjectAsPlugIn.JUMP_PROJECT_FILE_FILTER.accept(f)){

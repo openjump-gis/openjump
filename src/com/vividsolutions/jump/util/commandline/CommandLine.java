@@ -39,128 +39,140 @@ import java.util.Vector;
 
 import com.vividsolutions.jump.I18N;
 
-//<<TODO:NAMING>> Move the command package under ui [Jon Aquino]
-
 /**
- * A class to parse Unix (and DOS/Win)-style application command-lines.
+ * A class to parse application command-line parameters and arguments.
  */
 public class CommandLine {
 
-  // store options defs
-  private final Vector<OptionSpec> optSpecs = new Vector<>();
+  // store parameter specifications in the order defined
+  private final Vector<ParamSpec> paramSpecs = new Vector<>();
+  // store parameters in the order parsed
+  private final Vector<Param> params = new Vector<>();
 
-  // store optionless file parameters
-  private final Vector<String> parVec = new Vector<>(); // store plain params (e.g. projects/files to open)
+  // store plain arguments, like file/project files
+  private final Vector<String> arguments = new Vector<>();
 
-  private final char optionChar; // the char that indicates an option. Default is '/', which is
-                   // NT Standard, but this causes problems on Unix systems, so
-                   // '-' is used by JUMPWorkbench (better for cross-platform apps)
+  private char optionChar = '-'; // '-' is used for cross-platform compatibility
 
   public CommandLine() {
-    this('/');
   }
 
   public CommandLine(char optionCh) {
     optionChar = optionCh;
   }
 
-  public void addOptionSpec(OptionSpec optSpec) {
-    // should check for duplicate option names here
-    optSpecs.add(optSpec);
-
+  public void addParamSpec(ParamSpec paramSpec) {
+    // TODO: should probably check for duplicate option names here
+    paramSpecs.add(paramSpec);
   }
 
-  private OptionSpec getOptionSpec(String name) {
-    for (OptionSpec optionSpec : optSpecs) {
-      if (optionSpec.matches(name)) {
-        return optionSpec;
+  private ParamSpec getParamSpec(String name) {
+    for (ParamSpec paramSpec : paramSpecs) {
+      if (paramSpec.matches(name)) {
+        return paramSpec;
       }
     }
     return null;
   }
 
-  public Option getOption(String name) {
-    OptionSpec spec = getOptionSpec(name);
-    return spec != null ? spec.getOption() : null;
+  /**
+   * get last Param with that name
+   * @param name
+   * @return Param or null
+   */
+  public Param getParam(String name) {
+    ParamSpec spec = getParamSpec(name);
+    return spec != null ? spec.getParam() : null;
+  }
+
+  public Iterator<ParamSpec> getParamSpecs() {
+    return paramSpecs.iterator();
+  }
+
+  public Iterator<Param> getParams() {
+    return params.iterator();
+  }
+
+  public Iterator<String> getArguments() {
+    return arguments.iterator();
+  }
+
+  public boolean hasParam(String name) {
+    ParamSpec spec = getParamSpec(name);
+    return spec != null  && spec.hasArguments();
   }
 
   /**
    * get all values of all parameters(options) with the given name
-   * see {@link OptionSpec#getAllArguments()}
+   * see {@link ParamSpec#getAllArguments()}
    * 
    * @param name name of the arguments
    * @return an iterator to iterate through arguments with this name
    */
-  public Iterator<String> getAllArguments(String name) {
-    OptionSpec spec = getOptionSpec(name);
+  public Iterator<String> getParamsArguments(String name) {
+    ParamSpec spec = getParamSpec(name);
     return spec != null ? spec.getAllArguments() : Collections.emptyIterator();
-  }
-
-  public Iterator<String> getParams() {
-    return parVec.iterator();
-  }
-
-  public boolean hasOption(String name) {
-    OptionSpec spec = getOptionSpec(name);
-    return spec != null  && spec.hasOption();
   }
 
   public String printDoc() {
     return printDoc(null);
   }
-  
+
   public String printDoc(Exception e) {
 
     StringBuilder out = new StringBuilder();
-        
+
     if (e != null)
       out.append("Error:\n  ").append(e.getMessage()).append("\n\n");
 
-    out.append("Syntax:\n  oj_starter [-option [<parameter>]]... [<project_file>]... [<data_file>]...\n\nOptions:\n");
+    out.append("Syntax:\n  oj_starter [-parameter [<argument>]]... [<project_file>]... [<data_file>]...\n\nParameters:\n");
 
-    for (OptionSpec optionSpec : optSpecs) {
+    for (ParamSpec paramSpec : paramSpecs) {
       String names = "";
-      for (String name : optionSpec.getNames()) {
+      for (String name : paramSpec.getNames()) {
         names = names.isEmpty() ? optionChar + name : names + ", " + optionChar + name;
       }
-      out.append("  ").append(names).append("\n    ").append(optionSpec.getDesc()).append("\n");
+      out.append("  ").append(names).append("\n    ").append(paramSpec.getDesc()).append("\n");
     }
 
     return out.toString();
   }
 
   public void parse(String[] args) throws ParseException {
-    int i = 0;
+    if (params.size() > 0 || arguments.size() > 0)
+      throw new ParseException("CommandLine already contains parsed parameters or arguments!");
 
+    int i = 0;
     while (i < args.length) {
-      OptionSpec optSpec;
+      ParamSpec paramSpec;
       // check for valid option
       if (args[i].charAt(0) == optionChar
-          && (optSpec = getOptionSpec(args[i].substring(1))) != null) {
+          && (paramSpec = getParamSpec(args[i].substring(1))) != null) {
 
-        Option opt = optSpec.addOption(splitOptionParams(args, i));
-
-        // forward pointer to after options params
-        i += 1 + opt.getNumArgs();
+        Param param = paramSpec.addParam(splitParamArguments(args, i));
+        // forward pointer to after this option's arguments
+        i += 1 + param.getNumArgs();
+        
+        // add to list
+        params.add(param);
       }
       // check for files
       else if (new File(args[i]).exists()) {
-        parVec.add(args[i]);
+        arguments.add(args[i]);
         i++;
       } else
         throw new ParseException(I18N.getInstance().get(getClass().getName()
             + ".unknown-option-or-file-not-found-{0}", args[i]));
     }
-
   }
 
   // create list containing only the parameters up to the next valid parameter
-  private Vector<String> splitOptionParams(String[] args, int i) {
+  private Vector<String> splitParamArguments(String[] args, int i) {
     Vector<String> params = new Vector<>();
     for (int j = ++i; j < args.length; j++) {
       String param = args[j];
       if (param.charAt(0) == optionChar
-          && getOptionSpec(param.substring(1)) != null)
+          && getParamSpec(param.substring(1)) != null)
         break;
       params.add(param);
     }

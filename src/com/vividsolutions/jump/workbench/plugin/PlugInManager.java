@@ -28,6 +28,7 @@ package com.vividsolutions.jump.workbench.plugin;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -38,14 +39,15 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.util.Timer;
 import com.vividsolutions.jump.workbench.Logger;
@@ -66,17 +68,19 @@ public class PlugInManager {
 
     private TaskMonitor monitor;
     private WorkbenchContext context;
-    private Collection<Configuration> configurations = new ArrayList();
+    private ArrayList<Configuration> configurations = new ArrayList<Configuration>();
 
     private List<File> extensionDirs = new ArrayList<File>();
+    // switch to parse only jar/zips in extension dir root for extensions
+    // enabled by default, if disabled also classes/zip recursively are parsed
+    private boolean limitExtensionLookup = true;
     private PlugInClassLoader classLoader;
 
     /**
      * @param plugInDirectory
      *            null to leave unspecified
      */
-    public PlugInManager(WorkbenchContext context, File plugInDirectory,
-            TaskMonitor monitor) throws Exception {
+    public PlugInManager(WorkbenchContext context, TaskMonitor monitor) throws Exception {
         this.monitor = monitor;
 
 //          class ExtendedURLClassLoader extends URLClassLoader{
@@ -138,54 +142,80 @@ public class PlugInManager {
           throw je;
         }
 
-        // add plugin folder and recursively all jar/zip files in it to classpath
-        if ( plugInDirectory instanceof File ) {
-          addExtensionDir(plugInDirectory);
-        }
-
-        I18N.setClassLoader(classLoader);
         this.context = context;
+
+        // fetch default-plugins early, to enqueue them at the beginning
+        configurations.addAll(findConfigurations(context.getWorkbench()
+            .getProperties().getConfigurationClassNames()));
     }
 
-    public void addExtensionDir(File dir) {
+    public void setLimitExtensionLookup(boolean limitExtensionLookup) {
+      this.limitExtensionLookup = limitExtensionLookup;
+    }
+
+    /**
+     * add an extensions folder
+     * - adds folder root to classpath
+     * - adds all contained jars to classpath
+     * - looks for extensions in jars only in folder root (to speedup start)
+     * - looks for extensions in any jar file and as class files
+     *   recursively if limit-ext-lookup is 'false'
+     * 
+     * @param dir
+     */
+    public void addExtensionsFolder(File dir) {
       // already added? we don't want duplicates
-      if (extensionDirs.contains(dir))
+      if (extensionDirs.contains(dir)) {
+        Logger.error("extensions-dir '"+dir+"' was already added before!");
         return;
-
-      // add contained jars/zips and base folder to classloader
-      ArrayList<File> files = new ArrayList();
-      files.add( dir );
-      files.addAll( findFilesRecursively( dir,true) );
-      classLoader.addUrls(toURLs(files));
-      // add to internal list
-      extensionDirs.add(dir);
-    }
-
-    // pretty much the main method, finds and loads extensions from
-    // plugin dir
-    // and
-    // plugins/extensions defined in workbench properties (developers use this)
-    public void load() throws Exception {
-      // load plugins from workbench-properties
-      loadPlugIns(context.getWorkbench().getProperties());
-  
-      long start;
-  
-      // Find the configurations right away so they get reported to the splash
-      // screen ASAP. [Jon Aquino]
-      if (!extensionDirs.isEmpty()) {
-        start = Timer.milliSecondsSince(0);
-        for (File dir : extensionDirs) {
-          configurations.addAll(findConfigurations(dir));
-        }
-        Logger.info("Finding all OJ extensions took "
-            + Timer.secondsSinceString(start) + "s");
       }
 
-      configurations.addAll(findConfigurations(context.getWorkbench()
-          .getProperties().getConfigurationClassNames()));
+      if (!dir.exists()) {
+        Logger.error("given extensions-dir '"+dir+"' does not exist!");
+        return;
+      }
 
-      start = Timer.milliSecondsSince(0);
+      // add contained jars/zips _and_ base folder to classpath
+      ArrayList<File> files = new ArrayList();
+      files.add( dir );
+      files.addAll( findFilesRecursively( dir, jarOrFolderFilter, true) );
+      classLoader.addUrls(toURLs(files));
+      // reload translation resource bundles after changing  classpath
+      I18N.reset();
+
+      // memorize to internal list
+      extensionDirs.add(dir);
+
+      configurations.addAll(findConfigurations(dir));
+    }
+
+    /**
+     * add all jar files in a folder recursively to classpath 
+     * @param dir
+     */
+    public void addJarsFolder(File dir) {
+      // add contained jars/zips and base folder to classloader
+      ArrayList<File> files = new ArrayList();
+      files.addAll( findFilesRecursively( dir, jarOrFolderFilter, true) );
+      classLoader.addUrls(toURLs(files));
+      // reload translation resource bundles after changing  classpath
+      I18N.reset();
+    }
+
+    // pretty much the main method, finds and loads extensions
+    public void load() throws Exception {
+      if (Logger.isDebugEnabled())
+        Logger.debug("Pluginclassloader contains the folowing urls ->\n" + Arrays.asList(classLoader.getURLs()).stream()
+            .map(Object::toString).collect(java.util.stream.Collectors.joining("\n")).toString());
+
+      // load plugins from workbench-properties
+      loadPlugIns(context.getWorkbench().getProperties());
+
+      if (Logger.isDebugEnabled())
+        Logger.debug("The following extensions were found and are about to be loaded ->\n" + configurations.stream()
+            .map(Object::toString).collect(java.util.stream.Collectors.joining("\n")).toString());
+
+      long start = Timer.milliSecondsSince(0);
       loadConfigurations();
       Logger.info("Loading all OJ extensions took "
           + Timer.secondsSinceString(start) + "s");
@@ -363,51 +393,94 @@ public class PlugInManager {
       return configurations;
     }
 
-    static FileFilter jarfilter = new FileFilter(){
+    static Pattern jarFilePattern = Pattern.compile(".*\\.(?i:jar|zip)$");
+
+    static FileFilter jarOrFolderFilter = new FileFilter(){
       public boolean accept(File f) {
-        return f.getName().matches(".*\\.(?i:jar|zip)$") || f.isDirectory();
+        return jarFilePattern.matcher(f.getName()).matches() || f.isDirectory();
       }
     };
 
-    private Collection<File> findFilesRecursively(File directory, boolean recursive) {
-        Collection files = new ArrayList();
-        // add only jars/zips, recursively if requested
-        for (Iterator i = Arrays.asList(directory.listFiles(jarfilter)).iterator(); i
-                .hasNext();) {
-            File file = (File) i.next();
-            if (file.isDirectory() && recursive) {
-                files.addAll(findFilesRecursively(file,recursive));
-            }
-            if (!file.isFile()) {
-                continue;
-            }
+    static FileFilter extensionClassOrFolderFilter = new FileFilter(){
+      public boolean accept(File f) {
+        return isExtensionClassByName(f.getName()) || f.isDirectory();
+      }
+    };
 
-            //System.out.println(file.getPath()+"->"+file.isFile());
-            files.add(file);
-        }
-        return files;
+    // no $ ensures that inner classes are ignored as well [ede]
+    // Include "Configuration" for backwards compatibility. [Jon Aquino]
+    static Pattern extensionClassPattern = Pattern.compile("[^$]+(Extension|Configuration)\\.class");
+
+    private static boolean isExtensionClassByName( String name ) {
+      return extensionClassPattern.matcher(name).matches();
     }
 
-    private Collection findConfigurations(File plugInDirectory) throws Exception {
-      ArrayList configurations = new ArrayList();
-      long start;
-      for (Iterator i = findFilesRecursively( plugInDirectory, false ).iterator(); i.hasNext();) {
-        start = Timer.milliSecondsSince(0);
-        File file = (File) i.next();
-        String msg = I18N.getInstance().get(
-            "com.vividsolutions.jump.workbench.plugin.PlugInManager.scan",
-            new String[] { file.getName() });
-        monitor.report(msg);
-        try {
-          // add all extensions contained in this zip file
-          configurations.addAll(findConfigurations(classNames(new ZipFile(file))));
-        } catch (ZipException e) {
-          // Might not be a zipfile. Eat it. [Jon Aquino]
+    private Collection<File> findFilesRecursively(File directory, FileFilter filter, boolean recursive) {
+        Collection<File> filesFiltered = new ArrayList();
+        // add only jars/zips/classes if filter is set (may be null), recursively if requested
+        File[] files = directory.listFiles(filter);
+        if (files == null) files = new File[0];
+        for (File file : files) {
+            if (file.isDirectory() && recursive) {
+                filesFiltered.addAll(findFilesRecursively(file, filter, recursive));
+            }
+            else if (file.isFile())
+              filesFiltered.add(file);
         }
-        Logger.info("Scanning " + file + " took " + Timer.secondsSinceString(start)
-            + "s");
+        return filesFiltered;
+    }
+
+    private Collection<Configuration> findConfigurations(File plugInDirectory) {
+      ArrayList<Configuration> configurations = new ArrayList<Configuration>();
+      long start = Timer.milliSecondsSince(0);
+      String folder = plugInDirectory.getPath();
+      String msg = I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.PlugInManager.scan", folder);
+      monitor.report(msg);
+
+      // find class files that are extensions if '-limit-ext-lookup false'
+      for (Iterator<File> i = findFilesRecursively(plugInDirectory, extensionClassOrFolderFilter, true)
+          .iterator(); !limitExtensionLookup && i.hasNext();) {
+        File file = (File) i.next();
+
+        String relativePath = plugInDirectory.toURI().relativize(file.toURI()).getPath();
+        Configuration c = toConfiguration(relativePath);
+        if (c != null)
+          configurations.add(c);
       }
-  
+
+      // we're looking into jar files in ext-folder root only by default (to speedup OJ
+      // start), may be disabled for testing via cmd line param '-limit-ext-lookup false'
+      for (Iterator i = findFilesRecursively(plugInDirectory, jarOrFolderFilter, !limitExtensionLookup).iterator(); i
+          .hasNext();) {
+        File file = (File) i.next();
+
+        ZipFile zipFile = null;
+        try {
+          zipFile = new ZipFile(file);
+          for (Enumeration e = zipFile.entries(); e.hasMoreElements();) {
+            ZipEntry entry = (ZipEntry) e.nextElement();
+            // Filter by filename; otherwise we'll be loading all the classes,
+            // which takes significantly longer [Jon Aquino]
+            // no $ ensures that inner classes are ignored as well [ede]
+            // Include "Configuration" for backwards compatibility. [Jon Aquino]
+            if (!isExtensionClassByName(entry.getName()) || entry.isDirectory())
+              continue;
+
+            Configuration c = toConfiguration(entry.getName());
+            if (c != null)
+              configurations.add(c);
+          }
+
+        } catch (IOException e) {
+          Logger.error(e);
+        } finally {
+          FileUtil.close(zipFile);
+        }
+      }
+
+      Logger.info("Scanning " + folder + " took " + Timer.secondsSinceString(start) + "s. Found "
+          + configurations.size() + " configurations.");
+
       return configurations;
     }
 
@@ -427,77 +500,30 @@ public class PlugInManager {
       return urls;
     }
 
-    private List classes(ZipFile zipFile, ClassLoader classLoader) 
+    private Configuration toConfiguration( String fileName ) 
     {
-        ArrayList classes = new ArrayList();
-        for (Enumeration e = zipFile.entries(); e.hasMoreElements();) {
-            ZipEntry entry = (ZipEntry) e.nextElement();
-            // Filter by filename; otherwise we'll be loading all the classes,
-            // which takes significantly longer [Jon Aquino]
-            // no $ ensures that inner classes are ignored as well [ede]
-            // Include "Configuration" for backwards compatibility. [Jon Aquino]
-            if (!(entry.getName().matches("[^$]+(Extension|Configuration)\\.class"))
-                  || entry.isDirectory()) {
-                continue;
-            }
-            Class c = toClass(entry, classLoader);
-            if (c != null) {
-                classes.add(c);
-            }
-        }
-        
-        return classes;
-    }
-
-    /**
-     * list all class names in the zip file that end with Extension or Configuration
-     */
-    private List<String> classNames(ZipFile zipFile) 
-    {
-        ArrayList<String> classNames = new ArrayList();
-        for (Enumeration e = zipFile.entries(); e.hasMoreElements();) {
-            ZipEntry entry = (ZipEntry) e.nextElement();
-            // Filter by filename; otherwise we'll be loading all the classes,
-            // which takes significantly longer [Jon Aquino]
-            // no $ ensures that inner classes are ignored as well [ede]
-            // Include "Configuration" for backwards compatibility. [Jon Aquino]
-            if (!(entry.getName().matches("[^$]+(Extension|Configuration)\\.class"))
-                  || entry.isDirectory()) {
-                continue;
-            }
-            String name = toClassName(entry, classLoader);
-            classNames.add(name);
-        }
-        
-        return classNames;
-    }
-
-    private Class toClass(ZipEntry entry, ClassLoader classLoader) 
-    {
-        String className = entry.getName();
-        className = className.substring(0, className.length()
-                - ".class".length());
-        className = StringUtil.replaceAll(className, "/", ".");
-        Class candidate;
+        String className = toClassName(fileName);
+        Class<?> candidate;
         try {
-          candidate = classLoader.loadClass(className);
+          candidate = Class.forName(className, false, classLoader);
+          // make sure we got us a real configuration here
+          if ( Configuration.class.isAssignableFrom(candidate) ) {
+            return (Configuration) candidate.getDeclaredConstructor().newInstance();
+          }
         } catch (ClassNotFoundException e) {
-            Assert.shouldNeverReachHere("Class not found: " + className
-                    + ". Refine class name algorithm.");
-            return null;
+            throw new RuntimeException("This should never happen. Check classpath!", e);
         } catch (Throwable t) {
-            Logger.error(I18N.getInstance().get(LOADING_ERROR) + " " + className + ":");
+            throw new RuntimeException(I18N.getInstance().get(LOADING_ERROR) + " " + className, t);
             //e.g. java.lang.VerifyError: class
             // org.apache.xml.serialize.XML11Serializer
             //overrides final method [Jon Aquino]
-            return null;
         }
-        return candidate;
+
+        return null;
     }
 
-    private String toClassName(ZipEntry entry, ClassLoader classLoader) 
+    private String toClassName(String className) 
     {
-        String className = entry.getName();
         className = className.substring(0, className.length()
                 - ".class".length());
         className = StringUtil.replaceAll(className, "/", ".");
@@ -505,7 +531,7 @@ public class PlugInManager {
         return className;
     }
 
-    public Collection getConfigurations() {
+    public Collection<Configuration> getConfigurations() {
         return Collections.unmodifiableCollection(configurations);
     }
 

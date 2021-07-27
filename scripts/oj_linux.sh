@@ -223,7 +223,7 @@ export CLASSPATH;
 
 ## prepend jump opts
 #
-JUMP_OPTS="-plug-in-directory $JUMP_PLUGIN_DIR $JUMP_OPTS"
+JUMP_OPTS="-extensions-directory $JUMP_PLUGIN_DIR $JUMP_OPTS"
 if [ -f "$JUMP_PLUGINS" ]; then
   JUMP_OPTS="-default-plugins $JUMP_PLUGINS $JUMP_OPTS"
 fi

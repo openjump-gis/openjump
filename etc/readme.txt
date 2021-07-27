@@ -256,14 +256,23 @@ OpenJUMP options:
     ATTENTION: If the specified language is not available then
                the language used is english (en).
 
-  -plug-in-directory <path> 
-    Sets the location of the plugin directory.
+  -extensions-directory <path> 
+    Sets the location of the extensions folder. Can be defined multiple times.
+    Look for extensions in <path>/*.jar files, adds all jar-files recursively
+    to runtime classpath. (see also -limit-ext-lookup)
     Default: JUMP_HOME/lib/ext
 
-  -project <path/project.jmp> 
-    DEPRECATED: simply add the path as mentioned in the syntax above
-    Open a project located on the file system at starting time
+  -jars-directory <path>
+    Adds all contained jar-files recursively to runtime classpath.
+    Can be defined multiple times.
 
+  -limit-ext-lookup true|false
+    Limits the search for extensions in jar files to jar-files contained in
+    extension-directory folder root. Setting to 'false' enables extension
+    lookup in all jars + class files recursively (for devel purposes).
+    Default: true (to speed up OJ start)
+
+  DEPRECATED: use '-extensions-directory','-jars-directory','-limit-ext-lookup'
   -properties <file.xml>
     specifies the file where OpenJUMP persistent properties are stored.
     See Wiki article "How to use a plugin with a properties file in ECLIPSE".

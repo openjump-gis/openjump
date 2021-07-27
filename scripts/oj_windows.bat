@@ -295,7 +295,7 @@ rem -- essential options, don't change unless you know what you're doing --
 set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration="%LOG4J_CONF%" -Dlog.dir="%LOG_DIR%" -Djump.home="%JUMP_HOME%" %JAVA_MEM%
 
 rem -- set default app options --
-set JUMP_OPTS=-default-plugins bin\default-plugins.xml -state "%SETTINGS_HOME%" -plug-in-directory "%LIB%\ext" %JUMP_OPTS%
+set JUMP_OPTS=-default-plugins bin\default-plugins.xml -state "%SETTINGS_HOME%" -extensions-directory "%LIB%\ext" %JUMP_OPTS%
 rem --- workbench-properties.xml is used to manually load plugins (ISA uses this) ---
 if EXIST "bin\workbench-properties.xml" set "JUMP_OPTS=-properties bin\workbench-properties.xml %JUMP_OPTS%"
 
