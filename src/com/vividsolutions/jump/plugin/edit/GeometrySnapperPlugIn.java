@@ -26,7 +26,6 @@ public class GeometrySnapperPlugIn extends AbstractPlugIn implements ThreadedPlu
   private static final String LAYER = i18n.get("ui.GenericNames.LAYER");
   private static final String REF_LAYER = i18n.get("ui.GenericNames.REFERENCE_LAYER");
   private static final String TOLERANCE = i18n.get("ui.plugin.analysis.GeometrySnapperPlugIn.tolerance");
-  private static final String AUTO_SNAP = i18n.get("ui.plugin.analysis.GeometrySnapperPlugIn.auto-snap");
 
   private String layer;
   private String refLayer;
