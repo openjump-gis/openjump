@@ -52,10 +52,8 @@ public class SaveProjectAsPlugIn extends AbstractSaveProjectPlugIn {
     public static final FileFilter JUMP_PROJECT_FILE_FILTER =
         GUIUtil.createFileFilter(I18N.getInstance().get("ui.plugin.SaveProjectAsPlugIn.jump-project-files"),
                                  new String[]{"jmp", "jcs"});
-    
-        
+
     private JFileChooser fileChooser;
-    
 
     public SaveProjectAsPlugIn() {
       super();
