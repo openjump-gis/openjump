@@ -43,6 +43,8 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vividsolutions.jump.workbench.Logger;
 
 /**
@@ -127,6 +129,10 @@ public final class I18N {
     this.resourceBundle2 = locale.getLanguage().isEmpty() ? null : getResourceBundle( new Locale(locale.getLanguage()) );
     // loads only empty default fallback locale (english in our case)
     this.resourceBundle3 = getResourceBundle(Locale.ROOT);
+
+    // this indicates that something with the classpath is really wrong, hence log an error
+    if (this.resourceBundle == null && this.resourceBundle2 ==null && this.resourceBundle3 == null)
+      Logger.error("All resourcebundles for '"+this.resourcePath+"' returned NULL. This is most likely wrong! Check the classpath.");
   }
 
   /**
@@ -155,6 +161,10 @@ public final class I18N {
     return rb;
   }
 
+  public static void reset() {
+    initialized = false;
+  }
+
   /**
    * Set the class loader used to load resource bundles, must be called by the
    * PlugInManager (plugin jars are added to a child classloader there) to allow
@@ -167,7 +177,7 @@ public final class I18N {
       throw new IllegalArgumentException("Classloader must not be null.");
     classLoader = cl;
     // reinit rsbs later
-    initialized = false;
+    reset();
   }
 
   /**
@@ -181,7 +191,7 @@ public final class I18N {
 
     locale = localeNew;
     // reinit rsbs later
-    initialized = false;
+    reset();
   }
 
   public static Locale getLocale() {
@@ -213,6 +223,7 @@ public final class I18N {
       } else {
         instance = new I18N(categoryPrefixOrPathOrI18N.toString());
       }
+      instance.init();
       instances.put(categoryPrefixOrPathOrI18N, instance);
     }
 
@@ -347,41 +358,37 @@ public final class I18N {
     // refresh in case settings changed inbetween
     initAll();
 
-    try {
-      // IMPORTANT: trailing spaces break the Malayalam translation,
-      // so we trim here, just to make sure
-      String text = getValue(label).trim();
-      // reread in case of reused i18n vars '$J:'
-      if (text.startsWith("$J:"))
-        text = getInstance().getValue(text.substring(3).trim());
-      // no params, nothing to parse
-      if (objects.length < 1)
-        return text;
-      // parse away
-      final MessageFormat mformat = new MessageFormat(text);
-      String res = mformat.format(objects);
-      return res;
-    } catch (java.util.MissingResourceException e) {
-      // last resort fallback is to simply reuse the last key segment as value
-      final String[] labelpath = label.split("\\.");
-      Logger.warn(e.getMessage() + " no default value, the resource key is used: " + labelpath[labelpath.length - 1]);
+    if (StringUtils.isBlank(label))
+      throw new IllegalArgumentException("label must not be empty!");
 
-      final MessageFormat mformat = new MessageFormat(labelpath[labelpath.length - 1]);
-      return mformat.format(objects);
-    }
+    // IMPORTANT: trailing spaces break the Malayalam translation,
+    // so we trim here, just to make sure
+    String text = getValue(label).trim();
+
+    // reread in case of reused i18n vars '$J:'
+    if (text.startsWith("$J:"))
+      text = getInstance().getValue(text.substring(3).trim());
+
+    // no params, nothing to parse
+    if (objects.length < 1)
+      return text;
+
+    // parse away
+    final MessageFormat mformat = new MessageFormat(text);
+    String res = mformat.format(objects);
+    return res;
   }
 
   /**
    * Find value for the key, - respect validity and use next rb order being
-   * 'lang_Country', 'lang', '' default - eventually return missing resource
-   * exception
+   * 'lang_Country', 'lang', '' default - eventually return key based
+   * value if all fails and issue a warning in log
    * 
    * @param key key to retrieve
    * @return the value for the key
    */
   private String getValue(final String key) {
     String text;
-    try {
       // try lang_country resourcebundle
       if (resourceBundle != null && isValid(text = findKeyInResourceBundle(resourceBundle,key)))
         return text;
@@ -391,22 +398,23 @@ public final class I18N {
       // eventually use base resourcebundle
       if (resourceBundle3 != null && isValid(text = findKeyInResourceBundle(resourceBundle3,key)))
           return text;
-      else
-        throw new MissingResourceException("Missing translation even in jump.properties", "", key);
-    } catch (MissingResourceException e) {
+
+      // last resort fallback is to simply reuse the last key segment as value
+      final String[] labelpath = key.split("\\.");
+      text = labelpath[labelpath.length - 1];
+
+      // only complain once
       if (!missing.contains(key)) {
-        String msg = "No translation for key ''{0}'' in bundle ''{1}''.";
-        msg = MessageFormat.format(msg, key, resourcePath);
+        String msg = "No translation for key ''{0}'' in bundle ''{1}''.\nUsing last segment of key instead: ''{2}''";
+        msg = MessageFormat.format(msg, key, resourcePath, text);
 
-        Logger.warn(msg, Logger.isDebugEnabled() ? e : null);
+        Logger.warn(msg);
 
+        // remember, so we don't flood the log
         missing.add(key);
-        // uncomment and add a search string to get staks telling you where the
-        // call came from
-        // Assert.isTrue(!key.contains("Write"));
       }
-      throw e;
-    }
+
+      return text;
   }
 
   private String findKeyInResourceBundle( ResourceBundle rb, String key) {
