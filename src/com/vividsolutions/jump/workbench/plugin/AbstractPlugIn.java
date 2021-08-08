@@ -355,11 +355,9 @@ public abstract class AbstractPlugIn implements PlugIn, ShortcutEnabled, EnableC
             }
           }
 
-          if (workbenchContext.getWorkbench() != null) {
-            Logger.info(I18N.getInstance().get("plugin.AbstractPlugIn.done-current-committed-memory")
-                    + workbenchContext.getWorkbench().getFrame()
-                    .getMBCommittedMemory() + " MB");
-          }
+          Logger.info(I18N.getInstance().get("plugin.AbstractPlugIn.done-current-committed-memory")
+                  + workbenchContext.getWorkbench().getFrame()
+                  .getMBCommittedMemory() + " MB");
         } catch (Throwable t) {
           workbenchContext.getErrorHandler().handleThrowable(t);
         }
