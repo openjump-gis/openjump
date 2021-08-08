@@ -129,7 +129,7 @@ public class DrawCircleWithGivenRadiusTool extends NClickTool{
     		}
     		if(pts > 300){
     			pts = 300;
-    			getWorkbenchFrame().warnUser(sReset);
+    			getWorkbench().getFrame().warnUser(sReset);
     		}
     		this.points=pts;
     	}    	 

@@ -330,7 +330,7 @@ public abstract class ConstrainedMultiClickTool extends AbstractCursorTool
         
         //following added to handle Backspace key deletes last vertex
         panel = layerViewPanel;
-        frame = getWorkbenchFrame();
+        frame = panel.getWorkBenchFrame();
         
         if (frame != null) 
             frame.addEasyKeyListener(keyListener);

@@ -258,7 +258,8 @@ public abstract class MultiClickTool extends AbstractCursorTool {
 
   public void deactivate() {
     super.deactivate();
-    getWorkbenchFrame().removeEasyKeyListener(keyListener);
+    // always remove listeners on deactivate
+    getWorkbench().getFrame().removeEasyKeyListener(keyListener);
   }
 
   public void activate(LayerViewPanel new_panel) {
@@ -270,7 +271,7 @@ public abstract class MultiClickTool extends AbstractCursorTool {
 
     super.activate(new_panel);
     // following added to handle Backspace key deletes last vertex
-    getWorkbenchFrame().addEasyKeyListener(keyListener);
+    new_panel.getWorkBenchFrame().addEasyKeyListener(keyListener);
   }
 
   private KeyListener keyListener = new KeyListener() {

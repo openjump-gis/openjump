@@ -369,7 +369,7 @@ public class LayerViewPanel extends JPanel
   public void reSetCurrentCursorTool() {
     setCurrentCursorTool( getCurrentCursorTool(), true );
   }
-  
+
   /**
    * set a cursortool to associate with the layer view. will return immediatly
    * if the old cursor tools is identical to the new one.
@@ -378,7 +378,7 @@ public class LayerViewPanel extends JPanel
   public void setCurrentCursorTool(CursorTool newct) {
     setCurrentCursorTool( newct, false );
   }
-  
+
   private void setCurrentCursorTool(CursorTool newct, boolean force) {
     // if the CursorTool is identical don't do the whole shebang
     if (!force && newct.equals(this.currentCursorTool)) {
@@ -389,6 +389,7 @@ public class LayerViewPanel extends JPanel
     // always cancel ongoing gesture on tool switches
     if (!newct.equals(this.currentCursorTool))
       this.currentCursorTool.cancelGesture();
+
     // remove old
     removeCurrentCursorTool();
     // add new

@@ -94,7 +94,7 @@ public class SelectMultiItemsTool extends SelectTool implements ShortcutsDescrip
             selection.selectItems((Layer) entry.getKey(),
                     (Feature) ((Collection) entry.getValue()).iterator().next());
         } else if (count > 40) {
-            JOptionPane.showMessageDialog(getWorkbenchFrame(),
+            JOptionPane.showMessageDialog(getWorkbench().getFrame(),
                     I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Too-many-features"),
                     I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.cursortools.SelectMultiItemsTool.Message"),
                     JOptionPane.INFORMATION_MESSAGE);

@@ -168,6 +168,9 @@ public abstract class AbstractCursorTool implements CursorTool {
 
   private WorkbenchContext context;
 
+  /**
+   * enforce constructor providing WorkbenchContext needed
+   */
   private AbstractCursorTool() {
   }
 
@@ -596,17 +599,8 @@ public abstract class AbstractCursorTool implements CursorTool {
   }
 
   public JUMPWorkbench getWorkbench() {
-    return getWorkbenchFrame().getContext().getWorkbench();
+    return getWorkbenchContext().getWorkbench();
   }
-
-  public WorkbenchFrame getWorkbenchFrame() {
-    return panel.getWorkBenchFrame();
-  }
-
-//  public static JUMPWorkbench workbench(LayerViewPanel panel) {
-//    System.out.println(panel);
-//    return panel.getWorkBenchFrame().getContext().getWorkbench();
-//  }
 
   protected abstract void gestureFinished() throws Exception;
 
