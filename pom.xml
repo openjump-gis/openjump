@@ -83,12 +83,6 @@
                       <outputDirectory>${core.folder}</outputDirectory>
                     </configuration>
                   </execution>
-                </executions>
-              </plugin>
-              <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <executions>
                   <!-- example execution to download/integrate an extension for PLUS distro
                   <execution>
                     <id>PLUS-install-extension</id>
