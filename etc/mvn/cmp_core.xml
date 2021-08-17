@@ -15,10 +15,8 @@
            nolang, nosrc and add them via assembly -->
       <useProjectArtifact>false</useProjectArtifact>
       <excludes>
-        <!-- exclude batik and js which is a batik dependency
-             we'll selectively include needed deps in cmp_plus.xml -->
+        <!-- exclude batik we'll selectively include needed deps in cmp_plus.xml -->
         <exclude>*:batik-*</exclude>
-        <exclude>rhino:js</exclude>
         <!-- exclude junit and hamcrest from CORE build -->
         <exclude>junit:*</exclude>
         <exclude>org.hamcrest:hamcrest-core</exclude>
