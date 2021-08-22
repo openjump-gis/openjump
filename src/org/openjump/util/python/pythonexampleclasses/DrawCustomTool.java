@@ -33,10 +33,10 @@
 
 package org.openjump.util.python.pythonexampleclasses;
 
+import java.awt.*;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
-import java.awt.Shape;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.EventObject;
@@ -139,7 +139,7 @@ public class DrawCustomTool extends ConstrainedNClickTool {
     
     public void setStrokeWidth(int width)
     {
-    	super.setStrokeWidth(width);
+    	super.setStroke(new BasicStroke(width));
     }
     
 	public interface FinalDrawListener extends EventListener

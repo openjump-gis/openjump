@@ -35,7 +35,7 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -45,6 +45,7 @@ import com.vividsolutions.jump.geom.CoordUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 
 public abstract class RectangleTool extends DragTool {
+
     public RectangleTool(WorkbenchContext context) {
       super(context);
     }
@@ -67,8 +68,8 @@ public abstract class RectangleTool extends DragTool {
             null);
     }
 
-    private Collection verticesToSnap(Coordinate source, Coordinate destination) {
-        ArrayList verticesToSnap = new ArrayList();
+    private Collection<Coordinate> verticesToSnap(Coordinate source, Coordinate destination) {
+        List<Coordinate> verticesToSnap = new ArrayList<>();
         verticesToSnap.add(destination);
         verticesToSnap.add(new Coordinate(source.x, destination.y));
         verticesToSnap.add(new Coordinate(destination.x, source.y));
@@ -77,8 +78,7 @@ public abstract class RectangleTool extends DragTool {
     }
 
     protected void setModelDestination(Coordinate modelDestination) {
-        for (Iterator i = verticesToSnap(getModelSource(), modelDestination).iterator(); i.hasNext();) {
-            Coordinate vertex = (Coordinate) i.next();
+        for (Coordinate vertex : verticesToSnap(getModelSource(), modelDestination)) {
             Coordinate snappedVertex = snap(vertex);
 
             if (getSnapManager().wasSnapCoordinateFound()) {
@@ -88,8 +88,8 @@ public abstract class RectangleTool extends DragTool {
 
         }
         this.modelDestination = modelDestination;
-        return;
     }
+
     protected void setModelSource(Coordinate modelSource) {
         this.modelSource = snap(modelSource);
     }

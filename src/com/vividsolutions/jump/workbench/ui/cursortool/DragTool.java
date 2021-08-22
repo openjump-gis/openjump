@@ -50,6 +50,7 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
  *  (even to draw nothing).
  */
 public abstract class DragTool extends AbstractCursorTool {
+
     public static final int DEFAULT_VIEW_CLICK_BUFFER = 2;
     private int viewClickBuffer = DEFAULT_VIEW_CLICK_BUFFER;
     /** Modify using #setSource */

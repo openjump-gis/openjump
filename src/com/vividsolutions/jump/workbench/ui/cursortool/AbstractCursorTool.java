@@ -43,7 +43,6 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -51,7 +50,6 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -98,7 +96,6 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 public abstract class AbstractCursorTool implements CursorTool {
 
   private boolean snappingInitialized = false;
-
   private boolean snappingAllowed = false;
   private boolean controlPressed = false;
   private boolean shiftPressed = false;
@@ -117,12 +114,12 @@ public abstract class AbstractCursorTool implements CursorTool {
   protected boolean isLinuxOS = System.getProperty("os.name").toLowerCase()
       .startsWith("linux");
 
-  private LayerViewPanelListener layerViewPanelListener = new LayerViewPanelListener() {
+  private final LayerViewPanelListener layerViewPanelListener = new LayerViewPanelListener() {
 
     public void cursorPositionChanged(String x, String y) {
-      // show scale view when cursos moves on view //
+      // show scale view when cursor moves on view //
       // [Giuseppe Aruta 2012-feb-18] //
-      // [Micha�l Michaud 2013-03-13] move to workbenchFrame.changeZoom()
+      // [Michaël Michaud 2013-03-13] move to workbenchFrame.changeZoom()
       // getWorkbench().getFrame().setScaleText("1:" + (int)
       // Math.floor(ScreenScale.getHorizontalMapScale(panel.getViewport())));
     }
@@ -158,11 +155,11 @@ public abstract class AbstractCursorTool implements CursorTool {
 
   private boolean shapeOnScreen = false;
 
-  private SnapManager snapManager = new SnapManager();
+  private final SnapManager snapManager = new SnapManager();
 
   private Stroke stroke = new BasicStroke(1);
 
-  private ArrayList listeners = new ArrayList();
+  private final List<Listener> listeners = new ArrayList<>();
 
   private Cursor cursor;
 
@@ -202,17 +199,14 @@ public abstract class AbstractCursorTool implements CursorTool {
   }
 
   protected boolean wasShiftPressed() {
-    // System.out.println("act shift pressed");
     return shiftPressed;
   }
 
   protected void setControlPressed(boolean onoff) {
-    // System.out.println("set ctrl "+onoff+" -> "+this);
     controlPressed = onoff;
   }
 
   protected boolean wasControlPressed() {
-    // System.out.println("get ctrl "+controlPressed+" -> "+this);
     return controlPressed;
   }
 
@@ -222,8 +216,7 @@ public abstract class AbstractCursorTool implements CursorTool {
    * @return a Cursor
    */
   public static Cursor createCursor(Image image) {
-    // <<TODO>> Compute image center rather than hardcoding 16, 16. [Jon
-    // Aquino]
+    // TODO Compute image center rather than hardcoding 16, 16. [Jon Aquino]
     return createCursor(image, new Point(16, 16));
   }
 
@@ -287,7 +280,6 @@ public abstract class AbstractCursorTool implements CursorTool {
     }
 
     // following added to handle KEY shortcuts e.g. SPACEBAR snap switching
-    //WorkbenchFrame frame = this.panel.getWorkBenchFrame();
     context.getWorkbench().getFrame().addEasyKeyListener(keyListener);
   }
 
@@ -299,11 +291,12 @@ public abstract class AbstractCursorTool implements CursorTool {
 //    return (window instanceof WorkbenchFrame) ? (WorkbenchFrame) window : null;
 //  }
 
-  protected List createStandardSnappingPolicies(Blackboard blackboard) {
-    return Arrays
-        .asList(new SnapPolicy[] { new SnapToVerticesPolicy(blackboard),
-            new SnapToFeaturesPolicy(blackboard),
-            new SnapToGridPolicy(blackboard) });
+  protected List<SnapPolicy> createStandardSnappingPolicies(Blackboard blackboard) {
+    return Arrays.asList(
+        new SnapToVerticesPolicy(blackboard),
+        new SnapToFeaturesPolicy(blackboard),
+        new SnapToGridPolicy(blackboard)
+    );
   }
 
   protected boolean isRollingBackInvalidEdits() {
@@ -352,12 +345,16 @@ public abstract class AbstractCursorTool implements CursorTool {
     this.filling = filling;
   }
 
-  /**
-   * @deprecated Use #setStroke instead.
-   * @param strokeWidth stroke width of this cursor tool
-   */
-  protected void setStrokeWidth(int strokeWidth) {
-    setStroke(new BasicStroke(strokeWidth));
+  ///**
+  // * @deprecated Use #setStroke instead.
+  // * @param strokeWidth stroke width of this cursor tool
+  // */
+  //protected void setStrokeWidth(int strokeWidth) {
+  //  setStroke(new BasicStroke(strokeWidth));
+  //}
+
+  protected Stroke getStroke() {
+    return stroke;
   }
 
   protected void setStroke(Stroke stroke) {
@@ -458,9 +455,8 @@ public abstract class AbstractCursorTool implements CursorTool {
    * position and the image is remembered for a later clear.
    * 
    * @param g the graphics context
-   * @throws Exception if an Exception occurs during drawing
    */
-  protected void drawImageXOR(Graphics2D g) throws Exception {
+  protected void drawImageXOR(Graphics2D g) {
     Image newImage = getImage();
     Point newPosition = getImagePosition();
     drawImageXOR(newImage, newPosition, g);
@@ -474,8 +470,7 @@ public abstract class AbstractCursorTool implements CursorTool {
     try {
       // Pan tool returns a null shape. [Jon Aquino]
       if (shape != null) {
-        // Can't both draw and fill, because we're using XOR. [Jon
-        // Aquino]
+        // Can't both draw and fill, because we're using XOR. [Jon Aquino]
         if (filling) {
           graphics.fill(shape);
         } else {
@@ -576,12 +571,9 @@ public abstract class AbstractCursorTool implements CursorTool {
   /**
    * Redraws the image on screen. This means the clearing the old image and draw
    * the actual image.
-   * 
-   * @param graphics
-   *          the Graphics2D
-   * @throws Exception
+   * @param graphics the Graphics2D
    */
-  private void redrawImage(Graphics2D graphics) throws Exception {
+  private void redrawImage(Graphics2D graphics) {
     clearImage(graphics);
     drawImageXOR(graphics);
 
@@ -626,8 +618,7 @@ public abstract class AbstractCursorTool implements CursorTool {
       getPanel().getLayerManager().getUndoableEditReceiver().stopReceiving();
     }
 
-    for (Iterator i = listeners.iterator(); i.hasNext();) {
-      Listener listener = (Listener) i.next();
+    for (Listener listener : listeners) {
       listener.gestureFinished();
     }
   }
@@ -679,7 +670,7 @@ public abstract class AbstractCursorTool implements CursorTool {
   public static String name(CursorTool tool) {
     try {
       String key = tool.getClass().getName();
-      Class c;
+      Class<?> c;
       // use superclass name if tool was modified as anonymous inner class in
       // any way
       while (key.contains("$") && (c = tool.getClass().getSuperclass()) != null) {
@@ -721,7 +712,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 
   // memorize modifier key states (Shift/Ctrl etc.)
   // snap on/off via key listener
-  private KeyListener keyListener = new KeyListener() {
+  private final KeyListener keyListener = new KeyListener() {
     boolean off = false;
 
     public void keyTyped(KeyEvent e) {

@@ -53,14 +53,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -326,17 +319,16 @@ public class LayerViewPanel extends JPanel
 	/**
 	 * The Fence layer will be included.
 	 */
-	public Map visibleLayerToFeaturesInFenceMap(Geometry fence) {
-		Map map = new HashMap();
+	public Map<Layer, Set<Feature>> visibleLayerToFeaturesInFenceMap(Geometry fence) {
+		Map<Layer, Set<Feature>> map = new HashMap<>();
 
-		for (Iterator i = getLayerManager().iterator(Layer.class); i.hasNext();) {
-			Layer layer = (Layer) i.next();
+		for (Layer layer : getLayerManager().getLayerables(Layer.class)) {
 
 			if (!layer.isVisible()) {
 				continue;
 			}
 
-			HashSet features = new HashSet();
+			Set<Feature> features = new HashSet<>();
 
 			for (Iterator j = layer.getFeatureCollectionWrapper().query(
 					fence.getEnvelopeInternal()).iterator(); j.hasNext();) {

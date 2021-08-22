@@ -43,6 +43,7 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 
 
 public interface CursorTool extends MouseListener, MouseMotionListener {
+
     Cursor getCursor();
 
     /**

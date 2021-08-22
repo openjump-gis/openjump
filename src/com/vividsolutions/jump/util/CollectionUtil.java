@@ -290,9 +290,9 @@ public class CollectionUtil {
     /**
      * The Smalltalk #select method.
      */
-    public static Collection select(Collection collection, Block block) {
-        List<Object> result = new ArrayList<>();
-        for (Object item : collection) {
+    public static <T> Collection<T> select(Collection<T> collection, Block block) {
+        List<T> result = new ArrayList<>();
+        for (T item : collection) {
             if (Boolean.TRUE.equals(block.yield(item))) {
                 result.add(item);
             }

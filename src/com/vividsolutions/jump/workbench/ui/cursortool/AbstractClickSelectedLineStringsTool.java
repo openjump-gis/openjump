@@ -4,8 +4,8 @@ import java.awt.Shape;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -15,15 +15,15 @@ import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.util.Block;
 import com.vividsolutions.jump.util.CollectionUtil;
-import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 
 public abstract class AbstractClickSelectedLineStringsTool extends
 		SpecifyFeaturesTool {
+
 	public AbstractClickSelectedLineStringsTool(WorkbenchContext context) {
-	super(context);
+		super(context);
 		setViewClickBuffer(10);
 	}
 
@@ -59,7 +59,7 @@ public abstract class AbstractClickSelectedLineStringsTool extends
 		if (!check(checkFactory().createAtLeastNItemsMustBeSelectedCheck(1))) {
 			return;
 		}
-		Collection nearbyLineStringFeatures = CollectionUtil.select(
+		Collection<Feature> nearbyLineStringFeatures = CollectionUtil.select(
 				CollectionUtil.concatenate(layerToSpecifiedFeaturesMap()
 						.values()), new Block() {
 					public Object yield(Object feature) {
@@ -82,15 +82,12 @@ public abstract class AbstractClickSelectedLineStringsTool extends
 		return EnableCheckFactory.getInstance(getWorkbench().getContext());
 	}
 
-	protected abstract void gestureFinished(Collection nearbyLineStringFeatures)
+	protected abstract void gestureFinished(Collection<Feature> nearbyLineStringFeatures)
 			throws NoninvertibleTransformException;
 
-	protected Layer layer(Feature feature, Map layerToSpecifiedFeaturesMap) {
-		for (Iterator i = layerToSpecifiedFeaturesMap.keySet().iterator(); i
-				.hasNext();) {
-			Layer layer = (Layer) i.next();
-			Collection features = (Collection) layerToSpecifiedFeaturesMap
-					.get(layer);
+	protected Layer layer(Feature feature, Map<Layer, Set<Feature>> layerToSpecifiedFeaturesMap) {
+		for (Layer layer : layerToSpecifiedFeaturesMap.keySet()) {
+			Set<Feature> features = layerToSpecifiedFeaturesMap.get(layer);
 			if (features.contains(feature)) {
 				return layer;
 			}

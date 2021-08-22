@@ -33,9 +33,7 @@
 package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import java.awt.event.MouseEvent;
-
 import org.locationtech.jts.geom.Coordinate;
-
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 
 
@@ -44,8 +42,9 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
  * an NClickTool looks for a certain number of points to end the gesture.
  */
 public abstract class NClickTool extends MultiClickTool {
+
     //This class has been tested only with n=1 and n=2. [Jon Aquino]
-    private int n;
+    private final int n;
 
     public NClickTool(WorkbenchContext context, int n) {
         super(context);
@@ -57,11 +56,11 @@ public abstract class NClickTool extends MultiClickTool {
     }
     
     protected Coordinate getModelSource() {
-        return (Coordinate) getCoordinates().get(0);
+        return getCoordinates().get(0);
     }
 
     protected Coordinate getModelDestination() {
-        return (Coordinate) getCoordinates().get(n-1);
+        return getCoordinates().get(n-1);
     }    
 
     protected boolean isFinishingRelease(MouseEvent e) {

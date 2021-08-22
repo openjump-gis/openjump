@@ -2,9 +2,7 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import java.awt.Color;
 import java.awt.geom.NoninvertibleTransformException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -28,7 +26,7 @@ public class NodeLineStringsTool extends AbstractClickSelectedLineStringsTool {
     super(context);
   }
 
-  private class Intersection implements Comparable {
+  private static class Intersection implements Comparable<Intersection> {
 		public Intersection(Coordinate coordinate, Feature featureA,
 				Layer layerA, Feature featureB, Layer layerB) {
 			this.coordinate = coordinate;
@@ -38,28 +36,27 @@ public class NodeLineStringsTool extends AbstractClickSelectedLineStringsTool {
 			this.layerB = layerB;
 		}
 
-		private Coordinate coordinate;
+		private final Coordinate coordinate;
+		private final Feature featureA;
+		private final Feature featureB;
+		private final Layer layerA;
+		private final Layer layerB;
 
-		private Feature featureA;
-
-		private Feature featureB;
-
-		private Layer layerA;
-
-		private Layer layerB;
-
-		public int compareTo(Object o) {
-			return coordinate.compareTo(((Intersection) o).coordinate);
+		public int compareTo(Intersection o) {
+			return coordinate.compareTo(o.coordinate);
 		}
 	}
 
-    private final static String sNoIntersectionsHere = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.cursortool.NodeLineStringsTool.No-intersections-here");
+    private final static String sNoIntersectionsHere =
+				I18N.getInstance()
+						.get("com.vividsolutions.jump.workbench.ui.cursortool.NodeLineStringsTool.No-intersections-here");
     
     public String getName() {
-        return I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.cursortool.NodeLineStringsTool.Node-LineStrings");
+        return I18N.getInstance()
+						.get("com.vividsolutions.jump.workbench.ui.cursortool.NodeLineStringsTool.Node-LineStrings");
     }
     
-	protected void gestureFinished(Collection nearbyLineStringFeatures)
+	protected void gestureFinished(Collection<Feature> nearbyLineStringFeatures)
 			throws NoninvertibleTransformException {
 		Intersection intersection = closest(getModelClickPoint(),
 				CollectionUtil.select(
@@ -72,8 +69,7 @@ public class NodeLineStringsTool extends AbstractClickSelectedLineStringsTool {
 													((Intersection) intersection).coordinate) ? Boolean.TRUE
 											: Boolean.FALSE;
 								} catch (NoninvertibleTransformException e) {
-									// Not critical. Eat it. [Jon Aquino
-									// 2004-10-25]
+									// Not critical. Eat it. [Jon Aquino 2004-10-25]
 									return Boolean.FALSE;
 								}
 							}
@@ -97,11 +93,10 @@ public class NodeLineStringsTool extends AbstractClickSelectedLineStringsTool {
 				isRollingBackInvalidEdits(), getPanel());
 	}
 
-	private Intersection closest(Point p, Collection intersections) {
+	private Intersection closest(Point p, Collection<Intersection> intersections) {
 		Intersection closestIntersection = null;
 		double closestDistance = Double.MAX_VALUE;
-		for (Iterator i = intersections.iterator(); i.hasNext();) {
-			Intersection intersection = (Intersection) i.next();
+		for (Intersection intersection : intersections) {
 			double distance = intersection.coordinate.distance(p
 					.getCoordinate());
 			if (distance < closestDistance) {
@@ -112,29 +107,26 @@ public class NodeLineStringsTool extends AbstractClickSelectedLineStringsTool {
 		return closestIntersection;
 	}
 
-	private Set properIntersections(Collection nearbyLineStringFeatures,
-			Map layerToFeaturesMap) {
-		TreeSet intersections = new TreeSet();
-		for (Iterator i = nearbyLineStringFeatures.iterator(); i.hasNext();) {
-			Feature a = (Feature) i.next();
-			for (Iterator j = nearbyLineStringFeatures.iterator(); j.hasNext();) {
-				Feature b = (Feature) j.next();
+	private Set<Intersection> properIntersections(Collection<Feature> nearbyLineStringFeatures,
+			Map<Layer,Set<Feature>> layerToFeaturesMap) {
+		TreeSet<Intersection> intersections = new TreeSet<>();
+		for (Feature a : nearbyLineStringFeatures) {
+			for (Feature b : nearbyLineStringFeatures) {
 				if (a == b) {
 					continue;
 				}
-				for (Iterator k = Arrays.asList(
-						a.getGeometry().intersection(b.getGeometry())
-								.getCoordinates()).iterator(); k.hasNext();) {
-					Coordinate coordinate = (Coordinate) k.next();
+				for (Coordinate coordinate :
+						a.getGeometry().intersection(b.getGeometry()).getCoordinates()) {
 					if (coordinate.equals2D(first(a))
 							|| coordinate.equals2D(last(a))
 							|| coordinate.equals2D(first(b))
 							|| coordinate.equals2D(last(b))) {
 						continue;
 					}
-					intersections.add(new Intersection(coordinate, a, layer(a,
-							layerToFeaturesMap), b,
-							layer(b, layerToFeaturesMap)));
+					intersections.add(new Intersection(coordinate,
+							a, layer(a, layerToFeaturesMap),
+							b, layer(b, layerToFeaturesMap))
+					);
 				}
 			}
 		}
@@ -146,7 +138,7 @@ public class NodeLineStringsTool extends AbstractClickSelectedLineStringsTool {
 	}
 
 	private LineString lineString(Feature feature) {
-		return (LineString) ((Feature) feature).getGeometry();
+		return (LineString) feature.getGeometry();
 	}
 
 	private Coordinate last(Feature lineStringFeature) {

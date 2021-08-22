@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
@@ -24,7 +23,8 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
 
 public class SplitLineStringsOp {
-	private Color colour;
+
+	private final Color colour;
 
 	public SplitLineStringsOp addSplit(Feature feature, Coordinate target,
 			Layer layer, boolean moveSplitToTarget) {
@@ -41,12 +41,11 @@ public class SplitLineStringsOp {
 		execute(splits, name, rollingBackInvalidEdits, panel);
 	}
 
-	private Collection splits = new ArrayList();
+	private final Collection<Split> splits = new ArrayList<>();
 
-	private void assertIndependent(Collection splits) {
-		Collection splitsEncountered = new ArrayList();
-		for (Iterator i = splits.iterator(); i.hasNext();) {
-			Split split = (Split) i.next();
+	private void assertIndependent(Collection<Split> splits) {
+		Collection<Split> splitsEncountered = new ArrayList<>();
+		for (Split split : splits) {
 			Assert.isTrue(!splitsEncountered.contains(split));
 			splitsEncountered.add(split);
 		}
@@ -97,7 +96,7 @@ public class SplitLineStringsOp {
 		return transaction;
 	}
 
-	private void execute(final Collection splits, final String name,
+	private void execute(final Collection<Split> splits, final String name,
 			final boolean rollingBackInvalidEdits, final LayerViewPanel panel) {
 		assertIndependent(splits);
 		EditTransaction.commit(CollectionUtil.collect(splits, new Block() {
@@ -187,8 +186,8 @@ public class SplitLineStringsOp {
 		return lineString.getCoordinateN(lineString.getNumPoints() - 2);
 	}
 
-	private class Split {
-		private Feature[] newFeatures;
+	private static class Split {
+		private final Feature[] newFeatures;
 
 		public Split(Feature oldFeature, LineString[] newLineStrings,
 				Layer layer) {
@@ -200,14 +199,12 @@ public class SplitLineStringsOp {
 					clone(oldFeature, newLineStrings[1]) };
 		}
 
-		private Feature oldFeature;
-
-		private LineString[] newLineStrings;
-
-		private Layer layer;
+		private final Feature oldFeature;
+		private final LineString[] newLineStrings;
+		private final Layer layer;
 
 		private Feature clone(Feature feature, LineString lineString) {
-			Feature clone = (Feature) feature.clone();
+			Feature clone = feature.clone();
 			clone.setGeometry(lineString);
 			return clone;
 		}

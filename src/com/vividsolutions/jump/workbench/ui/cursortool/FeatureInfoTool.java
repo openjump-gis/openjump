@@ -39,20 +39,17 @@ import java.awt.Image;
 import java.awt.geom.Point2D;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import com.vividsolutions.jump.feature.Feature;
 import org.openjump.core.CheckOS;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
@@ -89,21 +86,20 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
         if (!wasShiftPressed()) {
             infoFrame.getModel().clear();
         }
-        Map map = layerToSpecifiedFeaturesMap();
-        Iterator i = map.keySet().iterator();
-        while(i.hasNext()){
-            Layer layer = (Layer) i.next();
+        Map<Layer, Set<Feature>> map = layerToSpecifiedFeaturesMap();
+        for (Layer layer : map.keySet()){
             if (layer.getName().equals(FenceLayerFinder.LAYER_NAME)) {
                 continue;
             }
-            Collection features = (Collection) map.get(layer);
+            Collection<Feature> features = map.get(layer);
             infoFrame.getModel().add(layer, features);
         }
         
         Coordinate coord = getPanel().getViewport().toModelCoordinate(getViewSource());
         
         // WMS
-        List<WMSLayer> wmsLay_l = getWorkbench().getContext().getLayerManager().getLayerables(WMSLayer.class);
+        List<WMSLayer> wmsLay_l = getWorkbench().getContext().getLayerManager()
+            .getLayerables(WMSLayer.class);
 
         String response = "";
         String newLine = System.getProperty("line.separator");
@@ -131,7 +127,7 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
               StringWriter sw = new StringWriter();
               ex.printStackTrace(new PrintWriter(sw));
               wmsResponse = sw.toString();
-              JUMPWorkbench.getInstance().getFrame().log(sw.toString());
+              Logger.warn(sw.toString());
               wmsResponse = wmsResponse.concat(newLine);
               
               Logger.debug(ex);
@@ -140,8 +136,7 @@ public class FeatureInfoTool extends SpecifyFeaturesTool {
             response = response.concat(wmsResponse);
             response = response.concat(newLine);
         }
-        
-        
+
         infoFrame.setWmsInfo(response);
         
         // Raster data

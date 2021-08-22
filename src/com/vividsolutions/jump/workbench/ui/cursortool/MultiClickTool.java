@@ -59,7 +59,7 @@ public abstract class MultiClickTool extends AbstractCursorTool {
   // 24.iii.03 Dropped drag handling because it's too easy to do 
   // a micro-drag when we mean a click. [Jon Aquino]
 
-  private List coordinates = new ArrayList();
+  private final List<Coordinate> coordinates = new ArrayList<>();
   private Coordinate tentativeCoordinate;
   // set this to true if rubber band should be closed
   private boolean closeRing = false;
@@ -88,7 +88,7 @@ public abstract class MultiClickTool extends AbstractCursorTool {
    * 
    * @see MultiClickTool#clearShape()
    */
-  public List getCoordinates() {
+  public List<Coordinate> getCoordinates() {
     return Collections.unmodifiableList(coordinates);
   }
 
@@ -169,7 +169,7 @@ public abstract class MultiClickTool extends AbstractCursorTool {
     if (metrics == null)
       return;
     if (isShapeOnScreen()) {
-      ArrayList currentCoordinates = new ArrayList(getCoordinates());
+      List<Coordinate> currentCoordinates = new ArrayList<>(getCoordinates());
       currentCoordinates.add(snap(getPanel().getViewport().toModelCoordinate(
           e.getPoint())));
       metrics.displayMetrics(currentCoordinates, getPanel());
@@ -215,13 +215,12 @@ public abstract class MultiClickTool extends AbstractCursorTool {
     // open menu in the map. In this moment we do not get the mousePressed
     // event and no coordinate will be added.
     if (!coordinates.isEmpty()) {
-      Point2D firstPoint = getPanel().getViewport().toViewPoint(
-          (Coordinate) coordinates.get(0));
+      Point2D firstPoint = getPanel().getViewport().toViewPoint(coordinates.get(0));
       path.moveTo((float) firstPoint.getX(), (float) firstPoint.getY());
 
       for (int i = 1; i < coordinates.size(); i++) { // start 1 [Jon Aquino]
 
-        Coordinate nextCoordinate = (Coordinate) coordinates.get(i);
+        Coordinate nextCoordinate = coordinates.get(i);
         Point2D nextPoint = getPanel().getViewport()
             .toViewPoint(nextCoordinate);
         path.lineTo((int) nextPoint.getX(), (int) nextPoint.getY());
@@ -241,8 +240,8 @@ public abstract class MultiClickTool extends AbstractCursorTool {
     return e.getClickCount() == 2;
   }
 
-  protected Coordinate[] toArray(List coordinates) {
-    return (Coordinate[]) coordinates.toArray(new Coordinate[] {});
+  protected Coordinate[] toArray(List<Coordinate> coordinates) {
+    return coordinates.toArray(new Coordinate[] {});
   }
 
   protected void finishGesture() throws Exception {
@@ -274,7 +273,7 @@ public abstract class MultiClickTool extends AbstractCursorTool {
     new_panel.getWorkBenchFrame().addEasyKeyListener(keyListener);
   }
 
-  private KeyListener keyListener = new KeyListener() {
+  private final KeyListener keyListener = new KeyListener() {
     public void keyTyped(KeyEvent e) {
     }
 
@@ -307,10 +306,10 @@ public abstract class MultiClickTool extends AbstractCursorTool {
       // approve drawing via ENTER, emulates doubleclick
       else if(e.getKeyCode() == KeyEvent.VK_ENTER && mouseLastLoc!=null){
         mousePressed(new MouseEvent(panel, MouseEvent.MOUSE_PRESSED,
-            (long) 0, MouseEvent.BUTTON1_MASK, mouseLastLoc.x,
+            0, MouseEvent.BUTTON1_MASK, mouseLastLoc.x,
             mouseLastLoc.y, 1, false));
         mouseReleased(new MouseEvent(panel, MouseEvent.MOUSE_RELEASED,
-            (long) 0, MouseEvent.BUTTON1_MASK, mouseLastLoc.x,
+            0, MouseEvent.BUTTON1_MASK, mouseLastLoc.x,
             mouseLastLoc.y, 2, false));
       }
     }

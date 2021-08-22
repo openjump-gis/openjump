@@ -34,6 +34,7 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -58,10 +59,10 @@ public abstract class PolygonTool extends MultiClickTool {
      * @throws NoninvertibleTransformException if an exception occurs during coordinate transformation
      */
     protected Polygon getPolygon() throws NoninvertibleTransformException {
-        ArrayList closedPoints = new ArrayList(getCoordinates());
+        List<Coordinate> closedPoints = new ArrayList<>(getCoordinates());
 
         if (!closedPoints.get(0).equals(closedPoints.get(closedPoints.size() - 1))) {
-            closedPoints.add(new Coordinate((Coordinate) closedPoints.get(0)));
+            closedPoints.add(new Coordinate(closedPoints.get(0)));
         }
 
         return new GeometryFactory().createPolygon(

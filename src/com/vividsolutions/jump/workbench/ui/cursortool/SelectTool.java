@@ -36,15 +36,7 @@ import java.awt.Cursor;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.NoninvertibleTransformException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.Icon;
 
@@ -89,14 +81,13 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
             getPanel().getSelectionManager().clear();
         }
 
-        Map layerToFeaturesInFenceMap =
+        Map<Layer, Set<Feature>> layerToFeaturesInFenceMap =
             getPanel().visibleLayerToFeaturesInFenceMap(
                 EnvelopeUtil.toGeometry(getBoxInModelCoordinates()));
 
-        Collection layers = layerToFeaturesInFenceMap.keySet();
+        Collection<Layer> layers = layerToFeaturesInFenceMap.keySet();
 
-        for (Iterator i = layers.iterator(); i.hasNext();) {
-            Layer layer = (Layer) i.next();
+        for (Layer layer : layers) {
 
             if (layer.getName().equals(FenceLayerFinder.LAYER_NAME)) {
                 continue;
@@ -105,12 +96,12 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
             try {
                 Map<Feature,List<Geometry>> featureToItemsToSelectMap =
                     featureToItemsInFenceMap(
-                        (Collection) layerToFeaturesInFenceMap.get(layer),
+                        layerToFeaturesInFenceMap.get(layer),
                         layer,
                         false);
                 Map<Feature,List<Geometry>> featureToItemsToUnselectMap =
                     featureToItemsInFenceMap(
-                        (Collection) layerToFeaturesInFenceMap.get(layer),
+                        layerToFeaturesInFenceMap.get(layer),
                         layer,
                         true);
                 selection.selectItems(layer, featureToItemsToSelectMap);
@@ -144,14 +135,13 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
      * @param selected whether to return selected items or deselected items
      */
     private Map<Feature,List<Geometry>> featureToItemsInFenceMap(
-            Collection features, Layer layer, boolean selected)
+            Collection<Feature> features, Layer layer, boolean selected)
                                         throws NoninvertibleTransformException {
         Map<Feature,List<Geometry>> featureToSelectedItemsMap =
             selection.getFeatureToSelectedItemCollectionMap(layer);
         Map<Feature,List<Geometry>> featureToItemsInFenceMap = 
-            new LinkedHashMap<Feature,List<Geometry>>();
-        for (Iterator i = features.iterator(); i.hasNext();) {
-            Feature feature = (Feature) i.next();
+            new LinkedHashMap<>();
+        for (Feature feature : features) {
             List<Geometry> selectedItems = featureToSelectedItemsMap.get(feature);
             if (selectedItems == null) selectedItems = Collections.EMPTY_LIST;
             List<Geometry> itemsToReturn = itemsInFence(feature);
@@ -166,7 +156,7 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
     }
 
     private List<Geometry> itemsInFence(Feature feature) throws NoninvertibleTransformException {
-        List<Geometry> itemsInFence = new ArrayList<Geometry>(1);
+        List<Geometry> itemsInFence = new ArrayList<>(1);
         Geometry fence = EnvelopeUtil.toGeometry(getBoxInModelCoordinates());
         for (Geometry selectedItem : selection.items(feature.getGeometry())) {
             if (LayerViewPanel.intersects(selectedItem, fence)) {
@@ -181,7 +171,7 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
     }
 
     public Map<ModifierKeySpec, String> describeShortcuts() {
-      Map map = new HashMap();
+      Map<ModifierKeySpec, String> map = new HashMap<>();
       map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_SHIFT }),
           I18N.getInstance().get(this.getClass().getName() + ".add-to-selection"));
       return map;
