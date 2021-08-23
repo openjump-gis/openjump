@@ -95,8 +95,6 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
 
 /**
  * Be sure to call #dispose() when the LayerViewPanel is no longer needed.
- */
-/**
  * @author ed
  *
  */
@@ -105,23 +103,26 @@ public class LayerViewPanel extends JPanel
 			LayerListener,
 			LayerManagerProxy,
 			SelectionManagerProxy {
-	private static JPopupMenu popupMenu = new TrackedPopupMenu();
-	private ToolTipWriter toolTipWriter = new ToolTipWriter(this);
-	BorderLayout borderLayout1 = new BorderLayout();
-	private LayerManager layerManager;
+
+	private static final JPopupMenu popupMenu = new TrackedPopupMenu();
+
+	private final ToolTipWriter toolTipWriter = new ToolTipWriter(this);
+	private final BorderLayout borderLayout1 = new BorderLayout();
 	// one dummytool for unassigned ModifierKey combinations
-	private CursorTool dummyCursorTool = new DummyTool();
+	private final CursorTool dummyCursorTool = new DummyTool();
+	private final Viewport viewport = new Viewport(this);
+	// no doubled listener entries
+	private final Set<LayerViewPanelListener> listeners = new HashSet<>();
+	private final RenderingManager renderingManager = new RenderingManager(this);
+	private final Blackboard blackboard = new Blackboard();
+
+	private LayerManager layerManager;
 	private CursorTool currentCursorTool = dummyCursorTool;
-	private Viewport viewport = new Viewport(this);
 	private boolean viewportInitialized = false;
 	private java.awt.Point lastClickedPoint, lastMouseLoc;
-	// no doubled listener entries
-	private HashSet listeners = new HashSet();
 	private LayerViewPanelContext context;
-	private RenderingManager renderingManager = new RenderingManager(this);
 	private FenceLayerFinder fenceLayerFinder;
 	private SelectionManager selectionManager;
-	private Blackboard blackboard = new Blackboard();
 	private boolean deferLayerEvents = false;
 	
 	class MouseWheelZoomListener implements MouseWheelListener {
@@ -248,68 +249,13 @@ public class LayerViewPanel extends JPanel
 		return toolTipWriter.write(getToolTipText(), event.getPoint());
 	}
 
-	public static List components(Geometry g) {
-		if (!(g instanceof GeometryCollection)) {
-			return Arrays.asList(new Object[]{g});
-		}
-
-		GeometryCollection c = (GeometryCollection) g;
-		ArrayList components = new ArrayList();
-
-		for (int i = 0; i < c.getNumGeometries(); i++) {
-			components.addAll(components(c.getGeometryN(i)));
-		}
-
-		return components;
-	}
-
-	/**
-	 * Workaround for the fact that GeometryCollection#intersects is not
-	 * currently implemented.
-	 */
-	public static boolean intersects(Geometry a, Geometry b) {
-		GeometryFactory factory = new GeometryFactory(a.getPrecisionModel(), a
-				.getSRID());
-		List aComponents = components(a);
-		List bComponents = components(b);
-
-		for (Iterator i = aComponents.iterator(); i.hasNext();) {
-			Geometry aComponent = (Geometry) i.next();
-			Assert.isTrue(!(aComponent instanceof GeometryCollection));
-
-			//Collapse to point as workaround for JTS defect: #contains doesn't
-			// work for
-			//polygons and zero-length vectors. [Jon Aquino]
-			aComponent = collapseToPointIfPossible(aComponent, factory);
-
-			for (Iterator j = bComponents.iterator(); j.hasNext();) {
-				Geometry bComponent = (Geometry) j.next();
-				Assert.isTrue(!(bComponent instanceof GeometryCollection));
-				bComponent = collapseToPointIfPossible(bComponent, factory);
-
-				if (aComponent.intersects(bComponent)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	private static Geometry collapseToPointIfPossible(Geometry g,
-			GeometryFactory factory) {
-		if (!g.isEmpty() && PinEqualCoordinatesStyle.coordinatesEqual(g)) {
-			g = factory.createPoint(g.getCoordinate());
-		}
-
-		return g;
-	}
 
 	/**
 	 * The Fence layer will be excluded.
 	 */
-	public Map visibleLayerToFeaturesInFenceMap() {
-		Map visibleLayerToFeaturesInFenceMap = visibleLayerToFeaturesInFenceMap(getFence());
+	public Map<Layer, Set<Feature>> visibleLayerToFeaturesInFenceMap() {
+		Map<Layer, Set<Feature>> visibleLayerToFeaturesInFenceMap =
+				visibleLayerToFeaturesInFenceMap(getFence());
 		visibleLayerToFeaturesInFenceMap.remove(new FenceLayerFinder(this)
 				.getLayer());
 
@@ -330,11 +276,9 @@ public class LayerViewPanel extends JPanel
 
 			Set<Feature> features = new HashSet<>();
 
-			for (Iterator j = layer.getFeatureCollectionWrapper().query(
-					fence.getEnvelopeInternal()).iterator(); j.hasNext();) {
-				Feature candidate = (Feature) j.next();
-
-				if (intersects(candidate.getGeometry(), fence)) {
+			for (Feature candidate :
+					layer.getFeatureCollectionWrapper().query(fence.getEnvelopeInternal())) {
+				if (candidate.getGeometry().intersects(fence)) {
 					features.add(candidate);
 				}
 			}
@@ -476,8 +420,7 @@ public class LayerViewPanel extends JPanel
 				public void run() {
 					try {
 						//Invoke later because other layers may be created in a
-						// few
-						//moments. [Jon Aquino]
+						// few moments. [Jon Aquino]
 						initializeViewportIfNecessary();
 					} catch (Throwable t) {
 						context.handleThrowable(t);
@@ -585,8 +528,7 @@ public class LayerViewPanel extends JPanel
 		//if (SwingUtilities.isRightMouseButton(e)) {
 		if (e.isPopupTrigger()) {
 			//Custom workbenches might not add any items to the LayerViewPanel
-			// popup menu.
-			//[Jon Aquino]
+			// popup menu. [Jon Aquino]
 			if (popupMenu.getSubElements().length == 0) {
 				return;
 			}
@@ -632,18 +574,11 @@ public class LayerViewPanel extends JPanel
 	}
 
 	protected String format(double d, double pixelWidthInModelUnits) {
-		int precisionInDecimalPlaces = (int) Math.max(0, //because
-																							   // if
-																							   // pixelWidthInModelUnits
-																							   // > 1,
-																							   // the
-																							   // negative
-																							   // log
-																							   // will
-																							   // be
-																							   // negative
-				Math.round( //not floor, which brings 0.999 down to
-									   // 0
+		int precisionInDecimalPlaces = (int) Math.max(0,
+				//because if pixelWidthInModelUnits > 1,
+				//the negative log will be negative
+				Math.round(
+						//not floor, which brings 0.999 down to 0
 						(-Math.log(pixelWidthInModelUnits)) / Math.log(10)));
 		precisionInDecimalPlaces++;
 
@@ -658,23 +593,20 @@ public class LayerViewPanel extends JPanel
 	}
 
 	private void firePainted(Graphics graphics) {
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
-			LayerViewPanelListener l = (LayerViewPanelListener) i.next();
-			l.painted(graphics);
+		for (LayerViewPanelListener listener : listeners) {
+			listener.painted(graphics);
 		}
 	}
 
 	public void fireSelectionChanged() {
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
-			LayerViewPanelListener l = (LayerViewPanelListener) i.next();
-            l.selectionChanged();
+		for (LayerViewPanelListener listener : listeners) {
+			listener.selectionChanged();
 		}
 	}
 
 	private void fireCursorPositionChanged(String x, String y) {
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
-			LayerViewPanelListener l = (LayerViewPanelListener) i.next();
-			l.cursorPositionChanged(x, y);
+		for (LayerViewPanelListener listener : listeners) {
+			listener.cursorPositionChanged(x, y);
 		}
 	}
 
@@ -683,8 +615,8 @@ public class LayerViewPanel extends JPanel
 	}
 
 	//Not sure where this method should reside. [Jon Aquino]
-	public Collection featuresWithVertex(Point2D viewPoint,
-			double viewTolerance, Collection features)
+	public Collection<Feature> featuresWithVertex(Point2D viewPoint,
+			double viewTolerance, Collection<Feature> features)
 			throws NoninvertibleTransformException {
 		Point2D modelPoint = viewport.toModelPoint(viewPoint);
 		double modelTolerance = viewTolerance / viewport.getScale();
@@ -692,11 +624,9 @@ public class LayerViewPanel extends JPanel
 				- modelTolerance, modelPoint.getX() + modelTolerance,
 				modelPoint.getY() - modelTolerance, modelPoint.getY()
 						+ modelTolerance);
-		Collection featuresWithVertex = new ArrayList();
+		Collection<Feature> featuresWithVertex = new ArrayList<>();
 
-		for (Iterator j = features.iterator(); j.hasNext();) {
-			Feature feature = (Feature) j.next();
-
+		for (Feature feature : features) {
 			if (geometryHasVertex(feature.getGeometry(), searchEnvelope)) {
 				featuresWithVertex.add(feature);
 			}
@@ -708,8 +638,8 @@ public class LayerViewPanel extends JPanel
 	private boolean geometryHasVertex(Geometry geometry, Envelope searchEnvelope) {
 		Coordinate[] coordinates = geometry.getCoordinates();
 
-		for (int i = 0; i < coordinates.length; i++) {
-			if (searchEnvelope.contains(coordinates[i])) {
+		for (Coordinate coordinate : coordinates) {
+			if (searchEnvelope.contains(coordinate)) {
 				return true;
 			}
 		}
