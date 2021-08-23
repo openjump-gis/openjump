@@ -159,7 +159,7 @@ public abstract class SelectTool extends DragTool implements ShortcutsDescriptor
         List<Geometry> itemsInFence = new ArrayList<>(1);
         Geometry fence = EnvelopeUtil.toGeometry(getBoxInModelCoordinates());
         for (Geometry selectedItem : selection.items(feature.getGeometry())) {
-            if (LayerViewPanel.intersects(selectedItem, fence)) {
+            if (selectedItem.intersects(fence)) {
                 itemsInFence.add(selectedItem);
             }
         }
