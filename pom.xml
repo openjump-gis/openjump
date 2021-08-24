@@ -136,6 +136,18 @@
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
                   </execution>
+                  <execution>
+                    <id>PLUS-install-kml_driver</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/kml-driver/releases/download/2.0.0/kml-driver-2.0.0.zip</url>
+                      <sha1>56941cbcc1c0e88c07827340a99dfd06e49238b5</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
                 </executions>
               </plugin>
             </plugins>
