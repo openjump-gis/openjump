@@ -99,6 +99,18 @@
                     </configuration>
                   </execution>
                   -->
+                  <execution>
+                    <id>PLUS-install-dxf_driver</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/dxf-driver/releases/download/2.0.0/dxf-driver-2.0.0.zip</url>
+                      <sha1>3330c3034eafc78f35df341bf254355467162485</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
                 </executions>
               </plugin>
             </plugins>
