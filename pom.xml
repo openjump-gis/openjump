@@ -148,6 +148,18 @@
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
                   </execution>
+                                    <execution>
+                    <id>PLUS-install-measure_toolbox_extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/measure-toolbox-extension/releases/download/2.1.0/measure-toolbox-extension-2.1.0.zip</url>
+                      <sha1>ddb36e849332e758e76cec8521f3b1f070832b26</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
                 </executions>
               </plugin>
             </plugins>
