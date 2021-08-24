@@ -71,6 +71,7 @@
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
                 <executions>
+                  <!-- add executions sorted by id alphabetically for maintainability -->
                   <execution>
                     <id>CORE-install-skyprinter</id>
                     <goals>
@@ -99,6 +100,18 @@
                     </configuration>
                   </execution>
                   -->
+                  <execution>
+                    <id>PLUS-install-bsheditor</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/bsheditor-extension/releases/download/2.0.0/bsheditor-extension-2.0.0.zip</url>
+                      <sha1>3d6393e3410d118cd89c5b66ff13b455067b2a8f</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
                   <execution>
                     <id>PLUS-install-dxf_driver</id>
                     <goals>
