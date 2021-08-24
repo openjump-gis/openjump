@@ -148,7 +148,19 @@
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
                   </execution>
-                                    <execution>
+                  <execution>
+                    <id>PLUS-install-matching_extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/matching-extension/releases/download/2.0.0/matching-extension-2.0.0.zip</url>
+                      <sha1>0c5f2c7b85b9c376c6f97663c8b24eed8c163982</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-measure_toolbox_extension</id>
                     <goals>
                       <goal>wget</goal>
@@ -156,6 +168,18 @@
                     <configuration>
                       <url>https://github.com/openjump-gis/measure-toolbox-extension/releases/download/2.1.0/measure-toolbox-extension-2.1.0.zip</url>
                       <sha1>ddb36e849332e758e76cec8521f3b1f070832b26</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
+                    <id>PLUS-install-topology_extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/topology-extension/releases/download/2.0.0/topology-extension-2.0.0.zip</url>
+                      <sha1>a786651aa3f3b2419e3e5bcdfc284efdbbfea39b</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
@@ -875,7 +899,7 @@
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>exec-maven-plugin</artifactId>
               <version>3.0.0</version>
-                    <?m2e ignore?>
+              <?m2e ignore?>
               <executions>
                 <execution>
                   <id>echo java version</id>
