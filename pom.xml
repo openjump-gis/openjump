@@ -113,6 +113,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-csv_driver</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/csv-driver/releases/download/2.0.0/csv-driver-2.0.0.zip</url>
+                      <sha1>9f53a98ae1e5f52f0d0a2fd5990490fa1b0692d7</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-dxf_driver</id>
                     <goals>
                       <goal>wget</goal>
