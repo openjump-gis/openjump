@@ -149,6 +149,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-graph_toolbox_extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/graph-toolbox-extension/releases/download/v2.0.0/graph-toolbox-2.0.0.zip</url>
+                      <sha1>07ae3a511c18df5fe82799a30d606fdc58399839</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-kml_driver</id>
                     <goals>
                       <goal>wget</goal>
