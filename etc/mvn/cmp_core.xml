@@ -17,9 +17,6 @@
       <excludes>
         <!-- exclude batik we'll selectively include needed deps in cmp_plus.xml -->
         <exclude>*:batik-*</exclude>
-        <!-- exclude junit and hamcrest from CORE build -->
-        <exclude>junit:*</exclude>
-        <exclude>org.hamcrest:hamcrest-core</exclude>
         <!-- exclude imageio-ext from CORE build, but include some selected jars below -->
         <exclude>it.geosolutions.imageio-ext:*</exclude>
       </excludes>
