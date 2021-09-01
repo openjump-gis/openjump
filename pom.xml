@@ -208,6 +208,18 @@
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
                   </execution>
+                  <execution>
+                    <id>PLUS-install-vertex_symbols</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/vertex-symbols/releases/download/v2.2.0/vertex-symbols-2.2.0.zip</url>
+                      <sha1>22df1e3124113909ffaeba12f93647832554c9c1</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
                 </executions>
               </plugin>
             </plugins>
