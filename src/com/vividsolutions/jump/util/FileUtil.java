@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +51,7 @@ import java.util.zip.ZipOutputStream;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.task.TaskMonitor;
+import com.vividsolutions.jump.workbench.Logger;
 
 /**
  * File-related utility functions.
@@ -317,5 +319,24 @@ public class FileUtil {
     in.close();
     fout.close();
     return tempFile;
+  }
+
+  /**
+   * utility method to find files or folders in classpath easy
+   * without handling exceptions or such
+   * returns NULL if none could b found
+   * 
+   * @return file object or null
+   */
+  public static File findFileInClassPath( String fileOrFolder ) {
+    File f = null;
+    try {
+      URL url = Thread.currentThread().getContextClassLoader().getResource(fileOrFolder);
+      f = new File(url.toURI());
+    } catch (Exception e) {
+      Logger.debug("Cannot resolve '"+fileOrFolder+"' in classpath.",e);
+    }
+
+    return f;
   }
 }
