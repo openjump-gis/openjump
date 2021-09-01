@@ -44,6 +44,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.task.TaskMonitor;
@@ -200,6 +201,23 @@ public class PlugInManager {
       classLoader.addUrls(toURLs(files));
       // reload translation resource bundles after changing  classpath
       I18N.reset();
+    }
+
+    /**
+     * search extension directories in the order they were added
+     * for a given file or folder
+     * return first found or null if none exists
+     * 
+     * @param fileOrFolder
+     * @return file object or null
+     */
+    public File findFileOrFolderInExtensionDirs( String fileOrFolder ) {
+      for (File extDir : extensionDirs) {
+        File candidate = new File( extDir, fileOrFolder );
+        if ( candidate.exists() )
+          return candidate;
+      }
+      return null;
     }
 
     // pretty much the main method, finds and loads extensions
