@@ -221,6 +221,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-set_attributes_extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/set-attributes-extension/releases/download/v2.0.0/set-attributes-extension-2.0.0.zip</url>
+                      <sha1>703e0fa0669d30b3ed32cf073d37624b94829743</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-topology_extension</id>
                     <goals>
                       <goal>wget</goal>
