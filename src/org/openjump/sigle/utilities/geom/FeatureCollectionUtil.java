@@ -22,7 +22,7 @@ import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.geom.MakeValidOp;
+import com.vividsolutions.jump.geom.OpenJUMPMakeValidOp;
 import com.vividsolutions.jump.workbench.Logger;
 
 /**
@@ -117,7 +117,7 @@ public class FeatureCollectionUtil {
    * @param FeatureCollection fc
    */
   public static void validFeatureCollection(FeatureCollection fc) {
-    MakeValidOp makeValidOp = new MakeValidOp();
+    OpenJUMPMakeValidOp makeValidOp = new OpenJUMPMakeValidOp();
     makeValidOp.setPreserveGeomDim(true);
     makeValidOp.setPreserveDuplicateCoord(false);
     for (Feature feature : fc.getFeatures()) {

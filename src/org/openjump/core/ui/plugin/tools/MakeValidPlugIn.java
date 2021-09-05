@@ -1,11 +1,13 @@
 package org.openjump.core.ui.plugin.tools;
 
+import com.vividsolutions.jump.geom.JtsMakeValidOp;
+import com.vividsolutions.jump.geom.MakeValidOp;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
-import com.vividsolutions.jump.geom.MakeValidOp;
+import com.vividsolutions.jump.geom.OpenJUMPMakeValidOp;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -23,6 +25,8 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 
@@ -37,6 +41,9 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
     public static String SOURCE_LAYER              = I18N.getInstance().get(KEY + ".source-layer");
     public static String DESCRIPTION               = I18N.getInstance().get(KEY + ".description");
     public static String RESULT_LAYER_SUFFIX       = I18N.getInstance().get(KEY + ".result-layer-suffix");
+
+    public static String USE_JTS_ALGORITHM         = I18N.getInstance().get(KEY + ".use-jts-algorithm");
+    public static String USE_JTS_ALGORITHM_TOOLTIP = I18N.getInstance().get(KEY + ".use-jts-algorithm-tooltip");
 
     public static String PRESERVE_GEOM_DIM         = I18N.getInstance().get(KEY + ".preserve-geom-dim");
     public static String PRESERVE_GEOM_DIM_TOOLTIP = I18N.getInstance().get(KEY + ".preserve-geom-dim-tooltip");
@@ -54,8 +61,8 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
     public static String ERROR_LAYER_SUFFIX        = I18N.getInstance().get(KEY + ".error-layer-suffix");
 
     private Layer layerA;
+    private boolean jtsGeometryFixer = true;
     private boolean preserveGeomDim = true;
-    //private boolean preserveCoordDim = true;
     private boolean removeDuplicateCoord = true;
     private boolean decomposeMulti = false;
     private boolean correctCurrentLayer = false;
@@ -102,26 +109,33 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
         Layer candidateA = layerA == null ? context.getCandidateLayer(0) : layerA;
         final JComboBox layerComboBoxA    =
                 dialog.addLayerComboBox(SOURCE_LAYER, candidateA, context.getLayerManager());
+        final JCheckBox jtsGeometryFixerCB =
+            dialog.addCheckBox(USE_JTS_ALGORITHM, jtsGeometryFixer, USE_JTS_ALGORITHM);
         final JCheckBox preserveGeomDimCB =
-                dialog.addCheckBox(PRESERVE_GEOM_DIM, preserveGeomDim, PRESERVE_GEOM_DIM_TOOLTIP);
-        //final JCheckBox preserveCoordDimCB =
-        //        dialog.addCheckBox(PRESERVE_COORD_DIM, preserveCoordDim, PRESERVE_COORD_DIM_TOOLTIP);
+            dialog.addCheckBox(PRESERVE_GEOM_DIM, preserveGeomDim, PRESERVE_GEOM_DIM_TOOLTIP);
         final JCheckBox removeDuplicateCoordCB =
-              dialog.addCheckBox(REMOVE_DUPLICATE_COORD, removeDuplicateCoord, REMOVE_DUPLICATE_COORD);
+            dialog.addCheckBox(REMOVE_DUPLICATE_COORD, removeDuplicateCoord, REMOVE_DUPLICATE_COORD);
+        removeDuplicateCoordCB.setEnabled(!jtsGeometryFixer);
         final JCheckBox decomposeMultiCB =
-                dialog.addCheckBox(DECOMPOSE_MULTI, decomposeMulti, DECOMPOSE_MULTI_TOOLTIP);
+            dialog.addCheckBox(DECOMPOSE_MULTI, decomposeMulti, DECOMPOSE_MULTI_TOOLTIP);
         final JRadioButton correctCurrentLayerRB =
-                dialog.addRadioButton(CORRECT_CURRENT_LAYER, "MODE", correctCurrentLayer, CORRECT_CURRENT_LAYER_TOOLTIP);
+            dialog.addRadioButton(CORRECT_CURRENT_LAYER, "MODE", correctCurrentLayer, CORRECT_CURRENT_LAYER_TOOLTIP);
         final JRadioButton createNewLayerRB =
-                dialog.addRadioButton(CREATE_NEW_LAYER, "MODE", createNewLayer, CREATE_NEW_LAYER_TOOLTIP);
+            dialog.addRadioButton(CREATE_NEW_LAYER, "MODE", createNewLayer, CREATE_NEW_LAYER_TOOLTIP);
 
+        jtsGeometryFixerCB.addActionListener(e -> {
+            if (jtsGeometryFixerCB.isSelected()) {
+                removeDuplicateCoordCB.setSelected(true);
+            }
+            removeDuplicateCoordCB.setEnabled(!jtsGeometryFixerCB.isSelected());
+        });
         GUIUtil.centreOnWindow(dialog);
     }
 
     private void getDialogValues(MultiInputDialog dialog) {
         layerA = dialog.getLayer(SOURCE_LAYER);
+        jtsGeometryFixer = dialog.getBoolean(USE_JTS_ALGORITHM);
         preserveGeomDim = dialog.getBoolean(PRESERVE_GEOM_DIM);
-        //preserveCoordDim = dialog.getBoolean(PRESERVE_COORD_DIM);
         removeDuplicateCoord = dialog.getBoolean(REMOVE_DUPLICATE_COORD);
         decomposeMulti = dialog.getBoolean(DECOMPOSE_MULTI);
         correctCurrentLayer = dialog.getBoolean(CORRECT_CURRENT_LAYER);
@@ -131,9 +145,9 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         monitor.allowCancellationRequests();
 
-        MakeValidOp makeValidOp = new MakeValidOp();
+        MakeValidOp makeValidOp = jtsGeometryFixer ?
+            new JtsMakeValidOp() : new OpenJUMPMakeValidOp();
         makeValidOp.setPreserveGeomDim(preserveGeomDim);
-        //makeValidOp.setPreserveCoordDim(preserveCoordDim);
         makeValidOp.setPreserveDuplicateCoord(!removeDuplicateCoord);
 
         if (correctCurrentLayer) {

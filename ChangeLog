@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2021-09-05 mmichaud
+  * Update to JTS 1.18.2, add GeometryFixer algorithm to OpenJUMP MakeValidPlugIn
+
 2021-06-13 mmichaud, ede
   * fix WMS parameters encoding
 
