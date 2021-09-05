@@ -101,6 +101,18 @@
                   </execution>
                   -->
                   <execution>
+                    <id>PLUS-install-aggregation_extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/aggregation-extension/releases/download/v2.0.0/aggregation-extension-2.0.0.zip</url>
+                      <sha1>91ca7f9320a91c602906c1efa46933094004461f</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-bsheditor</id>
                     <goals>
                       <goal>wget</goal>
