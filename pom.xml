@@ -113,6 +113,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-concave_hull</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/concave-hull-extension/releases/download/v2.0.0/concave-hull-2.0.0.zip</url>
+                      <sha1>c7b0ac56fe42233a7e86d2d1a790a06c7db3578d</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-csv_driver</id>
                     <goals>
                       <goal>wget</goal>
