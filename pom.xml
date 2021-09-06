@@ -197,6 +197,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-jump_chart_extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/jump-chart-extension/releases/download/v2.1.0/jump-chart-extension-2.1.0.zip</url>
+                      <sha1>b24a465fb802f8b98c1b776a8ee6e7acca40e4ad</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-kml_driver</id>
                     <goals>
                       <goal>wget</goal>
