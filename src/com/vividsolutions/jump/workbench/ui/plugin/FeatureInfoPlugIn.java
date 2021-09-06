@@ -76,6 +76,10 @@ public class FeatureInfoPlugIn extends AbstractPlugIn {
       return checker;
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         //Don't pass in TaskFrame as LayerManagerProxy, because the TaskFrame may

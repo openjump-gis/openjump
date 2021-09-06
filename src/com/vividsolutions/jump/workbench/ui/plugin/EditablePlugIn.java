@@ -70,6 +70,10 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
     this(EditingPlugIn.getInstance());
   }
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
 

@@ -73,7 +73,11 @@ public class EditSelectedFeaturePlugIn extends WKTPlugIn {
             .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
             .add(checkFactory.createExactlyNFeaturesMustHaveSelectedItemsCheck(1));
     }
-    
+
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         return execute(
             context,

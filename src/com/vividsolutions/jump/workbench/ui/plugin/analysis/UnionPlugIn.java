@@ -79,6 +79,7 @@ public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     }
     
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         FeatureInstaller featureInstaller = context.getFeatureInstaller();
         featureInstaller.addMainMenuItem(
             this,

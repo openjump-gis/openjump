@@ -116,12 +116,11 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
   }
 
   public void initialize(PlugInContext context) throws Exception {
-    	FeatureInstaller featureInstaller = context.getFeatureInstaller();
-  		featureInstaller.addMainMenuPlugin(this,
-            new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-  		    this.getName() + "...", false, null,
-  		    createEnableCheck(context.getWorkbenchContext()));
-        registerFunctions(context);
+    super.initialize(context);
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
+    featureInstaller.addMainMenuPlugin(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS },
+        this.getName() + "...", false, null, createEnableCheck(context.getWorkbenchContext()));
+    registerFunctions(context);
   }
 
   private void registerFunctions(PlugInContext context){

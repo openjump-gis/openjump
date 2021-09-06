@@ -69,6 +69,7 @@ public class PasteSchemaPlugIn extends AbstractPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
 
         final WorkbenchContext workbenchContext = context.getWorkbenchContext();
         final FeatureInstaller featureInstaller = context.getFeatureInstaller();

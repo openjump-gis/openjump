@@ -102,6 +102,7 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
   }
 
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
     FeatureInstaller featureInstaller = context.getFeatureInstaller();
     featureInstaller.addMainMenuPlugin(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QUERIES },
         this.getName() + "...", false, null, createEnableCheck(context.getWorkbenchContext()));

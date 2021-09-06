@@ -51,6 +51,11 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 public class DeleteAllFeaturesPlugIn extends AbstractPlugIn {
     public DeleteAllFeaturesPlugIn() {}
 
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(final PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         ArrayList transactions = new ArrayList();

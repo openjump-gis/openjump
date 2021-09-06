@@ -23,6 +23,7 @@ public class StopMacroPlugIn extends AbstractPlugIn implements MacroManager {
     }
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         context.getFeatureInstaller().addMainMenuPlugin(
                 this,
                 new String[]{MenuNames.CUSTOMIZE, "Macro"},

@@ -13,6 +13,8 @@ import com.vividsolutions.jump.workbench.ui.AbstractFeatureTextWriter;
 public class InstallStandardFeatureTextWritersPlugIn extends AbstractPlugIn {
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
+
         context.getWorkbenchContext().getFeatureTextWriterRegistry().register(
                 WKT_WRITER);
         context.getWorkbenchContext().getFeatureTextWriterRegistry().register(

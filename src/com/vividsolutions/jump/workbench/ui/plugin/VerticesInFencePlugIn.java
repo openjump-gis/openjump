@@ -60,6 +60,10 @@ public class VerticesInFencePlugIn extends AbstractPlugIn {
   public VerticesInFencePlugIn() {
   }
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
     TextFrame textFrame = new TextFrame(context.getWorkbenchFrame());

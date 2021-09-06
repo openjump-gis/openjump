@@ -84,6 +84,7 @@ public class CalculateAreasAndLengthsPlugIn extends AbstractPlugIn {
     private static String AREA_CHECK_BOX = I18N.getInstance().get("ui.plugin.analysis.CalculateAreasAndLengthsPlugIn.calculate-area");
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         context.getFeatureInstaller().addMainMenuPlugin(
             this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},

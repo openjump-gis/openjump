@@ -57,6 +57,7 @@ public class SelectFeaturesInFencePlugIn extends AbstractPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
       context.getFeatureInstaller().addMainMenuPlugin(this,
           new String[] { MenuNames.EDIT, MenuNames.SELECTION }, getName(), false,
           null, createEnableCheck(context.getWorkbenchContext()));

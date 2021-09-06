@@ -62,6 +62,10 @@ public class GenerateLogPlugIn extends AbstractPlugIn {
     return IconLoader.icon("application_view_list.png");
   }
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws java.lang.Exception {
     reportNothingToUndoYet(context);
 

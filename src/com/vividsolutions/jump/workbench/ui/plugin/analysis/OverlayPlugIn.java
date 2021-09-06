@@ -81,16 +81,14 @@ public class OverlayPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     public void setCategoryName(String value) {
         categoryName = value;
     }
-    
+
     public void initialize(PlugInContext context) throws Exception {
-        FeatureInstaller featureInstaller = context.getFeatureInstaller();
-    	featureInstaller.addMainMenuItem(
-    	    this,
-  			new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-            new JMenuItem(this.getName() + "..."),
-            createEnableCheck(context.getWorkbenchContext()));
+      super.initialize(context);
+      FeatureInstaller featureInstaller = context.getFeatureInstaller();
+      featureInstaller.addMainMenuItem(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS },
+          new JMenuItem(this.getName() + "..."), createEnableCheck(context.getWorkbenchContext()));
     }
-    
+
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 

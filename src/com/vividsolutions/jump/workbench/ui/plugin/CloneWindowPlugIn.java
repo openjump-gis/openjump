@@ -51,6 +51,11 @@ public class CloneWindowPlugIn extends AbstractPlugIn {
     public CloneWindowPlugIn() {
     }
 
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
 

@@ -22,11 +22,18 @@ public class MapToolTipsPlugIn extends AbstractPlugIn {
             }
         });
     }
+
     public String getName() {
-        //Can't use auto-naming, which produces "Map Tool Tips"; and Unix/Windows
-        //CVS issues will occur if I rename MapToolTipsPlugIn to MapTooltipsPlugIn. [Jon Aquino]
-		return I18N.getInstance().get("ui.plugin.MapToolTipsPlugIn.map-tooltips");
-	}
+      // Can't use auto-naming, which produces "Map Tool Tips"; and Unix/Windows
+      // CVS issues will occur if I rename MapToolTipsPlugIn to MapTooltipsPlugIn.
+      // [Jon Aquino]
+      return I18N.getInstance().get("ui.plugin.MapToolTipsPlugIn.map-tooltips");
+    }
+
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         context.getLayerViewPanel().getToolTipWriter().setEnabled(
             !context.getLayerViewPanel().getToolTipWriter().isEnabled());

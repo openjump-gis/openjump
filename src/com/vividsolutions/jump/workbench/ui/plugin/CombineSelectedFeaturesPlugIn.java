@@ -72,6 +72,11 @@ public class CombineSelectedFeaturesPlugIn extends AbstractPlugIn {
     this.setShortcutModifiers(KeyEvent.CTRL_MASK);
   }
 
+  @Override
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(final PlugInContext context) throws Exception {
     final SelectionManager smgr = ((SelectionManagerProxy) context
         .getActiveInternalFrame()).getSelectionManager();

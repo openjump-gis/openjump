@@ -47,6 +47,10 @@ public class RemoveSelectedLayersPlugIn extends AbstractPlugIn {
     public RemoveSelectedLayersPlugIn() {
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
   
         Layerable[] selectedLayers = (Layerable[]) (context.getLayerNamePanel())
