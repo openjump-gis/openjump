@@ -137,6 +137,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-color_chooser_extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/color-chooser-extension/releases/download/v2.1.0/color-chooser-extension-2.1.0.zip</url>
+                      <sha1>76400b466ca3ad2f60b2918800f7e22dbd551e62</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-csv_driver</id>
                     <goals>
                       <goal>wget</goal>
