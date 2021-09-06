@@ -63,7 +63,7 @@ public class SelectAllLayerItemsPlugIn extends AbstractPlugIn {
   }
 
   public void initialize(PlugInContext context) throws Exception {
-
+    super.initialize(context);
     context
         .getFeatureInstaller()
         .addPopupMenuPlugin(
