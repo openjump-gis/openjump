@@ -55,6 +55,10 @@ public class ZoomToFullExtentPlugIn extends AbstractPlugIn {
     public ZoomToFullExtentPlugIn() {
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         context.getLayerViewPanel().getViewport().zoomToFullExtent();

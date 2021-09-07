@@ -32,6 +32,7 @@
  */
 
 package org.openjump.core.ui.plugin.tools;
+
 import java.util.Collection;
 
 import javax.swing.JComponent;
@@ -57,104 +58,96 @@ import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class PlumePlugIn extends AbstractPlugIn {
-    
-	private WorkbenchContext workbenchContext;
 
-	private final static String sNew = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.New");
-	private final static String sTheradius = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.The-arc-radius");
-	private final static String selectLineStrings = I18N.getInstance().get("ui.cursortool.SelectLineStringsTool.select-linestrings");
-	private final static String RADIUS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Radius");
-	private final static String RADIUS1 = RADIUS + " 1";
-	private final static String RADIUS2 = RADIUS + " 2";
-	private double radius1 = 5.0;
-	private double radius2 = 50.0;
+  private WorkbenchContext workbenchContext;
 
-	public void initialize(PlugInContext context) throws Exception {     
-		workbenchContext = context.getWorkbenchContext();
-		context.getFeatureInstaller().addMainMenuItem(
-		    this, new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-		    getName() + "...",
-		    false,
-		    IconLoader.icon("buffer_plume.gif"),
-		    this.createEnableCheck(workbenchContext));
-	}
+  private final static String sNew = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.New");
+  private final static String sTheradius = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.The-arc-radius");
+  private final static String selectLineStrings = I18N.getInstance()
+      .get("ui.cursortool.SelectLineStringsTool.select-linestrings");
+  private final static String RADIUS = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.tools.JoinWithArcPlugIn.Radius");
+  private final static String RADIUS1 = RADIUS + " 1";
+  private final static String RADIUS2 = RADIUS + " 2";
+  private double radius1 = 5.0;
+  private double radius2 = 50.0;
 
-	public boolean execute(final PlugInContext context) throws Exception {
-		reportNothingToUndoYet(context);
-		Collection selectedFeatures = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    workbenchContext = context.getWorkbenchContext();
+    context.getFeatureInstaller().addMainMenuItem(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS },
+        getName() + "...", false, IconLoader.icon("buffer_plume.gif"), this.createEnableCheck(workbenchContext));
+  }
 
-		//get the radii
-		MultiInputDialog dialog = new MultiInputDialog(
-				context.getWorkbenchFrame(), getName(), true);
-		setDialogValues(dialog, context);
-		dialog.setVisible(true);
-		if (! dialog.wasOKPressed())
-		{ return false; }
-		getDialogValues(dialog);
+  public boolean execute(final PlugInContext context) throws Exception {
+    reportNothingToUndoYet(context);
+    Collection selectedFeatures = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
 
-		Geometry plume = null;
-		if (selectedFeatures.size() != 1)
-			return false;
-		Geometry geo = ((Feature) selectedFeatures.iterator().next()).getGeometry();
-		if (geo instanceof LineString) {
-			plume = GeoUtils.createPlume(geo.getCoordinates(), radius1, radius2);
-		}
+    // get the radii
+    MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
+    setDialogValues(dialog, context);
+    dialog.setVisible(true);
+    if (!dialog.wasOKPressed()) {
+      return false;
+    }
+    getDialogValues(dialog);
 
-		if (plume != null) {
-			Feature currFeature = (Feature) selectedFeatures.iterator().next();
-			Feature newFeature = (Feature) currFeature.clone();
-			newFeature.setGeometry(plume);
-			Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
-			LayerManager layerManager = context.getLayerManager();
-			FeatureDataset newFeatures = new FeatureDataset(currFeature.getSchema());
-			newFeatures.add(newFeature);
+    Geometry plume = null;
+    if (selectedFeatures.size() != 1)
+      return false;
+    Geometry geo = ((Feature) selectedFeatures.iterator().next()).getGeometry();
+    if (geo instanceof LineString) {
+      plume = GeoUtils.createPlume(geo.getCoordinates(), radius1, radius2);
+    }
 
-			layerManager.addLayer(selectedCategories.isEmpty()
-					? StandardCategoryNames.WORKING
-							: selectedCategories.iterator().next().toString(),
-							layerManager.uniqueLayerName(sNew),
-							newFeatures);
+    if (plume != null) {
+      Feature currFeature = (Feature) selectedFeatures.iterator().next();
+      Feature newFeature = (Feature) currFeature.clone();
+      newFeature.setGeometry(plume);
+      Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
+      LayerManager layerManager = context.getLayerManager();
+      FeatureDataset newFeatures = new FeatureDataset(currFeature.getSchema());
+      newFeatures.add(newFeature);
 
-			layerManager.getLayer(0).setFeatureCollectionModified(true);
-			layerManager.getLayer(0).setEditable(true);
-		}
-		return true;
-	}
+      layerManager.addLayer(selectedCategories.isEmpty() ? StandardCategoryNames.WORKING
+          : selectedCategories.iterator().next().toString(), layerManager.uniqueLayerName(sNew), newFeatures);
 
+      layerManager.getLayer(0).setFeatureCollectionModified(true);
+      layerManager.getLayer(0).setEditable(true);
+    }
+    return true;
+  }
 
-	private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
-		dialog.setSideBarImage(IconLoader.icon("buffer_plume_image.png"));
-		dialog.addDoubleField(RADIUS1, radius1, 6, sTheradius);
-		dialog.addDoubleField(RADIUS2, radius2, 6, sTheradius);
-	}
+  private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
+    dialog.setSideBarImage(IconLoader.icon("buffer_plume_image.png"));
+    dialog.addDoubleField(RADIUS1, radius1, 6, sTheradius);
+    dialog.addDoubleField(RADIUS2, radius2, 6, sTheradius);
+  }
 
-	private void getDialogValues(MultiInputDialog dialog) {
-		radius1 = dialog.getDouble(RADIUS1);
-		radius2 = dialog.getDouble(RADIUS2);
-	}
+  private void getDialogValues(MultiInputDialog dialog) {
+    radius1 = dialog.getDouble(RADIUS1);
+    radius2 = dialog.getDouble(RADIUS2);
+  }
 
-	public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-		EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
-		return new MultiEnableCheck()
-		.add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
-		.add(checkFactory.createOnlyOneLayerMayHaveSelectedFeaturesCheck())
-		.add(checkFactory.createExactlyNFeaturesMustHaveSelectedItemsCheck(1))
-		.add(onlyOneLinestringMayBeSelected(workbenchContext));
-	}
+  public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+    return new MultiEnableCheck().add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+        .add(checkFactory.createOnlyOneLayerMayHaveSelectedFeaturesCheck())
+        .add(checkFactory.createExactlyNFeaturesMustHaveSelectedItemsCheck(1))
+        .add(onlyOneLinestringMayBeSelected(workbenchContext));
+  }
 
-	public EnableCheck onlyOneLinestringMayBeSelected(final WorkbenchContext workbenchContext) {
-	    return new EnableCheck() {
-	        public String check(JComponent component) {
-		        Collection selectedItems = ((SelectionManagerProxy) workbenchContext
-	                            .getWorkbench()
-	                            .getFrame()
-	                            .getActiveInternalFrame())
-	                            .getSelectionManager()
-	                            .getSelectedItems();	            
-	            if ((Geometry) selectedItems.iterator().next() instanceof LineString) return null;
-	            return selectLineStrings;
-	        }
-	    };
-	}
+  public EnableCheck onlyOneLinestringMayBeSelected(final WorkbenchContext workbenchContext) {
+    return new EnableCheck() {
+      public String check(JComponent component) {
+        Collection selectedItems = ((SelectionManagerProxy) workbenchContext.getWorkbench().getFrame()
+            .getActiveInternalFrame()).getSelectionManager().getSelectedItems();
+        if ((Geometry) selectedItems.iterator().next() instanceof LineString)
+          return null;
+        return selectLineStrings;
+      }
+    };
+  }
 
 }

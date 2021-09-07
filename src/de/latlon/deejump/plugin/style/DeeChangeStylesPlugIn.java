@@ -87,6 +87,10 @@ public class DeeChangeStylesPlugIn extends AbstractPlugIn {
         return I18N.getInstance().get("ui.style.ChangeStylesPlugIn.change-styles");
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     @Override
     public boolean execute(final PlugInContext context) throws Exception {
         WorkbenchFrame wbframe = context.getWorkbenchFrame();

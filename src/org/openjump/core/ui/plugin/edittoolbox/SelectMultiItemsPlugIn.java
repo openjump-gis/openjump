@@ -18,6 +18,7 @@ public class SelectMultiItemsPlugIn extends AbstractPlugIn {
     private boolean selectMultiItemsButtonAdded = false;
 
     public void initialize(final PlugInContext context) throws Exception {
+        super.initialize(context);
 
         //add a listener so that when the toolbox dialog opens the constrained tools will be added
         //we can't just add the tools directly at this point since the toolbox isn't ready yet

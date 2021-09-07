@@ -86,6 +86,7 @@ public class CreateBarPlotPlugIn extends AbstractPlugIn implements
      */
     @Override
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
 
         ATTRIBUTE = GenericNames.SELECT_ATTRIBUTE;
         CLAYER = GenericNames.SELECT_LAYER;

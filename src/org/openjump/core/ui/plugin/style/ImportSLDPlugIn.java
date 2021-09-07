@@ -109,6 +109,7 @@ public class ImportSLDPlugIn extends AbstractPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
       FeatureInstaller featureInstaller = context.getFeatureInstaller();
       EnableCheck enableCheck = createEnableCheck(context.getWorkbenchContext());
       JPopupMenu popupMenu = context.getWorkbenchFrame().getLayerNamePopupMenu();

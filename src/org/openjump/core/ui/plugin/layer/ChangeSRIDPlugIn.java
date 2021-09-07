@@ -28,6 +28,7 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 public class ChangeSRIDPlugIn extends AbstractPlugIn {
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
     EnableCheckFactory enableCheckFactory = EnableCheckFactory.getInstance(context.getWorkbenchContext());
     EnableCheck enableCheck = new MultiEnableCheck()
         .add(enableCheckFactory.createWindowWithLayerManagerMustBeActiveCheck())

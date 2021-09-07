@@ -112,6 +112,10 @@ public class PasteItemsPlugIn extends AbstractPlugIn {
     return StringUtil.replace(getName(), "P", "&P", false);
   }
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(final PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
 

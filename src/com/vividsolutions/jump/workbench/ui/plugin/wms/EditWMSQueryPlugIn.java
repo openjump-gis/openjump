@@ -75,6 +75,10 @@ public class EditWMSQueryPlugIn extends AbstractPlugIn {
         return IconLoader.icon("edit.gif");
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         WMSLayer layer = (WMSLayer) context.getLayerNamePanel()
                 .selectedNodes(WMSLayer.class).iterator().next();

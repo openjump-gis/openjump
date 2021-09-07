@@ -64,6 +64,7 @@ public class MoveCategoryToTop extends AbstractPlugIn {
     }
     
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         
         JPopupMenu layerNamePopupMenu = context.getWorkbenchContext().getWorkbench().getFrame().getCategoryPopupMenu();
         FeatureInstaller featInst = context.getFeatureInstaller();

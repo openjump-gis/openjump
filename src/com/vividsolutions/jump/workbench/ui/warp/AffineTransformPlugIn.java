@@ -112,6 +112,7 @@ public class AffineTransformPlugIn extends AbstractPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         context.getFeatureInstaller().addMainMenuPlugin(this,
                 new String[] { MenuNames.TOOLS, MenuNames.TOOLS_WARP },
                 getName(), false, null,

@@ -61,167 +61,145 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
  * @author clark4444
  *
  */
-public abstract class SortCategoryAbstractPlugIn extends AbstractPlugIn
-		implements ActionListener {
+public abstract class SortCategoryAbstractPlugIn extends AbstractPlugIn implements ActionListener {
 
-	protected static final ImageIcon ICON = null;
+  protected static final ImageIcon ICON = null;
 
-	protected String menuLabelOnLayer = "Sort Selected Categories";
-	protected final static String I18N_SORT_MENU_LABEL = "org.openjump.core.ui.plugin.layer.SortCategoryAbstractPlugIn.Sort-Selected-Categories";
+  protected String menuLabelOnLayer = "Sort Selected Categories";
+  protected final static String I18N_SORT_MENU_LABEL = "org.openjump.core.ui.plugin.layer.SortCategoryAbstractPlugIn.Sort-Selected-Categories";
 
-	private String labelSelected;
+  private String labelSelected;
 
-	public void initialize(PlugInContext context) throws Exception {
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
 
-		menuLabelOnLayer = I18N.getInstance().get(I18N_SORT_MENU_LABEL);
+    menuLabelOnLayer = I18N.getInstance().get(I18N_SORT_MENU_LABEL);
 
-		addMenuOptions(context);
-		addActionListenersToMenu(context);
-	}
+    addMenuOptions(context);
+    addActionListenersToMenu(context);
+  }
 
-	protected abstract void addMenuOptions(PlugInContext context);
+  protected abstract void addMenuOptions(PlugInContext context);
 
-	private void addActionListenersToMenu(PlugInContext context) {
-		JMenu menu = context.getFeatureInstaller().menuBarMenu(MenuNames.LAYER);
-		// register action listener with the menu items
-		for (int j = 0; j < menu.getItemCount(); j++) {
-			if (menu.getItem(j) == null)
-				continue;
-			if (menu.getItem(j).getText().equals(menuLabelOnLayer)) {
-				JMenu submenu;
-				try {
-					submenu = (JMenu) menu.getItem(j);
-					for (int k = 0; k < submenu.getItemCount(); k++) {
-						if (submenu.getItem(k).getText().equals(
-								getSubMenuLabel())) {
-							submenu = (JMenu) submenu.getItem(k);
-							break;
-						}
-					}
-				} catch (ClassCastException cexc) {
-					context
-							.getWorkbenchContext()
-							.getErrorHandler()
-							.handleThrowable(
-									new Exception(
-											"Menuitem is an unexpected object type."));
-					return;
-				}
-				// add listener for selection of submenu items
-				for (int k = 0; k < submenu.getItemCount(); k++) {
-					submenu.getItem(k).addActionListener(this);
-				}
-				break;
-			}
-		}
-	}
-
-	protected final String[] getMenuLocation(String submenuLabel) {
-		return new String[] { MenuNames.LAYER, menuLabelOnLayer, submenuLabel };
-	}
-
-	protected abstract String getSubMenuLabel();
-
-	public boolean execute(PlugInContext context) throws Exception {
-		try {
-			reportNothingToUndoYet(context);
-			LayerManager layerManager = context.getWorkbenchContext()
-					.getLayerManager();
-
-			ArrayList<Category> selectedCategories = null;
-			try {
-				selectedCategories = (ArrayList) context.getWorkbenchContext()
-						.getLayerNamePanel().getSelectedCategories();
-			} catch (ClassCastException e) {
-				context
-						.getWorkbenchContext()
-						.getErrorHandler()
-						.handleThrowable(
-								new Exception(
-										"Categories is an unexpected object type."));
-				return false;
-			}
-
-			try {
-				// sort layers in each selected category by option
-				for (Category category : selectedCategories) {
-					ArrayList<Layerable> layers = getOrderedLayersInCategory(
-							category, labelSelected);
-                    removeLayers(category, layers);
-                    addLayers(category, layers);
-                    for (Layerable layerable : layers) {
-                        layerManager.fireLayerChanged(layerable, LayerEventType.METADATA_CHANGED);
-                    }
-				}
-			} finally {
-				// context.getLayerManager().setFiringEvents(firingEvents);
-				context.getLayerViewPanel().repaint();
-				context.getWorkbenchFrame().repaint();
-			}
-
-			return true;
-
-		} catch (Exception e) {
-			context.getWorkbenchFrame().warnUser("Error: see output window");
-			context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-			context.getWorkbenchFrame().getOutputFrame().addText(
-					getName() + " PlugIn Exception:" + e.toString());
-			return false;
-		}
-
-	}
-
-    private void addLayers(Category category,
-                           ArrayList<Layerable> layers) {
-        for (Layerable layerable : layers) {
-            category.add(0, layerable);
+  private void addActionListenersToMenu(PlugInContext context) {
+    JMenu menu = context.getFeatureInstaller().menuBarMenu(MenuNames.LAYER);
+    // register action listener with the menu items
+    for (int j = 0; j < menu.getItemCount(); j++) {
+      if (menu.getItem(j) == null)
+        continue;
+      if (menu.getItem(j).getText().equals(menuLabelOnLayer)) {
+        JMenu submenu;
+        try {
+          submenu = (JMenu) menu.getItem(j);
+          for (int k = 0; k < submenu.getItemCount(); k++) {
+            if (submenu.getItem(k).getText().equals(getSubMenuLabel())) {
+              submenu = (JMenu) submenu.getItem(k);
+              break;
+            }
+          }
+        } catch (ClassCastException cexc) {
+          context.getWorkbenchContext().getErrorHandler()
+              .handleThrowable(new Exception("Menuitem is an unexpected object type."));
+          return;
         }
+        // add listener for selection of submenu items
+        for (int k = 0; k < submenu.getItemCount(); k++) {
+          submenu.getItem(k).addActionListener(this);
+        }
+        break;
+      }
+    }
+  }
+
+  protected final String[] getMenuLocation(String submenuLabel) {
+    return new String[] { MenuNames.LAYER, menuLabelOnLayer, submenuLabel };
+  }
+
+  protected abstract String getSubMenuLabel();
+
+  public boolean execute(PlugInContext context) throws Exception {
+    try {
+      reportNothingToUndoYet(context);
+      LayerManager layerManager = context.getWorkbenchContext().getLayerManager();
+
+      ArrayList<Category> selectedCategories = null;
+      try {
+        selectedCategories = (ArrayList) context.getWorkbenchContext().getLayerNamePanel().getSelectedCategories();
+      } catch (ClassCastException e) {
+        context.getWorkbenchContext().getErrorHandler()
+            .handleThrowable(new Exception("Categories is an unexpected object type."));
+        return false;
+      }
+
+      try {
+        // sort layers in each selected category by option
+        for (Category category : selectedCategories) {
+          ArrayList<Layerable> layers = getOrderedLayersInCategory(category, labelSelected);
+          removeLayers(category, layers);
+          addLayers(category, layers);
+          for (Layerable layerable : layers) {
+            layerManager.fireLayerChanged(layerable, LayerEventType.METADATA_CHANGED);
+          }
+        }
+      } finally {
+        // context.getLayerManager().setFiringEvents(firingEvents);
+        context.getLayerViewPanel().repaint();
+        context.getWorkbenchFrame().repaint();
+      }
+
+      return true;
+
+    } catch (Exception e) {
+      context.getWorkbenchFrame().warnUser("Error: see output window");
+      context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+      context.getWorkbenchFrame().getOutputFrame().addText(getName() + " PlugIn Exception:" + e.toString());
+      return false;
     }
 
-    private void removeLayers(Category category,
-                              ArrayList<Layerable> layers) {
-        for (Layerable layerable : layers) {
-            category.remove(layerable);
-        }
+  }
+
+  private void addLayers(Category category, ArrayList<Layerable> layers) {
+    for (Layerable layerable : layers) {
+      category.add(0, layerable);
+    }
+  }
+
+  private void removeLayers(Category category, ArrayList<Layerable> layers) {
+    for (Layerable layerable : layers) {
+      category.remove(layerable);
+    }
+  }
+
+  abstract ArrayList<Layerable> getOrderedLayersInCategory(Category category, String sortLabel);
+
+  protected ArrayList<Layerable> getCategoryArrayList(Category category) {
+    List<Layerable> categoryList = category.getLayerables();
+    ArrayList<Layerable> categoryOrderedList = new ArrayList<Layerable>();
+
+    for (Layerable layer : categoryList) {
+      categoryOrderedList.add(layer);
     }
 
-	abstract ArrayList<Layerable> getOrderedLayersInCategory(Category category,
-			String sortLabel);
+    return categoryOrderedList;
+  }
 
-	protected ArrayList<Layerable> getCategoryArrayList(Category category) {
-		List<Layerable> categoryList = category.getLayerables();
-		ArrayList<Layerable> categoryOrderedList = new ArrayList<Layerable>();
+  class LayerableNameSort implements Comparator<Layerable> {
+    public int compare(Layerable layer1, Layerable layer2) {
+      return layer2.getName().compareTo(layer1.getName());
+    }
+  }
 
-		for (Layerable layer : categoryList) {
-			categoryOrderedList.add(layer);
-		}
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
-		return categoryOrderedList;
-	}
+    return new MultiEnableCheck().add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+        .add(checkFactory.createAtLeastNCategoriesMustBeSelectedCheck(1));
+  }
 
-	class LayerableNameSort implements Comparator<Layerable> {
-		public int compare(Layerable layer1, Layerable layer2) {
-			return layer2.getName().compareTo(layer1.getName());
-		}
-	}
-
-	public static MultiEnableCheck createEnableCheck(
-			WorkbenchContext workbenchContext) {
-		EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
-
-		return new MultiEnableCheck()
-				.add(
-						checkFactory
-								.createWindowWithLayerNamePanelMustBeActiveCheck())
-				.add(
-						checkFactory
-								.createAtLeastNCategoriesMustBeSelectedCheck(1));
-	}
-
-	public void actionPerformed(ActionEvent event) {
-		if (event != null) {
-			labelSelected = event.getActionCommand();
-		}
-	}
+  public void actionPerformed(ActionEvent event) {
+    if (event != null) {
+      labelSelected = event.getActionCommand();
+    }
+  }
 
 }

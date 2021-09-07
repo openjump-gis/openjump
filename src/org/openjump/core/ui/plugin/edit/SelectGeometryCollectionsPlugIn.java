@@ -23,7 +23,7 @@ import java.util.List;
 public class SelectGeometryCollectionsPlugIn extends AbstractPlugIn {
 
     public void initialize(PlugInContext context) throws Exception {
-
+        super.initialize(context);
         context.getFeatureInstaller().addMainMenuPlugin(this,
                 new String[] {MenuNames.EDIT, MenuNames.SELECTION},
                 getName(), false, null,

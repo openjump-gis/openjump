@@ -89,6 +89,10 @@ public class ImageLayerManagerPlugIn extends AbstractPlugIn {
     return mec;
   }
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws Exception {
     JDialog dlg = new ImageLayerManagerDialog(context);
 

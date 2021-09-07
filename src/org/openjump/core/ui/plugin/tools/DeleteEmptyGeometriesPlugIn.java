@@ -49,66 +49,59 @@ import com.vividsolutions.jump.workbench.ui.AbstractSelection;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 
-public class DeleteEmptyGeometriesPlugIn extends AbstractPlugIn
-{
-    private WorkbenchContext workbenchContext;
-    private MultiInputDialog dialog;
-    private boolean exceptionThrown = false;
-    private boolean selectEmpty = false;
-    private boolean selectPoint = false;
-    private boolean selectMultiPoint = false;
-    private boolean selectLineString = false;
-    private boolean selectLinearRing = false;
-    private boolean selectMultiLineString = false;
-    private boolean selectPolygon = false;
-    private boolean selectMultiPolygon = false;
-    private boolean selectGeometryCollection = false;
-    private boolean selectedLayersOnly = true;
-    protected AbstractSelection selection;
-    
-    String sDeleteEmptyGeometries=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
+public class DeleteEmptyGeometriesPlugIn extends AbstractPlugIn {
+  private WorkbenchContext workbenchContext;
+  private MultiInputDialog dialog;
+  private boolean exceptionThrown = false;
+  private boolean selectEmpty = false;
+  private boolean selectPoint = false;
+  private boolean selectMultiPoint = false;
+  private boolean selectLineString = false;
+  private boolean selectLinearRing = false;
+  private boolean selectMultiLineString = false;
+  private boolean selectPolygon = false;
+  private boolean selectMultiPolygon = false;
+  private boolean selectGeometryCollection = false;
+  private boolean selectedLayersOnly = true;
+  protected AbstractSelection selection;
 
-    public void initialize(PlugInContext context) throws Exception
-    {     
-        workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuItem(
-        		this, 
-				new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QA }, 
-				sDeleteEmptyGeometries + "...", 
-				false, 
-				null, 
-				this.createEnableCheck(workbenchContext));
+  String sDeleteEmptyGeometries = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
+
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    workbenchContext = context.getWorkbenchContext();
+    context.getFeatureInstaller().addMainMenuItem(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QA },
+        sDeleteEmptyGeometries + "...", false, null, this.createEnableCheck(workbenchContext));
+  }
+
+  public boolean execute(final PlugInContext context) throws Exception {
+    String sDeleteEmptyGeometries = I18N.getInstance()
+        .get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
+
+    reportNothingToUndoYet(context);
+    ArrayList featuresToDelete = new ArrayList();
+    Collection layers = context.getLayerViewPanel().getSelectionManager().getLayersWithSelectedItems();
+
+    for (Iterator j = layers.iterator(); j.hasNext();) {
+      Layer layer = (Layer) j.next();
+
+      Collection selectedFeatures = context.getLayerViewPanel().getSelectionManager()
+          .getFeaturesWithSelectedItems(layer);
+      for (Iterator i = selectedFeatures.iterator(); i.hasNext();) {
+        Feature feature = (Feature) i.next();
+        if (feature.getGeometry().isEmpty())
+          featuresToDelete.add(feature);
+      }
+      layer.getFeatureCollectionWrapper().removeAll(featuresToDelete);
+      featuresToDelete.clear();
     }
-    
-    public boolean execute(final PlugInContext context) throws Exception
-    {
-        String sDeleteEmptyGeometries=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
-        
-        reportNothingToUndoYet(context);
-        ArrayList featuresToDelete = new ArrayList();
-        Collection layers = context.getLayerViewPanel().getSelectionManager().getLayersWithSelectedItems();
-        
-        for (Iterator j = layers.iterator(); j.hasNext();)
-        {
-            Layer layer = (Layer) j.next();
-            
-            Collection selectedFeatures = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems(layer);
-            for (Iterator i = selectedFeatures.iterator(); i.hasNext();)
-            {
-                Feature feature = (Feature) i.next();
-                if (feature.getGeometry().isEmpty())
-                    featuresToDelete.add(feature);
-            }
-            layer.getFeatureCollectionWrapper().removeAll(featuresToDelete);
-            featuresToDelete.clear();
-        }
-        return true;
-    }
-        
-    public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) 
-    {
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
-        return new MultiEnableCheck().add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
-                                     .add(checkFactory.createAtLeastNFeaturesMustHaveSelectedItemsCheck(1));
-    }    
+    return true;
+  }
+
+  public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+    return new MultiEnableCheck().add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+        .add(checkFactory.createAtLeastNFeaturesMustHaveSelectedItemsCheck(1));
+  }
 }

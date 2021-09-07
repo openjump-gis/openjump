@@ -74,6 +74,7 @@ public class ZoomToScalePlugIn extends AbstractPlugIn {
       + "     1:";
 
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
 
     this.T1 = I18N.getInstance().get("org.openjump.core.ui.plugin.view.ZoomToScalePlugIn.scale") + ": ";
     context

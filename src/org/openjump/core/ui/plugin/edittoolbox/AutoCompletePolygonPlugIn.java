@@ -52,33 +52,31 @@ public class AutoCompletePolygonPlugIn extends AbstractPlugIn
     private boolean autoCompleteButtonAdded = false;
     final static String errorSeeOutputWindow =I18N.getInstance().get("org.openjump.core.ui.plugin.edittoolbox.DrawConstrainedPolygonPlugIn.Error-See-Output-Window");
     
-    public void initialize(final PlugInContext context) throws Exception
-    {
-      //add a listener so that when the toolbox dialog opens the constrained tools will be added
-        //we can't just add the tools directly at this point since the toolbox isn't ready yet
-        
-        context.getWorkbenchContext().getWorkbench().getFrame().addComponentListener(
-        new ComponentAdapter()
-        { 
-            public void componentShown(ComponentEvent e)
-            {
-                final ToolboxDialog toolBox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
-                toolBox.addComponentListener(new ComponentAdapter()
-                {
-                    
-                    public void componentShown(ComponentEvent e)
-                    {
-                        addButton(context);
-                    }
-                    
-                    public void componentHidden(ComponentEvent e)
-                    {
-                    }
-                });
+    public void initialize(final PlugInContext context) throws Exception {
+      super.initialize(context);
+
+      // add a listener so that when the toolbox dialog opens the constrained tools
+      // will be added
+      // we can't just add the tools directly at this point since the toolbox isn't
+      // ready yet
+
+      context.getWorkbenchContext().getWorkbench().getFrame().addComponentListener(new ComponentAdapter() {
+        public void componentShown(ComponentEvent e) {
+          final ToolboxDialog toolBox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard()
+              .get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
+          toolBox.addComponentListener(new ComponentAdapter() {
+
+            public void componentShown(ComponentEvent e) {
+              addButton(context);
             }
-        });        
+
+            public void componentHidden(ComponentEvent e) {
+            }
+          });
+        }
+      });
     }
-  
+
     public boolean execute(PlugInContext context) throws Exception
     {
         try

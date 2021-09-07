@@ -103,14 +103,14 @@ public class MultiRingBufferSelectedPlugIn extends AbstractPlugIn
     }
 
     public void initialize(PlugInContext context) throws Exception {
-        MULTIPLE_RING_BUFFER =
-            I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Multiple-Ring-Buffer");
-        context.getFeatureInstaller().addMainMenuItem(this,
-            new String[] {MenuNames.TOOLS , MenuNames.TOOLS_ANALYSIS},
-            MULTIPLE_RING_BUFFER + "...",
-            false, IconLoader.icon("buffer_multiple.gif"), this.createEnableCheck(context.getWorkbenchContext()));
+      super.initialize(context);
+      MULTIPLE_RING_BUFFER = I18N.getInstance()
+          .get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Multiple-Ring-Buffer");
+      context.getFeatureInstaller().addMainMenuItem(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS },
+          MULTIPLE_RING_BUFFER + "...", false, IconLoader.icon("buffer_multiple.gif"),
+          this.createEnableCheck(context.getWorkbenchContext()));
     }
-  
+
     public boolean execute(PlugInContext context) throws Exception {
         MULTIPLE_RING_BUFFER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Multiple-Ring-Buffer");
         sRESET = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MultiRingBufferSelectedPlugIn.Reset-all-buffer-options");

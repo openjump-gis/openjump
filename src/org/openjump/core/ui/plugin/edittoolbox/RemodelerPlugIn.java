@@ -17,6 +17,7 @@ public class RemodelerPlugIn extends AbstractPlugIn {
    * @see com.vividsolutions.jump.workbench.plugin.AbstractPlugIn#initialize(com.vividsolutions.jump.workbench.plugin.PlugInContext)
    */
   public void initialize(final PlugInContext context) throws Exception {
+    super.initialize(context);
 
     //add a listener so that when the toolbox dialog opens the constrained tools will be added
     //we can't just add the tools directly at this point since the toolbox isn't ready yet

@@ -61,6 +61,10 @@ import com.vividsolutions.jump.workbench.ui.renderer.ThreadQueue;
  */
 public class ZoomToSelectedItemsPlugIn extends AbstractPlugIn {
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         zoom(

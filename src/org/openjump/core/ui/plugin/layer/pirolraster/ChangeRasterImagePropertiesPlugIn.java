@@ -52,14 +52,10 @@ public class ChangeRasterImagePropertiesPlugIn extends AbstractPlugIn {
     public ChangeRasterImagePropertiesPlugIn() {
     }
 
-    /*
-     * Deactivated public void initialize(PlugInContext context) throws
-     * Exception { WorkbenchContext workbenchContext =
-     * context.getWorkbenchContext(); context.getFeatureInstaller();
-     * context.getFeatureInstaller().addMainMenuPlugin( this, new String[]
-     * {MenuNames.RASTER}, getName(), false, getIcon(),
-     * createEnableCheck(context.getWorkbenchContext())); }
-     */
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         final RasterImageLayer rLayer = (RasterImageLayer) LayerTools
                 .getSelectedLayerable(context, RasterImageLayer.class);

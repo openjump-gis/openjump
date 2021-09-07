@@ -48,6 +48,10 @@ public class ZoomToFencePlugIn extends AbstractPlugIn {
     public ZoomToFencePlugIn() {
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         context.getLayerViewPanel().getViewport().zoom(EnvelopeUtil.bufferByFraction(

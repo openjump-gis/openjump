@@ -44,6 +44,10 @@ public class CopyStylesPlugIn extends AbstractPlugIn {
         .add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1));
   }
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws Exception {
   	reportNothingToUndoYet(context);
     final Layer layer = context.getSelectedLayer(0);

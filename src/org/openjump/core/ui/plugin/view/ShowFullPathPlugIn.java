@@ -114,6 +114,7 @@ public class ShowFullPathPlugIn extends AbstractPlugIn {
   };
 
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
     gContext = context;
 
     /**** original *********************************/

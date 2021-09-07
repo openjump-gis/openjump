@@ -40,6 +40,7 @@ public class PointsToPathsPlugIn extends AbstractPlugIn implements ThreadedPlugI
     private static String UI_GROUP_BY_ATTRIBUTE_TT;
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         context.getFeatureInstaller().addMainMenuPlugin(this,
                 new String[]{MenuNames.TOOLS,MenuNames.TOOLS_EDIT_GEOMETRY}, getName(),
                 false, null, createEnableCheck(context.getWorkbenchContext()));

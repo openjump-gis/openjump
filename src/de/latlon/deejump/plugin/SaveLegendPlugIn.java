@@ -79,7 +79,7 @@ import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 
 /**
- * ... 
+ * ...
  * 
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei</a>
  * @author last edited by: $Author$
@@ -91,32 +91,30 @@ import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 
 public class SaveLegendPlugIn extends AbstractPlugIn {
 
-    JFileChooser fileChooser;
+  JFileChooser fileChooser;
 
-	public SaveLegendPlugIn() {
-        fileChooser = new GUIUtil.FileChooserWithOverwritePrompting("png");
-        // remove all FileFilters and (re)add, because our png filter should be the first, and not the AcceptAllFileFilter
-        GUIUtil.removeChoosableFileFilters(fileChooser);
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG", new String[] {"png"}));
-        fileChooser.addChoosableFileFilter(fileChooser.getAcceptAllFileFilter());
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fileChooser.setApproveButtonText( I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save"));
-		fileChooser.setDialogTitle( I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save-legend-as-image-png"));
-	}
+  public SaveLegendPlugIn() {
+    fileChooser = new GUIUtil.FileChooserWithOverwritePrompting("png");
+    // remove all FileFilters and (re)add, because our png filter should be the
+    // first, and not the AcceptAllFileFilter
+    GUIUtil.removeChoosableFileFilters(fileChooser);
+    fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG", new String[] { "png" }));
+    fileChooser.addChoosableFileFilter(fileChooser.getAcceptAllFileFilter());
+    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    fileChooser.setApproveButtonText(I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save"));
+    fileChooser.setDialogTitle(I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save-legend-as-image-png"));
+  }
 
-    @Override
-	public void initialize(PlugInContext context) throws Exception {
+  @Override
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
 
-		/*
-		context.getFeatureInstaller().addPopupMenuItem(
-				context.getWorkbenchContext().getWorkbench().getFrame().getLayerNamePopupMenu(), 
-				this, 
-				this.getName()+"{pos:13}", 				
-				false, 
-				null, 
-				null);
-		*/
-		
+    /*
+     * context.getFeatureInstaller().addPopupMenuItem(
+     * context.getWorkbenchContext().getWorkbench().getFrame().getLayerNamePopupMenu
+     * (), this, this.getName()+"{pos:13}", false, null, null);
+     */
+
 //        EnableCheckFactory enableCheckFactory = new EnableCheckFactory(context
 //                .getWorkbenchContext());
 //        EnableCheck enableCheck = new MultiEnableCheck().add(
@@ -128,205 +126,186 @@ public class SaveLegendPlugIn extends AbstractPlugIn {
 //            context.getWorkbenchFrame().getLayerNamePopupMenu(),
 //            this, new String[]{MenuNames.STYLE},
 //            this.getName() + "...", false, getIcon(), enableCheck);
-	}
-	
-	public ImageIcon getIcon() {
-        return IconLoader.icon("save_legend.png");
-    }
-	
-    @Override
-	public boolean execute(PlugInContext context) throws Exception {
-		
-        Layer layers[] = context.getSelectedLayers();
-		
-		LayerNamePanel layerPanel = context.getLayerNamePanel();
-		if ( !(layerPanel instanceof TreeLayerNamePanel ) ) {
-			return false;
-			
-		} 
-		
-		JTree newTree = 
-			createLayerTree( layers, (TreeLayerNamePanel)layerPanel );
-		
-		saveLegend( context, newTree );
-		
-		return true;
-	}
+  }
 
-	private void saveLegend( PlugInContext context, JTree tree ) 
-		throws IOException {
-			
-		JPanel p = new JPanel();
-		p.add( tree );
-        // save the aktual heigth
-        int oldHeigth = (int) fileChooser.getPreferredSize().getHeight();
-		fileChooser.setAccessory( p );
-        // check if the new heigth (through adding the tree) is grown by more than 100 pixel
-        if (fileChooser.getPreferredSize().getHeight() > oldHeigth + 100) {
-            // if so we set the old height + 100 pixel, because this looks like better than a very heigth dialog
-            // but leave the new width, because the width depends mainly on the length/witdh of the layer names
-            fileChooser.setPreferredSize(new Dimension((int)fileChooser.getPreferredSize().getWidth(), oldHeigth + 100));
-        }
-		
-        if (JFileChooser.APPROVE_OPTION == 
-            	fileChooser.showOpenDialog(context.getWorkbenchFrame())) {
-        
-        	
-        	// can only save if has a sizw -> put in a frame
-        	JFrame f = new JFrame(I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save-legend-as-image-png"));
-    		f.getContentPane().add( tree );
-    		f.pack();
+  public ImageIcon getIcon() {
+    return IconLoader.icon("save_legend.png");
+  }
+
+  @Override
+  public boolean execute(PlugInContext context) throws Exception {
+
+    Layer layers[] = context.getSelectedLayers();
+
+    LayerNamePanel layerPanel = context.getLayerNamePanel();
+    if (!(layerPanel instanceof TreeLayerNamePanel)) {
+      return false;
+
+    }
+
+    JTree newTree = createLayerTree(layers, (TreeLayerNamePanel) layerPanel);
+
+    saveLegend(context, newTree);
+
+    return true;
+  }
+
+  private void saveLegend(PlugInContext context, JTree tree) throws IOException {
+
+    JPanel p = new JPanel();
+    p.add(tree);
+    // save the aktual heigth
+    int oldHeigth = (int) fileChooser.getPreferredSize().getHeight();
+    fileChooser.setAccessory(p);
+    // check if the new heigth (through adding the tree) is grown by more than 100
+    // pixel
+    if (fileChooser.getPreferredSize().getHeight() > oldHeigth + 100) {
+      // if so we set the old height + 100 pixel, because this looks like better than
+      // a very heigth dialog
+      // but leave the new width, because the width depends mainly on the length/witdh
+      // of the layer names
+      fileChooser.setPreferredSize(new Dimension((int) fileChooser.getPreferredSize().getWidth(), oldHeigth + 100));
+    }
+
+    if (JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog(context.getWorkbenchFrame())) {
+
+      // can only save if has a sizw -> put in a frame
+      JFrame f = new JFrame(I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save-legend-as-image-png"));
+      f.getContentPane().add(tree);
+      f.pack();
 //    		f.setVisible( true );
-    		
-        	saveComponentAsJPEG( tree, 
-        				fileChooser.getSelectedFile().getAbsolutePath() );
-        	
-        	f.setVisible( false );
-        	f.dispose();
-    		
-        }
-        
-	}
 
-	private JTree createLayerTree( Layer layers[], TreeLayerNamePanel treePanel){
-		
-		
-		JTree tree = treePanel.getTree();
-        // create root node which gets the project name
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(I18N.getInstance().get("ui.WorkbenchFrame.task") + " " + layers[0].getTask().getName());
-        // lopp through all given layers
-		for (int l = 0; l < layers.length; l++) {
-            Layer layer = layers[l];
-            DefaultMutableTreeNode layerNode = 
-                new DefaultMutableTreeNode(layer );
+      saveComponentAsJPEG(tree, fileChooser.getSelectedFile().getAbsolutePath());
 
-            // adding childs for themed layers
-            for (int j = 0; j < tree.getModel().getChildCount(layer); j++) {
-                layerNode.add( 
-                        new DefaultMutableTreeNode(
-                                tree.getModel().getChild(layer, j) ) );
-            }
-            
-            rootNode.add(layerNode);
-        }
-        JTree newTree = new JTree(rootNode);
-        // expand all nodes, because we want to see all layers and theming
-        for (int i = 0; i < newTree.getRowCount(); i++) newTree.expandRow(i);
-        // set our special cellrenderer
-		newTree.setCellRenderer( createColorThemingValueRenderer() );
-        
-		return newTree;
-	}
-	
-    @Override
-	public String getName() {
-		return I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save-legend");
-	}
-	
-	public static void saveComponentAsJPEG(Component myComponent, 
-			String filename)
-	
-		throws IOException {
-		//-- [sstein, 06.08.2006]
-		if (!filename.endsWith(".png")){
-			filename=filename + ".png";
-		}
-		//--
-		Dimension size = myComponent.getSize();
-		BufferedImage myImage = 
-			new BufferedImage(size.width, size.height,
-			BufferedImage.TYPE_INT_RGB);
-			Graphics2D g2 = myImage.createGraphics();
-			myComponent.paint(g2);
-			
-			
-			ImageIO.write( (RenderedImage)myImage, "PNG", new File(filename) );
-			
-	}
-	
-	private TreeCellRenderer createColorThemingValueRenderer() {
-        return new TreeCellRenderer() {
-            private JPanel panel = new JPanel(new GridBagLayout());
-            private ColorPanel colorPanel = new ColorPanel();
-            private JLabel label = new JLabel();
-            {	
-                panel.add(colorPanel, 
-                		new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
-                
-                panel.add(label, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0,5,0,0), 0, 0));
-                
-                panel.setBackground( Color.white );
-                label.setBackground( Color.white );
-                
-            }
-            public Component getTreeCellRendererComponent(JTree tree,
-                    Object value, boolean selected, boolean expanded,
-                    boolean leaf, int row, boolean hasFocus) {
-            	
-            	String txt; 
-            	
-            	DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
-            	Object userObject = node.getUserObject();
-            	// themed layers	
-    			if ( userObject instanceof LayerTreeModel.ColorThemingValue ){
-    				
-    				LayerTreeModel.ColorThemingValue entry = 
-    					(LayerTreeModel.ColorThemingValue)userObject;
-            		
-            		txt = entry.toString();
-                    colorPanel.setPreferredSize(new Dimension(10, 10)); // reset the size in case we had previous a projektname for example
-            		BasicStyle style = entry.getStyle();
-            		colorPanel.setLineColor(style.isRenderingLine()
-            				? GUIUtil.alphaColor(style.getLineColor(), style
-            						.getAlpha())
-            					: GUIUtil.alphaColor(Color.BLACK, 0));
-            		colorPanel.setFillColor(style.isRenderingFill()
-            				? GUIUtil.alphaColor(style.getFillColor(), style
-            						.getAlpha())
-        						: GUIUtil.alphaColor(Color.BLACK, 0));
-                // "normal" layers
-            	} else if (userObject instanceof Layer) {
-                        Layer layer = (Layer)userObject;
-                        txt = layer.getName();
-                        colorPanel.setPreferredSize(new Dimension(10, 10)); // reset the size in case we had previous a projektname for example
-                        BasicStyle style = layer.getBasicStyle();
-                        colorPanel.setLineColor(style.isRenderingLine()
-            				? GUIUtil.alphaColor(style.getLineColor(), style
-            						.getAlpha())
-            					: GUIUtil.alphaColor(Color.BLACK, 0));
-                        colorPanel.setFillColor(style.isRenderingFill()
-            				? GUIUtil.alphaColor(style.getFillColor(), style
-            						.getAlpha())
-        						: GUIUtil.alphaColor(Color.BLACK, 0));
-                // and finally the rest (projectname...)
-            	} else {
-                    txt = (String)userObject;
-                    colorPanel.setPreferredSize(new Dimension(0, 0)); // no colorPanel for a left alignment
-                }
-            	
-                label.setText( txt );
-                
-                
-                return panel;
-            }
-        };
+      f.setVisible(false);
+      f.dispose();
+
     }
+
+  }
+
+  private JTree createLayerTree(Layer layers[], TreeLayerNamePanel treePanel) {
+
+    JTree tree = treePanel.getTree();
+    // create root node which gets the project name
+    DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(
+        I18N.getInstance().get("ui.WorkbenchFrame.task") + " " + layers[0].getTask().getName());
+    // lopp through all given layers
+    for (int l = 0; l < layers.length; l++) {
+      Layer layer = layers[l];
+      DefaultMutableTreeNode layerNode = new DefaultMutableTreeNode(layer);
+
+      // adding childs for themed layers
+      for (int j = 0; j < tree.getModel().getChildCount(layer); j++) {
+        layerNode.add(new DefaultMutableTreeNode(tree.getModel().getChild(layer, j)));
+      }
+
+      rootNode.add(layerNode);
+    }
+    JTree newTree = new JTree(rootNode);
+    // expand all nodes, because we want to see all layers and theming
+    for (int i = 0; i < newTree.getRowCount(); i++)
+      newTree.expandRow(i);
+    // set our special cellrenderer
+    newTree.setCellRenderer(createColorThemingValueRenderer());
+
+    return newTree;
+  }
+
+  @Override
+  public String getName() {
+    return I18N.getInstance().get("deejump.plugin.SaveLegendPlugIn.Save-legend");
+  }
+
+  public static void saveComponentAsJPEG(Component myComponent, String filename)
+
+      throws IOException {
+    // -- [sstein, 06.08.2006]
+    if (!filename.endsWith(".png")) {
+      filename = filename + ".png";
+    }
+    // --
+    Dimension size = myComponent.getSize();
+    BufferedImage myImage = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
+    Graphics2D g2 = myImage.createGraphics();
+    myComponent.paint(g2);
+
+    ImageIO.write((RenderedImage) myImage, "PNG", new File(filename));
+
+  }
+
+  private TreeCellRenderer createColorThemingValueRenderer() {
+    return new TreeCellRenderer() {
+      private JPanel panel = new JPanel(new GridBagLayout());
+      private ColorPanel colorPanel = new ColorPanel();
+      private JLabel label = new JLabel();
+      {
+        panel.add(colorPanel, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+            new Insets(0, 0, 0, 0), 0, 0));
+
+        panel.add(label, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE,
+            new Insets(0, 5, 0, 0), 0, 0));
+
+        panel.setBackground(Color.white);
+        label.setBackground(Color.white);
+
+      }
+
+      public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
+          boolean leaf, int row, boolean hasFocus) {
+
+        String txt;
+
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+        Object userObject = node.getUserObject();
+        // themed layers
+        if (userObject instanceof LayerTreeModel.ColorThemingValue) {
+
+          LayerTreeModel.ColorThemingValue entry = (LayerTreeModel.ColorThemingValue) userObject;
+
+          txt = entry.toString();
+          colorPanel.setPreferredSize(new Dimension(10, 10)); // reset the size in case we had previous a projektname
+                                                              // for example
+          BasicStyle style = entry.getStyle();
+          colorPanel.setLineColor(style.isRenderingLine() ? GUIUtil.alphaColor(style.getLineColor(), style.getAlpha())
+              : GUIUtil.alphaColor(Color.BLACK, 0));
+          colorPanel.setFillColor(style.isRenderingFill() ? GUIUtil.alphaColor(style.getFillColor(), style.getAlpha())
+              : GUIUtil.alphaColor(Color.BLACK, 0));
+          // "normal" layers
+        } else if (userObject instanceof Layer) {
+          Layer layer = (Layer) userObject;
+          txt = layer.getName();
+          colorPanel.setPreferredSize(new Dimension(10, 10)); // reset the size in case we had previous a projektname
+                                                              // for example
+          BasicStyle style = layer.getBasicStyle();
+          colorPanel.setLineColor(style.isRenderingLine() ? GUIUtil.alphaColor(style.getLineColor(), style.getAlpha())
+              : GUIUtil.alphaColor(Color.BLACK, 0));
+          colorPanel.setFillColor(style.isRenderingFill() ? GUIUtil.alphaColor(style.getFillColor(), style.getAlpha())
+              : GUIUtil.alphaColor(Color.BLACK, 0));
+          // and finally the rest (projectname...)
+        } else {
+          txt = (String) userObject;
+          colorPanel.setPreferredSize(new Dimension(0, 0)); // no colorPanel for a left alignment
+        }
+
+        label.setText(txt);
+
+        return panel;
+      }
+    };
+  }
 
 }
 
-
-/* ********************************************************************
-Changes to this class. What the people have been up to:
-$Log$
-Revision 1.2  2006/08/06 16:48:28  mentaer
-changed menu pos
-improved SaveLegendPlugIn by adding file ending ".png"
-
-Revision 1.1  2006/08/06 16:22:11  mentaer
-added savelegend
-
-Revision 1.1  2006/03/06 09:42:11  ut
-latest changes (key pan, legend, etc)
-
-
-********************************************************************** */
+/*
+ * ******************************************************************** Changes
+ * to this class. What the people have been up to: $Log$ Revision 1.2 2006/08/06
+ * 16:48:28 mentaer changed menu pos improved SaveLegendPlugIn by adding file
+ * ending ".png"
+ * 
+ * Revision 1.1 2006/08/06 16:22:11 mentaer added savelegend
+ * 
+ * Revision 1.1 2006/03/06 09:42:11 ut latest changes (key pan, legend, etc)
+ ********************************************************************** 
+ * 
+ */

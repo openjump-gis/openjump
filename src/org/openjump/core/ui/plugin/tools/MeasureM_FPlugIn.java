@@ -33,7 +33,6 @@
  * www.ashs.isa.com
  */
 
-
 package org.openjump.core.ui.plugin.tools;
 
 import javax.swing.Icon;
@@ -47,51 +46,40 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 
-public class MeasureM_FPlugIn extends AbstractPlugIn
-{
-    MeasureM_FTool measureTool;    
-    private final static String sMeasureInFeets = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Measure-In-Feets");
-    private final static String sErrorSeeOutputWindow= I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
-	
-    public void initialize(PlugInContext context) throws Exception
-    {    
-        
-        //context.getWorkbenchContext().getWorkbench().getFrame().getToolBar().addPlugIn(getIcon(), this, new MultiEnableCheck(), context.getWorkbenchContext());
-        context.getFeatureInstaller().addMainMenuItem(
-        		this, 
-				new String[] {MenuNames.TOOLS }, 
-				sMeasureInFeets, 
-				false, 
-				null,
-				createEnableCheck(context.getWorkbenchContext()));
-        measureTool = new MeasureM_FTool(context.getWorkbenchContext());
-   }
-    
-    public boolean execute(PlugInContext context) throws Exception
-    {
-        try
-        {
-            context.getLayerViewPanel().setCurrentCursorTool(measureTool);
-            return true;
-        }
-        catch (Exception e)
-        {
-            context.getWorkbenchFrame().warnUser(sErrorSeeOutputWindow);
-            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-            context.getWorkbenchFrame().getOutputFrame().addText("MeasureM_FPlugIn Exception:" + e.toString());
-            return false;
-        }
-    }
-   
-    public Icon getIcon()
-    {
-        return new ImageIcon(getClass().getResource("RulerM_F.gif"));
-    }  
-    
-    public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
-        return new MultiEnableCheck()
-            .add(checkFactory.createTaskWindowMustBeActiveCheck());
-    }
-}
+public class MeasureM_FPlugIn extends AbstractPlugIn {
+  MeasureM_FTool measureTool;
+  private final static String sMeasureInFeets = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Measure-In-Feets");
+  private final static String sErrorSeeOutputWindow = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    // context.getWorkbenchContext().getWorkbench().getFrame().getToolBar().addPlugIn(getIcon(),
+    // this, new MultiEnableCheck(), context.getWorkbenchContext());
+    context.getFeatureInstaller().addMainMenuItem(this, new String[] { MenuNames.TOOLS }, sMeasureInFeets, false, null,
+        createEnableCheck(context.getWorkbenchContext()));
+    measureTool = new MeasureM_FTool(context.getWorkbenchContext());
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+    try {
+      context.getLayerViewPanel().setCurrentCursorTool(measureTool);
+      return true;
+    } catch (Exception e) {
+      context.getWorkbenchFrame().warnUser(sErrorSeeOutputWindow);
+      context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+      context.getWorkbenchFrame().getOutputFrame().addText("MeasureM_FPlugIn Exception:" + e.toString());
+      return false;
+    }
+  }
+
+  public Icon getIcon() {
+    return new ImageIcon(getClass().getResource("RulerM_F.gif"));
+  }
+
+  public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+    return new MultiEnableCheck().add(checkFactory.createTaskWindowMustBeActiveCheck());
+  }
+}

@@ -66,198 +66,172 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
  */
 public class SortCategoryRestorePlugIn extends AbstractPlugIn {
 
-	static private WorkbenchContext workbenchContext = JUMPWorkbench.getInstance().getContext();
-	
-	private static final ImageIcon ICON = null;
+  static private WorkbenchContext workbenchContext = JUMPWorkbench.getInstance().getContext();
 
-	private String menuLabel = "Restore";
+  private static final ImageIcon ICON = null;
 
-	public void initialize(PlugInContext context) throws Exception {
-	  super.initialize(context);
+  private String menuLabel = "Restore";
 
-		menuLabel = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategoryRestorePlugIn.Restore");
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
 
-		context
-				.getFeatureInstaller()
-				.addMainMenuItem(
-						this,
-						new String[] {
-								MenuNames.LAYER,
-								I18N.getInstance().get(SortCategoryAbstractPlugIn.I18N_SORT_MENU_LABEL) },
-						menuLabel, false, ICON, null);
+    menuLabel = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategoryRestorePlugIn.Restore");
 
-	}
+    context.getFeatureInstaller().addMainMenuItem(this,
+        new String[] { MenuNames.LAYER, I18N.getInstance().get(SortCategoryAbstractPlugIn.I18N_SORT_MENU_LABEL) },
+        menuLabel, false, ICON, null);
 
-	public boolean execute(PlugInContext context) throws Exception {
-		try {
-			LayerManager layerManager = context.getWorkbenchContext()
-					.getLayerManager();
+  }
 
-			List<Layerable> allLayerables = context.getWorkbenchContext()
-					.getLayerNamePanel().getLayerManager().getLayerables(
-							Layerable.class);
+  public boolean execute(PlugInContext context) throws Exception {
+    try {
+      LayerManager layerManager = context.getWorkbenchContext().getLayerManager();
 
-			Map<LayerableLocation, Layerable> saved = new TreeMap<LayerableLocation, Layerable>(
-					Collections.reverseOrder());
-			List<Layerable> unsaved = new ArrayList<Layerable>();
+      List<Layerable> allLayerables = context.getWorkbenchContext().getLayerNamePanel().getLayerManager()
+          .getLayerables(Layerable.class);
 
-			getSavedUnsavedLayerables(saved, unsaved, allLayerables);
-			Map<Layerable, String> layerableToCategory = getLayerableToCategory(
-					unsaved, layerManager.getCategories());
+      Map<LayerableLocation, Layerable> saved = new TreeMap<LayerableLocation, Layerable>(Collections.reverseOrder());
+      List<Layerable> unsaved = new ArrayList<Layerable>();
 
-			try {
-				removeLayers(layerManager, allLayerables);
+      getSavedUnsavedLayerables(saved, unsaved, allLayerables);
+      Map<Layerable, String> layerableToCategory = getLayerableToCategory(unsaved, layerManager.getCategories());
 
-				// add unsaved to end, saved to beginning
-				addUnSavedBack(layerManager, allLayerables, unsaved,
-						layerableToCategory);
-				addSavedBack(layerManager, allLayerables, saved);
+      try {
+        removeLayers(layerManager, allLayerables);
 
-			} finally {
-				// context.getLayerManager().setFiringEvents(firingEvents);
-				context.getLayerViewPanel().repaint();
-				context.getWorkbenchFrame().repaint();
-			}
-			return true;
-		} catch (Exception e) {
-			context.getWorkbenchFrame().warnUser("Error: see output window");
-			context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-			context.getWorkbenchFrame().getOutputFrame().addText(
-					getName() + " PlugIn Exception:" + e.toString());
-			return false;
+        // add unsaved to end, saved to beginning
+        addUnSavedBack(layerManager, allLayerables, unsaved, layerableToCategory);
+        addSavedBack(layerManager, allLayerables, saved);
 
-		}
-	}
+      } finally {
+        // context.getLayerManager().setFiringEvents(firingEvents);
+        context.getLayerViewPanel().repaint();
+        context.getWorkbenchFrame().repaint();
+      }
+      return true;
+    } catch (Exception e) {
+      context.getWorkbenchFrame().warnUser("Error: see output window");
+      context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+      context.getWorkbenchFrame().getOutputFrame().addText(getName() + " PlugIn Exception:" + e.toString());
+      return false;
 
-	private Map<Layerable, String> getLayerableToCategory(
-			List<Layerable> unsaved, List<Category> categories) {
+    }
+  }
 
-		Map<Layerable, String> layerableToCategory = new HashMap<Layerable, String>();
+  private Map<Layerable, String> getLayerableToCategory(List<Layerable> unsaved, List<Category> categories) {
 
-		for (Layerable layerable : unsaved) {
-			for (Category category : categories) {
-				if (category.contains(layerable)) {
-					layerableToCategory.put(layerable, category.getName());
-					break;
-				} else
-					continue;
-			}
-		}
+    Map<Layerable, String> layerableToCategory = new HashMap<Layerable, String>();
 
-		return layerableToCategory;
-	}
+    for (Layerable layerable : unsaved) {
+      for (Category category : categories) {
+        if (category.contains(layerable)) {
+          layerableToCategory.put(layerable, category.getName());
+          break;
+        } else
+          continue;
+      }
+    }
 
-	private void addSavedBack(LayerManager layerManager,
-			List<Layerable> allLayerables,
-			Map<LayerableLocation, Layerable> saved) {
+    return layerableToCategory;
+  }
 
-		for (Layerable layerable : saved.values()) {
-			if (layerable.getBlackboard().get(
-					SortCategorySavePlugIn.BLACKBOARD_CATEGORY) != null)
-				layerManager.addLayerable((String) layerable.getBlackboard()
-						.get(SortCategorySavePlugIn.BLACKBOARD_CATEGORY),
-						layerable);
-		}
-	}
+  private void addSavedBack(LayerManager layerManager, List<Layerable> allLayerables,
+      Map<LayerableLocation, Layerable> saved) {
 
-	private void addUnSavedBack(LayerManager layerManager,
-			List<Layerable> allLayerables, List<Layerable> unsaved,
-			Map<Layerable, String> layerableToCategory) {
+    for (Layerable layerable : saved.values()) {
+      if (layerable.getBlackboard().get(SortCategorySavePlugIn.BLACKBOARD_CATEGORY) != null)
+        layerManager.addLayerable((String) layerable.getBlackboard().get(SortCategorySavePlugIn.BLACKBOARD_CATEGORY),
+            layerable);
+    }
+  }
 
-		Collections.reverse(unsaved);
+  private void addUnSavedBack(LayerManager layerManager, List<Layerable> allLayerables, List<Layerable> unsaved,
+      Map<Layerable, String> layerableToCategory) {
 
-		for (Layerable layerable : unsaved) {
-			layerManager.addLayerable(layerableToCategory.get(layerable),
-					layerable);
+    Collections.reverse(unsaved);
 
-		}
-	}
+    for (Layerable layerable : unsaved) {
+      layerManager.addLayerable(layerableToCategory.get(layerable), layerable);
 
-	private void getSavedUnsavedLayerables(
-			Map<LayerableLocation, Layerable> saved, List<Layerable> unsaved,
-			List<Layerable> allLayerables) {
+    }
+  }
 
-		for (Layerable layerable : allLayerables) {
-			if (layerable.getBlackboard().get(
-					SortCategorySavePlugIn.BLACKBOARD_CATEGORY) != null
-					&& layerable != null) {
-				saved.put(new LayerableLocation((String) layerable
-						.getBlackboard().get(
-								SortCategorySavePlugIn.BLACKBOARD_CATEGORY),
-						layerable.getBlackboard().getInt(
-								SortCategorySavePlugIn.BLACKBOARD_LAYER)),
-						layerable);
-			} else if (layerable != null) {
-				unsaved.add(layerable);
-			} else
-				throw new IllegalStateException("Unknown layerable");
-		}
-	}
+  private void getSavedUnsavedLayerables(Map<LayerableLocation, Layerable> saved, List<Layerable> unsaved,
+      List<Layerable> allLayerables) {
 
-	private void removeLayers(LayerManager layerManager, List<Layerable> layers) {
-		for (Layerable layerable : layers) {
-			layerManager.remove(layerable);
-		}
-	}
+    for (Layerable layerable : allLayerables) {
+      if (layerable.getBlackboard().get(SortCategorySavePlugIn.BLACKBOARD_CATEGORY) != null && layerable != null) {
+        saved.put(
+            new LayerableLocation((String) layerable.getBlackboard().get(SortCategorySavePlugIn.BLACKBOARD_CATEGORY),
+                layerable.getBlackboard().getInt(SortCategorySavePlugIn.BLACKBOARD_LAYER)),
+            layerable);
+      } else if (layerable != null) {
+        unsaved.add(layerable);
+      } else
+        throw new IllegalStateException("Unknown layerable");
+    }
+  }
 
-	static public EnableCheck createSaveCategorySectionMustExistCheck() {
-		return new EnableCheck() {
-			public String check(JComponent component) {
-				boolean notSaved = true;
-				Collection layerCollection = (Collection) workbenchContext
-						.getLayerNamePanel().getLayerManager().getLayerables(
-								Layerable.class);
-				for (Iterator i = layerCollection.iterator(); i.hasNext();) {
-					Layerable layer = (Layerable) i.next();
-					if (layer.getBlackboard().get(
-							SortCategorySavePlugIn.BLACKBOARD_LAYER) != null)
-						notSaved = false;
+  private void removeLayers(LayerManager layerManager, List<Layerable> layers) {
+    for (Layerable layerable : layers) {
+      layerManager.remove(layerable);
+    }
+  }
 
-				}
-				return (((notSaved))) ? "Use Save Category first." : null;
-			}
-		};
-	}
+  static public EnableCheck createSaveCategorySectionMustExistCheck() {
+    return new EnableCheck() {
+      public String check(JComponent component) {
+        boolean notSaved = true;
+        Collection layerCollection = (Collection) workbenchContext.getLayerNamePanel().getLayerManager()
+            .getLayerables(Layerable.class);
+        for (Iterator i = layerCollection.iterator(); i.hasNext();) {
+          Layerable layer = (Layerable) i.next();
+          if (layer.getBlackboard().get(SortCategorySavePlugIn.BLACKBOARD_LAYER) != null)
+            notSaved = false;
 
-	public static MultiEnableCheck createEnableCheck(
-			WorkbenchContext workbenchContext) {
-		return new MultiEnableCheck().add(SortCategoryRestorePlugIn
-				.createSaveCategorySectionMustExistCheck());
-	}
+        }
+        return (((notSaved))) ? "Use Save Category first." : null;
+      }
+    };
+  }
 
-	class LayerableLocation implements Comparable<LayerableLocation> {
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+    return new MultiEnableCheck().add(SortCategoryRestorePlugIn.createSaveCategorySectionMustExistCheck());
+  }
 
-		private String category;
-		private Integer position;
+  class LayerableLocation implements Comparable<LayerableLocation> {
 
-		LayerableLocation(String category, Integer position) {
-			this.category = category;
-			this.position = position;
-		}
+    private String category;
+    private Integer position;
 
-		public String getCategory() {
-			return category;
-		}
+    LayerableLocation(String category, Integer position) {
+      this.category = category;
+      this.position = position;
+    }
 
-		public void setCategory(String category) {
-			this.category = category;
-		}
+    public String getCategory() {
+      return category;
+    }
 
-		public Integer getPosition() {
-			return position;
-		}
+    public void setCategory(String category) {
+      this.category = category;
+    }
 
-		public void setPosition(Integer position) {
-			this.position = position;
-		}
+    public Integer getPosition() {
+      return position;
+    }
 
-		public int compareTo(LayerableLocation location) {
-			if (category.compareTo(location.getCategory()) == 0)
-				return position.compareTo(location.getPosition());
-			else
-				return category.compareTo(location.getCategory());
-		}
+    public void setPosition(Integer position) {
+      this.position = position;
+    }
 
-	}
+    public int compareTo(LayerableLocation location) {
+      if (category.compareTo(location.getCategory()) == 0)
+        return position.compareTo(location.getPosition());
+      else
+        return category.compareTo(location.getCategory());
+    }
+
+  }
 
 }

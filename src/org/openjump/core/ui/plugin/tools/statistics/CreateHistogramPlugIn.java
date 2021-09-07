@@ -84,6 +84,7 @@ public class CreateHistogramPlugIn extends AbstractPlugIn implements
      */
     @Override
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
 
         ATTRIBUTE = GenericNames.SELECT_ATTRIBUTE;
         T2 = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateHistogramPlugIn.Number-of-ranges");

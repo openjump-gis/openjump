@@ -77,6 +77,7 @@ public class SetCategoryVisibilityPlugIn extends AbstractPlugIn {
     }
     
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
 
         /// keep context for later
         this.context = context;

@@ -111,6 +111,10 @@ public class ExportLayerableEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
     String ENVELOPE = I18N.getInstance().get("ui.plugin.LayerStatisticsPlugIn.envelope")
             + "_";
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     /**
      * @inheritDoc
      */

@@ -51,6 +51,7 @@ public class BoundaryMatchDataPlugIn extends AbstractPlugIn {
     public BoundaryMatchDataPlugIn() {}
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         context.getFeatureInstaller().addLayerViewMenuItem(
             this,
             new String[] { I18N.getInstance().get("ui.plugin.generate.BoundaryMatchDataPlugIn.tools"),

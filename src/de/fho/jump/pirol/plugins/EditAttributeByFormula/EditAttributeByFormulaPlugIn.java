@@ -123,16 +123,13 @@ public class EditAttributeByFormulaPlugIn extends AbstractPlugIn {
     protected static final String storedFormulasFileName = "Formula.properties"; //$NON-NLS-1$
     //[sstein 24.March.2007] added this logger instead using Personal logger
 
-    
     public void initialize(PlugInContext context) throws Exception {
-	    context.getFeatureInstaller().addMainMenuItem(this,
-		        new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES },
-				this.getName(), 
-				false, 
-				null, 
-				createEnableCheck(context.getWorkbenchContext()));
+      super.initialize(context);
+      context.getFeatureInstaller().addMainMenuItem(this,
+          new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES }, this.getName(), false, null,
+          createEnableCheck(context.getWorkbenchContext()));
     }
-    
+
     public String getName(){
     	return I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.Attribute-Calculator");
     }

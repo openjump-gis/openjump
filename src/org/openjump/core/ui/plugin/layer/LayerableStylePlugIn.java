@@ -23,6 +23,11 @@ import de.latlon.deejump.plugin.style.DeeChangeStylesPlugIn;
 //import de.latlon.deejump.wfs.jump.WFSLayer;
 
 public class LayerableStylePlugIn extends AbstractPlugIn {
+
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(final PlugInContext context) throws Exception {
 
         /**

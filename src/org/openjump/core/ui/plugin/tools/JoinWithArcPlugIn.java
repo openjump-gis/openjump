@@ -78,6 +78,7 @@ public class JoinWithArcPlugIn extends AbstractPlugIn {
 
     public void initialize(PlugInContext context) throws Exception
     {     
+        super.initialize(context);
         workbenchContext = context.getWorkbenchContext();
         context.getFeatureInstaller().addMainMenuPlugin(
                 this,

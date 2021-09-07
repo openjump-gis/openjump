@@ -25,8 +25,8 @@ public class SelectAllOrderedFeaturesFromAttributeTablePlugIn extends AbstractPl
     super();
   }
 
-  public void initialize(PlugInContext context) throws Exception {
-
+  public void initialize(PlugInContext context) throws Exception { 
+    super.initialize(context);
   }
 
   public boolean execute(PlugInContext context) throws Exception {
