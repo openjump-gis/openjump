@@ -51,92 +51,83 @@ import com.vividsolutions.jump.workbench.ui.cursortool.DelegatingTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxDialog;
 
-
 /**
- * Selects items of the actual layer
- * and informs about the number of selected items
+ * Selects items of the actual layer and informs about the number of selected
+ * items
  * 
  * @author sstein
  *
  */
-public class DrawCircleWithGivenRadiusPlugIn extends AbstractPlugIn{
-	
-    private boolean circleButtonAdded = false;
-	
-    public void initialize(final PlugInContext context) throws Exception {
+public class DrawCircleWithGivenRadiusPlugIn extends AbstractPlugIn {
 
-	      //add a listener so that when the toolbox dialog opens the constrained tools will be added
-        //we can't just add the tools directly at this point since the toolbox isn't ready yet
+  private boolean circleButtonAdded = false;
 
-        context.getWorkbenchContext().getWorkbench().getFrame().addComponentListener(
-        new ComponentAdapter()
-        { 
-            public void componentShown(ComponentEvent e)
-            {
-                final ToolboxDialog toolBox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
-                toolBox.addComponentListener(new ComponentAdapter()
-                {
-                    
-                    public void componentShown(ComponentEvent e)
-                    {
-                        addButton(context);
-                    }
-                    
-                    public void componentHidden(ComponentEvent e)
-                    {
-                    }
-                });
-            }
-        });  
+  public void initialize(final PlugInContext context) throws Exception {
+    super.initialize(context);
+
+    // add a listener so that when the toolbox dialog opens the constrained tools
+    // will be added
+    // we can't just add the tools directly at this point since the toolbox isn't
+    // ready yet
+
+    context.getWorkbenchContext().getWorkbench().getFrame().addComponentListener(new ComponentAdapter() {
+      public void componentShown(ComponentEvent e) {
+        final ToolboxDialog toolBox = ((EditingPlugIn) context.getWorkbenchContext().getBlackboard()
+            .get(EditingPlugIn.KEY)).getToolbox(context.getWorkbenchContext());
+        toolBox.addComponentListener(new ComponentAdapter() {
+
+          public void componentShown(ComponentEvent e) {
+            addButton(context);
+          }
+
+          public void componentHidden(ComponentEvent e) {
+          }
+        });
+      }
+    });
+  }
+
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+    return new MultiEnableCheck().add(checkFactory.createSelectedLayersMustBeEditableCheck());
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+    try {
+      CursorTool circleTool = DrawCircleWithGivenRadiusTool.create(context.getWorkbenchContext());
+      context.getLayerViewPanel().setCurrentCursorTool(circleTool);
+
+    } catch (Exception e) {
+      context.getWorkbenchFrame().warnUser("SelecItemsByCircleTool Exception:" + e.toString());
+      return false;
     }
-    
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);        
-        return new MultiEnableCheck()
-						.add(checkFactory.createSelectedLayersMustBeEditableCheck());        
-    }
-	
-    
-	public boolean execute(PlugInContext context) throws Exception{	    
-        try
-        {
-            CursorTool circleTool = DrawCircleWithGivenRadiusTool.create(context.getWorkbenchContext());
-            context.getLayerViewPanel().setCurrentCursorTool(circleTool); 
 
-        }
-        catch (Exception e)
-        {
-            context.getWorkbenchFrame().warnUser("SelecItemsByCircleTool Exception:" + e.toString());
-            return false;
-        }
+    return true;
+  }
 
-		System.gc();		
-	    return true;
-	}
-
-    public void addButton(final PlugInContext pcontext)
-    {
-        if (!circleButtonAdded)
-        {
-            final ToolboxDialog toolbox = ((EditingPlugIn) pcontext.getWorkbenchContext().getBlackboard().get(EditingPlugIn.KEY)).getToolbox(pcontext.getWorkbenchContext());
-            final DelegatingTool cursorTool = (DelegatingTool)DrawCircleWithGivenRadiusTool.create(toolbox.getContext());
+  public void addButton(final PlugInContext pcontext) {
+    if (!circleButtonAdded) {
+      final ToolboxDialog toolbox = ((EditingPlugIn) pcontext.getWorkbenchContext().getBlackboard()
+          .get(EditingPlugIn.KEY)).getToolbox(pcontext.getWorkbenchContext());
+      final DelegatingTool cursorTool = (DelegatingTool) DrawCircleWithGivenRadiusTool.create(toolbox.getContext());
 //            final QuasimodeTool quasimodeTool = new QuasimodeTool(cursorTool);
 //            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, false, false), null);
 //            quasimodeTool.add(new QuasimodeTool.ModifierKeySpec(true, true, false), null);
-            toolbox.add(DrawCircleWithGivenRadiusTool.create(toolbox.getContext()), null);
-            toolbox.finishAddingComponents();
-            toolbox.validate();
-            toolbox.getToolBar().getButton(cursorTool.getClass()).addMouseListener(new java.awt.event.MouseAdapter(){
-                public void mouseClicked(java.awt.event.MouseEvent e) {
-                    try {
-                        ((DrawCircleWithGivenRadiusTool)cursorTool.getDelegate()).makeDialogThings(pcontext.getWorkbenchContext().getLayerViewPanel());
-                    } catch(Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-            circleButtonAdded = true;
+      toolbox.add(DrawCircleWithGivenRadiusTool.create(toolbox.getContext()), null);
+      toolbox.finishAddingComponents();
+      toolbox.validate();
+      toolbox.getToolBar().getButton(cursorTool.getClass()).addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent e) {
+          try {
+            ((DrawCircleWithGivenRadiusTool) cursorTool.getDelegate())
+                .makeDialogThings(pcontext.getWorkbenchContext().getLayerViewPanel());
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
         }
+      });
+      circleButtonAdded = true;
     }
-     
+  }
+
 }

@@ -79,6 +79,10 @@ public class SaveRasterImageAsImagePlugIn extends AbstractPlugIn {
 
     public static final ImageIcon ICON = IconLoader.icon("disk_dots.png");
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     @Override
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);

@@ -70,6 +70,7 @@ public class StatisticOverViewPlugIn extends AbstractPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         final WorkbenchContext workbenchContext = context.getWorkbenchContext();
         context.getFeatureInstaller().addMainMenuPlugin(this,
                 new String[] { MenuNames.TOOLS, MenuNames.STATISTICS },

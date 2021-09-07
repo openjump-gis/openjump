@@ -61,6 +61,7 @@ public class PersistentBlackboardPlugIn extends AbstractPlugIn {
     }
 
     public void initialize(final PlugInContext context) throws Exception {
+        super.initialize(context);
         restoreState(context.getWorkbenchContext());
         context.getWorkbenchFrame().addComponentListener(
                 new ComponentAdapter() {

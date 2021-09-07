@@ -67,16 +67,13 @@ public class FeatureStatisticsPlugIn extends AbstractPlugIn {
     public FeatureStatisticsPlugIn() {
     }
 
-    public void initialize(PlugInContext context) throws Exception
-    {
-        	FeatureInstaller featureInstaller = context.getFeatureInstaller();
-    		featureInstaller.addMainMenuPlugin(
-    	        this,
-  				new String[] {MenuNames.TOOLS, MenuNames.STATISTICS},
-                this.getName() + "...",
-                false,			//checkbox
-                null,			//icon
-                createEnableCheck(context.getWorkbenchContext()));
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      FeatureInstaller featureInstaller = context.getFeatureInstaller();
+      featureInstaller.addMainMenuPlugin(this, new String[] { MenuNames.TOOLS, MenuNames.STATISTICS },
+          this.getName() + "...", false, // checkbox
+          null, // icon
+          createEnableCheck(context.getWorkbenchContext()));
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {

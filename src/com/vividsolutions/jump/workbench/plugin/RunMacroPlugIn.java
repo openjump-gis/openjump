@@ -26,6 +26,7 @@ public class RunMacroPlugIn extends AbstractThreadedUiPlugIn implements MacroMan
 
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         context.getFeatureInstaller().addMainMenuPlugin(
                 this,
                 new String[]{MenuNames.CUSTOMIZE, "Macro"},

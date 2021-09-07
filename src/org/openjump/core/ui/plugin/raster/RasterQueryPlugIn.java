@@ -51,80 +51,70 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class RasterQueryPlugIn extends AbstractPlugIn {
 
-    /*
-     * [2013_05_27] Giuseppe Aruta Simple plugin that allows to inspect raster cell value for
-     *  DTM ver 0.1 2013_05_27
-     * 
-     * [2014_01_24] Giuseppe Aruta - Extended inspection to multiband raster
-     *  layers. Now multiple measure are displayed (and saved) by default. Press
-     *  SHIFT to display only last measure. Moving cursor on image shows raster
-     *  cell value on lower panel
-     */
-    private final static String sErrorSeeOutputWindow = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
+  /*
+   * [2013_05_27] Giuseppe Aruta Simple plugin that allows to inspect raster cell
+   * value for DTM ver 0.1 2013_05_27
+   * 
+   * [2014_01_24] Giuseppe Aruta - Extended inspection to multiband raster layers.
+   * Now multiple measure are displayed (and saved) by default. Press SHIFT to
+   * display only last measure. Moving cursor on image shows raster cell value on
+   * lower panel
+   */
+  private final static String sErrorSeeOutputWindow = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.tools.MeasureM_FPlugIn.Error-see-output-window");
 
-    @Override
-	public void initialize(PlugInContext context) throws Exception {
+  @Override
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
 
-        context.getFeatureInstaller()
-                .addMainMenuPlugin(
-                        this,
-                        new String[] { MenuNames.RASTER },
-                        // new String[] {MenuNames.PLUGINS,
-                        // I18NPlug.getI18N("RasterInfo_Extension")},
-                        getName(),
-                        false, getIcon(),
-                        createEnableCheck(context.getWorkbenchContext()));
+    context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.RASTER },
+        // new String[] {MenuNames.PLUGINS,
+        // I18NPlug.getI18N("RasterInfo_Extension")},
+        getName(), false, getIcon(), createEnableCheck(context.getWorkbenchContext()));
 
-    }
+  }
 
-    @Override
-    public String getName() {
-    	return  I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn");
-    }
-    
-    
-    @Override
-	public boolean execute(PlugInContext context) throws Exception {
-        try {
+  @Override
+  public String getName() {
+    return I18N.getInstance().get("org.openjump.core.ui.plugin.raster.RasterQueryPlugIn");
+  }
 
-        	
-        	context.getLayerViewPanel().setCurrentCursorTool(QuasimodeTool.createWithDefaults((new OrCompositeTool() 
-        	{
-                 @Override
-				public String getName() {
-                   return "Test dragging to retrive a set of values";
-                 }
-               }).add(new RasterQueryCursorTool(context.getWorkbenchContext())).add(new RasterQueryDragTool(context.getWorkbenchContext()))));
-        	
-        	 
-       //     context.getLayerViewPanel().setCurrentCursorTool(
-       //             new RasterQueryCursorTool());
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            context.getWorkbenchFrame().warnUser(sErrorSeeOutputWindow);
-            context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-            context.getWorkbenchFrame().getOutputFrame()
-                    .addText("MeasureM_FPlugIn Exception:" + e.toString());
-            return false;
+  @Override
+  public boolean execute(PlugInContext context) throws Exception {
+    try {
+
+      context.getLayerViewPanel().setCurrentCursorTool(QuasimodeTool.createWithDefaults((new OrCompositeTool() {
+        @Override
+        public String getName() {
+          return "Test dragging to retrive a set of values";
         }
-    }
+      }).add(new RasterQueryCursorTool(context.getWorkbenchContext()))
+          .add(new RasterQueryDragTool(context.getWorkbenchContext()))));
 
-    /*
-     * private Icon getIcon() {
-     * 
-     * return IconLoader.icon("Raster_Info.png"); }
-     */
-    public Icon getIcon() {
-        return IconLoader.icon("grid_info.png");
+      // context.getLayerViewPanel().setCurrentCursorTool(
+      // new RasterQueryCursorTool());
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      context.getWorkbenchFrame().warnUser(sErrorSeeOutputWindow);
+      context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+      context.getWorkbenchFrame().getOutputFrame().addText("MeasureM_FPlugIn Exception:" + e.toString());
+      return false;
     }
+  }
 
-    public MultiEnableCheck createEnableCheck(
-            final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
-        return new MultiEnableCheck().add(
-                checkFactory.createTaskWindowMustBeActiveCheck()).add(
-                checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1,
-                        RasterImageLayer.class));
-    }
+  /*
+   * private Icon getIcon() {
+   * 
+   * return IconLoader.icon("Raster_Info.png"); }
+   */
+  public Icon getIcon() {
+    return IconLoader.icon("grid_info.png");
+  }
+
+  public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+    return new MultiEnableCheck().add(checkFactory.createTaskWindowMustBeActiveCheck())
+        .add(checkFactory.createAtLeastNLayerablesMustBeSelectedCheck(1, RasterImageLayer.class));
+  }
 }

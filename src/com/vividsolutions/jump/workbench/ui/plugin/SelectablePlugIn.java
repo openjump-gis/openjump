@@ -54,6 +54,10 @@ public class SelectablePlugIn extends AbstractPlugIn implements CheckBoxed{
  
     public static final ImageIcon ICON = IconLoader.icon("SmallSelect.gif");
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         boolean makeSelectable = !context.getSelectedLayer(0).isSelectable();

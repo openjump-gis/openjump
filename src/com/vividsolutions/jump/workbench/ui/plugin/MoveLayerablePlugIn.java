@@ -65,6 +65,10 @@ public class MoveLayerablePlugIn extends AbstractPlugIn {
         return (Layerable) layerNamePanel.selectedNodes(Layerable.class).iterator().next();
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(final PlugInContext context) throws Exception {
         final Layerable layerable = selectedLayerable(context.getLayerNamePanel());
         final int index = index(layerable);

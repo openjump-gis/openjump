@@ -61,6 +61,10 @@ public class CopySelectedItemsPlugIn extends AbstractPlugIn {
     return StringUtil.replace(getName(), "C", "&C", false);
   }
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws Exception {
     Toolkit
         .getDefaultToolkit()

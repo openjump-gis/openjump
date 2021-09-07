@@ -57,6 +57,10 @@ public class UndoPlugIn extends AbstractPlugIn {
     this.setShortcutModifiers(KeyEvent.CTRL_MASK);
   }
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws Exception {
     ((LayerManagerProxy) context.getWorkbenchContext().getWorkbench()
         .getFrame().getActiveInternalFrame()).getLayerManager()

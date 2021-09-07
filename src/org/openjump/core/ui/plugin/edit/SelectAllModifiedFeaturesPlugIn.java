@@ -66,6 +66,7 @@ public class SelectAllModifiedFeaturesPlugIn extends AbstractPlugIn {
   }
 
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
     context
         .getFeatureInstaller()
         .addMainMenuPlugin(

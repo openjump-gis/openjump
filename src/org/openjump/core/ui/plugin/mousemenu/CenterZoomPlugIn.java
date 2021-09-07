@@ -19,6 +19,7 @@ public class CenterZoomPlugIn extends AbstractPlugIn {
     public static final ImageIcon ICON = IconLoader.icon("center_zoom.png");
     
     public void initialize(PlugInContext context) throws Exception { 
+        super.initialize(context);
     
         WorkbenchContext workbenchContext = context.getWorkbenchContext();
         FeatureInstaller featureInstaller = context.getFeatureInstaller(); 

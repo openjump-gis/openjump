@@ -86,7 +86,9 @@ public class ShowTriangulationPlugIn extends AbstractPlugIn {
     
     private WarpingPanel warpingPanel;
 
-    public void initialize(PlugInContext context) throws Exception {}
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
 
     public EnableCheck createEnableCheck(WorkbenchContext context) {
         EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(context);
@@ -114,6 +116,7 @@ public class ShowTriangulationPlugIn extends AbstractPlugIn {
         }
         return envelope;
     }
+
     public boolean execute(final PlugInContext context) throws Exception {
         context.getLayerManager().getUndoableEditReceiver().reportNothingToUndoYet();
         execute(createCommand(context.getWorkbenchContext(), true), context);

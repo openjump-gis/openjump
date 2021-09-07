@@ -48,7 +48,14 @@ public class AbstractPlugInTestCase extends TestCase {
   }
 
   private class MyPlugIn extends AbstractPlugIn {
-    public boolean execute(PlugInContext context) throws Exception { return true; }
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
+    public boolean execute(PlugInContext context) throws Exception {
+      return true;
+    }
+
     protected String toFriendlyName(String className) {
       return StringUtil.toFriendlyName(className, "PlugIn");
     }

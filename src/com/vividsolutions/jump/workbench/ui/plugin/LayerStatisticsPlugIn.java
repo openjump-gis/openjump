@@ -62,6 +62,7 @@ public class LayerStatisticsPlugIn extends AbstractPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         final FeatureInstaller featureInstaller = context.getFeatureInstaller();
         featureInstaller.addMainMenuPlugin(this, new String[] {
                 MenuNames.TOOLS, MenuNames.STATISTICS }, getName() + "...",

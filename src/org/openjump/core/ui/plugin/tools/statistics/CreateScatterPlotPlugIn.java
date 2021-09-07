@@ -88,6 +88,7 @@ public class CreateScatterPlotPlugIn extends AbstractPlugIn implements
      */
     @Override
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
 
         ATTRIBUTEA = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Select-attribute-for-east-axis");
         ATTRIBUTEB = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.CreateScatterPlotPlugIn.Select-attribute-for-north-axis");

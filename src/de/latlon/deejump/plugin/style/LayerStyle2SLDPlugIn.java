@@ -151,6 +151,7 @@ public class LayerStyle2SLDPlugIn extends AbstractPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
 
       FeatureInstaller featureInstaller = context.getFeatureInstaller();
       EnableCheck enableCheck = createEnableCheck(context.getWorkbenchContext());

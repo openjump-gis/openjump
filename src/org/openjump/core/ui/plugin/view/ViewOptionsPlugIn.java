@@ -44,6 +44,7 @@ public class ViewOptionsPlugIn extends AbstractPlugIn {
     private Blackboard blackBoard;
 
     public void initialize(final PlugInContext context) throws Exception {
+        super.initialize(context);
 
         blackBoard = PersistentBlackboardPlugIn.get(context.getWorkbenchContext());
 

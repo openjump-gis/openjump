@@ -104,6 +104,7 @@ public final class DeleteDuplicateGeometriesPlugIn extends AbstractPlugIn implem
     }
     
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         initializeLanguageStrings();
         initializeMenuItem(context);
     }

@@ -154,10 +154,13 @@ public abstract class StandardPirolPlugIn extends AbstractPlugIn implements Erro
      * @throws Exception if an Exception occurs
      * @see StandardPirolPlugIn#getCategoryName()
 	 */
-	public void initialize(PlugInContext context) throws Exception {
-        context.getFeatureInstaller().addMainMenuItem( this, new String[]{PirolPlugInSettings.getName_PirolMenu(), getCategoryName() }, this.getName(), false, null, StandardPirolPlugIn.createEnableCheck(context.getWorkbenchContext(),false));
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      context.getFeatureInstaller().addMainMenuItem(this,
+          new String[] { PirolPlugInSettings.getName_PirolMenu(), getCategoryName() }, this.getName(), false, null,
+          StandardPirolPlugIn.createEnableCheck(context.getWorkbenchContext(), false));
     }
-    
+
     /**
      * The name of the category, a PlugIn can be found in - this method should be overridden by any derived class! 
      *@return name of the category, a PlugIn can be found in

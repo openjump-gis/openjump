@@ -176,6 +176,7 @@ public class ShowViewCenterPlugIn extends AbstractPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         FeatureInstaller featureInstaller = context.getFeatureInstaller();
         ShowViewCenterInstallRenderer installRenderer = new ShowViewCenterInstallRenderer();
         installRenderer.initialize(context);

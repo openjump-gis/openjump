@@ -22,7 +22,7 @@ import org.openjump.core.model.TaskListener;
 public class EnsureAllLayersHaveSRIDStylePlugIn extends AbstractPlugIn {
 
   public void initialize(PlugInContext context) throws Exception {
-
+    super.initialize(context);
     initializeCurrentAndFutureInternalFrames(context.getWorkbenchFrame(), new Block() {
 
       private Collection<JInternalFrame> initializedFrames = new ArrayList<>();

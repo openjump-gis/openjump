@@ -83,16 +83,14 @@ public class SelectByTypePlugIn extends AbstractPlugIn
     private final static String sEmptyGeometries = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Empty-Geometries");
     private final static String sOnSelectedLayersOnly = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.On-selected-layers-only");
     private final static String sExcludeEmptyGeometries = I18N.getInstance().get("org.openjump.core.ui.plugin.edit.SelectByTypePlugIn.Exclude-empty-geometries");
-	
-    public void initialize(PlugInContext context) throws Exception
-    {     
-        workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuPlugin(this,
-        		new String[] { MenuNames.EDIT, MenuNames.SELECTION }, 
-        		sSelectByGeometryType + "...", 
-				false, null, getEnableCheck());
+
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      workbenchContext = context.getWorkbenchContext();
+      context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.EDIT, MenuNames.SELECTION },
+          sSelectByGeometryType + "...", false, null, getEnableCheck());
     }
-    
+
     public String getName(){
     	return sSelectByGeometryType;
     }

@@ -51,16 +51,13 @@ public class SelectLayersWithSelectedItemsPlugIn extends AbstractPlugIn {
     private static final String sSelectLayersWithSelectedItems =
             I18N.getInstance().get("org.openjump.core.ui.plugin.mousemenu.SelectLayersWithSelectedItemsPlugIn.SelectLayersWithSelectedItems");
 
-    public void initialize(PlugInContext context) throws Exception
-    {     
-        WorkbenchContext workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuPlugin(this,
-        		new String[] { MenuNames.EDIT, MenuNames.SELECTION }, 
-        		sSelectLayersWithSelectedItems, 
-				false, null,
-				this.createEnableCheck(workbenchContext));
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      WorkbenchContext workbenchContext = context.getWorkbenchContext();
+      context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.EDIT, MenuNames.SELECTION },
+          sSelectLayersWithSelectedItems, false, null, this.createEnableCheck(workbenchContext));
     }
-    
+
     public boolean execute(final PlugInContext context) throws Exception
     {
         reportNothingToUndoYet(context);

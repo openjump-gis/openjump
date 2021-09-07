@@ -55,7 +55,11 @@ public class RemoveSelectedRasterImageLayersPlugIn extends AbstractPlugIn {
     public String getName() {
         return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.RemoveSelectedRasterImageLayersPlugIn.Remove-Selected-Raster-Image-Layers");
     }
-    
+
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         remove((Layerable[]) (context.getLayerNamePanel()).selectedNodes(
                 Layerable.class).toArray(new Layerable[] {  }));

@@ -56,18 +56,27 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
-public class SearchAllAttributes extends AbstractPlugIn
-{
-	private final static String SEARCHFOR = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-for"); 
-	private final static String SEARCHALLATTRIBUTES = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-all-attributes");
-	private final static String INCLUDEGEOMETRY = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.include-geometry");
-	private final static String MATCHOR = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.match-any-search-word");
-	private final static String MATCHAND = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.match-all-search-words");
-	private final static String MATCHHINT = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.all-search-words-must-be-ina-single-attribute");
-	private final static String CASESENSITIVE = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.case-sensitive");
-	private final static String WHOLEWORD = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.whole-word");
-	private final static String SIDEBARTEXT = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-for-text-in-any-attribute");
-	private final static String REGULAREXPRESSIONS = I18N.getInstance().get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.regular-expressions"); 
+public class SearchAllAttributes extends AbstractPlugIn {
+  private final static String SEARCHFOR = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-for");
+  private final static String SEARCHALLATTRIBUTES = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-all-attributes");
+  private final static String INCLUDEGEOMETRY = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.include-geometry");
+  private final static String MATCHOR = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.match-any-search-word");
+  private final static String MATCHAND = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.match-all-search-words");
+  private final static String MATCHHINT = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.all-search-words-must-be-ina-single-attribute");
+  private final static String CASESENSITIVE = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.case-sensitive");
+  private final static String WHOLEWORD = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.whole-word");
+  private final static String SIDEBARTEXT = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.search-for-text-in-any-attribute");
+  private final static String REGULAREXPRESSIONS = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.queries.SearchAllAttributes.regular-expressions");
 //		+" and select matching map objects.\n\n"
 //		+"Uses Java Pattern matcher which supports:\n"
 //		+". - Match any character\n"
@@ -75,79 +84,77 @@ public class SearchAllAttributes extends AbstractPlugIn
 //		+"$ - End of a line\n"
 //		+"and others.  See the Java documentation.";
 
-	private boolean includeGeometry = false;
-	private String searchString = "";
-	private int patternCaseOption = Pattern.CASE_INSENSITIVE;
-	private boolean wholeWord = false;
-	private boolean regularExpressions = false;
-    private boolean SHIFT = false;
-	
-		
-	private boolean multiWordMatchAnd = true;
+  private boolean includeGeometry = false;
+  private String searchString = "";
+  private int patternCaseOption = Pattern.CASE_INSENSITIVE;
+  private boolean wholeWord = false;
+  private boolean regularExpressions = false;
+  private boolean SHIFT = false;
 
-	public String getName() { return SEARCHALLATTRIBUTES; };
+  private boolean multiWordMatchAnd = true;
 
-	public void initialize(PlugInContext context) throws Exception
-	{
-		context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { MenuNames.TOOLS,MenuNames.TOOLS_QUERIES}, getName()+"...", false, IconLoader.icon("search.png"),  
-				null);
-	}
+  public String getName() {
+    return SEARCHALLATTRIBUTES;
+  };
 
-	public boolean execute(final PlugInContext context) throws Exception
-	{
-		includeGeometry = false;
-		reportNothingToUndoYet(context);
-		MultiInputDialog dialog = new MultiInputDialog(
-				context.getWorkbenchFrame(), getName(), true);
-        // keep track of wether the SHIFT key has been pressed or not
-        KeyEventPostProcessor kepp = new KeyEventPostProcessor() {
-            public boolean postProcessKeyEvent(KeyEvent e) {
-                if (e.isShiftDown()) SHIFT = true;
-                else SHIFT = false;
-                return true;
-            }
-        };
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor(kepp);
-		setDialogValues(dialog, context);
-		GUIUtil.centreOnWindow(dialog);
-		dialog.setVisible(true);
-		if (! dialog.wasOKPressed()) { return false; }
-		getDialogValues(dialog);
-        SelectionManager selectionManager = context.getLayerViewPanel().getSelectionManager();
-        if (!SHIFT) selectionManager.clear();
-		searchInAttributes(context, searchString);
-		return true;
-	}
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    context.getFeatureInstaller().addMainMenuItem(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QUERIES },
+        getName() + "...", false, IconLoader.icon("search.png"), null);
+  }
 
+  public boolean execute(final PlugInContext context) throws Exception {
+    includeGeometry = false;
+    reportNothingToUndoYet(context);
+    MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
+    // keep track of wether the SHIFT key has been pressed or not
+    KeyEventPostProcessor kepp = new KeyEventPostProcessor() {
+      public boolean postProcessKeyEvent(KeyEvent e) {
+        if (e.isShiftDown())
+          SHIFT = true;
+        else
+          SHIFT = false;
+        return true;
+      }
+    };
+    KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor(kepp);
+    setDialogValues(dialog, context);
+    GUIUtil.centreOnWindow(dialog);
+    dialog.setVisible(true);
+    if (!dialog.wasOKPressed()) {
+      return false;
+    }
+    getDialogValues(dialog);
+    SelectionManager selectionManager = context.getLayerViewPanel().getSelectionManager();
+    if (!SHIFT)
+      selectionManager.clear();
+    searchInAttributes(context, searchString);
+    return true;
+  }
 
-	private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
-	{
-		dialog.setSideBarDescription(SIDEBARTEXT);
-		dialog.addTextField(SEARCHFOR, searchString, 16, null, "Search target");
-		dialog.addCheckBox(CASESENSITIVE, (patternCaseOption == 0));  
-		dialog.addCheckBox(WHOLEWORD, wholeWord);  
-		//dialog.addSeparator();
-		dialog.addRadioButton(MATCHAND, "MatchOptions", multiWordMatchAnd, MATCHHINT);
-		dialog.addRadioButton(MATCHOR, "MatchOptions", !multiWordMatchAnd, MATCHHINT);
-		dialog.addCheckBox(INCLUDEGEOMETRY, includeGeometry);  
-		dialog.addCheckBox(REGULAREXPRESSIONS, regularExpressions);  
-	}
+  private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
+    dialog.setSideBarDescription(SIDEBARTEXT);
+    dialog.addTextField(SEARCHFOR, searchString, 16, null, "Search target");
+    dialog.addCheckBox(CASESENSITIVE, (patternCaseOption == 0));
+    dialog.addCheckBox(WHOLEWORD, wholeWord);
+    // dialog.addSeparator();
+    dialog.addRadioButton(MATCHAND, "MatchOptions", multiWordMatchAnd, MATCHHINT);
+    dialog.addRadioButton(MATCHOR, "MatchOptions", !multiWordMatchAnd, MATCHHINT);
+    dialog.addCheckBox(INCLUDEGEOMETRY, includeGeometry);
+    dialog.addCheckBox(REGULAREXPRESSIONS, regularExpressions);
+  }
 
-
-	private void getDialogValues(MultiInputDialog dialog) 
-	{
-		searchString = dialog.getText(SEARCHFOR);
-		wholeWord = dialog.getCheckBox(WHOLEWORD).isSelected();
-		multiWordMatchAnd = dialog.getRadioButton(MATCHAND).isSelected();
-		if (dialog.getCheckBox(CASESENSITIVE).isSelected())
-			patternCaseOption = 0;
-		else
-			patternCaseOption = Pattern.CASE_INSENSITIVE;
-		includeGeometry = dialog.getCheckBox(INCLUDEGEOMETRY).isSelected();
-		regularExpressions = dialog.getCheckBox(REGULAREXPRESSIONS).isSelected();
-	}
-
+  private void getDialogValues(MultiInputDialog dialog) {
+    searchString = dialog.getText(SEARCHFOR);
+    wholeWord = dialog.getCheckBox(WHOLEWORD).isSelected();
+    multiWordMatchAnd = dialog.getRadioButton(MATCHAND).isSelected();
+    if (dialog.getCheckBox(CASESENSITIVE).isSelected())
+      patternCaseOption = 0;
+    else
+      patternCaseOption = Pattern.CASE_INSENSITIVE;
+    includeGeometry = dialog.getCheckBox(INCLUDEGEOMETRY).isSelected();
+    regularExpressions = dialog.getCheckBox(REGULAREXPRESSIONS).isSelected();
+  }
 
 //	public void run(TaskMonitor monitor, PlugInContext context)
 //	throws Exception
@@ -156,78 +163,75 @@ public class SearchAllAttributes extends AbstractPlugIn
 //
 //	}
 
-	private void searchInAttributes(PlugInContext context, String searchString) {
-		SelectionManager selectionManager = context.getLayerViewPanel().getSelectionManager();
-		LayerManager layerManager = context.getLayerManager();
-		String[] searchStrings = searchString.split(" ");
-		int nwords = searchStrings.length;
-		Pattern[] patterns = new Pattern[nwords];
-		String quote = "\\Q";
-		String endQuote = "\\E";
-		if (regularExpressions) {
-			quote = "";
-			endQuote = "";
-		}			
-		for (int k=0; k<nwords; k++) {
-			String regex;
-			if (wholeWord)
-				regex = "\\b"+quote+searchStrings[k]+endQuote+"\\b";
-			else
-				regex = quote+searchStrings[k]+endQuote;
-			patterns[k] = Pattern.compile(regex,patternCaseOption);
-		}
-		ArrayList layerList = new ArrayList(layerManager.getVisibleLayers(false));         		
-		for (Iterator j = layerList.iterator(); j.hasNext();) {
-			Layer layer = (Layer) j.next();
-			HashSet<Feature> selectedFeatures = new HashSet<Feature>();
-			for (Iterator iter = layer.getFeatureCollectionWrapper().iterator(); iter.hasNext();) {
-				Feature f = (Feature) iter.next();
-				String attribString = null;
-				int n = f.getAttributes().length;
-				for (int i=0; i<n; i++) {
-					Object attribute = (Object) f.getAttribute(i);
-					if (!includeGeometry && attribute instanceof Geometry) 
-						continue;
-					try {
-						attribString = attribute.toString();
-						boolean select;
-						if (multiWordMatchAnd)
-							select = true;
-						else
-							select = false;
-						for (int k = 0; k < nwords; k++) {
-							patterns[k].matcher(attribString).reset();
-							if (multiWordMatchAnd) {
-								select = select
-										&& (patterns[k].matcher(attribString)
-												.find());
-							} else {
-								select = select
-										|| (patterns[k].matcher(attribString)
-												.find());
-							}
-						}
-						if (select) {
-							selectedFeatures.add(f);
-						}
-					} catch (NullPointerException ex) {};
-				}
-			}
-			if (selectedFeatures.size() > 0) {
-				selectionManager.getFeatureSelection().selectItems(layer, selectedFeatures);
+  private void searchInAttributes(PlugInContext context, String searchString) {
+    SelectionManager selectionManager = context.getLayerViewPanel().getSelectionManager();
+    LayerManager layerManager = context.getLayerManager();
+    String[] searchStrings = searchString.split(" ");
+    int nwords = searchStrings.length;
+    Pattern[] patterns = new Pattern[nwords];
+    String quote = "\\Q";
+    String endQuote = "\\E";
+    if (regularExpressions) {
+      quote = "";
+      endQuote = "";
+    }
+    for (int k = 0; k < nwords; k++) {
+      String regex;
+      if (wholeWord)
+        regex = "\\b" + quote + searchStrings[k] + endQuote + "\\b";
+      else
+        regex = quote + searchStrings[k] + endQuote;
+      patterns[k] = Pattern.compile(regex, patternCaseOption);
+    }
+    ArrayList layerList = new ArrayList(layerManager.getVisibleLayers(false));
+    for (Iterator j = layerList.iterator(); j.hasNext();) {
+      Layer layer = (Layer) j.next();
+      HashSet<Feature> selectedFeatures = new HashSet<Feature>();
+      for (Iterator iter = layer.getFeatureCollectionWrapper().iterator(); iter.hasNext();) {
+        Feature f = (Feature) iter.next();
+        String attribString = null;
+        int n = f.getAttributes().length;
+        for (int i = 0; i < n; i++) {
+          Object attribute = (Object) f.getAttribute(i);
+          if (!includeGeometry && attribute instanceof Geometry)
+            continue;
+          try {
+            attribString = attribute.toString();
+            boolean select;
+            if (multiWordMatchAnd)
+              select = true;
+            else
+              select = false;
+            for (int k = 0; k < nwords; k++) {
+              patterns[k].matcher(attribString).reset();
+              if (multiWordMatchAnd) {
+                select = select && (patterns[k].matcher(attribString).find());
+              } else {
+                select = select || (patterns[k].matcher(attribString).find());
+              }
             }
-            Envelope env = new Envelope();
-            for (Feature f : selectedFeatures) {
-                env.expandToInclude(f.getGeometry().getEnvelopeInternal());
+            if (select) {
+              selectedFeatures.add(f);
             }
-            try {
-                env.expandBy(env.getWidth()/3.0, env.getHeight()/3.0);
-                context.getLayerViewPanel().getViewport().zoom(env);
-            } catch (NoninvertibleTransformException e) {
-                e.printStackTrace();
-            }
-		}
-	}
-
+          } catch (NullPointerException ex) {
+          }
+          ;
+        }
+      }
+      if (selectedFeatures.size() > 0) {
+        selectionManager.getFeatureSelection().selectItems(layer, selectedFeatures);
+      }
+      Envelope env = new Envelope();
+      for (Feature f : selectedFeatures) {
+        env.expandToInclude(f.getGeometry().getEnvelopeInternal());
+      }
+      try {
+        env.expandBy(env.getWidth() / 3.0, env.getHeight() / 3.0);
+        context.getLayerViewPanel().getViewport().zoom(env);
+      } catch (NoninvertibleTransformException e) {
+        e.printStackTrace();
+      }
+    }
+  }
 
 }

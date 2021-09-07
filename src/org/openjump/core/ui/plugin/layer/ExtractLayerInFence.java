@@ -56,79 +56,67 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ExtractLayerInFence extends AbstractPlugIn {
 
-	private final static String EXTRACT_LAYER_IN_FENCE =
-	    	I18N.getInstance().get("org.openjump.core.ui.plugin.layer.ExtractLayerInFence.Extract-Layer-in-Fence");
-	 
-	public ExtractLayerInFence() {
+  private final static String EXTRACT_LAYER_IN_FENCE = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.layer.ExtractLayerInFence.Extract-Layer-in-Fence");
 
-	}
-	
-	public void initialize(PlugInContext context) throws Exception {
-	    context.getFeatureInstaller().addMainMenuPlugin(this,
-		    new String[]
-				{MenuNames.EDIT, MenuNames.EXTRACT},
-				getName(), 
-				false, 
-				ICON, 
-				createEnableCheck(context.getWorkbenchContext()));
-	}
+  public ExtractLayerInFence() {}
 
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext)
-    {
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);      
-        return new MultiEnableCheck()
-        .add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
-        .add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1))
-        .add(checkFactory.createFenceMustBeDrawnCheck());
-    }  
-    
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.EDIT, MenuNames.EXTRACT }, getName(),
+        false, ICON, createEnableCheck(context.getWorkbenchContext()));
+  }
 
-	public boolean execute(PlugInContext context) throws Exception {
-		@SuppressWarnings( "deprecation" )
-		Layer[] layers = context.getWorkbenchContext().getLayerableNamePanel().getSelectedLayers();
-		if (layers.length > 0){
-			Layer layer = layers[0];
-			splitLayer(context, layer);
-			return true;
-		} else
-			return false;
-	}
-	
-	public String getName() {
-		return EXTRACT_LAYER_IN_FENCE;
-	}
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+    return new MultiEnableCheck().add(checkFactory.createWindowWithSelectionManagerMustBeActiveCheck())
+        .add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1)).add(checkFactory.createFenceMustBeDrawnCheck());
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+    @SuppressWarnings("deprecation")
+    Layer[] layers = context.getWorkbenchContext().getLayerableNamePanel().getSelectedLayers();
+    if (layers.length > 0) {
+      Layer layer = layers[0];
+      splitLayer(context, layer);
+      return true;
+    } else
+      return false;
+  }
+
+  public String getName() {
+    return EXTRACT_LAYER_IN_FENCE;
+  }
 
   public static final ImageIcon ICON = IconLoader.icon("extract1.gif");
 
-
   private void splitLayer(PlugInContext context, Layer layer) {
-  	Geometry fence = context.getLayerViewPanel().getFence();
-   	
-  	FeatureCollectionWrapper featureCollection = layer.getFeatureCollectionWrapper();
-  	List<Feature> featureList = featureCollection.getFeatures();
-  	FeatureSchema featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
-            
-  	boolean wasFiringEvents = context.getLayerManager().isFiringEvents();
-  	Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
-  	context.getLayerManager().setFiringEvents(true);
-			
-  	Layer fencedLayer = context.addLayer(selectedCategories.isEmpty()
-			? StandardCategoryNames.WORKING
-			: selectedCategories.iterator().next().toString(), layer.getName(),
-			 new FeatureDataset(featureSchema));
+    Geometry fence = context.getLayerViewPanel().getFence();
 
-  	FeatureCollectionWrapper fencedFeatureCollection = fencedLayer.getFeatureCollectionWrapper();
+    FeatureCollectionWrapper featureCollection = layer.getFeatureCollectionWrapper();
+    List<Feature> featureList = featureCollection.getFeatures();
+    FeatureSchema featureSchema = layer.getFeatureCollectionWrapper().getFeatureSchema();
 
-  	context.getLayerManager().setFiringEvents(false);
-  	for (Feature feature : featureList) {
-  		Geometry geometry = feature.getGeometry();
-                
-  		if ((!geometry.isEmpty()) && (fence != null) &&  (geometry.intersects(fence)) )
-  			fencedFeatureCollection.add(feature.clone());
-  		}
-            
-  		context.getLayerManager().setFiringEvents(wasFiringEvents);
-  	context.getLayerViewPanel().repaint();
+    boolean wasFiringEvents = context.getLayerManager().isFiringEvents();
+    Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
+    context.getLayerManager().setFiringEvents(true);
+
+    Layer fencedLayer = context.addLayer(
+        selectedCategories.isEmpty() ? StandardCategoryNames.WORKING : selectedCategories.iterator().next().toString(),
+        layer.getName(), new FeatureDataset(featureSchema));
+
+    FeatureCollectionWrapper fencedFeatureCollection = fencedLayer.getFeatureCollectionWrapper();
+
+    context.getLayerManager().setFiringEvents(false);
+    for (Feature feature : featureList) {
+      Geometry geometry = feature.getGeometry();
+
+      if ((!geometry.isEmpty()) && (fence != null) && (geometry.intersects(fence)))
+        fencedFeatureCollection.add(feature.clone());
+    }
+
+    context.getLayerManager().setFiringEvents(wasFiringEvents);
+    context.getLayerViewPanel().repaint();
   }
 
 }

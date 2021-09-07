@@ -58,16 +58,14 @@ public class ExportEnvelopeAsGeometryPlugIn extends AbstractPlugIn {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
     public String getName() {
         return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExportEnvelopeAsGeometryPlugIn.Export-Envelope-As-Geometry");
     }
-    
-    /**
-     *@inheritDoc
-     */
+
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
         

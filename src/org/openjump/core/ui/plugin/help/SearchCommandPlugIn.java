@@ -31,7 +31,7 @@ public class SearchCommandPlugIn extends AbstractPlugIn {
     static final String CATEGORY_POPUP = I18N.getInstance().get("ui.MenuNames.LAYERNAMEPANEL_CATEGORY_POPUP");
 
     public void initialize(PlugInContext context) throws Exception {
-
+        super.initialize(context);
         context.getFeatureInstaller().addMainMenuPlugin (this,
                 new String[]{MenuNames.HELP},
                 this.getName() + "...", false,

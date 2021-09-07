@@ -75,6 +75,10 @@ public class ChangeStylesPlugIn extends AbstractPlugIn {
     public ChangeStylesPlugIn() {
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         final Layer layer = context.getSelectedLayer(0);
         MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(),

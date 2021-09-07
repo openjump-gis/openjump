@@ -62,6 +62,7 @@ public class FirstTaskFramePlugIn extends AbstractPlugIn {// AbstractPlugIn {
 
   @Override
   public void initialize(final PlugInContext context) throws Exception {
+    super.initialize(context);
 
     final WorkbenchContext workbenchContext = context.getWorkbenchContext();
 

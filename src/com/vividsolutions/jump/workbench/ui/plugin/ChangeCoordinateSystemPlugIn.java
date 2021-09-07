@@ -21,6 +21,11 @@ import com.vividsolutions.jump.workbench.ui.EditTransaction;
  */
 public class ChangeCoordinateSystemPlugIn extends AbstractPlugIn {
 
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         //Don't make this plug-in undoable -- it's a lot of data to store in memory [Jon Aquino]
         context.getLayerManager().getUndoableEditReceiver()

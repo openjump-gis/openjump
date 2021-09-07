@@ -61,6 +61,7 @@ public class SaveImageAsSVGPlugIn extends AbstractPlugIn implements ThreadedPlug
   }
 
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
     ClassLoader cl = this.getClass().getClassLoader();
     Class c = null, c2 = null;
     try {

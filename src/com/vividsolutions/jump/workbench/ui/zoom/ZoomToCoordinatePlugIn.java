@@ -27,6 +27,10 @@ import com.vividsolutions.jump.workbench.ui.cursortool.Animations;
 public class ZoomToCoordinatePlugIn extends AbstractPlugIn {
   private Coordinate lastCoordinate = new Coordinate(0, 0);
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws Exception {
     Coordinate coordinate = null;
     boolean retry = true;

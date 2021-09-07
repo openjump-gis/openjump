@@ -163,6 +163,8 @@ public class InstallStandardDataSourceQueryChoosersPlugIn extends
   }
 
   public void initialize(final PlugInContext context) throws Exception {
+    super.initialize(context);
+    
     addFileDataSourceQueryChoosers(new JMLReader(), new JMLWriter(),
         "JUMP GML", context.getWorkbenchContext(),
         StandardReaderWriterFileDataSource.JML.class);

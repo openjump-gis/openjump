@@ -55,7 +55,9 @@ public class CutSelectedItemsPlugIn extends MacroPlugIn {
         this.setShortcutKeys(KeyEvent.VK_X);
         this.setShortcutModifiers(KeyEvent.CTRL_MASK);
     }
-
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
     public String getName() {
         return AbstractPlugIn.createName(getClass());
     }

@@ -150,6 +150,10 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
         return LAYER_PROPERTIES;
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
 
         styleChanged = false;

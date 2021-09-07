@@ -45,6 +45,10 @@ public class OutputWindowPlugIn extends AbstractPlugIn {
     public OutputWindowPlugIn() {
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         context.getWorkbenchFrame().getOutputFrame().surface();

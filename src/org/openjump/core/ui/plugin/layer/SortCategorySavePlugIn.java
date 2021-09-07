@@ -53,52 +53,45 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
  */
 public class SortCategorySavePlugIn extends AbstractPlugIn {
 
-	private static final ImageIcon ICON = null;
-	private static String menuLabel = "Save";
+  private static final ImageIcon ICON = null;
+  private static String menuLabel = "Save";
 
-	// no I18N needed
-	final protected static String BLACKBOARD_LAYER = "SortCategorySavePlugIn_Layer_Location";
-	static final String BLACKBOARD_CATEGORY = "SortCategorySavePlugIn_Category_Location";
+  // no I18N needed
+  final protected static String BLACKBOARD_LAYER = "SortCategorySavePlugIn_Layer_Location";
+  static final String BLACKBOARD_CATEGORY = "SortCategorySavePlugIn_Category_Location";
 
-	public void initialize(PlugInContext context) throws Exception {
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
 
-		menuLabel = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategorySavePlugIn.Save");
+    menuLabel = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.SortCategorySavePlugIn.Save");
 
-		context
-				.getFeatureInstaller()
-				.addMainMenuItem(
-						this,
-						new String[] {
-								MenuNames.LAYER,
-								I18N.getInstance().get(SortCategoryAbstractPlugIn.I18N_SORT_MENU_LABEL) },
-						menuLabel, false, ICON, null);
-	}
+    context.getFeatureInstaller().addMainMenuItem(this,
+        new String[] { MenuNames.LAYER, I18N.getInstance().get(SortCategoryAbstractPlugIn.I18N_SORT_MENU_LABEL) },
+        menuLabel, false, ICON, null);
+  }
 
-	public boolean execute(PlugInContext context) throws Exception {
-		try {
-			List<Category> categories = context.getWorkbenchContext()
-					.getLayerNamePanel().getLayerManager().getCategories();
-			for (Category category : categories) {
-				saveLayerLocation(category);
-			}
+  public boolean execute(PlugInContext context) throws Exception {
+    try {
+      List<Category> categories = context.getWorkbenchContext().getLayerNamePanel().getLayerManager().getCategories();
+      for (Category category : categories) {
+        saveLayerLocation(category);
+      }
 
-			return true;
-		} catch (Exception e) {
-			context.getWorkbenchFrame().warnUser("Error: see output window");
-			context.getWorkbenchFrame().getOutputFrame().createNewDocument();
-			context.getWorkbenchFrame().getOutputFrame().addText(
-					getName() + "PlugIn Exception:" + e.toString());
-			return false;
-		}
-	}
+      return true;
+    } catch (Exception e) {
+      context.getWorkbenchFrame().warnUser("Error: see output window");
+      context.getWorkbenchFrame().getOutputFrame().createNewDocument();
+      context.getWorkbenchFrame().getOutputFrame().addText(getName() + "PlugIn Exception:" + e.toString());
+      return false;
+    }
+  }
 
-	private void saveLayerLocation(Category category) {
-		List<Layerable> layerables = category.getLayerables();
-		int count = 0;
-		for (Layerable layerable : layerables) {
-			layerable.getBlackboard().put(BLACKBOARD_LAYER, count++);
-			layerable.getBlackboard().put(BLACKBOARD_CATEGORY,
-					category.getName());
-		}
-	}
+  private void saveLayerLocation(Category category) {
+    List<Layerable> layerables = category.getLayerables();
+    int count = 0;
+    for (Layerable layerable : layerables) {
+      layerable.getBlackboard().put(BLACKBOARD_LAYER, count++);
+      layerable.getBlackboard().put(BLACKBOARD_CATEGORY, category.getName());
+    }
+  }
 }

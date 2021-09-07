@@ -55,9 +55,10 @@ public class ZoomToRasterImagePlugIn extends AbstractPlugIn {
         return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ZoomToRasterImagePlugIn.Zoom-To-Raster-Image");
     }
 
-    /**
-     * @inheritDoc
-     */
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
 
         RasterImageLayer rLayer = (RasterImageLayer) LayerTools

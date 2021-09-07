@@ -77,6 +77,7 @@ public class ImportArcMapStylePlugIn extends AbstractPlugIn {
 
     @Override
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         EnableCheckFactory enableCheckFactory = EnableCheckFactory.getInstance(context.getWorkbenchContext());
 
         EnableCheck enableCheck = new MultiEnableCheck().add(

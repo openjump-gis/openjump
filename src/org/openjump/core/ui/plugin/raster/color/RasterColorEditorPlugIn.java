@@ -14,48 +14,34 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 /**
  * 16 sept. 2005
  *
- * @author  Paul PLOUY
- *  			Laboratoire RESO
- *  			universit� de Rennes 2
- *              FRANCE
- * 			modified by Stefan Steiniger (perriger@gmx.de)
+ * @author Paul PLOUY Laboratoire RESO universit� de Rennes 2 FRANCE modified
+ *         by Stefan Steiniger (perriger@gmx.de)
  */
 public class RasterColorEditorPlugIn extends AbstractPlugIn {
 
-	public RasterColorEditorPlugIn() {
+  public RasterColorEditorPlugIn() {}
 
-	}
+  public void initialize(PlugInContext context) throws Exception {
 
-	public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
 
-		super.initialize(context);
+    String sName = I18N.getInstance()
+        .get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor");
 
-		String sName = I18N.getInstance().get("org.openjump.core.ui.plugin.raster.color.RasterColorEditorPlugIn.Raster-Color-Editor");
-		
-		context.getFeatureInstaller().addMainMenuPlugin(
-				this,
-				new String[] {MenuNames.RASTER},
-				sName + "...",
-				false,
-				IconLoader.icon("color_wheel.png"),
-				new MultiEnableCheck()
-						.add(
-								EnableCheckFactory.getInstance(context.getWorkbenchContext())
-										.createWindowWithLayerViewPanelMustBeActiveCheck()
-						)
-						.add(
-								EnableCheckFactory.getInstance(context.getWorkbenchContext())
-										.createAtLeastNLayerablesMustBeSelectedCheck(
-												1, RasterImageLayer.class)
-				)
-		);
+    context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.RASTER }, sName + "...", false,
+        IconLoader.icon("color_wheel.png"),
+        new MultiEnableCheck()
+            .add(EnableCheckFactory.getInstance(context.getWorkbenchContext())
+                .createWindowWithLayerViewPanelMustBeActiveCheck())
+            .add(EnableCheckFactory.getInstance(context.getWorkbenchContext())
+                .createAtLeastNLayerablesMustBeSelectedCheck(1, RasterImageLayer.class)));
 
-	}
+  }
 
-	public boolean execute(PlugInContext context) throws Exception {
+  public boolean execute(PlugInContext context) throws Exception {
 
-		 new RasterStylesPlugIn().execute(context);
-		 return true;
-	}
+    new RasterStylesPlugIn().execute(context);
+    return true;
+  }
 
 }

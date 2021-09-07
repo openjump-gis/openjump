@@ -46,6 +46,10 @@ public class ZoomToClickPlugIn extends AbstractPlugIn {
         zoomFactor = newZoomFactor;
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         context.getLayerViewPanel().getViewport().zoomToViewPoint(context.getLayerViewPanel()

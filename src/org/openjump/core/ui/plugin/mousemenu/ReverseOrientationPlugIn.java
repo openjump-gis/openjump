@@ -54,6 +54,7 @@ public class ReverseOrientationPlugIn extends AbstractPlugIn {
     public static final ImageIcon ICON = IconLoader.icon("reverse.png");
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         WorkbenchContext workbenchContext = context.getWorkbenchContext();
         FeatureInstaller featureInstaller = context.getFeatureInstaller();
         JPopupMenu popupMenu = LayerViewPanel.popupMenu();

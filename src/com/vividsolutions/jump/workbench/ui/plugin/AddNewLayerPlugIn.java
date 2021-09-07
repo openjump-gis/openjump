@@ -66,6 +66,11 @@ public class AddNewLayerPlugIn extends AbstractPlugIn {
     return new FeatureDataset(featureSchema);
   }
 
+  @Override
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
     Collection selectedCategories = context.getLayerNamePanel()

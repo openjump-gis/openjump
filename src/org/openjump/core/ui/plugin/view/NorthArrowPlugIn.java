@@ -46,46 +46,40 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
-
 public class NorthArrowPlugIn extends AbstractPlugIn {
 
-	private static final String NORTH_ARROW = I18N.getInstance().get("org.openjump.core.ui.plugin.view.NorthArrowPlugIn.North-Arrow");
+  private static final String NORTH_ARROW = I18N.getInstance()
+      .get("org.openjump.core.ui.plugin.view.NorthArrowPlugIn.North-Arrow");
 
-	public void initialize(PlugInContext context) throws Exception {
-		FeatureInstaller featureInstaller = context.getFeatureInstaller();
-		final WorkbenchContext workbenchContext = context.getWorkbenchContext();
-		NorthArrowInstallRenderer northArrowInstallRenderer = new NorthArrowInstallRenderer();
-		northArrowInstallRenderer.initialize(new PlugInContext(workbenchContext, 
-				null, null, null, null));
-		EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
-		featureInstaller.addMainMenuItem(this,
-				new String[]  {MenuNames.VIEW, MenuNames.MAP_DECORATIONS},
-				getName(),
-				true,
-				IconLoader.icon("show_nord.png"),
-				new MultiEnableCheck().add(
-						checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
-						.add(new EnableCheck() {
-							public String check(JComponent component) {
-								((JCheckBoxMenuItem) component)
-								.setSelected(NorthArrowRenderer.isEnabled(workbenchContext
-										.getLayerViewPanel()));
-								return null;
-							}
-						}));
-	}
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
+    final WorkbenchContext workbenchContext = context.getWorkbenchContext();
+    NorthArrowInstallRenderer northArrowInstallRenderer = new NorthArrowInstallRenderer();
+    northArrowInstallRenderer.initialize(new PlugInContext(workbenchContext, null, null, null, null));
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+    featureInstaller.addMainMenuItem(this, new String[] { MenuNames.VIEW, MenuNames.MAP_DECORATIONS }, getName(), true,
+        IconLoader.icon("show_nord.png"), new MultiEnableCheck()
+            .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck()).add(new EnableCheck() {
+              public String check(JComponent component) {
+                ((JCheckBoxMenuItem) component)
+                    .setSelected(NorthArrowRenderer.isEnabled(workbenchContext.getLayerViewPanel()));
+                return null;
+              }
+            }));
+  }
 
-	public boolean execute(PlugInContext context) throws Exception {
-		reportNothingToUndoYet(context);
-		NorthArrowRenderer.setEnabled(!NorthArrowRenderer.isEnabled(
-				context.getLayerViewPanel()), context.getLayerViewPanel());
-		context.getLayerViewPanel().getRenderingManager().render(NorthArrowRenderer.CONTENT_ID);
+  public boolean execute(PlugInContext context) throws Exception {
+    reportNothingToUndoYet(context);
+    NorthArrowRenderer.setEnabled(!NorthArrowRenderer.isEnabled(context.getLayerViewPanel()),
+        context.getLayerViewPanel());
+    context.getLayerViewPanel().getRenderingManager().render(NorthArrowRenderer.CONTENT_ID);
 
-		return true;
-	}
+    return true;
+  }
 
-	public String getName() {
-		return NORTH_ARROW;
-	}
+  public String getName() {
+    return NORTH_ARROW;
+  }
 
 }

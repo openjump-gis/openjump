@@ -53,6 +53,8 @@ public abstract class InstallRendererPlugIn extends AbstractPlugIn {
     }
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
+
         JInternalFrame[] frames = context.getWorkbenchFrame().getInternalFrames();
 
         for (int i = 0; i < frames.length; i++) {

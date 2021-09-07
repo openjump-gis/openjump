@@ -29,6 +29,8 @@ public class AddWMSDemoBoxEasterEggPlugIn extends AbstractPlugIn {
     private Collection panelsEncountered = new ArrayList();
 
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
+
         context.getWorkbenchFrame().getDesktopPane().addContainerListener(new ContainerAdapter() {
                 public void componentAdded(ContainerEvent e) {
                     if (!(e.getChild() instanceof JInternalFrame)) {

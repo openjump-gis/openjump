@@ -79,6 +79,10 @@ public class RemoveSelectedCategoriesPlugIn extends AbstractPlugIn {
         return null;
     }
 
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         execute(toCategorySpecToLayerablesMap(toOrderedCategories(
                     context.getLayerNamePanel().getSelectedCategories())),

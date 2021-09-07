@@ -48,6 +48,10 @@ public class PasteStylesPlugIn extends AbstractPlugIn {
     return GUIUtil.toSmallIcon(IconLoader.icon("Palette_paste.png"));
   }
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws Exception
   {
     if (CopyStylesPlugIn.stylesBuffer == null)

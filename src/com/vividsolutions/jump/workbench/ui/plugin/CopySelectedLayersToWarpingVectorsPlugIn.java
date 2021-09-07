@@ -80,6 +80,11 @@ public class CopySelectedLayersToWarpingVectorsPlugIn extends AbstractPlugIn {
         return newFeatures;
     }
 
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
         Collection newWarpingVectors = new ArrayList();

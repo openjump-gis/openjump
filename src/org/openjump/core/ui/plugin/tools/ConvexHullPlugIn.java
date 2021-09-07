@@ -32,6 +32,7 @@
  */
 
 package org.openjump.core.ui.plugin.tools;
+
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -61,86 +62,76 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class ConvexHullPlugIn extends AbstractPlugIn {
-    //private WorkbenchContext workbenchContext;
-    private String TOLERANCE = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ConvexHullPlugIn.Tolerance");
-    private MultiInputDialog dialog;
-    private final double blendTolerance = 0.1;
-    private final boolean exceptionThrown = false;
-    private String sConvexHull = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ConvexHullPlugIn.Convex-Hull");
+  // private WorkbenchContext workbenchContext;
+  private String TOLERANCE = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ConvexHullPlugIn.Tolerance");
+  private MultiInputDialog dialog;
+  private final double blendTolerance = 0.1;
+  private final boolean exceptionThrown = false;
+  private String sConvexHull = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ConvexHullPlugIn.Convex-Hull");
 
-    public void initialize(PlugInContext context) throws Exception
-    {
-      context.getFeatureInstaller().addMainMenuPlugin(
-              this,
-              new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-              getName() /*+ "{pos:3}"*/,
- 			false,
-              IconLoader.icon("convex_hull2.png"),
-              this.createEnableCheck(context.getWorkbenchContext())
-      );
-    }
-    
-    public String getName() {
-        return sConvexHull;
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    context.getFeatureInstaller().addMainMenuPlugin(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS },
+        getName() /* + "{pos:3}" */, false, IconLoader.icon("convex_hull2.png"),
+        this.createEnableCheck(context.getWorkbenchContext()));
+  }
+
+  public String getName() {
+    return sConvexHull;
+  }
+
+  public boolean execute(final PlugInContext context) throws Exception {
+    TOLERANCE = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ConvexHullPlugIn.Tolerance");
+    sConvexHull = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ConvexHullPlugIn.Convex-Hull");
+
+    reportNothingToUndoYet(context);
+    Collection selectedFeatures = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
+    Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
+    LayerManager layerManager = context.getLayerManager();
+    FeatureSchema featureSchema = new FeatureSchema();
+    featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
+    CoordinateList coords = new CoordinateList();
+
+    for (Iterator j = selectedFeatures.iterator(); j.hasNext();) {
+      Feature f = (Feature) j.next();
+      Geometry geo = f.getGeometry();
+      UniqueCoordinateArrayFilter filter = new UniqueCoordinateArrayFilter();
+      geo.apply(filter);
+      coords.add(filter.getCoordinates(), false);
     }
 
-    public boolean execute(final PlugInContext context) throws Exception
-    {
-        TOLERANCE = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ConvexHullPlugIn.Tolerance");
-        sConvexHull = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ConvexHullPlugIn.Convex-Hull");
-        
-        reportNothingToUndoYet(context);
-        Collection selectedFeatures = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems(); 
-        Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
-        LayerManager layerManager = context.getLayerManager();
-        FeatureSchema featureSchema = new FeatureSchema();
-        featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
-        CoordinateList coords = new CoordinateList();
-        
-        
-        for (Iterator j = selectedFeatures.iterator(); j.hasNext();)
-        {
-            Feature f = (Feature) j.next();
-            Geometry geo = f.getGeometry();
-            UniqueCoordinateArrayFilter filter = new UniqueCoordinateArrayFilter();
-            geo.apply(filter);
-            coords.add( filter.getCoordinates() ,false);
-         }
-         
-        CoordinateList convexHullCoords = GeoUtils.ConvexHullWrap( coords );
-        /* 
-         * Plugin saves Covex hull as polygon ( like Convex Hull of Layer
-         *  Plugin. Giuseppe Aruta giuseppe_aruta@yahoo.it
+    CoordinateList convexHullCoords = GeoUtils.ConvexHullWrap(coords);
+    /*
+     * Plugin saves Covex hull as polygon ( like Convex Hull of Layer Plugin.
+     * Giuseppe Aruta giuseppe_aruta@yahoo.it
+     */
+    Polygon convexHull = new GeometryFactory().createPolygon(convexHullCoords.toCoordinateArray());
+    // LineString convexHull = new
+    // GeometryFactory().createLineString(convexHullCoords.toCoordinateArray());
+
+    Feature newFeature = new BasicFeature(featureSchema);
+    newFeature.setGeometry(convexHull);
+    FeatureDataset newFeatures = new FeatureDataset(featureSchema);
+    newFeatures.add(newFeature);
+
+    layerManager.addLayer(selectedCategories.isEmpty()
+        /*
+         * Covex hull on selection saves to RESULT category (as other analysis tools
+         * like Convex Hull of Layer Plugin. Giuseppe Aruta giuseppe_aruta@yahoo.it
          */
-        Polygon convexHull = new GeometryFactory().createPolygon(convexHullCoords.toCoordinateArray());
-        //LineString convexHull = new GeometryFactory().createLineString(convexHullCoords.toCoordinateArray());
+        ? StandardCategoryNames.RESULT
+        // ? StandardCategoryNames.WORKING
+        : selectedCategories.iterator().next().toString(), layerManager.uniqueLayerName(sConvexHull), newFeatures);
 
-        Feature newFeature = new BasicFeature(featureSchema);
-        newFeature.setGeometry(convexHull);
-        FeatureDataset newFeatures = new FeatureDataset(featureSchema);       
-        newFeatures.add(newFeature);
-        
-        layerManager.addLayer(selectedCategories.isEmpty()
-        /* 
-         * Covex hull on selection saves to RESULT category (as other analysis tools like Convex Hull of Layer
-         *  Plugin. Giuseppe Aruta giuseppe_aruta@yahoo.it
-         */
-        ? StandardCategoryNames.RESULT		
-       // ? StandardCategoryNames.WORKING
-        : selectedCategories.iterator().next().toString(),
-        layerManager.uniqueLayerName(sConvexHull),
-        newFeatures);
-        
-        layerManager.getLayer(0).setFeatureCollectionModified(true);
-        layerManager.getLayer(0).setEditable(true);
-        
-        return true;
-    }
-           
-    public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
-        return new MultiEnableCheck()
-            .add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
-            .add(checkFactory.createAtLeastNFeaturesMustHaveSelectedItemsCheck(1));
-    }    
+    layerManager.getLayer(0).setFeatureCollectionModified(true);
+    layerManager.getLayer(0).setEditable(true);
+
+    return true;
+  }
+
+  public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+    return new MultiEnableCheck().add(checkFactory.createWindowWithLayerViewPanelMustBeActiveCheck())
+        .add(checkFactory.createAtLeastNFeaturesMustHaveSelectedItemsCheck(1));
+  }
 }

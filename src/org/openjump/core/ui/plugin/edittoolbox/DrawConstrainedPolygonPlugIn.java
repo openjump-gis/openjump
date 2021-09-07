@@ -62,9 +62,10 @@ public class DrawConstrainedPolygonPlugIn extends AbstractPlugIn
     
     public void initialize(final PlugInContext context) throws Exception
     {
+        super.initialize(context);
         OptionsDialog.instance(context.getWorkbenchContext().getWorkbench()).addTab(constraints,
             new ConstraintsOptionsPanel(context.getWorkbenchContext()));
-      //add a listener so that when the toolbox dialog opens the constrained tools will be added
+        //add a listener so that when the toolbox dialog opens the constrained tools will be added
         //we can't just add the tools directly at this point since the toolbox isn't ready yet
         
         context.getWorkbenchContext().getWorkbench().getFrame().addComponentListener(

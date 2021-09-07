@@ -59,100 +59,103 @@ import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
- * Extracts the boundaries of a polygon layer distinguishing 
+ * Extracts the boundaries of a polygon layer distinguishing
  * between shared and non-shared boundaries.
- *	
+ * 
  * @author sstein
  *
  **/
-public class ExtractCommonBoundaryBetweenPolysPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
+public class ExtractCommonBoundaryBetweenPolysPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
-	private String sName = "Extract Common Boundary Between Polygons";
-    private String sSidebar ="Classifies the boundaries of a polygon by using a neighbourhood graph.";  
-    private String sCreateGraph = "create graph";
-    private String sBoundaries = "boundaries";   
-    private String LAYERREGIONS = "select layer with polygons";
-    private FeatureCollection regions = null;        
-    private Layer input = null;
-    private MultiInputDialog dialog;
-        
-    public void initialize(PlugInContext context) throws Exception {
-    	
-    		this.sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn");
-	        this.sSidebar = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.Classifies-the-boundaries-of-a-polygon-by-using-a-neighbourhood-graph");
-	        this.sCreateGraph = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.create-graph");
-    		this.sBoundaries = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.boundaries");
-	        this.LAYERREGIONS = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.select-layer-with-polygons");
-    		
-    		FeatureInstaller featureInstaller = context.getFeatureInstaller();
-	    	featureInstaller.addMainMenuItem(
-	    	        this,								//exe
-	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT}, 	//menu path
-	                this.sName + "...",
-	                false,			//checkbox
-	                null,			//icon
-	                createEnableCheck(context.getWorkbenchContext())); //enable check
+  private String sName = "Extract Common Boundary Between Polygons";
+  private String sSidebar = "Classifies the boundaries of a polygon by using a neighbourhood graph.";
+  private String sCreateGraph = "create graph";
+  private String sBoundaries = "boundaries";
+  private String LAYERREGIONS = "select layer with polygons";
+  private FeatureCollection regions = null;
+  private Layer input = null;
+  private MultiInputDialog dialog;
+
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    this.sName = I18N.getInstance()
+        .get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn");
+    this.sSidebar = I18N.getInstance().get(
+        "org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.Classifies-the-boundaries-of-a-polygon-by-using-a-neighbourhood-graph");
+    this.sCreateGraph = I18N.getInstance()
+        .get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.create-graph");
+    this.sBoundaries = I18N.getInstance()
+        .get("org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.boundaries");
+    this.LAYERREGIONS = I18N.getInstance().get(
+        "org.openjump.core.ui.plugin.tools.geometrychange.ExtractCommonBoundaryBetweenPolysPlugIn.select-layer-with-polygons");
+
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
+    featureInstaller.addMainMenuItem(this, // exe
+        new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT }, // menu path
+        this.sName + "...", false, // checkbox
+        null, // icon
+        createEnableCheck(context.getWorkbenchContext())); // enable check
+  }
+
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+
+    return new MultiEnableCheck().add(checkFactory.createAtLeastNLayersMustExistCheck(1));
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+    // Unlike ValidatePlugIn, here we always call #initDialog because we want
+    // to update the layer comboboxes.
+    initDialog(context);
+    dialog.setVisible(true);
+    if (!dialog.wasOKPressed()) {
+      return false;
+    } else {
+      this.input = dialog.getLayer(this.LAYERREGIONS);
+      this.regions = this.input.getFeatureCollectionWrapper();
     }
-    
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+    return true;
+  }
 
-        return new MultiEnableCheck()
-                        .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
+  public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+    System.gc(); // flush garbage collector
+    monitor.allowCancellationRequests();
+    // final Collection features =
+    // context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
+    Collection<Feature> features = this.regions.getFeatures();
+    Feature firstFeature = (Feature) features.iterator().next();
+    if (firstFeature.getGeometry() instanceof Polygon) {
+      monitor.report(sCreateGraph);
+      PolygonGraph pg = new PolygonGraph(features, monitor);
+      // pg.getCommonBoundaries(pg.nodes.get(0));
+      // FeatureCollection resultD = pg.getBoundaries(pg.nodes.get(0));
+      // -- old sorted return of boundaries
+      // FeatureCollection resultD = pg.getSharedBoundaries();
+      // context.addLayer(StandardCategoryNames.RESULT, "sharedBoundaries", resultD);
+      // FeatureCollection resultE = pg.getNonSharedBoundaries();
+      // context.addLayer(StandardCategoryNames.RESULT, "nonSharedBoundaries",
+      // resultE);
+      // -- new return of boundaries, distinction by attribute value for
+      // PolygonGraphNode.edgeTypeAtributeName
+      FeatureCollection resultD = pg.getSharedBoundaries();
+      resultD.addAll(pg.getNonSharedBoundaries().getFeatures());
+      context.addLayer(StandardCategoryNames.RESULT, this.input + "-" + sBoundaries, resultD);
+    } else {
+      context.getWorkbenchFrame().warnUser("no (simple) polygon geometries found");
     }
-    
-	public boolean execute(PlugInContext context) throws Exception{
-        //Unlike ValidatePlugIn, here we always call #initDialog because we want
-        //to update the layer comboboxes.
-        initDialog(context);
-        dialog.setVisible(true);
-        if (!dialog.wasOKPressed()) {
-            return false;
-        }
-        else{
-        	this.input =  dialog.getLayer(this.LAYERREGIONS);
-        	this.regions = this.input.getFeatureCollectionWrapper();        	
-        }
-        return true;	    
-	}
-	
-    public void run(TaskMonitor monitor, PlugInContext context) throws Exception{            		
-	    	System.gc(); //flush garbage collector
-	    	monitor.allowCancellationRequests();
-		    //final Collection features = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
-	    	Collection<Feature> features = this.regions.getFeatures();
-	    	Feature firstFeature = (Feature)features.iterator().next();
-	    	if (firstFeature.getGeometry() instanceof Polygon){
-		    	monitor.report(sCreateGraph);
-		    	PolygonGraph pg = new PolygonGraph(features, monitor);
-		    	//pg.getCommonBoundaries(pg.nodes.get(0));
-		    	//FeatureCollection resultD = pg.getBoundaries(pg.nodes.get(0));
-		    	//-- old sorted return of boundaries
-		    	//FeatureCollection resultD = pg.getSharedBoundaries();
-		        //context.addLayer(StandardCategoryNames.RESULT, "sharedBoundaries", resultD);
-		    	//FeatureCollection resultE = pg.getNonSharedBoundaries();
-		        //context.addLayer(StandardCategoryNames.RESULT, "nonSharedBoundaries", resultE);	
-		    	//-- new return of boundaries, distinction by attribute value for PolygonGraphNode.edgeTypeAtributeName
-		    	FeatureCollection resultD = pg.getSharedBoundaries();
-		    	resultD.addAll(pg.getNonSharedBoundaries().getFeatures());
-		    	context.addLayer(StandardCategoryNames.RESULT, this.input + "-" + sBoundaries, resultD);
-	    	}
-	    	else{
-	    		context.getWorkbenchFrame().warnUser("no (simple) polygon geometries found");
-	    	}
-    	}
+  }
 
-	private void initDialog(PlugInContext context) {
-    	
-        dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.sName, true);
-        dialog.setSideBarDescription(sSidebar);
-        try {
-        	JComboBox addLayerComboBoxRegions = dialog.addLayerComboBox(this.LAYERREGIONS, context.getCandidateLayer(0), null, context.getLayerManager());
-        }
-        catch (IndexOutOfBoundsException e) {
-        	//eat it
-        }
-        GUIUtil.centreOnWindow(dialog);
-    }	
+  private void initDialog(PlugInContext context) {
+
+    dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.sName, true);
+    dialog.setSideBarDescription(sSidebar);
+    try {
+      JComboBox addLayerComboBoxRegions = dialog.addLayerComboBox(this.LAYERREGIONS, context.getCandidateLayer(0), null,
+          context.getLayerManager());
+    } catch (IndexOutOfBoundsException e) {
+      // eat it
+    }
+    GUIUtil.centreOnWindow(dialog);
+  }
 
 }

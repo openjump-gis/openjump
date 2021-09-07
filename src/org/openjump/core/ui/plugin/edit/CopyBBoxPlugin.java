@@ -58,8 +58,8 @@ public class CopyBBoxPlugin extends AbstractPlugIn {
       return I18N.getInstance().get( "org.openjump.core.ui.plugin.edit.CopyBBoxPlugin.name" );
     }
 
-    @Override
-    public void initialize( PlugInContext context ) {
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
     }
 
     @Override

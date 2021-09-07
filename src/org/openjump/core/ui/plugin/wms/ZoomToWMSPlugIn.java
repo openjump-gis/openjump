@@ -48,6 +48,7 @@ public class ZoomToWMSPlugIn extends AbstractPlugIn {
     private TableColumnModel tcm = null;
 
     public void initialize( PlugInContext context ) throws Exception {
+        super.initialize(context);
         this.context = context;
         EnableCheckFactory enableCheckFactory = context.getCheckFactory();
 

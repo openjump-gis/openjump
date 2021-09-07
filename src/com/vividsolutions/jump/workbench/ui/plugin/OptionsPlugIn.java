@@ -79,6 +79,8 @@ public class OptionsPlugIn extends AbstractPlugIn {
   }
 
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    
     // don't double initialize
     if (instance != null)
       return;

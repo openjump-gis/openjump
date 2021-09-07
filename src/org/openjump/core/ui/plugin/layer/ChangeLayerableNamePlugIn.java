@@ -27,6 +27,7 @@ public class ChangeLayerableNamePlugIn extends AbstractPlugIn {
 
   @Override
   public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
     WorkbenchContext workbenchContext = context.getWorkbenchContext();
     EnableCheck enableCheck = createEnableCheck(workbenchContext);
 

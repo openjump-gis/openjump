@@ -63,7 +63,6 @@ import org.openjump.core.ui.plugin.edittoolbox.cursortools.ConstrainedMultiClick
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
@@ -88,6 +87,10 @@ import de.soldin.awt.VerticalFlowLayout;
 public class ShortcutKeysPlugIn extends AbstractPlugIn {
   public static final ImageIcon ICON = IconLoader.icon("keyboard.png");
   public static final String NAME = I18N.getInstance().get(ShortcutKeysPlugIn.class.getName());
+
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
 
   public boolean execute(PlugInContext context) throws Exception {
     ShortcutKeysFrame dlg;

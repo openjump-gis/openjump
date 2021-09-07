@@ -19,6 +19,7 @@ public class ZoomOutPlugIn extends AbstractPlugIn {
     public static final ImageIcon ICON = IconLoader.icon("zoom_out.png");
     
     public void initialize(PlugInContext context) throws Exception { 
+        super.initialize(context);
     
         WorkbenchContext workbenchContext = context.getWorkbenchContext();
         FeatureInstaller featureInstaller = context.getFeatureInstaller();

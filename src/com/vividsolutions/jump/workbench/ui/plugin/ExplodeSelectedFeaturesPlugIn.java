@@ -69,6 +69,10 @@ public class ExplodeSelectedFeaturesPlugIn extends AbstractPlugIn {
     this.setShortcutModifiers(KeyEvent.CTRL_MASK + KeyEvent.SHIFT_MASK);
   }
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(final PlugInContext context) throws Exception {
     final ArrayList transactions = new ArrayList();
     for (Iterator i = context.getLayerViewPanel().getSelectionManager()

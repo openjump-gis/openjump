@@ -113,17 +113,16 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
         return validator != null;
     }
 
-    public void initialize(PlugInContext context) throws Exception
-    {
-        context.getFeatureInstaller().addMainMenuPlugin(
-                this,								//exe
-  				      new String[] {MenuNames.TOOLS, MenuNames.TOOLS_QA}, 	//menu path
-                this.getName() + "...", //name methode .getName recieved by AbstractPlugIn 
-                false,			//checkbox
-                null,			//icon
-                createEnableCheck(context.getWorkbenchContext())); //enable check  
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+      context.getFeatureInstaller().addMainMenuPlugin(this, // exe
+          new String[] { MenuNames.TOOLS, MenuNames.TOOLS_QA }, // menu path
+          this.getName() + "...", // name methode .getName recieved by AbstractPlugIn
+          false, // checkbox
+          null, // icon
+          createEnableCheck(context.getWorkbenchContext())); // enable check
     }
-    
+
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 

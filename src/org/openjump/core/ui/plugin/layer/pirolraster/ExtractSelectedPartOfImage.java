@@ -49,213 +49,190 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  * Some parts were taken from Stefan Ostermann's SaveInterpolationAsImagePlugIn.
  * 
  * @author Ole Rahn, (Stefan Ostermann) <br>
- * <br>
- *         FH Osnabr&uuml;ck - University of Applied Sciences Osnabr&uuml;ck, <br>
+ *         <br>
+ *         FH Osnabr&uuml;ck - University of Applied Sciences Osnabr&uuml;ck,
+ *         <br>
  *         Project: PIROL (2005), <br>
  *         Subproject: Daten- und Wissensmanagement
  * 
  * @version $Rev: 2509 $ [sstein] - 22.Feb.2009 - modified to work in OpenJUMP
- * @version $Rev: 4386 [Giuseppe Aruta] - 6.Apr.2015 - added random number to File name
+ * @version $Rev: 4386 [Giuseppe Aruta] - 6.Apr.2015 - added random number to
+ *          File name
  */
 public class ExtractSelectedPartOfImage extends AbstractPlugIn {
 
-    public ExtractSelectedPartOfImage() {
-        // super(new PersonalLogger(DebugUserIds.OLE));
-    }
+  public ExtractSelectedPartOfImage() {
+    // super(new PersonalLogger(DebugUserIds.OLE));
+  }
 
-    /**
-     * @inheritDoc
-     */
-    public String getIconString() {
-        return "extractPart.png";
-    }
+  /**
+   * @inheritDoc
+   */
+  public String getIconString() {
+    return "extractPart.png";
+  }
 
-    /**
-     * @inheritDoc
-     */
-    @Override
-	public String getName() {
-        return I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.Extract-Selected-Part-Of-Image");
-    }
+  /**
+   * @inheritDoc
+   */
+  @Override
+  public String getName() {
+    return I18N.getInstance()
+        .get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.Extract-Selected-Part-Of-Image");
+  }
 
-    /**
-     * @inheritDoc
-     */
-    @Override
-	public boolean execute(PlugInContext context) throws Exception {
-        RasterImageLayer rLayer = (RasterImageLayer) LayerTools
-                .getSelectedLayerable(context, RasterImageLayer.class);
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
 
-        Random rnd = new Random();
-        int n = 1000 + rnd.nextInt(9000);
-        String random = Integer.toString(n);
-        String part = I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of");
-        String fileName = part + rLayer.getName() + "_" + random + ".tif";
+  public boolean execute(PlugInContext context) throws Exception {
+    RasterImageLayer rLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(context, RasterImageLayer.class);
 
-        String newLayerName = context
-                .getLayerManager()
-                .uniqueLayerName(
-                        I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of")
-                                + rLayer.getName() + ".tif");
-        // String extension =
-        // rLayer.getImageFileName().substring(rLayer.getImageFileName().lastIndexOf("."),
-        // rLayer.getImageFileName().length());
+    Random rnd = new Random();
+    int n = 1000 + rnd.nextInt(9000);
+    String random = Integer.toString(n);
+    String part = I18N.getInstance()
+        .get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of");
+    String fileName = part + rLayer.getName() + "_" + random + ".tif";
 
-        File outFile = new File(System.getProperty("java.io.tmpdir")
-                .concat(File.separator).concat(fileName)); // .concat(extension));
+    String newLayerName = context.getLayerManager().uniqueLayerName(
+        I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of")
+            + rLayer.getName() + ".tif");
+    // String extension =
+    // rLayer.getImageFileName().substring(rLayer.getImageFileName().lastIndexOf("."),
+    // rLayer.getImageFileName().length());
 
-        Geometry fence = SelectionTools.getFenceGeometry(context);
-        Envelope envWanted = fence.getEnvelopeInternal().intersection(
-                rLayer.getWholeImageEnvelope());
+    File outFile = new File(System.getProperty("java.io.tmpdir").concat(File.separator).concat(fileName)); // .concat(extension));
 
-        Rectangle subset = rLayer.getRectangleFromEnvelope(envWanted);
-        Raster raster = rLayer.getRasterData(subset);
-        ;
+    Geometry fence = SelectionTools.getFenceGeometry(context);
+    Envelope envWanted = fence.getEnvelopeInternal().intersection(rLayer.getWholeImageEnvelope());
 
-        if (rLayer.getImage().getColorModel() instanceof IndexColorModel) {
-          //  SampleModel sampleModel = rLayer.getImage().getSampleModel();
-            IndexColorModel indexColorModel = (IndexColorModel) rLayer
-                    .getImage().getColorModel();
-            DataBuffer dataBufferIn = raster.getDataBuffer();
-            DataBufferByte dataBufferOut = new DataBufferByte(subset.width
-                    * subset.height * 3, 3);
-            int index = 0;
-            int nCells = subset.height * subset.width;
-            for (int r = 0; r < subset.height; r++) {
-                for (int c = 0; c < subset.width; c++) {
-                    int value = dataBufferIn.getElem(index);
-                    // if(indexColorModel.getAlpha(value) == 255) {
-                    // dataBufferOut.setElem(0, index, rLayer.getNoDataValue());
-                    // }
-                    dataBufferOut.setElem(0, index,
-                            indexColorModel.getRed(value));
-                    dataBufferOut.setElem(1, index + nCells,
-                            indexColorModel.getGreen(value));
-                    dataBufferOut.setElem(2, index + nCells * 2,
-                            indexColorModel.getBlue(value));
-                    index++;
-                }
-            }
+    Rectangle subset = rLayer.getRectangleFromEnvelope(envWanted);
+    Raster raster = rLayer.getRasterData(subset);
+    ;
 
-            int[] bankIndices = new int[3];
-            bankIndices[0] = 0;
-            bankIndices[1] = 1;
-            bankIndices[2] = 2;
-
-            int[] bandOffsets = new int[3];
-            bandOffsets[0] = 0;
-            bandOffsets[1] = raster.getWidth() * raster.getHeight();
-            bandOffsets[2] = 2 * raster.getWidth() * raster.getHeight();
-
-            WritableRaster wRaster = RasterFactory.createBandedRaster(
-                    dataBufferOut, raster.getWidth(), raster.getHeight(),
-                    raster.getWidth(), bankIndices, bandOffsets,
-                    new Point(0, 0));
-            raster = wRaster;
+    if (rLayer.getImage().getColorModel() instanceof IndexColorModel) {
+      // SampleModel sampleModel = rLayer.getImage().getSampleModel();
+      IndexColorModel indexColorModel = (IndexColorModel) rLayer.getImage().getColorModel();
+      DataBuffer dataBufferIn = raster.getDataBuffer();
+      DataBufferByte dataBufferOut = new DataBufferByte(subset.width * subset.height * 3, 3);
+      int index = 0;
+      int nCells = subset.height * subset.width;
+      for (int r = 0; r < subset.height; r++) {
+        for (int c = 0; c < subset.width; c++) {
+          int value = dataBufferIn.getElem(index);
+          // if(indexColorModel.getAlpha(value) == 255) {
+          // dataBufferOut.setElem(0, index, rLayer.getNoDataValue());
+          // }
+          dataBufferOut.setElem(0, index, indexColorModel.getRed(value));
+          dataBufferOut.setElem(1, index + nCells, indexColorModel.getGreen(value));
+          dataBufferOut.setElem(2, index + nCells * 2, indexColorModel.getBlue(value));
+          index++;
         }
+      }
 
-        RasterImageIO rasterImageIO = new RasterImageIO();
+      int[] bankIndices = new int[3];
+      bankIndices[0] = 0;
+      bankIndices[1] = 1;
+      bankIndices[2] = 2;
 
-        rasterImageIO.writeImage(outFile, raster, envWanted,
-                rasterImageIO.new CellSizeXY(rLayer.getMetadata()
-                        .getOriginalCellSize(), rLayer.getMetadata()
-                        .getOriginalCellSize()), rLayer.getMetadata()
-                        .getNoDataValue());
+      int[] bandOffsets = new int[3];
+      bandOffsets[0] = 0;
+      bandOffsets[1] = raster.getWidth() * raster.getHeight();
+      bandOffsets[2] = 2 * raster.getWidth() * raster.getHeight();
 
-        String catName = StandardCategoryNames.WORKING;
-        try {
-            catName = ((Category) context.getLayerNamePanel()
-                    .getSelectedCategories().toArray()[0]).getName();
-        } catch (RuntimeException e1) {
-        }
-
-         Point point = RasterImageIO.getImageDimensions(outFile
-               .getAbsolutePath());
-       Envelope env = RasterImageIO.getGeoReferencing(
-               outFile.getAbsolutePath(), true, point);
-         
-        Viewport viewport = context.getWorkbenchContext().getLayerViewPanel()
-                .getViewport();
-        Resolution requestedRes = RasterImageIO
-                .calcRequestedResolution(viewport);
-        ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
-                /*context.getWorkbenchContext(),*/ outFile.getAbsolutePath(), null,
-                viewport.getEnvelopeInModelCoordinates(), requestedRes);
-        RasterImageLayer ril = new RasterImageLayer(outFile.getName(), context
-                .getWorkbenchContext().getLayerManager(),
-                outFile.getAbsolutePath(), imageAndMetadata.getImage(), env);
-
-        context.getLayerManager().addLayerable(catName, ril);
-        ril.setName(newLayerName);
-        return true;
-
-        // if (rLayer==null){
-        //            context.getWorkbenchFrame().warnUser(I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
-        // return false;
-        // }
-        //
-        // Geometry fence = SelectionTools.getFenceGeometry(context);
-        // Envelope envWanted = fence.getEnvelopeInternal();
-        //
-        // BufferedImage partOfImageWanted = rLayer.getTileAsImage(envWanted);
-        // Raster partOfRasterWanted = rLayer.getTileAsRaster(envWanted);
-        // //[sstein 2 Aug 2010] need to add as we have now the image for
-        // display plus the data
-        //
-        // if (partOfImageWanted==null){
-        // context.getWorkbenchFrame().warnUser(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.fence-in-wrong-region"));
-        // return false;
-        // }
-        //
-        // boolean returnVal = this.putImageIntoMap(partOfImageWanted,
-        // partOfRasterWanted, envWanted, rLayer, context);
-        //
-        // return returnVal;
+      WritableRaster wRaster = RasterFactory.createBandedRaster(dataBufferOut, raster.getWidth(), raster.getHeight(),
+          raster.getWidth(), bankIndices, bandOffsets, new Point(0, 0));
+      raster = wRaster;
     }
 
-    protected boolean putImageIntoMap(BufferedImage partOfImage,
-            Raster partOfRaster, Envelope envelope, RasterImageLayer rLayer,
-            PlugInContext context) {
-        if (partOfImage == null)
-            return false;
+    RasterImageIO rasterImageIO = new RasterImageIO();
 
-        String newLayerName = context
-                .getLayerManager()
-                .uniqueLayerName(
-                        I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of")
-                                + rLayer.getName());
+    rasterImageIO.writeImage(outFile, raster, envWanted,
+        rasterImageIO.new CellSizeXY(rLayer.getMetadata().getOriginalCellSize(),
+            rLayer.getMetadata().getOriginalCellSize()),
+        rLayer.getMetadata().getNoDataValue());
 
-        RasterImageLayer newRasterLayer = new RasterImageLayer(newLayerName,
-                context.getLayerManager(), partOfImage, partOfRaster, envelope);
-
-        String catName = StandardCategoryNames.WORKING;
-
-        try {
-            catName = ((Category) context.getLayerNamePanel()
-                    .getSelectedCategories().toArray()[0]).getName();
-        } catch (RuntimeException e1) {
-        }
-
-        context.getLayerManager().addLayerable(catName, newRasterLayer);
-
-        return true;
+    String catName = StandardCategoryNames.WORKING;
+    try {
+      catName = ((Category) context.getLayerNamePanel().getSelectedCategories().toArray()[0]).getName();
+    } catch (RuntimeException e1) {
     }
 
-    public static MultiEnableCheck createEnableCheck(
-            final WorkbenchContext workbenchContext) {
+    Point point = RasterImageIO.getImageDimensions(outFile.getAbsolutePath());
+    Envelope env = RasterImageIO.getGeoReferencing(outFile.getAbsolutePath(), true, point);
 
-        MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
-        multiEnableCheck.add(checkFactory
-                .createExactlyNLayerablesMustBeSelectedCheck(1,
-                        RasterImageLayer.class));
-        multiEnableCheck.add(checkFactory.createFenceMustBeDrawnCheck());
+    Viewport viewport = context.getWorkbenchContext().getLayerViewPanel().getViewport();
+    Resolution requestedRes = RasterImageIO.calcRequestedResolution(viewport);
+    ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(
+        /* context.getWorkbenchContext(), */ outFile.getAbsolutePath(), null, viewport.getEnvelopeInModelCoordinates(),
+        requestedRes);
+    RasterImageLayer ril = new RasterImageLayer(outFile.getName(), context.getWorkbenchContext().getLayerManager(),
+        outFile.getAbsolutePath(), imageAndMetadata.getImage(), env);
 
-        EnableCheck enableCheck = new CurrentLayerIsRasterImageLayerCheck(
-                workbenchContext.createPlugInContext());
-        multiEnableCheck.add(enableCheck);
+    context.getLayerManager().addLayerable(catName, ril);
+    ril.setName(newLayerName);
+    return true;
 
-        return multiEnableCheck;
+    // if (rLayer==null){
+    // context.getWorkbenchFrame().warnUser(I18N.getInstance().get("pirol.plugIns.EditAttributeByFormulaPlugIn.no-layer-selected"));
+    // return false;
+    // }
+    //
+    // Geometry fence = SelectionTools.getFenceGeometry(context);
+    // Envelope envWanted = fence.getEnvelopeInternal();
+    //
+    // BufferedImage partOfImageWanted = rLayer.getTileAsImage(envWanted);
+    // Raster partOfRasterWanted = rLayer.getTileAsRaster(envWanted);
+    // //[sstein 2 Aug 2010] need to add as we have now the image for
+    // display plus the data
+    //
+    // if (partOfImageWanted==null){
+    // context.getWorkbenchFrame().warnUser(I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.fence-in-wrong-region"));
+    // return false;
+    // }
+    //
+    // boolean returnVal = this.putImageIntoMap(partOfImageWanted,
+    // partOfRasterWanted, envWanted, rLayer, context);
+    //
+    // return returnVal;
+  }
+
+  protected boolean putImageIntoMap(BufferedImage partOfImage, Raster partOfRaster, Envelope envelope,
+      RasterImageLayer rLayer, PlugInContext context) {
+    if (partOfImage == null)
+      return false;
+
+    String newLayerName = context.getLayerManager().uniqueLayerName(
+        I18N.getInstance().get("org.openjump.core.ui.plugin.layer.pirolraster.ExtractSelectedPartOfImage.part-of")
+            + rLayer.getName());
+
+    RasterImageLayer newRasterLayer = new RasterImageLayer(newLayerName, context.getLayerManager(), partOfImage,
+        partOfRaster, envelope);
+
+    String catName = StandardCategoryNames.WORKING;
+
+    try {
+      catName = ((Category) context.getLayerNamePanel().getSelectedCategories().toArray()[0]).getName();
+    } catch (RuntimeException e1) {
     }
+
+    context.getLayerManager().addLayerable(catName, newRasterLayer);
+
+    return true;
+  }
+
+  public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+
+    MultiEnableCheck multiEnableCheck = new MultiEnableCheck();
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+    multiEnableCheck.add(checkFactory.createExactlyNLayerablesMustBeSelectedCheck(1, RasterImageLayer.class));
+    multiEnableCheck.add(checkFactory.createFenceMustBeDrawnCheck());
+
+    EnableCheck enableCheck = new CurrentLayerIsRasterImageLayerCheck(workbenchContext.createPlugInContext());
+    multiEnableCheck.add(enableCheck);
+
+    return multiEnableCheck;
+  }
 
 }

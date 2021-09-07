@@ -10,6 +10,11 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
 public class AddNewLayerViewPlugIn extends AbstractPlugIn {
 
+  @Override
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
     @SuppressWarnings( "deprecation" )

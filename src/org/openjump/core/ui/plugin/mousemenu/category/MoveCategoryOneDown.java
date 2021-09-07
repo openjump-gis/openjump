@@ -65,6 +65,7 @@ public class MoveCategoryOneDown extends AbstractPlugIn {
     }
     
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
         
         JPopupMenu layerNamePopupMenu = context.getWorkbenchContext().getWorkbench().getFrame().getCategoryPopupMenu();
         FeatureInstaller featInst = context.getFeatureInstaller();
@@ -74,9 +75,7 @@ public class MoveCategoryOneDown extends AbstractPlugIn {
                 GUIUtil.toSmallIcon((ImageIcon) getIcon()),
                 MoveCategoryOneDown.createEnableCheck(context.getWorkbenchContext()));
     }
-    
-    
-    
+
     public static MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
                 
         EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);

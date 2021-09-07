@@ -116,6 +116,7 @@ public class ClassifyAttributesPlugIn extends AbstractPlugIn implements
      */
     @Override
     public void initialize(PlugInContext context) throws Exception {
+        super.initialize(context);
 
         sideBarText = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.descriptiontext");
         CLASSIFIER = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.statistics.ClassifyAttributesPlugin.Select-classification-method");

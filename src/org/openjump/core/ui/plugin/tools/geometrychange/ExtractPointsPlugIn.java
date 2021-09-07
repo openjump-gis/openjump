@@ -65,102 +65,102 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 /**
  * Extracts points from polygon or line features and writes them to a new layer
- *  
+ * 
  * @author sstein
  *
  **/
-public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugIn{
+public class ExtractPointsPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
-    private String sName = "Extract Points";
-    private String CLAYER = "select layer";
-    private String DELETE_LAST_POINT_IF_CLOSED = "Account for closed Geometries";
-    
-    private String sideBarText = "Extracts points from polygon or line features and writes them to a new layer. " +
-    		"Note, for closed geometries start point and end point are the same. If closed geometries are to be observed," +
-    		"then the last point is not returned to avoid two overlaying points.";
-    private String sPoints = "points";    
-    
-    private Layer itemlayer = null;
-    private boolean deleteDoublePoints = false;
-	private MultiInputDialog dialog;
-	private JComboBox layerComboBoxBackground;
-    
-    public void initialize(PlugInContext context) throws Exception {
-    		
-    		this.CLAYER = GenericNames.LAYER;
-       		this.sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.Extract-Points");
-    	    this.sideBarText = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.description");
-    		this.sPoints = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.points");
-    	    this.DELETE_LAST_POINT_IF_CLOSED = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.Account-for-closed-Geometries");
-    		
-	        FeatureInstaller featureInstaller = context.getFeatureInstaller();
-	    	featureInstaller.addMainMenuItem(
-	    	        this,								//exe
-	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT}, 	//menu path
-	                this.sName + "...", //name methode .getName recieved by AbstractPlugIn 
-	                false,			//checkbox
-	                null,			//icon
-	                createEnableCheck(context.getWorkbenchContext())); //enable check
-    }
-    
-    public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+  private String sName = "Extract Points";
+  private String CLAYER = "select layer";
+  private String DELETE_LAST_POINT_IF_CLOSED = "Account for closed Geometries";
 
-        return new MultiEnableCheck()
-                        .add(checkFactory.createAtLeastNLayersMustExistCheck(1));
-    }
-    
-	public boolean execute(PlugInContext context) throws Exception{
-	    this.reportNothingToUndoYet(context);
-	        
- 		dialog = new MultiInputDialog(
-	            context.getWorkbenchFrame(), this.sName, true);
-	        setDialogValues(dialog, context);
-	        GUIUtil.centreOnWindow(dialog);
-	        dialog.setVisible(true);
-	        if (! dialog.wasOKPressed()) { return false; }
-	        getDialogValues(dialog);	    
-	    return true;
-	}
-	
-    private void setDialogValues(MultiInputDialog dialog, PlugInContext context)
-	  {
-	    dialog.setSideBarDescription(this.sideBarText);	    
-    	JComboBox addLayerComboBoxBuild = dialog.addLayerComboBox(this.CLAYER, context.getCandidateLayer(0), null, context.getLayerManager());
-    	dialog.addCheckBox(this.DELETE_LAST_POINT_IF_CLOSED, this.deleteDoublePoints);
-	  }
+  private String sideBarText = "Extracts points from polygon or line features and writes them to a new layer. "
+      + "Note, for closed geometries start point and end point are the same. If closed geometries are to be observed,"
+      + "then the last point is not returned to avoid two overlaying points.";
+  private String sPoints = "points";
 
-	private void getDialogValues(MultiInputDialog dialog) {
-    	this.itemlayer = dialog.getLayer(this.CLAYER);
-    	this.deleteDoublePoints = dialog.getBoolean(this.DELETE_LAST_POINT_IF_CLOSED);
-	  }
-	
-	
-    public void run(TaskMonitor monitor, PlugInContext context) throws Exception{            			    
-    	 System.gc();
-    	 final Collection features = this.itemlayer.getFeatureCollectionWrapper().getFeatures();    	 
-    	 FeatureSchema fs = this.itemlayer.getFeatureCollectionWrapper().getFeatureSchema();
-    	 //--
-    	 final String ITEM_ID = "item_id";
-    	 final String SEQ_ID = "sequence_id";    	 
-    	 FeatureSchema fsNew = (FeatureSchema)fs.clone();
-    	 fsNew.addAttribute(ITEM_ID, AttributeType.INTEGER);
-    	 fsNew.addAttribute(SEQ_ID, AttributeType.INTEGER);
-    	 //--
-    	 FeatureDataset fd = new FeatureDataset(fsNew);
-    	 for (Iterator iterator = features.iterator(); iterator.hasNext();) {
-			Feature f = (Feature) iterator.next();
-			ArrayList<Feature> points = FeatureCollectionTools.convertToPointFeature(f, this.deleteDoublePoints);
-		    int seq_count=0;
-			for (Iterator iterator2 = points.iterator(); iterator2.hasNext();) {
-				Feature pt = (Feature) iterator2.next();
-				pt = FeatureCollectionTools.copyFeatureAndSetFeatureSchema(pt, fsNew);
-				pt.setAttribute(ITEM_ID, f.getID());
-				pt.setAttribute(SEQ_ID, seq_count);
-				fd.add(pt);
-			    seq_count++;
-			}			
-		}
-    	context.addLayer(StandardCategoryNames.RESULT, this.itemlayer.getName() + "-" + sPoints, fd);
+  private Layer itemlayer = null;
+  private boolean deleteDoublePoints = false;
+  private MultiInputDialog dialog;
+  private JComboBox layerComboBoxBackground;
+
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+
+    this.CLAYER = GenericNames.LAYER;
+    this.sName = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.Extract-Points");
+    this.sideBarText = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.description");
+    this.sPoints = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.points");
+    this.DELETE_LAST_POINT_IF_CLOSED = I18N.getInstance()
+        .get("org.openjump.core.ui.plugin.tools.ExtractPointsPlugIn.Account-for-closed-Geometries");
+
+    FeatureInstaller featureInstaller = context.getFeatureInstaller();
+    featureInstaller.addMainMenuItem(this, // exe
+        new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, MenuNames.CONVERT }, // menu path
+        this.sName + "...", // name methode .getName recieved by AbstractPlugIn
+        false, // checkbox
+        null, // icon
+        createEnableCheck(context.getWorkbenchContext())); // enable check
+  }
+
+  public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+
+    return new MultiEnableCheck().add(checkFactory.createAtLeastNLayersMustExistCheck(1));
+  }
+
+  public boolean execute(PlugInContext context) throws Exception {
+    this.reportNothingToUndoYet(context);
+
+    dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.sName, true);
+    setDialogValues(dialog, context);
+    GUIUtil.centreOnWindow(dialog);
+    dialog.setVisible(true);
+    if (!dialog.wasOKPressed()) {
+      return false;
     }
+    getDialogValues(dialog);
+    return true;
+  }
+
+  private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
+    dialog.setSideBarDescription(this.sideBarText);
+    JComboBox addLayerComboBoxBuild = dialog.addLayerComboBox(this.CLAYER, context.getCandidateLayer(0), null,
+        context.getLayerManager());
+    dialog.addCheckBox(this.DELETE_LAST_POINT_IF_CLOSED, this.deleteDoublePoints);
+  }
+
+  private void getDialogValues(MultiInputDialog dialog) {
+    this.itemlayer = dialog.getLayer(this.CLAYER);
+    this.deleteDoublePoints = dialog.getBoolean(this.DELETE_LAST_POINT_IF_CLOSED);
+  }
+
+  public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
+    System.gc();
+    final Collection features = this.itemlayer.getFeatureCollectionWrapper().getFeatures();
+    FeatureSchema fs = this.itemlayer.getFeatureCollectionWrapper().getFeatureSchema();
+    // --
+    final String ITEM_ID = "item_id";
+    final String SEQ_ID = "sequence_id";
+    FeatureSchema fsNew = (FeatureSchema) fs.clone();
+    fsNew.addAttribute(ITEM_ID, AttributeType.INTEGER);
+    fsNew.addAttribute(SEQ_ID, AttributeType.INTEGER);
+    // --
+    FeatureDataset fd = new FeatureDataset(fsNew);
+    for (Iterator iterator = features.iterator(); iterator.hasNext();) {
+      Feature f = (Feature) iterator.next();
+      ArrayList<Feature> points = FeatureCollectionTools.convertToPointFeature(f, this.deleteDoublePoints);
+      int seq_count = 0;
+      for (Iterator iterator2 = points.iterator(); iterator2.hasNext();) {
+        Feature pt = (Feature) iterator2.next();
+        pt = FeatureCollectionTools.copyFeatureAndSetFeatureSchema(pt, fsNew);
+        pt.setAttribute(ITEM_ID, f.getID());
+        pt.setAttribute(SEQ_ID, seq_count);
+        fd.add(pt);
+        seq_count++;
+      }
+    }
+    context.addLayer(StandardCategoryNames.RESULT, this.itemlayer.getName() + "-" + sPoints, fd);
+  }
 }

@@ -37,34 +37,26 @@ import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.plugin.ChangeCoordinateSystemPlugIn;
 
-public class ProjectionPlugIn extends AbstractPlugIn
-{
-    private WorkbenchContext workbenchContext;
-    
-    //final static String sDeleteEmptyGeometries=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
-    final static String sName="test projections";
+public class ProjectionPlugIn extends AbstractPlugIn {
+  private WorkbenchContext workbenchContext;
 
-    public void initialize(PlugInContext context) throws Exception
-    {        
-        workbenchContext = context.getWorkbenchContext();
-        context.getFeatureInstaller().addMainMenuPlugin(
-        		new ChangeCoordinateSystemPlugIn(), 
-				new String[] {MenuNames.TOOLS}, 
-				sName, 
-				false, 
-				null, 
-				this.createEnableCheck(workbenchContext));
-    }
-    
-    public boolean execute(final PlugInContext context) throws Exception
-    {
+  // final static String
+  // sDeleteEmptyGeometries=I18N.getInstance().get("org.openjump.core.ui.plugin.tools.DeleteEmptyGeometriesPlugIn.Delete-Empty-Geometries-in-Selection");
+  final static String sName = "test projections";
 
-        return true;
-    }
-        
-    public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) 
-    {
-        EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
-        return new MultiEnableCheck().add(checkFactory.createTaskWindowMustBeActiveCheck());
-    }    
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    workbenchContext = context.getWorkbenchContext();
+    context.getFeatureInstaller().addMainMenuPlugin(new ChangeCoordinateSystemPlugIn(),
+        new String[] { MenuNames.TOOLS }, sName, false, null, this.createEnableCheck(workbenchContext));
+  }
+
+  public boolean execute(final PlugInContext context) throws Exception {
+    return true;
+  }
+
+  public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
+    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
+    return new MultiEnableCheck().add(checkFactory.createTaskWindowMustBeActiveCheck());
+  }
 }

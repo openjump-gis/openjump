@@ -48,6 +48,10 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 public class ScaleBarPlugIn extends AbstractPlugIn {
   public static final Icon ICON = IconLoader.icon("show_scale.png");
 
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+  }
+
   public boolean execute(PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
     ScaleBarRenderer.setEnabled(

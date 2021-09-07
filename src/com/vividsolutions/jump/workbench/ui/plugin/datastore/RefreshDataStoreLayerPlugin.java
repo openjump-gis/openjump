@@ -46,7 +46,11 @@ public class RefreshDataStoreLayerPlugin extends AbstractPlugIn {
         );
         return mec;
     }
-    
+
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
       @SuppressWarnings( "deprecation" )
     	Layer layer = context.getLayerNamePanel().getSelectedLayers()[0];

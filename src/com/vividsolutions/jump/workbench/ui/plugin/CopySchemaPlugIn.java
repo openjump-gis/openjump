@@ -64,7 +64,8 @@ public class CopySchemaPlugIn extends AbstractPlugIn {
 	public static ImageIcon ICON = IconLoader.icon("schema_copy.png");	
  
     public void initialize(PlugInContext context) throws Exception {
-    	    	 
+        super.initialize(context);
+
         WorkbenchContext workbenchContext = context.getWorkbenchContext();
         FeatureInstaller featureInstaller = context.getFeatureInstaller();
         

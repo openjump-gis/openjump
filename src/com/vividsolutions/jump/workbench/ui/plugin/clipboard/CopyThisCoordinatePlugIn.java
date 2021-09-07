@@ -49,7 +49,11 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class CopyThisCoordinatePlugIn extends AbstractPlugIn {
     public Icon ICON = IconLoader.icon("crosshair.png");
-  
+
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+    }
+
     public boolean execute(PlugInContext context) throws Exception {
         final Coordinate c =
             context.getLayerViewPanel().getViewport().toModelCoordinate(

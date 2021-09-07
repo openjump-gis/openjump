@@ -89,6 +89,7 @@ public class SaveLayersWithoutDataSourcePlugIn extends AbstractPlugIn {
     
     public void initialize(PlugInContext context) throws Exception {
       super.initialize(context);
+
       fileChooser = new JFCWithEnterAction();
       fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
       fileChooser.setDialogTitle(FILECHOOSER);

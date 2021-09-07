@@ -23,21 +23,6 @@ public class AdditionalResultsPlugIn extends AbstractPlugIn {
     private String sName = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.Result-viewer");
     private static String sWarning = I18N.getInstance().get("org.openjump.sextante.gui.additionalResults.AdditionalResultsPlugIn.List-of-results-is-empty");
 
-    @Override
-    public void initialize(PlugInContext context) throws Exception {
-        // context.getFeatureInstaller().addMainMenuPlugin(this,
-        // new String[] { MenuNames.WINDOW }, getName(), false, getIcon(),
-        // getEnableCheck());
-        // super.initialize(context);
-
-        // context.getFeatureInstaller().addMainMenuPlugin(this,
-        // new String[] { MenuNames.WINDOW }, sName, false,
-        // getColorIcon(), getEnableCheck()
-        //
-        // );
-
-    }
-
     public MultiEnableCheck createEnableCheck(
             final WorkbenchContext workbenchContext) {
         return new MultiEnableCheck().add(resultListMustNotBeEmpy());
