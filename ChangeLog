@@ -4,6 +4,10 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2021-09-07 mmichaud
+  * Fix #37 : make it possible to have optional attributes in XMLBinder
+              (example in BasicStyle.java2xml using required=false)
+
 2021-09-05 mmichaud
   * Update to JTS 1.18.2, add GeometryFixer algorithm to OpenJUMP MakeValidPlugIn
 
