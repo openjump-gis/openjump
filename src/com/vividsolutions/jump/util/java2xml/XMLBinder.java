@@ -72,9 +72,14 @@ public class XMLBinder {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
-    private HashMap<Class,CustomConverter> classToCustomConverterMap = new HashMap<>();
+    // Map classes to converters defining how to represent certain objects in XML
+    private final HashMap<Class<?>,CustomConverter> classToCustomConverterMap = new HashMap<>();
 
-    public XMLBinder() {
+  /**
+   * Initialize an XMLBinder and register CustomConverters for current classes like
+   * Class, Color, Date, Font...
+   */
+  public XMLBinder() {
         classToCustomConverterMap.put(Class.class,
             new CustomConverter() {
                 public Object toJava(String value) {
@@ -88,7 +93,7 @@ public class XMLBinder {
                 }
 
                 public String toXML(Object object) {
-                    return ((Class) object).getName();
+                    return ((Class<?>) object).getName();
                 }
             });
         classToCustomConverterMap.put(Color.class,
@@ -308,12 +313,14 @@ public class XMLBinder {
                 });
     }
 
-    private String specFilename(Class c) {
+    /** Return the name of the java2xml file containing binding definition.*/
+    private String specFilename(Class<?> c) {
         return StringUtil.classNameWithoutPackageQualifiers(c.getName()) +
         ".java2xml";
     }
 
-    protected List<Element> specElements(Class c)
+    /** Return the List of XML Elements to be used to serialize a Class.*/
+    protected List<Element> specElements(Class<?> c)
                 throws XMLBinderException, JDOMException, IOException {
 
         try (InputStream stream = specResourceStream(c)) {
@@ -339,7 +346,7 @@ public class XMLBinder {
         }
     }
 
-    private InputStream specResourceStream(Class c) {
+    private InputStream specResourceStream(Class<?> c) {
         for (Class<?> clazz : LangUtil.classesAndInterfaces(c)) {
             Assert.isTrue(clazz.isAssignableFrom(c));
 
@@ -353,14 +360,14 @@ public class XMLBinder {
         return null;
     }
 
-    public void addCustomConverter(Class c, CustomConverter converter) {
+    public void addCustomConverter(Class<?> c, CustomConverter converter) {
         classToCustomConverterMap.put(c, converter);
     }
 
     /**
      * @param c for error messages
      */
-    protected void visit(List<Element> specElements, SpecVisitor visitor, Class c)
+    protected void visit(List<Element> specElements, SpecVisitor visitor, Class<?> c)
         throws Exception {
         for (Element specElement : specElements) {
             Attribute xmlName = specElement.getAttribute("xml-name");
@@ -373,6 +380,9 @@ public class XMLBinder {
 
             Attribute javaName = specElement.getAttribute("java-name");
             String attributeValue = javaName == null ? null : javaName.getValue();
+
+            Attribute requiredAttribute = specElement.getAttribute("required");
+            boolean required = requiredAttribute == null || requiredAttribute.getValue().equals("true");
             //javaName is null if tag does nothing other than add a level to the
             //hierarchy [Jon Aquino]
             if (specElement.getName().equals("element")) {
@@ -381,18 +391,17 @@ public class XMLBinder {
             }
 
             if (specElement.getName().equals("attribute")) {
-                visitor.attributeSpecFound(xmlName.getValue(), attributeValue);
+                visitor.attributeSpecFound(xmlName.getValue(), attributeValue, required);
             }
         }
     }
 
-    public Object toJava(String text, Class c) {
+    public Object toJava(String text, Class<?> c) {
         return (!text.equals("null")) ?
                 classToCustomConverterMap.get(customConvertableClass(c)).toJava(text) : null;
     }
 
-    protected boolean specifyingTypeExplicitly(Class c)
-                throws XMLBinderException {
+    protected boolean specifyingTypeExplicitly(Class<?> c) {
         //The int and double classes are abstract. Filter them out. [Jon Aquino]
         if (hasCustomConverter(c)) {
             return false;
@@ -403,13 +412,13 @@ public class XMLBinder {
         c.isInterface();
     }
 
-    protected Class fieldClass(Method setter) {
+    protected Class<?> fieldClass(Method setter) {
         Assert.isTrue(setter.getParameterTypes().length == 1);
 
         return setter.getParameterTypes()[0];
     }
 
-    public Method setter(Class c, String field) throws XMLBinderException {
+    public Method setter(Class<?> c, String field) throws XMLBinderException {
         Method[] methods = c.getMethods();
 
         //Exact match first [Jon Aquino]
@@ -453,14 +462,14 @@ public class XMLBinder {
         ).toXML(object);
     }
 
-    protected boolean hasCustomConverter(Class fieldClass) {
+    protected boolean hasCustomConverter(Class<?> fieldClass) {
         return customConvertableClass(fieldClass) != null;
     }
 
     /**
      * @return null if c doesn't have a custom converter
      */
-    private Class customConvertableClass(Class c) {
+    private Class<?> customConvertableClass(Class<?> c) {
         //Use #isAssignableFrom rather than #contains because some classes
         //may be interfaces. [Jon Aquino]
         for (Class<?> customConvertableClass : classToCustomConverterMap.keySet()) {
@@ -476,7 +485,7 @@ public class XMLBinder {
         void tagSpecFound(String xmlName, String javaName,
             List<Element> specChildElements) throws Exception;
 
-        void attributeSpecFound(String xmlName, String javaName)
+        void attributeSpecFound(String xmlName, String javaName, boolean required)
             throws Exception;
     }
 

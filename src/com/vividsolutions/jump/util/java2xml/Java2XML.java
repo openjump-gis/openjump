@@ -47,6 +47,11 @@ import org.jdom2.output.XMLOutputter;
 
 import com.vividsolutions.jump.workbench.Logger;
 
+/**
+ * Write a java object to XML.
+ * Rules to convert the object to xml tags and attributes are defined in a
+ * .java2xml file or in a CustomConverter (@link XMLBinder)
+ */
 public class Java2XML extends XMLBinder {
 
     public Java2XML() {
@@ -78,6 +83,14 @@ public class Java2XML extends XMLBinder {
         xmlOutputter.output(document, writer);
     }
 
+    /**
+     * Write an object and its fields into an XML element using the visitor pattern.
+     * @param object object to serialize into a XML Element
+     * @param tag the tag Element to store the java object into
+     * @param specElements elements of the object to serialize as defined in the
+     *                     java2xml definition file
+     * @throws Exception if an exception occurs during serialization
+     */
     private void write(final Object object, final Element tag, List<Element> specElements)
             throws Exception {
         try {
@@ -101,18 +114,26 @@ public class Java2XML extends XMLBinder {
                         write(object, childTag, specChildElements);
                     }
                 }
-                public void attributeSpecFound(String xmlName, String javaName)
+                public void attributeSpecFound(String xmlName, String javaName, boolean required)
                         throws Exception {
-                    writeAttribute(tag, xmlName, getter(object.getClass(),
-                            javaName).invoke(object));
+                    Object value = getter(object.getClass(), javaName).invoke(object);
+                    if (required || value != null)
+                        writeAttribute(tag, xmlName, value);
                 }
             }, object.getClass());
         } catch (Exception e) {
-        	Logger.error("Java2XML: Exception writing "
-                    + object.getClass());
+        	  Logger.error("Java2XML: Exception writing " + object.getClass());
             throw e;
         }
     }
+
+    /**
+     * Write a non null object value as an attribute of Element tag.
+     * @param tag the tag to add object value to
+     * @param name the attribute name to store object value
+     * @param value the value to store
+     * @throws XMLBinderException if value is null
+     */
     private void writeAttribute(Element tag, String name, Object value)
             throws XMLBinderException {
         if (value == null) {
@@ -121,6 +142,17 @@ public class Java2XML extends XMLBinder {
         }
         tag.setAttribute(new Attribute(name, toXML(value)));
     }
+
+    /**
+     * Add a child element containing object value to the parent tag.
+     * @param tag the parent tag element to add object value to
+     * @param name the name of the new child element
+     * @param value the value to add
+     * @param specifyingType whether the object type must be written to the XML
+     *                       definition or not
+     * @return the child element added
+     * @throws Exception if an exception occurs
+     */
     private Element writeChildTag(Element tag, String name, Object value,
             boolean specifyingType) throws Exception {
         Element childTag = new Element(name);
@@ -133,14 +165,14 @@ public class Java2XML extends XMLBinder {
         } else if (hasCustomConverter(value.getClass())) {
             childTag.setText(toXML(value));
         } else if (value instanceof Map) {
-            for (Object key : ((Map)value).keySet()) {
+            for (Object key : ((Map<?,?>)value).keySet()) {
                 Element mappingTag = new Element("mapping");
                 childTag.addContent(mappingTag);
                 writeChildTag(mappingTag, "key", key, true);
-                writeChildTag(mappingTag, "value", ((Map) value).get(key), true);
+                writeChildTag(mappingTag, "value", ((Map<?,?>) value).get(key), true);
             }
         } else if (value instanceof Collection) {
-            for (Object item : (Collection)value) {
+            for (Object item : (Collection<?>)value) {
                 writeChildTag(childTag, "item", item, true);
             }
         } else if (value instanceof QName) {
@@ -152,6 +184,10 @@ public class Java2XML extends XMLBinder {
         return childTag;
     }
 
+    /**
+     * Write object value as a Collection of tag Elements. The collection can contain
+     * several elements if value itself is a Collection.
+     */
     private Collection<Element> writeChildTags(Element tag, String name, Object value,
             boolean specifyingType) throws Exception {
 
@@ -159,7 +195,7 @@ public class Java2XML extends XMLBinder {
         if (value instanceof Collection) {
             // Might or might not need to specify type, depending on how
             // concrete the setter's parameter is. [Jon Aquino]
-            for (Object item : (Collection)value) {
+            for (Object item : (Collection<?>)value) {
                 childTags.add(writeChildTag(tag, name, item, specifyingType));
             }
         } else {
@@ -168,7 +204,14 @@ public class Java2XML extends XMLBinder {
         return childTags;
     }
 
-    private Method getter(Class fieldClass, String field)
+    /**
+     * Use reflexion to find the getter method associated to a field.
+     * @param fieldClass the java class
+     * @param field the field name
+     * @return the java method returning the field value if exists
+     * @throws XMLBinderException if no getter can be found for the field
+     */
+    private Method getter(Class<?> fieldClass, String field)
             throws XMLBinderException {
         Method[] methods = fieldClass.getMethods();
         // Exact match first [Jon Aquino]

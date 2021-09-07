@@ -48,9 +48,13 @@ import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.Logger;
 
+/**
+ * Convert a XML document into a java Object using XMLBinder and a java2xml
+ * mapping file.
+ */
 public class XML2Java extends XMLBinder {
 
-    private ArrayList<Listener> listeners = new ArrayList<>();
+    private final ArrayList<Listener> listeners = new ArrayList<>();
     private ClassLoader classLoader = getClass().getClassLoader();
 
     public XML2Java() {
@@ -60,27 +64,27 @@ public class XML2Java extends XMLBinder {
         this.classLoader = classLoader;
     }
 
-    public Object read(String xml, Class c) throws Exception {
+    public Object read(String xml, Class<?> c) throws Exception {
         try (StringReader reader = new StringReader(xml)) {
             return read(reader, c);
         }
     }
 
-    public Object read(Reader reader, Class c) throws Exception {
+    public Object read(Reader reader, Class<?> c) throws Exception {
         return read(new SAXBuilder().build(reader).getRootElement(), c);
     }
 
-    public Object read(InputStream inputStream, Class c) throws Exception {
+    public Object read(InputStream inputStream, Class<?> c) throws Exception {
         return read(new SAXBuilder().build(inputStream).getRootElement(), c);
     }
 
-    public Object read(File file, Class c) throws Exception {
+    public Object read(File file, Class<?> c) throws Exception {
         try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
             return new XML2Java().read(bis, c);
         }
     }
 
-    private void read(final Element tag, final Object object, List specElements)
+    private void read(final Element tag, final Object object, List<Element> specElements)
             throws Exception {
 
         Assert.isTrue(tag != null);
@@ -88,7 +92,7 @@ public class XML2Java extends XMLBinder {
         visit(specElements, new SpecVisitor() {
 
             private void fillerTagSpecFound(String xmlName,
-                    List specChildElements) throws Exception {
+                    List<Element> specChildElements) throws Exception {
                 if (tag.getChildren(xmlName).size() == 0) {
                 	System.err.println("WARNING: Expected 1 <" + xmlName + "> tag but found None");
                 	return;
@@ -102,7 +106,7 @@ public class XML2Java extends XMLBinder {
             }
 
             private void normalTagSpecFound(String xmlName, String javaName,
-                    List specChildElements) throws Exception {
+                    List<Element> specChildElements) throws Exception {
                 try {
                     setValuesFromTags(object, setter(object.getClass(), javaName),
                         tag.getChildren(xmlName));
@@ -119,7 +123,7 @@ public class XML2Java extends XMLBinder {
             }
 
             public void tagSpecFound(String xmlName, String javaName,
-                    List specChildElements) throws Exception {
+                    List<Element> specChildElements) throws Exception {
                 if (javaName == null) {
                     fillerTagSpecFound(xmlName, specChildElements);
                 } else {
@@ -127,17 +131,19 @@ public class XML2Java extends XMLBinder {
                 }
             }
 
-            public void attributeSpecFound(String xmlName, String javaName)
+            public void attributeSpecFound(String xmlName, String javaName, boolean required)
                     throws Exception {
-                if (tag.getAttribute(xmlName) == null) {
+                if (tag.getAttribute(xmlName) == null && required) {
                     String msg = ("Expected '"
                             + xmlName
                             + "' attribute but found none. Tag = "
                             + tag.getName()
                             + "; Attributes = "
                             + StringUtil.toCommaDelimitedString(tag.getAttributes()));
+                    throw new XMLBinderException(msg);
                     // [sstein 5April2008] replaced XMLB exception by Log
                     // so when a problem with styling appears data are still loaded
+                    /*
                     if (tag.getName().equalsIgnoreCase("style")){
                     	Logger.warn(msg);
                     	return; //return to avoid further messages
@@ -159,15 +165,18 @@ public class XML2Java extends XMLBinder {
                     else{
                     	throw new XMLBinderException(msg);
                     }
+                    */
                 }
-                Method setter = setter(object.getClass(), javaName);
-                setValue(object, setter, toJava(tag.getAttribute(xmlName)
+                else if (tag.getAttribute(xmlName) != null) {
+                    Method setter = setter(object.getClass(), javaName);
+                    setValue(object, setter, toJava(tag.getAttribute(xmlName)
                         .getValue(), setter.getParameterTypes()[0]));
+                }
             }
         }, object.getClass());
     }
 
-    private Object read(Element tag, Class c) throws Exception {
+    private Object read(Element tag, Class<?> c) throws Exception {
 
         if (tag.getAttribute("null") != null
                 && tag.getAttributeValue("null").equals("true")) {
@@ -223,17 +232,17 @@ public class XML2Java extends XMLBinder {
                                     + "> to have 1 <value> tag under <mapping> but found "
                                     + mappingTag.getChildren("key").size());
                 }
-                ((Map) object).put(read(mappingTag.getChild("key"),
+                ((Map<Object,Object>) object).put(read(mappingTag.getChild("key"),
                         Object.class), read(mappingTag.getChild("value"),
                         Object.class));
             }
-        } else if (object instanceof Collection) {
+        } else if (object instanceof Collection<?>) {
             for (Element itemTag : tag.getChildren()) {
                 if (!itemTag.getName().equals("item")) {
                     throw new XMLBinderException("Expected <" + tag.getName()
                             + "> to have <item> tag but found none");
                 }
-                ((Collection) object).add(read(itemTag, Object.class));
+                ((Collection<Object>) object).add(read(itemTag, Object.class));
             }
         } else {
             read(tag, object, specElements(object.getClass()));
@@ -241,7 +250,7 @@ public class XML2Java extends XMLBinder {
         return object;
     }
 
-    private void fireCreatingObject(Class c) {
+    private void fireCreatingObject(Class<?> c) {
         for (Listener listener : listeners) {
             listener.creatingObject(c);
         }
@@ -272,6 +281,6 @@ public class XML2Java extends XMLBinder {
     }
 
     public interface Listener {
-        void creatingObject(Class c);
+        void creatingObject(Class<?> c);
     }
 }
