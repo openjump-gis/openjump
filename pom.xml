@@ -114,6 +114,18 @@
                       <outputDirectory>${db.folder}</outputDirectory>
                     </configuration>
                   </execution>
+                  <execution>
+                    <id>PLUS-install-jdbc-sqlite</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/xerial/sqlite-jdbc/releases/download/3.36.0.3/sqlite-jdbc-3.36.0.3.jar</url>
+                      <sha1>7fa71c4dfab806490cb909714fb41373ec552c29</sha1>
+                      <unpack>false</unpack>
+                      <outputDirectory>${db.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
                   <!-- plus extensions -->
                   <execution>
                     <id>PLUS-install-aggregation_extension</id>
