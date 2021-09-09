@@ -64,6 +64,7 @@
           <properties>
             <core.folder>${project.build.directory}/lib.ext.core/</core.folder>
             <plus.folder>${project.build.directory}/lib.ext.plus/</plus.folder>
+            <db.folder>${plus.folder}/dbdatastore/</db.folder>
           </properties>
           <build>
             <plugins>
@@ -100,6 +101,20 @@
                     </configuration>
                   </execution>
                   -->
+                  <!-- plus dbdatastore jdbc libs -->
+                  <execution>
+                    <id>PLUS-install-jdbc-mariadb</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://downloads.mariadb.com/Connectors/java/connector-java-2.7.3/mariadb-java-client-2.7.3.jar</url>
+                      <sha1>4a2edc05bd882ad19371d2615c2635dccf8d74f0</sha1>
+                      <unpack>false</unpack>
+                      <outputDirectory>${db.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <!-- plus extensions -->
                   <execution>
                     <id>PLUS-install-aggregation_extension</id>
                     <goals>
