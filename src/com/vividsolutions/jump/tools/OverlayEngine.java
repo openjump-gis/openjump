@@ -39,7 +39,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.precision.EnhancedPrecisionOp;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.BasicFeature;
 import com.vividsolutions.jump.feature.Feature;
@@ -125,9 +126,9 @@ public class OverlayEngine {
         Geometry intersection = null;
 
         try {
-            //TODO check with MD if it is still relevant to use EnhancedPrecisionOp
-            intersection = EnhancedPrecisionOp.intersection(a.getGeometry(),
-                    b.getGeometry());
+            // 2021-09-11 [mmichaud] replace old EnhancedPrecisionOp.intersection by the new
+            // OverlayNGRobust.overlay which is both faster and more robust.
+            intersection = OverlayNGRobust.overlay(a.getGeometry(), b.getGeometry(), OverlayNG.INTERSECTION);
         } catch (Exception ex) {
             monitor.report(ex);
             Logger.error(a.getGeometry().toString());

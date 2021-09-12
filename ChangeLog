@@ -4,6 +4,10 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2021-09-12 mmichaud
+  * Use new JTS overlayng algorithm for OverlayPlugIn
+  * Use new JTS overlayng algorithm for UnionByAttributePlugIn
+
 2021-09-07 mmichaud
   * Fix #37 : make it possible to have optional attributes in XMLBinder
               (example in BasicStyle.java2xml using required=false)

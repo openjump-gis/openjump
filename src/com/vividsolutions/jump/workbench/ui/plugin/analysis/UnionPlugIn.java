@@ -32,28 +32,15 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
-import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
-
-import org.locationtech.jts.geom.Envelope;
+import com.vividsolutions.jump.feature.*;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
+import org.locationtech.jts.operation.overlayng.UnaryUnionNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureCollection;
-import com.vividsolutions.jump.feature.FeatureDataset;
-import com.vividsolutions.jump.feature.FeatureDatasetFactory;
-import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
@@ -67,13 +54,32 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
+import javax.swing.*;
+
 
 public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
-    private String LAYER = I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.layer");
-    private String SELECTED_ONLY = I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.selected-features-only");
+
+    private final String LAYER = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.layer");
+    private final String SELECTED_ONLY = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.selected-features-only");
+    private final String LEGACY_ALGO = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.legacy-algo");
+    private final String LEGACY_ALGO_TT = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.legacy-algo-tt");
+    private final String OVERLAY_NG_ALGO = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.overlay-ng-algo");
+    private final String OVERLAY_NG_ALGO_TT = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.overlay-ng-algo-tt");
+    private final String FLOATING_PRECISION_MODEL = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.floating-precision-model");
+    private final String FLOATING_PRECISION_MODEL_TT = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.floating-precision-model-tt");
+    private final String FIXED_PRECISION_MODEL = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.fixed-precision-model");
+    private final String FIXED_PRECISION_MODEL_TT = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.fixed-precision-model-tt");
+    private final String PRECISION = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.fixed-precision-model");
+    private final String PRECISION_TT = I18N.JUMP.get("ui.plugin.analysis.UnionPlugIn.fixed-precision-model-tt");
+
     private boolean useSelected = false;
+    private boolean overlayNgAlgo = true;
+    private boolean legacyAlgo = false;
+    private boolean floatingPrecision = true;
+    private boolean fixedPrecision = false;
+    private double precision = 0.001;
     private MultiInputDialog dialog;
-    private JComboBox addLayerComboBox;
+
     
     public UnionPlugIn() {
     }
@@ -81,10 +87,9 @@ public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     public void initialize(PlugInContext context) throws Exception {
         super.initialize(context);
         FeatureInstaller featureInstaller = context.getFeatureInstaller();
-        featureInstaller.addMainMenuItem(
-            this,
+        featureInstaller.addMainMenuPlugin(this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-            new JMenuItem(this.getName() + "..."),
+            this.getName() + "...", false, null,
             createEnableCheck(context.getWorkbenchContext()));  
     }
     
@@ -97,21 +102,19 @@ public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
     }
     
     public boolean execute(PlugInContext context) throws Exception {
-    	//[sstein, 16.07.2006] put here again to load correct language
+    	  //[sstein, 16.07.2006] put here again to load correct language
         //[mmichaud 2007-05-20] move to UnionPlugIn constructor to load the string only once
         //LAYER = I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.layer");
         //Unlike ValidatePlugIn, here we always call #initDialog because we want
         //to update the layer comboboxes. [Jon Aquino]
         int n = context.getLayerViewPanel().getSelectionManager()
-		  .getFeaturesWithSelectedItems().size();
+            .getFeaturesWithSelectedItems().size();
         useSelected = (n > 0);
         initDialog(context);
         dialog.setVisible(true);
 
-        if (!dialog.wasOKPressed()) {
-            return false;
-        }
-
+        if (! dialog.wasOKPressed()) { return false; }
+        getDialogValues(dialog);
         return true;
     }
 
@@ -127,20 +130,51 @@ public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
             dialog.setSideBarDescription(
                 I18N.getInstance().get("ui.plugin.analysis.UnionPlugIn.creates-a-new-layer-containing-the-union-of-all-the-features-in-the-input-layer"));
         }
-        String fieldName = LAYER;
         if (useSelected) {
             dialog.addLabel(SELECTED_ONLY);
         }
         else {
-            addLayerComboBox = dialog.addLayerComboBox(fieldName, context.getCandidateLayer(0), null, context.getLayerManager());
+            dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
         }
+        JRadioButton overlayNgAlgoRB = dialog
+            .addRadioButton(OVERLAY_NG_ALGO,"ALGO_TYPE",overlayNgAlgo,OVERLAY_NG_ALGO_TT);
+        JRadioButton legacyAlgoRB = dialog
+            .addRadioButton(LEGACY_ALGO,"ALGO_TYPE",legacyAlgo,LEGACY_ALGO_TT);
+        JRadioButton floatingPrecisionRB = dialog
+            .addRadioButton(FLOATING_PRECISION_MODEL,"MODEL",floatingPrecision, FLOATING_PRECISION_MODEL_TT);
+        JRadioButton fixedPrecisionRB = dialog
+            .addRadioButton(FIXED_PRECISION_MODEL,"MODEL",fixedPrecision,FIXED_PRECISION_MODEL_TT);
+        JTextField precisionModelTF = dialog
+            .addDoubleField(PRECISION,precision, 12, PRECISION_TT);
+        legacyAlgoRB.addActionListener(e -> {
+            floatingPrecisionRB.setEnabled(!legacyAlgoRB.isSelected());
+            fixedPrecisionRB.setEnabled(!legacyAlgoRB.isSelected());
+            precisionModelTF.setEnabled(!legacyAlgoRB.isSelected() && fixedPrecisionRB.isSelected());
+        });
+        overlayNgAlgoRB.addActionListener(e -> {
+            floatingPrecisionRB.setEnabled(overlayNgAlgoRB.isSelected());
+            fixedPrecisionRB.setEnabled(overlayNgAlgoRB.isSelected());
+            precisionModelTF.setEnabled(overlayNgAlgoRB.isSelected() && fixedPrecisionRB.isSelected());
+        });
+        floatingPrecisionRB.addActionListener(e ->
+            precisionModelTF.setEnabled(!floatingPrecisionRB.isSelected()));
+        fixedPrecisionRB.addActionListener(e ->
+            precisionModelTF.setEnabled(fixedPrecisionRB.isSelected()));
+
         GUIUtil.centreOnWindow(dialog);
     }
 
-    public void run(TaskMonitor monitor, PlugInContext context)
-        throws Exception {
+    private void getDialogValues(MultiInputDialog dialog) {
+        legacyAlgo = dialog.getBoolean(LEGACY_ALGO);
+        overlayNgAlgo = dialog.getBoolean(OVERLAY_NG_ALGO);
+        floatingPrecision = dialog.getBoolean(FLOATING_PRECISION_MODEL);
+        fixedPrecision = dialog.getBoolean(FIXED_PRECISION_MODEL);
+        precision = dialog.getDouble(PRECISION);
+    }
+
+    public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         FeatureCollection a;
-        Collection inputC;
+        Collection<Feature> inputC;
         if (useSelected) {
             inputC = context.getLayerViewPanel()
                             .getSelectionManager()
@@ -153,8 +187,17 @@ public class UnionPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
             a = dialog.getLayer(LAYER).getFeatureCollectionWrapper();
         }
         
-        Collection geoms = FeatureUtil.toGeometries(a.getFeatures());
-        Geometry g = UnaryUnionOp.union(geoms);
+        Collection<Geometry> geoms = FeatureUtil.toGeometries(a.getFeatures());
+        Geometry g;
+        if (legacyAlgo) {
+            g = UnaryUnionOp.union(geoms);
+        } else {
+            if (floatingPrecision) {
+                g = OverlayNGRobust.union(geoms);
+            } else {
+                g = UnaryUnionNG.union(geoms, new PrecisionModel(precision));
+            }
+        }
         geoms.clear();
         geoms.add(g);
         FeatureCollection fc = FeatureDatasetFactory.createFromGeometry(geoms);
