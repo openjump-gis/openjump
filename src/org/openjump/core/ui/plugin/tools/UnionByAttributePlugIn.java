@@ -33,6 +33,7 @@
 package org.openjump.core.ui.plugin.tools;
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jts.operation.overlayng.UnaryUnionNG;
@@ -98,7 +99,7 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
 
     private boolean floatingPrecision = true;
     private boolean fixedPrecision = false;
-    private double precision = 0.001;
+    private double precision = 1000.0;
     
     private GeometryFactory factory;
     
@@ -354,10 +355,7 @@ public class UnionByAttributePlugIn extends AbstractThreadedUiPlugIn {
                 geometries.add(g);
             }
             else {
-                context.getWorkbenchFrame().warnUser(
-                    I18N.JUMP.get("ui.plugin.analysis.UnionByAttributePlugIn.invalid-geometry-excluded"));
-                context.getOutputFrame().addText(
-                    I18N.JUMP.get("ui.plugin.analysis.UnionByAttributePlugIn.exclusion", f.getID()));
+                geometries.add(GeometryFixer.fix(g));
             }
         }
         Geometry unioned;

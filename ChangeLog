@@ -7,6 +7,8 @@
 2021-09-12 mmichaud
   * Use new JTS overlayng algorithm for OverlayPlugIn
   * Use new JTS overlayng algorithm for UnionByAttributePlugIn
+  * Use new JTS overlayng algorithm for DissolvePlugIn
+  * Repair invalid geometries if any before UnionByAttribute & Dissolve
 
 2021-09-07 mmichaud
   * Fix #37 : make it possible to have optional attributes in XMLBinder

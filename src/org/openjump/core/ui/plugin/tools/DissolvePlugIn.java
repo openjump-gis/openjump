@@ -3,7 +3,11 @@ package org.openjump.core.ui.plugin.tools;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
+import org.locationtech.jts.operation.overlayng.UnaryUnionNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
@@ -42,22 +46,32 @@ import java.util.List;
  */
 public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
 
-    private final static String LAYER             = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.source-layer");
-    private final static String DESCRIPTION       = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.description");
-    private final static String ATTRIBUTES        = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.attributes");
-    private final static String MERGE_LINESTRINGS = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.merge-linestrings");
-    private final static String SIMPLE_GEOMETRIES = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.decompose-multi-geometries");
-    private final static String REMOVE_UNUSED_ATT = I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.remove-unused-attributes");
+    private final String LAYER                       = I18N.JUMP.get("ui.plugin.analysis.DissolvePlugIn.source-layer");
+    private final String DESCRIPTION                 = I18N.JUMP.get("ui.plugin.analysis.DissolvePlugIn.description");
+    private final String ATTRIBUTES                  = I18N.JUMP.get("ui.plugin.analysis.DissolvePlugIn.attributes");
+    private final String MERGE_LINESTRINGS           = I18N.JUMP.get("ui.plugin.analysis.DissolvePlugIn.merge-linestrings");
+    private final String SIMPLE_GEOMETRIES           = I18N.JUMP.get("ui.plugin.analysis.DissolvePlugIn.decompose-multi-geometries");
+    private final String REMOVE_UNUSED_ATT           = I18N.JUMP.get("ui.plugin.analysis.DissolvePlugIn.remove-unused-attributes");
+
+    private final String FLOATING_PRECISION_MODEL    = I18N.JUMP.get("jts.use-floating-point-precision-model");
+    private final String FLOATING_PRECISION_MODEL_TT = I18N.JUMP.get("jts.use-floating-point-precision-model-tt");
+    private final String FIXED_PRECISION_MODEL       = I18N.JUMP.get("jts.use-fixed-precision-model");
+    private final String FIXED_PRECISION_MODEL_TT    = I18N.JUMP.get("jts.use-fixed-precision-model-tt");
+    private final String PRECISION                   = I18N.JUMP.get("jts.fixed-precision");
+    private final String PRECISION_TT                = I18N.JUMP.get("jts.fixed-precision-tt");
 
     private Layer layer;
+    private boolean floatingPrecision = true;
+    private boolean fixedPrecision = false;
+    private double precision = 1000.0;
     private boolean merge_linestrings = true;
     private boolean simple_geometries = false;
     private boolean remove_unused_att = true;
-    private List<String> attributes = new ArrayList<String>();
+    private final List<String> attributes = new ArrayList<>();
 
     private JPanel attributePanel;
 
-    private GeometryFactory factory;
+
 
     public DissolvePlugIn() {
     }
@@ -101,7 +115,16 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
         //dialog.setSideBarImage(IconLoader.icon("dissolve_layer_icon.gif"));
         dialog.setSideBarDescription(I18N.getInstance().get(DESCRIPTION));
 
-        final JComboBox layerComboBox = dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), context.getLayerManager());
+        final JComboBox<Layer> layerComboBox =
+            dialog.addLayerComboBox(LAYER, context.getCandidateLayer(0), context.getLayerManager());
+
+        JRadioButton floatingPrecisionRB = dialog
+            .addRadioButton(FLOATING_PRECISION_MODEL,"MODEL", floatingPrecision, FLOATING_PRECISION_MODEL_TT);
+        JRadioButton fixedPrecisionRB = dialog
+            .addRadioButton(FIXED_PRECISION_MODEL,"MODEL", fixedPrecision, FIXED_PRECISION_MODEL_TT);
+        dialog.addDoubleField(PRECISION,precision, 12, PRECISION_TT);
+        floatingPrecisionRB.addActionListener(e -> updateControls(dialog));
+        fixedPrecisionRB.addActionListener(e -> updateControls(dialog));
 
         dialog.addSubTitle(I18N.getInstance().get(ATTRIBUTES));
         attributePanel = new JPanel();
@@ -134,11 +157,7 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
                 updateControls(dialog);
             }
         });
-        mergeLineStringsCheckBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                updateControls(dialog);
-            }
-        });
+        //mergeLineStringsCheckBox.addActionListener(e -> updateControls(dialog));
 
         GUIUtil.centreOnWindow(dialog);
     }
@@ -146,6 +165,9 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
     private void getDialogValues(MultiInputDialog dialog) {
         layer = dialog.getLayer(LAYER);
         attributes.clear();
+        floatingPrecision = dialog.getBoolean(FLOATING_PRECISION_MODEL);
+        fixedPrecision = dialog.getBoolean(FIXED_PRECISION_MODEL);
+        precision = dialog.getDouble(PRECISION);
         for (int i = 0 ; i < attributePanel.getComponentCount() ; i++) {
             if (attributePanel.getComponent(i) instanceof JCheckBox) {
                 String name = ((JCheckBox)attributePanel.getComponent(i)).getText();
@@ -166,6 +188,7 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
             if (schema.getGeometryIndex() == i) continue; // skip geometry attribute
             attributePanel.add(new JCheckBox(schema.getAttributeName(i), false));
         }
+        dialog.setFieldEnabled(PRECISION, dialog.getBoolean(FIXED_PRECISION_MODEL));
         dialog.pack();
     }
 
@@ -173,15 +196,11 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
 
         monitor.allowCancellationRequests();
 
-        Collection inputC = layer.getFeatureCollectionWrapper().getFeatures();
+        Collection<Feature> inputC = layer.getFeatureCollectionWrapper().getFeatures();
         FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
         FeatureDataset inputFC = new FeatureDataset(inputC, schema);
 
-        if (inputFC.getFeatures().size() > 1 &&
-                ((Feature)inputFC.getFeatures().get(0)).getGeometry() != null) {
-            factory = ((Feature)inputFC.getFeatures().get(0)).getGeometry().getFactory();
-        }
-        else {
+        if (inputFC.getFeatures().size() < 2) {
             context.getWorkbenchFrame().warnUser(
                     I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.needs-two-features-or-more"));
             return;
@@ -201,10 +220,9 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
         }
 
         // Order features by attribute value in a map
-        Map<List<Object>,FeatureCollection> map = new HashMap<List<Object>,FeatureCollection>();
+        Map<List<Object>,FeatureCollection> map = new HashMap<>();
         monitor.report(I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn"));
-        for (Iterator i = inputFC.iterator() ; i.hasNext() ; ) {
-            Feature f = (Feature)i.next();
+        for (Feature f : inputFC.getFeatures()) {
             List<Object> key = computeKeyFromAttributes(f, attributes);
             if (!map.containsKey(key)) {
                 FeatureCollection fd = new FeatureDataset(inputFC.getFeatureSchema());
@@ -219,9 +237,8 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
         // Computing the result
         int count = 1;
         FeatureCollection resultfc = new FeatureDataset(newSchema);
-        for (Iterator<List<Object>> it = map.keySet().iterator() ; it.hasNext() ; ) {
+        for (List<Object> key : map.keySet()) {
             monitor.report(I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.computing-union") + " (" + count++ + "/" + map.size() + ")");
-            List<Object> key = it.next();
             FeatureCollection fca = map.get(key);
             if (fca.size() > 0) {
                 List<Geometry> geometries = union(context, monitor, fca);
@@ -241,7 +258,7 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
     }
 
     private List<Object> computeKeyFromAttributes(Feature feature, List<String> attributes) {
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
         for (String attribute : attributes) {
             list.add(feature.getAttribute(attribute));
         }
@@ -254,28 +271,33 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
      */
     private List<Geometry> union(PlugInContext context, TaskMonitor monitor, FeatureCollection fc) {
         // Eliminate invalid geometries and log their fid
-        List<Geometry> geometries  = new ArrayList<Geometry>();
-        for (Iterator it = fc.iterator() ; it.hasNext() ; ) {
-            Feature f = (Feature) it.next();
+        List<Geometry> geometries  = new ArrayList<>();
+        for (Feature f : fc.getFeatures()) {
             Geometry g = f.getGeometry();
-            if (!g.isValid()) {
-                context.getWorkbenchFrame().warnUser(
-                        I18N.getInstance().get("ui.plugin.analysis.DissolvePlugIn.invalid-geometry-excluded"));
-                continue;
-            }
-            else {
-                for (int i = 0 ; i < g.getNumGeometries() ; i++) {
+            for (int i = 0 ; i < g.getNumGeometries() ; i++) {
+                Geometry component = g.getGeometryN(i);
+                if (component.isValid()) {
                     geometries.add(g.getGeometryN(i));
+                }
+                else {
+                    geometries.add(GeometryFixer.fix(component));
                 }
             }
         }
-        Geometry unioned = UnaryUnionOp.union(geometries);
+        //Geometry unioned = UnaryUnionOp.union(geometries); // old way
+        Geometry unioned;
+        //unioned = UnaryUnionOp.union(geometries); // old algorithm (not as robust)
+        if (floatingPrecision) {
+            unioned = OverlayNGRobust.union(geometries);
+        } else {
+            unioned = UnaryUnionNG.union(geometries, new PrecisionModel(precision));
+        }
         // Post process linestring if merged is wanted
         if (merge_linestrings) {
             geometries.clear();
-            List points      = new ArrayList();
-            List lineStrings = new ArrayList();
-            List polygons    = new ArrayList();
+            List<Geometry> points      = new ArrayList<>();
+            List<Geometry> lineStrings = new ArrayList<>();
+            List<Geometry> polygons    = new ArrayList<>();
             decompose(unioned, points, lineStrings, polygons);
             LineMerger merger = new LineMerger();
             merger.add(lineStrings);
@@ -296,7 +318,7 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
         return geometries;
     }
 
-    private void decompose(Geometry geometry, List dim0, List dim1, List dim2) {
+    private void decompose(Geometry geometry, List<Geometry> dim0, List<Geometry> dim1, List<Geometry> dim2) {
         if (geometry instanceof GeometryCollection) {
             for (int i = 0 ; i < geometry.getNumGeometries() ; i++) {
                 decompose(geometry.getGeometryN(i), dim0, dim1, dim2);
@@ -307,7 +329,7 @@ public class DissolvePlugIn extends AbstractThreadedUiPlugIn {
         else if (geometry.getDimension() == 0) dim0.add(geometry);
         else {
             assert false : "Should never reach here";
-        };
+        }
     }
 
 }
