@@ -55,7 +55,7 @@ import com.vividsolutions.jump.util.Blackboard;
  * [2015-04-01] Giuseppe Aruta - add option for advanced layer tooltip
  * [2016-10-04] Giuseppe Aruta - add option to select the geometry after it has
  * been drawn
- * [2016-10-09] Micha�l Michaud - add option to limit the number of editable
+ * [2016-10-09] Michaël Michaud - add option to limit the number of editable
  * layers to one
  * [2020-06-16] Giuseppe Aruta - Feature request #245 Create form to edit attribute values 
  * Added option to open Infoframe after digitalized a new feature

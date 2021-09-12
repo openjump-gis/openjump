@@ -29,13 +29,6 @@
  * (250)385-6040
  * www.vividsolutions.com
  */
-
-/**
- * Implements an {@link OptionsPanel} for Edit.
- * 
- * [2016-4-10] Giuseppe Aruta - added option that selects the geometry after it has been drawn
- */
-
 package com.vividsolutions.jump.workbench.ui.cursortool.editing;
 
 import java.awt.Color;
@@ -71,7 +64,6 @@ import com.vividsolutions.jump.workbench.ui.GeometryEditor;
 import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.OptionsPanel;
 import com.vividsolutions.jump.workbench.ui.SelectionManager;
 import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
@@ -83,22 +75,18 @@ import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 
 
-
 public class FeatureDrawingUtil {
+
 	protected List<Feature> featsToAdd;
 
-	private Collection selectedFeaturesContaining(Polygon polygon,
+	private Collection<Feature> selectedFeaturesContaining(Polygon polygon,
 			LayerViewPanel panel) {
 		if (layerNamePanelProxy.getLayerNamePanel().chooseEditableLayer() == null) {
-			return new ArrayList();
+			return new ArrayList<>();
 		}
-		ArrayList selectedFeaturesContainingPolygon = new ArrayList();
-		for (Iterator i = panel
-				.getSelectionManager()
-				.getFeaturesWithSelectedItems(
-						layerNamePanelProxy.getLayerNamePanel()
-						.chooseEditableLayer()).iterator(); i.hasNext();) {
-			Feature feature = (Feature) i.next();
+		List<Feature> selectedFeaturesContainingPolygon = new ArrayList<>();
+		for (Feature feature : panel.getSelectionManager().getFeaturesWithSelectedItems(
+						layerNamePanelProxy.getLayerNamePanel().chooseEditableLayer())) {
 			// Unfortunately, GeometryCollection does not yet support either
 			// #contains or (more importantly) #difference. [Jon Aquino]
 			// Use == rather than instanceof because MultiPoint, MultiLineString
@@ -118,26 +106,20 @@ public class FeatureDrawingUtil {
 		return selectedFeaturesContainingPolygon;
 	}
 
-	private void createHole(Polygon hole, Collection features, Layer layer,
+	private void createHole(Polygon hole, Collection<Feature> features, Layer layer,
 			LayerViewPanel panel, boolean rollingBackInvalidEdits,
 			String transactionName) {
 		Assert.isTrue(hole.getNumInteriorRing() == 0);
 		EditTransaction transaction = new EditTransaction(features,
 				transactionName, layer, rollingBackInvalidEdits, false, panel);
-		// for (int i = 0; i < transaction.size(); i++) {
-		// transaction.setGeometry(i,
-		// transaction.getGeometry(i).difference(hole));
-		// }
-		for (Iterator<Feature> i = transaction.getFeatures().iterator(); i
-				.hasNext();) {
-			Feature f = i.next();
-			transaction.setGeometry(f,
-					transaction.getGeometry(f).difference(hole));
+		for (Feature feature : transaction.getFeatures()) {
+			transaction.setGeometry(feature,
+					transaction.getGeometry(feature).difference(hole));
 		}
 		transaction.commit();
 	}
 
-	private LayerNamePanelProxy layerNamePanelProxy;
+	private final LayerNamePanelProxy layerNamePanelProxy;
 
 	public FeatureDrawingUtil(LayerNamePanelProxy layerNamePanelProxy) {
 		this.layerNamePanelProxy = layerNamePanelProxy;
@@ -181,9 +163,7 @@ public class FeatureDrawingUtil {
 				.removeRepeatedPoints(geometry), layer
 				.getFeatureCollectionWrapper().getFeatureSchema());
 
-		// selectGeometry(layerViewPanel, geometry);
-
-		featsToAdd = new ArrayList<Feature>();
+		featsToAdd = new ArrayList<>();
 		featsToAdd.add(feature);
 
 		return new UndoableCommand(tool.getName(), layer) {
@@ -196,7 +176,7 @@ public class FeatureDrawingUtil {
 						.get(layerViewPanel.getWorkBenchFrame().getContext())
 						.get(EditOptionsPanel.SELECT_NEW_GEOMETRY_KEY, false)) {
 					//if (EditOptionsPanel.geometryCheck.isSelected()) {
-					featsToAdd = new ArrayList<Feature>();
+					featsToAdd = new ArrayList<>();
 					featsToAdd.add(feature);
 
 					selectionManager.clear();
@@ -214,7 +194,7 @@ public class FeatureDrawingUtil {
 										layer(layerViewPanel),
 										selectionManager.getFeaturesWithSelectedItems(
 												layer(layerViewPanel)));
-								((InfoFrame) iFrame).toFront();
+								iFrame.toFront();
 								return;
 
 							}
@@ -240,7 +220,7 @@ public class FeatureDrawingUtil {
 		};
 	}
 
-	private GeometryEditor editor = new GeometryEditor();
+	private final GeometryEditor editor = new GeometryEditor();
 
 	/**
 	 * Apply settings common to all feature-drawing tools.createAddCommand
@@ -272,13 +252,13 @@ public class FeatureDrawingUtil {
 
 	public void drawRing(Polygon polygon, boolean rollingBackInvalidEdits,
 			AbstractCursorTool tool, LayerViewPanel panel) {
-		Collection selectedFeaturesContainingPolygon = selectedFeaturesContaining(
+		Collection<Feature> selectedFeaturesContainingPolygon = selectedFeaturesContaining(
 				polygon, panel);
 		if (selectedFeaturesContainingPolygon.isEmpty()) {
 			UndoableCommand cmd = createAddCommand(polygon,
 					rollingBackInvalidEdits, panel, tool);
 			// createAddCommand() might return null on errors [ede]
-			if (cmd instanceof UndoableCommand)
+			if (cmd != null)
 				AbstractPlugIn.execute(cmd, panel);
 		} else {
 			createHole(polygon, selectedFeaturesContainingPolygon,
@@ -288,18 +268,14 @@ public class FeatureDrawingUtil {
 
 	}
 
-	private Collection selectedFeaturesMatchingEndPoint(LineString lineString,
+	private Collection<Feature> selectedFeaturesMatchingEndPoint(LineString lineString,
 			LayerViewPanel panel) {
 		if (layerNamePanelProxy.getLayerNamePanel().chooseEditableLayer() == null) {
-			return new ArrayList();
+			return new ArrayList<>();
 		}
-		ArrayList selectedFeaturesMatchingEndPoints = new ArrayList();
-		for (Iterator i = panel
-				.getSelectionManager()
-				.getFeaturesWithSelectedItems(
-						layerNamePanelProxy.getLayerNamePanel()
-						.chooseEditableLayer()).iterator(); i.hasNext();) {
-			Feature feature = (Feature) i.next();
+		List<Feature> selectedFeaturesMatchingEndPoints = new ArrayList<>();
+		for (Feature feature : panel.getSelectionManager().getFeaturesWithSelectedItems(
+						layerNamePanelProxy.getLayerNamePanel().chooseEditableLayer())) {
 			if (!(feature.getGeometry() instanceof LineString)) {
 				continue;
 			}
@@ -389,15 +365,15 @@ public class FeatureDrawingUtil {
 	public void drawLineString(LineString newLineString,
 			boolean rollingBackInvalidEdits, AbstractCursorTool tool,
 			LayerViewPanel panel) {
-		Collection matchingLineStringFeatures = selectedFeaturesMatchingEndPoint(
+		Collection<Feature> matchingLineStringFeatures = selectedFeaturesMatchingEndPoint(
 				newLineString, panel);
 		if (matchingLineStringFeatures.size() == 0) {
 			AbstractPlugIn.execute(
 					createAddCommand(newLineString, rollingBackInvalidEdits,
 							panel, tool), panel);
 		} else {
-			LineString oldLineString = null;
-			Iterator iter = matchingLineStringFeatures.iterator();
+			LineString oldLineString;
+			Iterator<Feature> iter = matchingLineStringFeatures.iterator();
 			EditTransaction transaction = new EditTransaction(
 					matchingLineStringFeatures, tool.getName(), layer(panel),
 					rollingBackInvalidEdits, true, panel);
@@ -405,15 +381,11 @@ public class FeatureDrawingUtil {
 			// Coordinate[0]);
 			// for (int i = 0; i < transaction.size(); i++) {
 			int count = 0;
-			for (Iterator<Feature> i = transaction.getFeatures().iterator(); i
-					.hasNext();) {
-				Feature feature = i.next();
-				oldLineString = (LineString) ((Feature) iter.next())
-						.getGeometry();
+			for (Feature feature : transaction.getFeatures()) {
+				oldLineString = (LineString) iter.next().getGeometry();
 				newLineString = mergeLineStrings(oldLineString, newLineString);
 				if (count > 0)
-					transaction
-					.setGeometry(feature, transaction.EMPTY_GEOMETRY);
+					transaction.setGeometry(feature, EditTransaction.EMPTY_GEOMETRY);
 				count++;
 			}
 			transaction.setGeometry(
@@ -428,18 +400,12 @@ public class FeatureDrawingUtil {
 		if (PersistentBlackboardPlugIn
 				.get(panel.getWorkBenchFrame().getContext())
 				.get(EditOptionsPanel.SELECT_NEW_GEOMETRY_KEY, false)) {
-			//if (EditOptionsPanel.geometryCheck.isSelected()) {
-
-			this.featsToAdd = new ArrayList();
+			this.featsToAdd = new ArrayList<>();
 			this.featsToAdd.add(FeatureUtil.toFeature(geom, layer(panel)
 					.getFeatureCollectionWrapper().getFeatureSchema()));
 			selectionManager.getFeatureSelection().unselectItems();
-			selectionManager.getFeatureSelection().selectItems(layer(panel),
-					this.featsToAdd);
+			selectionManager.getFeatureSelection().selectItems(layer(panel), this.featsToAdd);
 		}
-		/*
-		 * else { selectionManager.getFeatureSelection().unselectItems(); }
-		 */
 	}
 
 }

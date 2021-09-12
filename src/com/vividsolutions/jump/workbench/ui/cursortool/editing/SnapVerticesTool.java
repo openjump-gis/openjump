@@ -36,10 +36,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Shape;
 import java.awt.geom.NoninvertibleTransformException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -62,7 +59,8 @@ import com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn;
 
 
 public class SnapVerticesTool extends SpecifyFeaturesTool {
-    private EnableCheckFactory checkFactory;
+
+    private final EnableCheckFactory checkFactory;
 
     public SnapVerticesTool(WorkbenchContext context) {
         super(context);
@@ -100,9 +98,9 @@ public class SnapVerticesTool extends SpecifyFeaturesTool {
             suggestedTarget, targetFeature);
     }
 
-    protected void snapVertices(Collection editableLayers,
+    protected void snapVertices(Collection<Layer> editableLayers,
         Coordinate suggestedTarget, final Feature targetFeature)
-        throws Exception, NoninvertibleTransformException {
+        throws Exception {
         new SnapVerticesOp().execute(EnvelopeUtil.toGeometry(
                 getBoxInModelCoordinates()), editableLayers,
             isRollingBackInvalidEdits(), getPanel(), getTaskFrame().getTask(),
@@ -124,30 +122,23 @@ public class SnapVerticesTool extends SpecifyFeaturesTool {
 
     private Feature targetFeature(Coordinate suggestedTarget, Envelope fence,
         boolean fromEditableLayers) throws NoninvertibleTransformException {
-        ArrayList candidateFeatures = new ArrayList();
-        Map layerToSpecifiedFeaturesMap = layerToSpecifiedFeaturesMap();
+        List<Feature> candidateFeatures = new ArrayList<>();
+        Map<Layer,Set<Feature>> layerToSpecifiedFeaturesMap = layerToSpecifiedFeaturesMap();
 
-        for (Iterator i = layerToSpecifiedFeaturesMap.keySet().iterator();
-                i.hasNext();) {
-            Layer layer = (Layer) i.next();
-
+        for (Layer layer : layerToSpecifiedFeaturesMap.keySet()) {
             if (layer.isEditable() != fromEditableLayers) {
                 continue;
             }
-
             if (layer.getName().equals(FenceLayerFinder.LAYER_NAME)) {
                 continue;
             }
-
-            candidateFeatures.addAll((Collection) layerToSpecifiedFeaturesMap.get(
-                    layer));
+            candidateFeatures.addAll(layerToSpecifiedFeaturesMap.get(layer));
         }
 
         Feature targetFeature = null;
         double distanceToTargetVertices = -1;
 
-        for (Iterator i = candidateFeatures.iterator(); i.hasNext();) {
-            Feature candidate = (Feature) i.next();
+        for (Feature candidate : candidateFeatures) {
             double distanceToCandidateVertices = distanceToVertices(suggestedTarget,
                     candidate, fence);
 
@@ -181,11 +172,10 @@ public class SnapVerticesTool extends SpecifyFeaturesTool {
         Feature feature, Envelope vertexFilter) {
         double distanceToVertices = -1;
 
-        for (Iterator i = VerticesInFencePlugIn.verticesInFence(
-                    feature.getGeometry(),
-                    EnvelopeUtil.toGeometry(vertexFilter), true).getCoordinates()
-                                               .iterator(); i.hasNext();) {
-            Coordinate vertex = (Coordinate) i.next();
+        for (Coordinate vertex : VerticesInFencePlugIn.verticesInFence(
+            feature.getGeometry(),
+            EnvelopeUtil.toGeometry(vertexFilter),
+            true).getCoordinates()) {
             double distanceToVertex = vertex.distance(referenceCoordinate);
 
             if (distanceToVertices == -1 ||
@@ -206,8 +196,7 @@ public class SnapVerticesTool extends SpecifyFeaturesTool {
                 "QuickSnapCursor.gif").getImage());
     }
 
-    protected Envelope getBoxInModelCoordinates()
-        throws NoninvertibleTransformException {
+    protected Envelope getBoxInModelCoordinates() {
         return EnvelopeUtil.expand(new Envelope(getModelSource(),
                 getModelDestination()), modelClickBuffer());
     }

@@ -43,18 +43,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.geom.CoordUtil;
 import com.vividsolutions.jump.util.CollectionUtil;
-import com.vividsolutions.jump.workbench.model.FenceLayerFinder;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
@@ -73,12 +68,12 @@ public class SnapVerticesOp {
 
     public SnapVerticesOp() {}
 
-    private Collection featuresInFence(Layer layer, Geometry fence, LayerViewPanel panel) {
-        Collection featuresInFence =
-            (Collection) panel.visibleLayerToFeaturesInFenceMap(fence).get(layer);
+    private Collection<Feature> featuresInFence(Layer layer, Geometry fence, LayerViewPanel panel) {
+        Collection<Feature> featuresInFence =
+            panel.visibleLayerToFeaturesInFenceMap(fence).get(layer);
 
         if (featuresInFence == null) {
-            return new ArrayList();
+            return new ArrayList<>();
         }
 
         return featuresInFence;
@@ -107,7 +102,7 @@ public class SnapVerticesOp {
      */
     public boolean execute(
         Geometry fence,
-        Collection editableLayers,
+        Collection<Layer> editableLayers,
         boolean rollingBackInvalidEdits,
         final LayerViewPanel panel,
         Task task,
@@ -116,10 +111,10 @@ public class SnapVerticesOp {
         boolean insertVerticesIfNecessary)
         throws Exception {
 
-        Map editableLayerToFeaturesInFenceMap =
+        Map<Layer,Collection<Feature>> editableLayerToFeaturesInFenceMap =
             editableLayerToFeaturesInFenceMap(editableLayers, fence, panel);
 
-        Collection editableFeatures =
+        Collection<Feature> editableFeatures =
             CollectionUtil.concatenate(editableLayerToFeaturesInFenceMap.values());
 
         if (editableFeatures.isEmpty()) {
@@ -140,11 +135,10 @@ public class SnapVerticesOp {
 
         Geometry targetGeometry = targetFeature.getGeometry();
 
-        List transactions = new ArrayList();
-        for (Iterator i = editableLayers.iterator(); i.hasNext();) {
-            Layer editableLayer = (Layer) i.next();
-            Collection featuresInFence =
-                (Collection) editableLayerToFeaturesInFenceMap.get(editableLayer);
+        List<EditTransaction> transactions = new ArrayList<>();
+        for (Layer editableLayer : editableLayers) {
+            Collection<Feature> featuresInFence =
+                editableLayerToFeaturesInFenceMap.get(editableLayer);
             EditTransaction transaction =
                 new EditTransaction(
                     featuresInFence,
@@ -186,14 +180,10 @@ public class SnapVerticesOp {
         });
     }
 
-    private boolean moveVertices(List transactions, Geometry fence, final Coordinate target) {
+    private boolean moveVertices(List<EditTransaction> transactions, Geometry fence, final Coordinate target) {
         boolean geometryChanged = false;
-        for (Iterator i = transactions.iterator(); i.hasNext();) {
-            EditTransaction transaction = (EditTransaction) i.next();
-            //for (int j = 0; j < transaction.size(); j++) {
-            for (Iterator<Feature> j = transaction.getFeatures().iterator() ; j.hasNext() ;) {
-                //Geometry proposedGeometry = (Geometry) transaction.getGeometry(j);
-                Feature feature = j.next();
+        for (EditTransaction transaction : transactions) {
+            for (Feature feature : transaction.getFeatures()) {
                 Geometry proposedGeometry = transaction.getGeometry(feature);
                 move(
                     VerticesInFencePlugIn
@@ -204,15 +194,12 @@ public class SnapVerticesOp {
                     proposedGeometry = geometryEditor.removeRepeatedPoints(proposedGeometry);
                 } catch (IllegalArgumentException e) {
                     Assert.isTrue(
-                        e.getMessage().toLowerCase().indexOf("point") > -1
-                            && e.getMessage().toLowerCase().indexOf(">") > -1,
+                        e.getMessage().toLowerCase().contains("point")
+                            && e.getMessage().toLowerCase().contains(">"),
                         "I assumed that we would get here only if too few points "
                             + "were passed into the Geometry constructor [Jon Aquino]");
-                    proposedGeometry =
-                        new Point(
-                            target,
-                            proposedGeometry.getPrecisionModel(),
-                            proposedGeometry.getSRID());
+                    proposedGeometry = new GeometryFactory(proposedGeometry.getPrecisionModel(),
+                        proposedGeometry.getSRID()).createPoint(target);
                 }
                 //transaction.setGeometry(j, proposedGeometry);
                 transaction.setGeometry(feature, proposedGeometry);
@@ -224,13 +211,12 @@ public class SnapVerticesOp {
         return geometryChanged;
     }
 
-    private Map editableLayerToFeaturesInFenceMap(
-        Collection editableLayers,
+    private Map<Layer,Collection<Feature>> editableLayerToFeaturesInFenceMap(
+        Collection<Layer> editableLayers,
         Geometry fence,
         final LayerViewPanel panel) {
-        Map editableLayerToFeaturesInFenceMap = new HashMap();
-        for (Iterator i = editableLayers.iterator(); i.hasNext();) {
-            Layer editableLayer = (Layer) i.next();
+        Map<Layer,Collection<Feature>> editableLayerToFeaturesInFenceMap = new HashMap<>();
+        for (Layer editableLayer : editableLayers) {
             Assert.isTrue(editableLayer.isEditable());
             editableLayerToFeaturesInFenceMap.put(
                 editableLayer,
@@ -241,10 +227,7 @@ public class SnapVerticesOp {
 
     private boolean coordinatesEqual(EditTransaction transaction, Geometry fence) {
         //for (int i = 0; i < transaction.size(); i++) {
-        for (Iterator<Feature> i = transaction.getFeatures().iterator() ; i.hasNext() ; ) {
-            Feature originalFeature = i.next();
-            //Feature originalFeature = transaction.getFeature(i);
-            //Geometry newGeometry = transaction.getGeometry(i);
+        for (Feature originalFeature : transaction.getFeatures()) {
             Geometry newGeometry = transaction.getGeometry(originalFeature);
 
             if (!coordinatesEqual(VerticesInFencePlugIn
@@ -260,20 +243,20 @@ public class SnapVerticesOp {
         return true;
     }
 
-    private boolean coordinatesEqual(List a, List b) {
+    private boolean coordinatesEqual(List<Coordinate> a, List<Coordinate> b) {
         if (a.size() != b.size()) {
             return false;
         }
 
-        TreeSet A = new TreeSet(a);
-        TreeSet B = new TreeSet(b);
+        TreeSet<Coordinate> A = new TreeSet<>(a);
+        TreeSet<Coordinate> B = new TreeSet<>(b);
 
         if (A.size() != B.size()) {
             return false;
         }
 
-        Iterator Ai = A.iterator();
-        Iterator Bi = B.iterator();
+        Iterator<Coordinate> Ai = A.iterator();
+        Iterator<Coordinate> Bi = B.iterator();
 
         while (Ai.hasNext()) {
             if (!Ai.next().equals(Bi.next())) {
@@ -290,9 +273,8 @@ public class SnapVerticesOp {
         Animations.drawExpandingRing(center, false, Color.green, panel, null);
     }
 
-    private void move(Collection verticesToMove, Coordinate target) {
-        for (Iterator i = verticesToMove.iterator(); i.hasNext();) {
-            Coordinate vertexToMove = (Coordinate) i.next();
+    private void move(Collection<Coordinate> verticesToMove, Coordinate target) {
+        for (Coordinate vertexToMove : verticesToMove) {
             vertexToMove.setCoordinate(target);
         }
     }
@@ -300,18 +282,16 @@ public class SnapVerticesOp {
     private int insertVerticesIfNecessary(
         final EditTransaction transaction,
         final Coordinate target,
-        final Geometry fence)
-        throws NoninvertibleTransformException {
+        final Geometry fence) {
         //Trick: Wrap count in array to avoid "must be declared final" warnings. [Jon Aquino]
         final int[] verticesInserted = new int[] { 0 };
 
         //for (int i = 0; i < transaction.size(); i++) {
-        for (Iterator<Feature> i = transaction.getFeatures().iterator() ; i.hasNext(); ) {
+        for (Feature feature : transaction.getFeatures()) {
             //GeometryEditor is being used in two ways here. GeometryEditor#edit 
             //recurses through GeometryCollection/Polygon elements (if any). 
             //GeometryEditor#insertVertex does the vertex insertion on each
             //Geometry or GeometryCollection/Polygon element. [Jon Aquino]
-            Feature feature = i.next();
             transaction.setGeometry(feature, geometryEditor.edit(
                             transaction.getGeometry(feature),
                             new GeometryEditor.GeometryEditorOperation() {
@@ -347,5 +327,5 @@ public class SnapVerticesOp {
         return verticesInserted[0];
     }
 
-    private GeometryEditor geometryEditor = new GeometryEditor();
+    private final GeometryEditor geometryEditor = new GeometryEditor();
 }

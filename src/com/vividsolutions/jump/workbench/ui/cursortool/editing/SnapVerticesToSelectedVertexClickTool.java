@@ -31,6 +31,7 @@
  */
 
 package com.vividsolutions.jump.workbench.ui.cursortool.editing;
+
 import java.awt.Shape;
 import java.awt.geom.NoninvertibleTransformException;
 
@@ -41,26 +42,29 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
+
 public class SnapVerticesToSelectedVertexClickTool extends NClickTool {
-    private EnableCheckFactory checkFactory;
-    private GeometryFactory factory = new GeometryFactory();
+
+    private final EnableCheckFactory checkFactory;
+    private final GeometryFactory factory = new GeometryFactory();
+
     public SnapVerticesToSelectedVertexClickTool(WorkbenchContext context) {
         super(context, 1);
-        this.checkFactory = checkFactory;
+        this.checkFactory = context.createPlugInContext().getCheckFactory();
     }
+
     public Icon getIcon() {
         Assert.shouldNeverReachHere();
         return null;
     }
+
     protected void gestureFinished() throws java.lang.Exception {
         reportNothingToUndoYet();
-        final Coordinate clickCoordinate = (Coordinate) getCoordinates().get(0);
+        final Coordinate clickCoordinate = getCoordinates().get(0);
         if (!check(checkFactory.createAtLeastNLayersMustBeEditableCheck(1))) {
             return;
         }
@@ -88,10 +92,10 @@ public class SnapVerticesToSelectedVertexClickTool extends NClickTool {
             getPanel(),
             getTaskFrame().getTask(),
             clickCoordinate,
-            (Feature) getPanel()
+            getPanel()
                 .getSelectionManager()
                 .getFeaturesWithSelectedItems(
-                    (Layer) getPanel()
+                    getPanel()
                         .getSelectionManager()
                         .getLayersWithSelectedItems()
                         .iterator()
@@ -102,6 +106,7 @@ public class SnapVerticesToSelectedVertexClickTool extends NClickTool {
                 SnapVerticesOp.INSERT_VERTICES_IF_NECESSARY_KEY,
                 true));
     }
+
     protected Shape getShape() throws NoninvertibleTransformException {
         return null;
     }

@@ -41,13 +41,13 @@ import javax.swing.JComponent;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
-import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.ui.cursortool.AbstractCursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.DrawRectangleFenceTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class SnapVerticesToSelectedVertexTool extends QuasimodeTool {
+
     private static final Cursor SHIFT_DOWN_CURSOR =
         AbstractCursorTool.createCursor(
             IconLoader.icon("SnapVerticesTogetherCursor3.gif").getImage());

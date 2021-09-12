@@ -35,8 +35,10 @@ import java.awt.Cursor;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 import javax.swing.Icon;
+
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
@@ -50,11 +52,13 @@ import com.vividsolutions.jump.workbench.ui.cursortool.Animations;
 import com.vividsolutions.jump.workbench.ui.cursortool.SpecifyFeaturesTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn;
+
 //Override SpecifyFeaturesTool rather than just DragTool so that clicks are
 //handled. [Jon Aquino]
 public class DeleteVertexTool extends SpecifyFeaturesTool {
-    private EnableCheckFactory checkFactory;
-    private GeometryEditor geometryEditor = new GeometryEditor();
+
+    private final EnableCheckFactory checkFactory;
+    private final GeometryEditor geometryEditor = new GeometryEditor();
     public DeleteVertexTool(WorkbenchContext context) {
         super(context);
         this.checkFactory = EnableCheckFactory.getInstance(context);
@@ -68,13 +72,9 @@ public class DeleteVertexTool extends SpecifyFeaturesTool {
         if (!check(checkFactory.createSelectedItemsLayersMustBeEditableCheck())) {
             return;
         }
-        final ArrayList verticesDeleted = new ArrayList();
-        ArrayList transactions = new ArrayList();
-        for (Iterator i =
-            getPanel().getSelectionManager().getLayersWithSelectedItems().iterator();
-            i.hasNext();
-            ) {
-            Layer layer = (Layer) i.next();
+        final List<Coordinate> verticesDeleted = new ArrayList<>();
+        List<EditTransaction> transactions = new ArrayList<>();
+        for (Layer layer : getPanel().getSelectionManager().getLayersWithSelectedItems()) {
             transactions.add(createTransaction(layer, verticesDeleted));
         }
         int emptyGeometryCount = EditTransaction.emptyGeometryCount(transactions);
@@ -102,9 +102,10 @@ public class DeleteVertexTool extends SpecifyFeaturesTool {
             }
         });
     }
+
     protected EditTransaction createTransaction(
         Layer layer,
-        final ArrayList verticesDeleted)
+        final List<Coordinate> verticesDeleted)
         throws NoninvertibleTransformException {
         final Geometry box = EnvelopeUtil.toGeometry(getBoxInModelCoordinates());
         EditTransaction transaction =
@@ -112,7 +113,7 @@ public class DeleteVertexTool extends SpecifyFeaturesTool {
                 .createTransactionOnSelection(new EditTransaction.SelectionEditor() {
             public Geometry edit(
                 Geometry geometryWithSelectedItems,
-                Collection selectedItems) {
+                Collection<Geometry> selectedItems) {
                 if (wasClick() && !verticesDeleted.isEmpty()) {
                     Assert.isTrue(verticesDeleted.size() == 1);
                     return geometryWithSelectedItems;
@@ -122,7 +123,7 @@ public class DeleteVertexTool extends SpecifyFeaturesTool {
                     .intersects(geometryWithSelectedItems.getEnvelopeInternal())) {
                     return geometryWithSelectedItems;
                 }
-                Collection verticesInBox =
+                Collection<Coordinate> verticesInBox =
                     VerticesInFencePlugIn.verticesInFence(selectedItems, box, true);
                 if (wasClick() && !verticesInBox.isEmpty()) {
                     verticesDeleted.add(verticesInBox.iterator().next());
@@ -142,9 +143,11 @@ public class DeleteVertexTool extends SpecifyFeaturesTool {
             false);
         return transaction;
     }
+
     public Cursor getCursor() {
         return createCursor(IconLoader.icon("DeleteCursor.gif").getImage());
     }
+
     public Icon getIcon() {
         return IconLoader.icon("DeleteVertex.gif");
     }

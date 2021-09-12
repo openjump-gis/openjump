@@ -36,19 +36,17 @@ import java.awt.geom.NoninvertibleTransformException;
 
 import javax.swing.Icon;
 
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class DrawPointTool extends NClickTool {
 
-	private FeatureDrawingUtil featureDrawingUtil;
+	private final FeatureDrawingUtil featureDrawingUtil;
 
 	private DrawPointTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil) {
 		super(context, 1);
@@ -93,7 +91,7 @@ public class DrawPointTool extends NClickTool {
 	protected Point getPoint()
 		throws NoninvertibleTransformException {
 		return new GeometryFactory().createPoint(
-			(Coordinate)getCoordinates().get(0));
+				getCoordinates().get(0));
 	}	
 
 }

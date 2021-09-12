@@ -34,7 +34,6 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
-import java.util.Iterator;
 
 
 /**
@@ -43,6 +42,7 @@ import java.util.Iterator;
  * @see AndCompositeTool
  */
 public class OrCompositeTool extends CompositeTool {
+
     public OrCompositeTool() {
         this(new CursorTool[] {  });
     }
@@ -52,14 +52,11 @@ public class OrCompositeTool extends CompositeTool {
     }
 
     private CursorTool currentTool() {
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-
-            if (tool.isGestureInProgress()) {
-                return tool;
+        for (CursorTool cursorTool : cursorTools) {
+            if (cursorTool.isGestureInProgress()) {
+                return cursorTool;
             }
         }
-
         return null;
     }
 
@@ -67,7 +64,6 @@ public class OrCompositeTool extends CompositeTool {
         if (currentTool() == null) {
             return firstCursorTool().getCursor();
         }
-
         return super.getCursor();
     }
 
@@ -77,11 +73,9 @@ public class OrCompositeTool extends CompositeTool {
      * (such as the SnapIndicatorTool).
      */
     private void clearOtherTools() {
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-
-            if (tool != currentTool()) {
-                tool.cancelGesture();
+        for (CursorTool cursorTool : cursorTools) {
+            if (cursorTool != currentTool()) {
+                cursorTool.cancelGesture();
             }
         }
     }
@@ -90,17 +84,13 @@ public class OrCompositeTool extends CompositeTool {
         if (currentTool() != null) {
             currentTool().mouseClicked(e);
             clearOtherTools();
-
             return;
         }
 
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-            tool.mouseClicked(e);
-
+        for (CursorTool cursorTool : cursorTools) {
+            cursorTool.mouseClicked(e);
             if (currentTool() != null) {
                 clearOtherTools();
-
                 return;
             }
         }
@@ -110,17 +100,13 @@ public class OrCompositeTool extends CompositeTool {
         if (currentTool() != null) {
             currentTool().mousePressed(e);
             clearOtherTools();
-
             return;
         }
 
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-            tool.mousePressed(e);
-
+        for (CursorTool cursorTool : cursorTools) {
+            cursorTool.mousePressed(e);
             if (currentTool() != null) {
                 clearOtherTools();
-
                 return;
             }
         }
@@ -134,17 +120,13 @@ public class OrCompositeTool extends CompositeTool {
         if (currentTool() != null) {
             currentTool().mouseReleased(e);
             clearOtherTools();
-
             return;
         }
 
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-            tool.mouseReleased(e);
-
+        for (CursorTool cursorTool : cursorTools) {
+            cursorTool.mouseReleased(e);
             if (currentTool() != null) {
                 clearOtherTools();
-
                 return;
             }
         }
@@ -158,13 +140,10 @@ public class OrCompositeTool extends CompositeTool {
             return;
         }
 
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-            tool.mouseEntered(e);
-
+        for (CursorTool cursorTool : cursorTools) {
+            cursorTool.mouseEntered(e);
             if (currentTool() != null) {
                 clearOtherTools();
-
                 return;
             }
         }
@@ -174,17 +153,13 @@ public class OrCompositeTool extends CompositeTool {
         if (currentTool() != null) {
             currentTool().mouseExited(e);
             clearOtherTools();
-
             return;
         }
 
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-            tool.mouseExited(e);
-
+        for (CursorTool cursorTool : cursorTools) {
+            cursorTool.mouseExited(e);
             if (currentTool() != null) {
                 clearOtherTools();
-
                 return;
             }
         }
@@ -194,37 +169,30 @@ public class OrCompositeTool extends CompositeTool {
         if (currentTool() != null) {
             currentTool().mouseDragged(e);
             clearOtherTools();
-
             return;
         }
 
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-            tool.mouseDragged(e);
-
+        for (CursorTool cursorTool : cursorTools) {
+            cursorTool.mouseDragged(e);
             if (currentTool() != null) {
                 clearOtherTools();
-
                 return;
             }
         }
     }
 
     public void mouseMoved(MouseEvent e) {
-        if (currentTool() != null) {
-            currentTool().mouseMoved(e);
+        CursorTool currentTool = currentTool();
+        if (currentTool != null) {
+            currentTool.mouseMoved(e);
             clearOtherTools();
-
             return;
         }
 
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-            tool.mouseMoved(e);
-
+        for (CursorTool cursorTool : cursorTools) {
+            cursorTool.mouseMoved(e);
             if (currentTool() != null) {
                 clearOtherTools();
-
                 return;
             }
         }

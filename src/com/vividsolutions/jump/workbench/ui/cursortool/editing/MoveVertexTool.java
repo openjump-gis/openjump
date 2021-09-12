@@ -59,7 +59,7 @@ public class MoveVertexTool extends DragTool {
 
     public final static int TOLERANCE = 5;
 
-    private EnableCheckFactory checkFactory;
+    private final EnableCheckFactory checkFactory;
 
     public MoveVertexTool(WorkbenchContext context) {
         super(context);
@@ -121,8 +121,7 @@ public class MoveVertexTool extends DragTool {
             if (!layer.isEditable()) {
                 continue;
             }
-            for (Object object : getPanel().getSelectionManager().getSelectedItems(layer)) {
-                Geometry item = (Geometry) object;
+            for (Geometry item : getPanel().getSelectionManager().getSelectedItems(layer)) {
                 item.apply(new CoordinateFilter() {
                     public void filter(Coordinate coord) {
                         if (buffer.contains(coord)) {
@@ -143,9 +142,8 @@ public class MoveVertexTool extends DragTool {
     public void moveVertices(Coordinate initialLocation, Coordinate finalLocation)
         throws Exception {
         final Envelope oldVertexBuffer = vertexBuffer(initialLocation);
-        ArrayList transactions = new ArrayList();
-        for (Object object : getPanel().getSelectionManager().getLayersWithSelectedItems()) {
-            Layer layerWithSelectedItems = (Layer) object;
+        java.util.List<EditTransaction> transactions = new ArrayList<>();
+        for (Layer layerWithSelectedItems : getPanel().getSelectionManager().getLayersWithSelectedItems()) {
             if (!layerWithSelectedItems.isEditable()) {
                 continue;
             }
@@ -159,9 +157,8 @@ public class MoveVertexTool extends DragTool {
         final Envelope oldVertexBuffer,
         final Coordinate newVertex) {
         return EditTransaction.createTransactionOnSelection(new EditTransaction.SelectionEditor() {
-            public Geometry edit(Geometry geometryWithSelectedItems, Collection selectedItems) {
-                for (Object object : selectedItems) {
-                    Geometry item = (Geometry) object;
+            public Geometry edit(Geometry geometryWithSelectedItems, Collection<Geometry> selectedItems) {
+                for (Geometry item : selectedItems) {
                     edit(item);
                 }
                 return geometryWithSelectedItems;

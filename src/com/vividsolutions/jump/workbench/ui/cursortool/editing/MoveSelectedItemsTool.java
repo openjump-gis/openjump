@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -71,15 +70,16 @@ import com.vividsolutions.jump.workbench.ui.cursortool.ShortcutsDescriptor;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescriptor{
-    private EnableCheckFactory checkFactory;
+
+    private final EnableCheckFactory checkFactory;
+    private final GeometryFactory geometryFactory = new GeometryFactory();
+    private final Cursor rotateCursor = createCursor(IconLoader.icon("RotateSelCursor.gif").getImage());
     private Shape selectedFeaturesShape;
-    private GeometryFactory geometryFactory = new GeometryFactory();
-    private List verticesToSnap = null;
+    private List<Coordinate> verticesToSnap = null;
     private Coordinate centerCoord = null;
     protected boolean clockwise = true;
     private double fullAngle = 0.0;
     private boolean shiftDown = false;
-    private Cursor rotateCursor = createCursor(IconLoader.icon("RotateSelCursor.gif").getImage());;
 
     public MoveSelectedItemsTool(WorkbenchContext context) {
         super(context);
@@ -99,11 +99,8 @@ public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescript
     protected void gestureFinished() throws java.lang.Exception {
         reportNothingToUndoYet();
         final Coordinate displacement = CoordUtil.subtract(getModelDestination(), getModelSource());
-        ArrayList transactions = new ArrayList();
-        for (Iterator i = getPanel().getSelectionManager().getLayersWithSelectedItems().iterator();
-            i.hasNext();
-            ) {
-            Layer layerWithSelectedItems = (Layer) i.next();
+        List<EditTransaction> transactions = new ArrayList<>();
+        for (Layer layerWithSelectedItems : getPanel().getSelectionManager().getLayersWithSelectedItems()) {
             transactions.add(createTransaction(layerWithSelectedItems, displacement));
         }
         EditTransaction.commit(transactions);
@@ -112,9 +109,8 @@ public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescript
     private EditTransaction createTransaction(Layer layer, final Coordinate displacement) {
         EditTransaction transaction =
             EditTransaction.createTransactionOnSelection(new EditTransaction.SelectionEditor() {
-            public Geometry edit(Geometry geometryWithSelectedItems, Collection selectedItems) {
-                for (Iterator j = selectedItems.iterator(); j.hasNext();) {
-                    Geometry item = (Geometry) j.next();
+            public Geometry edit(Geometry geometryWithSelectedItems, Collection<Geometry> selectedItems) {
+                for (Geometry item : selectedItems) {
                     if (shiftDown)
                         rotate(item);
                     else
@@ -128,12 +124,9 @@ public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescript
     }
 
     private void move(Geometry geometry, final Coordinate displacement) {
-        geometry.apply(new CoordinateFilter() {
-            public void filter(Coordinate coordinate) {
-                //coordinate.setCoordinate(CoordUtil.add(coordinate, displacement));
-                coordinate.x += displacement.x;
-                coordinate.y += displacement.y;
-            }
+        geometry.apply((CoordinateFilter) coordinate -> {
+            coordinate.x += displacement.x;
+            coordinate.y += displacement.y;
         });
     }
 
@@ -189,21 +182,18 @@ public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescript
         }
     }
 
-    private Collection verticesToSnap() {
+    private Collection<Coordinate> verticesToSnap() {
         //Lazily initialized because not used if there are no snapping policies. [Jon Aquino]
         Envelope viewportEnvelope = getPanel().getViewport().getEnvelopeInModelCoordinates();
 
         if (verticesToSnap == null) {
-            verticesToSnap = new ArrayList();
-            for (Iterator i = getPanel().getSelectionManager().getSelectedItems().iterator();
-                i.hasNext();
-                ) {
-                Geometry selectedItem = (Geometry) i.next();
+            verticesToSnap = new ArrayList<>();
+            for (Geometry selectedItem : getPanel().getSelectionManager().getSelectedItems()) {
                 Coordinate[] coordinates = selectedItem.getCoordinates();
 
-                for (int j = 0; j < coordinates.length; j++) {
-                    if (viewportEnvelope.contains(coordinates[j])) {
-                        verticesToSnap.add(coordinates[j]);
+                for (Coordinate coordinate : coordinates) {
+                    if (viewportEnvelope.contains(coordinate)) {
+                        verticesToSnap.add(coordinate);
                     }
                 }
             }
@@ -218,7 +208,7 @@ public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescript
     }
 
     private Shape createSelectedItemsShape() throws NoninvertibleTransformException {
-        List itemsToRender = new ArrayList(getPanel().getSelectionManager().getSelectedItems());
+        List<Geometry> itemsToRender = new ArrayList<>(getPanel().getSelectionManager().getSelectedItems());
         if (itemsToRender.size() > 100) {
             Collections.shuffle(itemsToRender);
             itemsToRender = itemsToRender.subList(0, 99);
@@ -226,7 +216,7 @@ public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescript
 
         GeometryCollection gc =
             geometryFactory.createGeometryCollection(
-                (Geometry[]) itemsToRender.toArray(new Geometry[] {}));
+                itemsToRender.toArray(new Geometry[] {}));
 
         if (centerCoord == null) {
         	centerCoord = gc.getCentroid().getCoordinate(); 
@@ -289,8 +279,7 @@ public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescript
     }
 
     protected void setModelDestination(Coordinate modelDestination) {
-        for (Iterator i = verticesToSnap().iterator(); i.hasNext();) {
-            Coordinate vertex = (Coordinate) i.next();
+        for (Coordinate vertex : verticesToSnap()) {
             Coordinate displacement = CoordUtil.subtract(vertex, getModelSource());
             Coordinate snapPoint = snap(CoordUtil.add(modelDestination, displacement));
 
@@ -302,8 +291,8 @@ public class MoveSelectedItemsTool extends DragTool implements ShortcutsDescript
         this.modelDestination = modelDestination;
     }
 
-    public Map<ModifierKeySpec, String> describeShortcuts() {
-      Map map = new HashMap();
+    public Map<ModifierKeySpec,String> describeShortcuts() {
+      Map<ModifierKeySpec,String> map = new HashMap<>();
       map.put(new ModifierKeySpec(new int[] { KeyEvent.VK_SHIFT }),
           I18N.getInstance().get(this.getClass().getName() + ".rotate-item"));
       return map;

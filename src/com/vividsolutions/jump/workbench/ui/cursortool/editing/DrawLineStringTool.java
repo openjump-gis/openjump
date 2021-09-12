@@ -39,6 +39,7 @@ import java.util.List;
 
 import javax.swing.Icon;
 
+import com.vividsolutions.jump.workbench.ui.snap.*;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.operation.valid.IsValidOp;
@@ -46,18 +47,14 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
-import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
 import com.vividsolutions.jump.workbench.ui.cursortool.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-import com.vividsolutions.jump.workbench.ui.snap.SnapToLineStringBeingEditedPolicy;
-import com.vividsolutions.jump.workbench.ui.snap.SnapToFeaturesPolicy;
-import com.vividsolutions.jump.workbench.ui.snap.SnapToGridPolicy;
-import com.vividsolutions.jump.workbench.ui.snap.SnapToVerticesPolicy;
 
 
 public class DrawLineStringTool extends MultiClickTool {
-    private FeatureDrawingUtil featureDrawingUtil;
+
+    private final FeatureDrawingUtil featureDrawingUtil;
 
     private DrawLineStringTool(WorkbenchContext context, FeatureDrawingUtil featureDrawingUtil) {
         super(context);
@@ -95,8 +92,8 @@ public class DrawLineStringTool extends MultiClickTool {
           isRollingBackInvalidEdits(), this, getPanel());
     }
 
-    protected List createStandardSnappingPolicies(Blackboard blackboard) {
-        List policies = new ArrayList();
+    protected List<SnapPolicy> createStandardSnappingPolicies(Blackboard blackboard) {
+        List<SnapPolicy> policies = new ArrayList<>();
         policies.add(new SnapToVerticesPolicy(blackboard));
         policies.add(new SnapToFeaturesPolicy(blackboard));
         policies.add(new SnapToGridPolicy(blackboard));

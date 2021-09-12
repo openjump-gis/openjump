@@ -46,7 +46,8 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
  * Filters out middle- and right-clicks.
  */
 public class LeftClickFilter implements CursorTool {
-    private CursorTool wrappee;
+
+    private final CursorTool wrappee;
 
     public LeftClickFilter(CursorTool wrappee) {
         this.wrappee = wrappee;
@@ -114,8 +115,7 @@ public class LeftClickFilter implements CursorTool {
 
     public boolean isRightMouseButtonUsed() {
       if (wrappee instanceof AbstractCursorTool) {
-        return ((AbstractCursorTool) wrappee)
-            .isRightMouseButtonUsed();
+        return wrappee.isRightMouseButtonUsed();
       }
       return false;
     }

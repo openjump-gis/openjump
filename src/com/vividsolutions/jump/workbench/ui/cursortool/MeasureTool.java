@@ -35,12 +35,14 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Icon;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.images.famfam.IconLoaderFamFam;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * A tool which displays cumlative length, angle and cumlative area of
@@ -72,7 +74,7 @@ public class MeasureTool
   public void mouseLocationChanged(MouseEvent e) {
     try {
       if (isShapeOnScreen()) {
-        ArrayList currentCoordinates = new ArrayList(getCoordinates());
+        List<Coordinate> currentCoordinates = new ArrayList<>(getCoordinates());
         currentCoordinates.add(getPanel().getViewport().toModelCoordinate(e.getPoint()));
       }
       super.mouseLocationChanged(e);

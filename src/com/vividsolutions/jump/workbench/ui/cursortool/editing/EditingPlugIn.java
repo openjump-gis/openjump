@@ -43,7 +43,6 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
-import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.cursortool.CursorTool;
@@ -107,7 +106,7 @@ public class EditingPlugIn extends ToolboxPlugIn {
     toolbox.setResizable(false);
     toolbox.setInitialLocation(new GUIUtil.Location(20, true, 20, false));
 
-    EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(toolbox.getContext());
+    //EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(toolbox.getContext());
     // Null out the quasimodes for [Ctrl] because the Select tools will handle
     // that case. [Jon Aquino]
     toolbox.add(new SelectFeaturesTool(toolbox.getContext()));

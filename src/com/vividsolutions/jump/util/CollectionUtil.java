@@ -278,10 +278,10 @@ public class CollectionUtil {
     /**
      * The Smalltalk #collect method.
      */
-    public static <T> Collection<T> collect(Collection<T> collection, Block block) {
-        ArrayList<T> result = new ArrayList<>();
+    public static <T,R> Collection<R> collect(Collection<T> collection, Block block) {
+        ArrayList<R> result = new ArrayList<>();
         for (Object object : collection) {
-            result.add((T)block.yield(object));
+            result.add((R)block.yield(object));
         }
 
         return result;

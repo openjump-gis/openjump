@@ -35,7 +35,7 @@ package com.vividsolutions.jump.workbench.ui.cursortool;
 import java.awt.Cursor;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.Icon;
 
@@ -43,22 +43,21 @@ import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 
 
 public abstract class CompositeTool implements CursorTool {
-    protected ArrayList cursorTools = new ArrayList();
+
+    protected List<CursorTool> cursorTools;
 
     public CompositeTool(CursorTool[] cursorTools) {
-        this.cursorTools = new ArrayList(Arrays.asList(cursorTools));
+        this.cursorTools = new ArrayList<>(Arrays.asList(cursorTools));
     }
 
     public void deactivate() {
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-            tool.deactivate();
+        for (CursorTool cursorTool : cursorTools) {
+            cursorTool.deactivate();
         }
     }
 
     public Cursor getCursor() {
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool cursorTool = (CursorTool) i.next();
+        for (CursorTool cursorTool : cursorTools) {
 
             //Prefer cursors other than the default cursor. [Jon Aquino]
             if (cursorTool.getCursor() != Cursor.getDefaultCursor()) {
@@ -70,9 +69,7 @@ public abstract class CompositeTool implements CursorTool {
     }
 
     public boolean isRightMouseButtonUsed() {
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool cursorTool = (CursorTool) i.next();
-
+        for (CursorTool cursorTool : cursorTools) {
             if (cursorTool.isRightMouseButtonUsed()) {
                 return true;
             }
@@ -82,7 +79,7 @@ public abstract class CompositeTool implements CursorTool {
     }
 
     protected CursorTool firstCursorTool() {
-        return (CursorTool) cursorTools.get(0);
+        return cursorTools.get(0);
     }
 
     private LayerViewPanel panel = null;
@@ -90,9 +87,8 @@ public abstract class CompositeTool implements CursorTool {
 
     public void activate(LayerViewPanel layerViewPanel) {
         this.panel = layerViewPanel;
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-            tool.activate(layerViewPanel);
+        for (CursorTool cursorTool : cursorTools) {
+            cursorTool.activate(layerViewPanel);
         }
     }
 
@@ -102,49 +98,42 @@ public abstract class CompositeTool implements CursorTool {
     }
 
     public void cancelGesture() {
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-            tool.cancelGesture();
+        for (CursorTool cursorTool : cursorTools) {
+            cursorTool.cancelGesture();
         }
     }
 
     public Icon getIcon() {
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-
-            if (tool.getIcon() != null) {
-                return tool.getIcon();
+        for (CursorTool cursorTool : cursorTools) {
+            if (cursorTool.getIcon() != null) {
+                return cursorTool.getIcon();
             }
         }
-
         return null;
     }
 
     protected String getName(String delimiter) {
-        String name = "";
+        StringBuilder name = new StringBuilder();
 
         for (int i = 0; i < cursorTools.size(); i++) {
             if (i > 0) {
-                name += (" " + delimiter + " ");
+                name.append(" ").append(delimiter).append(" ");
             }
-
-            name += ((CursorTool) cursorTools.get(i)).getName();
+            name.append(cursorTools.get(i).getName());
         }
 
-        return name;
+        return name.toString();
     }
 
     public boolean isGestureInProgress() {
-        for (Iterator i = cursorTools.iterator(); i.hasNext();) {
-            CursorTool tool = (CursorTool) i.next();
-
-            if (tool.isGestureInProgress()) {
+        for (CursorTool cursorTool : cursorTools) {
+            if (cursorTool.isGestureInProgress()) {
                 return true;
             }
         }
-
         return false;
     }
+
     public LayerViewPanel getPanel() {
         return panel;
     }

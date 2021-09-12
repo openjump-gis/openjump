@@ -30,16 +30,11 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui.cursortool.editing;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.geom.NoninvertibleTransformException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.swing.Icon;
 
@@ -61,46 +56,50 @@ import com.vividsolutions.jump.workbench.ui.GeometryEditor;
 import com.vividsolutions.jump.workbench.ui.cursortool.Animations;
 import com.vividsolutions.jump.workbench.ui.cursortool.NClickTool;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+
+
 public class InsertVertexTool extends NClickTool {
+
 	private static final int PIXEL_RANGE = 5;
-	private EnableCheckFactory checkFactory;
+	private final EnableCheckFactory checkFactory;
 	public InsertVertexTool(WorkbenchContext context) {
 		super(context, 1);
 		this.checkFactory = EnableCheckFactory.getInstance(context);
 	}
+
 	private double modelRange() {
 		return PIXEL_RANGE / getPanel().getViewport().getScale();
 	}
-	private Collection featuresInRange(Coordinate modelClickCoordinate,
+
+	private Collection<Feature> featuresInRange(Coordinate modelClickCoordinate,
 			Layer layer) {
 		Point modelClickPoint = new GeometryFactory()
 				.createPoint(modelClickCoordinate);
-		Collection featuresWithSelectedItems = getPanel().getSelectionManager()
+		Collection<Feature> featuresWithSelectedItems = getPanel().getSelectionManager()
 				.getFeaturesWithSelectedItems(layer);
 		if (featuresWithSelectedItems.isEmpty()) {
-			return new ArrayList();
+			return new ArrayList<>();
 		}
-		ArrayList featuresInRange = new ArrayList();
-		for (Iterator i = featuresWithSelectedItems.iterator(); i.hasNext();) {
-			Feature candidate = (Feature) i.next();
+		List<Feature> featuresInRange = new ArrayList<>();
+		for (Feature candidate : featuresWithSelectedItems) {
 			if (modelClickPoint.distance(candidate.getGeometry()) <= modelRange()) {
 				featuresInRange.add(candidate);
 			}
 		}
 		return featuresInRange;
 	}
-	private Coordinate modelClickCoordinate()
-			throws NoninvertibleTransformException {
-		return (Coordinate) getCoordinates().get(0);
+
+	private Coordinate modelClickCoordinate() {
+		return getCoordinates().get(0);
 	}
+
 	private LineSegment segmentInRange(Geometry geometry, Coordinate target) {
 		//It's possible that the geometry may have no segments in range; for
 		// example, if it
 		//is empty, or if only has points in range. [Jon Aquino]
 		LineSegment closest = null;
-		List coordArrays = CoordinateArrays.toCoordinateArrays(geometry, false);
-		for (Iterator i = coordArrays.iterator(); i.hasNext();) {
-			Coordinate[] coordinates = (Coordinate[]) i.next();
+		List<Coordinate[]> coordArrays = CoordinateArrays.toCoordinateArrays(geometry, false);
+		for (Coordinate[] coordinates : coordArrays) {
 			for (int j = 1; j < coordinates.length; j++) { //1
 				LineSegment candidate = new LineSegment(coordinates[j - 1],
 						coordinates[j]);
@@ -126,14 +125,12 @@ public class InsertVertexTool extends NClickTool {
 
 		}
 		//No good to make the new vertex one of the endpoints. If the segment
-		// is
-		//tiny (less than 6 pixels), pick the midpoint. [Jon Aquino]
+		// is tiny (less than 6 pixels), pick the midpoint. [Jon Aquino]
 		double threshold = 6 / getPanel().getViewport().getScale();
 		if (segment.getLength() < threshold) {
 			return CoordUtil.average(segment.p0, segment.p1);
 		}
-		//Segment is not so tiny. Pick a point 3 pixels from the end. [Jon
-		// Aquino]
+		//Segment is not so tiny. Pick a point 3 pixels from the end. [Jon Aquino]
 		double offset = 3 / getPanel().getViewport().getScale();
 		Coordinate unitVector = closestPoint.equals(segment.p0) ? CoordUtil
 				.divide(CoordUtil.subtract(segment.p1, segment.p0), segment
@@ -148,9 +145,9 @@ public class InsertVertexTool extends NClickTool {
 			this.feature = feature;
 			this.segment = segment;
 		}
-		private LineSegment segment;
-		private Feature feature;
-		private Layer layer;
+		private final LineSegment segment;
+		private final Feature feature;
+		private final Layer layer;
 		public Feature getFeature() {
 			return feature;
 		}
@@ -161,14 +158,12 @@ public class InsertVertexTool extends NClickTool {
 			return segment;
 		}
 	}
-	private SegmentContext findSegment(Layer layer, Collection features,
+	private SegmentContext findSegment(Layer layer, Collection<Feature> features,
 			Coordinate target) {
 		Assert.isTrue(layer.isEditable());
-		for (Iterator i = features.iterator(); i.hasNext();) {
-			Feature feature = (Feature) i.next();
-			for (Iterator j = getPanel().getSelectionManager()
-					.getSelectedItems(layer, feature).iterator(); j.hasNext();) {
-				Geometry selectedItem = (Geometry) j.next();
+		for (Feature feature : features) {
+			for (Geometry selectedItem : getPanel().getSelectionManager()
+						.getSelectedItems(layer, feature)) {
 				LineSegment segment = segmentInRange(selectedItem, target);
 				if (segment != null) {
 					return new SegmentContext(layer, feature, segment);
@@ -177,10 +172,10 @@ public class InsertVertexTool extends NClickTool {
 		}
 		return null;
 	}
-	private SegmentContext findSegment(Map layerToFeaturesMap, Coordinate target) {
-		for (Iterator i = layerToFeaturesMap.keySet().iterator(); i.hasNext();) {
-			Layer layer = (Layer) i.next();
-			Collection features = (Collection) layerToFeaturesMap.get(layer);
+
+	private SegmentContext findSegment(Map<Layer,Collection<Feature>> layerToFeaturesMap, Coordinate target) {
+		for (Layer layer : layerToFeaturesMap.keySet()) {
+			Collection<Feature> features = layerToFeaturesMap.get(layer);
 			SegmentContext segmentContext = findSegment(layer, features, target);
 			if (segmentContext != null) {
 				return segmentContext;
@@ -196,7 +191,7 @@ public class InsertVertexTool extends NClickTool {
 		if (!check(checkFactory.createAtLeastNLayersMustBeEditableCheck(1))) {
 			return;
 		}
-		HashMap layerToFeaturesInRangeMap = layerToFeaturesInRangeMap();
+		Map<Layer,Collection<Feature>> layerToFeaturesInRangeMap = layerToFeaturesInRangeMap();
 		if (layerToFeaturesInRangeMap.isEmpty()) {
 			getPanel().getContext().warnUser(I18N.getInstance().get("ui.cursortool.editing.InsertVertexTool.no-selected-editable-items-here"));
 			return;
@@ -214,9 +209,10 @@ public class InsertVertexTool extends NClickTool {
 				.getSegment().p1, newVertex);
 		gestureFinished(newGeometry, newVertex, segment);
 	}
+
 	protected void gestureFinished(Geometry newGeometry, final Coordinate newVertex, SegmentContext segment) {
-		EditTransaction transaction = new EditTransaction(Arrays
-				.asList(new Feature[]{segment.getFeature()}), getName(),
+		EditTransaction transaction = new EditTransaction(
+				Collections.singletonList(segment.getFeature()), getName(),
 				segment.getLayer(), isRollingBackInvalidEdits(), false,
 				getPanel());
 		//transaction.setGeometry(0, newGeometry);
@@ -233,13 +229,11 @@ public class InsertVertexTool extends NClickTool {
 			}
 		});
 	}
-	private HashMap layerToFeaturesInRangeMap()
-			throws NoninvertibleTransformException {
-		HashMap layerToFeaturesInRangeMap = new HashMap();
-		for (Iterator i = getPanel().getLayerManager().getEditableLayers()
-				.iterator(); i.hasNext();) {
-			Layer editableLayer = (Layer) i.next();
-			Collection featuresInRange = featuresInRange(
+
+	private Map<Layer,Collection<Feature>> layerToFeaturesInRangeMap() {
+		Map<Layer,Collection<Feature>> layerToFeaturesInRangeMap = new HashMap<>();
+		for (Layer editableLayer : getPanel().getLayerManager().getEditableLayers()) {
+			Collection<Feature> featuresInRange = featuresInRange(
 					modelClickCoordinate(), editableLayer);
 			if (!featuresInRange.isEmpty()) {
 				layerToFeaturesInRangeMap.put(editableLayer, featuresInRange);
@@ -247,9 +241,11 @@ public class InsertVertexTool extends NClickTool {
 		}
 		return layerToFeaturesInRangeMap;
 	}
+
 	public Icon getIcon() {
 		return IconLoader.icon("InsertVertex.gif");
 	}
+
 	public Cursor getCursor() {
 		return createCursor(IconLoader.icon("PlusCursor.gif").getImage());
 	}
