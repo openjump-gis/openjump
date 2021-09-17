@@ -116,13 +116,15 @@ public class EnableableToolBar extends JToolBar {
         }
         buttonToNameMap.put(button, tooltip);
         int dim = 20;
-        int w = icon.getIconWidth();
-        int h = icon.getIconHeight();
-        // make sure the icon is max 20x20
-        if (h > dim || w > dim) {
-          icon = GUIUtil.resize(GUIUtil.toImageIcon(icon), dim);
+        if (icon != null) {
+            int w = icon.getIconWidth();
+            int h = icon.getIconHeight();
+            // make sure the icon is max 20x20
+            if (h > dim || w > dim) {
+                icon = GUIUtil.resize(GUIUtil.toImageIcon(icon), dim);
+            }
+            button.setIcon(icon);
         }
-        button.setIcon(icon);
         button.setMargin(new Insets(0, 0, 0, 0));
         button.setToolTipText(tooltip);
         button.addActionListener(actionListener);

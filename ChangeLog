@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2021-09-17 mmichaud
+  * Use new JTS overlayng algorithm for Dissolve2PlugIn + refactoring
+
 2021-09-12 mmichaud
   * Use new JTS overlayng algorithm for OverlayPlugIn
   * Use new JTS overlayng algorithm for UnionByAttributePlugIn

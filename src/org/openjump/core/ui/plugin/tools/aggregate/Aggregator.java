@@ -16,7 +16,7 @@ public interface Aggregator<T> {
     /**
      * Create a new Aggregator with the same attributes as this one.
      */
-    Aggregator clone();
+    Aggregator<?> clone();
 
     /**
      * Returns true if this aggregator must ignore null values.

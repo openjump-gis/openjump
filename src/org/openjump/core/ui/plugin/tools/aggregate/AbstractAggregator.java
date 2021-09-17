@@ -10,10 +10,11 @@ import java.util.*;
  */
 abstract class AbstractAggregator<T> implements Aggregator<T> {
 
-    final private AttributeType outputType;
+    private final AttributeType outputType;
+    private final List<T> values;
     private boolean ignoreNull;
     private Map<String,Object> parameters;
-    private List<T> values;
+
 
     AbstractAggregator(AttributeType outputType, boolean ignoreNull, Object...kv) {
         this.outputType = outputType;
@@ -33,7 +34,7 @@ abstract class AbstractAggregator<T> implements Aggregator<T> {
 
     @Override
     public Set<String> getParameters() {
-        return parameters == null ? new HashSet<String>() : parameters.keySet();
+        return parameters == null ? new HashSet<>() : parameters.keySet();
     }
 
     @Override
@@ -93,7 +94,7 @@ abstract class AbstractAggregator<T> implements Aggregator<T> {
     }
 
     @Override
-    public abstract Aggregator clone();
+    public abstract Aggregator<?> clone();
 
     @Override
     public String toString() {

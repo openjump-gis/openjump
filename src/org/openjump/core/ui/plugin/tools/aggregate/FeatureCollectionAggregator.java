@@ -17,9 +17,9 @@ public class FeatureCollectionAggregator {
 
     private final static String KEY = FeatureCollectionAggregator.class.getName();
 
-    private FeatureCollection fc;
-    private List<String> keyAttributes;
-    private List<AttributeAggregator> aggregators;
+    private final FeatureCollection fc;
+    private final List<String> keyAttributes;
+    private final List<AttributeAggregator> aggregators;
 
     public FeatureCollectionAggregator(FeatureCollection fc, List<String> keyAttributes, List<AttributeAggregator> aggregators)
             throws AggregatorException {
@@ -49,8 +49,7 @@ public class FeatureCollectionAggregator {
     public FeatureCollection getAggregatedFeatureCollection() {
         Map<Key,List<AttributeAggregator>> map = new HashMap<>();
         // Add attribute values to features with the same key
-        for (Object object : fc.getFeatures()) {
-            Feature feature = (Feature)object;
+        for (Feature feature : fc.getFeatures()) {
             Key key = new Key(feature, keyAttributes);
             List<AttributeAggregator> featureAggregators = map.get(key);
             if (featureAggregators == null) {
@@ -64,8 +63,9 @@ public class FeatureCollectionAggregator {
                 }
                 map.put(key, featureAggregators);
             }
-            for (AttributeAggregator agg : featureAggregators) {
-                agg.getAggregator().addValue(feature.getAttribute(agg.getInputName()));
+            for (AttributeAggregator aagg : featureAggregators) {
+                Aggregator<Object> agg = (Aggregator<Object>)aagg.getAggregator();
+                agg.addValue(feature.getAttribute(aagg.getInputName()));
             }
         }
 
@@ -99,7 +99,7 @@ public class FeatureCollectionAggregator {
 
     public static class Key {
 
-        private Map<String,Object> map = new HashMap<>();
+        private final Map<String,Object> map = new HashMap<>();
 
         Key(Feature feature, List<String> attributes) {
             for (String name : attributes) {
@@ -117,7 +117,7 @@ public class FeatureCollectionAggregator {
 
         @Override
         public int hashCode() {
-            return map != null ? map.hashCode() : 0;
+            return map.hashCode();
         }
 
     }

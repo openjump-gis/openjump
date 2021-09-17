@@ -3,8 +3,10 @@ package org.openjump.core.ui.plugin.tools.aggregate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.linemerge.LineMerger;
-import org.locationtech.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
+import org.locationtech.jts.operation.overlayng.UnaryUnionNG;
 import com.vividsolutions.jump.feature.AttributeType;
 
 import java.util.*;
@@ -15,28 +17,28 @@ import java.util.*;
  */
 public class Aggregators {
 
-    private final static Map<AttributeType,Map<String,Aggregator>> aggregatorsByType =
-            new HashMap<AttributeType,Map<String,Aggregator>>();
-    private final static Map<String,Aggregator> aggregatorsByName =
-            new HashMap<String,Aggregator>();
+    private final static Map<AttributeType,Map<String,Aggregator<?>>> aggregatorsByType =
+            new HashMap<>();
+    private final static Map<String,Aggregator<?>> aggregatorsByName =
+            new HashMap<>();
 
     /**
      * Returns an aggregator from its (internationalized) name
      */
-    public static Aggregator getAggregator(String name) {
+    public static Aggregator<?> getAggregator(String name) {
         return aggregatorsByName.get(name);
     }
 
     /**
      * Returns aggregators accepting a certain type of values as input.
      */
-    public static Map<String,Aggregator> getAggregators(AttributeType type) {
+    public static Map<String,Aggregator<?>> getAggregators(AttributeType type) {
         return aggregatorsByType.get(type);
     }
 
-    private static void addAggregator(AttributeType inputType, Aggregator aggregator) {
+    private static void addAggregator(AttributeType inputType, Aggregator<?> aggregator) {
         aggregatorsByName.put(aggregator.getName(), aggregator);
-        Map<String,Aggregator> map = aggregatorsByType.get(inputType);
+        Map<String,Aggregator<?>> map = aggregatorsByType.get(inputType);
         if (map == null) {
             map = new HashMap<>();
             aggregatorsByType.put(inputType, map);
@@ -145,7 +147,7 @@ public class Aggregators {
             for (int i = 0 ; i < values.size() ; i++) {
                 if (values.get(i) == null) values.set(i, "<NULL>");
             }
-            Set set = new TreeSet<>(values);
+            Set<Object> set = new TreeSet<>(values);
             for (Object value : set) {
                 if (sb.length()==0) sb.append(value);
                 else sb.append(getParameter(SEPARATOR_NAME)).append(value);
@@ -171,22 +173,32 @@ public class Aggregators {
             super(AttributeType.GEOMETRY, true);
         }
         @Override public Union clone() {
-            return new Union();
+            Union clone = new Union();
+            for (String key : getParameters()) {
+                clone.setParameter(key, getParameter(key));
+            }
+            return clone;
         }
         @Override public Geometry getResult() {
             GeometryFactory gf = getValues().size() == 0 ? new GeometryFactory() : getValues().get(0).getFactory();
             Geometry collected = gf.buildGeometry(getValues());
             if (getValues().size() == 0) return collected;
-            List<Geometry> points      = new ArrayList<Geometry>();
-            List<Geometry> lineStrings = new ArrayList<Geometry>();
-            List<Geometry> polygons    = new ArrayList<Geometry>();
+            List<Geometry> points      = new ArrayList<>();
+            List<Geometry> lineStrings = new ArrayList<>();
+            List<Geometry> polygons    = new ArrayList<>();
             decompose(collected, points, lineStrings, polygons);
             LineMerger merger = new LineMerger();
             merger.add(lineStrings);
-            List<Geometry> geometries = new ArrayList<Geometry>();
+            List<Geometry> geometries = new ArrayList<>();
             geometries.addAll(points);
             geometries.addAll(merger.getMergedLineStrings());
-            Geometry mpoly = UnaryUnionOp.union(polygons);
+            Geometry mpoly; // = UnaryUnionOp.union(polygons);
+            if (this.getParameter("precision") == null ||
+                this.getParameter("precision").equals(0.0)) {
+                mpoly = OverlayNGRobust.union(polygons);
+            } else {
+                mpoly = UnaryUnionNG.union(polygons, new PrecisionModel((Double)this.getParameter("precision")));
+            }
             if (mpoly != null) {
                 for (int i = 0; i < mpoly.getNumGeometries(); i++) {
                     geometries.add(mpoly.getGeometryN(i));
@@ -520,7 +532,7 @@ public class Aggregators {
             return new IntMedian();
         }
         @Override public Integer getResult() {
-            List<Integer> sortedList = new ArrayList<Integer>(getValues());
+            List<Integer> sortedList = new ArrayList<>(getValues());
             if (sortedList.size() == 0) return null;
             Collections.sort(sortedList);
             return sortedList.get(sortedList.size()/2);
@@ -535,7 +547,7 @@ public class Aggregators {
             return new LongMedian();
         }
         @Override public Long getResult() {
-            List<Long> sortedList = new ArrayList<Long>(getValues());
+            List<Long> sortedList = new ArrayList<>(getValues());
             if (sortedList.size() == 0) return null;
             Collections.sort(sortedList);
             return sortedList.get(sortedList.size()/2);
@@ -550,7 +562,7 @@ public class Aggregators {
             return new DoubleMedian();
         }
         @Override public Double getResult() {
-            List<Double> sortedList = new ArrayList<Double>(getValues());
+            List<Double> sortedList = new ArrayList<>(getValues());
             if (sortedList.size() == 0) return null;
             Collections.sort(sortedList);
             return sortedList.get(sortedList.size()/2);
@@ -566,7 +578,7 @@ public class Aggregators {
             return new DateMedian();
         }
         @Override public Date getResult() {
-            List<Date> sortedList = new ArrayList<Date>(getValues());
+            List<Date> sortedList = new ArrayList<>(getValues());
             if (sortedList.size() == 0) return null;
             Collections.sort(sortedList);
             return sortedList.get(sortedList.size()/2);
@@ -581,7 +593,7 @@ public class Aggregators {
             return new StringMajority(ignoreNull());
         }
         @Override public String getResult() {
-            Map<String,Integer> map = new HashMap<String, Integer>();
+            Map<String,Integer> map = new HashMap<>();
             for (Object value : getValues()) {
                 String v = value==null?null:value.toString();
                 Integer i = map.get(v);
@@ -611,8 +623,7 @@ public class Aggregators {
         @Override public Boolean getResult() {
             int countTrue = 0;
             int countFalse = 0;
-            for (Object value : getValues()) {
-                Boolean b = (Boolean)value;
+            for (Boolean b : getValues()) {
                 if (b == null) countFalse++;
                 else if (b) countTrue++;
                 else countFalse++;

@@ -6,14 +6,15 @@ import com.vividsolutions.jump.task.TaskMonitor;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
-import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.*;
+import org.locationtech.jts.geom.Geometry;
 import org.openjump.core.ui.images.IconLoader;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 import org.openjump.core.ui.plugin.tools.aggregate.*;
+import static com.vividsolutions.jump.workbench.ui.AttributeTypeFilter.NO_GEOMETRY_FILTER;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,30 +36,40 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
     private final static Dimension MEDIUM = new Dimension(22,22);
     private final static Dimension NARROW = new Dimension(22,22);
 
-    private final static String SOURCE_LAYER              = I18N.getInstance().get(KEY + ".source-layer");
-    private final static String DESCRIPTION               = I18N.getInstance().get(KEY + ".description");
-    private final static String KEY_ATTRIBUTES            = I18N.getInstance().get(KEY + ".key-attributes");
-    private final static String ADD_KEY_ATTRIBUTE         = I18N.getInstance().get(KEY + ".add-key-attribute");
-    private final static String AGGREGATORS               = I18N.getInstance().get(KEY + ".aggregators");
-    private final static String AGGREGATE_FUNCTION        = I18N.getInstance().get(KEY + ".aggregate-function");
-    private final static String AGGREGATE_FUNCTIONS       = I18N.getInstance().get(KEY + ".aggregate-functions");
-    private final static String ADD_AGGREGATE_FUNCTION    = I18N.getInstance().get(KEY + ".add-aggregate-function");
-    private final static String REMOVE_AGGREGATE_FUNCTION = I18N.getInstance().get(KEY + ".remove-aggregate-function");
-    private final static String IGNORE_NULL               = I18N.getInstance().get(KEY + ".ignore-null");
-    private final static String PARAMETER                 = I18N.getInstance().get(KEY + ".parameter");
-    private final static String OUTPUT_NAME               = I18N.getInstance().get(KEY + ".output-name");
-    private final static String INPUT_ATTRIBUTE           = I18N.getInstance().get(KEY + ".input-attribute");
-    private final static String GEOMETRY_AGGREGATOR       = I18N.getInstance().get(KEY + ".geometry-aggregator");
+    private final static String SOURCE_LAYER              = I18N.JUMP.get(KEY + ".source-layer");
+    private final static String DESCRIPTION               = I18N.JUMP.get(KEY + ".description");
+    private final static String KEY_ATTRIBUTES            = I18N.JUMP.get(KEY + ".key-attributes");
+    private final static String ADD_KEY_ATTRIBUTE         = I18N.JUMP.get(KEY + ".add-key-attribute");
+    private final static String AGGREGATORS               = I18N.JUMP.get(KEY + ".aggregators");
+    private final static String AGGREGATE_FUNCTION        = I18N.JUMP.get(KEY + ".aggregate-function");
+    private final static String AGGREGATE_FUNCTIONS       = I18N.JUMP.get(KEY + ".aggregate-functions");
+    private final static String ADD_AGGREGATE_FUNCTION    = I18N.JUMP.get(KEY + ".add-aggregate-function");
+    private final static String REMOVE_AGGREGATE_FUNCTION = I18N.JUMP.get(KEY + ".remove-aggregate-function");
+    private final static String IGNORE_NULL               = I18N.JUMP.get(KEY + ".ignore-null");
+    private final static String PARAMETER                 = I18N.JUMP.get(KEY + ".parameter");
+    private final static String OUTPUT_NAME               = I18N.JUMP.get(KEY + ".output-name");
+    private final static String INPUT_ATTRIBUTE           = I18N.JUMP.get(KEY + ".input-attribute");
+    private final static String GEOMETRY_AGGREGATOR       = I18N.JUMP.get(KEY + ".geometry-aggregator");
+
+    private final static String FLOATING_PRECISION_MODEL    = I18N.JUMP.get("jts.use-floating-point-precision-model");
+    private final static String FLOATING_PRECISION_MODEL_TT = I18N.JUMP.get("jts.use-floating-point-precision-model-tt");
+    private final static String FIXED_PRECISION_MODEL       = I18N.JUMP.get("jts.use-fixed-precision-model");
+    private final static String FIXED_PRECISION_MODEL_TT    = I18N.JUMP.get("jts.use-fixed-precision-model-tt");
+    private final static String PRECISION                   = I18N.JUMP.get("jts.fixed-precision");
+    private final static String PRECISION_TT                = I18N.JUMP.get("jts.fixed-precision-tt");
 
 
     private Layer layer;
     private FeatureCollectionAggregator fca;
+    private boolean floatingPrecision = true;
+    private boolean fixedPrecision = false;
+    private double precision = 1000.0;
 
     public Dissolve2PlugIn() {
     }
 
     public String getName() {
-        return I18N.getInstance().get(KEY);
+        return I18N.JUMP.get(KEY);
     }
 
     @Override
@@ -74,17 +85,11 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
         EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
                 .add(checkFactory.createTaskWindowMustBeActiveCheck())
-                .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1))
-                .add(new EnableCheck() {
-                    @SuppressWarnings( "deprecation" )
-                    public String check(JComponent component) {
-                        return workbenchContext
-                                .getLayerableNamePanel()
-                                .getSelectedLayers()[0]
-                                .getFeatureCollectionWrapper()
-                                .getFeatureSchema()
-                                .getAttributeCount() > 1 ? null : I18N.getInstance().get(KEY + ".dataset-must-have-attributes");
-                    }
+                .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
+                .add(component -> {
+                    // At least one layer must have a non geometric attribute
+                    return NO_GEOMETRY_FILTER.filter(workbenchContext.getLayerManager()).size() > 0 ? null :
+                        I18N.JUMP.get(KEY + ".dataset-must-have-attributes");
                 });
     }
 
@@ -112,11 +117,18 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
 
         dialog.addSeparator();
 
-        // Filter out layers without attribute
-        final JComboBox layerComboBox = dialog.addLayerComboBox(SOURCE_LAYER, "", context.getLayerManager(), AttributeTypeFilter.NO_GEOMETRY_FILTER);
-        if (context.getCandidateLayer(0).getFeatureCollectionWrapper().getFeatureSchema().getAttributeCount() > 1) {
-            layerComboBox.setSelectedItem(context.getCandidateLayer(0));
+        if (layer == null) {
+            if (context.getCandidateLayer(0).getFeatureCollectionWrapper().getFeatureSchema().getAttributeCount()>1) {
+                layer = context.getCandidateLayer(0);
+            } else {
+                List<Layer> candidates = NO_GEOMETRY_FILTER.filter(workbenchContext.getLayerManager());
+                layer = candidates.get(0);
+            }
         }
+
+        // Filter out layers without attribute
+        final JComboBox<Layer> layerComboBox = dialog.addLayerComboBox(SOURCE_LAYER, layer, "",
+            NO_GEOMETRY_FILTER.filter(context.getLayerManager()));
 
         dialog.addSeparator();
 
@@ -126,9 +138,37 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
 
         dialog.addSeparator();
 
-        Aggregator union = new Aggregators.Union();
-        Aggregator collect = new Aggregators.Collect();
+        Aggregator<Geometry> union = new Aggregators.Union();
+        Aggregator<Geometry> collect = new Aggregators.Collect();
         dialog.addComboBox(GEOMETRY_AGGREGATOR, union, Arrays.asList(union, collect), "");
+        JRadioButton floatingPrecisionRB = dialog
+            .addRadioButton(FLOATING_PRECISION_MODEL,"MODEL", floatingPrecision, FLOATING_PRECISION_MODEL_TT);
+        JRadioButton fixedPrecisionRB = dialog
+            .addRadioButton(FIXED_PRECISION_MODEL,"MODEL", fixedPrecision, FIXED_PRECISION_MODEL_TT);
+        final JTextField precisionTF = dialog.addDoubleField(PRECISION,precision, 12, PRECISION_TT);
+        precisionTF.setEnabled(fixedPrecision);
+        floatingPrecisionRB.addActionListener(e -> {
+            FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+            try {
+                keyOptionPanel.setSchema(schema);
+                aggregateOptionPanel.setSchema(schema);
+                precisionTF.setEnabled(!floatingPrecisionRB.isSelected());
+                updateControls(dialog, keyOptionPanel, aggregateOptionPanel);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        fixedPrecisionRB.addActionListener(e -> {
+            FeatureSchema schema = dialog.getLayer(SOURCE_LAYER).getFeatureCollectionWrapper().getFeatureSchema();
+            try {
+                keyOptionPanel.setSchema(schema);
+                aggregateOptionPanel.setSchema(schema);
+                precisionTF.setEnabled(fixedPrecisionRB.isSelected());
+                updateControls(dialog, keyOptionPanel, aggregateOptionPanel);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         dialog.addSeparator();
 
@@ -165,17 +205,26 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                                  KeyOptionPanel keyOptionPanel,
                                  AggregateOptionPanel aggregateOptionPanel) {
         layer = dialog.getLayer(SOURCE_LAYER);
+        floatingPrecision = dialog.getBoolean(FLOATING_PRECISION_MODEL);
+        fixedPrecision = dialog.getBoolean(FIXED_PRECISION_MODEL);
+        precision = dialog.getDouble(PRECISION);
         FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
         List<String> keyAttributes = new ArrayList<>(keyOptionPanel.getKeyAttributes());
         List<AttributeAggregator> aggregators = new ArrayList<>();
         // We use the special geometry aggregator if geometry is not a key attribute
-        System.out.println(keyAttributes);
+        //System.out.println(keyAttributes);
         if (!keyAttributes.contains(schema.getAttributeName(schema.getGeometryIndex()))) {
-            System.out.println("add");
-          aggregators.add(new AttributeAggregator(
-                  schema.getAttributeName(schema.getGeometryIndex()),
-                  (Aggregator) dialog.getComboBox(GEOMETRY_AGGREGATOR).getSelectedItem(),
-                  schema.getAttributeName(schema.getGeometryIndex())));
+            //System.out.println("add");
+            Aggregator<?> geomAggregator =
+                (Aggregator<?>)dialog.getComboBox(GEOMETRY_AGGREGATOR).getSelectedItem();
+            if (geomAggregator instanceof Aggregators.Union && fixedPrecision) {
+                geomAggregator.setParameter("precision", precision);
+            }
+            AttributeAggregator attAggregator = new AttributeAggregator(
+                schema.getAttributeName(schema.getGeometryIndex()),
+                geomAggregator,
+                schema.getAttributeName(schema.getGeometryIndex()));
+            aggregators.add(attAggregator);
         }
         aggregators.addAll(aggregateOptionPanel.getAttributeAggregators());
         int geometryTypeCount = 0;
@@ -246,15 +295,12 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
             keyAttributesPanel = new JPanel();
             keyAttributesPanel.setLayout(new BoxLayout(keyAttributesPanel, BoxLayout.Y_AXIS));
 
-            jbPlus.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        keyAttributesPanel.add(new KeyAttributePanel(KeyOptionPanel.this, schema));
-                        SwingUtilities.getWindowAncestor(keyAttributesPanel).pack();
-                    } catch(Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
+            jbPlus.addActionListener(e -> {
+                try {
+                    keyAttributesPanel.add(new KeyAttributePanel(KeyOptionPanel.this, schema));
+                    SwingUtilities.getWindowAncestor(keyAttributesPanel).pack();
+                } catch(Exception ex) {
+                    throw new RuntimeException(ex);
                 }
             });
 
@@ -315,14 +361,11 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
             jbRemove.setPreferredSize(NARROW);
             jbRemove.setToolTipText(REMOVE_AGGREGATE_FUNCTION);
 
-            jbRemove.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (keyOptionPanel.getKeyAttributes().size() > 1) {
-                            keyOptionPanel.getKeyAttributesPanel().remove(KeyAttributePanel.this);
-                            SwingUtilities.getWindowAncestor(keyOptionPanel).pack();
-                        }
-                    }
+            jbRemove.addActionListener(e -> {
+                if (keyOptionPanel.getKeyAttributes().size() > 1) {
+                    keyOptionPanel.getKeyAttributesPanel().remove(KeyAttributePanel.this);
+                    SwingUtilities.getWindowAncestor(keyOptionPanel).pack();
+                }
             });
 
             add(jcbInputAttributeName);
@@ -391,14 +434,11 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
             aggregatorsPanel = new JPanel();
             aggregatorsPanel.setLayout(new BoxLayout(aggregatorsPanel, BoxLayout.Y_AXIS));
 
-            jbPlus.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    aggregatorsPanel.add(new AttributeAggregatePanel(
-                            AggregateOptionPanel.this,
-                            schema));
-                    SwingUtilities.getWindowAncestor(aggregatorsPanel).pack();
-                }
+            jbPlus.addActionListener(e -> {
+                aggregatorsPanel.add(new AttributeAggregatePanel(
+                        AggregateOptionPanel.this,
+                        schema));
+                SwingUtilities.getWindowAncestor(aggregatorsPanel).pack();
             });
             setLayout(new BorderLayout());
             add(northPanel, BorderLayout.NORTH);
@@ -426,10 +466,10 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                         if (selectedAttributeName != null && selectedAggregator != null) {
                             String inputName = selectedAttributeName.toString();
                             String outputName = aap.jtfOutputAttributeName.getText();
-                            Aggregator agg = ((Aggregator)selectedAggregator).clone();
+                            Aggregator<?> agg = ((Aggregator<?>)selectedAggregator).clone();
                             agg.setIgnoreNull(aap.jcbIgnoreNull.isSelected());
                             if (aap.jtfParameter.isEnabled() && agg.getParameters().size() > 0) {
-                                agg.setParameter(agg.getParameters().iterator().next().toString(), aap.jtfParameter.getText());
+                                agg.setParameter(agg.getParameters().iterator().next(), aap.jtfParameter.getText());
                             }
                             AttributeAggregator aggregator = new AttributeAggregator(inputName, agg, outputName);
                             aggregators.add(aggregator);
@@ -448,7 +488,7 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
 
         JTextField jtfOutputAttributeName;
         JComboBox<String> jcbInputAttributeName;
-        JComboBox<Aggregator> jcbAggregators;
+        JComboBox<Aggregator<?>> jcbAggregators;
         JCheckBox jcbIgnoreNull;
         JTextField jtfParameter;
         JButton jbRemove;
@@ -474,12 +514,12 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
             jtfOutputAttributeName.setText(defaultAttribute);
             jcbInputAttributeName.setPreferredSize(LARGE);
 
-            jcbAggregators = new JComboBox<>(
+            jcbAggregators = new JComboBox<Aggregator<?>>(
                     Aggregators.getAggregators(schema.getAttributeType(defaultAttribute))
                             .values().toArray(new Aggregator[0]));
             jcbAggregators.setPreferredSize(LARGE);
 
-            Aggregator aggregator = (Aggregator)jcbAggregators.getSelectedItem();
+            Aggregator<?> aggregator = (Aggregator<?>)jcbAggregators.getSelectedItem();
             jcbIgnoreNull = new JCheckBox();
             jcbIgnoreNull.setPreferredSize(MEDIUM);
             jcbIgnoreNull.setSelected(aggregator == null || aggregator.ignoreNull());
@@ -495,9 +535,9 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     AttributeType type = schema.getAttributeType(jcbInputAttributeName.getSelectedItem().toString());
-                    jcbAggregators.setModel(new DefaultComboBoxModel<>(
+                    jcbAggregators.setModel(new DefaultComboBoxModel<Aggregator<?>>(
                             Aggregators.getAggregators(type).values().toArray(new Aggregator[0])));
-                    Aggregator agg = (Aggregator)jcbAggregators.getSelectedItem();
+                    Aggregator<?> agg = (Aggregator<?>)jcbAggregators.getSelectedItem();
                     if (agg != null) {
                         jcbIgnoreNull.setSelected(agg.ignoreNull());
                         jtfParameter.setEditable(agg.getParameters().size() > 0);
@@ -506,23 +546,17 @@ public class Dissolve2PlugIn extends AbstractThreadedUiPlugIn {
                 }
             });
 
-            jcbAggregators.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Aggregator agg = (Aggregator)jcbAggregators.getSelectedItem();
-                    if (agg != null) {
-                        jcbIgnoreNull.setSelected(agg.ignoreNull());
-                        jtfParameter.setEditable(agg.getParameters().size() > 0);
-                    }
+            jcbAggregators.addActionListener(e -> {
+                Aggregator<?> agg = (Aggregator<?>)jcbAggregators.getSelectedItem();
+                if (agg != null) {
+                    jcbIgnoreNull.setSelected(agg.ignoreNull());
+                    jtfParameter.setEditable(agg.getParameters().size() > 0);
                 }
             });
 
-            jbRemove.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    aggregatePanel.getAggregatorsPanel().remove(AttributeAggregatePanel.this);
-                    SwingUtilities.getWindowAncestor(aggregatePanel).pack();
-                }
+            jbRemove.addActionListener(e -> {
+                aggregatePanel.getAggregatorsPanel().remove(AttributeAggregatePanel.this);
+                SwingUtilities.getWindowAncestor(aggregatePanel).pack();
             });
 
             add(jtfOutputAttributeName);

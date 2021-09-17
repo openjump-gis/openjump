@@ -10,11 +10,11 @@ package org.openjump.core.ui.plugin.tools.aggregate;
  */
 public class AttributeAggregator {
 
-    private String inputName;
-    private Aggregator aggregator;
-    private String outputName;
+    private final String inputName;
+    private final Aggregator<?> aggregator;
+    private final String outputName;
 
-    public AttributeAggregator(String inputName, Aggregator aggregator, String outputName) {
+    public AttributeAggregator(String inputName, Aggregator<?> aggregator, String outputName) {
         this.inputName = inputName;
         this.aggregator = aggregator;
         this.outputName = outputName;
@@ -24,7 +24,7 @@ public class AttributeAggregator {
         return inputName;
     }
 
-    public Aggregator getAggregator() {
+    public Aggregator<?> getAggregator() {
         return aggregator;
     }
 
