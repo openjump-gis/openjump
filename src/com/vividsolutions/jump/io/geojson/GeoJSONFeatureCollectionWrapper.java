@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONStreamAware;
 
@@ -30,10 +31,12 @@ import com.vividsolutions.jump.util.Timer;
  *
  */
 public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
+
   MapGeoJsonGeometryReader geomReader = null;
   FlexibleFeatureSchema featureSchema;
   FeatureCollection featureCollection;
   List<String> columnsWithMixedValues = new LinkedList<>();
+  int epsgCode = 0;
 
   /**
    * create a new empty FeatureCollection wrapper
@@ -41,6 +44,12 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
   public GeoJSONFeatureCollectionWrapper() {
     this.featureSchema = new FlexibleFeatureSchema();
     this.featureCollection = new FeatureDataset(featureSchema);
+    try {
+      CoordinateSystem cs = getFeatureCollection().getFeatureSchema().getCoordinateSystem();
+      if (cs != null) epsgCode = cs.getEPSGCode();
+    } catch(UnsupportedOperationException e) {
+      epsgCode = 0;
+    }
   }
 
   /**
@@ -49,10 +58,16 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
   public GeoJSONFeatureCollectionWrapper(FeatureCollection fc) {
     this.featureSchema = new FlexibleFeatureSchema(fc.getFeatureSchema());
     this.featureCollection = fc;
+    try {
+      CoordinateSystem cs = getFeatureCollection().getFeatureSchema().getCoordinateSystem();
+      if (cs != null) epsgCode = cs.getEPSGCode();
+    } catch(UnsupportedOperationException e) {
+      epsgCode = 0;
+    }
   }
 
   /**
-   * add a Feature defined by given JSON-simple map the to the collection
+   * add a Feature defined by given JSON-simple map to the collection
    */
   public void add(Map featureMap) throws Exception {
 
@@ -104,7 +119,7 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
         // add fields if schema changed in between
         int diffCount = schema.getAttributeCount() - oldAttribs.length;
         if (diffCount > 0) {
-          List attributes = new ArrayList(Arrays.asList(oldAttribs));
+          List<Object> attributes = new ArrayList<>(Arrays.asList(oldAttribs));
           attributes.addAll(Arrays.asList(new Object[diffCount]));
           super.setAttributes(attributes.toArray());
         }
@@ -184,14 +199,13 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
     featureCollection.add(feature);
   }
 
-  static class Null extends Object {
-  };
+  static class Null { }
 
   static class NullAttributeType extends AttributeType {
     public NullAttributeType() {
       super("NULL", Null.class);
     }
-  };
+  }
 
   public static final AttributeType ATTRIBUTETYPE_NULL = new NullAttributeType();
 
@@ -242,7 +256,14 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
       throws IOException {
     out.write("{\n");
     out.write("\"type\": \"" + GeoJSONConstants.TYPE_FEATURECOLLECTION
-        + "\",\n\n");
+        + "\",\n");
+
+    if (epsgCode != 0 && epsgCode != 4326) {
+      out.write("\"" + GeoJSONConstants.CRS + "\": {" +
+          "\"type\": \"name\", \"properties\": { \"name\": \"EPSG:" + epsgCode + "\" }" +
+          "},\n");
+    }
+
     out.write("\"" + GeoJSONConstants.FEATURES + "\": [\n");
 
     long milliSeconds = 0;
@@ -282,13 +303,14 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
     out.write("\n\n}");
   }
 
-  private static String toJSONString(Feature feature) {
+  private String toJSONString(Feature feature) {
     return toJSONString(feature, false);
   }
 
-  private static String toJSONString(Feature feature, boolean saveNullValues) {
+  private String toJSONString(Feature feature, boolean saveNullValues) {
     String propertiesJson = null, geometryJson = null;
     FeatureSchema schema = feature.getSchema();
+    GeoJsonWriter geomWriter = new GeoJsonWriter();
 
     for (int i = 0; i < schema.getAttributeCount(); i++) {
       String name = schema.getAttributeName(i);
@@ -298,8 +320,10 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
       // geometry to json
       if (i == schema.getGeometryIndex()) {
         Geometry geometry = (Geometry) value;
-        if (geometry != null)
-          geometryJson = new GeoJsonWriter().write(geometry);
+        if (geometry != null) {
+          geomWriter.setEncodeCRS(geometry.getFactory().getSRID() != 0 && geometry.getFactory().getSRID() != epsgCode);
+          geometryJson = geomWriter.write(geometry);
+        }
       }
       // attrib to json
       else {

@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2021-09-19 mmichaud
+  * Fix #40 : GeoJSON manage crs at the FeatureCollection level where possible
+
 2021-09-17 mmichaud
   * Use new JTS overlayng algorithm for Dissolve2PlugIn + refactoring
 

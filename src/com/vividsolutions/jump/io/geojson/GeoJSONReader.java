@@ -13,7 +13,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.vividsolutions.jump.coordsys.CoordinateSystem;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ContentHandler;
 import org.json.simple.parser.JSONParser;
@@ -84,10 +87,12 @@ public class GeoJSONReader extends AbstractJUMPReader {
    * json file (saves memory and processing loops)
    */
   class Transformer implements ContentHandler {
+    private final GeoJSONFeatureCollectionWrapper fcwrap;
     private Stack valueStack;
     private Object featsId = null;
-    private GeoJSONFeatureCollectionWrapper fcwrap = null;
+    private Object crsId = null;
     private long milliSeconds = 0;
+    final Pattern crsPattern = Pattern.compile(".*EPSG::?(\\d++).*");
 
     public Transformer(GeoJSONFeatureCollectionWrapper fcwrap) {
       this.fcwrap = fcwrap;
@@ -106,7 +111,7 @@ public class GeoJSONReader extends AbstractJUMPReader {
     /**
      * create JTS features from a json-simple map
      * 
-     * @param featureMapList
+     * @param featureMapList the list of Maps describing features
      */
     private void addFeatures(List<Map> featureMapList) {
       TaskMonitor monitor = getTaskMonitor();
@@ -186,8 +191,14 @@ public class GeoJSONReader extends AbstractJUMPReader {
     }
 
     public boolean startObject() throws ParseException, IOException {
+      // if last object key in the stack is crs
+      if (crsId == null && valueStack.size() > 0 &&
+          valueStack.elementAt(valueStack.size() - 1).equals(
+              GeoJSONConstants.CRS)) {
+        crsId = GeoJSONConstants.CRS;
+      }
       // memorize feature object for processing in endObject
-      if (featsId == null
+      else if (featsId == null
           && valueStack.size() > 2
           && valueStack.elementAt(valueStack.size() - 3).equals(
               GeoJSONConstants.FEATURES)) {
@@ -203,7 +214,27 @@ public class GeoJSONReader extends AbstractJUMPReader {
 
     public boolean endObject() throws ParseException, IOException {
       trackBack();
-
+      // if this is the end of a crs object, get the srid and set the CoordinateSystem associated to the schema
+      if (crsId != null && valueStack.size() > 1
+          && valueStack.elementAt(valueStack.size() - 2).equals(GeoJSONConstants.CRS)) {
+        Map crsObject = (Map) valueStack.elementAt(valueStack.size() - 1);
+        if (crsObject != null) {
+          Map crsProperties = (Map)crsObject.get(GeoJSONConstants.PROPERTIES);
+          if (crsProperties != null) {
+            String crsName = (String)crsProperties.get(GeoJSONConstants.NAME);
+            if (crsName != null) {
+               Matcher m = crsPattern.matcher(crsName);
+               if (m.matches()) {
+                 int srid = Integer.parseInt(m.group(1));
+                 if (srid != 0) fcwrap.getFeatureCollection().getFeatureSchema().setCoordinateSystem(
+                     new CoordinateSystem(crsName, srid, null)
+                 );
+               }
+            }
+          }
+          crsId = null;
+        }
+      }
       // at this point we just finished parsing a whole feature object
       if (featsId != null && valueStack.size() > 2
           && valueStack.elementAt(valueStack.size() - 3) == featsId) {

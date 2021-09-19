@@ -146,7 +146,7 @@ public class LayerManager {
 
     public void addLayerable(String categoryName, Layerable layerable) {
 
-        // TODO CoordinateSystem is unused, but it should be set for any Layerable, not just Layerable
+        // TODO CoordinateSystem is unused, but it should be set for any GeoReferencedLayerable, not just Layer
         if (layerable instanceof GeoReferencedLayerable) {
 
             if (size() == 0 && getCoordinateSystem() == CoordinateSystem.UNSPECIFIED) {
@@ -155,6 +155,22 @@ public class LayerManager {
                     CoordinateSystem crs = new CoordinateSystem(srsInfo.getDescription(),
                         Integer.parseInt(srsInfo.getCode()), null);
                     setCoordinateSystem(crs);
+                }
+            }
+            // 2021-09-19 [mmichaud] set SRSInfo from CoordinateSystem if the later is set and not the former
+            if (layerable instanceof Layer) {
+                Layer layer = (Layer)layerable;
+                if (layer.getSrsInfo() == null || layer.getSrsInfo().getCode().equals(SRSInfo.UNDEFINED)) {
+                    CoordinateSystem cs = layer.getFeatureCollectionWrapper().getFeatureSchema().getCoordinateSystem();
+                    if (cs != null) {
+                        int epsg = cs.getEPSGCode();
+                        if (epsg != 0) {
+                            SRSInfo srsInfo = new SRSInfo();
+                            srsInfo.setCode(""+epsg);
+                            srsInfo.complete();
+                            layer.setSrsInfo(srsInfo);
+                        }
+                    }
                 }
             }
 // [12/2017 ede] reprojection is not properly implemented as of right now
@@ -566,9 +582,7 @@ public class LayerManager {
      * and all classes using it in OpenJUMP core have been updated
      */
     public <T> Iterator<T> iterator(Class<T> clazz) {
-        // <<TODO:PERFORMANCE>> Create an iterator that doesn't build a
-        // Collection of Layers first (unlike #getLayers) [Jon Aquino]
-        //return getLayers().iterator();
+        // Create an iterator that doesn't build a Collection of Layers first
         final Iterator<Object> iterator = new ObjectGraphIterator<>(LayerManager.this, input -> {
             if (input instanceof LayerManager) {
                 return ((LayerManager) input).getCategories().iterator();
