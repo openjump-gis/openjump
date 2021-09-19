@@ -163,12 +163,16 @@ public class LayerManager {
                 if (layer.getSrsInfo() == null || layer.getSrsInfo().getCode().equals(SRSInfo.UNDEFINED)) {
                     CoordinateSystem cs = layer.getFeatureCollectionWrapper().getFeatureSchema().getCoordinateSystem();
                     if (cs != null) {
-                        int epsg = cs.getEPSGCode();
-                        if (epsg != 0) {
-                            SRSInfo srsInfo = new SRSInfo();
-                            srsInfo.setCode(""+epsg);
-                            srsInfo.complete();
-                            layer.setSrsInfo(srsInfo);
+                        try {
+                            int epsg = cs.getEPSGCode();
+                            if (epsg != 0) {
+                                SRSInfo srsInfo = new SRSInfo();
+                                srsInfo.setCode("" + epsg);
+                                srsInfo.complete();
+                                layer.setSrsInfo(srsInfo);
+                            }
+                        } catch(UnsupportedOperationException e) {
+                            // don't do anything if cs is UNSPECIFIED
                         }
                     }
                 }
