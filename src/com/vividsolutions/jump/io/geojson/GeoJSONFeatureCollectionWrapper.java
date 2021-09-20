@@ -44,12 +44,6 @@ public class GeoJSONFeatureCollectionWrapper implements JSONStreamAware {
   public GeoJSONFeatureCollectionWrapper() {
     this.featureSchema = new FlexibleFeatureSchema();
     this.featureCollection = new FeatureDataset(featureSchema);
-    try {
-      CoordinateSystem cs = getFeatureCollection().getFeatureSchema().getCoordinateSystem();
-      if (cs != null) epsgCode = cs.getEPSGCode();
-    } catch(UnsupportedOperationException e) {
-      epsgCode = 0;
-    }
   }
 
   /**
