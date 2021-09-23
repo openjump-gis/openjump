@@ -40,6 +40,8 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.linemerge.LineSequencer;
 import org.locationtech.jts.operation.overlay.snap.GeometrySnapper;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
@@ -73,12 +75,22 @@ public abstract class GeometryFunction
   
   private static final String sFunction = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.function");
   */  
-  private static GeometryFunction[] methods = {
+  private static final GeometryFunction[] methods = {
     new IntersectionFunction(),
+    new RobustIntersectionFunction(),
+    new FixedPrecisionIntersectionFunction(),
     new UnionFunction(),
+    new RobustUnionFunction(),
+    new FixedPrecisionUnionFunction(),
     new DifferenceABFunction(),
+    new RobustDifferenceABFunction(),
+    new FixedPrecisionDifferenceABFunction(),
     new DifferenceBAFunction(),
+    new RobustDifferenceBAFunction(),
+    new FixedPrecisionDifferenceBAFunction(),
     new SymDifferenceFunction(),
+    new RobustSymDifferenceFunction(),
+    new FixedPrecisionSymDifferenceFunction(),
     new CentroidFunction(),
     new InteriorPointFunction(),
     new BufferFunction(),
@@ -145,11 +157,11 @@ public abstract class GeometryFunction
 	  return methods;
   }
 
-  private String name;
-  private int nArguments;
-  private int nParams;
+  private final String name;
+  private final int nArguments;
+  private final int nParams;
   private boolean isAggregate = false;   // not yet used
-  private String description;
+  private final String description;
 
   public String getName() { return name; }
   public int getGeometryArgumentCount() { return nArguments; }
@@ -201,6 +213,28 @@ public abstract class GeometryFunction
     }
   }
 
+  private static class RobustIntersectionFunction extends GeometryFunction {
+    public RobustIntersectionFunction() {
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.intersection-robust"), 2, 0);
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      return OverlayNGRobust.overlay(geom[0], geom[1], OverlayNG.INTERSECTION);
+    }
+  }
+
+  private static class FixedPrecisionIntersectionFunction extends GeometryFunction {
+    public FixedPrecisionIntersectionFunction() {
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.intersection-fixed-precision"), 2, 1);
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      return OverlayNG.overlay(geom[0], geom[1], OverlayNG.INTERSECTION, new PrecisionModel(param[0]));
+    }
+  }
+
   private static class UnionFunction extends GeometryFunction {
     public UnionFunction() {
       super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.union"), 2, 0);
@@ -209,6 +243,28 @@ public abstract class GeometryFunction
     public Geometry execute(Geometry[] geom, double[] param)
     {
       return geom[0].union(geom[1]);
+    }
+  }
+
+  private static class RobustUnionFunction extends GeometryFunction {
+    public RobustUnionFunction() {
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.union-robust"), 2, 0);
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      return OverlayNGRobust.overlay(geom[0], geom[1], OverlayNG.UNION);
+    }
+  }
+
+  private static class FixedPrecisionUnionFunction extends GeometryFunction {
+    public FixedPrecisionUnionFunction() {
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.union-fixed-precision"), 2, 1);
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      return OverlayNG.overlay(geom[0], geom[1], OverlayNG.UNION, new PrecisionModel(param[0]));
     }
   }
 
@@ -223,6 +279,28 @@ public abstract class GeometryFunction
     }
   }
 
+  private static class RobustDifferenceABFunction extends GeometryFunction {
+    public RobustDifferenceABFunction() {
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.difference-a-b-robust"), 2, 0);
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      return OverlayNGRobust.overlay(geom[0], geom[1], OverlayNG.DIFFERENCE);
+    }
+  }
+
+  private static class FixedPrecisionDifferenceABFunction extends GeometryFunction {
+    public FixedPrecisionDifferenceABFunction() {
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.difference-a-b-fixed-precision"), 2, 1);
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      return OverlayNG.overlay(geom[0], geom[1], OverlayNG.DIFFERENCE, new PrecisionModel(param[0]));
+    }
+  }
+
   private static class DifferenceBAFunction extends GeometryFunction {
     public DifferenceBAFunction() {
       super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.difference-b-a"), 2, 0);
@@ -234,6 +312,28 @@ public abstract class GeometryFunction
     }
   }
 
+  private static class RobustDifferenceBAFunction extends GeometryFunction {
+    public RobustDifferenceBAFunction() {
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.difference-b-a-robust"), 2, 0);
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      return OverlayNGRobust.overlay(geom[1], geom[0], OverlayNG.DIFFERENCE);
+    }
+  }
+
+  private static class FixedPrecisionDifferenceBAFunction extends GeometryFunction {
+    public FixedPrecisionDifferenceBAFunction() {
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.difference-b-a-fixed-precision"), 2, 1);
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      return OverlayNG.overlay(geom[1], geom[0], OverlayNG.DIFFERENCE, new PrecisionModel(param[0]));
+    }
+  }
+
   private static class SymDifferenceFunction extends GeometryFunction {
     public SymDifferenceFunction() {
       super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.symetric-difference"), 2, 0);
@@ -242,6 +342,28 @@ public abstract class GeometryFunction
     public Geometry execute(Geometry[] geom, double[] param)
     {
       return geom[0].symDifference(geom[1]);
+    }
+  }
+
+  private static class RobustSymDifferenceFunction extends GeometryFunction {
+    public RobustSymDifferenceFunction() {
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.symetric-difference-robust"), 2, 0);
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      return OverlayNGRobust.overlay(geom[0], geom[1], OverlayNG.SYMDIFFERENCE);
+    }
+  }
+
+  private static class FixedPrecisionSymDifferenceFunction extends GeometryFunction {
+    public FixedPrecisionSymDifferenceFunction() {
+      super(I18N.getInstance().get("ui.plugin.analysis.GeometryFunction.symetric-difference-fixed-precision"), 2, 1);
+    }
+
+    public Geometry execute(Geometry[] geom, double[] param)
+    {
+      return OverlayNG.overlay(geom[0], geom[1], OverlayNG.SYMDIFFERENCE, new PrecisionModel(param[0]));
     }
   }
 
@@ -433,7 +555,7 @@ public abstract class GeometryFunction
 
     public Geometry execute(Geometry[] geom, double[] param)
     {
-      Geometry clone = (Geometry)geom[0].clone();
+      Geometry clone = geom[0].copy();
       return clone.reverse();
     }
   }
@@ -515,11 +637,11 @@ public abstract class GeometryFunction
         public void process(Polygon polygon, List<Geometry> list) {
           List<LinearRing> holes = new ArrayList<>();
           for (int i = 0 ; i < polygon.getNumInteriorRing() ; i++) {
-            LinearRing ring = (LinearRing)polygon.getInteriorRingN(i);
+            LinearRing ring = polygon.getInteriorRingN(i);
             if (ring.getFactory().createPolygon(ring).getArea() >= param[0]) holes.add(ring);
           }
           list.add(polygon.getFactory().createPolygon(
-                  (LinearRing)polygon.getExteriorRing(),
+                  polygon.getExteriorRing(),
                   holes.toArray(new LinearRing[0])));
         }
       };
