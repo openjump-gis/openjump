@@ -272,6 +272,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-openklem_extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/openklem-extension/releases/download/v2.0.1-SNAPSHOT/openklem-openjump-2.0.1-SNAPSHOT.zip</url>
+                      <sha1>d7a3ce6c1ab56306758a9ae12ddf62be364577b1</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-set_attributes_extension</id>
                     <goals>
                       <goal>wget</goal>
