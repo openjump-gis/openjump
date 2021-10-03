@@ -1271,7 +1271,8 @@ ${project.artifactId} ${project.version} Changelog
 {{name}}
 
 {{#commits}}
-{{{commitTime}}} - {{{authorName}}} - https://github.com/{{{ownerName}}}/{{{repoName}}}/commit/{{{hash}}}
+{{{commitTime}}} - {{{authorName}}}
+- https://github.com/{{{ownerName}}}/{{{repoName}}}/commit/{{{hash}}}
 {{{messageTitle}}}
 {{#messageBodyItems}}
   {{{.}}}
