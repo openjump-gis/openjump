@@ -157,6 +157,9 @@ public abstract class AttributePredicate {
       if (attrVal instanceof Integer) {
         return Integer.valueOf(constantValue);
       }
+      if (attrVal instanceof Long) {
+        return Long.valueOf(constantValue);
+      }
       if (attrVal instanceof String) {
         return constantValue;
       }
