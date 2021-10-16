@@ -213,8 +213,10 @@ public class UpdateWithJoinPlugIn extends AbstractThreadedUiPlugIn {
                             }
                             referenceLayer.getLayerManager().fireFeaturesAttChanged(newFeatures.values(),
                                     FeatureEventType.ATTRIBUTES_MODIFIED, referenceLayer, oldFeatures.values());
-                            referenceLayer.getLayerManager().fireGeometryModified(newFeatures.values(),
-                                    referenceLayer, oldFeatures.values());
+                            //firing both FeaturesAttChanged and GeometryModified disturbs the database
+                            //transaction manager which is based on FeatureEvents
+                            //referenceLayer.getLayerManager().fireGeometryModified(newFeatures.values(),
+                            //        referenceLayer, oldFeatures.values());
                             referenceLayer.getLayerManager().fireFeaturesChanged(added,
                                     FeatureEventType.ADDED, referenceLayer);
                             referenceLayer.getLayerManager().fireFeaturesChanged(removed,
@@ -235,8 +237,10 @@ public class UpdateWithJoinPlugIn extends AbstractThreadedUiPlugIn {
                             }
                             referenceLayer.getLayerManager().fireFeaturesAttChanged(oldFeatures.values(),
                                     FeatureEventType.ATTRIBUTES_MODIFIED, referenceLayer, newFeatures.values());
-                            referenceLayer.getLayerManager().fireGeometryModified(oldFeatures.values(),
-                                    referenceLayer, newFeatures.values());
+                            //firing both FeaturesAttChanged and GeometryModified disturbs the database
+                            //transaction manager which is based on FeatureEvents
+                            //referenceLayer.getLayerManager().fireGeometryModified(oldFeatures.values(),
+                            //        referenceLayer, newFeatures.values());
                             referenceLayer.getLayerManager().fireFeaturesChanged(removed,
                                     FeatureEventType.ADDED, referenceLayer);
                             referenceLayer.getLayerManager().fireFeaturesChanged(added,

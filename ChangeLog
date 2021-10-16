@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2021-10-16 mmichaud
+  * Fix UpdateWithJoinPlugIn not compatible with Database Transaction Manager
+
 2021-09-23 mmichaud
   * Add robust and fixed precision algorithms in GeometryFunctionPlugIn for
     Intersection, Union, Difference A-B, Difference B-A, Symmetric difference
