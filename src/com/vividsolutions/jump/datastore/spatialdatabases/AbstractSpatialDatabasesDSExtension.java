@@ -100,9 +100,6 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
     // only run this test once
     if (errorMessage != null)
       return errorMessage;
-// [ede 202106] should be obsolete, PluginClassloader is default system classloader since some time now
-//    ClassLoader pluginLoader = JUMPWorkbench.getInstance().getPlugInManager()
-//        .getClassLoader();
     String msg = "";
     String others = "";
     for (Map.Entry<String, String> entry : classNameToJarName.entrySet()) {
@@ -110,7 +107,9 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
       String jar = entry.getValue();
       // check for jar
       try {
-        Class.forName(clazz, false, null);
+        // [ede 202110] Class seems to ignore '-Djava.system.class.loader=plugin.class.loader' 
+        // for unknown reasons, hence we need to enforce it here
+        Class.forName(clazz, false, this.getClass().getClassLoader() );
       } catch (ClassNotFoundException e) {
         msg = msg.isEmpty() ? jar : msg + ", " + jar;
       } catch (Throwable t) {
