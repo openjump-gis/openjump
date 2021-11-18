@@ -119,7 +119,7 @@ public final class I18N {
   */
   private void init() {
     //System.out.println("reinit -> "+locale.toString() +" "+this+ " "+resourcePath);
-    ClassLoader cl = classLoader instanceof ClassLoader ? classLoader : getClass().getClassLoader();
+
     // load several resourcebundles to allow overlaying "invalid" translations
     // with an entry from te next sensible translation file
     // order is: lang_Country, lang, default (english)
