@@ -120,9 +120,9 @@ public final class I18N {
   private void init() {
     //System.out.println("reinit -> "+locale.toString() +" "+this+ " "+resourcePath);
 
-    // load several resourcebundles to allow overlaying "invalid" translations
-    // with an entry from te next sensible translation file
-    // order is: lang_Country, lang, default (english)
+    // load several resourcebundles to allow overlaying "invalid"(commented/empty) 
+    // translations with an entry from the next sensible translation file
+    // order is: langCode_countryCode, langCode, empty/default (english)
     // loads selected locale, selected language, empty locale
     this.resourceBundle = locale.getCountry().isEmpty() ? null : getResourceBundle(locale);
     // loads lang only locale or empty
