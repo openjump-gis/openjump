@@ -1505,6 +1505,15 @@ ${project.artifactId} ${project.version} Changelog
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>2.12.1</version>
+            <exclusions>
+                <!-- prevent error when building with jre9+, apparently 
+                     org.w3c.dom is part of jre as module java.xml, error is
+                    "The package org.w3c.dom is accessible from more than one module: <unnamed>, java.xml" -->
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
