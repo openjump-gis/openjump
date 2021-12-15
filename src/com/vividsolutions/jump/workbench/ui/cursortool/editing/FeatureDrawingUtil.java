@@ -34,6 +34,7 @@ package com.vividsolutions.jump.workbench.ui.cursortool.editing;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +42,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 
 import org.locationtech.jts.geom.CoordinateList;
@@ -54,12 +56,14 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import com.vividsolutions.jump.workbench.model.UndoableCommand;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.ui.EditOptionsPanel;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.GeometryEditor;
 import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.LayerNamePanelProxy;
@@ -222,33 +226,49 @@ public class FeatureDrawingUtil {
 
 	private final GeometryEditor editor = new GeometryEditor();
 
-	/**
-	 * Apply settings common to all feature-drawing tools.createAddCommand
-	 */
-	public CursorTool prepare(final AbstractCursorTool drawFeatureTool,
-			boolean allowSnapping) {
-		drawFeatureTool.setColor(Color.red);
-		if (allowSnapping) {
-			drawFeatureTool.allowSnapping();
-		}
-		return new DelegatingTool(drawFeatureTool) {
-			@Override
-			public String getName() {
-				return drawFeatureTool.getName();
-			}
+  /**
+   * Apply settings common to all feature-drawing tools.createAddCommand
+   */
+  public CursorTool prepare(final AbstractCursorTool drawFeatureTool, boolean allowSnapping) {
+    drawFeatureTool.setColor(Color.red);
+    if (allowSnapping) {
+      drawFeatureTool.allowSnapping();
+    }
+    return new DelegatingTool(drawFeatureTool) {
+      @Override
+      public String getName() {
+        return drawFeatureTool.getName();
+      }
 
-			@Override
-			public Cursor getCursor() {
-				if (Toolkit.getDefaultToolkit().getBestCursorSize(32, 32)
-						.equals(new Dimension(0, 0))) {
-					return Cursor.getDefaultCursor();
-				}
-				return Toolkit.getDefaultToolkit().createCustomCursor(
-						IconLoader.icon("Pen.gif").getImage(),
-						new java.awt.Point(1, 31), drawFeatureTool.getName());
-			}
-		};
-	}
+      @Override
+      public Cursor getCursor() {
+
+        // no custom cursor support if dim(0,0) is returned
+        if (Toolkit.getDefaultToolkit().getBestCursorSize(32, 32).equals(new Dimension(0, 0))) {
+          return Cursor.getDefaultCursor();
+        }
+
+        ImageIcon cursor = IconLoader.icon("Pen.gif"); // 32x32
+        Dimension curCursorSize = new Dimension(cursor.getIconWidth(), cursor.getIconHeight());
+        Point hotSpot = new java.awt.Point(1, 31);
+        Dimension bestCursorSize = Toolkit.getDefaultToolkit().getBestCursorSize(curCursorSize.width,
+            curCursorSize.height);
+
+        if (!curCursorSize.equals(bestCursorSize)) {
+          cursor = GUIUtil.resize(cursor, bestCursorSize.width, bestCursorSize.height);
+          // recalc hotspot
+          double hotSpot_x = hotSpot.x * ((double) bestCursorSize.width / curCursorSize.getWidth());
+          double hotSpot_y = hotSpot.y * ((double) bestCursorSize.height / curCursorSize.getHeight());
+          hotSpot = new Point((int) Math.round(hotSpot_x), (int) Math.round(hotSpot_y));
+
+          Logger.info("Cursor resized to " + cursor.getIconWidth() + "/" + cursor.getIconHeight());
+          Logger.info("Hotspot now " + hotSpot);
+        }
+
+        return Toolkit.getDefaultToolkit().createCustomCursor(cursor.getImage(), hotSpot, drawFeatureTool.getName());
+      }
+    };
+  }
 
 	public void drawRing(Polygon polygon, boolean rollingBackInvalidEdits,
 			AbstractCursorTool tool, LayerViewPanel panel) {
