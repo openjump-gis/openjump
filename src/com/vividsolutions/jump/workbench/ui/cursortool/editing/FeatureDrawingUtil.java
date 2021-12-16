@@ -235,38 +235,45 @@ public class FeatureDrawingUtil {
       drawFeatureTool.allowSnapping();
     }
     return new DelegatingTool(drawFeatureTool) {
+      final Cursor cursor = AbstractCursorTool.createCursor(IconLoader.image("Pen.gif"), new java.awt.Point(1, 31), drawFeatureTool.getName());
+
       @Override
       public String getName() {
         return drawFeatureTool.getName();
       }
 
-      @Override
       public Cursor getCursor() {
-
-        // no custom cursor support if dim(0,0) is returned
-        if (Toolkit.getDefaultToolkit().getBestCursorSize(32, 32).equals(new Dimension(0, 0))) {
-          return Cursor.getDefaultCursor();
-        }
-
-        ImageIcon cursor = IconLoader.icon("Pen.gif"); // 32x32
-        Dimension curCursorSize = new Dimension(cursor.getIconWidth(), cursor.getIconHeight());
-        Point hotSpot = new java.awt.Point(1, 31);
-        Dimension bestCursorSize = Toolkit.getDefaultToolkit().getBestCursorSize(curCursorSize.width,
-            curCursorSize.height);
-
-        if (!curCursorSize.equals(bestCursorSize)) {
-          cursor = GUIUtil.resize(cursor, bestCursorSize.width, bestCursorSize.height);
-          // recalc hotspot
-          double hotSpot_x = hotSpot.x * ((double) bestCursorSize.width / curCursorSize.getWidth());
-          double hotSpot_y = hotSpot.y * ((double) bestCursorSize.height / curCursorSize.getHeight());
-          hotSpot = new Point((int) Math.round(hotSpot_x), (int) Math.round(hotSpot_y));
-
-          Logger.info("Cursor resized to " + cursor.getIconWidth() + "/" + cursor.getIconHeight());
-          Logger.info("Hotspot now " + hotSpot);
-        }
-
-        return Toolkit.getDefaultToolkit().createCustomCursor(cursor.getImage(), hotSpot, drawFeatureTool.getName());
+        return cursor;
       }
+
+// TODO: can be removed if cursor hotspot on HiDPI works as expected
+//      @Override
+//      public Cursor getCursor() {
+//
+//        // no custom cursor support if dim(0,0) is returned
+//        if (Toolkit.getDefaultToolkit().getBestCursorSize(32, 32).equals(new Dimension(0, 0))) {
+//          return Cursor.getDefaultCursor();
+//        }
+//
+//        ImageIcon cursor = IconLoader.icon("Pen.gif"); // 32x32
+//        Dimension curCursorSize = new Dimension(cursor.getIconWidth(), cursor.getIconHeight());
+//        Point hotSpot = new java.awt.Point(1, 31);
+//        Dimension bestCursorSize = Toolkit.getDefaultToolkit().getBestCursorSize(curCursorSize.width,
+//            curCursorSize.height);
+//
+//        if (!curCursorSize.equals(bestCursorSize)) {
+//          cursor = GUIUtil.resize(cursor, bestCursorSize.width, bestCursorSize.height);
+//          // recalc hotspot
+//          double hotSpot_x = hotSpot.x * ((double) bestCursorSize.width / curCursorSize.getWidth());
+//          double hotSpot_y = hotSpot.y * ((double) bestCursorSize.height / curCursorSize.getHeight());
+//          hotSpot = new Point((int) Math.round(hotSpot_x), (int) Math.round(hotSpot_y));
+//
+//          Logger.info("Cursor resized to " + cursor.getIconWidth() + "/" + cursor.getIconHeight());
+//          Logger.info("Hotspot now " + hotSpot);
+//        }
+//
+//        return Toolkit.getDefaultToolkit().createCustomCursor(cursor.getImage(), hotSpot, drawFeatureTool.getName());
+//      }
     };
   }
 

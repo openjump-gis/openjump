@@ -212,6 +212,7 @@ public abstract class AbstractCursorTool implements CursorTool {
 
   /**
    * The cursor will look best if the image is a 32 x 32 transparent GIF.
+   * TODO: rework to provide hires cursors 64x64 and up
    * @param image the cursor image
    * @return a Cursor
    */
@@ -221,7 +222,11 @@ public abstract class AbstractCursorTool implements CursorTool {
   }
 
   public static Cursor createCursor(Image image, Point hotSpot) {
-    return GUIUtil.createCursor(image, hotSpot);
+    return createCursor(image, hotSpot, null);
+  }
+
+  public static Cursor createCursor(Image image, Point hotSpot, String name) {
+    return GUIUtil.createCursor(image, hotSpot, name);
   }
 
   public Cursor getCursor() {

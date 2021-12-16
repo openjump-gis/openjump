@@ -94,6 +94,7 @@ import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.util.FileUtil;
 import com.vividsolutions.jump.util.StringUtil;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 //<<TODO:NAMING>> Perhaps rename to WorkbenchUtilities and move to workbench
@@ -865,8 +866,11 @@ public class GUIUtil {
    * @return the resized ImageIcon
    */
   public static ImageIcon resize(ImageIcon icon, int extent_x, int extent_y) {
-    return new ImageIcon(icon.getImage().getScaledInstance(extent_x, extent_y,
-        Image.SCALE_AREA_AVERAGING));
+    return new ImageIcon(resize(icon.getImage(),extent_x, extent_y));
+  }
+
+  public static Image resize(Image image, int extent_x, int extent_y) {
+    return image.getScaledInstance(extent_x, extent_y, Image.SCALE_AREA_AVERAGING);
   }
 
   /**
@@ -1529,10 +1533,11 @@ public class GUIUtil {
         RenderingHints.VALUE_ANTIALIAS_ON);
     graphics.drawImage(basicCursor.getImage(), 0, 0, null);
     graphics.drawImage(icon.getImage(), 10, 10, null);
-    return createCursor(image, new Point(0, 15));
+    return createCursor(image, new Point(0, 15), null);
   }
 
-  public static Cursor createCursor(Image image, Point hotSpot) {
+// TODO: kept for reference, can be deleted if HiDPI cursor scaling works fine
+  public static Cursor createCursorOld(Image image, Point hotSpot) {
     if (null == image) {
       return Cursor.getDefaultCursor();
     }
@@ -1544,6 +1549,45 @@ public class GUIUtil {
 
     return Toolkit.getDefaultToolkit().createCustomCursor(image, hotSpot,
         I18N.getInstance().get("ui.GUIUtil.jump-workbench-custom-cursor"));
+  }
+
+  public static Cursor createCursor(Image cursorImage, Point hotSpot, String name) {
+    // just a test, no custom cursor support if dim(0,0) is returned
+    if (Toolkit.getDefaultToolkit().getBestCursorSize(32, 32).equals(new Dimension(0, 0))) {
+      return Cursor.getDefaultCursor();
+    }
+
+    if (null == cursorImage) {
+      Logger.error("cannot create a custom cursor from NuLL image");
+      return Cursor.getDefaultCursor();
+    }
+
+    if (null == hotSpot) {
+      Logger.debug("apply default hotspot Point(0,0)");
+      hotSpot = new Point(0,0);
+    }
+
+    // apply default name if none given
+    if (name == null)
+      name = I18N.getInstance().get("ui.GUIUtil.jump-workbench-custom-cursor");
+
+    Dimension curCursorSize = new Dimension(cursorImage.getWidth(null), cursorImage.getHeight(null));
+    Dimension bestCursorSize = Toolkit.getDefaultToolkit().getBestCursorSize(curCursorSize.width,
+        curCursorSize.height);
+
+    // resize cursor if requested cursor size does not match (eg. for HiDPI displays)
+    if (!curCursorSize.equals(bestCursorSize)) {
+      cursorImage = GUIUtil.resize(cursorImage, bestCursorSize.width, bestCursorSize.height);
+      // recalc hotspot
+      double hotSpot_x = hotSpot.x * ((double) bestCursorSize.width / curCursorSize.getWidth());
+      double hotSpot_y = hotSpot.y * ((double) bestCursorSize.height / curCursorSize.getHeight());
+      hotSpot = new Point((int) Math.round(hotSpot_x), (int) Math.round(hotSpot_y));
+
+      Logger.trace("Cursor resized to " + cursorImage.getWidth(null) + "/" + cursorImage.getHeight(null));
+      Logger.trace("Hotspot now " + hotSpot);
+    }
+
+    return Toolkit.getDefaultToolkit().createCustomCursor(cursorImage, hotSpot, name);
   }
 
   /**
