@@ -79,6 +79,9 @@ public class EnableCheckFactory {
     }
 
     public static EnableCheckFactory getInstance( WorkbenchContext workbenchContext ) {
+      if (workbenchContext == null)
+        throw new IllegalArgumentException("workbenchContext must not be *null*");
+
       EnableCheckFactory instance = instances.get(workbenchContext);
       if (instance == null) {
         instance = new EnableCheckFactory(workbenchContext);
