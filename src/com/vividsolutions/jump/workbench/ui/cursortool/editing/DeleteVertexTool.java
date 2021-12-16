@@ -58,10 +58,12 @@ import com.vividsolutions.jump.workbench.ui.plugin.VerticesInFencePlugIn;
 public class DeleteVertexTool extends SpecifyFeaturesTool {
 
     private final EnableCheckFactory checkFactory;
+    private final Cursor cursor;
     private final GeometryEditor geometryEditor = new GeometryEditor();
     public DeleteVertexTool(WorkbenchContext context) {
         super(context);
         this.checkFactory = EnableCheckFactory.getInstance(context);
+        this.cursor = createCursor(IconLoader.image("DeleteCursor.gif"));
         setViewClickBuffer(5);
     }
     protected void gestureFinished() throws java.lang.Exception {
@@ -145,7 +147,7 @@ public class DeleteVertexTool extends SpecifyFeaturesTool {
     }
 
     public Cursor getCursor() {
-        return createCursor(IconLoader.icon("DeleteCursor.gif").getImage());
+        return cursor;
     }
 
     public Icon getIcon() {
