@@ -375,8 +375,10 @@ public class FeatureInstaller {
   }
 
   /**
-   * a generic addMenu method, fetching all settings from workbench properties
-   * and the plugin object. used in PluginManager
+   * a generic addMenu utility method, used in PluginManager
+   * 
+   * all detailed settings are fetched from workbench properties
+   * and the plugin object. 
    * 
    * @param menuKey the key of the Menu to add this PlugIn to
    * @param plugin a PlugIn
@@ -400,7 +402,6 @@ public class FeatureInstaller {
 
     JMenuItem menuItem = createMenuItem(plugin.getName(), checkBox, null);
     return addMenuPluginItem(menu, plugin, new String[] {}, menuItem, null, null);
-
   }
 
   // regex pattern to strip position setting from strings, keep static to prevent recompilation
