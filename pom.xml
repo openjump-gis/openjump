@@ -308,6 +308,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-sextante</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/sextante-extension/releases/download/v2.2.0-SNAPSHOT/sextante-openjump-2.2.0-SNAPSHOT.zip</url>
+                      <sha1>48498b6a630d8c83c25b2b137fad93381c993945</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-topology_extension</id>
                     <goals>
                       <goal>wget</goal>

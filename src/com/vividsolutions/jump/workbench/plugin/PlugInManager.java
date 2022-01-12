@@ -510,7 +510,11 @@ public class PlugInManager {
           // TODO: if "jar:file:" not explicitely defined VertexSymbols Extensions die with
           //       "java.lang.SecurityException: sealing violation: can't seal package <>: already loaded"
           // [ede 05.2012]
-          urls[i++] = file.isFile() ? new URL("jar:file:" + file.getPath() + "!/") : file.toURI().toURL();
+          // disabled as it chokes ClassGraph, also it doesn't seem to be needed anymore
+          // for VertexSymbols [ede 01.2022]
+          //urls[i++] = file.isFile() ? new URL("jar:file:" + file.getPath() + "!/") : 
+          //  file.toURI().toURL();
+          urls[i++] = file.toURI().toURL();
         } catch (MalformedURLException e) {
           Assert.shouldNeverReachHere(e.toString());
         }
