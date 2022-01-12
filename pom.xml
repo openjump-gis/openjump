@@ -236,6 +236,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-cadplan-printer-extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/cadplan-printer-extension/releases/download/2.1.0/cadplan-printer-extension-2.1.0.zip</url>
+                      <sha1>740323b8d76dc5ec6d75c8b25f043c73c563f8e5</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-kml_driver</id>
                     <goals>
                       <goal>wget</goal>
