@@ -152,6 +152,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-cadplan-printer-extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/cadplan-printer-extension/releases/download/2.1.0/cadplan-printer-extension-2.1.0.zip</url>
+                      <sha1>740323b8d76dc5ec6d75c8b25f043c73c563f8e5</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-concave_hull</id>
                     <goals>
                       <goal>wget</goal>
@@ -200,6 +212,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-fill-patterns</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/fill-patterns/releases/download/v2.1.0/fill-patterns-2.1.0.zip</url>
+                      <sha1>f42af741679104cd51f6fb2e113c70a97943baeb</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-fivecolors_extension</id>
                     <goals>
                       <goal>wget</goal>
@@ -231,18 +255,6 @@
                     <configuration>
                       <url>https://github.com/openjump-gis/jump-chart-extension/releases/download/v2.1.0/jump-chart-extension-2.1.0.zip</url>
                       <sha1>b24a465fb802f8b98c1b776a8ee6e7acca40e4ad</sha1>
-                      <unpack>true</unpack>
-                      <outputDirectory>${plus.folder}</outputDirectory>
-                    </configuration>
-                  </execution>
-                  <execution>
-                    <id>PLUS-install-cadplan-printer-extension</id>
-                    <goals>
-                      <goal>wget</goal>
-                    </goals>
-                    <configuration>
-                      <url>https://github.com/openjump-gis/cadplan-printer-extension/releases/download/2.1.0/cadplan-printer-extension-2.1.0.zip</url>
-                      <sha1>740323b8d76dc5ec6d75c8b25f043c73c563f8e5</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
