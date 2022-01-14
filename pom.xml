@@ -27,7 +27,7 @@
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <batik.version>1.6-1</batik.version>
         <jts.version>1.18.2</jts.version>
-        <imageio-ext.version>1.3.9</imageio-ext.version>
+        <imageio-ext.version>1.3.11</imageio-ext.version>
     </properties>
     <profiles>
         <!-- switching os dependent lib paths for launch4j -->
@@ -1482,11 +1482,10 @@ ${project.artifactId} ${project.version} Changelog
             <name>Deegree Snaphots</name>
             <url>http://repo.deegree.org/content/repositories/snapshots/</url>
         </repository-->
-        <!-- below the home of imageio-ext, needed for local compilation only
-        for distribution jars are added manually in etc/mvn/*.cmp files -->
+        <!-- below the home of imageio-ext -->
         <repository>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
             <id>imageio-ext-repository</id>
             <name>imageio-ext Repository</name>
