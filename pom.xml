@@ -229,8 +229,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/fill-patterns/releases/download/v2.1.0/fill-patterns-2.1.0.zip</url>
-                      <sha1>f42af741679104cd51f6fb2e113c70a97943baeb</sha1>
+                      <url>https://github.com/openjump-gis/fill-patterns/releases/download/v2.1.1/fill-patterns-2.1.1.zip</url>
+                      <sha1>d0c746e704525e4e72802e6c4d230a25da7a1cc3</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
