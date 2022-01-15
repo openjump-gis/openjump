@@ -1560,10 +1560,13 @@ ${project.artifactId} ${project.version} Changelog
                 <!-- prevent error when building with jre9+, apparently 
                      org.w3c.dom is part of jre as module java.xml, error is
                     "The package org.w3c.dom is accessible from more than one module: <unnamed>, java.xml" -->
+                <!-- reenabled [202201 ed] needed by log4j and extensions
+                     will need to find another solution
                 <exclusion>
                     <groupId>*</groupId>
                     <artifactId>xml-apis</artifactId>
                 </exclusion>
+                -->
             </exclusions>
         </dependency>
         <dependency>
