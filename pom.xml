@@ -265,8 +265,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/kml-driver/releases/download/2.0.0/kml-driver-2.0.0.zip</url>
-                      <sha1>56941cbcc1c0e88c07827340a99dfd06e49238b5</sha1>
+                      <url>https://github.com/openjump-gis/kml-driver/releases/download/v2.0.2/kml-driver-2.0.2.zip</url>
+                      <sha1>73c2dfb44f13f1c1812edcba916091b00a9aa386</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
