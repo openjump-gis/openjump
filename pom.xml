@@ -164,6 +164,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-cadtools-extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/cadtools-extension/releases/download/2.1.0/cadtools-extension-2.1.0.zip</url>
+                      <sha1>45c27e06e1f7ed7517f0b06cea36189ad8ee1011</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-concave_hull</id>
                     <goals>
                       <goal>wget</goal>
