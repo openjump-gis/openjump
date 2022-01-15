@@ -1267,7 +1267,8 @@
           <plugin>
             <groupId>io.github.git-commit-id</groupId>
             <artifactId>git-commit-id-maven-plugin</artifactId>
-            <version>5.0.0</version>
+            <!-- version 5+ are java11+ compatible only -->
+            <version>4.9.9</version>
             <?m2e ignore?>
             <executions>
               <!-- retrieve git revision information from local repo -->
@@ -1281,6 +1282,7 @@
             </executions>
             <configuration>
               <verbose>true</verbose>
+              <offline>true</offline>
               <!-- write a copy of git props into target/classes to be contained in the resulting jar below -->
               <generateGitPropertiesFile>true</generateGitPropertiesFile>
               <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
