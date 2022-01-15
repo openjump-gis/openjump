@@ -296,6 +296,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                    <id>PLUS-install-online_doc_extension</id>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                    <configuration>
+                      <url>https://github.com/openjump-gis/online-doc-extension/releases/download/2.0.0/online-doc-extension-2.0.0.zip</url>
+                      <sha1>333e9401103bcc5ed17ccb7e4942515f8bddac73</sha1>
+                      <unpack>true</unpack>
+                      <outputDirectory>${plus.folder}</outputDirectory>
+                    </configuration>
+                  </execution>
+                  <execution>
                     <id>PLUS-install-openklem_extension</id>
                     <goals>
                       <goal>wget</goal>
