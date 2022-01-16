@@ -337,8 +337,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/set-attributes-extension/releases/download/v2.0.0/set-attributes-extension-2.0.0.zip</url>
-                      <sha1>703e0fa0669d30b3ed32cf073d37624b94829743</sha1>
+                      <url>https://github.com/openjump-gis/set-attributes-extension/releases/download/v2.0.1/set-attributes-extension-2.0.1.zip</url>
+                      <sha1>6e901cfc322cbc48fecbff9cc84fd0a1885aee32</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
