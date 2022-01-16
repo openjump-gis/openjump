@@ -169,9 +169,9 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/cadtools-extension/releases/download/2.1.0/cadtools-extension-2.1.0.zip</url>
-                      <sha1>45c27e06e1f7ed7517f0b06cea36189ad8ee1011</sha1>
-                      <unpack>true</unpack>
+                      <url>https://github.com/openjump-gis/cadtools-extension/releases/download/v2.1.1/cadtools-extension-2.1.1.jar</url>
+                      <sha1>8b8a6b39cc868697efbe090d8067a7da9108252d</sha1>
+                      <unpack>false</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
                   </execution>
@@ -229,8 +229,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/fill-patterns/releases/download/v2.1.0/fill-patterns-2.1.0.zip</url>
-                      <sha1>f42af741679104cd51f6fb2e113c70a97943baeb</sha1>
+                      <url>https://github.com/openjump-gis/fill-patterns/releases/download/v2.1.1/fill-patterns-2.1.1.zip</url>
+                      <sha1>d0c746e704525e4e72802e6c4d230a25da7a1cc3</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
@@ -723,7 +723,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>1.4.1</version>
                         <executions>
                             <execution>
                                 <id>portable-is-active</id>
