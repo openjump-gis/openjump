@@ -35,6 +35,20 @@
       <includes>
         <include>it.geosolutions.imageio-ext:*</include>
       </includes>
+      <excludes>
+        <exclude>*:jaxb-*</exclude>
+        <exclude>*:javax.activation*</exclude>
+      </excludes>
+    </dependencySet>
+    <!-- place all jaxb jars separately, used by imageio-ext, set-attribute, view-manager currently -->
+    <dependencySet>
+      <outputDirectory>/lib/ext/jaxb/</outputDirectory>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>*:jaxb-*</include>
+        <include>*:javax.activation*</include>
+      </includes>
     </dependencySet>
   </dependencySets>
 
