@@ -1598,7 +1598,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.23</version>
+            <version>42.3.1</version>
         </dependency>
         <dependency>
             <groupId>batik</groupId>
@@ -1700,13 +1700,13 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
           <groupId>org.junit.jupiter</groupId>
           <artifactId>junit-jupiter</artifactId>
-          <version>5.7.2</version>
+          <version>5.8.2</version>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.junit.vintage</groupId>
           <artifactId>junit-vintage-engine</artifactId>
-          <version>5.7.2</version>
+          <version>5.8.2</version>
           <scope>test</scope>
         </dependency>
         <dependency>
