@@ -37,7 +37,7 @@
       </includes>
       <excludes>
         <exclude>*:jaxb-*</exclude>
-        <exclude>*:javax.activation*</exclude>
+        <exclude>*:javax.activation-*</exclude>
       </excludes>
     </dependencySet>
     <!-- place all jaxb jars separately, used by imageio-ext, set-attribute, view-manager currently -->
@@ -47,7 +47,7 @@
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>*:jaxb-*</include>
-        <include>*:javax.activation*</include>
+        <include>*:javax.activation-*</include>
       </includes>
     </dependencySet>
   </dependencySets>
