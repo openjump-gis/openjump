@@ -64,10 +64,12 @@
         <exclude>lib/native/readme.txt</exclude>
       </excludes>
     </fileSet>
+<!-- 
     <fileSet>
       <directory>lib/plus</directory>
       <outputDirectory>/lib/ext</outputDirectory>
     </fileSet>
+-->
     <fileSet>
       <directory>${project.build.directory}/lib.ext.plus/</directory>
       <outputDirectory>/lib/ext/</outputDirectory>
