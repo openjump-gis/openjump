@@ -66,25 +66,25 @@ public abstract class AttributePredicate {
       new EndsWithCIPredicate(), new MatchesCIPredicate() };
 
   static List<String> getNames() {
-    List names = new ArrayList();
-    for (int i = 0; i < methods.length; i++) {
-      names.add(methods[i].name);
+    List<String> names = new ArrayList<>();
+    for (AttributePredicate method : methods) {
+      names.add(method.name);
     }
     return names;
   }
 
   static List<String> getNamesCI() {
-    List names = new ArrayList();
-    for (int i = 0; i < methodsCaseInsensitive.length; i++) {
-      names.add(methodsCaseInsensitive[i].name);
+    List<String> names = new ArrayList<>();
+    for (AttributePredicate attributePredicate : methodsCaseInsensitive) {
+      names.add(attributePredicate.name);
     }
     return names;
   }
 
   static AttributePredicate getPredicate(String name) {
-    for (int i = 0; i < methods.length; i++) {
-      if (methods[i].name.equals(name))
-        return methods[i];
+    for (AttributePredicate method : methods) {
+      if (method.name.equals(name))
+        return method;
     }
     return null;
   }
@@ -92,9 +92,9 @@ public abstract class AttributePredicate {
   static AttributePredicate getPredicate(String name, boolean caseInsensitive) {
     AttributePredicate pred = null;
     if (caseInsensitive) {
-      for (int i = 0; i < methodsCaseInsensitive.length; i++) {
-        if (methodsCaseInsensitive[i].name.equals(name))
-          pred = methodsCaseInsensitive[i];
+      for (AttributePredicate attributePredicate : methodsCaseInsensitive) {
+        if (attributePredicate.name.equals(name))
+          pred = attributePredicate;
       }
     }
     // checkbox might be disabled but still ticked on, return nonCI pred in that
@@ -183,7 +183,7 @@ public abstract class AttributePredicate {
       return NOT_COMPARABLE;
     if (!(o2 instanceof Comparable))
       return NOT_COMPARABLE;
-    return ((Comparable) o1).compareTo((Comparable) o2);
+    return ((Comparable) o1).compareTo(o2);
   }
 
   private static boolean getBooleanLoose(String boolStr) {

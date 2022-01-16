@@ -133,7 +133,7 @@ public class FeatureInstaller {
 
   private EnableCheckFactory checkFactory;
 
-  private static HashMap<JMenuItem, PlugIn> menuItemRegistry = new HashMap();
+  private static Map<JMenuItem, PlugIn> menuItemRegistry = new HashMap<>();
 
   private FeatureInstaller(WorkbenchContext workbenchContext) {
     this.workbenchContext = workbenchContext;

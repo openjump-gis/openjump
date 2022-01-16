@@ -32,22 +32,15 @@
 package com.vividsolutions.jump.workbench.ui;
 
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.util.Blackboard;
+import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
-import com.vividsolutions.jump.workbench.plugin.PlugIn;
-import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
-import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
-import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
 import javax.swing.*;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -512,7 +505,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
             row.getPanel().scrollRectToVisible(new Rectangle(0, 0, 1, 1));
         }
 
-        ArrayList features = new ArrayList();
+        List<Feature> features = new ArrayList<>();
         features.add(row.getFeature());
         panel.zoom(features);
     }
@@ -535,7 +528,7 @@ public class AttributeTab extends JPanel implements LayerableNamePanel {
             row.getPanel().scrollRectToVisible(new Rectangle(0, 0, 1, 1));
         }
 
-        ArrayList features = new ArrayList();
+        List<Feature> features = new ArrayList<>();
         features.add(row.getFeature());
         panel.pan(features);
     }

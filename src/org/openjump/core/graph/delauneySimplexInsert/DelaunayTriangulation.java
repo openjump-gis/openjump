@@ -19,11 +19,10 @@
  */
 
 package org.openjump.core.graph.delauneySimplexInsert;
-import java.util.Collection;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -40,7 +39,7 @@ import java.util.Set;
  */
 public class DelaunayTriangulation extends Triangulation {
     
-    private Simplex mostRecent = null;       // Most recently inserted triangle
+    private Simplex mostRecent;              // Most recently inserted triangle
     public boolean debug = false;            // Used for debugging
     
     /**

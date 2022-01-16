@@ -177,7 +177,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
      */
     protected void saveButton_actionPerformed(ActionEvent e) {
         JFileChooser chooser;
-        File archivo = null;
+        File archivo;
         chooser = GUIUtil.createJFileChooserWithOverwritePrompting();
         chooser.setMultiSelectionEnabled(false);
         chooser.setFileFilter(GUIUtil.createFileFilter(
@@ -211,8 +211,7 @@ public class HTMLPanel extends JPanel implements RecordPanelModel {
                         .getFrame()
                         .getOutputFrame()
                         .addText(
-                                "SaveImageToRasterPlugIn Exception:"
-                                        + new Object[] { e.toString() });
+                                "SaveImageToRasterPlugIn Exception: " + e1);
             }
         }
     }

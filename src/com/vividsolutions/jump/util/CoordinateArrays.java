@@ -50,11 +50,13 @@ public class CoordinateArrays {
     // MD - yep, at some point.
     // [mmichaud - 2016] some methods have not yet been integrated into
     // JTS CoordinateArrays
-    private static final Coordinate[] coordArrayType = new Coordinate[0];
 
-    public static Coordinate[] toCoordinateArray(List<Coordinate[]> coordList) {
-        return coordList.toArray(coordArrayType);
-    }
+    //private static final Coordinate[] coordArrayType = new Coordinate[0];
+
+    // Try to remov eit as it is probably wrong (should return Cordinate[][]) and unused
+    //public static Coordinate[] toCoordinateArray(List<Coordinate[]> coordList) {
+    //    return coordList.toArray(coordArrayType);
+    //}
 
     /**
      * Converts an array of coordinates to a line or point, as appropriate.

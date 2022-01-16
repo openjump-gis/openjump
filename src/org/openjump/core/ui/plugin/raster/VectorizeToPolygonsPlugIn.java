@@ -158,7 +158,7 @@ public class VectorizeToPolygonsPlugIn extends ThreadedBasePlugIn {
 
         switch (comboBox.getSelectedIndex()) {
             case 0:
-                if (explodeb = true) {
+                if (explodeb) {
                     featDataset = VectorizeAlgorithm.toPolygonsAdbToolBox(gwrapper,
                         true, sValue, 0);
                 } else {

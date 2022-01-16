@@ -36,7 +36,7 @@ abstract public class AbstractFileLayerSaver implements FileLayerSaver {
 
   @Override
   public List<Option> getOptionMetadata() {
-    return new ArrayList();
+    return new ArrayList<>();
   }
 
 }

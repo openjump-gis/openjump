@@ -39,12 +39,11 @@
 package org.openjump.core.attributeoperations;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 
 import org.math.array.DoubleArray;
 
-import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureSchema;
@@ -102,17 +101,14 @@ public class AttributeOp {
     }
   
     public static double evaluateAttributes(int attributeOp, Feature[] features, String attributeName){
-    	ArrayList<Feature> featureL = new ArrayList<Feature>();
-    	for (int i = 0; i < features.length; i++) {
-			featureL.add(features[i]);
-		}
+      List<Feature> featureL = new ArrayList<>(Arrays.asList(features));
     	return AttributeOp.evaluateAttributes(attributeOp, featureL, attributeName);
     }
     
-    public static double evaluateAttributes(int attributeOp, List features, String attributeName){
+    public static double evaluateAttributes(int attributeOp, List<Feature> features, String attributeName){
         double result= Double.NaN;
         if (features.size() > 0){
-            Feature firstF = (Feature)features.get(0);
+            Feature firstF = features.get(0);
             FeatureSchema fs = firstF.getSchema();
             if (fs.hasAttribute(attributeName)){
                 boolean doEval = true; 
@@ -121,8 +117,7 @@ public class AttributeOp {
 		        double[] vals = org.math.array.StatisticSample.fill(n,0);
 		        //Matrix mat = MatlabSyntax.zeros(n,1);
 		        int count=0;
-		        for (Iterator iter = features.iterator(); iter.hasNext();) {
-		            Feature f = (Feature) iter.next();
+		        for (Feature f : features) {
 		            Object value = f.getAttribute(attributeName);
 		            if (value == null) {
 		                // will be counted as 0
@@ -130,7 +125,7 @@ public class AttributeOp {
 		            else if (at == AttributeType.DOUBLE){
 		                Double val = (Double)value;
 		                //mat.set(count,0, val.doubleValue());
-		                vals[count] = val.doubleValue();
+		                vals[count] = val;
 		            }
 		            else if(at == AttributeType.INTEGER){
 		                Integer val = (Integer)value;
@@ -177,7 +172,7 @@ public class AttributeOp {
 		            	result = DoubleArray.sum(vals); 
 		            }
 		            else if(attributeOp == AttributeOp.COUNT){
-		            	result = (double)vals.length; 
+		            	result = vals.length;
 		            }		            		            
 		            else{
 		                System.out.println("AttributeOp: attribute operation not supported");
@@ -197,34 +192,34 @@ public class AttributeOp {
     }
     
     private static double majorityEval(double[] values){
-        double result=0;
+        double result;
         //-- built list of all values
-        ArrayList vals = new ArrayList();
+        List<Double> vals = new ArrayList<>();
         for(int i=0; i < values.length; i++){
-                double val = values[i];
-                if(i==0){
-                    //-- add first value
-                    vals.add(val);
-                }
-                else{
-	                boolean stop = false; int count =0;
-	                boolean found = false;
-	                while(stop == false){
-	                    Double d = (Double)vals.get(count);
-	                    if(val == d.doubleValue()){
-	                        stop = true;
-	                        found = true;
-	                    }
-	                    count++;
-	                    if(count == vals.size()){
-	                        //-- if last value reached stop and add
-	                        stop = true;	                
-	                    }
-	                }
-	                if(found == false){
-	                    vals.add(val);
-	                }	                
-                }                
+          double val = values[i];
+          if(i==0){
+            //-- add first value
+            vals.add(val);
+          }
+          else{
+            boolean stop = false; int count =0;
+            boolean found = false;
+            while(!stop){
+              Double d = vals.get(count);
+              if(val == d){
+                stop = true;
+                found = true;
+              }
+              count++;
+              if(count == vals.size()){
+                //-- if last value reached stop and add
+                stop = true;
+              }
+            }
+            if(!found){
+              vals.add(val);
+            }
+          }
         }
         //-- count number of values
         int[] countVals = new int[vals.size()];
@@ -232,23 +227,22 @@ public class AttributeOp {
         for (int i = 0; i < countVals.length; i++) {
             countVals[i]=0;
         }
-        for(int i=0; i < values.length; i++){
-                double val = values[i];
-                boolean stop = false; int count =0;
-                while(stop == false){
-                    Double d = (Double)vals.get(count);
-                    if(val == d.doubleValue()){
-                        //-- count 
-                        int oldVal = countVals[count];
-                        countVals[count] = oldVal +1;
-                        //-- stop 
-                        stop = true;
-                    }
-                    count++;
-                    if(count == countVals.length){
-                        stop = true;
-                    }
-                }
+        for(double val : values){
+          boolean stop = false; int count =0;
+          while(!stop){
+            Double d = vals.get(count);
+            if(val == d){
+              //-- count
+              int oldVal = countVals[count];
+              countVals[count] = oldVal +1;
+              //-- stop
+              stop = true;
+            }
+            count++;
+            if(count == countVals.length){
+              stop = true;
+            }
+          }
         }
 //        if (mat.getRowDimension() > 15){
 //            String s= "Stop here for debugging"; 
@@ -263,14 +257,14 @@ public class AttributeOp {
        	    }
         }
        	//-- assign value which appears most
-       	result = ((Double)vals.get(pos)).doubleValue();
+       	result = vals.get(pos);
         return result;
     }
 
     private static double minorityEval(double[] values){
-        double result=0;
+        double result;
         //-- built list of all values
-        ArrayList vals = new ArrayList();
+        List<Double> vals = new ArrayList<>();
         for(int i=0; i < values.length; i++){
                  double val = values[i];
                 if(i==0){
@@ -280,9 +274,9 @@ public class AttributeOp {
                 else{
 	                boolean stop = false; int count =0;
 	                boolean found = false;
-	                while(stop == false){
-	                    Double d = (Double)vals.get(count);
-	                    if(val == d.doubleValue()){
+	                while(!stop){
+	                    Double d = vals.get(count);
+	                    if(val == d){
 	                        stop = true;
 	                        found = true;
 	                    }
@@ -292,7 +286,7 @@ public class AttributeOp {
 	                        stop = true;	                
 	                    }
 	                }
-	                if(found == false){
+	                if(!found){
 	                    vals.add(val);
 	                }
                 }                
@@ -303,23 +297,22 @@ public class AttributeOp {
         for (int i = 0; i < countVals.length; i++) {
             countVals[i]=0;
         }
-        for(int i=0; i < values.length; i++){
-                double val = values[i];
-                boolean stop = false; int count =0;
-                while(stop == false){
-                    Double d = (Double)vals.get(count);
-                    if(val == d.doubleValue()){
-                        //-- count 
-                        int oldVal = countVals[count];
-                        countVals[count] = oldVal +1;
-                        //-- stop 
-                        stop = true;
-                    }
-                    count++;
-                    if(count == countVals.length){
-                        stop = true;
-                    }
-                }
+        for(double val : values){
+          boolean stop = false; int count =0;
+          while(!stop){
+            Double d = vals.get(count);
+            if(val == d){
+              //-- count
+              int oldVal = countVals[count];
+              countVals[count] = oldVal +1;
+              //-- stop
+              stop = true;
+            }
+            count++;
+            if(count == countVals.length){
+              stop = true;
+            }
+          }
         }
         //-- get minimum count
         int mincount = countVals[0];
@@ -331,7 +324,7 @@ public class AttributeOp {
        	    }
         }
        	//-- assign value which appears fewest
-       	result = ((Double)vals.get(pos)).doubleValue();
+       	result = vals.get(pos);
         return result;
     }
 

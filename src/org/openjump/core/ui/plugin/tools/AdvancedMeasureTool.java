@@ -1,5 +1,6 @@
 package org.openjump.core.ui.plugin.tools;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import com.vividsolutions.jump.I18N;
@@ -147,7 +148,7 @@ public class AdvancedMeasureTool extends PolygonTool implements ActionListener {
 
 		try {
 			if (isShapeOnScreen()) {
-				ArrayList currentCoordinates = new ArrayList(getCoordinates());
+				List<Coordinate> currentCoordinates = new ArrayList(getCoordinates());
 				currentCoordinates.add(getPanel().getViewport().toModelCoordinate(e.getPoint()));
 			}
 			super.mouseLocationChanged(e);

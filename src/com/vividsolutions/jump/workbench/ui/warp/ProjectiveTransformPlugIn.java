@@ -179,8 +179,7 @@ public class ProjectiveTransformPlugIn extends AbstractPlugIn {
                     .getContext()
                     .setStatusMessage(
                             I18N.getInstance().get("Warping vectors: " + "{0}",
-                                    new Object[] { numVectors }
-                                            + "\n Especting 4"));
+                                    numVectors + "\n Especting 4"));
         } else if (numVectors == 4) {
             return new ProjectiveTransform(vectorCoordinate(0, false, context,
                     vlm), vectorCoordinate(0, true, context, vlm),

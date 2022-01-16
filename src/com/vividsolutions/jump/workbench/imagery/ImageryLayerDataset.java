@@ -225,7 +225,7 @@ public class ImageryLayerDataset {
       try {
         String loaderParam = "";
         if (loaderClassPath.contains("|")){
-          String[] parts = loaderClassPath.split("|",1);
+          String[] parts = loaderClassPath.split("\\|",1);
           loaderClassPath = parts[0];
           loaderParam = parts[1];
         }

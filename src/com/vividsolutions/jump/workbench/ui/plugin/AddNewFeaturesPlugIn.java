@@ -34,7 +34,7 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 
@@ -69,12 +69,11 @@ public class AddNewFeaturesPlugIn extends WKTPlugIn {
     protected void apply(final FeatureCollection c, final PlugInContext context) {
         //Can't use WeakHashMap, otherwise the features will vanish when the command
         //is undone! [Jon Aquino]
-        final ArrayList features = new ArrayList();               
+        final List<Feature> features = new ArrayList<>();
         
         FeatureSchema fs = this.layer.getFeatureCollectionWrapper().getFeatureSchema();
         
-        for (Iterator i = c.iterator(); i.hasNext();) {
-            Feature feature = (Feature) i.next();      
+        for (Feature feature : c.getFeatures()) {
             features.add(FeatureUtil.toFeature(feature.getGeometry(), fs));
         }
 

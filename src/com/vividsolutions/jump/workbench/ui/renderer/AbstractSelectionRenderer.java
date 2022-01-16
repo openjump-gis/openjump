@@ -125,8 +125,7 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
 
     public void paint(Feature f, Graphics2D g, Viewport viewport)
         throws NoninvertibleTransformException {
-        for (Iterator i = featureToSelectedItemsMap.get(f).iterator(); i.hasNext(); ) {
-            Geometry geometry = (Geometry) i.next();
+        for (Geometry geometry : featureToSelectedItemsMap.get(f)) {
             paint(geometry, g, viewport);
         }
     }
@@ -170,13 +169,13 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
         }
     }
 
-    protected Collection styles() {
+    protected Collection<Style> styles() {
 		return Collections.singleton(this);
 	}
     
-    protected Map layerToFeaturesMap() {
+    protected Map<Layer, Collection<Feature>> layerToFeaturesMap() {
         featureToSelectedItemsMap = new HashMap<>();
-		    Map<Layer,List<Feature>> layerToFeaturesMap = new HashMap();
+		    Map<Layer,Collection<Feature>> layerToFeaturesMap = new HashMap<>();
         for (Iterator<Layer> i = panel.getLayerManager().iterator(Layer.class); i.hasNext();) {
             Layer layer = i.next();
             if (layer instanceof LayerView) continue;
@@ -229,18 +228,18 @@ public abstract class AbstractSelectionRenderer extends FeatureCollectionRendere
 
         g.setColor(lineColor);
 
-        for (int i = 0; i < coordinates.length; i++) {
-            if (!viewport.getEnvelopeInModelCoordinates().contains(coordinates[i])) {
+        for (Coordinate c : coordinates) {
+            if (!viewport.getEnvelopeInModelCoordinates().contains(c)) {
                 //Otherwise get "sun.dc.pr.PRException: endPath: bad path" exception [Jon Aquino 10/22/2003]
                 continue;
             }
             g.draw(handle(viewport.toViewPoint(
-                new Point2D.Double(coordinates[i].x, coordinates[i].y)
+                new Point2D.Double(c.x, c.y)
             )));
         }
     }
 
-    protected boolean useImageCaching(Map layerToFeaturesMap) {
+    protected boolean useImageCaching(Map<Layer, List<Feature>> layerToFeaturesMap) {
 		return true;
 	}
 

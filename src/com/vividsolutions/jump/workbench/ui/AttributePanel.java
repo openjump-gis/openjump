@@ -38,7 +38,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import javax.swing.JPanel;
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.feature.Feature;
@@ -58,7 +58,7 @@ public class AttributePanel extends JPanel implements InfoModelListener {
 
     //private SelectionManager selectionManager;
     private GridBagLayout gridBagLayout1 = new GridBagLayout();
-    private HashMap<Layerable,AttributeTablePanel> layerToTablePanelMap = new HashMap();
+    private HashMap<Layerable,AttributeTablePanel> layerToTablePanelMap = new HashMap<>();
     private InfoModel model;
     private WorkbenchContext workbenchContext;
     private ZoomToSelectedItemsPlugIn zoomToSelectedItemsPlugIn =
@@ -187,7 +187,7 @@ public class AttributePanel extends JPanel implements InfoModelListener {
                     if (row == -1) {
                         return;
                     }
-                    ArrayList features = new ArrayList();
+                    List<Feature> features = new ArrayList<>();
                     features.add(layerTableModel.getFeature(row));
                     if (taskFrame.isVisible()) {
                         zoomToSelectedItemsPlugIn.flash(
@@ -239,8 +239,7 @@ public class AttributePanel extends JPanel implements InfoModelListener {
 
     public int rowCount() {
         int rowCount = 0;
-        for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
-            AttributeTablePanel tablePanel = (AttributeTablePanel) i.next();
+        for (AttributeTablePanel tablePanel : layerToTablePanelMap.values()) {
             rowCount += tablePanel.getTable().getRowCount();
         }
         return rowCount;
@@ -264,16 +263,15 @@ public class AttributePanel extends JPanel implements InfoModelListener {
             taskFrame.getLayerViewPanel());
     }
 
-    public Collection selectedFeatures() {
-        ArrayList selectedFeatures = new ArrayList();
-        for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
-            AttributeTablePanel tablePanel = (AttributeTablePanel) i.next();
+    public Collection<Feature> selectedFeatures() {
+        List<Feature> selectedFeatures = new ArrayList<>();
+        for (AttributeTablePanel tablePanel : layerToTablePanelMap.values()) {
             if (tablePanel.getModel().getRowCount() == 0) {
                 continue;
             }
             int[] selectedRows = tablePanel.getTable().getSelectedRows();
-            for (int j = 0; j < selectedRows.length; j++) {
-                selectedFeatures.add(tablePanel.getModel().getFeature(selectedRows[j]));
+            for (int j : selectedRows) {
+                selectedFeatures.add(tablePanel.getModel().getFeature(j));
             }
         }
         return selectedFeatures;
@@ -283,12 +281,11 @@ public class AttributePanel extends JPanel implements InfoModelListener {
     //
     public void selectInLayerViewPanel() {
         taskFrame.getLayerViewPanel().getSelectionManager().clear();
-        for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
-            AttributeTablePanel tablePanel = (AttributeTablePanel) i.next();
+        for (AttributeTablePanel tablePanel : layerToTablePanelMap.values()) {
             int[] selectedRows = tablePanel.getTable().getSelectedRows();
-            ArrayList selectedFeatures = new ArrayList();
-            for (int j = 0; j < selectedRows.length; j++) {
-                selectedFeatures.add(tablePanel.getModel().getFeature(selectedRows[j]));
+            List<Feature> selectedFeatures = new ArrayList<>();
+            for (int j : selectedRows) {
+                selectedFeatures.add(tablePanel.getModel().getFeature(j));
             }
             taskFrame
                 .getLayerViewPanel()
@@ -302,8 +299,7 @@ public class AttributePanel extends JPanel implements InfoModelListener {
 
 
     public Row topSelectedRow() {
-        for (Iterator i = layerToTablePanelMap.values().iterator(); i.hasNext();) {
-            AttributeTablePanel panel = (AttributeTablePanel) i.next();
+        for (AttributeTablePanel panel : layerToTablePanelMap.values()) {
             int selectedRow = panel.getTable().getSelectedRow();
             if (selectedRow == -1) {
                 continue;
@@ -346,7 +342,7 @@ public class AttributePanel extends JPanel implements InfoModelListener {
     }
 
     private class BasicRow implements Row {
-        private AttributeTablePanel panel = null;
+        private AttributeTablePanel panel;
         private int index;
         public BasicRow(AttributeTablePanel panel, int index) {
             this.panel = panel;

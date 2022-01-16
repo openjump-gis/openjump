@@ -11,6 +11,7 @@ package org.openjump.util.metaData;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Meta information object to store the units for the attributes in a layer.
@@ -26,7 +27,7 @@ import java.util.HashMap;
  */
 public class Attribute2UnitMap {
 
-    protected HashMap<String, String> attribute2unit = new HashMap<String, String>();
+    protected Map<String, String> attribute2unit = new HashMap<>();
     protected boolean useHTMLLineBreaks = false;
     /**
      * key to be used in the meta information map
@@ -60,7 +61,7 @@ public class Attribute2UnitMap {
         String result = this.getClass().getName() + (useHTMLLineBreaks?":<br>\n":":\n");
         
         for (int i=0; i<this.attribute2unit.size(); i++){
-            result += keys[i].toString() + " - "+ this.attribute2unit.get(keys[i]).toString() + (useHTMLLineBreaks?"<br>\n":"\n");
+            result += keys[i].toString() + " - "+ this.attribute2unit.get(keys[i]) + (useHTMLLineBreaks?"<br>\n":"\n");
         }
         
         return result;
@@ -83,7 +84,7 @@ public class Attribute2UnitMap {
      * for java2xml
      *@return attribute2unit map
      */
-    public HashMap getAttribute2unit() {
+    public Map getAttribute2unit() {
         return attribute2unit;
     }
     /**
