@@ -1793,6 +1793,18 @@ ${project.artifactId} ${project.version} Changelog
             <groupId>it.geosolutions.imageio-ext</groupId>
             <artifactId>imageio-ext-geocore</artifactId>
             <version>${imageio-ext.version}</version>
+            <exclusions>
+              <exclusion>
+                <!-- currently v1.3.11 these are 
+                   javax.xml.bind:jaxb-api, org.glassfish.jaxb:jaxb-runtime, 
+                   javax.activation:javax.activation-api
+                  not sure they are needed, but even if there is already
+                  another JAXB implementation included under lib/ext/jaxb/ by
+                  view-manager, set-atributes extensions in PLUS -->
+                <groupId>*</groupId>
+                <artifactId>*</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
            <groupId>it.geosolutions.imageio-ext</groupId>
