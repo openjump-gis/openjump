@@ -327,6 +327,13 @@ public final class I18N {
   }
 
   /**
+   * see {@link #get(String, Object...)}
+   */
+  public String get(final String label) {
+    return get(label, new Object[0]);
+  }
+
+  /**
    * Get the internationalized text from the resource bundle associated with the
    * specified category or path. If no label is defined then a default string is
    * created from the last part of the key.
