@@ -20,8 +20,7 @@ import com.vividsolutions.jump.workbench.ui.toolbox.ToolboxPlugIn;
 public class BeanShellPlugIn extends ToolboxPlugIn {
 
   private static final String sName = I18N.getInstance().get("com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn.BeanShell-Console");
-  private static final ImageIcon icon = IconLoader
-      .icon("famfam/application_bean.png");
+  public static final ImageIcon ICON = IconLoader.icon("famfam/application_bean.png");
 
   public void initialize(PlugInContext context) throws Exception {
     // [Michael Michaud 2007-03-23]
@@ -39,7 +38,7 @@ public class BeanShellPlugIn extends ToolboxPlugIn {
 
   protected void initializeToolbox(ToolboxDialog toolbox) {
     try {
-      toolbox.setIconImage(icon.getImage());
+      toolbox.setIconImage(ICON.getImage());
       final JConsole console = new JConsole();
       console.setPreferredSize(new Dimension(430, 240));
       console
@@ -61,6 +60,6 @@ public class BeanShellPlugIn extends ToolboxPlugIn {
   }
   
   public Icon getIcon(){
-    return icon;
+    return ICON;
   }
 }
