@@ -46,6 +46,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -56,12 +57,15 @@ import bsh.EvalError;
 import bsh.Interpreter;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.JUMPException;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.HTMLFrame;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.BeanShellPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
 
@@ -72,28 +76,54 @@ import com.vividsolutions.jump.workbench.ui.task.TaskMonitorManager;
  */
 public class BeanToolsPlugIn extends AbstractPlugIn {
 
-  private static final String sName = I18N.getInstance().get("org.openjump.core.ui.plugin.customize.BeanToolsPlugIn.Bean-Tools");
-
+  public static final String NAME = I18N.getInstance().get("org.openjump.core.ui.plugin.customize.BeanToolsPlugIn.Bean-Tools");
+  private File beanToolsFolder = null;
   private String lastcmd = "";
-  private String beanShellDirName;
   private TaskMonitorManager taskMonitorManager;
   private FeatureInstaller featureInstaller;
 
   public void initialize(PlugInContext context) throws Exception {
-    File plugInDirectory = context.getWorkbenchContext().getWorkbench()
-        .getPlugInManager().getPlugInDirectory();
-    if (null == plugInDirectory || !plugInDirectory.exists()) {
-      Logger
-          .debug("BeanTools plugin has not been initialized : the plugin directory is missing");
-      return;
+    beanToolsFolder = context.getWorkbenchContext().getWorkbench()
+        .getPlugInManager().findFileOrFolderInExtensionDirs("BeanTools");
+    if (null == beanToolsFolder || !beanToolsFolder.isDirectory() || !beanToolsFolder.exists()) {
+      throw  new JUMPException("BeanTools plugin initialization failed because folder 'BeanTools' is missing.");
     }
-    beanShellDirName = plugInDirectory.getPath() + File.separator
-        + I18N.getInstance().get("ui.plugin.customize.BeanToolsPlugIn.BeanTools");
-    File beanShellDir = new File(beanShellDirName);
     featureInstaller = context.getFeatureInstaller();
     taskMonitorManager = new TaskMonitorManager();
-    if (beanShellDir.exists()) {
-      scanBeanShellDir(beanShellDir, context);
+    if (beanToolsFolder.exists()) {
+      scanBeanShellDir(beanToolsFolder, context);
+    }
+
+    // retroactively grab menuitem and decorate with icon
+    JMenu menu = featureInstaller.menuBarMenu(MenuNames.CUSTOMIZE);
+    if (menu!=null) {
+      JMenu item = (JMenu)FeatureInstaller.childMenuItem(getName(), FeatureInstaller.wrapMenu(menu));
+      if (item != null) {
+        // add folder icons
+        addFolderIconRecursive(item);
+        // set plugin icon
+        item.setIcon(getIcon());
+      }
+      // add separator before help/refresh
+      for (int i = 0; i < item.getItemCount(); i++) {
+        JMenuItem menuEntry = item.getItem(i);
+        String text = menuEntry.getText();
+        if (text.matches("^(?i)(help|refresh)$")) {
+          //item.insertSeparator(i);
+          break;
+        }
+      }
+    }
+  }
+
+  private void addFolderIconRecursive(JMenu menu) {
+    Icon icon = IconLoader.icon("fugue/folder-horizontal-open_16.png");
+    menu.setIcon(icon);
+    for (int i = 0; i < menu.getItemCount(); i++) {
+      JMenuItem item = menu.getItem(i);
+      if (item instanceof JMenu) {
+        addFolderIconRecursive((JMenu) item);
+      }
     }
   }
 
@@ -117,8 +147,21 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
       File[] files = file.listFiles();
       Arrays.sort(files, new Comparator<File>() {
         Pattern pattern = Pattern.compile(".*?([0-9]+).*");
+        Pattern helpRefresh = Pattern.compile("^(Help|Refresh)\\.bsh$",Pattern.CASE_INSENSITIVE);
 
         public int compare(File f1, File f2) {
+          if (f1.isDirectory() && !f2.isDirectory())
+            return -1;
+          else if (!f1.isDirectory() && f2.isDirectory())
+            return 1;
+
+          // place help & refresh to bottom always in main folder
+          if (f1.getParentFile().equals(beanToolsFolder))
+            if (helpRefresh.matcher(f1.getName()).matches())
+              return 1;
+            else if (helpRefresh.matcher(f2.getName()).matches())
+              return -1;
+
           Matcher m1 = pattern.matcher(f1.getName());
           Matcher m2 = pattern.matcher(f2.getName());
           if (m1.matches() && m2.matches()) {
@@ -138,8 +181,10 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
     }
     // add a menu item for the beanshell script
     else if (file.getName().endsWith(".bsh")) {
-      File beanShellDir = new File(beanShellDirName);
-      String ancestors = ancestors(beanShellDir, file);
+      String ancestors = ancestors(beanToolsFolder, file);
+      String[] ancestorList = ancestors.split(File.separator.replace("\\", "\\\\"));
+      // replace folder name with plugin's translated name
+      ancestorList[0] = getName();
       String shellName = file.getName().substring(0,
           file.getName().length() - 4);
       JMenu menu = featureInstaller.menuBarMenu(MenuNames.CUSTOMIZE);
@@ -151,9 +196,10 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
       }
       JMenu parent = (JMenu) featureInstaller.createMenusIfNecessary(
           FeatureInstaller.wrapMenu(menu),
-          ancestors.split(File.separator.replace("\\", "\\\\"))).getWrappee();
+          ancestorList).getWrappee();
       final JMenuItem menuItem = featureInstaller.installMnemonic(
           new JMenuItem(shellName), parent);
+      menuItem.setIcon(BeanShellPlugIn.ICON);
       final ActionListener listener = AbstractPlugIn.toActionListener(this,
           context.getWorkbenchContext(), taskMonitorManager);
       menuItem.addActionListener(new ActionListener() {
@@ -168,13 +214,16 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
       });
       parent.add(menuItem);
     }
-    // file is not a directory and it does not end with .bsh
-    else
-      ;
+
   }
 
   public String getName() {
-    return sName;
+    return NAME;
+  }
+
+  @Override
+  public Icon getIcon() {
+    return IconLoader.icon("famfam/applications_bean_go.png");
   }
 
   public boolean execute(final PlugInContext context) throws Exception {
