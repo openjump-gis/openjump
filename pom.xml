@@ -71,6 +71,7 @@
               <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
+                <?m2e execute onConfiguration,onIncremental?>
                 <executions>
                   <!-- add executions sorted by id alphabetically for maintainability -->
                   <execution>
