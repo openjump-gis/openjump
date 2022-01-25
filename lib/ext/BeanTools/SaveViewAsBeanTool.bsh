@@ -57,14 +57,6 @@ bshFile.write("wc.createPlugInContext().getWorkbenchFrame().getActiveInternalFra
 bshFile.write("wc.getLayerViewPanel().getViewport().zoom(modelEnv);\n");
 bshFile.close();
 
-// Remove the BeanTools menu
-context = wc.createPlugInContext();
-featureInstaller = context.getFeatureInstaller();
-menu = featureInstaller.menuBarMenu(I18N.get(MenuNames.CUSTOMIZE));
-item = featureInstaller.childMenuItem(I18N.get("ui.plugin.BeanToolsPlugIn.BeanTools"), FeatureInstaller.wrapMenu(menu));
-menu.remove(item);
-
-// Reinitialize the plugin
-plugin = new BeanToolsPlugIn();
-plugin.initialize(context);
+//  the BeanTools menu
+this.interpreter.source("lib/ext/BeanTools/RefreshScriptsMenu.bsh");
 }
