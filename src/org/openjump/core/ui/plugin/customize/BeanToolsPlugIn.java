@@ -109,7 +109,7 @@ public class BeanToolsPlugIn extends AbstractPlugIn {
         JMenuItem menuEntry = item.getItem(i);
         String text = menuEntry.getText();
         if (text.matches("^(?i)(help|refresh)$")) {
-          //item.insertSeparator(i);
+          item.insertSeparator(i);
           break;
         }
       }
