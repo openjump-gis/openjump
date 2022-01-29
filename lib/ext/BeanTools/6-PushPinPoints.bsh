@@ -1,10 +1,10 @@
 {
 //filenameOrURL = new URL("http://www.techsoup.org/fb/fxforums/images/pushpin.gif");
-filenameOrURL = new URL("http://openclipart.org/people/jean_victor_balin/jean_victor_balin_icon_host.png");
+filenameOrURL = new URL("https://github.com/openjump-gis/openjump/blob/main/icon/pngs/oj_16.png?raw=true");
 //filenameOrURL = "c:/junk/Arrow.jpg";
 image = Toolkit.getDefaultToolkit().getImage(filenameOrURL);
 import java.awt.geom.Point2D;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.geom.EnvelopeUtil;
 import com.vividsolutions.jump.workbench.model.*;

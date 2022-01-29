@@ -2,7 +2,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.awt.Dimension;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
@@ -22,14 +22,14 @@ double bottom = modelViewEnv.getMinY();
 double top = modelViewEnv.getMaxY();
 
 String beanShellViewDirName = wc.getWorkbench().getPlugInManager().getPlugInDirectory()
-	.getPath() +  File.separator + I18N.get("ui.plugin.customize.BeanToolsPlugIn.BeanTools")
+	.getPath() +  File.separator + I18N.getInstance().get("ui.plugin.customize.BeanToolsPlugIn.BeanTools")
 	+  File.separator + "Saved_Views";
 File beanShellViewDir = new File(beanShellViewDirName);
 if (!beanShellViewDir.exists()) {
     beanShellViewDir.mkdir(); //ensure Saved_views directory exists
 }
 int i = 0;
-File saveViweFile;
+File saveViewFile;
 do {
    i++;
    saveViewFile = new File(beanShellViewDir+File.separator+"SavedView"+i+".bsh");
@@ -44,7 +44,7 @@ if (dialog.wasOKPressed()) {
 }
 
 FileWriter bshFile = new FileWriter(saveViewFile);
-bshFile.write("import com.vividsolutions.jts.geom.Envelope;\n");
+bshFile.write("import org.locationtech.jts.geom.Envelope;\n");
 bshFile.write("left = "+ left +"d; \n");
 bshFile.write("right = "+ right +"d; \n");
 bshFile.write("bottom = "+ bottom +"d; \n");
@@ -58,5 +58,5 @@ bshFile.write("wc.getLayerViewPanel().getViewport().zoom(modelEnv);\n");
 bshFile.close();
 
 //  the BeanTools menu
-this.interpreter.source("lib/ext/BeanTools/RefreshScriptsMenu.bsh");
+this.interpreter.source("lib/ext/BeanTools/Refresh.bsh");
 }
