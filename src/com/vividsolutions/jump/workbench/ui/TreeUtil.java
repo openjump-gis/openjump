@@ -130,7 +130,7 @@ public class TreeUtil {
 
     private static void visitCategoriesAndLayerables(TreeModel model, Stack path, Visitor visitor) {
         visitor.visit(path);
-        if (path.peek() instanceof Category) {
+        if (path.peek() instanceof Category || path.peek() == model.getRoot()) {
             for (int i = 0; i < model.getChildCount(path.peek()); i++) {
                 path.push(model.getChild(path.peek(), i));
                 visit(model, path, visitor);
