@@ -59,10 +59,10 @@ toolbox.pack()
 #import com.vividsolutions.jump.workbench.ui.cursortool.NoteTool as NoteTool
 #toolbox.add(NoteTool())  #surprise!  Deselect before changing tools to avoid bug
 #Custom Tools can be defined with only a constructor
-lineTool = DrawCustomTool(featureDrawingUtil, maxClicks = 2, toolName = "Line Tool", geometryType = "linestring")
+lineTool = DrawCustomTool(wc,featureDrawingUtil, maxClicks = 2, toolName = "Line Tool", geometryType = "linestring")
 toolbox.add(featureDrawingUtil.prepare(lineTool, 1))
 #this one creates multipoints.  Double-Click or Right-click to stop
-multiPointTool = DrawCustomTool(featureDrawingUtil, minClicks = 2, maxClicks = 99, toolName = "MultiPoint Tool", geometryType = "POINT", icon = swing.ImageIcon(startuppath +"images" + sep + "DrawPoint.gif"))
+multiPointTool = DrawCustomTool(wc,featureDrawingUtil, minClicks = 2, maxClicks = 99, toolName = "MultiPoint Tool", geometryType = "POINT", icon = swing.ImageIcon(startuppath +"images" + sep + "DrawPoint.gif"))
 toolbox.add(featureDrawingUtil.prepare(multiPointTool, 1))
 
 #Custom Tools can be defined with only an inline function and constructor
@@ -73,34 +73,34 @@ def corner(event):    #this event handler won't fire until fireClicks points
     dist = p[2].distance(GeoUtils.getClosestPointOnLine(p[2], p[0], p[1]))
     toLeft = not GeoUtils.pointToRight(p[2], p[1], p[0])
     p[2] = GeoUtils.perpendicularVector(p[1], p[0], dist, toLeft)
-toCorner = DrawCustomTool(featureDrawingUtil, finalDraw=corner, \
+toCorner = DrawCustomTool(wc,featureDrawingUtil, finalDraw=corner, \
             minClicks = 3, maxClicks = 3, toolName = "Corner Tool", \
             icon = swing.ImageIcon(startuppath + "images" + sep + "DrawCorner.gif"), \
             fireClicks = 2, geometryType = "linestring")
 toolbox.add(featureDrawingUtil.prepare(toCorner, 1))
 
 #Complex Custom Tools can be defined in a class module and imported
-rotRectTool = DrawCustomTool(featureDrawingUtil, minClicks = 3, maxClicks = 3, toolName = "Rotated Rectangle Tool", icon = swing.ImageIcon(startuppath + "images" + sep + "DrawRotRect.gif"), geometryType = "polygon");
+rotRectTool = DrawCustomTool(wc,featureDrawingUtil, minClicks = 3, maxClicks = 3, toolName = "Rotated Rectangle Tool", icon = swing.ImageIcon(startuppath + "images" + sep + "DrawRotRect.gif"), geometryType = "polygon");
 import RotatedRectangleTool
 # this tool has a feedback shape that is the same as the final geometry
 rotRectTool.setFinalGeoListener(RotatedRectangleTool.ToolListener())
 toolbox.add(featureDrawingUtil.prepare(rotRectTool, 1))
 
 featureDrawingUtil = FeatureDrawingUtil(toolbox.getContext())
-arcTool = DrawCustomTool(featureDrawingUtil, minClicks = 3, maxClicks = 3, toolName = "Arc Tool", icon = swing.ImageIcon(startuppath + "images" + sep + "DrawArc.gif"), geometryType = "LINESTRING");
+arcTool = DrawCustomTool(wc,featureDrawingUtil, minClicks = 3, maxClicks = 3, toolName = "Arc Tool", icon = swing.ImageIcon(startuppath + "images" + sep + "DrawArc.gif"), geometryType = "LINESTRING");
 import ArcTool
 # this tool has a feedback shape that is different from the final geometry
 arcTool.setFeedbackListener(ArcTool.ToolListenerFeedback())
 arcTool.setFinalGeoListener(ArcTool.ToolListenerFinal())
 toolbox.add(featureDrawingUtil.prepare(arcTool, 1))
 
-circleTool = DrawCustomTool(featureDrawingUtil, minClicks = 2, maxClicks = 2, fireClicks = 1, toolName = "Tangent Circle Tool", icon = swing.ImageIcon(startuppath + "images" + sep + "DrawCircle.gif"), geometryType = "POLYGON");
+circleTool = DrawCustomTool(wc,featureDrawingUtil, minClicks = 2, maxClicks = 2, fireClicks = 1, toolName = "Tangent Circle Tool", icon = swing.ImageIcon(startuppath + "images" + sep + "DrawCircle.gif"), geometryType = "POLYGON");
 import CircleTool
 circleTool.setFeedbackListener(CircleTool.ToolListenerFeedback())
 circleTool.setFinalGeoListener(CircleTool.ToolListenerFinal())
 toolbox.add(featureDrawingUtil.prepare(circleTool, 1))
 
-roadTool = DrawCustomTool(featureDrawingUtil, minClicks = 3, maxClicks = 99, fireClicks = 2, toolName = "Road Arc Tool", icon = swing.ImageIcon(startuppath + "images" + sep + "DrawRoad.gif"), geometryType = "POLYGON", strokeWidth = 3);
+roadTool = DrawCustomTool(wc,featureDrawingUtil, minClicks = 3, maxClicks = 99, fireClicks = 2, toolName = "Road Arc Tool", icon = swing.ImageIcon(startuppath + "images" + sep + "DrawRoad.gif"), geometryType = "POLYGON", strokeWidth = 3);
 import RoadTool
 roadListenerFinal = RoadTool.ToolListenerFinal()
 roadListenerFinal.setGUI(label1, edit1, panel, toolbox)
@@ -112,7 +112,7 @@ roadTool.setActivationListener(RoadTool.ToolListenerActivation())
 # [Giuseppe Aruta 2016_06_02] RoadTool commented out as it crashes Jython console (and OpenJUMP)
 # toolbox.add(featureDrawingUtil.prepare(roadTool, 1))
 
-ovalTool = DrawCustomTool(featureDrawingUtil, fireClicks = 1, minClicks = 2, maxClicks = 2, toolName = "Oval Tool", icon = swing.ImageIcon(startuppath + "images" + sep + "DrawOval.gif"), geometryType = "polygon");
+ovalTool = DrawCustomTool(wc,featureDrawingUtil, fireClicks = 1, minClicks = 2, maxClicks = 2, toolName = "Oval Tool", icon = swing.ImageIcon(startuppath + "images" + sep + "DrawOval.gif"), geometryType = "polygon");
 import OvalTool
 ovalTool.setFinalGeoListener(OvalTool.ToolListener())
 toolbox.add(featureDrawingUtil.prepare(ovalTool, 1))
