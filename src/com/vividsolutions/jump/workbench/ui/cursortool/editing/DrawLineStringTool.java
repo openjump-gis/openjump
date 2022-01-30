@@ -69,11 +69,6 @@ public class DrawLineStringTool extends MultiClickTool {
                 context, featureDrawingUtil), true);
     }
 
-    public String getName() {
-    	//Specify name explicitly, otherwise it will be "Draw Line String" [Jon Aquino]
-        return I18N.getInstance().get("ui.cursortool.editing.DrawLineString.draw-linestring");
-    }
-
     public Icon getIcon() {
         return IconLoader.icon("DrawLineString.gif");
     }
