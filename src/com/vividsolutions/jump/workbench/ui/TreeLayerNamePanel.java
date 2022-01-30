@@ -740,7 +740,6 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     tree.addSelectionPath(TreeUtil.findLayerTreePath(layer, tree.getModel()));
   }
 
-  
   public void setSelectedLayerables(Layerable[] layers) {
       tree.getSelectionModel().clearSelection();
 

@@ -68,7 +68,7 @@ public class SelectLayersWithSelectedItemsPlugIn extends AbstractPlugIn {
         lnp.setSelectedLayers(layersToSelect);
         return true;
     }
-    
+
     public MultiEnableCheck createEnableCheck(final WorkbenchContext workbenchContext) {
         EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
