@@ -31,21 +31,15 @@
  */
 package com.vividsolutions.jump.workbench.ui;
 
-import org.locationtech.jts.util.Assert;
-
-import com.vividsolutions.jump.util.Block;
-import com.vividsolutions.jump.util.StringUtil;
-import com.vividsolutions.jump.workbench.model.Category;
-import com.vividsolutions.jump.workbench.model.Layer;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.swing.ImageIcon;
@@ -55,6 +49,11 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+
+import org.locationtech.jts.util.Assert;
+
+import com.vividsolutions.jump.util.Block;
+import com.vividsolutions.jump.util.StringUtil;
 
 
 public class TreeUtil {
@@ -91,10 +90,20 @@ public class TreeUtil {
             };
     }
 
+    /**
+     * see {@link #visit(TreeModel, Visitor, RecurseValidator)}
+     */
     public static void visit(TreeModel model, Visitor visitor) {
-        Stack path = new Stack();
-        path.push(model.getRoot());
-        visit(model, path, visitor);
+      visit(model, visitor, null);
+    }
+
+    /**
+     * visit Treemodel.Root recursively, limited by {@link RecurseValidator} (may be null if not needed)
+     */
+    public static void visit(TreeModel model, Visitor visitor, RecurseValidator rv) {
+      Stack path = new Stack();
+      path.push(model.getRoot());
+      visit(model, path, visitor, rv);
     }
 
     /**
@@ -103,39 +112,27 @@ public class TreeUtil {
     public static void visit(TreeModel model, TreePath path, Visitor visitor) {
         Stack stack = new Stack();
         stack.addAll(Arrays.asList(path.getPath()));
-        visit(model, stack, visitor);
+        visit(model, stack, visitor, null);
     }
 
-    private static void visit(TreeModel model, Stack path, Visitor visitor) {
+    /**
+     * the actual visit routine
+     * 
+     * run {@link Visitor} on the {@link Stack}
+     * recurse into it if {@link RecurseValidator} is NULL or allows it
+     * if so, run this method each child object of {@link Stack}
+     */
+    private static void visit(TreeModel model, Stack path, Visitor visitor, RecurseValidator rv) {
         visitor.visit(path);
+
+        // limit recursion for performance reason e.g. exhaustive colour theming nodes
+        if ( rv != null && !rv.recurseAllowed(path.peek()))
+          return;
 
         for (int i = 0; i < model.getChildCount(path.peek()); i++) {
             path.push(model.getChild(path.peek(), i));
-            visit(model, path, visitor);
+            visit(model, path, visitor, rv);
             path.pop();
-        }
-    }
-
-    public static void visitCategoriesAndLayerables(TreeModel model, Visitor visitor) {
-        Stack path = new Stack();
-        path.push(model.getRoot());
-        visitCategoriesAndLayerables(model, path, visitor);
-    }
-
-    public static void visitCategoriesAndLayerables(TreeModel model, TreePath path, Visitor visitor) {
-        Stack stack = new Stack();
-        stack.addAll(Arrays.asList(path.getPath()));
-        visitCategoriesAndLayerables(model, stack, visitor);
-    }
-
-    private static void visitCategoriesAndLayerables(TreeModel model, Stack path, Visitor visitor) {
-        visitor.visit(path);
-        if (path.peek() instanceof Category || path.peek() == model.getRoot()) {
-            for (int i = 0; i < model.getChildCount(path.peek()); i++) {
-                path.push(model.getChild(path.peek(), i));
-                visit(model, path, visitor);
-                path.pop();
-            }
         }
     }
 
@@ -168,37 +165,47 @@ public class TreeUtil {
 
     /**
      * @return null if the node is not in the tree model
+     * 
+     * @deprecated use
      */
+    @Deprecated
     public static TreePath findTreePath(final Object node, final TreeModel model) {
-        final TreePath[] treePath = new TreePath[] { null };
-        visit(model,
-            new Visitor() {
-                public void visit(Stack path) {
-                    if (path.peek() != node) {
-                        return;
-                    }
-
-                    treePath[0] = new TreePath(path.toArray());
-                }
-            });
-
-        return treePath[0];
+      return findTreePath(node, model, null);
     }
 
-    public static TreePath findLayerTreePath(final Layer node, final TreeModel model) {
-        final TreePath[] treePath = new TreePath[] { null };
-        visitCategoriesAndLayerables(model,
-                new Visitor() {
-                    public void visit(Stack path) {
-                        if (path.peek() != node) {
-                            return;
-                        }
+    private static TreePath findTreePath(final Object node, final TreeModel model, RecurseValidator rv) {
+      TreePath[] treePaths = findTreePaths(new Object[]{node}, model, rv);
+      return treePaths.length>0 ? treePaths[0] : null;
+    }
 
-                        treePath[0] = new TreePath(path.toArray());
-                    }
-                });
+    /**
+     * find TreePath objects, optimised by limiting recursion with {@link RecurseValidator} and {@link VisitFinishedException}
+     */
+    public static TreePath[] findTreePaths(final Object[] nodesArray, final TreeModel model, final RecurseValidator rv) {
+      final Set<Object> nodes = new HashSet<Object>(Arrays.asList(nodesArray));
+      final Set<Object> found = new HashSet<Object>(nodes.size());
+      final Visitor visitor = new Visitor() {
+        public void visit(Stack path) {
+          for (Object node : nodes) {
+            if (path.peek() == node) {
+              found.add(new TreePath(path.toArray()));
+              nodes.remove(node);
+              // found all? stop searching :)
+              if (nodes.isEmpty())
+                throw new VisitFinishedException();
+              // found this one, continue with next path
+              break;
+            }
+          }
+        }
+      };
+      try {
+        visit(model, visitor, rv);
+      } catch (VisitFinishedException e) {
+        // all good, finished early is all
+      }
 
-        return treePath[0];
+      return found.toArray(new TreePath[0]);
     }
 
     public static boolean contains(TreeModel model, final Object node) {
@@ -255,7 +262,21 @@ public class TreeUtil {
         return nodes;
     }
 
-    public interface Visitor {
-        void visit(Stack path);
+    /**
+     * interface handling visiting each tree path node
+     * may throw {@link VisitFinishedException} or other {@link VisitingException}s
+     */
+    public static interface Visitor {
+      void visit(Stack path);
     }
+
+    /**
+     * interface to limit recursion over tree
+     */
+    public static interface RecurseValidator{
+      boolean recurseAllowed( Object o );
+    }
+
+    public static class VisitingException extends RuntimeException {};
+    public static class VisitFinishedException extends VisitingException {};
 }

@@ -728,31 +728,35 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
     return selectedNodes;
   }
 
+  /**
+   * @param layers
+   * @deprecated use {@link #setSelectedLayerables(Layerable[])} instead
+   */
+  @Deprecated
   public void setSelectedLayers(Layer[] layers) {
+    setSelectedLayerables(layers);
+  }
+
+  public void setSelectedLayerables(Layerable[] layerables) {
     tree.getSelectionModel().clearSelection();
-
-    for (Layer layer : layers) {
-      addSelectedLayer(layer);
-    }
+    addSelectedLayerables(layerables);
   }
 
-  protected void addSelectedLayer(Layer layer) {
-    tree.addSelectionPath(TreeUtil.findLayerTreePath(layer, tree.getModel()));
+  protected void addSelectedLayerable(Layerable layerable) {
+    addSelectedLayerables(new Layerable[] { layerable });
   }
 
-  public void setSelectedLayerables(Layerable[] layers) {
-      tree.getSelectionModel().clearSelection();
-
-      for (final Layerable layer : layers) {
-          addSelectedLayerable(layer);
+  /**
+   * selects given layerables visually in the tree
+   */
+  protected void addSelectedLayerables(Layerable[] layerables) {
+    tree.addSelectionPaths(TreeUtil.findTreePaths(layerables, tree.getModel(), new TreeUtil.RecurseValidator() {
+      public boolean recurseAllowed(Object o) {
+        return o instanceof LayerTreeModel.Root || o instanceof Category;
       }
+    }));
   }
 
-  protected void addSelectedLayerable(Layerable layer) {
-      tree.addSelectionPath(TreeUtil.findTreePath(layer, tree.getModel()));
-  }
-  
-  
   public void layerChanged(final LayerEvent e) {
     final TreeModelEvent treeModelEvent = new TreeModelEvent(this,
         new Object[] { tree.getModel().getRoot(), e.getCategory() },
@@ -771,7 +775,7 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
       firableTreeModelWrapper.fireTreeStructureChanged(treeModelEvent);
       if ((selectedNodes(Layerable.class)).size() == 0
           && e.getLayerable() instanceof Layer) {
-        addSelectedLayer((Layer) e.getLayerable());
+        addSelectedLayerable(e.getLayerable());
       }
 
       return;
