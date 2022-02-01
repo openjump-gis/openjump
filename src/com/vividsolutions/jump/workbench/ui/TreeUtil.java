@@ -179,7 +179,7 @@ public class TreeUtil {
     }
 
     /**
-     * find TreePath objects, optimised by limiting recursion with {@link RecurseValidator} and {@link VisitFinishedException}
+     * find TreePath objects, optimized by limiting recursion with {@link RecurseValidator} and {@link VisitFinishedException}
      */
     public static TreePath[] findTreePaths(final Object[] nodesArray, final TreeModel model, final RecurseValidator rv) {
       final Set<Object> nodes = new HashSet<Object>(Arrays.asList(nodesArray));
@@ -190,13 +190,13 @@ public class TreeUtil {
             if (path.peek() == node) {
               found.add(new TreePath(path.toArray()));
               nodes.remove(node);
-              // found all? stop searching :)
-              if (nodes.isEmpty())
-                throw new VisitFinishedException();
               // found this one, continue with next path
               break;
             }
           }
+          // found all? stop searching :)
+          if (nodes.isEmpty())
+            throw new VisitFinishedException();
         }
       };
       try {
