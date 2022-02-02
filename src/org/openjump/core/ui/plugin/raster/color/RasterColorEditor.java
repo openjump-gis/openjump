@@ -21,7 +21,7 @@ import org.openjump.core.rasterimage.RasterSymbology;
  * 15 sept. 2005
  *
  * @author  Paul PLOUY
- * 			Laboratoire RESO - 	université de Rennes 2
+ * 			Laboratoire RESO - 	universitÃ© de Rennes 2
  * 			FRANCE
  * 
  * 			modified by Stefan Steiniger (perriger@gmx.de)

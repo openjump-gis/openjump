@@ -150,14 +150,14 @@ public class AboutDialog extends JDialog {
         String result;
         String urlstring = "";
         try {
-            URL url = ClassLoader.getSystemResource("readme.txt"); // "ÿ \u069e/test.txt"
+            URL url = ClassLoader.getSystemResource("readme.txt"); // "Ã¿ \u069e/test.txt"
 
             if (url == null)
                 throw new FileNotFoundException(
                         "readme.txt missing in ojhome/.");
             urlstring = URLDecoder.decode(url.toString(), "UTF8");
             // System.out.println(URLDecoder.decode(url.toString(), "UTF8") +
-            // "-> ÿ \u069e/test.txt");
+            // "-> Ã¿ \u069e/test.txt");
             FileInputStream file = new FileInputStream(new File(url.toURI()));
             DataInputStream in = new DataInputStream(file);
             byte[] b = new byte[in.available()];

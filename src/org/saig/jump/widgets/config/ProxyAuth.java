@@ -1,5 +1,5 @@
 /* 
- * Kosmo - Sistema Abierto de Información Geográfica
+ * Kosmo - Sistema Abierto de InformaciÃ³n GeogrÃ¡fica
  * Kosmo - Open Geographical Information System
  *
  * http://www.saig.es
@@ -21,16 +21,16 @@
  *
  * For more information, contact:
  * 
- * Sistemas Abiertos de Información Geográfica, S.L.
- * Avnda. República Argentina, 28
- * Edificio Domocenter Planta 2ª Oficina 7
+ * Sistemas Abiertos de InformaciÃ³n GeogrÃ¡fica, S.L.
+ * Avnda. RepÃºblica Argentina, 28
+ * Edificio Domocenter Planta 2Âª Oficina 7
  * C.P.: 41930 - Bormujos (Sevilla)
- * España / Spain
+ * EspaÃ±a / Spain
  *
- * Teléfono / Phone Number
+ * TelÃ©fono / Phone Number
  * +34 954 788876
  * 
- * Correo electrónico / Email
+ * Correo electrÃ³nico / Email
  * info@saig.es
  *
  */
@@ -42,7 +42,7 @@ import java.net.PasswordAuthentication;
 /**
  * Authentification for net requests
  * 
- * @author Sergio Baños Calvo
+ * @author Sergio BaÃ±os Calvo
  * @since 1.3
  */
 public class ProxyAuth extends Authenticator {

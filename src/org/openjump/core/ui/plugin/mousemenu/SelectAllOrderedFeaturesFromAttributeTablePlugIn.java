@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Michaël Michaud.
+ * Copyright (C) MichaÃ«l Michaud.
  */
 
 package org.openjump.core.ui.plugin.mousemenu;

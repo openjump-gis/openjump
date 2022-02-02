@@ -82,7 +82,7 @@ public class MultiTabInputDialog extends MultiInputDialog {
         d.addTextField("Nom", "", 24, null, "");
         d.addPositiveIntegerField("Age", 0, 6, "");
         d.addNonNegativeDoubleField("Salaire", 0, 12, "");
-        d.addComboBox("Métier", "Cadre", java.util.Arrays.asList("Cadre","Charpentier","Maçon","Boulanger"), "");
+        d.addComboBox("MÃ©tier", "Cadre", java.util.Arrays.asList("Cadre","Charpentier","MaÃ§on","Boulanger"), "");
         
         d.addPane("2nd pane");
         d.addLabel("Yay!");

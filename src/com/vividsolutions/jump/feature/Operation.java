@@ -33,7 +33,7 @@ package com.vividsolutions.jump.feature;
 
 /**
  * Interface that any dynamic attribute must implement.
- * @author Michaël Michaud
+ * @author MichaÃ«l Michaud
  * @since 1.6
  */
 public interface Operation  extends Cloneable {

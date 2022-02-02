@@ -22,7 +22,7 @@ import org.openjump.core.ui.io.file.DataSourceFileLayerLoader;
  * extension. This is useful to skip those files if there are included in a
  * zip file
  * 
- * @author Michaël Michaud
+ * @author MichaÃ«l Michaud
  */
 public class InstallDummyReaderPlugIn extends AbstractPlugIn {
 

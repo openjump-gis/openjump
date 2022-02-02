@@ -4,7 +4,7 @@ import com.vividsolutions.jump.util.java2xml.Java2XML;
 import com.vividsolutions.jump.util.java2xml.XMLBinder;
 
 /**
- * Created by Michaël on 05/10/14.
+ * Created by MichaÃ«l on 05/10/14.
  */
 public interface MacroManager {
 

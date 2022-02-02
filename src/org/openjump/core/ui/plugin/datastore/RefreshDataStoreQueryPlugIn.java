@@ -27,7 +27,7 @@ import org.openjump.core.ui.plugin.file.open.OpenProjectWizard;
  * <code>RefreshDatastoreQueryPlugIn</code> runs the query associated
  * to this layer and replace the dataset.
  *
- * @author <a href="mailto:michael.michaud@free.fr">Michaël Michaud</a>
+ * @author <a href="mailto:michael.michaud@free.fr">MichaÃ«l Michaud</a>
  */
 public class RefreshDataStoreQueryPlugIn extends ThreadedBasePlugIn {
 
