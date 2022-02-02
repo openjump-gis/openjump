@@ -32,6 +32,11 @@
 package com.vividsolutions.jump;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.InvalidParameterException;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -41,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 import org.apache.commons.lang3.StringUtils;
@@ -139,17 +145,75 @@ public final class I18N {
    * find the exactly matching resourcebundle or return null if not available
    */
   private ResourceBundle getResourceBundle(Locale loco) {
-    // limit fetching to exactly this locale
+    // limit fetching to _exactly_ this locale, 
+    // support charset encodings, default to UTF-8 (as java9+ does anyway)
     ResourceBundle.Control rbc = new ResourceBundle.Control() {
       @Override
       public List<Locale> getCandidateLocales(String name, Locale locale) {
         return Collections.singletonList(loco);
       }
+
       @Override
       public Locale getFallbackLocale(String baseName, Locale locale) {
         return null;
       }
+
+      @Override
+      public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
+          throws IllegalAccessException, InstantiationException, IOException {
+        // not really needed, as we are dealing with language files here
+        if (!format.equals("java.properties"))
+          return super.newBundle(baseName, locale, format, loader, reload);
+
+        // below is the default implementation just modified to use a given charset
+        String bundleName = toBundleName(baseName, locale);
+        ResourceBundle bundle = null;
+
+        // default implementation, added encoding switch
+        final String resourceName = toResourceName0(bundleName, "properties");
+        if (resourceName == null) {
+          return bundle;
+        }
+
+        final boolean reloadFlag = reload;
+        InputStream stream = null;
+
+        URL url = loader.getResource(resourceName);
+        if (url == null)
+          return null;
+
+        URLConnection connection = url.openConnection();
+        if (reloadFlag) {
+          // Disable caches to get fresh data for
+          // reloading.
+          connection.setUseCaches(false);
+        }
+        stream = connection.getInputStream();
+
+        // use setting or UTF-8 as default
+        String encoding = System.getProperty("com.vividsolutions.jump.I18N.encoding", "UTF-8");
+
+        if (stream != null) {
+          try {
+            bundle = new PropertyResourceBundle(new InputStreamReader(stream, encoding));
+          } finally {
+            stream.close();
+          }
+        }
+
+        return bundle;
+      }
+
+      private String toResourceName0(String bundleName, String suffix) {
+        // application protocol check
+        if (bundleName.contains("://")) {
+          return null;
+        } else {
+          return toResourceName(bundleName, suffix);
+        }
+      }
     };
+
     ResourceBundle rb;
     ClassLoader cl = classLoader instanceof ClassLoader ? classLoader : getClass().getClassLoader();
     try {
@@ -162,6 +226,7 @@ public final class I18N {
   }
 
   public static void reset() {
+    ResourceBundle.clearCache();
     initialized = false;
   }
 
@@ -198,6 +263,11 @@ public final class I18N {
     return locale;
   }
 
+  public static void setEncoding( String csname ) {
+    System.setProperty("com.vividsolutions.jump.I18N.encoding", csname);
+    reset();
+  }
+
   /**
    * Get the I18N instance for a category or a path. The resource files are
    * resolved and at least one must exist in the classpath.
@@ -223,7 +293,7 @@ public final class I18N {
       } else {
         instance = new I18N(categoryPrefixOrPathOrI18N.toString());
       }
-      instance.init();
+      //instance.init();
       instances.put(categoryPrefixOrPathOrI18N, instance);
     }
 
