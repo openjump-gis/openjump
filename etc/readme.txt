@@ -102,25 +102,25 @@ Additionally PLUS distribution contains
  Xerial SQLite JDBC driver (sqlite-jdbc-*.jar) - apache_license-2.0.txt
  
 and the following plugins
- Aggregation PlugIn (Michaël Michaud) - GPL2 - gpl-2.txt
+ Aggregation PlugIn (MichaÃ«l Michaud) - GPL2 - gpl-2.txt
   aggregation-*.jar
- BeanShell Editor (Michaël Michaud) - GPL2 - gpl-2.txt
+ BeanShell Editor (MichaÃ«l Michaud) - GPL2 - gpl-2.txt
   bsheditor4jump-*.jar, buoy.jar(see above)
  CAD Tools (Giuseppe Aruta) - GPL3 - gpl-3.0.txt
   CadTools-*.jar
- CSV driver (Michaël Michaud) - GPL2 - gpl-2.txt
+ CSV driver (MichaÃ«l Michaud) - GPL2 - gpl-2.txt
   csv-driver-*.jar
  Concave Hull (Eric Grosso) - LGPL2.1, GPL2 - lgpl-2.1.txt, gpl-2.txt
   ConcaveHull*.{jar,txt}
- CTS extension (Michaël Michaud) - GPL2 - gpl-2.txt
+ CTS extension (MichaÃ«l Michaud) - GPL2 - gpl-2.txt
   CTS-PlugIn-*.jar,
   lib/cts-*.jar - LGPL3 - lgpl-3.0.txt
   SLF4J (see above)
- DXF driver (Michaël Michaud) - GPL2 - gpl-2.txt
+ DXF driver (MichaÃ«l Michaud) - GPL2 - gpl-2.txt
   driver-dxf-*.jar
  Five Color Map Coloring (Larry Reeder) - GPL3 - gpl-3.0.txt
   SLF4J (see above), JGraphT (see above)
- Graph Extension (Michaël Michaud) - GPL2 - gpl-2.txt
+ Graph Extension (MichaÃ«l Michaud) - GPL2 - gpl-2.txt
   graph-toolbox-*.jar, lib/jump-jgrapht-*.jar
   JGraphT (see above)
  Jump Chart (com.cadplan.jump) - GPL2 - gpl-2.txt
@@ -135,7 +135,7 @@ and the following plugins
   JumpFillPattern.jar
  KML Driver (skyjump) - GPL2 - gpl-2.txt
   kml-driver-*.jar
- Matching (Michaël Michaud) - GPL2 - gpl-2.txt
+ Matching (MichaÃ«l Michaud) - GPL2 - gpl-2.txt
    matching-*.jar
    utils-*.jar
  Measure Toolbox (Giuseppe Aruta) - GPL3 - gpl-3.0.txt
@@ -152,7 +152,7 @@ and the following plugins
  Pirol Csv Dataset 
   (de.fhOsnabrueck.jump.pirol.datasources.pirolCSV) - GPL2 - gpl-2.txt
   PirolCsv.jar, pbaseClasses.jar
- SetAttributes (Michaël Michaud) - GPL2 - gpl-2.txt
+ SetAttributes (MichaÃ«l Michaud) - GPL2 - gpl-2.txt
   SetAttributes-.jar
   jaxb/jaxb-*.jar
  Sextante Tools (es.unex.sextante.openjump.extensions) - GPL3 - gpl-3.0.txt
@@ -161,13 +161,13 @@ and the following plugins
   sextante_new_algorithms.jar
  TableLayout-*.jar - Clearthought License - clearthought-2.0.txt
   xbean-*.jar - Apache License Version 2.0 - apache_license-2.0.txt
- Topology Extension (Michaël Michaud) - GPL2 - gpl-2.txt
+ Topology Extension (MichaÃ«l Michaud) - GPL2 - gpl-2.txt
   topology-*.jar
  Vertex Note (com.cadplan.jump) - GPL2 - gpl-2.txt
  Vertex Symbols (com.cadplan.jump) - GPL2 - gpl-2.txt
   VertexSymbols.jar
   itext-*.jar - LGPL2.1 - lgpl-2.1.txt
- View Manager Extension (Michaël Michaud) - GPL2 - gpl-2.txt
+ View Manager Extension (MichaÃ«l Michaud) - GPL2 - gpl-2.txt
   ViewManager-*.jar
   jaxb/jaxb-*.jar
  WFS Plugin
@@ -332,7 +332,7 @@ OpenJUMP project team (in alphabetical order):
   Edgar Soldin (edso, http://soldin.de)
   Giuseppe Aruta
   Jukka Rahkonen
-  Michaël Michaud
+  MichaÃ«l Michaud
 
 Continuous or recent contributors (in alphabetical order):
   Nicolas Ribot
@@ -370,14 +370,14 @@ Past contributors (in alphabetical order):
   Stephan Holl
   Steve Tanner
   Ugo Taddei
-  Uwe Dallüge
+  Uwe DallÃ¼ge
 
 Translation contributors are
   Chinese: Elton Chan
   Czech: Jan Ruzicka
   English: Landon Blake
   Finnish: Jukka Rahkonnen
-  French: Basile Chandesris, Erwan Bocher, Steve Tanner, Michaël Michaud
+  French: Basile Chandesris, Erwan Bocher, Steve Tanner, MichaÃ«l Michaud
   German: Florian Rengers, Stefan Steiniger, Edgar Soldin
   Hungarian: Zoltan Siki
   Italian: Giuseppe Aruta
@@ -401,8 +401,8 @@ Contributing projects and companies:
   for providing their Jump ISA tools code and numerous other improvements
 - Lat/Lon GmbH (deeJUMP team)
   for providing some plugins and functionality (i.e. WFS and WMS Plugins)
-  contact: Markus Müller/Andreas Schmitz
-- Pirol Project from University of Applied Sciences Osnabrück
+  contact: Markus MÃ¼ller/Andreas Schmitz
+- Pirol Project from University of Applied Sciences OsnabrÃ¼ck
   for providing the attribute editor. Note that the project is finished now.
   (contact: Arnd Kielhorn)
 - VividSolutions Inc. & Refractions Inc.
