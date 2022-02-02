@@ -17,7 +17,7 @@ public class UnitTest extends TestCase {
     public void testFindFromLengthName() throws Exception {
         assertEquals("unit METRE from metre", Unit.METRE, Unit.find("metre"));
         assertEquals("unit METRE from metres", Unit.METRE, Unit.find("metres"));
-        assertEquals("unit METRE from mètre", Unit.METRE, Unit.find("mètre"));
+        assertEquals("unit METRE from mÃ¨tre", Unit.METRE, Unit.find("mÃ¨tre"));
         assertEquals("unit METRE from METRE", Unit.METRE, Unit.find("METRE"));
         assertEquals("unit METRE from METER", Unit.METRE, Unit.find("METER"));
         assertEquals("unit METRE from m", Unit.METRE, Unit.find("m"));

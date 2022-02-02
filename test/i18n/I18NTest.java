@@ -47,7 +47,7 @@ public class I18NTest {
 //    System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
     Locale loc = I18N.fromCode("de_DE");
     I18N.setLocale(loc);
-    assertEquals("Test Schlüssel", i18n.get("test.key"));
+    assertEquals("Test SchlÃ¼ssel", i18n.get("test.key"));
   }
 
   private final static String[] strings = new String[] { "one", "two", "three", "four", "five" };
@@ -113,16 +113,16 @@ public class I18NTest {
   @Order(10)
   public void testIso() throws Exception {
     I18N.setEncoding("ISO-8859-1");
-    assertEquals("äöü", i18n_iso.get("umlauts.plain"));
-    assertEquals("äöü", i18n_iso.get("umlauts.escaped"));
+    assertEquals("Ã¤Ã¶Ã¼", i18n_iso.get("umlauts.plain"));
+    assertEquals("Ã¤Ã¶Ã¼", i18n_iso.get("umlauts.escaped"));
   }
 
   @Test
   @Order(10)
   public void testUtf() throws Exception {
     I18N.setEncoding("UTF-8");
-    assertEquals("äöü", i18n_utf.get("umlauts.plain"));
-    assertEquals("äöü", i18n_utf.get("umlauts.escaped"));
+    assertEquals("Ã¤Ã¶Ã¼", i18n_utf.get("umlauts.plain"));
+    assertEquals("Ã¤Ã¶Ã¼", i18n_utf.get("umlauts.escaped"));
   }
 
   @Test
