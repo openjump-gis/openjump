@@ -20,7 +20,7 @@
         <version.buildDateLong>${build.datelong}</version.buildDateLong>
         <version.string>${git.branch}(${git.commit.id.abbrev})</version.string>
 
-        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
