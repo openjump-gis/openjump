@@ -389,7 +389,7 @@ public class JUMPWorkbench {
               (com.vividsolutions.jump.workbench.ui.ProgressMonitor) progressMonitorClass
           .getDeclaredConstructor().newInstance();
       SplashPanelV2 splashPanel = new SplashPanelV2(splashImage(),
-          I18N.getInstance().get("ui.AboutDialog.version") + " "
+          I18N.getInstance().get("JUMPWorkbench.version") + " "
               + JUMPVersion.CURRENT_VERSION);
       splashPanel.addProgressMonitor(progressMonitor);
 
