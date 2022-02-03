@@ -293,7 +293,7 @@ public final class I18N {
       } else {
         instance = new I18N(categoryPrefixOrPathOrI18N.toString());
       }
-      //instance.init();
+      instance.init();
       instances.put(categoryPrefixOrPathOrI18N, instance);
     }
 
