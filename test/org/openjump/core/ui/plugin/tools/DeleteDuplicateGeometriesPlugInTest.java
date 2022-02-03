@@ -46,7 +46,7 @@ import com.vividsolutions.jump.workbench.plugin.PlugIn;
 
 /**
  * @author Benjamin Gudehus
- * @author Michaël Michaud
+ * @author MichaÃ«l Michaud
  */
 @Ignore("currently broken: workbench hangs indefinitely after being setVisible(true)")
 public class DeleteDuplicateGeometriesPlugInTest {
