@@ -77,9 +77,9 @@
     <extension>
         com.vividsolutions.jump.workbench.ui.cursortool.QuasimodeTool$Setup
     </extension>
-    <!--extension>
-        de.latlon.deejump.wfs.WFSExtension
-    </extension-->
+    <extension>
+        de.soldin.jumpcore.geomconv.GCExtension
+    </extension>
 
     <!-- load wizards -->
     <!-- <plug-in> -->

@@ -18,31 +18,34 @@
  */
 package de.soldin.jumpcore.geomconv;
 
+import com.vividsolutions.jump.JUMPVersion;
 import com.vividsolutions.jump.workbench.plugin.Extension;
 import com.vividsolutions.jump.workbench.plugin.PlugIn;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 
 //import de.soldin.jumpcore.ExtClassLoader;
 
-
 /**
  * Installs the {@link de.soldin.jumpcore.geomconv.GCPlugin}
- * TODO Is this class useless now that GeometryConverted has been included into the CORE ?
+ * TODO Is this class useless now that GeometryConverted has been included into
+ * the CORE ?
+ * 
  * @see com.vividsolutions.jump.workbench.plugin.Extension
  */
-public class GCExtension
-	extends Extension
-	{
-	public static final String NAME = "Geometry Converter (de.soldin.jumpcore.geomconv)";
-	public static final String VERSION = "0.3core";
+public class GCExtension extends Extension {
+  public static final String NAME = "Geometry Converter (de.soldin.jumpcore.geomconv)";
+  public static final String VERSION = JUMPVersion.CURRENT_VERSION;
 
-	public void configure(PlugInContext context) throws Exception {
-		GCPlugin plugin = new GCPlugin();
-		plugin.initialize(context);
-	}
+  public void configure(PlugInContext context) throws Exception {
+    // TODO: move installation here from GCPlugin.initialize()
+  }
 
-	public String getVersion(){ return VERSION; }
-	
-	public String getName(){ return NAME; }
+  public String getVersion() {
+    return VERSION;
+  }
+
+  public String getName() {
+    return NAME;
+  }
 
 }
