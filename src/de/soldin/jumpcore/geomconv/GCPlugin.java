@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2011 Edgar Soldin
+ * Copyright 2022 Edgar Soldin
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -600,14 +601,14 @@ public class GCPlugin extends AbstractPlugIn {
         Geometry geom = src.getGeometryN(i);
 
         LinearRing ring = factory.createLinearRing(geom.getCoordinates());
-        if (CGAlgorithms.isCCW(ring.getCoordinates())) {
+        if (Orientation.isCCW(ring.getCoordinates())) {
           holes.add(ring);
         } else {
           shells.add(ring);
         }
       }
 
-      // something went wrong, detect holes mow
+      // something went wrong, detect holes now
       if (shells.size() != 1) {
         // throw it all together and let findCWHoles find it
         shells.addAll(holes);
@@ -620,7 +621,7 @@ public class GCPlugin extends AbstractPlugIn {
           for (int j = 0; j < foundholes.size(); j++) {
             LinearRing hole = (LinearRing) foundholes.get(j);
             // reverse cw holes
-            if (!CGAlgorithms.isCCW(hole.getCoordinates()))
+            if (!Orientation.isCCW(hole.getCoordinates()))
               hole = reverseRing(hole);
             holes.add(hole);
           }
@@ -670,7 +671,7 @@ public class GCPlugin extends AbstractPlugIn {
       Coordinate[] points = geom.getCoordinates();
       try {
         LinearRing ring = geometryFactory.createLinearRing(points);
-        if (CGAlgorithms.isCCW(points)) {
+        if (Orientation.isCCW(points)) {
           holes.add(ring);
         } else {
           shells.add(ring);
@@ -729,7 +730,7 @@ public class GCPlugin extends AbstractPlugIn {
         boolean isContained = false;
         Coordinate[] coordList = tryRing.getCoordinates();
 
-        if (tryEnv.contains(testEnv) && (CGAlgorithms.isPointInRing(testPt, coordList)))
+        if (tryEnv.contains(testEnv) && (PointLocation.isInRing(testPt, coordList)))
           isContained = true;
         // check if this new containing ring is smaller than the current
         // minimum ring
@@ -791,7 +792,7 @@ public class GCPlugin extends AbstractPlugIn {
             // pointInList(jPt, coordList))
             // && (CGAlgorithms.isPointInRing(jPt2, coordList) ||
             // pointInList(jPt2, coordList))) {
-            && (CGAlgorithms.isPointInRing(jPt, coordList)) && (CGAlgorithms.isPointInRing(jPt2, coordList))) {
+            && (PointLocation.isInRing(jPt, coordList)) && (PointLocation.isInRing(jPt2, coordList))) {
           if (!holesCW.contains(jRing)) {
             Polygon iPoly = factory.createPolygon(iRing, noHole);
             Polygon jPoly = factory.createPolygon(jRing, noHole);
