@@ -4,6 +4,9 @@
 # 3. be concise but convey the change in a way that ordinary users understand
 #<-------------------------------- 80 chars ---------------------------------->
 
+2021-02-02 ede
+  * turn the whole project to UTF-8, including language resource files
+
 2021-10-16 mmichaud
   * Fix UpdateWithJoinPlugIn not compatible with Database Transaction Manager
   * AttributePredicate : add Long data type
