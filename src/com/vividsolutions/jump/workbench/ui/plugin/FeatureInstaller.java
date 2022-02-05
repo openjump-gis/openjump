@@ -1530,6 +1530,26 @@ public class FeatureInstaller {
     return null;
   }
 
+  /**
+   * find the first occuring {@link JMenuItem} by childName in given Menu
+   * within given menuPath hierarchy, might return null if nothing was found
+   *
+   * @param itemName
+   * @param menu
+   * @param menuPath
+   * @return
+   */
+  public static JMenuItem childMenuItem(String itemName, Menu menu, String[] menuPath){
+    for (String pathName : menuPath) {
+      JMenuItem item = childMenuItem(pathName, menu);
+      if (item==null || !(item instanceof JMenu))
+        return null;
+      menu = wrapMenu((JMenu)item);
+    }
+
+    return childMenuItem(itemName, menu);
+  }
+
   private static String[] strip(String[] a1) {
     String[] a2 = new String[a1.length - 1];
     System.arraycopy(a1, 0, a2, 0, a2.length);
