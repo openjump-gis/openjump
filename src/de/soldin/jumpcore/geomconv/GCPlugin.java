@@ -29,17 +29,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
@@ -61,6 +67,7 @@ import org.locationtech.jts.geom.util.LinearComponentExtracter;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -70,10 +77,14 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.AttributeTab;
 import com.vividsolutions.jump.workbench.ui.FeatureSelection;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog.Validator;
+import com.vividsolutions.jump.workbench.ui.images.IconLoader;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn;
+import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 
 import de.soldin.jumpcore.UndoableSetGeometry;
@@ -97,7 +108,23 @@ public class GCPlugin extends AbstractPlugIn {
   final private static I18N I18N = com.vividsolutions.jump.I18N.getInstance(new File("language/geomconv/gc"));
   private static GeometryFactory factory = new GeometryFactory();
   private static Map geoms = null;
-  private static List items;
+  private static List<String> items = new ArrayList<String>();
+  static {
+    // add geometry keys in the order shown in gui, case sensitive as
+    // key is used verbatim to resolve GeometryFactory.create...() methods
+    items.add("Point");
+    items.add("LineString");
+    items.add("LinearRing");
+    items.add("Polygon");
+    items.add("MultiPoint");
+    items.add("MultiLineString");
+    items.add("MultiPolygon");
+    items.add("GeometryCollection");
+    // add tools
+    items.add("separator");
+    items.add("close-lines");
+    items.add("remove-closing-segment");
+  }
   private String target = null;
   private boolean youvebeenwarned = false;
 
@@ -115,40 +142,31 @@ public class GCPlugin extends AbstractPlugIn {
       return;
 
     WorkbenchContext wbc = getWorkbenchContext();
-
-    // fetch possible geometry keys
-    items = new ArrayList(this.getCreatableGeoms().keySet());
-    Collections.sort(items);
-    // add tools
-    items.add("separator");
-    items.add("close-lines");
-    items.add("remove-closing-segment");
+    FeatureInstaller f = context.getFeatureInstaller();
 
     // create menu items
     String[] menuchain = new String[] { MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY, getName() };
+    addToMainMenu(context, menuchain);
+    JMenuItem mainMenuItem = FeatureInstaller.childMenuItem(getName(), FeatureInstaller.wrapMenu(f.menuBar()),
+        Arrays.copyOf(menuchain, menuchain.length-1));
+    if (mainMenuItem != null)
+      mainMenuItem.setIcon(getIcon());
+
     JPopupMenu popupMenu = LayerViewPanel.popupMenu();
     String[] popupchain = new String[] { getName() };
-
-    addToMainMenu(context, menuchain);
-
-      // context.getFeatureInstaller().addPopupMenuSeparator(popupMenu, new
-      // String[]{});
-      // context.getFeatureInstaller().addPopupMenuSeparator(popupMenu, new String[]{
-      // "bla" });
-      // context.getFeatureInstaller().addPopupMenuSeparator(popupMenu, new String[]{
-      // "foo", "bar"});
-      addToPopupMenu(context, popupMenu, popupchain);
-      addToPopupMenu(context, AttributeTab.popupMenu(wbc), popupchain);
-
+    addToPopupMenu(context, popupMenu, popupchain);
+    JMenuItem popupItem = FeatureInstaller.childMenuItem(getName(), FeatureInstaller.wrapMenu(popupMenu));
+    if (popupItem != null)
+      popupItem.setIcon(getIcon());
+    // addToPopupMenu(context, AttributeTab.popupMenu(wbc), popupchain);
   }
 
   // this can be used to attach it to another popup menu as well
   public void addToPopupMenu(PlugInContext context, JPopupMenu popupMenu, String[] popupchain) throws Exception {
-
     // one checker to rule them all
     EnableCheck checker = createEnableCheck();
-    for (Iterator iter = items.iterator(); iter.hasNext();) {
-      String menuentry = (String) iter.next();
+
+    for (String menuentry : items) {
       // add one plugin per menuitem
       GCPlugin plugin = new GCPlugin(menuentry);
       plugin.initialize(context);
@@ -157,7 +175,10 @@ public class GCPlugin extends AbstractPlugIn {
         getSubMenu(popupMenu, popupchain).addSeparator();
       } else {
         // the layer popup menu
-        context.getFeatureInstaller().addPopupMenuItem(popupMenu, plugin, popupchain, _m(menuentry.toLowerCase()),
+        // context.getFeatureInstaller().addPopupMenuItem(popupMenu, plugin, popupchain,
+        // _m(menuentry.toLowerCase()),
+        // false, null, checker);
+        context.getFeatureInstaller().addPopupMenuPlugin(popupMenu, plugin, popupchain, _m(menuentry.toLowerCase()),
             false, null, checker);
       }
     }
@@ -318,18 +339,30 @@ public class GCPlugin extends AbstractPlugIn {
     return _m("convert-selected-to");
   }
 
-  /*
-   * private JMenu getSubMenu(JMenu menu, String key) {
-   * for (int i = 0; i < menu.getItemCount(); i++) {
-   * if (menu.getItem(i) == null)
-   * continue;
-   * if (menu.getItem(i).getText().equals(key)) {
-   * return (JMenu) menu.getItem(i);
-   * }
-   * }
-   * return null;
-   * }
-   */
+  @Override
+  public Icon getIcon() {
+    // private ImageIcon gc = IconLoader.icon("EditGeometryCollection.gif");
+    // private ImageIcon point = IconLoader.icon("EditPoint.gif");
+    // private ImageIcon mpoint = IconLoader.icon("EditMultiPoint.gif");
+    // private ImageIcon line = IconLoader.icon("EditLineString.gif");
+    // private ImageIcon mline = IconLoader.icon("EditMultiLineString.gif");
+    // private ImageIcon poly = IconLoader.icon("EditPolygon.gif");
+    // private ImageIcon mpoly = IconLoader.icon("EditMultiPolygon.gif");
+    // private ImageIcon lring = IconLoader.icon("EditLinearRing.gif");
+
+    if (target == null)
+      return IconLoader.icon("geometry_converter.png");
+
+    if (getCreateGeometryMethods().containsKey(target)) {
+      ImageIcon icon = IconLoader.icon("Edit" + target + ".gif");
+      return GUIUtil.pad(icon, 3);
+    } else if (target.equals("close-lines"))
+      return IconLoader.icon("geometry_converter_closering.png");
+    else if (target.equals("remove-closing-segment"))
+      return IconLoader.icon("geometry_converter_openring.png");
+
+    return null;
+  }
 
   private JMenu getSubMenu(MenuElement menu, String[] keys) {
     MenuElement[] ms = menu.getSubElements();
@@ -387,8 +420,8 @@ public class GCPlugin extends AbstractPlugIn {
   }
 
   private boolean layerMode() {
-    FeatureSelection sel = ((SelectionManagerProxy) getWorkbenchContext().getWorkbench().getFrame().getActiveInternalFrame())
-        .getSelectionManager().getFeatureSelection();
+    FeatureSelection sel = ((SelectionManagerProxy) getWorkbenchContext().getWorkbench().getFrame()
+        .getActiveInternalFrame()).getSelectionManager().getFeatureSelection();
 
     // user hand picked geometries (features)
     if (!sel.getFeaturesWithSelectedItems().isEmpty()) {
@@ -401,8 +434,8 @@ public class GCPlugin extends AbstractPlugIn {
   }
 
   private Collection getFeatures(Layer layer) {
-    FeatureSelection sel = ((SelectionManagerProxy) getWorkbenchContext().getWorkbench().getFrame().getActiveInternalFrame())
-        .getSelectionManager().getFeatureSelection();
+    FeatureSelection sel = ((SelectionManagerProxy) getWorkbenchContext().getWorkbench().getFrame()
+        .getActiveInternalFrame()).getSelectionManager().getFeatureSelection();
 
     Collection feats;
     // user hand picked geometries (features)
@@ -419,8 +452,8 @@ public class GCPlugin extends AbstractPlugIn {
 
   private Collection getLayers() {
     // all layers with selected items (parts of geometries)
-    Collection layers = ((SelectionManagerProxy) getWorkbenchContext().getWorkbench().getFrame().getActiveInternalFrame())
-        .getSelectionManager().getFeatureSelection().getLayersWithSelectedItems();
+    Collection layers = ((SelectionManagerProxy) getWorkbenchContext().getWorkbench().getFrame()
+        .getActiveInternalFrame()).getSelectionManager().getFeatureSelection().getLayersWithSelectedItems();
     return layers.isEmpty() ? Arrays.asList(getWorkbenchContext().getLayerableNamePanel().getSelectedLayers()) : layers;
   }
 
@@ -434,43 +467,47 @@ public class GCPlugin extends AbstractPlugIn {
     return types;
   }
 
-  private static Map getCreatableGeoms() {
+  private static Map getCreateGeometryMethods() {
     if (geoms != null)
       return geoms;
 
     geoms = new Hashtable();
-    Class cfactory = factory.getClass();
-    Method[] methods = cfactory.getMethods();
-    for (int i = 0; i < methods.length; i++) {
-      Method method = (Method) methods[i];
-      if (!method.getName().startsWith("create")) {
-        continue;
+    for (String key : items) {
+      if (key.equals("separator"))
+        break;
+
+      Method m = null;
+      if (key.equals("Point")) {
+        m = findMethod("create" + key, Coordinate.class);
+      } else if (key.equals("Polygon")) {
+        m = findMethod("create" + key, new Class[] { LinearRing.class, LinearRing[].class });
+      } else if (key.equals("MultiPoint")) {
+        m = findMethod("createMultiPointFromCoords", Coordinate[].class);
+      } else if (key.equals("MultiLineString")) {
+        m = findMethod("create" + key, LineString[].class);
+      } else if (key.equals("MultiPolygon")) {
+        m = findMethod("create" + key, Polygon[].class);
+      } else if (key.equals("GeometryCollection")) {
+        m = findMethod("create" + key, Geometry[].class);
       }
-      // check if parameters match
-      Class[] cparams = methods[i].getParameterTypes();
-      if (cparams.length < 1)
-        continue;
-
-      boolean valid = true;
-      for (int j = 0; j < cparams.length; j++) {
-        Class cparam = cparams[j];
-        if (!validType(cparam)) {
-          valid = false;
-          break;
-        }
+      // the rest can work with coord arrays
+      else {
+        m = findMethod("create" + key, Coordinate[].class);
       }
-      if (!valid)
-        continue;
-
-      String id = method.getName().replaceFirst("create", "");
-      // blacklist some
-      if (id.equals("PointFromInternalCoord") || id.equals("Geometry") || id.equals("MultiPointFromCoords"))
-        continue;
-
-      geoms.put(id, method);
+      if (m != null)
+        geoms.put(key, m);
     }
 
     return geoms;
+  }
+
+  private static Method findMethod(String name, Class... params) {
+    try {
+      return GeometryFactory.class.getDeclaredMethod(name, params);
+    } catch (Exception e) {
+      Logger.error(e);
+      return null;
+    }
   }
 
   private static boolean validType(Class clazz) {
@@ -492,7 +529,7 @@ public class GCPlugin extends AbstractPlugIn {
   private Geometry convert(Geometry geom_src, String type) throws Exception {
     Geometry geom_new = null;
 
-    Method method = (Method) getCreatableGeoms().get(type);
+    Method method = (Method) getCreateGeometryMethods().get(type);
     // do we have to && can we convert?
     if (!(method instanceof Method)) {
       // ups we've got ourself no conversion
@@ -862,11 +899,12 @@ public class GCPlugin extends AbstractPlugIn {
     panel.setLayout(f);
     panel.add(label);
 
-    OKCancelDialog dlg = new OKCancelDialog(getWorkbenchContext().getWorkbench().getFrame(), title, true, panel, new Validator() {
-      public String validateInput(Component component) {
-        return null;
-      }
-    });
+    OKCancelDialog dlg = new OKCancelDialog(getWorkbenchContext().getWorkbench().getFrame(), title, true, panel,
+        new Validator() {
+          public String validateInput(Component component) {
+            return null;
+          }
+        });
 
     dlg.setVisible(true);
 
