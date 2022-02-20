@@ -36,11 +36,9 @@ import java.awt.event.KeyListener;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.KeyStroke;
 
@@ -48,13 +46,9 @@ import org.openjump.core.CheckOS;
 import org.openjump.core.ui.plugin.edittoolbox.cursortools.RotateSelectedItemTool;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
-import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.Configuration;
-import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
-import com.vividsolutions.jump.workbench.plugin.Extension;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
-import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.DeleteVertexTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.InsertVertexTool;
 import com.vividsolutions.jump.workbench.ui.cursortool.editing.MoveSelectedItemsTool;
@@ -70,12 +64,16 @@ import com.vividsolutions.jump.workbench.ui.zoom.ZoomTool;
  * "Humane Interfaces" by Jef Raskin.
  */
 public class QuasimodeTool extends DelegatingTool {
-  private HashMap<ModifierKeySpec,CursorTool> keySpecToToolMap;
-  private DummyTool dummytool = new DummyTool();
+
+  private final HashMap<ModifierKeySpec,CursorTool> keySpecToToolMap;
+  //private DummyTool dummytool = new DummyTool();
+
   // switch defaults on/off
   private boolean useDefaults = false;
+
   // map of default tools, keep adding order for documentation later
-  private static HashMap<ModifierKeySpec,CursorTool> defaultToolsMap= new LinkedHashMap();
+  private final static HashMap<ModifierKeySpec,CursorTool> defaultToolsMap =
+      new LinkedHashMap<>();
 
   public static class Setup implements Configuration {
     @Override
@@ -128,13 +126,12 @@ public class QuasimodeTool extends DelegatingTool {
   private QuasimodeTool(CursorTool defaultTool, final HashMap<ModifierKeySpec,CursorTool> keyMap) {
     // set first delegate
     super(defaultTool);
-    this.keySpecToToolMap = (keyMap != null) ? new HashMap<ModifierKeySpec,CursorTool>(keyMap)
-        : new HashMap<ModifierKeySpec,CursorTool>();
+    this.keySpecToToolMap = (keyMap != null) ? new HashMap<>(keyMap) : new HashMap<>();
     setDefaultTool(defaultTool);
   }
 
   public CursorTool getDefaultTool() {
-    return (CursorTool) keySpecToToolMap.get(ModifierKeySpec.DEFAULT);
+    return keySpecToToolMap.get(ModifierKeySpec.DEFAULT);
   }
 
   public QuasimodeTool add(ModifierKeySpec keySpec, CursorTool tool) {
@@ -157,18 +154,17 @@ public class QuasimodeTool extends DelegatingTool {
 
   // returns a clone with a new default tool
   public QuasimodeTool cloneAndSetDefaultTool(CursorTool defaultTool) {
-    QuasimodeTool clone = new QuasimodeTool(defaultTool, keySpecToToolMap);
-    return clone;
+    return new QuasimodeTool(defaultTool, keySpecToToolMap);
   }
 
   public String toString(){
-    StringBuffer buf = new StringBuffer();
-    for (ModifierKeySpec keys : (Set<ModifierKeySpec>)keySpecToToolMap.keySet()) {
-      buf.append(keys + "=" + ((CursorTool)keySpecToToolMap.get(keys)) + "\n");
+    StringBuilder buf = new StringBuilder();
+    for (ModifierKeySpec keys : keySpecToToolMap.keySet()) {
+      buf.append(keys + "=" + keySpecToToolMap.get(keys) + "\n");
     }
     if (useDefaults){
-      for (ModifierKeySpec keys : (Set<ModifierKeySpec>)defaultToolsMap.keySet()) {
-        buf.append(keys + "=" + ((CursorTool)defaultToolsMap.get(keys)) + "\n");
+      for (ModifierKeySpec keys : defaultToolsMap.keySet()) {
+        buf.append(keys + "=" + defaultToolsMap.get(keys) + "\n");
       }
     }
     return getDefaultTool().getName()+"\n"+buf;
@@ -204,10 +200,10 @@ public class QuasimodeTool extends DelegatingTool {
     return tool;
   }
 
-  private HashMap keyTimeMap = new HashMap();
+  private final Map<Integer,Integer> keyTimeMap = new HashMap<>();
   
-  private KeyListener keyListener = new KeyListener() {
-    private Collection previous = null;
+  private final KeyListener keyListener = new KeyListener() {
+    private Set<Integer> previous = null;
 
     public void keyTyped(KeyEvent e) {
     }
@@ -224,11 +220,11 @@ public class QuasimodeTool extends DelegatingTool {
 
     // one method to rule them all
     private void keyStateChanged(KeyEvent e) {
-      Set keys = keyTimeMap.keySet();
+      Set<Integer> keys = keyTimeMap.keySet();
       // filter out duplicate events (e.g. key stays pressed)
       if (previous != null && previous.equals(keys))
         return;
-      previous = new Vector(keys);
+      previous = new HashSet<>(keys);
       //System.out.println(e.getKeyCode()+"/"+e.getKeyModifiersText(e.getModifiers())+"/"+e.getKeyText(e.getKeyCode()));
       setTool(keys);
     }
@@ -303,7 +299,7 @@ public class QuasimodeTool extends DelegatingTool {
   }
 
   private LayerViewPanel panel;
-  private WorkbenchFrame frame;
+  //private WorkbenchFrame frame;
 
   public void activate(final LayerViewPanel panel) {
     if (panel==null) return;
@@ -342,7 +338,7 @@ public class QuasimodeTool extends DelegatingTool {
     public ModifierKeySpec(int[] keys) {
       super();
       for (int i : keys) {
-        add(new Integer(i));
+        add(i);
       }
     }
 
@@ -367,15 +363,14 @@ public class QuasimodeTool extends DelegatingTool {
       // Mac always uses CMD key instead of CTRL, which is preserved for left
       // click context menu, right click emulation
       if (e == KeyEvent.VK_CONTROL && CheckOS.isMacOsx()){
-        e = new Integer(KeyEvent.VK_META);
+        e = KeyEvent.VK_META;
       }
-      return super.add((Integer) e);
+      return super.add(e);
     }
 
     protected void addAllRaw(Collection<Integer> c) {
-      Iterator<Integer> e = c.iterator();
-      while (e.hasNext()) {
-        super.add(e.next());
+      for (Integer integer : c) {
+        super.add(integer);
       }
     }
 
@@ -383,9 +378,7 @@ public class QuasimodeTool extends DelegatingTool {
       if (obj instanceof ModifierKeySpec) {
         ModifierKeySpec other = (ModifierKeySpec) obj;
         // System.out.println("vgl1: "+other+"\nvgl2: "+this);
-        Iterator iter = this.iterator();
-        while (iter.hasNext()) {
-          Integer keyval = (Integer) iter.next();
+        for (Integer keyval : this) {
           if (!other.contains(keyval)) {
             // wrong shortcut dude
             return false;
@@ -402,22 +395,20 @@ public class QuasimodeTool extends DelegatingTool {
     }
     
     public KeyStroke toKeyStroke(){
-      Iterator iter = this.iterator();
       // iterate over pressed keys, generate
       int modifiers = 0, keys = 0;
-      while (iter.hasNext()) {
-        Integer keyval = (Integer) iter.next();
-        if (keyval==KeyEvent.VK_SHIFT){
+      for (Integer keyval : this) {
+        if (keyval == KeyEvent.VK_SHIFT) {
           modifiers |= KeyEvent.SHIFT_MASK;
-        }else if (keyval==KeyEvent.VK_CONTROL){
+        } else if (keyval == KeyEvent.VK_CONTROL) {
           modifiers |= KeyEvent.CTRL_MASK;
-        }else if (keyval==KeyEvent.VK_META){
+        } else if (keyval == KeyEvent.VK_META) {
           modifiers |= KeyEvent.META_MASK;
-        }else if (keyval==KeyEvent.VK_ALT){
+        } else if (keyval == KeyEvent.VK_ALT) {
           modifiers |= KeyEvent.ALT_MASK;
-        }else if (keyval==KeyEvent.VK_ALT_GRAPH){
+        } else if (keyval == KeyEvent.VK_ALT_GRAPH) {
           modifiers |= KeyEvent.ALT_GRAPH_MASK;
-        }else{
+        } else {
           keys |= keyval;
         }
       }
@@ -427,12 +418,10 @@ public class QuasimodeTool extends DelegatingTool {
 
     public String toString() {
       String out = "";
-      Iterator iter = this.iterator();
       // iterate over pressed keys, generate
-      while (iter.hasNext()) {
-        Integer keyval = (Integer) iter.next();
+      for (Integer keyval : this) {
         String keyDesc = KeyEvent.getKeyText(keyval);
-        out += out.length()>0? "+"+keyDesc : keyDesc;
+        out += out.length() > 0 ? "+" + keyDesc : keyDesc;
       }
       return out;
     }
