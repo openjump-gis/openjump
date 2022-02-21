@@ -563,12 +563,13 @@
             <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" install="true" />
         </menus>
     </plug-in>
-    <plug-in>
+    <!-- deactivated as needed binary is outdated and only avail for windows -->
+    <!-- plug-in>
         org.openjump.core.ui.plugin.style.ImportArcMapStylePlugIn
         <menus>
             <main-menu menupath="MenuNames.LAYER/MenuNames.STYLE" />
         </menus>
-    </plug-in>
+    </plug-in -->
     <!--plug-in>
         org.openjump.core.ui.plugin.style.ImportSLDPlugIn
         <menus>
