@@ -82,6 +82,7 @@ Version 1.16 release rev.6669 (released on 03. January 2021)
   initially break all unmodified extensions/plugins. So enjoy this one and
   look forward to OJ2 developed in a Git-repo using the latest locationtech JTS.
 
+
   New Features
   * Added RasterizePlugIn. A plugin to rasterize vector layer according to
     an attribute value and cell size (plugin located under Tools>Generate)
@@ -96,7 +97,7 @@ Version 1.16 release rev.6669 (released on 03. January 2021)
   b) Remove single-cell pits. To remove single pits in order to speed sink 
      filling of a DEM
   c) Remove sinks. Modified from "Sink Filling" Sextante tool, to solve
-     a bug (Schröder et al,, 2010, 6 International gvSIG Conference) and 
+     a bug (SchrÃ¶der et al,, 2010, 6 International gvSIG Conference) and 
      to speed the process
   - Under "Rasterization and interpolation" menu
   d) Rasterize vector layer (2). Modified version of "Rasterize vector layer" 
@@ -106,6 +107,7 @@ Version 1.16 release rev.6669 (released on 03. January 2021)
     #245 "Create form to edit attribute values" 
   * CadTools Plugin version 0.9: added capability to load Python console and 
     tools: added Align and Distribute selected features tools
+
 
   Improvements
   * reorder app exit handlers, do not run if exit is cancelled
@@ -170,13 +172,15 @@ Version 1.16 release rev.6669 (released on 03. January 2021)
   - rework allow cert unverified dialog, properly wraps and resizes now
   * Now tolerate an empty cpg file along with shapefile
 
+
   PLUS
   * Added a valid plugin to export the view to several file formats (Raster, 
     SVG, PDF). Export view to scale: style elements will be resized according
     to the selected scale. This plugin substitutes SaveViewAsRaster and 
     SaveViewAsSVG plugins in OpenJUMP PLUS version 
   * PLUS upgrade ojmapcoloring, added Hungarian translation
-    (thanks to J�nos Tam�s Kis), polish translation
+    (thanks to János Tamás Kis), polish translation
+
 
   Bug Fixes
   * fix #517 : raster styling of float32 image
@@ -214,7 +218,7 @@ Version 1.15 release rev.6241 (released on 16. February 2020)
     b) Remove single-cell pits. To remove single pits in order to speed sink
        filling of a DEM
     c) Remove sinks. Modified from "Sink Filling" Sextante tool, to solve
-       a bug (Schr�der et al,, 2010, 6 International gvSIG Conference) and
+       a bug (Schröder et al,, 2010, 6 International gvSIG Conference) and
        to speed the process
     - Under "Rasterization and interpolation" menu
     d) Rasterize vector layer (2). Modified version of "Rasterize vector layer"
@@ -227,6 +231,7 @@ Version 1.15 release rev.6241 (released on 16. February 2020)
         d) activated capability to read/use pure WKT files as symbols (already embedded by Geoff)
         e) integration with some basic style parameters (line/fill colors, global transparency,..)
         f) improved panels, commands and GUI
+
 
   Improvements
   * make MergePolygonsWithNeighbourPlugIn fast and transactional
@@ -257,6 +262,7 @@ Version 1.15 release rev.6241 (released on 16. February 2020)
   * UI : Fix text preview panel of TextEditor (text is now wrapped into multiple lines)
   * WMS : upgrade libraries, fix encoding problem, save trusted url per session,
          fix http auth on cert unverified requests, rework allow cert unverified dialog
+
 
   Bug Fixes
   * fix #516 modeler : z-interpolation and transaction fix
@@ -708,7 +714,7 @@ Version 1.10 release rev.5336 (released on 27. January 2017)
     (vector and image) if these have an auxiliary .prj or .aux file.
     The SRID code is saved as SRIDStyle
   * Extends WritableDataStoreDataSource capabilities to H2 DataStore
-  * File projection detection: Added IGNF and IGN G�oportail codes
+  * File projection detection: Added IGNF and IGN Géoportail codes
   * File projection detection: Added measure units
   * FR #235 : Improved ExtractLayersByGeometryPlugIn
   * Improve MoveSelectedLayerable to another category
@@ -863,7 +869,7 @@ Version 1.9.0 release rev.4795 (released on 18. January 2016)
   PLUS edition
   - read support for MariaDB, MySQL, Oracle, Spatialite, Sqlite, H2GIS
     DB Datastores in PLUS (mainly contributed by Nicolas Ribot)
-  - coordinate transformation with CTSPlugIn (Micha�l Michaud)
+  - coordinate transformation with CTSPlugIn (Michaël Michaud)
   - WFS 1.0,1.1 access via WFSPlugin (based on deegree2 by lat/lon)
 
   New Features
@@ -945,7 +951,7 @@ Version 1.9.0 release rev.4795 (released on 18. January 2016)
     - polygon width
     - polygon length
     - circularity (Miller)
-    - compacity (Grav�lius)
+    - compacity (Gravélius)
   * Added "Change Style" plugin to WMS Layers - currently only general 
     transparency and scale visibility are available
   * Added CutFeatures tool into the editing toolbox
@@ -1844,7 +1850,7 @@ Version 1.4.0.2 (released on 07.November.2010)
   - postgresql driver replaced by a newer one (for pgsql 9.0 compatibility)
   - openjump bundled with Sextante and postgis plugin fixed :
     (1) quick fix in linux/macos script (thanks to edgar soldin)
-    (2) postgis plugin made java5 compatible thanks to Uwe Dall�ge
+    (2) postgis plugin made java5 compatible thanks to Uwe Dallüge
   - see other small fixes in the ChangeLog file at
     http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/
     core/trunk/ChangeLog?sortby=date&view=log
@@ -2412,7 +2418,7 @@ Version 1.2.0 C (2007-08-11)
   - Landon Blake
   - Larry Becker
   - Martin Davis
-  - Micha�l Michaud
+  - Michaël Michaud
   - Paul Austin
   - Sascha L. Teichmann
   - Stefan Steiniger
