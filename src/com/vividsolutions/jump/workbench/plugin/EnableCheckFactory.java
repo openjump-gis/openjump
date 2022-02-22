@@ -630,6 +630,21 @@ public class EnableCheckFactory {
         };
     }
 
+    public EnableCheck createSelectedLayersMustNotBeEmpty() {
+      return new EnableCheck() {
+        @Override
+        public String check(JComponent component) {
+          for (final Layer layer : workbenchContext.getLayerableNamePanel().getSelectedLayers()) {
+            if (layer.getFeatureCollectionWrapper().isEmpty()) {
+              return I18N.getInstance().get("com.vividsolutions.jump.workbench.plugin.Selected-layers-must-not-be-empty",
+                  layer.getName());
+            }
+          }
+          return null;
+        }
+      };
+    }
+
     public EnableCheck createFenceMustBeDrawnCheck() {
         return new EnableCheck() {
             @Override
