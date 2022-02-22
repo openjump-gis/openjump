@@ -75,8 +75,8 @@ public class LegendPlugIn extends AbstractPlugIn {
         final EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
         return new MultiEnableCheck()
                 .add(checkFactory.createTaskWindowMustBeActiveCheck())
-                .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-                .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1));
+                .add(checkFactory.createAtLeastNLayersMustBeSelectedCheck(1))
+                .add(checkFactory.createSelectedLayersMustNotBeEmpty());
     }
 
     //   @SuppressWarnings("deprecation")
