@@ -1,12 +1,86 @@
 Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
+Announcement
+  We are very proud to present some major improvements in this release 
+  reflected in the major version jump from 1.16 to version 2.0.
+  The long overdue port to the recent and maintained JTS 1.18 took place as
+  well as the switch from sf.net's svn to github git as source repository.
+  We invite each and every user, developer to take part in the development and 
+  improvement of this project. it's not called *Open*JUMP by accident :)
+
+  We want to acknowledge the efforts of Eric Grosso, who took the initiative 
+  and researched the best way to move over to git, preserving the commit history
+  as well as the upgrade to locationtech's JTS. Thank you Eric!
+
+New Features
+  - Removed WFS functionality because of missing degree sources
+  - Add GeometrySnapperPlugIn and a self-snap function ni geometry 
+    functions plugin
+  - overhauled extension development support for IDEs
+    rename cmd line parameter '-plug-in-directory' to '-extensions-directory' 
+    to reflect it's purpose better, add cmd line parameters '-jars-directory' 
+    and '-limit-ext-lookup' for enhanced IDE extension development support
+    see https://github.com/openjump-gis/openjump/commit/3a0b5327f14ff31
+  - removed mysql jdbc in favor of freely available mariadb jdbc
+  - removed ImportArcMapStylePlugIn
+  - add Snap-rounding plugin using jts 1.18
+  - add self-snapping function in Geometry Function plugin
+  - add GeometryFixer algorithm to MakeValidPlugIn
+  - AttributePredicate: add Long data type
+
+Improvements
+  - OJ2 core and extension repos now located at 
+    https://github.com/openjump-gis/
+  - cleaned all extension and dependency jar binaries from source tree,
+    they are downloaded with maven during the build now
+  - mavenized complete development chain, including IDE development
+  - upgraded to latest greatest JTS 1.18.2
+  - improved usage of JTS algorithms
+  - convert OJ2 project to UTF-8, language files can be edited online now
+  - adapted all PLUS extensions to OJ2 API changes
+  - mavenized build and packaging of all PLUS extensions
+  - clean/improve wms layer management, add style management
+  - adbtoolbox vectorize algorithm: use cell height, not only cell width
+  - add a fast vectorization algorithm to Raster VectorizeToPolygonsPlugin
+  - upgrade imageio-ext to 1.3.11, batik to 1.6-1, xz to 1.9
+  - add robust algo options for geometry eraser and precision reducer (#28)
+  - enhanced I18N to be usable for extensions as well
+  - started work to remove JUMPWorkbench.getInstance() usage
+  - single instance use of FeatureInstaller and EnableCheckFactory
+  - moved tests into own src folder, prevents recompiling full source
+  - upgrade junit to 5.8.2, mariadb to 2.7.3, sqlite to 3.36, postgres to 42.3
+  - revamped BeanToolsPlugin, new icons, better menu creation, fixed scripts
+  - adapt GeometryConversionPlugin to new JTS, add icons
+  - utilize new JTS overlaying algorithm in 
+    OverlayPlugIn, UnionByAttributePlugIn, DissolvePlugIn, Dissolve2PlugIn
+  - repair invalid geometries if any before UnionByAttribute & Dissolve
+  - add robust and fixed precision algorithms in GeometryFunctionPlugIn for
+    Intersection, Union, Difference A-B, Difference B-A, Symmetric difference
+  - translation updates for several languages (still looking for translators!)
+
+Bug Fixes (details either on
+  https://sourceforge.net/p/jump-pilot/bugs/ or
+  https://github.com/openjump-gis/openjump/issues )
+  - fix #17 OpenFileWizard with multiple files and options does not work
+  - fix #22 about the 0.5 pixel shift of referenced images
+  - fix #23 about wms base url including parameters
+  - fix #37 and make it possible to have optional attributes in XMLBinder
+  - fix #40 GeoJSON manage crs at the FeatureCollection level where possible
+  - fix UpdateWithJoinPlugIn not compatible with Database Transaction Manager
+  - fix wrong CursorTool hotspot on HiDPI systems
+  - fix #42 select layers with selected items
+  - don't die on reading srs info from invalid GeoTIFFs
+  - fix WMS parameters encoding
+
+
+Version 1.16 release rev.6669 (released on 03. January 2021)
+
   Announcement
   This is the final release of the long lasting OJ version 1.x series.
 
   The next release will introduce backward incompatible changes that'll 
   initially break all unmodified extensions/plugins. So enjoy this one and
   look forward to OJ2 developed in a Git-repo using the latest locationtech JTS.
-
 
   New Features
   * Added RasterizePlugIn. A plugin to rasterize vector layer according to
@@ -32,7 +106,6 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
     #245 "Create form to edit attribute values" 
   * CadTools Plugin version 0.9: added capability to load Python console and 
     tools: added Align and Distribute selected features tools
-
 
   Improvements
   * reorder app exit handlers, do not run if exit is cancelled
@@ -97,15 +170,13 @@ Version ${version.number} ${version.release} rev.${version.revision} (released o
   - rework allow cert unverified dialog, properly wraps and resizes now
   * Now tolerate an empty cpg file along with shapefile
 
-
   PLUS
   * Added a valid plugin to export the view to several file formats (Raster, 
     SVG, PDF). Export view to scale: style elements will be resized according
     to the selected scale. This plugin substitutes SaveViewAsRaster and 
     SaveViewAsSVG plugins in OpenJUMP PLUS version 
   * PLUS upgrade ojmapcoloring, added Hungarian translation
-    (thanks to János Tamás Kis), polish translation
-
+    (thanks to Jï¿½nos Tamï¿½s Kis), polish translation
 
   Bug Fixes
   * fix #517 : raster styling of float32 image
@@ -143,7 +214,7 @@ Version 1.15 release rev.6241 (released on 16. February 2020)
     b) Remove single-cell pits. To remove single pits in order to speed sink
        filling of a DEM
     c) Remove sinks. Modified from "Sink Filling" Sextante tool, to solve
-       a bug (Schröder et al,, 2010, 6 International gvSIG Conference) and
+       a bug (Schrï¿½der et al,, 2010, 6 International gvSIG Conference) and
        to speed the process
     - Under "Rasterization and interpolation" menu
     d) Rasterize vector layer (2). Modified version of "Rasterize vector layer"
@@ -156,7 +227,6 @@ Version 1.15 release rev.6241 (released on 16. February 2020)
         d) activated capability to read/use pure WKT files as symbols (already embedded by Geoff)
         e) integration with some basic style parameters (line/fill colors, global transparency,..)
         f) improved panels, commands and GUI
-
 
   Improvements
   * make MergePolygonsWithNeighbourPlugIn fast and transactional
@@ -187,7 +257,6 @@ Version 1.15 release rev.6241 (released on 16. February 2020)
   * UI : Fix text preview panel of TextEditor (text is now wrapped into multiple lines)
   * WMS : upgrade libraries, fix encoding problem, save trusted url per session,
          fix http auth on cert unverified requests, rework allow cert unverified dialog
-
 
   Bug Fixes
   * fix #516 modeler : z-interpolation and transaction fix
@@ -639,7 +708,7 @@ Version 1.10 release rev.5336 (released on 27. January 2017)
     (vector and image) if these have an auxiliary .prj or .aux file.
     The SRID code is saved as SRIDStyle
   * Extends WritableDataStoreDataSource capabilities to H2 DataStore
-  * File projection detection: Added IGNF and IGN Géoportail codes
+  * File projection detection: Added IGNF and IGN Gï¿½oportail codes
   * File projection detection: Added measure units
   * FR #235 : Improved ExtractLayersByGeometryPlugIn
   * Improve MoveSelectedLayerable to another category
@@ -794,7 +863,7 @@ Version 1.9.0 release rev.4795 (released on 18. January 2016)
   PLUS edition
   - read support for MariaDB, MySQL, Oracle, Spatialite, Sqlite, H2GIS
     DB Datastores in PLUS (mainly contributed by Nicolas Ribot)
-  - coordinate transformation with CTSPlugIn (Michaël Michaud)
+  - coordinate transformation with CTSPlugIn (Michaï¿½l Michaud)
   - WFS 1.0,1.1 access via WFSPlugin (based on deegree2 by lat/lon)
 
   New Features
@@ -876,7 +945,7 @@ Version 1.9.0 release rev.4795 (released on 18. January 2016)
     - polygon width
     - polygon length
     - circularity (Miller)
-    - compacity (Gravélius)
+    - compacity (Gravï¿½lius)
   * Added "Change Style" plugin to WMS Layers - currently only general 
     transparency and scale visibility are available
   * Added CutFeatures tool into the editing toolbox
@@ -1775,7 +1844,7 @@ Version 1.4.0.2 (released on 07.November.2010)
   - postgresql driver replaced by a newer one (for pgsql 9.0 compatibility)
   - openjump bundled with Sextante and postgis plugin fixed :
     (1) quick fix in linux/macos script (thanks to edgar soldin)
-    (2) postgis plugin made java5 compatible thanks to Uwe Dallüge
+    (2) postgis plugin made java5 compatible thanks to Uwe Dallï¿½ge
   - see other small fixes in the ChangeLog file at
     http://jump-pilot.svn.sourceforge.net/viewvc/jump-pilot/
     core/trunk/ChangeLog?sortby=date&view=log
@@ -2343,7 +2412,7 @@ Version 1.2.0 C (2007-08-11)
   - Landon Blake
   - Larry Becker
   - Martin Davis
-  - Michaël Michaud
+  - Michaï¿½l Michaud
   - Paul Austin
   - Sascha L. Teichmann
   - Stefan Steiniger
