@@ -170,8 +170,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/cadtools-extension/releases/download/v2.1.1/cadtools-extension-2.1.1.jar</url>
-                      <sha1>8b8a6b39cc868697efbe090d8067a7da9108252d</sha1>
+                      <url>https://github.com/openjump-gis/cadtools-extension/releases/download/v2.1.2/cadtools-extension-2.1.2.jar</url>
+                      <sha1>7b1cf5d7a555221cafbb8e57fabcc631f03c321f</sha1>
                       <unpack>false</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
@@ -278,8 +278,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/kml-driver/releases/download/v2.0.2/kml-driver-2.0.2.zip</url>
-                      <sha1>73c2dfb44f13f1c1812edcba916091b00a9aa386</sha1>
+                      <url>https://github.com/openjump-gis/kml-driver/releases/download/v2.0.3/kml-driver-2.0.3.zip</url>
+                      <sha1>93a5528dbd34a038fbd6e39f58ae3ef3b124d71e</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
@@ -290,8 +290,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/matching-extension/releases/download/2.0.0/matching-extension-2.0.0.zip</url>
-                      <sha1>0c5f2c7b85b9c376c6f97663c8b24eed8c163982</sha1>
+                      <url>https://github.com/openjump-gis/matching-extension/releases/download/v2.0.1/matching-extension-2.0.1.zip</url>
+                      <sha1>3516da1ea644866085625e62a8d52587487b5711</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
@@ -302,8 +302,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/measure-toolbox-extension/releases/download/2.1.0-jtsfix/measure-toolbox-extension-2.1.0.zip</url>
-                      <sha1>d4c7f4f94726b5646cd8b8fba37b8118257d3fd0</sha1>
+                      <url>https://github.com/openjump-gis/measure-toolbox-extension/releases/download/v2.1.1/measure-toolbox-extension-2.1.1.zip</url>
+                      <sha1>8c32f15aaec0a8010c2d11e8f564548405c67170</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
@@ -326,8 +326,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/openklem-extension/releases/download/v2.0.1-SNAPSHOT/openklem-openjump-2.0.1-SNAPSHOT.zip</url>
-                      <sha1>d7a3ce6c1ab56306758a9ae12ddf62be364577b1</sha1>
+                      <url>https://github.com/openjump-gis/openklem-extension/releases/download/v2.0.2/openklem-openjump-2.0.2.zip</url>
+                      <sha1>9e4e0daf0cf373e785f6d5cd4228fa3742210789</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
@@ -374,8 +374,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/vertex-symbols/releases/download/v2.2.0/vertex-symbols-2.2.0.zip</url>
-                      <sha1>22df1e3124113909ffaeba12f93647832554c9c1</sha1>
+                      <url>https://github.com/openjump-gis/vertex-symbols/releases/download/v2.2.1/vertex-symbols-2.2.1.zip</url>
+                      <sha1>a2c8bdb76c099ef9c2835148bc461a6a577e5d15</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
