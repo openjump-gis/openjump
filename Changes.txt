@@ -16,10 +16,11 @@ New Features
   - Removed WFS functionality because of missing deegree2 sources
   - Add GeometrySnapperPlugIn and a self-snap function into geometry 
     functions plugin
-  - overhauled cmd line parameters for extension development support for IDEs,
-    the parameter '-plug-in-directory' now renamed to '-extensions-directory' 
+  - overhauled cmd line parameters for extension development support,
+    parameter '-plug-in-directory' renamed to '-extensions-directory' 
     new cmd line parameters '-jars-directory','-limit-ext-lookup'
     see https://github.com/openjump-gis/openjump/commit/3a0b5327f14ff31
+    commit message on how it is supposed to work
   - removed mysql jdbc in favor of freely available mariadb jdbc
   - removed ImportArcMapStylePlugIn
   - add Snap-rounding plugin using JTS 1.18
