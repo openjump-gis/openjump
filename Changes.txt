@@ -13,18 +13,16 @@ Announcement
   as well as the upgrade to locationtech's JTS. Thank you Eric!
 
 New Features
-  - Removed WFS functionality because of missing degree sources
-  - Add GeometrySnapperPlugIn and a self-snap function ni geometry 
+  - Removed WFS functionality because of missing deegree2 sources
+  - Add GeometrySnapperPlugIn and a self-snap function into geometry 
     functions plugin
-  - overhauled extension development support for IDEs
-    rename cmd line parameter '-plug-in-directory' to '-extensions-directory' 
-    to reflect it's purpose better, add cmd line parameters '-jars-directory' 
-    and '-limit-ext-lookup' for enhanced IDE extension development support
+  - overhauled cmd line parameters for extension development support for IDEs,
+    the parameter '-plug-in-directory' now renamed to '-extensions-directory' 
+    new cmd line parameters '-jars-directory','-limit-ext-lookup'
     see https://github.com/openjump-gis/openjump/commit/3a0b5327f14ff31
   - removed mysql jdbc in favor of freely available mariadb jdbc
   - removed ImportArcMapStylePlugIn
-  - add Snap-rounding plugin using jts 1.18
-  - add self-snapping function in Geometry Function plugin
+  - add Snap-rounding plugin using JTS 1.18
   - add GeometryFixer algorithm to MakeValidPlugIn
   - AttributePredicate: add Long data type
 
