@@ -81,7 +81,6 @@ Version 1.16 release rev.6669 (released on 03. January 2021)
   initially break all unmodified extensions/plugins. So enjoy this one and
   look forward to OJ2 developed in a Git-repo using the latest locationtech JTS.
 
-
   New Features
   * Added RasterizePlugIn. A plugin to rasterize vector layer according to
     an attribute value and cell size (plugin located under Tools>Generate)
@@ -89,24 +88,23 @@ Version 1.16 release rev.6669 (released on 03. January 2021)
     values in a table dragging on an area of the raster (like pixel inspector 
     in ArcGIS) - currently limited to the first band
   * Add an interiorBorder option to BasicStyle
-  * Added new tools in SextanteGIS :
-  - Under "DEM Processing" menu (Raster analisys)
-  a) Map pits. Tool to map pits and sinks to verify the quality of a raster 
-     for hydrological analisys
-  b) Remove single-cell pits. To remove single pits in order to speed sink 
-     filling of a DEM
-  c) Remove sinks. Modified from "Sink Filling" Sextante tool, to solve
-     a bug (SchrÃ¶der et al,, 2010, 6 International gvSIG Conference) and 
-     to speed the process
-  - Under "Rasterization and interpolation" menu
-  d) Rasterize vector layer (2). Modified version of "Rasterize vector layer" 
-     to solve a bug on rasterize polygons
+  * new tools in Sextante
+    "DEM Processing" (Raster analysis)
+    a) Map pits. Tool to map pits and sinks to verify the quality of a raster 
+       for hydrological analisys
+    b) Remove single-cell pits. To remove single pits in order to speed sink 
+       filling of a DEM
+    c) Remove sinks. Modified from "Sink Filling" Sextante tool, to solve
+       a bug (Schröder et al, 2010, 6 International gvSIG Conference) and 
+       to speed the process
+    "Rasterization and interpolation"
+    d) Rasterize vector layer (2). Modified version of "Rasterize vector layer" 
+       to solve a bug on rasterize polygons
   * EditOptionPanel : Added option to automatically open a feature attributes 
     Info Frame after a new feature is created. Workaround to Feature request 
     #245 "Create form to edit attribute values" 
   * CadTools Plugin version 0.9: added capability to load Python console and 
     tools: added Align and Distribute selected features tools
-
 
   Improvements
   * reorder app exit handlers, do not run if exit is cancelled
@@ -171,7 +169,6 @@ Version 1.16 release rev.6669 (released on 03. January 2021)
   - rework allow cert unverified dialog, properly wraps and resizes now
   * Now tolerate an empty cpg file along with shapefile
 
-
   PLUS
   * Added a valid plugin to export the view to several file formats (Raster, 
     SVG, PDF). Export view to scale: style elements will be resized according
@@ -179,7 +176,6 @@ Version 1.16 release rev.6669 (released on 03. January 2021)
     SaveViewAsSVG plugins in OpenJUMP PLUS version 
   * PLUS upgrade ojmapcoloring, added Hungarian translation
     (thanks to János Tamás Kis), polish translation
-
 
   Bug Fixes
   * fix #517 : raster styling of float32 image
@@ -217,7 +213,7 @@ Version 1.15 release rev.6241 (released on 16. February 2020)
     b) Remove single-cell pits. To remove single pits in order to speed sink
        filling of a DEM
     c) Remove sinks. Modified from "Sink Filling" Sextante tool, to solve
-       a bug (Schröder et al,, 2010, 6 International gvSIG Conference) and
+       a bug (Schröder et al, 2010, 6 International gvSIG Conference) and
        to speed the process
     - Under "Rasterization and interpolation" menu
     d) Rasterize vector layer (2). Modified version of "Rasterize vector layer"
@@ -230,7 +226,6 @@ Version 1.15 release rev.6241 (released on 16. February 2020)
         d) activated capability to read/use pure WKT files as symbols (already embedded by Geoff)
         e) integration with some basic style parameters (line/fill colors, global transparency,..)
         f) improved panels, commands and GUI
-
 
   Improvements
   * make MergePolygonsWithNeighbourPlugIn fast and transactional
@@ -261,7 +256,6 @@ Version 1.15 release rev.6241 (released on 16. February 2020)
   * UI : Fix text preview panel of TextEditor (text is now wrapped into multiple lines)
   * WMS : upgrade libraries, fix encoding problem, save trusted url per session,
          fix http auth on cert unverified requests, rework allow cert unverified dialog
-
 
   Bug Fixes
   * fix #516 modeler : z-interpolation and transaction fix
