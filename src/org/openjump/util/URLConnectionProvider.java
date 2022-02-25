@@ -10,7 +10,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
@@ -24,8 +23,6 @@ import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.network.ProxySettingsOptionsPanel;
 import com.vividsolutions.wms.WMSException;
-
-import net.iharder.Base64;
 
 public class URLConnectionProvider {
 
@@ -134,7 +131,8 @@ public class URLConnectionProvider {
     // add auth info if any
     String userInfo = connection.getURL().getUserInfo();
     if (userInfo != null) {
-      String auth = Base64.encodeBytes(UriUtil.urlDecode(userInfo).getBytes(StandardCharsets.UTF_8));
+      byte[] userInfoBytes = UriUtil.urlDecode(userInfo).getBytes(StandardCharsets.UTF_8);
+      String auth = org.apache.commons.codec.binary.Base64.encodeBase64String(userInfoBytes);
       connection.setRequestProperty("Authorization", "Basic " + auth);
       Logger.trace("Added auth header 'Authorization: Basic "+auth+"'");
     }
