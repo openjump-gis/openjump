@@ -1192,12 +1192,6 @@
                 </includes>
                 <targetPath>${project.build.directory}/res/</targetPath>
             </resource>
-            <resource>
-                <directory>etc</directory>
-                <includes>
-                    <include>log4j.xml</include>
-                </includes>
-            </resource>
         </resources>
         <testResources>
           <testResource>
