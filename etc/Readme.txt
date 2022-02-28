@@ -1,4 +1,4 @@
-﻿OpenJUMP ReadMe file
+OpenJUMP Readme file
 --------------------
 Version ${version.number} ${version.release} rev.${version.revision}
 
