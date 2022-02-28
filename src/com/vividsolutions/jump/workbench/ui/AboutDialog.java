@@ -45,6 +45,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
@@ -62,6 +63,9 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.JUMPVersion;
@@ -166,11 +170,13 @@ public class AboutDialog extends JDialog {
         throw new FileNotFoundException("readme.txt missing in OJ working dir.");
 
       FileInputStream fis = new FileInputStream(readmeFile);
-      DataInputStream in = new DataInputStream(fis);
-      byte[] b = new byte[in.available()];
-      in.readFully(b);
-      in.close();
-      result = new String(b, 0, b.length, "UTF-8");
+      // skip BOM signaling UTF encoding
+      BOMInputStream bis = new BOMInputStream(fis);
+      // we default to UTF-8
+      Charset cs = Charset.forName("UTF-8");
+      if (bis.hasBOM())
+        cs = Charset.forName(bis.getBOMCharsetName());
+      result = IOUtils.toString(bis, cs);
     } catch (Exception e) {
       // this should not happen when working directory is either
       // project root (during development) or
