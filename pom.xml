@@ -16,11 +16,13 @@
         <!-- setup some defaults used or overridden later -->
         <version.number>${build.datestamp}</version.number>
         <version.release>mvn build</version.release>
-        <version.revision>${git.total.commit.count}(${git.commit.id.abbrev})</version.revision>
+        <version.revision>${git.total.commit.count}[${git.commit.id.abbrev}]</version.revision>
         <version.buildDateLong>${build.datelong}</version.buildDateLong>
         <version.string>${git.branch}(${git.commit.id.abbrev})</version.string>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
