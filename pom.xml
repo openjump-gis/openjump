@@ -624,7 +624,7 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <target>
-                                        <property name="file.encoding" value="ISO-8859-1" />
+                                        <property name="file.encoding" value="UTF-8" />
                                         <!--property name="recompress.folder"
                                                   value="${project.build.directory}/recompress" /-->
                                         <echo>Cleanup</echo>
@@ -752,7 +752,7 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <target>
-                                        <property name="file.encoding" value="ISO-8859-1" />
+                                        <property name="file.encoding" value="UTF-8" />
                                         <delete includeemptydirs="true" quiet="true">
                                             <fileset dir="${project.build.directory}/izpack"
                                                      followsymlinks="false" />
@@ -780,11 +780,11 @@
                                         <!-- prepare izpack environments -->
                                         <!-- jump through hoops to get special chars in readme infopanel 
                                         correct -->
-                                        <copy file="${project.build.directory}/res/readme.txt"
+                                        <copy file="${project.build.directory}/res/Readme.txt"
                                               tofile="${project.build.directory}/izpack/readme.text.html" />
                                         <replace
                                             file="${project.build.directory}/izpack/readme.text.html"
-                                            encoding="iso-8859-1">
+                                            encoding="UTF-8">
                                             <replacefilter>
                                                 <replacetoken>&amp;</replacetoken>
                                                 <replacevalue>&amp;amp;</replacevalue>
@@ -1180,7 +1180,7 @@
                 <filtering>true</filtering>
                 <directory>etc</directory>
                 <includes>
-                    <include>readme.txt</include>
+                    <include>Readme.txt</include>
                 </includes>
                 <targetPath>${project.build.directory}/res/</targetPath>
             </resource>
@@ -1328,7 +1328,7 @@
                   <goal>git-changelog</goal>
                 </goals>
                 <configuration>
-                  <file>${project.build.outputDirectory}/git-log.txt</file>
+                  <file>${project.build.directory}/res/Git-log.txt</file>
                   <toRef>HEAD</toRef> 
                   <fromCommit>17603d8a46840a58dcf2d105d22a0000763e7dfd</fromCommit>
                   <!-- needs 'git fetch __tags', rather use commit hash above

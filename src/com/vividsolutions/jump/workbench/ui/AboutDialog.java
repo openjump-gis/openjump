@@ -158,7 +158,7 @@ public class AboutDialog extends JDialog {
     String urlstring = "";
     try {
       File readmeFile = null;
-      for (String candidatePath : new String[] { "etc/readme.txt", "readme.txt" }) {
+      for (String candidatePath : new String[] { "Readme.txt", "target/res/Readme.txt", "etc/Readme.txt" }) {
         File candidateFile = new File(userDir, candidatePath);
         if (candidateFile.exists()) {
           readmeFile = candidateFile;
@@ -167,7 +167,7 @@ public class AboutDialog extends JDialog {
       }
 
       if (readmeFile == null)
-        throw new FileNotFoundException("readme.txt missing in OJ working dir.");
+        throw new FileNotFoundException("Readme.txt missing in OJ working dir.");
 
       FileInputStream fis = new FileInputStream(readmeFile);
       // skip BOM signaling UTF encoding
