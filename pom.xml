@@ -1471,7 +1471,7 @@ ${project.artifactId} ${project.version} Changelog
                   <url>file://${project.build.directory}/build-repo/</url>
                   -->
                   <version>${project.version}-${git.branch}-SNAPSHOT</version>
-                  <files>${project.build.outputDirectory}/git.properties,${project.build.outputDirectory}/git-log.txt</files>
+                  <files>${project.build.outputDirectory}/git.properties,${project.build.directory}/res/Git-log.txt</files>
                   <classifiers>git-info,git-log</classifiers>
                   <types>txt,txt</types>
                 </configuration>
