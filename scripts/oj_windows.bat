@@ -163,7 +163,7 @@ cd /D "%JUMP_HOME%"
 
 rem -- Uninstall if asked nicely ---
 if [%1] == [--uninstall] ( 
-  "%JAVA%" -jar .\uninstall\uninstaller.jar
+  "%JAVA%" -jar .\uninstall\uninstaller.jar -f -x
   goto:eof
 )
 
