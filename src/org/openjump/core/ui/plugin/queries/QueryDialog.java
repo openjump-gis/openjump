@@ -11,6 +11,7 @@ import com.vividsolutions.jump.util.CollectionMap;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.*;
+import org.locationtech.jts.geom.Geometry;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -42,7 +43,7 @@ public class QueryDialog extends BDialog {
 
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat();
     
-    private PlugInContext context;
+    private final PlugInContext context;
     
     // List of layers to search
     List<Layer> layers = new ArrayList<>();
@@ -64,8 +65,8 @@ public class QueryDialog extends BDialog {
     private static boolean runningQuery = false;
     private static boolean cancelQuery = false;
     
-    // selected features initialized in execute query if "select" option is true
-    Collection selection;
+    // selected items initialized in execute query if "select" option is true
+    Collection<Geometry> selection;
 
     BCheckBox charFilter;
     BCheckBox caseSensitive;
@@ -244,27 +245,28 @@ public class QueryDialog extends BDialog {
         layerCB = new BComboBox();
             layerCB.addEventLink(ValueChangedEvent.class, this, "layerChanged");
             queryConstructorPanel.add(layerCB, 1, 0, leftAlign);
-            // mmichaud 2008-11-13 limit the width to about 40 chars
-            ((javax.swing.JComboBox)layerCB.getComponent())
+            // mmichaud 2008-11-13 limit the width to about 32 chars
+            layerCB.getComponent()
                 .setPrototypeDisplayValue("012345678901234567890123456789O1");
         attributeCB = new BComboBox();
             attributeCB.addEventLink(ValueChangedEvent.class, this, "attributeChanged");
             queryConstructorPanel.add(attributeCB, 1, 1, leftAlign);
-            // mmichaud 2008-11-13 limit the width to about 40 chars
-            ((javax.swing.JComboBox)attributeCB.getComponent())
+            // mmichaud 2008-11-13 limit the width to about 32 chars
+            attributeCB.getComponent()
                 .setPrototypeDisplayValue("01234567890123456789012345678901");
         functionCB = new BComboBox();
             functionCB.addEventLink(ValueChangedEvent.class, this, "functionChanged");
             queryConstructorPanel.add(functionCB, 1, 2, leftAlignShort);
-        
+            functionCB.getComponent().setPrototypeDisplayValue("012345678901234567890123");
         operatorCB = new BComboBox();
             operatorCB.addEventLink(ValueChangedEvent.class, this, "operatorChanged");
             queryConstructorPanel.add(operatorCB, 1, 3, leftAlignShort);
+            operatorCB.getComponent().setPrototypeDisplayValue("012345678901234567890123");
         valueCB = new BComboBox();
             valueCB.addEventLink(ValueChangedEvent.class, this, "valueChanged");
             queryConstructorPanel.add(valueCB, 1, 4, leftAlign);
-            // mmichaud 2008-11-13 limit the width to about 40 chars
-            ((javax.swing.JComboBox)valueCB.getComponent())
+            // mmichaud 2008-11-13 limit the width to about 48 chars
+            valueCB.getComponent()
                 .setPrototypeDisplayValue("012345678901234567890123456789012345678901234567");
             
         comments = new BLabel("<html>&nbsp;<br>&nbsp;</html>");
@@ -349,7 +351,7 @@ public class QueryDialog extends BDialog {
         for (Layer layer : layers) {
             layerCB.add(layer);
         }
-        ((javax.swing.JComboBox)layerCB.getComponent()).setRenderer(layerListCellRenderer);
+        layerCB.getComponent().setRenderer(layerListCellRenderer);
         this.layers = layers;
         this.attributes = authorizedAttributes(layers);
         attributeType = 'G';
@@ -432,8 +434,7 @@ public class QueryDialog extends BDialog {
     }
     
     private void charFilterChanged() {
-        if (charFilter.getState()) caseSensitive.setVisible(true);
-        else caseSensitive.setVisible(false);
+        caseSensitive.setVisible(charFilter.getState());
         layerChanged();
     }
     
@@ -502,7 +503,6 @@ public class QueryDialog extends BDialog {
     private void functionChanged() {
         // if function is edited to change the parameter value by hand (buffer),
         // functionCB.getSelectedValue() class changes from Function to String
-        //String ft = functionCB.getSelectedValue().toString();
         try {
             if (functionCB.getSelectedValue() instanceof Function) {
                 Function newfunction = (Function)functionCB.getSelectedValue();
@@ -512,15 +512,12 @@ public class QueryDialog extends BDialog {
                     updateValues();
                 }
                 function = (Function)functionCB.getSelectedValue();
-                if (function == Function.SUBS || function == Function.BUFF) {
-                    functionCB.setEditable(true);
-                }
-                else functionCB.setEditable(false);
+                boolean editable = function == Function.SUBS || function == Function.BUFF;
+                functionCB.setEditable(editable);
             }
             else if (functionCB.getSelectedValue() instanceof String) {
                 // SET IF FUNCTION IS EDITABLE OR NOT
                 if(function==Function.SUBS) {
-                    //functionCB.setEditable(true);
                     String f = functionCB.getSelectedValue().toString();
                     String sub = f.substring(f.lastIndexOf('(')+1, f.lastIndexOf(')'));
                     String[] ss = sub.split(",");
@@ -530,7 +527,6 @@ public class QueryDialog extends BDialog {
                     functionCB.setSelectedValue(Function.SUBS);
                 }
                 else if(function==Function.BUFF) {
-                    //functionCB.setEditable(true);
                     String f = functionCB.getSelectedValue().toString();
                     String sub = f.substring(f.lastIndexOf('(')+1, f.lastIndexOf(')'));
                     Function.BUFF.arg = Double.parseDouble(sub);
@@ -584,12 +580,8 @@ public class QueryDialog extends BDialog {
                     updateValues();
                 }
                 operator = newop;
-                if (operator == Operator.WDIST || operator == Operator.RELAT) {
-                    operatorCB.setEditable(true);
-                }
-                else {
-                    operatorCB.setEditable(false);
-                }
+                boolean editable = operator == Operator.WDIST || operator == Operator.RELAT;
+                operatorCB.setEditable(editable);
             }
             if (operatorCB.getSelectedValue() instanceof String) {
                 if (operator==Operator.WDIST) {
@@ -609,7 +601,7 @@ public class QueryDialog extends BDialog {
                 // added on 2013-06-28
                 else if (operator==Operator.RELAT) {
                     String f = operatorCB.getSelectedValue().toString();
-                    Pattern regex = Pattern.compile(".*\\(([012TFtf\\*]{9})\\)");
+                    Pattern regex = Pattern.compile(".*\\(([012TFtf*]{9})\\)");
                     Matcher matcher = regex.matcher(f);
                     if (matcher.matches()) {
                         Operator.RELAT.arg = matcher.group(1);
@@ -692,15 +684,15 @@ public class QueryDialog extends BDialog {
     }
 
     // attribute must be f type String
-    private Set availableStrings(String attribute, int maxsize) {
+    private Set<String> availableStrings(String attribute, int maxsize) {
         Set<String> set = new TreeSet<>();
         set.add("");
         for (Layer layer : layers) {
             FeatureCollection fc = layer.getFeatureCollectionWrapper();
             if (!fc.getFeatureSchema().hasAttribute(attribute)) continue;
-            Iterator it = fc.iterator();
-            while (it.hasNext() && set.size()<maxsize) {
-                Feature f = (Feature)it.next();
+            Iterator<Feature> it = fc.iterator();
+            while (it.hasNext() && set.size() < maxsize) {
+                Feature f = it.next();
                 set.add(f.getString(attribute));
             }
         }
@@ -743,7 +735,7 @@ public class QueryDialog extends BDialog {
         }
         layerChanged();
         
-        int attributeIndex = Integer.parseInt(prop.getProperty("attribute_index"));
+        //int attributeIndex = Integer.parseInt(prop.getProperty("attribute_index"));
         String attributeName = prop.getProperty("attribute_name");
         attributeCB.setSelectedValue(attributeName);
         if(!attributeName.equals(attributeCB.getSelectedValue().toString())) {
@@ -971,7 +963,7 @@ public class QueryDialog extends BDialog {
                             outputLayerName, dataset
                         );
                     }
-                    if(display.getState()) {
+                    if(display.getState() && info != null) {
                         info.getModel().add(layer, okFeatures);
                     }
                     
@@ -997,7 +989,7 @@ public class QueryDialog extends BDialog {
                     selection = context.getLayerViewPanel().getSelectionManager().getSelectedItems();
                 }
                 
-                if(display.getState()) {
+                if(display.getState() && info != null) {
                     info.pack();
                     context.getWorkbenchFrame().addInternalFrame(info);
                 }

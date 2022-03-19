@@ -12,7 +12,7 @@ import com.vividsolutions.jump.I18N;
 
 public class Function {
     /** Function key is fully internationalized*/
-    private String key;
+    private final String key;
     
     /** Returned type : B=boolean, N=numeric, S=string, E=enumeration, G=geometric*/
     public char type;
@@ -93,10 +93,11 @@ public class Function {
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer(I18N.getInstance().get("org.openjump.core.ui.plugin.queries.Function."+key));
-        if(this==BUFF) {return sb.toString() + " ("+arg+")";}
-        else if (this==SUBS && args.length==1) {return sb.toString() + " ("+args[0] + ")";}
-        else if (this==SUBS && args.length==2) {return sb.toString() + " ("+args[0]+","+args[1]+")";}
+        StringBuilder sb = new StringBuilder(I18N.getInstance()
+            .get("org.openjump.core.ui.plugin.queries.Function." + key));
+        if(this==BUFF) {return sb + " ("+arg+")";}
+        else if (this==SUBS && args.length==1) {return sb + " ("+args[0] + ")";}
+        else if (this==SUBS && args.length==2) {return sb + " ("+args[0]+","+args[1]+")";}
         else {return sb.toString();}
     }
 
