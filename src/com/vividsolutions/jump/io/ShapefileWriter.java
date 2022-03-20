@@ -31,6 +31,7 @@
  */
 package com.vividsolutions.jump.io;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.I18N;
@@ -47,6 +48,7 @@ import org.geotools.shapefile.Shapefile;
 
 import javax.swing.*;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -226,6 +228,8 @@ public class ShapefileWriter implements JUMPWriter {
 	private static final String SHAPE_TYPE_PROPERTY_KEY = "ShapeType";
 	private static boolean truncate = false;
 	private static long lastTimeTruncate = new Date(0).getTime();
+  // keep previously used prj to avoid rebuilding it
+  private static final Map<Integer,String> PRJ_MAP = new HashMap<>();
 
     /** Creates new ShapefileWriter */
     public ShapefileWriter() {
@@ -690,6 +694,17 @@ public class ShapefileWriter implements JUMPWriter {
             throws Exception {
         if (code.equals("0")) return null;
         if (!code.matches("\\d+")) return null;
+        if (registry.equals("EPSG")) {
+            try {
+                Integer epsgCode = Integer.parseInt(code);
+                if (PRJ_MAP.containsKey(epsgCode)) return PRJ_MAP.get(epsgCode);
+                String esriString = getPrjStringFromEpsg(epsgCode);
+                PRJ_MAP.put(epsgCode, esriString);
+                return esriString;
+            } catch(Exception e) {
+                Logger.warn(e);
+            }
+        }
         if (Class.forName("org.cts.CRSFactory") != null) {
             org.cts.CRSFactory crsFactory = new org.cts.CRSFactory();
             org.cts.registry.RegistryManager registryManager = crsFactory.getRegistryManager();
@@ -701,6 +716,23 @@ public class ShapefileWriter implements JUMPWriter {
         } else {
             throw new Exception("Class org.cts.CRSFactory has not been found");
         }
+    }
+
+    /** Get esri formatted string from epsg.io website if possible.*/
+    private String getPrjStringFromEpsg(Integer code) throws Exception {
+        String url = "https://epsg.io/" + code + ".esriwkt";
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        int status = connection.getResponseCode();
+        if (status != 200) throw new Exception("Request to " + url + " failed");
+        BufferedReader in = new BufferedReader(
+            new InputStreamReader(connection.getInputStream()));
+        String inputLine;
+        StringBuilder content = new StringBuilder();
+        while((inputLine = in.readLine())!=null) {
+            content.append(inputLine);
+        }
+        connection.disconnect();
+        return content.toString();
     }
 
     private String removeCount(String s, int count) {
