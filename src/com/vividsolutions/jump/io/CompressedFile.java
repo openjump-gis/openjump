@@ -35,13 +35,7 @@ package com.vividsolutions.jump.io;
 
 import static com.vividsolutions.jump.util.FileUtil.close;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -284,6 +278,33 @@ public class CompressedFile {
       throw createArchiveFNFE(filePath, compressedEntry);
     }
     
+  }
+
+  /**
+   * Returns an uncompressed stream from a compressed stream and an entry name.
+   * This is a part of openFile method you can use if you know your input is
+   * compressed with the following benefits :
+   * <ul>
+   *   <li>input is just an InputStream</li>
+   *   <li>faster</li>
+   * </ul>
+   *
+   * @param is input stream containing compressed data (from URL, jar, file...)
+   * @param entryName entry name in the compressed stream
+   * @return uncompressed inputstream for the entry
+   * @throws IOException if the input stream cannot be read
+   * @throws ArchiveException if an exception occurs during decompression
+   */
+  public static InputStream getUncompressedStream(InputStream is, String entryName) throws IOException, ArchiveException {
+    InputStream bis = is instanceof FilterInputStream ? is : new BufferedInputStream(is);
+    ArchiveInputStream ais = new ArchiveStreamFactory().createArchiveInputStream(bis);
+    ArchiveEntry entry;
+    while ((entry = ais.getNextEntry()) != null) {
+      if (entry.getName().equals(entryName))
+        return ais;
+    }
+    bis.close();
+    return null;
   }
 
   public static boolean isCompressed(URI uri) {

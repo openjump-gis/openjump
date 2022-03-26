@@ -490,6 +490,7 @@ public class PlugInManager {
           }
 
         } catch (IOException e) {
+          Logger.error("Configuration failed for " + file.getPath());
           Logger.error(e);
         } finally {
           FileUtil.close(zipFile);
