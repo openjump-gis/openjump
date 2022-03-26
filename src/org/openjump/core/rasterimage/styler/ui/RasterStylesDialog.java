@@ -365,6 +365,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
     private void fixComponents() throws Exception{
         
         this.setTitle(RasterStylesExtension.extensionName);
+        int numbands = rasterImageLayer.getMetadata().getStats().getBandCount();
         
         /* Transparency text field */
         jTextField_TranspValue.setInputVerifier(verifier);
@@ -380,6 +381,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
                 rasterImageLayer,
                 minMaxValues);
         singleValuesPanel = new SingleValuesPanel(this, Utils.purgeNoData(rasterImageLayer.getActualRasterData(), rasterImageLayer), rasterImageLayer);
+        heatMapPanel = new HeatMapPanel(this, rasterImageLayer, numbands);
         
         if (stats.getMin(band) == stats.getMax(band)) {
             final DummyPanel pan = new DummyPanel("No stretched classification available, this raster has only one value: " + stats.getMax(band));
@@ -393,6 +395,11 @@ public class RasterStylesDialog extends javax.swing.JDialog {
             jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
         }
         jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"), singleValuesPanel);
+        if (numbands > 3) {
+            System.out.println("Nombre de bandes = " + numbands);
+            //jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.heatmap"), heatMapPanel);
+            jTabbedPane_Type.addTab("heatmap", heatMapPanel);
+        }
         pack();
         
         /* Startup symbology */
@@ -556,6 +563,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
     private StretchedPanel stretchedPanel;
     private IntervalPanel intervalPanel;
     private SingleValuesPanel singleValuesPanel;
+    private HeatMapPanel heatMapPanel;
     
     private final MyVerifier verifier = new MyVerifier();
     private RasterSymbology finalRasterSymbolizer;
