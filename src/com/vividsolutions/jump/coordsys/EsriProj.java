@@ -76,8 +76,9 @@ public class EsriProj {
     String proj = PROJMAP.get(id);
     if (proj == null) proj = PROJMAP.get(id);
     if (proj == null) {
-      InputStream fis = new FileInputStream(projfile);
-      InputStream is = CompressedFile.getUncompressedStream(fis, entryName);
+      //InputStream fis = new FileInputStream(projfile);
+      //InputStream is = CompressedFile.getUncompressedStream(fis, entryName);
+      InputStream is = CompressedFile.openFile(projfile.getPath(), entryName);
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
       Optional<String[]> tokens = br.lines()
