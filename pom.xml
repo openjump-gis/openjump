@@ -1163,10 +1163,6 @@
         <testOutputDirectory>target/test-classes/</testOutputDirectory>
         <resources>
             <resource>
-                <directory>resources</directory>
-                <targetPath>${project.build.directory}/resources/</targetPath>
-            </resource>
-            <resource>
                 <directory>src</directory>
                 <!-- we copy _everything_ to target/classes and filter during packaging -->
                 <excludes>

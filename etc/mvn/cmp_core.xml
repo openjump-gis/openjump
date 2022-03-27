@@ -107,14 +107,6 @@
         <include>*.txt</include>
       </includes>
     </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/resources/</directory>
-      <outputDirectory>/lib/resources/</outputDirectory>
-      <includes>
-        <include>*.txt</include>
-        <include>**/*.zip</include>
-      </includes>
-    </fileSet>
   </fileSets>
   <files>
     <file>

@@ -1,11 +1,11 @@
 package com.vividsolutions.jump.coordsys;
 
 import com.vividsolutions.jump.io.CompressedFile;
+import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
 import org.apache.commons.compress.archivers.ArchiveException;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -37,16 +37,9 @@ public class EsriProj {
   // A cache to remember already used projection ids
   public static Map<String,Integer> CODEMAP = new HashMap<>();
 
-  static File resource = null;
-  static {
-    try {
-      File wb = new File(EsriProj.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-      resource = new File(wb.getParent(), "resources/coord_ref_sys/pe_list_projcs_geogcs.zip");
-    } catch(URISyntaxException e) {
-      Logger.warn(e);
-    }
-  }
-  private static String entryName = "pe_list_projcs_geogcs.csv";
+  private static final File projfile = JUMPWorkbench.getInstance().getPlugInManager()
+      .findFileOrFolderInExtensionDirs("coord_ref_sys/pe_list_projcs_geogcs.zip");
+  private static final String entryName = "pe_list_projcs_geogcs.csv";
 
 
   public static void main(String[] args) throws IOException, ArchiveException {
@@ -83,7 +76,7 @@ public class EsriProj {
     String proj = PROJMAP.get(id);
     if (proj == null) proj = PROJMAP.get(id);
     if (proj == null) {
-      InputStream fis = new FileInputStream(resource);
+      InputStream fis = new FileInputStream(projfile);
       InputStream is = CompressedFile.getUncompressedStream(fis, entryName);
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
