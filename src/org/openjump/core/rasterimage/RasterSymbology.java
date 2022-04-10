@@ -1,157 +1,88 @@
 package org.openjump.core.rasterimage;
 
 import java.awt.Color;
-import java.util.Map;
-import java.util.TreeMap;
-import org.openjump.core.rasterimage.styler.ColorMapEntry;
 
 /**
  *
- * @author AdL
+ * @author Michaël Michaud
  */
-public class RasterSymbology {
-    
-    private TreeMap<Double,Color> colorMapEntries_tm;
-    private String colorMapType;
+abstract public class RasterSymbology implements IRasterSymbology {
+
     private double transparency = 0;
+    private double minNoDataValue = Double.NaN;
+    private double maxNoDataValue = Double.NaN;
+    private Color noDataColor = new Color(0,0,0,0);
+    private String type;
     
+
     public RasterSymbology() {
     }
     
-    public RasterSymbology (String colorMapType) {
-        
-        this.colorMapType = colorMapType;
-        colorMapEntries_tm = new TreeMap<Double,Color>();
-        
-    }
-    
-    public void addColorMapEntry(double upperValue, Color color) {
-        colorMapEntries_tm.put(upperValue, color);
-    }
-    
-    private ColorMapEntry getColorMapEntry(double cellValue) {     
-        if(colorMapEntries_tm.floorEntry(cellValue) != null) {
-            return new ColorMapEntry(
-                    colorMapEntries_tm.floorEntry(cellValue).getKey(),
-                    colorMapEntries_tm.floorEntry(cellValue).getValue());
-        }
-        return null;        
-    }
-    
-    private ColorMapEntry getNextColorMapEntry(double cellValue) {     
-        if(colorMapEntries_tm.higherEntry(cellValue) != null) {
-            return new ColorMapEntry(
-                    colorMapEntries_tm.higherEntry(cellValue).getKey(),
-                    colorMapEntries_tm.higherEntry(cellValue).getValue());
-        }
-        return null;        
+    public RasterSymbology (double transparency) {
+        this.transparency = transparency;
     }
 
-    public String getColorMapType() {
-        return colorMapType;
+    public RasterSymbology (double transparency, double noDataValue) {
+        this.transparency = transparency;
+        this.minNoDataValue = noDataValue;
+        this.maxNoDataValue = noDataValue;
     }
 
-    public void setColorMapType(String colorMapType) {
-        this.colorMapType = colorMapType;
+    public RasterSymbology (double transparency, double noDataValue, Color noDataColor) {
+        this.transparency = transparency;
+        this.minNoDataValue = noDataValue;
+        this.maxNoDataValue = noDataValue;
+        this.noDataColor = noDataColor;
     }
-    
-    public TreeMap<Double, Color> getColorMapEntries_tm() {
-        return colorMapEntries_tm;
+
+    @Override
+    public String getType() {
+        return type;
     }
-    
-    public void setColorMapEntries_tm(TreeMap<Double, Color> colorMapEntries_tm) {
-        this.colorMapEntries_tm = colorMapEntries_tm;
+
+    @Override
+    public void setType(String type) {
+        this.type = type;
     }
-    
-    public ColorMapEntry[] getColorMapEntries() {
-        
-        ColorMapEntry[] colorMapEntries = new ColorMapEntry[getColorMapEntries_tm().size()];
-        int pos = 0;
-        for(Map.Entry<Double,Color> colorMapEntry : getColorMapEntries_tm().entrySet()) {
-            colorMapEntries[pos] = new ColorMapEntry(colorMapEntry.getKey(), colorMapEntry.getValue());
-            pos++;
-        }
-        return colorMapEntries;
-        
-    }
-    
+
+    @Override
     public double getTransparency() {
         return transparency;
     }
 
+    @Override
     public void setTransparency(double transparency) {
         this.transparency = transparency;
     }
-    
-    public Color getColor(double value) {
-        
-        if(colorMapType.equals(TYPE_RAMP)) {
-            
-            ColorMapEntry downColorMapEntry = getColorMapEntry(value);
-            ColorMapEntry upColorMapEntry = getNextColorMapEntry(value);
-            
-            if(downColorMapEntry != null && upColorMapEntry == null) {
-                return downColorMapEntry.getColor();
-            } else if(downColorMapEntry == null && upColorMapEntry != null) {
-                return upColorMapEntry.getColor();
-            } else if(downColorMapEntry != null && upColorMapEntry != null) {
-            
-                if(downColorMapEntry.getColor() == null) {
-                    return null;
-                } else if(upColorMapEntry.getColor() == null) {
-                    return downColorMapEntry.getColor();
-                } else {
-                    double distDown = value - downColorMapEntry.getUpperValue();
-                    double distUp = upColorMapEntry.getUpperValue()- value;
 
-                    double relDist = distDown / (distUp + distDown);
-
-                    Color newColor = calculateNewColor(
-                            downColorMapEntry.getColor(),
-                            upColorMapEntry.getColor(),
-                            relDist);
-
-                    return newColor;
-                }
-            } else {
-                return null;
-            }
-            
-        } else if(colorMapType.equals(TYPE_INTERVALS)) {
-            
-            ColorMapEntry downColorMapEntry = getColorMapEntry(value);
-            if(downColorMapEntry == null) {
-                return null;
-            }
-            return downColorMapEntry.getColor();
-            
-        } else if(colorMapType.equals(TYPE_SINGLE)) {
-            
-            ColorMapEntry downColorMapEntry = getColorMapEntry(value);
-            if(downColorMapEntry == null) {
-                return null;
-            }
-            return downColorMapEntry.getColor();
-            
-            
-        } else {
-            return null;
-        }  
-
+    @Override
+    public double getMinNoDataValue() {
+        return minNoDataValue;
     }
-    
-    private static Color calculateNewColor (Color downColor, Color upColor, double relDist) {
-        int red = (int) Math.round((upColor.getRed() - downColor.getRed()) * relDist + downColor.getRed());
-        int green = (int) Math.round((upColor.getGreen() - downColor.getGreen()) * relDist + downColor.getGreen());
-        int blue = (int) Math.round((upColor.getBlue() - downColor.getBlue()) * relDist + downColor.getBlue());
-        
-        return new Color(red, green, blue);        
+
+    @Override
+    public void setMinNoDataValue(double minNoDataValue) {
+        this.minNoDataValue = minNoDataValue;
     }
-    
-    
-    public static final String TYPE_RAMP = "RAMP";
-    public static final String TYPE_INTERVALS = "INTERVALS";
-    public static final String TYPE_SINGLE = "SINGLE";
-    
+
+    @Override
+    public double getMaxNoDataValue() {
+        return maxNoDataValue;
+    }
+
+    @Override
+    public void setMaxNoDataValue(double maxNoDataValue) {
+        this.maxNoDataValue = maxNoDataValue;
+    }
+
+    @Override
+    public Color getNoDataColor() {
+        return noDataColor;
+    }
+
+    @Override
+    public void setNoDataColor(Color noDataColor) {
+        this.noDataColor = noDataColor;
+    }
     
 }

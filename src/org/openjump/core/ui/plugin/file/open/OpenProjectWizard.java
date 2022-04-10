@@ -20,11 +20,7 @@ import javax.xml.namespace.QName;
 import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
-import org.openjump.core.rasterimage.ImageAndMetadata;
-import org.openjump.core.rasterimage.RasterImageIO;
-import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.RasterSymbology;
-import org.openjump.core.rasterimage.Resolution;
+import org.openjump.core.rasterimage.*;
 import org.openjump.core.ui.plugin.file.FindFile;
 import org.openjump.core.ui.plugin.file.OpenProjectPlugIn;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
@@ -418,7 +414,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
     }
 
     public static void loadRasterImageLayer(WorkbenchContext context,
-            RasterImageLayer ril, RasterSymbology symbology, Category category)
+                                            RasterImageLayer ril, IRasterSymbology symbology, Category category)
             throws Exception {
 
         RasterImageIO rasterImageIO = new RasterImageIO();

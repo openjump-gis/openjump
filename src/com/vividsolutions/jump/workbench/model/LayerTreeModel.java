@@ -41,6 +41,8 @@ import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.util.SimpleTreeModel;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
+import org.openjump.core.rasterimage.RasterColorMapSymbology;
+import org.openjump.core.rasterimage.RasterHeatmapSymbology;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 
@@ -275,14 +277,15 @@ public class LayerTreeModel extends SimpleTreeModel {
             else if (parent instanceof RasterImageLayer) {
                 
                 RasterImageLayer rasterImageLayer = (RasterImageLayer)parent;
-                if(rasterImageLayer.getSymbology() != null && rasterImageLayer.getMetadata() != null) {
+                if(rasterImageLayer.getSymbology() != null && rasterImageLayer.getMetadata() != null
+                    && rasterImageLayer.getSymbology() instanceof RasterColorMapSymbology) {
 
-                    RasterSymbology rasterSymbology = rasterImageLayer.getSymbology();
+                    RasterColorMapSymbology rasterSymbology = (RasterColorMapSymbology)rasterImageLayer.getSymbology();
                     double bottomValue = rasterImageLayer.getMetadata().getStats().getMin(0);
                     double topValue = rasterImageLayer.getMetadata().getStats().getMax(0);
                     Double[] keys = rasterSymbology.getColorMapEntries_tm().keySet().toArray(new Double[0]);
 
-                    if(!rasterImageLayer.getSymbology().getColorMapType().equals(RasterSymbology.TYPE_RAMP)) {
+                    if(!rasterImageLayer.getSymbology().getType().equals(RasterColorMapSymbology.TYPE_RAMP)) {
 
                         List<RasterStyleValueIntv> styleValues_l = new ArrayList<>();
 
@@ -296,7 +299,7 @@ public class LayerTreeModel extends SimpleTreeModel {
                                 Color color = rasterSymbology.getColorMapEntries_tm().get(key);
 
                                 styleValues_l.add(new RasterStyleValueIntv(
-                                        rasterSymbology.getColorMapType(),
+                                        rasterSymbology.getType(),
                                         color,
                                         key,
                                         nextValue,

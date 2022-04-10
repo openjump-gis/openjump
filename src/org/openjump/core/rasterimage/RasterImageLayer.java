@@ -55,11 +55,9 @@ import com.vividsolutions.jump.workbench.ui.Viewport;
  * modified: [sstein]: 16.Feb.2009 changed logger-entries to comments, used frame.warnUser
  */
 // TODO ObjectContainingMetaInformation seems a bit redundant with Blackboard
-public final class RasterImageLayer extends GeoReferencedLayerable
+public class RasterImageLayer extends GeoReferencedLayerable
         implements ObjectContainingMetaInformation, Disposable {
-    
-    //protected static Blackboard blackboard = null;
-    
+
     //protected final static String BLACKBOARD_KEY_PLUGINCONTEXT = PlugInContext.class.getName();
     //protected final static String BLACKBOARD_KEY_WORKBENCHCONTEXT = PlugInContext.class.getName();
     
@@ -69,8 +67,11 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     protected final static int MODE_SCALINGFIRST = 1;
     protected final static int MODE_CLIPPINGFIRST = 2;
     protected final static int MODE_FASTDISPLAY = 3;
-    
-    protected Rectangle imagePart, visibleRect = null;
+
+    // Visible part of the image in image coordinate
+    protected Rectangle imagePart;
+    // Visible part of the viewport in pixels
+    protected Rectangle visibleRect = null;
     
     protected double oldScaleXImg2Canvas;
     
@@ -85,12 +86,14 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     // The value below is set dynamically based on available memory
     //       now its 200x200px as min (originally it was 500x500)
     //protected static int maxPixelsForFastDisplayMode = 40000;
-    protected static int maxPixelsForFastDisplayMode = 250000;
+    protected static int maxPixelsForFastDisplayMode = 250_000;
 
     protected String imageFileName = null;
-    protected int origImageWidth, origImageHeight;
-    protected boolean imageSet = false;
+    protected int origImageWidth;
+    protected int origImageHeight;
+    // original image (null if image does not intersect the viewport)
     protected BufferedImage image = null;
+    protected boolean imageSet = false;  // true if original image has been set
     protected int numBands = 0;
     
     //-- [sstein 2nd Aug 2010] new, since we scale the image now for display
@@ -98,11 +101,16 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     protected boolean rasterDataChanged = false; //may be needed for rescaling the image values
     //-- end
 
+    // Part of the scaled and symbolized image displayed in the viewport
     protected BufferedImage scaledBufferedImage = null;
 
-    protected Envelope actualImageEnvelope = null, visibleEnv = null, oldVisibleEnv;
-    //protected Envelope originalImageEnvelope = null;
-    
+    // Envelope of the part of the image actually displayed in model coordinates.
+    protected Envelope actualImageEnvelope = null;
+    // Envelope of the visible part of the viewport in model coordinates
+    protected Envelope visibleEnv = null;
+    // Previous visible part of the envelope in model coordinates
+    protected Envelope oldVisibleEnv;
+
     /**
      * Flag to decide, if events are fired automatically, if the appearance (imageEnvelope, etc.) changes.<br>
      * default: true
@@ -130,7 +138,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     
     private Stats stats;
     
-    private RasterSymbology symbology = null;
+    private IRasterSymbology symbology = null;
     private boolean symbologyChanged = false;
     private final UUID uuid = java.util.UUID.randomUUID();
     
@@ -194,15 +202,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         if (imageToDisplay != null)
             this.setImage(imageToDisplay);
 
-        //[sstein 9.Aug.2010]       
-        long avram = getAvailRAM();
-        if(avram > 256000000){
-        	maxPixelsForFastDisplayMode = 250000; //500x500 px
-        }
-        if(avram > 750000000){
-        	maxPixelsForFastDisplayMode = 4000000; //2000x2000 px
-        }
-        //[sstein end]
+        setMaxPixels();
     }
     
     
@@ -236,24 +236,17 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         
         this.setImage(imageToDisplay);
 
-        //[sstein 9.Aug.2010]
-        long avram = getAvailRAM();
-        if(avram > 256000000){
-        	maxPixelsForFastDisplayMode = 250000; //500x500 px
-        }
-        if(avram > 750000000){
-        	maxPixelsForFastDisplayMode = 563500; //750x750 px
-        }
-        //[sstein end]
+        setMaxPixels();
     }
 
-    //@Override
-    //public Blackboard getBlackboard() {
-    //    if (getBlackboard() == null)
-    //        RasterImageLayer.blackboard = new Blackboard();
-    //
-    //    return RasterImageLayer.blackboard;
-    //}
+    private void setMaxPixels() {
+        long avram = getAvailRAM();
+        // for 256MB, max pixels = 512 x 512
+        // for 1GB, max pixels = 1024 x 1024
+        // for 4GB max pixels = 2048 x 2048
+        maxPixelsForFastDisplayMode = (int)(avram / 1024);
+    }
+
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -324,7 +317,9 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     }
     
     /**
-     * Creates the image to draw
+     * Creates the image to draw.
+     * This method is called everytime the image must be redraw because the
+     * viewport, zoom level or symbology changed.
      * @param layerViewPanel the LayerViewPanel where the image will be drawn
      * @return the BufferedImage to be drawn
      */
@@ -341,7 +336,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         BufferedImage imageToDraw = null;
 
         try {
-
+            // just in case the image changed as there is a setter for imageFileName
             java.awt.Point imageDims = RasterImageIO.getImageDimensions(imageFileName);
 
             assert imageDims != null;
@@ -355,14 +350,19 @@ public final class RasterImageLayer extends GeoReferencedLayerable
             int visibleY2 = visibleY1 + visibleRect.height;
 
             // Viewport envelope in model coordinates
-            Coordinate upperLeftVisible = viewport.toModelCoordinate(new Point(visibleX1, visibleY1));
-            Coordinate lowerRightVisible = viewport.toModelCoordinate(new Point(visibleX2, visibleY2));
-            Envelope newVisibleEnv = new Envelope(upperLeftVisible, lowerRightVisible);
+            //Coordinate upperLeftVisible = viewport.toModelCoordinate(new Point(visibleX1, visibleY1));
+            //Coordinate lowerRightVisible = viewport.toModelCoordinate(new Point(visibleX2, visibleY2));
+            //Envelope newVisibleEnv = new Envelope(upperLeftVisible, lowerRightVisible);
+            Envelope newVisibleEnv = viewport.toModelEnvelope(visibleX1, visibleX2, visibleY1, visibleY2);
 
             setImageSet(false);
             
-            if (visibleEnv == null || visibleEnv.getMinX() != newVisibleEnv.getMinX() || visibleEnv.getMaxX() != newVisibleEnv.getMaxX() || 
-                    visibleEnv.getMinY() != newVisibleEnv.getMinY() || visibleEnv.getMaxY() != newVisibleEnv.getMaxY() || symbologyChanged){
+            if (visibleEnv == null || !visibleEnv.equals(newVisibleEnv) || symbologyChanged) {
+                //visibleEnv.getMinX() != newVisibleEnv.getMinX() ||
+                //visibleEnv.getMaxX() != newVisibleEnv.getMaxX() ||
+                //visibleEnv.getMinY() != newVisibleEnv.getMinY() ||
+                //visibleEnv.getMaxY() != newVisibleEnv.getMaxY() ||
+                //symbologyChanged) {
                 visibleEnv = newVisibleEnv;
                     
                 symbologyChanged = false;
@@ -392,6 +392,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
                 } else {
                     Logger.debug("Reload image");
                 }
+
                 // Load the part of the image intersecting the viewport and setting this.image
                 reLoadImage(layerViewPanel);
                 if(image == null) {
@@ -509,7 +510,13 @@ public final class RasterImageLayer extends GeoReferencedLayerable
             Runtime.getRuntime().gc();
         }
     }
-    
+
+    /**
+     * Load the part of the image intersecting the viewport in image or set
+     * image to null if it does not intersects the viewport
+     * @param layerViewPanel
+     * @throws Exception
+     */
     public void reLoadImage(LayerViewPanel layerViewPanel) throws Exception {
         
         //if (image == null && !needToKeepImage){
@@ -517,6 +524,8 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         RasterImageIO rasterImageIO = new RasterImageIO();
 
         Viewport viewport = layerViewPanel.getViewport();
+        // If LayerManager contains no layerable and the image does not intersect the viewport
+        // zoom to the image envelope
         if(!viewport.getEnvelopeInModelCoordinates().intersects(getEnvelope())
                 && layerViewPanel.getLayerManager().getLayerables(Layerable.class).isEmpty()
         ) {
@@ -526,6 +535,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         Resolution requestedRes = RasterImageIO.calcRequestedResolution(viewport);
         long start = Timer.milliSecondsSince(0);
         Logger.debug("Try reading "+getName());
+
         // Get the part of the image intersecting the viewport
         ImageAndMetadata imageAndMetadata = rasterImageIO.loadImage(imageFileName,
                 stats, viewport.getEnvelopeInModelCoordinates(), requestedRes);
@@ -555,7 +565,13 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     //   //PlanarImage dontNeedThisImage = RasterImageLayer.loadImage( context, imageFileName); //causes error for .clone()
     //   this.setImage(pi);
     //}
-    
+
+    /**
+     * Return a BufferedImage representing the part of the original image intersecting
+     * the viewport, with the user-defined symbology
+     * @return
+     * @throws NoninvertibleTransformException
+     */
     protected BufferedImage stretchImageValuesForDisplay() throws NoninvertibleTransformException{
 
         Raster actualRasterData = image.copyData(null);
@@ -568,18 +584,19 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         }
 
         BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+        double[] array = new double[getNumBands()];
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
 
                 if(symbology == null) {
                     if(stats.getBandCount() < 3) {
                         
-                        final RasterSymbology rasterSymbology;
+                        final RasterColorMapSymbology rasterSymbology;
                         if (metadata.getStats().getMin(0) == metadata
                                 .getStats().getMax(0)) {
-                            rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_SINGLE);
+                            rasterSymbology = new RasterColorMapSymbology(RasterColorMapSymbology.TYPE_SINGLE);
                         } else {
-                            rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
+                            rasterSymbology = new RasterColorMapSymbology(RasterColorMapSymbology.TYPE_RAMP);
                         }
                         if (!Double.isNaN(metadata.getNoDataValue())) {
                             rasterSymbology.addColorMapEntry(metadata.getNoDataValue(), transparentColor);
@@ -618,42 +635,47 @@ public final class RasterImageLayer extends GeoReferencedLayerable
                         
                         newImage.setRGB(col, row, new Color(r, g, b, alpha).getRGB());
                     }
-                } else {
+                } else if (symbology instanceof RasterHeatmapSymbology) {
+                    int[] values = new int[actualRasterData.getNumBands()];
+                    actualRasterData.getPixel(col, row, values);
+                    Color color = symbology.getFinalColor(values);
+                    newImage.setRGB(col, row, color.getRGB());
+                } else if (symbology instanceof RasterColorMapSymbology) {
                     // Symbology exists
-                    double value = actualRasterData.getSampleDouble(col, row, 0);
-                    
+                    //double value = actualRasterData.getSampleDouble(col, row, 0);
+                    actualRasterData.getPixel(col, row, array);
 
                     // If symbology min value is higher than raster min value
                     // the value becomes equal to the symbology min value
-                    Double[] symbologyClassLimits =  symbology.getColorMapEntries_tm().keySet().toArray(new Double[0]);
-                    double symbMinValue = symbologyClassLimits[0];
-                    double symbFirstValue = symbologyClassLimits[0];
-                    if(this.isNoData(symbFirstValue)) {
-                        symbMinValue = symbologyClassLimits[1];
-                    }
+                    //Double[] symbologyClassLimits =  symbology.getColorMapEntries_tm().keySet().toArray(new Double[0]);
+                    //double symbMinValue = symbologyClassLimits[0];
+                    //double symbFirstValue = symbologyClassLimits[0];
+                    //if(this.isNoData(symbFirstValue)) {
+                    //    symbMinValue = symbologyClassLimits[1];
+                    //}
+                    //
+                    //if(!this.isNoData(value) && value < symbMinValue) {
+                    //    value = symbMinValue;
+                    //}
+                    newImage.setRGB(col, row, symbology.getFinalColor(array).getRGB());
+                    //Color color = symbology.getFinalColor(value);
                     
-                    if(!this.isNoData(value) && value < symbMinValue) {
-                        value = symbMinValue;
-                    }
-                    
-                    Color color = symbology.getColor(value);
-                    
-                    if((Double.isNaN(value) || Double.isInfinite(value) || this.isNoData(value))
-                            && color == null) {
-                        newImage.setRGB(col, row, Color.TRANSLUCENT);
-                        continue;
-                    }
-                    
-                    // Transparency is a combination of total layer transparency
-                    // and single cell transparency
-                    int transparency = 
-                            (int)(((1 - symbology.getTransparency()) * 
-                            (color.getAlpha() / 255d)) * 255);
-                    newImage.setRGB(col, row, new Color(
-                            color.getRed(),
-                            color.getGreen(),
-                            color.getBlue(),
-                            transparency).getRGB());
+                    //if((Double.isNaN(value) || Double.isInfinite(value) || this.isNoData(value))
+                    //        && color == null) {
+                    //    newImage.setRGB(col, row, Color.TRANSLUCENT);
+                    //    continue;
+                    //}
+                    //
+                    //// Transparency is a combination of total layer transparency
+                    //// and single cell transparency
+                    //int transparency =
+                    //        (int)(((1 - symbology.getTransparency()) *
+                    //        (color.getAlpha() / 255d)) * 255);
+                    //newImage.setRGB(col, row, new Color(
+                    //        color.getRed(),
+                    //        color.getGreen(),
+                    //        color.getBlue(),
+                    //        transparency).getRGB());
                 }  
             }
         }
@@ -828,10 +850,11 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         }
     }
     
-
+    // Returns true if envelopes are equals
     private static boolean tilesAreNotNullAndCongruent( Envelope oldVisibleEnv, Envelope newVisibleEnv ){
-
+        // TODO do we really want to return true when one envelope is null ?
         if (oldVisibleEnv == null || newVisibleEnv == null) return true;
+        // TODO why not just test envelope equality ?
         return (oldVisibleEnv.getMinX() == newVisibleEnv.getMinX() &&
                 oldVisibleEnv.getMaxX() == newVisibleEnv.getMaxX() &&
                 oldVisibleEnv.getMinY() == newVisibleEnv.getMinY() &&
@@ -1044,7 +1067,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         return this.getVisibleImageCoordinatesOfImage( img.getWidth(), img.getHeight(), visible, imageEnv );
     }
     
-    protected BufferedImage getVisiblePartOfTheImage( BufferedImage img, Rectangle desiredImageArea ){
+    protected BufferedImage getVisiblePartOfTheImage( BufferedImage img, Rectangle desiredImageArea ) {
         if (desiredImageArea==null){
             return null;
         }
@@ -1076,7 +1099,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
      */
     public void setImage(BufferedImage image) {
         this.image = image;
-        imageSet = true;
+        imageSet = image != null;
     }
 
     public void setImageSet(boolean imageSet) {
@@ -1225,14 +1248,14 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         return freeRamFactor;
     }
 
-    public static void setFreeRamFactor(double freeRamFactor) {
+    public void setFreeRamFactor(double freeRamFactor) {
         RasterImageLayer.freeRamFactor = freeRamFactor;
         RasterImageLayer.minRamToKeepFree = RasterImageLayer.availRAM * RasterImageLayer.freeRamFactor;
-        RasterImageLayer.maxPixelsForFastDisplayMode = (int)((RasterImageLayer.availRAM - RasterImageLayer.minRamToKeepFree)/(1024*1024) * 3000);
+        setMaxPixels();
     }
 
 
-    public static long getAvailRAM() {
+    public long getAvailRAM() {
         return availRAM;
     }
 
@@ -1251,12 +1274,14 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     public void setImageFileName(String imageFileName) {
         this.imageFileName = imageFileName;
         this.setNeedToKeepImage(false);
+        // TODO need to draw the new image
     }
     
     
     /**
      * 
-     * @return the file name of the image represented by this instance of the <code>RasterImageLayer</code>
+     * @return the file name of the image represented by this instance of the
+     * <code>RasterImageLayer</code>
      */
     public String getImageFileName() {
         return imageFileName;
@@ -1280,7 +1305,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     }
 
     @Override
-	protected void finalize() throws Throwable {
+	  protected void finalize() throws Throwable {
         super.finalize();
         this.flushImages(true);
     }
@@ -1321,7 +1346,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
      * @param visible set true if image must be visible
      */
     @Override
-	public void setVisible(boolean visible) {
+	  public void setVisible(boolean visible) {
         super.setVisible(visible);
         
         if (!visible)
@@ -1456,7 +1481,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     public Double getCellValue(int col, int row, int band) throws IOException {
 
         int pos = row * origImageWidth + col;
-        if(pos <0 || pos > origImageWidth * origImageHeight) return null;
+        if(pos < 0 || pos > origImageWidth * origImageHeight) return null;
                        
         return RasterImageIO.readCellValue(imageFileName, col, row, band);
         
@@ -1514,11 +1539,11 @@ public final class RasterImageLayer extends GeoReferencedLayerable
                 workbenchContext.getLayerViewPanel().getVisibleRect().height);
     }
     
-    public RasterSymbology getSymbology() {
+    public IRasterSymbology getSymbology() {
         return symbology;
     }
     
-    public void setSymbology(RasterSymbology symbology) throws NoninvertibleTransformException {
+    public void setSymbology(IRasterSymbology symbology) throws NoninvertibleTransformException {
         this.symbology = symbology;
         symbologyChanged = true;
         scaledBufferedImage = null;

@@ -10,6 +10,7 @@ import java.util.TreeSet;
 
 import javax.swing.JOptionPane;
 
+import org.openjump.core.rasterimage.RasterColorMapSymbology;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
@@ -246,9 +247,9 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         colorsTablePanel.rampColors();
     }
     
-    public RasterSymbology getRasterStyler() throws Exception{
-        
-        RasterSymbology rasterSymbolizer = new RasterSymbology(RasterSymbology.TYPE_SINGLE);
+    public RasterColorMapSymbology getRasterStyler() throws Exception{
+
+        RasterColorMapSymbology rasterSymbolizer = new RasterColorMapSymbology(RasterColorMapSymbology.TYPE_SINGLE);
         for (ColorMapEntry colorMapEntry : colorsTablePanel.getColorMapEntries()) {
             rasterSymbolizer.addColorMapEntry(colorMapEntry.getUpperValue(), colorMapEntry.getColor());
         }
@@ -256,7 +257,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         return rasterSymbolizer;
     }
     
-    public void plugRasterSymbology(RasterSymbology rasterSymbology) {
+    public void plugRasterSymbology(RasterColorMapSymbology rasterSymbology) {
         
         updateTable(rasterSymbology.getColorMapEntries());
         

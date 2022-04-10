@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 
 import org.openjump.core.attributeoperations.Classifier1D;
+import org.openjump.core.rasterimage.RasterColorMapSymbology;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
@@ -395,7 +396,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         return null;
     }
     
-    public void plugRasterSymbology(RasterSymbology rasterSymbology) {
+    public void plugRasterSymbology(RasterColorMapSymbology rasterSymbology) {
         
         updateTable(rasterSymbology.getColorMapEntries());
         
@@ -419,8 +420,8 @@ public class IntervalPanel extends javax.swing.JPanel {
     }
     
     public RasterSymbology getRasterStyler() throws Exception{
-        
-        RasterSymbology rasterSymbolizer = new RasterSymbology(RasterSymbology.TYPE_INTERVALS);
+
+        RasterColorMapSymbology rasterSymbolizer = new RasterColorMapSymbology(RasterColorMapSymbology.TYPE_INTERVALS);
         for (ColorMapEntry colorMapEntry : colorsTablePanel.getColorMapEntries()) {
             rasterSymbolizer.addColorMapEntry(colorMapEntry.getUpperValue(), colorMapEntry.getColor());
         }

@@ -24,6 +24,8 @@ import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
 import org.openjump.core.apitools.LayerTools;
+import org.openjump.core.rasterimage.IRasterSymbology;
+import org.openjump.core.rasterimage.RasterColorMapSymbology;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.rasterimage.styler.ui.ColorsLabelLegendComponent;
@@ -92,35 +94,40 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
         rasterImageLayer = (RasterImageLayer) LayerTools.getSelectedLayerable(
                 context, RasterImageLayer.class);
 
-        final RasterSymbology rasterStyler = rasterImageLayer.getSymbology();
+        final IRasterSymbology rasterStyler = rasterImageLayer.getSymbology();
 
-        if (rasterStyler.getColorMapEntries_tm().size() > 40) {
-            JOptionPane.showMessageDialog(context.getWorkbenchFrame(),
+        if (rasterStyler instanceof RasterColorMapSymbology) {
+
+            RasterColorMapSymbology symbology = (RasterColorMapSymbology) rasterStyler;
+
+            if (symbology.getColorMapEntries_tm().size() > 40) {
+                JOptionPane.showMessageDialog(context.getWorkbenchFrame(),
                     // bundle.getString("LegendDialog.More40Colors.message"),
                     "More than 40 colors", RasterStylesExtension.extensionName,
                     JOptionPane.INFORMATION_MESSAGE);
-            return false;
-        }
+                return false;
+            }
 
-        final TreeMap<Double, Color> colorMapEntries = rasterStyler
+            final TreeMap<Double, Color> colorMapEntries = symbology
                 .getColorMapEntries_tm();
 
-        final String type = RasterLegendPlugIn.getLayer().getSymbology()
-                .getColorMapType();
+            final String type = RasterLegendPlugIn.getLayer().getSymbology()
+                .getType();
 
-        if (type.equals(RasterSymbology.TYPE_INTERVALS)
-                || type.equals(RasterSymbology.TYPE_SINGLE)) {
-            scrollPane = new JScrollPane(getPanelInterval(colorMapEntries,
+            if (type.equals(RasterColorMapSymbology.TYPE_INTERVALS)
+                || type.equals(RasterColorMapSymbology.TYPE_SINGLE)) {
+                scrollPane = new JScrollPane(getPanelInterval(colorMapEntries,
                     rasterImageLayer),
                     JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        } else if (type.equals(RasterSymbology.TYPE_RAMP)) {
-            scrollPane = new JScrollPane(getPanelGradient(colorMapEntries,
+            } else if (type.equals(RasterColorMapSymbology.TYPE_RAMP)) {
+                scrollPane = new JScrollPane(getPanelGradient(colorMapEntries,
                     rasterImageLayer),
                     JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
+            }
         }
 
         scrollPane.setPreferredSize(new Dimension(300, 400));

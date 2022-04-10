@@ -15,6 +15,7 @@ import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.workbench.Logger;
 import org.apache.commons.io.FileUtils;
 import org.openjump.core.apitools.IOTools;
+import org.openjump.core.rasterimage.RasterColorMapSymbology;
 import org.openjump.core.rasterimage.RasterImageIOUtils;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.WorldFileHandler;
@@ -765,7 +766,9 @@ public abstract class LayerableUtil {
         final File sld_outFile = new File(path.concat(File.separator).concat(
                 outSLD));
         try {
-            SLDHandler.write(rLayer.getSymbology(), null, sld_outFile);
+          if (rLayer.getSymbology() instanceof RasterColorMapSymbology) {
+            SLDHandler.write((RasterColorMapSymbology) rLayer.getSymbology(), null, sld_outFile);
+          }
         } catch (final Exception te) {
             Logger.warn("Error while saving layer " + rLayer.getName() +
                     " to " + path + " as SLD", te);

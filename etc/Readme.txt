@@ -27,6 +27,8 @@ as (Component name - License name - License file in "licenses/" folder or link)
  Commons Codec, Compress, Imaging, IO, Lang, Logging
    - Apache License Version 2.0 - apache_license-2.0.txt
  CTS - GNU Lesser General Public License (GNU LGPL)
+ Esri projection list (resources/coord_ref_sys/pe_list_projcs_geogcs)
+     - Apache License Version 2.0 - apache_license-2.0.txt
  Extensible-TIFF-JAI (xtiff jai) - MIT License - MIT-license.txt
  Icons (some original or based fully or in part on the following)
    FAMFAMFAM Silk by http://www.famfamfam.com - CC BY 2.5
@@ -59,12 +61,13 @@ as (Component name - License name - License file in "licenses/" folder or link)
    Splash Logo designed by Paola Zanetti (paoladorileo<AT>gmail.com)
    Vertical Design used in the installer by Stefan Steiniger 2012
  Netbeans swing outline - Apache License Version 2.0 - apache_license-2.0.txt
+ Outline Swing Component by Netbeans.org, GPL2 - gpl-2.txt
  Postgresql JDBC driver - Postgresql BSD license - postgresql-BSD_license.txt
  Simple Logging Facade for Java (SLF4J) - MIT License - MIT-license.txt
    lib/slf4j-api-*.jar,slf4j-api-*.jar
  Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
  XZ for Java - Public Domain
- Outline Swing Component by Netbeans.org, GPL2 - gpl-2.txt
+
 
 and the following plugins
 ( Component name - License name - License file in "licenses/" folder

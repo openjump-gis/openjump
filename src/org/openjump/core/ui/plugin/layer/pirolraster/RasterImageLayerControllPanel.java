@@ -152,7 +152,7 @@ public class RasterImageLayerControllPanel extends JPanel implements ValueChecke
         this.rasterImageLayer.setTransparencyLevelInPercent(newTransparencyValue);
         
         int newFreeRamValue = this.speedSlider.getValue();
-        RasterImageLayer.setFreeRamFactor(1.0 - newFreeRamValue/100d);
+        this.rasterImageLayer.setFreeRamFactor(1.0 - newFreeRamValue/100d);
         
         this.rasterImageLayer.setFiringAppearanceEvents(true);
         

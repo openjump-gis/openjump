@@ -13,6 +13,9 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
+
+import org.openjump.core.rasterimage.IRasterSymbology;
+import org.openjump.core.rasterimage.RasterColorMapSymbology;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -34,14 +37,14 @@ public class SLDHandler {
      * @throws IOException if an IOException occurs during file reading
      * @throws Exception if an other kind of Exception occurs
      */
-    public static RasterSymbology read(File SLDFile)
+    public static RasterColorMapSymbology read(File SLDFile)
             throws ParserConfigurationException, SAXException, IOException, Exception {
     
         DocumentBuilderFactory dbf = newInstance();
         dbf.setNamespaceAware(true);
-        String colorMapType = RasterSymbology.TYPE_RAMP;
-        
-        RasterSymbology rasterSymbology = null;
+        String colorMapType = RasterColorMapSymbology.TYPE_RAMP;
+
+        RasterColorMapSymbology rasterSymbology = null;
         
         Document doc = dbf.newDocumentBuilder().parse(SLDFile);
         NodeList rasterSymb_nl = doc.getElementsByTagName("RasterSymbolizer");
@@ -57,7 +60,7 @@ public class SLDHandler {
                 colorMapType = type.toUpperCase();
             }
             
-            rasterSymbology = new RasterSymbology(colorMapType);
+            rasterSymbology = new RasterColorMapSymbology(colorMapType);
             
             // Opacity
             NodeList opacity_nl = rasterSymb_el.getElementsByTagName("Opacity");
@@ -85,7 +88,8 @@ public class SLDHandler {
         
     }
     
-    public static void write(RasterSymbology symbology, String symbologyName, File sldFile) throws IOException, XMLStreamException, TransformerConfigurationException {
+    public static void write(IRasterSymbology symbology, String symbologyName, File sldFile)
+        throws IOException, XMLStreamException, TransformerConfigurationException {
         
         XMLOutputFactory outFactory =  XMLOutputFactory.newInstance();
         XMLStreamWriter writer = outFactory.createXMLStreamWriter(new FileWriter(sldFile));
@@ -112,7 +116,7 @@ public class SLDHandler {
         writer.writeStartElement("RasterSymbolizer");
         
         writer.writeStartElement("Type");
-        writer.writeCharacters(symbology.getColorMapType());
+        writer.writeCharacters(symbology.getType());
         writer.writeEndElement();
         
         writer.writeStartElement("Opacity");
@@ -120,14 +124,17 @@ public class SLDHandler {
         writer.writeEndElement();
         
         writer.writeStartElement("ColorMap");
-        
-        for(Map.Entry<Double,Color> colorMapEntry : symbology.getColorMapEntries_tm().entrySet()) {
-            
-            writer.writeStartElement("ColorMapEntry");
-            writer.writeAttribute("Color", SLDHandler.rgb2Hex(colorMapEntry.getValue()));
-            writer.writeAttribute("quantity", colorMapEntry.getKey().toString());
-            writer.writeEndElement();
-            
+
+        if (symbology instanceof RasterColorMapSymbology) {
+            for (Map.Entry<Double, Color> colorMapEntry :
+                ((RasterColorMapSymbology)symbology).getColorMapEntries_tm().entrySet()) {
+
+                writer.writeStartElement("ColorMapEntry");
+                writer.writeAttribute("Color", SLDHandler.rgb2Hex(colorMapEntry.getValue()));
+                writer.writeAttribute("quantity", colorMapEntry.getKey().toString());
+                writer.writeEndElement();
+
+            }
         }
         
         writer.writeEndElement(); // ColorMap

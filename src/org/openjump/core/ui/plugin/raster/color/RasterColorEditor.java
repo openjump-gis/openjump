@@ -3,6 +3,7 @@ package org.openjump.core.ui.plugin.raster.color;
 import java.awt.Color;
 import java.awt.geom.NoninvertibleTransformException;
 
+import org.openjump.core.rasterimage.RasterColorMapSymbology;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.ui.color.ColorGenerator;
 
@@ -30,7 +31,7 @@ import org.openjump.core.rasterimage.RasterSymbology;
 public class RasterColorEditor {
 
     private RasterImageLayer layer;
-	private	ColorGenerator	colorGenerator;
+	  private	ColorGenerator	colorGenerator;
 
     public RasterColorEditor(RasterImageLayer Rlayer) {
         setRasterLayer(Rlayer);
@@ -61,7 +62,7 @@ public class RasterColorEditor {
         }
     	colorGenerator = new ColorGenerator(35, colors);
         
-        RasterSymbology symbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
+        RasterColorMapSymbology symbology = new RasterColorMapSymbology(RasterColorMapSymbology.TYPE_RAMP);
         
         min = layer.getMetadata().getStats().getMin(0);
         max = layer.getMetadata().getStats().getMax(0);

@@ -31,7 +31,9 @@
  */
 package com.vividsolutions.jump.io;
 
+import com.vividsolutions.jump.coordsys.EsriProj;
 import com.vividsolutions.jump.workbench.Logger;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.I18N;
@@ -51,6 +53,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.*;
 
 
@@ -307,7 +310,7 @@ public class ShapefileWriter implements JUMPWriter {
 
         String registry = dp.getProperty(DataSource.COORDINATE_SYSTEM_REGISTRY, "EPSG");
         String code = dp.getProperty(DataSource.COORDINATE_SYSTEM_CODE, "0");
-        String prjString = getPrjString(path + fname_withoutextention + ".prj", registry, code);
+        String prjString = getPrjString(code);
         if (prjString != null) {
             try {
                 prjfname = path + fname_withoutextention + ".prj";
@@ -689,51 +692,17 @@ public class ShapefileWriter implements JUMPWriter {
         dbf.close();
     }
 
-    // Prepare prj writing for 1.12 version
-    private String getPrjString(String fname, String registry, String code)
-            throws Exception {
-        if (code.equals("0")) return null;
-        if (!code.matches("\\d+")) return null;
-        if (registry.equals("EPSG")) {
-            try {
-                Integer epsgCode = Integer.parseInt(code);
-                if (PRJ_MAP.containsKey(epsgCode)) return PRJ_MAP.get(epsgCode);
-                String esriString = getPrjStringFromEpsg(epsgCode);
-                PRJ_MAP.put(epsgCode, esriString);
-                return esriString;
-            } catch(Exception e) {
-                Logger.warn(e);
-            }
-        }
-        if (Class.forName("org.cts.CRSFactory") != null) {
-            org.cts.CRSFactory crsFactory = new org.cts.CRSFactory();
-            org.cts.registry.RegistryManager registryManager = crsFactory.getRegistryManager();
-            if (registry.equals("EPSG")) registryManager.addRegistry(new org.cts.registry.EPSGRegistry());
-            if (registry.equals("ESRI")) registryManager.addRegistry(new org.cts.registry.ESRIRegistry());
-            org.cts.crs.CoordinateReferenceSystem crs = crsFactory.getCRS(registry + ":" + code);
-            //System.out.println(crs.toWKT());
-            return crs.toWKT();
-        } else {
-            throw new Exception("Class org.cts.CRSFactory has not been found");
+
+    private String getPrjString(String code) throws Exception {
+        try {
+            int srid = Integer.parseInt(code);
+            return EsriProj.findProj(srid);
+        } catch(IOException e) {
+            Logger.warn(e);
+            return null;
         }
     }
 
-    /** Get esri formatted string from epsg.io website if possible.*/
-    private String getPrjStringFromEpsg(Integer code) throws Exception {
-        String url = "https://epsg.io/" + code + ".esriwkt";
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        int status = connection.getResponseCode();
-        if (status != 200) throw new Exception("Request to " + url + " failed");
-        BufferedReader in = new BufferedReader(
-            new InputStreamReader(connection.getInputStream()));
-        String inputLine;
-        StringBuilder content = new StringBuilder();
-        while((inputLine = in.readLine())!=null) {
-            content.append(inputLine);
-        }
-        connection.disconnect();
-        return content.toString();
-    }
 
     private String removeCount(String s, int count) {
         return s.substring(0, s.length()-Integer.toString(count).length());

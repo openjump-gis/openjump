@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<root>
+    <!--element xml-name="type" java-name="ColorMapType"/-->
+    <element xml-name="type" java-name="type"/>
+    <element xml-name="colors">
+        <element xml-name="color" java-name="color"/>
+    </element>
+    <element xml-name="thresholds">
+        <element xml-name="threshold" java-name="threshold"/>
+    </element>
+    <element xml-name="opacity" java-name="transparency"/>
+    <element xml-name="nodata_min" java-name="minNoDataValue"/>
+    <element xml-name="nodata_max" java-name="maxNoDataValue"/>
+    <element xml-name="nodata_color" java-name="noDataColor"/>
+</root>

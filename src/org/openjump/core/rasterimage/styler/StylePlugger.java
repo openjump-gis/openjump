@@ -26,11 +26,12 @@ public class StylePlugger {
         int width = raster.getWidth();
         int height = raster.getHeight();
         BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-        
+        double[] array = new double[raster.getNumBands()];
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                Double value = raster.getSampleDouble(col, row, 0);                               
-                Color newColor = rasterSymbolizer.getColor(value); //getColor(value, rasterSymbolizer);
+                //Double value = raster.getSampleDouble(col, row, 0);
+                raster.getPixel(col, row, array);
+                Color newColor = rasterSymbolizer.getFinalColor(array); //getColor(value, rasterSymbolizer);
                 if(newColor == null) {
                     /* Transparent cell */
                     newImage.setRGB(col, row, Color.TRANSLUCENT);

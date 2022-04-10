@@ -3,6 +3,7 @@ package org.openjump.core.rasterimage.styler.ui;
 import com.vividsolutions.jump.util.Range;
 
 import com.vividsolutions.jump.workbench.Logger;
+import org.openjump.core.rasterimage.RasterColorMapSymbology;
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
 import org.openjump.core.rasterimage.RasterSymbology;
 
@@ -194,7 +195,7 @@ public class StretchedPanel extends javax.swing.JPanel {
         GradientCanvas gradientCanvas = (GradientCanvas) comboBox_Gradient.getItemAt(0);
         colorMapEntries = gradientCanvas.getColorMapEntries();
         
-        rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
+        rasterSymbology = new RasterColorMapSymbology(RasterColorMapSymbology.TYPE_RAMP);
         updateRasterStyler(colorMapEntries);
 
         GUIUtils utils = new GUIUtils();
@@ -239,7 +240,7 @@ public class StretchedPanel extends javax.swing.JPanel {
     
     private void updateRasterStyler(ColorMapEntry[] colorMapEntries) {
         
-        rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
+        rasterSymbology = new RasterColorMapSymbology(RasterColorMapSymbology.TYPE_RAMP);
         for (ColorMapEntry paletteColorMapEntrie : colorMapEntries) {
             double quantity = (maxValue - minValue) * paletteColorMapEntrie.getUpperValue() + minValue;
             rasterSymbology.addColorMapEntry(quantity, paletteColorMapEntrie.getColor());
@@ -247,7 +248,7 @@ public class StretchedPanel extends javax.swing.JPanel {
 
     }
     
-    public void plugRasterSymbology(RasterSymbology rasterSymbology) throws Exception {
+    public void plugRasterSymbology(RasterColorMapSymbology rasterSymbology) throws Exception {
         
         colorMapEntries = rasterSymbology.getColorMapEntries();
         
@@ -288,14 +289,14 @@ public class StretchedPanel extends javax.swing.JPanel {
     private final double maxValue;
     private ColorMapEntry[] colorMapEntries;
     private GradientComboBox comboBox_Gradient;
-    private RasterSymbology rasterSymbology; 
+    private RasterColorMapSymbology rasterSymbology;
     private final int width = 200;
     private final int height = 18;
     
     public RasterSymbology getRasterStyler(){
         
         if(jCheckBox_Invert.isSelected()) {
-            RasterSymbology revRasterSymbology = new RasterSymbology(rasterSymbology.getColorMapType());
+            RasterColorMapSymbology revRasterSymbology = new RasterColorMapSymbology(rasterSymbology.getType());
             
             int firstEntry = 0;
             if(rasterSymbology.getColorMapEntries()[0].getColor() == null) {

@@ -57,6 +57,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.openjump.core.rasterimage.RasterColorMapSymbology;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import org.locationtech.jts.geom.Envelope;
@@ -496,11 +497,11 @@ public class TreeLayerNamePanel extends JPanel implements LayerListener,
 
             RasterStyleValueIntv rasterStyleValue = (RasterStyleValueIntv) value;
             
-            if(rasterStyleValue.getColorMapType().equals(RasterSymbology.TYPE_INTERVALS)) {
+            if(rasterStyleValue.getColorMapType().equals(RasterColorMapSymbology.TYPE_INTERVALS)) {
                 label.setText(
                         rasterStyleValue.getValue().floatValue() + "-" +
                         rasterStyleValue.getNextValue().floatValue());
-            } else if(rasterStyleValue.getColorMapType().equals(RasterSymbology.TYPE_SINGLE)) {
+            } else if(rasterStyleValue.getColorMapType().equals(RasterColorMapSymbology.TYPE_SINGLE)) {
                 label.setText(String.valueOf(rasterStyleValue.getValue().intValue()));
             }
             colorPanel.setLineColor(Color.BLACK);

@@ -22,6 +22,7 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
 
+import org.openjump.core.rasterimage.RasterColorMapSymbology;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.ui.color.ColorGenerator;
@@ -286,8 +287,8 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         // Deactivated. As 6 steps seems to work better than 35
         // colorGenerator = new ColorGenerator(35, colors);
         
-        RasterSymbology symbology = new RasterSymbology(
-                RasterSymbology.TYPE_RAMP);
+        RasterColorMapSymbology symbology = new RasterColorMapSymbology(
+            RasterColorMapSymbology.TYPE_RAMP);
          
         CopyColorIntoBlackBoard(context, layer, symbology);
         
@@ -334,8 +335,8 @@ public class RasterColorEditorPanel extends JPanel implements ValueChecker,
         colorGenerator = new ColorGenerator(step, colors);
         // Deactivated. As 6 steps seems to work better than 35
         // colorGenerator = new ColorGenerator(35, colors);
-        RasterSymbology symbology = new RasterSymbology(
-                RasterSymbology.TYPE_INTERVALS);
+        RasterColorMapSymbology symbology = new RasterColorMapSymbology(
+            RasterColorMapSymbology.TYPE_INTERVALS);
        
         CopyColorIntoBlackBoard(context, layer, symbology);
         

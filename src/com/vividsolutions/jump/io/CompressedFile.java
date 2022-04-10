@@ -35,13 +35,7 @@ package com.vividsolutions.jump.io;
 
 import static com.vividsolutions.jump.util.FileUtil.close;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -285,6 +279,7 @@ public class CompressedFile {
     }
     
   }
+
 
   public static boolean isCompressed(URI uri) {
     String filepath = UriUtil.getFilePath(uri);

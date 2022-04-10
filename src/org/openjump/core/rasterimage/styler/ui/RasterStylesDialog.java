@@ -15,9 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.RasterSymbology;
-import org.openjump.core.rasterimage.Stats;
+import org.openjump.core.rasterimage.*;
 import org.openjump.core.rasterimage.styler.RasterStylesExtension;
 import org.openjump.core.rasterimage.styler.SLDHandler;
 import org.openjump.core.rasterimage.styler.Utils;
@@ -341,7 +339,9 @@ public class RasterStylesDialog extends javax.swing.JDialog {
                 stretchedPanel.reset();
                 intervalPanel.reset();
                 singleValuesPanel.reset();
-                finalRasterSymbolizer.setColorMapType(RasterSymbology.TYPE_RAMP);
+                if (finalRasterSymbolizer instanceof RasterColorMapSymbology) {
+                    finalRasterSymbolizer.setType(RasterColorMapSymbology.TYPE_RAMP);
+                }
                 if (lyr instanceof RasterImageLayer) restoreToOriginal((RasterImageLayer)lyr);
             }
         } catch (Exception ex) {
@@ -365,14 +365,15 @@ public class RasterStylesDialog extends javax.swing.JDialog {
     private void fixComponents() throws Exception{
         
         this.setTitle(RasterStylesExtension.extensionName);
-        int numbands = rasterImageLayer.getMetadata().getStats().getBandCount();
+        Metadata metadata = rasterImageLayer.getMetadata();
+        Stats stats = metadata.getStats();
+        int numbands = stats.getBandCount();
         
         /* Transparency text field */
         jTextField_TranspValue.setInputVerifier(verifier);
         jTextField_TranspValue.addActionListener(verifier);
         jTextField_TranspValue.setText(Integer.toString(jSlider_Transparency.getValue()));               
                 
-        Stats stats = rasterImageLayer.getMetadata().getStats();
         Range minMaxValues = new Range(stats.getMin(band), true, stats.getMax(band), true);
 
         stretchedPanel = new StretchedPanel(minMaxValues);
@@ -424,15 +425,20 @@ public class RasterStylesDialog extends javax.swing.JDialog {
             finalRasterSymbolizer = intervalPanel.getRasterStyler();
         } else if(jTabbedPane_Type.getSelectedComponent() instanceof SingleValuesPanel) {
             finalRasterSymbolizer = singleValuesPanel.getRasterStyler();
-            
+        } else if(jTabbedPane_Type.getSelectedComponent() instanceof HeatMapPanel) {
+            finalRasterSymbolizer = heatMapPanel.getRasterStyler();
         }
         
         finalRasterSymbolizer.setTransparency(GUIUtils.getAlpha_DecimalRange(Integer.parseInt(jTextField_TranspValue.getText())));
-        
-        if(jCheckBox_NoDataValue.isSelected()){
-            finalRasterSymbolizer.addColorMapEntry(rasterImageLayer.getNoDataValue(), jButton_NoDataValueColor.getBackground());
-        } else {
-            finalRasterSymbolizer.addColorMapEntry(rasterImageLayer.getNoDataValue(), null);
+
+        if (finalRasterSymbolizer instanceof  RasterColorMapSymbology) {
+            if (jCheckBox_NoDataValue.isSelected()) {
+                ((RasterColorMapSymbology)finalRasterSymbolizer)
+                    .addColorMapEntry(rasterImageLayer.getNoDataValue(), jButton_NoDataValueColor.getBackground());
+            } else {
+                ((RasterColorMapSymbology)finalRasterSymbolizer)
+                    .addColorMapEntry(rasterImageLayer.getNoDataValue(), null);
+            }
         }
 
         Collection<Layerable> layerables = context.getLayerableNamePanel().getSelectedLayerables();
@@ -525,14 +531,14 @@ public class RasterStylesDialog extends javax.swing.JDialog {
     
     private void updateGUI() throws Exception {
         
-        if(finalRasterSymbolizer.getColorMapType().equals(RasterSymbology.TYPE_RAMP)) {
-                stretchedPanel.plugRasterSymbology(finalRasterSymbolizer);
+        if(finalRasterSymbolizer.getType().equals(RasterColorMapSymbology.TYPE_RAMP)) {
+                stretchedPanel.plugRasterSymbology((RasterColorMapSymbology)finalRasterSymbolizer);
                 jTabbedPane_Type.setSelectedIndex(0);
-        } else if(finalRasterSymbolizer.getColorMapType().equals(RasterSymbology.TYPE_INTERVALS)) {
-                intervalPanel.plugRasterSymbology(finalRasterSymbolizer);
+        } else if(finalRasterSymbolizer.getType().equals(RasterColorMapSymbology.TYPE_INTERVALS)) {
+                intervalPanel.plugRasterSymbology((RasterColorMapSymbology)finalRasterSymbolizer);
                 jTabbedPane_Type.setSelectedIndex(1);
-        } else if(finalRasterSymbolizer.getColorMapType().equals(RasterSymbology.TYPE_SINGLE)) {
-                singleValuesPanel.plugRasterSymbology(finalRasterSymbolizer);
+        } else if(finalRasterSymbolizer.getType().equals(RasterColorMapSymbology.TYPE_SINGLE)) {
+                singleValuesPanel.plugRasterSymbology((RasterColorMapSymbology)finalRasterSymbolizer);
                 jTabbedPane_Type.setSelectedIndex(2);
         }
     }
@@ -566,9 +572,9 @@ public class RasterStylesDialog extends javax.swing.JDialog {
     private HeatMapPanel heatMapPanel;
     
     private final MyVerifier verifier = new MyVerifier();
-    private RasterSymbology finalRasterSymbolizer;
+    private IRasterSymbology finalRasterSymbolizer;
 
-    public RasterSymbology getFinalRasterSymbolizer() {
+    public IRasterSymbology getFinalRasterSymbolizer() {
         return finalRasterSymbolizer;
     }
     

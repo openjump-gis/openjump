@@ -184,7 +184,7 @@ public class RasterTransparencyPanel extends JPanel implements ValueChecker,
 				.setTransparencyLevelInPercent(newTransparencyValue);
 
 		int newFreeRamValue = this.speedSlider.getValue();
-		RasterImageLayer.setFreeRamFactor(1.0 - newFreeRamValue / 100d);
+		this.rasterImageLayer.setFreeRamFactor(1.0 - newFreeRamValue / 100d);
 
 		this.rasterImageLayer.setFiringAppearanceEvents(true);
 
@@ -221,7 +221,7 @@ public class RasterTransparencyPanel extends JPanel implements ValueChecker,
 				.setTransparencyLevelInPercent(newTransparencyValue);
 
 		int newFreeRamValue = this.speedSlider.getValue();
-		RasterImageLayer.setFreeRamFactor(1.0 - newFreeRamValue / 100d);
+		this.rasterImageLayer.setFreeRamFactor(1.0 - newFreeRamValue / 100d);
 
 		this.rasterImageLayer.setFiringAppearanceEvents(true);
 

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<root>
+  <element xml-name="type" java-name="type"/>
+  <element xml-name="opacity" java-name="transparency"/>
+  <element xml-name="colormapentries" java-name="colorTreeMap"/>
+  <element xml-name="nodata_min" java-name="minNoDataValue"/>
+  <element xml-name="nodata_max" java-name="maxNoDataValue"/>
+  <element xml-name="nodata_color" java-name="noDataColor"/>
+</root>
