@@ -1,5 +1,7 @@
 package org.openjump.core.rasterimage;
 
+import org.locationtech.jts.util.Assert;
+
 import java.awt.Color;
 
 /**
@@ -84,5 +86,14 @@ abstract public class RasterSymbology implements IRasterSymbology {
     public void setNoDataColor(Color noDataColor) {
         this.noDataColor = noDataColor;
     }
-    
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            Assert.shouldNeverReachHere();
+            return null;
+        }
+    }
 }

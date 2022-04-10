@@ -1544,9 +1544,18 @@ public class RasterImageLayer extends GeoReferencedLayerable
     }
     
     public void setSymbology(IRasterSymbology symbology) throws NoninvertibleTransformException {
+        // Check if symbology applies to this raster
+        // TODO : should HeatmapSymbology be able to apply to raster with different number of bands?
+        if (symbology instanceof RasterHeatmapSymbology) {
+            if (((RasterHeatmapSymbology)symbology).colors.size() != getNumBands()) {
+                Logger.warn("Cannot apply raster heatmap symbology because the number of bands is not the same");
+                return;
+            }
+        }
         this.symbology = symbology;
         symbologyChanged = true;
         scaledBufferedImage = null;
+        fireLayerChanged(LayerEventType.VISIBILITY_CHANGED);
         //LayerViewPanel layerViewPanel = getWorkbenchContext().getLayerViewPanel();
         //if(layerViewPanel != null) {
         //    layerViewPanel.getViewport().update();

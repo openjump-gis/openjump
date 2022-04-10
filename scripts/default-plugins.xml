@@ -1566,6 +1566,18 @@
             <layername-popup-raster install="true" />
         </menus>
     </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.CopyRasterStylePlugIn
+        <menus>
+            <layername-popup-raster menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
+        org.openjump.core.ui.plugin.raster.PasteRasterStylePlugIn
+        <menus>
+            <layername-popup-raster menupath="MenuNames.STYLE" install="true" />
+        </menus>
+    </plug-in>
 
     <separator />
 

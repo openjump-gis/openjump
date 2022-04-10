@@ -5,7 +5,7 @@ import java.awt.*;
 /**
  * Apply symbology to a Raster.
  */
-public interface IRasterSymbology {
+public interface IRasterSymbology extends Cloneable {
 
   /**
    * Get global image transparency (maybe combined with a per pixel transparency)
@@ -121,4 +121,6 @@ public interface IRasterSymbology {
         (value == Double.NEGATIVE_INFINITY && getMinNoDataValue() == Double.NEGATIVE_INFINITY) ||
         ((float)value >= (float)getMinNoDataValue() && (float)value <= (float)getMaxNoDataValue());
   }
+
+  Object clone();
 }

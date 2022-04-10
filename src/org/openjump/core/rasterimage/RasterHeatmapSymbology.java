@@ -1,5 +1,7 @@
 package org.openjump.core.rasterimage;
 
+import org.locationtech.jts.util.Assert;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,7 +139,10 @@ public class RasterHeatmapSymbology extends RasterSymbology {
     return new Color((int)(Ar*255), (int)(Ag*255), (int)(Ab*255), (int)((Aa*255)));
   }
 
-
+  @Override
+  public Object clone() {
+    return super.clone();
+  }
 
 
 }
