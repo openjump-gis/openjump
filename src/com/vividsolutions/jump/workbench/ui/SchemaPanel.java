@@ -76,13 +76,13 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.apache.log4j.Logger;
 import org.openjump.core.ui.util.FeatureSchemaUtils;
 
 import org.locationtech.jts.util.Assert;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
 import com.vividsolutions.jump.workbench.model.FeatureEvent;
@@ -345,14 +345,13 @@ public class SchemaPanel extends JPanel {
 
             } catch (final Exception ex) {
 
-                final Logger LOG = Logger.getLogger(this.getClass());
                 JUMPWorkbench
                         .getInstance()
                         .getFrame()
                         .warnUser(
                                 this.getClass().getSimpleName() + " " + Error
                                         + ": " + ex.toString());
-                LOG.error(this.getClass().getName() + " " + Error + ": ", ex);
+                Logger.error(this.getClass().getName() + " " + Error + ": ", ex);
                 JOptionPane.showMessageDialog(JUMPWorkbench.getInstance()
                         .getFrame(), Error + ": " + ex, getName(), 0);
             }

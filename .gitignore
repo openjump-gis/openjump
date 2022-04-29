@@ -15,6 +15,9 @@ target/
 hs_err_pid*
 /bin/
 
+# IntelliJ IDE config files
+.idea/
+
 .okhttpcache/*
 .settings/*
 .classpath
