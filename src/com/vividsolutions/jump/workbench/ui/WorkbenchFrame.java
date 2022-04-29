@@ -80,7 +80,6 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
 import org.openjump.core.CheckOS;
 import org.openjump.core.model.TaskEvent;
 import org.openjump.core.model.TaskListener;
@@ -614,7 +613,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      */
     @Deprecated
     public void log(String message) {
-        log(message, null, new Exception().getStackTrace()[0]);
+        Logger.info(message);
     }
 
     /**
@@ -624,7 +623,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      */
     @Deprecated
     public void log(String message, Class clazz) {
-        log(message, null, new Exception().getStackTrace()[0]);
+        Logger.info(message);
     }
 
     /**
@@ -633,11 +632,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      */
     @Deprecated
     public void log(String message, Throwable t) {
-        log(message, t, new Exception().getStackTrace()[0]);
-    }
-
-    private void log(String message, Throwable t, StackTraceElement calledFrom) {
-        Logger.log(message, Logger.isDebugEnabled() ? t : null, Level.INFO, calledFrom);
+        Logger.info(message, t);
     }
 
     public void setMinimumFeatureExtentForAnyRenderingInPixels(
@@ -1941,7 +1936,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                         return;
                     }
                 } catch (Exception e) {
-                    log("", e);
+                    Logger.info(e);
                 }
 
                 // There are other internal frames associated with this task

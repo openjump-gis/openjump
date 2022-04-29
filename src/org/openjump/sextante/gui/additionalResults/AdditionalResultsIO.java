@@ -30,7 +30,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
-import org.apache.log4j.Logger;
 import org.math.plot.PlotPanel;
 import org.math.plot.plots.Plot;
 import org.openjump.core.apitools.IOTools;
@@ -43,6 +42,7 @@ import org.w3c.dom.Document;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.FeatureCollectionPanel;
@@ -361,13 +361,12 @@ public class AdditionalResultsIO {
 	}
 
 	public static void Logger(Class<?> plugin, Exception e) {
-		final Logger LOG = Logger.getLogger(plugin);
 		JUMPWorkbench
 		.getInstance()
 		.getFrame()
 		.warnUser(
 				plugin.getSimpleName() + " Exception: " + e.toString());
-		LOG.error(plugin.getName() + " Exception: ", e);
+		Logger.error(plugin.getName() + " Exception: ", e);
 	}
 
 

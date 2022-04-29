@@ -46,7 +46,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.xml.namespace.QName;
 
-import org.apache.log4j.Logger;
 import org.math.plot.PlotPanel;
 import org.math.plot.plots.Plot;
 import org.openjump.core.apitools.IOTools;
@@ -58,6 +57,7 @@ import org.openjump.sextante.core.ObjectAndDescription;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Task;
 import com.vividsolutions.jump.workbench.ui.FeatureCollectionPanel;
@@ -663,13 +663,12 @@ public class AdditionalResultsFrame extends DetachableInternalFrame {
     }
 
     public static void Logger(Class<?> plugin, Exception e) {
-        final Logger LOG = Logger.getLogger(plugin);
         JUMPWorkbench
                 .getInstance()
                 .getFrame()
                 .warnUser(
                         plugin.getSimpleName() + " Exception: " + e.toString());
-        LOG.error(plugin.getName() + " Exception: ", e);
+        Logger.error(plugin.getName() + " Exception: ", e);
     }
 
     protected JPanel getOKSavePanel() {

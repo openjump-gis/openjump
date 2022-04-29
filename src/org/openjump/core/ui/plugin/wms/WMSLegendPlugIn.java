@@ -27,13 +27,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.ui.io.file.FileNameExtensionFilter;
 import org.openjump.core.ui.swing.DetachableInternalFrame;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.WMSLayer;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -213,13 +213,12 @@ public class WMSLegendPlugIn extends AbstractPlugIn {
     }
 
     public static void Logger(Class<?> plugin, Exception e) {
-        final Logger LOG = Logger.getLogger(plugin);
         JUMPWorkbench
                 .getInstance()
                 .getFrame()
                 .warnUser(
                         plugin.getSimpleName() + " Exception: " + e.toString());
-        LOG.error(plugin.getName() + " Exception: ", e);
+        Logger.error(plugin.getName() + " Exception: ", e);
     }
 
     protected void saved(File file) {
