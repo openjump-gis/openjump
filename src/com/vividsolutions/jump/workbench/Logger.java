@@ -1,17 +1,28 @@
 package com.vividsolutions.jump.workbench;
 
+import static org.apache.logging.log4j.Level.DEBUG;
+import static org.apache.logging.log4j.core.appender.ConsoleAppender.Target.SYSTEM_OUT;
+
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+
+//import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import com.vividsolutions.jump.workbench.ui.plugin.GenerateLogPlugIn;
 
@@ -28,8 +39,9 @@ import com.vividsolutions.jump.workbench.ui.plugin.GenerateLogPlugIn;
 public class Logger {
 
   private static boolean initialized = false;
+  private static boolean log4j2Initialized = false;
 
-  private static void init(){
+  private static void initLog4j1(){
     if (initialized)
       return;
 
@@ -122,23 +134,27 @@ public class Logger {
    * @param logLevel log level of the message
    * @param calledFrom Exception stacktracle
    */
-  public static void log(String msg, Throwable t, Level logLevel,
-      StackTraceElement calledFrom) {
+  public static void log(String msg, Throwable t, Level logLevel, StackTraceElement calledFrom) {
+
+    // run our initLog4j2() before first call to log4j 2 to configure the Root Logger
+    initLog4j2();
 
     // get caller
     StackTraceElement element = getCaller(calledFrom);
 
-    org.apache.log4j.Logger logger = null;
+    org.apache.log4j.Logger logger1 = null;
+    org.apache.logging.log4j.core.Logger logger2 = null;
 
     if (element != null) {
-      logger = org.apache.log4j.Logger.getLogger(element.getClassName());
+      logger1 = org.apache.log4j.Logger.getLogger(element.getClassName());
+      logger2 = ((LoggerContext) LogManager.getContext(false)).getLogger(element.getClassName());
     }
 
-    // run our init() after first call to log4j to give it the possibility to read log4j.xml first
-    init();
+    // run our initLog4j1() after first call to log4j 1 to give it the possibility to read log4j.xml first
+    initLog4j1();
 
     // what's the current log level?
-    Level loggerLevel = logger.getEffectiveLevel();
+    Level loggerLevel = logger1.getEffectiveLevel();
 
     // only append code:line during debugging
     String msgAppend = "";
@@ -162,7 +178,69 @@ public class Logger {
         msg = t.getClass().getName();
     }
 
-    logger.log(logLevel, msg + msgAppend, t);
+    logger1.log(logLevel, msg + msgAppend, t);
+    logger2.log(getLogLevel(logLevel), msg + msgAppend, t);
+  }
+
+  private static void initLog4j2() {
+    if (log4j2Initialized) {
+      return;
+    }
+
+    LoggerContext context = (LoggerContext) LogManager.getContext(false);
+    Configuration configuration = context.getConfiguration();
+
+    if (configuration instanceof DefaultConfiguration) {
+      String defaultAppenderName = "DefaultConsole-2";
+      org.apache.logging.log4j.core.Appender defaultAppender = configuration.getAppender(defaultAppenderName);
+
+      org.apache.logging.log4j.core.appender.ConsoleAppender fallbackConsoleAppender =
+              org.apache.logging.log4j.core.appender.ConsoleAppender.newBuilder()
+                      .setTarget(SYSTEM_OUT)
+                      .setLayout(org.apache.logging.log4j.core.layout.PatternLayout.newBuilder()
+                              .withPattern("[%p] %d{HH:mm:ss.SSS} %m%n").build())
+                      .setName("FallbackConsoleAppender")
+                      .build();
+      fallbackConsoleAppender.start();
+
+      // Log Level must be adjusted on The Root Logger's LoggerConfig for configuration inheritance to work properly */
+      configuration.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(DEBUG);
+
+      context.getRootLogger().removeAppender(defaultAppender);
+      context.getRootLogger().addAppender(fallbackConsoleAppender);
+
+    }
+    log4j2Initialized = true;
+  }
+
+  // Temporary code to allow log4j 1 and log4j 2 to be used simultaneously.
+  private static org.apache.logging.log4j.Level getLogLevel(Level logLevel) {
+    if (logLevel.equals(Level.ALL)) {
+      return org.apache.logging.log4j.Level.ALL;
+    }
+    else if (logLevel.equals(Level.FATAL)) {
+      return org.apache.logging.log4j.Level.FATAL;
+    }
+    else if (logLevel.equals(Level.ERROR)) {
+      return org.apache.logging.log4j.Level.ERROR;
+    }
+    else if (logLevel.equals(Level.WARN)) {
+      return org.apache.logging.log4j.Level.WARN;
+    }
+    else if (logLevel.equals(Level.INFO)) {
+      return org.apache.logging.log4j.Level.INFO;
+    }
+    else if (logLevel.equals(Level.DEBUG)) {
+      return DEBUG;
+    }
+    else if (logLevel.equals(Level.TRACE)) {
+      return org.apache.logging.log4j.Level.TRACE;
+    }
+    else if (logLevel.equals(Level.OFF)) {
+      return org.apache.logging.log4j.Level.OFF;
+    }
+
+    return DEBUG;
   }
 
   private static StackTraceElement getCaller(StackTraceElement calledFrom) {

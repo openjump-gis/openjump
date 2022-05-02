@@ -67,6 +67,7 @@
       <outputDirectory>/bin</outputDirectory>
       <includes>
         <include>log4j.xml</include>
+        <include>log4j2.xml</include>
       </includes>
     </fileSet>
     <!-- <fileSet> <directory>docs</directory> <excludes> <exclude>**/*.doc</exclude> 

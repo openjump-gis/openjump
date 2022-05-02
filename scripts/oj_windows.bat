@@ -278,6 +278,7 @@ rem -- set settings home/log dir if none given --
   rem --- create folder if not existing ---
   if NOT EXIST "%SETTINGS_HOME%" mkdir "%SETTINGS_HOME%"
 
+rem change this over to log4j 2 as well
 rem -- look if we have a custom logging configuration in settings --
 if EXIST "%SETTINGS_HOME%\log4j.xml" (
   rem --- log4j can't seem to find absolute path without the file:/// prefix ---
@@ -291,6 +292,7 @@ if NOT DEFINED JAVA_MEM (
   call :memory
 )
 
+rem change this over to log4j 2 as well
 rem -- essential options, don't change unless you know what you're doing --
 set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration="%LOG4J_CONF%" -Dlog.dir="%LOG_DIR%" -Djump.home="%JUMP_HOME%" %JAVA_MEM%
 

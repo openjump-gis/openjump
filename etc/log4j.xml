@@ -6,6 +6,8 @@
    | example: http://wiki.apache.org/logging-log4j/Log4jXmlFormat
  -->
 
+<!-- This entire file should be replaced with log4j2 xml -->
+
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
   debug="false">
 
