@@ -132,9 +132,14 @@ public class Logger {
    * @param msg message to log
    * @param t throwable to log
    * @param logLevel log level of the message
-   * @param calledFrom Exception stacktracle
+   * @param calledFrom Exception stacktrace
    */
-  public static void log(String msg, Throwable t, Level logLevel, StackTraceElement calledFrom) {
+
+  public static void log(String msg, Throwable t, LogLevel logLevel, StackTraceElement calledFrom) {
+    log(msg, t, logLevel.getEquivalent(), calledFrom);
+  }
+
+  private static void log(String msg, Throwable t, Level logLevel, StackTraceElement calledFrom) {
 
     // run our initLog4j2() before first call to log4j 2 to configure the Root Logger
     initLog4j2();
@@ -312,12 +317,12 @@ public class Logger {
   /**
    * @return the current log level for the calling class
    */
-  public static Level getLevel() {
+  public static LogLevel getLevel() {
     // get caller
     StackTraceElement element = getCaller(new Exception().getStackTrace()[0]);
     org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(element
         .getClassName());
-    return logger.getEffectiveLevel();
+    return LogLevel.fromEquivalent(logger.getEffectiveLevel());
   }
 
   private static boolean isLoggerLevelEnabled(Level level) {
@@ -350,6 +355,32 @@ public class Logger {
 
   public static boolean isTraceEnabled() {
     return isLoggerLevelEnabled(Level.TRACE);
+  }
+
+  public enum LogLevel {
+    OFF(Level.OFF),
+    FATAL(Level.FATAL),
+    ERROR(Level.ERROR),
+    WARN(Level.WARN),
+    INFO(Level.INFO),
+    DEBUG(Level.DEBUG),
+    TRACE(Level.TRACE),
+    ALL(Level.ALL);
+
+    public static LogLevel fromEquivalent(Level equivalent) {
+      return valueOf(equivalent.toString());
+    }
+
+    private final Level equivalent;
+
+    LogLevel(Level equivalent) {
+      this.equivalent = equivalent;
+    }
+
+    private Level getEquivalent() {
+      return equivalent;
+    }
+
   }
 
 }
