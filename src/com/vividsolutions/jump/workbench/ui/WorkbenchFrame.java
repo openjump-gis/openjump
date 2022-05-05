@@ -97,6 +97,7 @@ import com.vividsolutions.jump.util.CollectionUtil;
 import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.Logger.LogLevel;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.CategoryEvent;
@@ -613,7 +614,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      */
     @Deprecated
     public void log(String message) {
-        Logger.info(message);
+        log(message, null, new Exception().getStackTrace()[0]);
     }
 
     /**
@@ -623,7 +624,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      */
     @Deprecated
     public void log(String message, Class clazz) {
-        Logger.info(message);
+        log(message, null, new Exception().getStackTrace()[0]);
     }
 
     /**
@@ -632,7 +633,11 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
      */
     @Deprecated
     public void log(String message, Throwable t) {
-        Logger.info(message, t);
+        log(message, t, new Exception().getStackTrace()[0]);
+    }
+
+    private void log(String message, Throwable t, StackTraceElement calledFrom) {
+        Logger.log(message, Logger.isDebugEnabled() ? t : null, LogLevel.INFO, calledFrom);
     }
 
     public void setMinimumFeatureExtentForAnyRenderingInPixels(
@@ -1936,7 +1941,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                         return;
                     }
                 } catch (Exception e) {
-                    Logger.info(e);
+                    log("", e);
                 }
 
                 // There are other internal frames associated with this task
