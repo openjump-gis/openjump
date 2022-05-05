@@ -30,7 +30,7 @@
     <!-- ================================= -->
 
   <appender name="LOGFILE" class="org.apache.log4j.FileAppender">
-    <param name="File" value="${log.dir}openjump.log" />
+    <param name="File" value="${log.dir}openjump1.log" />
     <param name="Append" value="true" />
     <param name="Encoding" value="UTF-8" />
     <layout class="org.apache.log4j.PatternLayout">

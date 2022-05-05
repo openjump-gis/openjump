@@ -192,7 +192,7 @@
                 <filter token="VERSION" value="${version}"/>
             </filterset-->
         </copy>
-        <copy file="etc/log4j.xml" todir="${archive.dir}/bin"/>
+        <copy file="etc/log4j.xml" todir="${archive.dir}/bin"/> <!-- TODO remove Log4j 1 -->
         <copy file="etc/log4j2.xml" todir="${archive.dir}/bin"/>
         <copy todir="${archive.dir}">
             <fileset dir=".">

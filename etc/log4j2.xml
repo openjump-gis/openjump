@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO">
-
-    <Properties>
-        <Property name="LOG_PATTERN">%date %-5level [%thread] %logger - %msg%n</Property>
-    </Properties>
+<Configuration status="info">
 
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
+        <Console name="Console"
+                 target="SYSTEM_OUT">
             <PatternLayout pattern="[%p] %d{HH:mm:ss.SSS} %m%n"/>
         </Console>
+        <File name="LogFile"
+                     fileName="${sys:log.dir}openjump2.log"
+                     append="true">
+            <PatternLayout pattern="[%p] %d{yyyy-MM-dd_HH:mm:ss.SSS} %m%n"/>
+        </File>
     </Appenders>
 
     <Loggers>
-        <Root level="trace">
+        <Root level="info">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="LogFile"/>
         </Root>
     </Loggers>
 </Configuration>

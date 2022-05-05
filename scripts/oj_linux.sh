@@ -356,7 +356,7 @@ fi
 # eventually try to start if no errors so far
 if [ -z "$ERROR" ]; then
   echo ---Start OJ---
-  # log.dir needs a trailing slash for path concatenation in log4j.xml
+  # log.dir needs a trailing slash for path concatenation in log4j2.xml
 "$JAVA" -Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader -cp "$CLASSPATH" -Dlog.dir="$JUMP_SETTINGS/" $JAVA_OPTS $MAIN -state "$JUMP_SETTINGS/" $JUMP_OPTS "$@"
   # result of jre call
   ERROR=$?

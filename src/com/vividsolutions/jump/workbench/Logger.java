@@ -6,7 +6,6 @@ import static org.apache.logging.log4j.core.appender.ConsoleAppender.Target.SYST
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -22,7 +21,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import com.vividsolutions.jump.workbench.ui.plugin.GenerateLogPlugIn;
 
