@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+   | For more configuration information and examples see the Log4j 2
+   | configuration manual: https://logging.apache.org/log4j/2.x/manual/configuration.html
+   | examples: https://howtodoinjava.com/log4j2/log4j2-xml-configuration-example/
+ -->
+
+<!-- Set status to "debug" to troubleshoot Log4j 2 issues, or use VM option: -Dlog4j2.debug -->
 <Configuration status="info">
 
     <Appenders>
+
+        <!-- ============================== -->
+        <!-- Append messages to the console -->
+        <!-- ============================== -->
+
+        <!-- Classname & line are added via OJ Logger -->
+        <!-- Available targets are SYSTEM_OUT and SYSTEM_ERR -->
         <Console name="Console"
                  target="SYSTEM_OUT">
+
+            <!-- Date     : %d{DEFAULT} display date in yyyy-MM-dd HH:mm:ss,SSS format -->
+            <!-- Priority : %p display the priority level                              -->
+            <!-- Message  : %m%n displays the log message (%n = os specific newline)   -->
+            <!-- See https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout for more options and information -->
             <PatternLayout pattern="[%p] %d{HH:mm:ss.SSS} %m%n"/>
         </Console>
+
+        <!-- ================================= -->
+        <!-- Preserve messages in a local file -->
+        <!-- ================================= -->
+
+        <!-- Properties have namespace in log4j2.xml - use ${sys:X} to get X from system properties -->
+        <!-- See https://logging.apache.org/log4j/2.x/manual/configuration.html#PropertySubstitution for more options and information -->
         <File name="LogFile"
                      fileName="${sys:log.dir}openjump2.log"
                      append="true">
@@ -14,9 +40,21 @@
     </Appenders>
 
     <Loggers>
+        <!-- Available levels: all|trace|debug|info|warn|error|fatal|off -->
         <Root level="info">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="LogFile"/>
         </Root>
+
+        <!-- ======================================================== -->
+        <!-- To adjust log level for a specific (sub-)package:        -->
+        <!-- 1. Uncomment one or more of the following Logger configs -->
+        <!-- 2. Adjust package name and level as needed               -->
+        <!-- ======================================================== -->
+
+        <!-- <Logger name="org.apache" level="warn"/>  -->
+        <!-- <Logger name="com.vividsolutions" level="debug"/>  -->
+        <!-- <Logger name="com.vividsolutions.jump.workbench" level="debug"/>  -->
+        <!-- <Logger name="com.vividsolutions.jump.workbench.plugin" level="trace"/>  -->
     </Loggers>
 </Configuration>
