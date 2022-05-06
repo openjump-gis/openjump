@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -244,7 +245,7 @@ public class Logger {
    * @return files list
    */
   public static List<File> getLogFiles() {
-    List files = new ArrayList<File>();
+    List<File> files = new ArrayList<>();
     Enumeration<org.apache.log4j.Logger> loggers = org.apache.log4j.LogManager
         .getCurrentLoggers();
     org.apache.log4j.Logger rootlogger = org.apache.log4j.LogManager
@@ -266,6 +267,17 @@ public class Logger {
         }
       }
     }
+
+    List<File> fileList = getLoggerContext().getLoggers().stream()
+            .flatMap(logger -> logger.getAppenders().values().stream())
+            .filter(appender -> appender instanceof org.apache.logging.log4j.core.appender.FileAppender)
+            .map(appender -> (org.apache.logging.log4j.core.appender.FileAppender) appender)
+            .map(org.apache.logging.log4j.core.appender.FileAppender::getFileName)
+            .distinct()
+            .map(File::new)
+            .collect(Collectors.toList());
+
+    files.addAll(fileList);
 
     return files;
   }
