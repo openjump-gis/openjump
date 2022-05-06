@@ -1,6 +1,5 @@
 package com.vividsolutions.jump.workbench;
 
-import static org.apache.logging.log4j.Level.DEBUG;
 import static org.apache.logging.log4j.core.appender.ConsoleAppender.Target.SYSTEM_OUT;
 
 import java.io.File;
@@ -10,14 +9,13 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-//import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
@@ -36,11 +34,11 @@ import com.vividsolutions.jump.workbench.ui.plugin.GenerateLogPlugIn;
  */
 public class Logger {
 
-  private static boolean initialized = false;
+  private static boolean log4j1Initialized = false;
   private static boolean log4j2Initialized = false;
 
   private static void initLog4j1(){
-    if (initialized)
+    if (log4j1Initialized)
       return;
 
     // just in case log4j init failed add a default console appender for us to see errors printed
@@ -48,79 +46,79 @@ public class Logger {
     if (!rootLogger.getAllAppenders().hasMoreElements()) {
       rootLogger.addAppender(new ConsoleAppender(new PatternLayout("[%p] %d{HH:mm:ss.SSS} %m%n"),"System.out"));
     }
-    initialized = true;
+    log4j1Initialized = true;
   }
 
   public static void fatal(String msg) {
-    log(msg, null, Level.FATAL, new Exception().getStackTrace()[0]);
+    log(msg, null, LogLevel.FATAL, new Exception().getStackTrace()[0]);
   }
 
   public static void error(String msg) {
-    log(msg, null, Level.ERROR, new Exception().getStackTrace()[0]);
+    log(msg, null, LogLevel.ERROR, new Exception().getStackTrace()[0]);
   }
 
   public static void warn(String msg) {
-    log(msg, null, Level.WARN, new Exception().getStackTrace()[0]);
+    log(msg, null, LogLevel.WARN, new Exception().getStackTrace()[0]);
   }
 
   public static void info(String msg) {
-    log(msg, null, Level.INFO, new Exception().getStackTrace()[0]);
+    log(msg, null, LogLevel.INFO, new Exception().getStackTrace()[0]);
   }
 
   public static void debug(String msg) {
-    log(msg, null, Level.DEBUG, new Exception().getStackTrace()[0]);
+    log(msg, null, LogLevel.DEBUG, new Exception().getStackTrace()[0]);
   }
 
   public static void trace(String msg) {
-    log(msg, null, Level.TRACE, new Exception().getStackTrace()[0]);
+    log(msg, null, LogLevel.TRACE, new Exception().getStackTrace()[0]);
   }
 
   public static void fatal(Throwable t) {
-    log(null, t, Level.FATAL, new Exception().getStackTrace()[0]);
+    log(null, t, LogLevel.FATAL, new Exception().getStackTrace()[0]);
   }
 
   public static void error(Throwable t) {
-    log(null, t, Level.ERROR, new Exception().getStackTrace()[0]);
+    log(null, t, LogLevel.ERROR, new Exception().getStackTrace()[0]);
   }
 
   public static void warn(Throwable t) {
-    log(null, t, Level.WARN, new Exception().getStackTrace()[0]);
+    log(null, t, LogLevel.WARN, new Exception().getStackTrace()[0]);
   }
 
   public static void info(Throwable t) {
-    log(null, t, Level.INFO, new Exception().getStackTrace()[0]);
+    log(null, t, LogLevel.INFO, new Exception().getStackTrace()[0]);
   }
 
   public static void debug(Throwable t) {
-    log(null, t, Level.DEBUG, new Exception().getStackTrace()[0]);
+    log(null, t, LogLevel.DEBUG, new Exception().getStackTrace()[0]);
   }
 
   public static void trace(Throwable t) {
-    log(null, t, Level.TRACE, new Exception().getStackTrace()[0]);
+    log(null, t, LogLevel.TRACE, new Exception().getStackTrace()[0]);
   }
 
   public static void fatal(String msg, Throwable t) {
-    log(msg, t, Level.FATAL, new Exception().getStackTrace()[0]);
+    log(msg, t, LogLevel.FATAL, new Exception().getStackTrace()[0]);
   }
 
   public static void error(String msg, Throwable t) {
-    log(msg, t, Level.ERROR, new Exception().getStackTrace()[0]);
+    log(msg, t, LogLevel.ERROR, new Exception().getStackTrace()[0]);
   }
 
   public static void warn(String msg, Throwable t) {
-    log(msg, t, Level.WARN, new Exception().getStackTrace()[0]);
+    log(msg, t, LogLevel.WARN, new Exception().getStackTrace()[0]);
   }
 
   public static void info(String msg, Throwable t) {
-    log(msg, t, Level.INFO, new Exception().getStackTrace()[0]);
+    log(msg, t, LogLevel.INFO, new Exception().getStackTrace()[0]);
   }
 
   public static void debug(String msg, Throwable t) {
-    log(msg, t, Level.DEBUG, new Exception().getStackTrace()[0]);
+    log(msg, t, LogLevel.DEBUG, new Exception().getStackTrace()[0]);
   }
 
   public static void trace(String msg, Throwable t) {
-    log(msg, t, Level.TRACE, new Exception().getStackTrace()[0]);
+    log(msg, t, LogLevel.TRACE, new Exception().getStackTrace()[0]);
   }
 
   /**
@@ -134,11 +132,6 @@ public class Logger {
    */
 
   public static void log(String msg, Throwable t, LogLevel logLevel, StackTraceElement calledFrom) {
-    log(msg, t, logLevel.getEquivalent(), calledFrom);
-  }
-
-  private static void log(String msg, Throwable t, Level logLevel, StackTraceElement calledFrom) {
-
     // run our initLog4j2() before first call to log4j 2 to configure the Root Logger
     initLog4j2();
 
@@ -150,39 +143,42 @@ public class Logger {
 
     if (element != null) {
       logger1 = org.apache.log4j.Logger.getLogger(element.getClassName());
-      logger2 = ((LoggerContext) LogManager.getContext(false)).getLogger(element.getClassName());
+      logger2 = getLogger(element.getClassName());
     }
 
     // run our initLog4j1() after first call to log4j 1 to give it the possibility to read log4j.xml first
     initLog4j1();
 
-    // what's the current log level?
-    Level loggerLevel = logger1.getEffectiveLevel();
+    // In Log4j 2, "DEBUG.isMoreSpecificThan(DEBUG)" is true, and "DEBUG.isMoreSpecificThan(INFO)" is false
+    boolean debugEnabled = !logger2.getLevel().isMoreSpecificThan(Level.INFO);
 
     // only append code:line during debugging
     String msgAppend = "";
-    if (element != null && !loggerLevel.isGreaterOrEqual(Level.INFO))
+    if (element != null && debugEnabled) {
       msgAppend = " at " + element + "";
+    }
 
     // empty log messages provoke this error line for devs to fix the cause
-    if (msg!=null && msg.isEmpty()) {
+    if (msg !=null && msg.isEmpty()) {
       error("Logger: string message was empty but not null at "+element);
     }
 
     // throw error on empty log entries
-    if (t == null && msg == null)
-        throw new IllegalArgumentException(
-            "Logger: either message or throwable must be given. "+element);
+    if (t == null && msg == null) {
+      throw new IllegalArgumentException(
+          "Logger: either message or throwable must be given. "+element);
+    }
 
     // use throwable's data if null message was given
     if (msg == null) {
       msg = t.getMessage();
-      if (msg == null || msg.isEmpty() )
+      if (msg == null || msg.isEmpty() ) {
         msg = t.getClass().getName();
+      }
     }
 
-    logger1.log(logLevel, msg + msgAppend, t);
-    logger2.log(getLogLevel(logLevel), msg + msgAppend, t);
+    logger1.log(logLevel.getLog4j1Equivalent(), msg + msgAppend, t);
+    logger2.log(logLevel.getLog4j2Equivalent(), msg + msgAppend, t);
   }
 
   private static void initLog4j2() {
@@ -190,7 +186,7 @@ public class Logger {
       return;
     }
 
-    LoggerContext context = (LoggerContext) LogManager.getContext(false);
+    LoggerContext context = getLoggerContext();
     Configuration configuration = context.getConfiguration();
 
     if (configuration instanceof DefaultConfiguration) {
@@ -206,44 +202,14 @@ public class Logger {
                       .build();
       fallbackConsoleAppender.start();
 
-      // Log Level must be adjusted on The Root Logger's LoggerConfig for configuration inheritance to work properly */
-      configuration.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(DEBUG);
+      // Log Level must be adjusted on The Root Logger's LoggerConfig for configuration inheritance to work properly
+      configuration.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.DEBUG);
 
       context.getRootLogger().removeAppender(defaultAppender);
       context.getRootLogger().addAppender(fallbackConsoleAppender);
 
     }
     log4j2Initialized = true;
-  }
-
-  // Temporary code to allow log4j 1 and log4j 2 to be used simultaneously.
-  private static org.apache.logging.log4j.Level getLogLevel(Level logLevel) {
-    if (logLevel.equals(Level.ALL)) {
-      return org.apache.logging.log4j.Level.ALL;
-    }
-    else if (logLevel.equals(Level.FATAL)) {
-      return org.apache.logging.log4j.Level.FATAL;
-    }
-    else if (logLevel.equals(Level.ERROR)) {
-      return org.apache.logging.log4j.Level.ERROR;
-    }
-    else if (logLevel.equals(Level.WARN)) {
-      return org.apache.logging.log4j.Level.WARN;
-    }
-    else if (logLevel.equals(Level.INFO)) {
-      return org.apache.logging.log4j.Level.INFO;
-    }
-    else if (logLevel.equals(Level.DEBUG)) {
-      return DEBUG;
-    }
-    else if (logLevel.equals(Level.TRACE)) {
-      return org.apache.logging.log4j.Level.TRACE;
-    }
-    else if (logLevel.equals(Level.OFF)) {
-      return org.apache.logging.log4j.Level.OFF;
-    }
-
-    return DEBUG;
   }
 
   private static StackTraceElement getCaller(StackTraceElement calledFrom) {
@@ -261,6 +227,14 @@ public class Logger {
     }
 
     return null;
+  }
+
+  private static org.apache.logging.log4j.core.Logger getLogger(String className) {
+    return getLoggerContext().getLogger(className);
+  }
+
+  private static LoggerContext getLoggerContext() {
+    return (LoggerContext) LogManager.getContext(false);
   }
 
   /**
@@ -297,19 +271,24 @@ public class Logger {
   }
 
   /**
-   * setting current log level for the root logger (internally use
-   * org.apache.log4j.Level.toLevel)
+   * setting current log level for the root logger
    *
    * @param levelString a string representing the LogLevel
    */
   public static void setLevel(String levelString) {
-    Level level = org.apache.log4j.Level.toLevel(levelString);
-    if (level.equals(Level.DEBUG) && !levelString.equalsIgnoreCase("debug"))
-      throw new IllegalArgumentException("unknown log verbosity level.");
+    LogLevel logLevel = LogLevel.valueOf(levelString.toUpperCase());
 
-    org.apache.log4j.Logger.getRootLogger().setLevel(level);
+    org.apache.log4j.Logger.getRootLogger().setLevel(logLevel.getLog4j1Equivalent()); // TODO remove Log4j 1 here
 
-    info(new MessageFormat("Setting log level to {0}").format(new Object[]{level}));
+    // initialize the Root Logger if needed, or else there might be no Logger to configure
+    initLog4j2();
+
+    LoggerContext loggerContext = getLoggerContext();
+    // Log Level must be adjusted on The Root Logger's LoggerConfig for configuration inheritance to work properly
+    loggerContext.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(logLevel.getLog4j2Equivalent());
+    loggerContext.getRootLogger().setLevel(logLevel.getLog4j2Equivalent());
+
+    info(new MessageFormat("Setting log level to {0}").format(new Object[]{logLevel}));
   }
 
   /**
@@ -318,65 +297,78 @@ public class Logger {
   public static LogLevel getLevel() {
     // get caller
     StackTraceElement element = getCaller(new Exception().getStackTrace()[0]);
-    org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(element
-        .getClassName());
-    return LogLevel.fromEquivalent(logger.getEffectiveLevel());
+
+    org.apache.logging.log4j.core.Logger logger2 = getLogger(element.getClassName());
+
+    return LogLevel.fromLog4j2Equivalent(logger2.getLevel());
   }
 
-  private static boolean isLoggerLevelEnabled(Level level) {
+  private static boolean isLoggerLevelEnabled(LogLevel level) {
     // get caller, this time 2 stack entries away
     StackTraceElement element = getCaller(new Exception().getStackTrace()[1]);
-    org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(element
-        .getClassName());
-    return level.isGreaterOrEqual(logger.getEffectiveLevel());
+
+    org.apache.logging.log4j.core.Logger logger = getLogger(element.getClassName());
+
+    // In Log4j 2, "DEBUG.isMoreSpecificThan(DEBUG)" is true, and "DEBUG.isMoreSpecificThan(INFO)" is false
+    return level.getLog4j2Equivalent().isMoreSpecificThan(logger.getLevel());
   }
 
   public static boolean isFatalEnabled() {
-    return isLoggerLevelEnabled(Level.FATAL);
+    return isLoggerLevelEnabled(LogLevel.FATAL);
   }
 
   public static boolean isErrorEnabled() {
-    return isLoggerLevelEnabled(Level.ERROR);
+    return isLoggerLevelEnabled(LogLevel.ERROR);
   }
 
   public static boolean isWarnEnabled() {
-    return isLoggerLevelEnabled(Level.WARN);
+    return isLoggerLevelEnabled(LogLevel.WARN);
   }
 
   public static boolean isInfoEnabled() {
-    return isLoggerLevelEnabled(Level.INFO);
+    return isLoggerLevelEnabled(LogLevel.INFO);
   }
 
   public static boolean isDebugEnabled() {
-    return isLoggerLevelEnabled(Level.DEBUG);
+    return isLoggerLevelEnabled(LogLevel.DEBUG);
   }
 
   public static boolean isTraceEnabled() {
-    return isLoggerLevelEnabled(Level.TRACE);
+    return isLoggerLevelEnabled(LogLevel.TRACE);
   }
 
   public enum LogLevel {
-    OFF(Level.OFF),
-    FATAL(Level.FATAL),
-    ERROR(Level.ERROR),
-    WARN(Level.WARN),
-    INFO(Level.INFO),
-    DEBUG(Level.DEBUG),
-    TRACE(Level.TRACE),
-    ALL(Level.ALL);
+    OFF(org.apache.log4j.Level.OFF, Level.OFF),
+    FATAL(org.apache.log4j.Level.FATAL, Level.FATAL),
+    ERROR(org.apache.log4j.Level.ERROR, Level.ERROR),
+    WARN(org.apache.log4j.Level.WARN, Level.WARN),
+    INFO(org.apache.log4j.Level.INFO, Level.INFO),
+    DEBUG(org.apache.log4j.Level.DEBUG, Level.DEBUG),
+    TRACE(org.apache.log4j.Level.TRACE, Level.TRACE),
+    ALL(org.apache.log4j.Level.ALL, Level.ALL);
 
-    public static LogLevel fromEquivalent(Level equivalent) {
+    public static LogLevel fromLog4j1Equivalent(org.apache.log4j.Level equivalent) {
       return valueOf(equivalent.toString());
     }
 
-    private final Level equivalent;
-
-    LogLevel(Level equivalent) {
-      this.equivalent = equivalent;
+    public static LogLevel fromLog4j2Equivalent(Level equivalent) {
+      return valueOf(equivalent.name());
     }
 
-    private Level getEquivalent() {
-      return equivalent;
+    private final org.apache.log4j.Level log4j1Equivalent;
+    private final Level log4j2Equivalent;
+
+    LogLevel(org.apache.log4j.Level log4j1Equivalent, Level log4j2Equivalent) {
+      this.log4j1Equivalent = log4j1Equivalent;
+      this.log4j2Equivalent = log4j2Equivalent;
+    }
+
+    private org.apache.log4j.Level getLog4j1Equivalent() {
+      return log4j1Equivalent;
+    }
+
+    private Level getLog4j2Equivalent() {
+      return log4j2Equivalent;
     }
 
   }
