@@ -169,12 +169,11 @@ public class Logger {
       String defaultAppenderName = "DefaultConsole-2";
       Appender defaultAppender = configuration.getAppender(defaultAppenderName);
 
-      ConsoleAppender fallbackConsoleAppender =
-              ConsoleAppender.newBuilder()
-                      .setTarget(SYSTEM_OUT)
-                      .setLayout(PatternLayout.newBuilder().withPattern("[%p] %d{HH:mm:ss.SSS} %m%n").build())
-                      .setName("FallbackConsoleAppender")
-                      .build();
+      ConsoleAppender fallbackConsoleAppender = ConsoleAppender.newBuilder()
+              .setTarget(SYSTEM_OUT)
+              .setLayout(PatternLayout.newBuilder().withPattern("[%p] %d{HH:mm:ss.SSS} %m%n").build())
+              .setName("FallbackConsoleAppender")
+              .build();
       fallbackConsoleAppender.start();
 
       // Log Level must be adjusted on The Root Logger's LoggerConfig for configuration inheritance to work properly
@@ -249,7 +248,7 @@ public class Logger {
     getLoggerContext().getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(logLevel.getEquivalent());
     getLoggerContext().getRootLogger().setLevel(logLevel.getEquivalent());
 
-    info(new MessageFormat("Setting log level to {0}").format(new Object[]{logLevel}));
+    info("Setting log level to " + logLevel);
   }
 
   /**
