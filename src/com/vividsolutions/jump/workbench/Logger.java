@@ -3,7 +3,6 @@ package com.vividsolutions.jump.workbench;
 import static org.apache.logging.log4j.core.appender.ConsoleAppender.Target.SYSTEM_OUT;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
