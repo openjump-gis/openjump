@@ -278,14 +278,6 @@ rem -- set settings home/log dir if none given --
   rem --- create folder if not existing ---
   if NOT EXIST "%SETTINGS_HOME%" mkdir "%SETTINGS_HOME%"
 
-rem TODO remove log4j 1
-rem -- look if we have a custom logging configuration in settings --
-if EXIST "%SETTINGS_HOME%\log4j.xml" (
-  rem --- log4j can't seem to find absolute path without the file:/// prefix ---
-  set "LOG4J_CONF=file:///%SETTINGS_HOME%\log4j.xml"
-) else (
-  set LOG4J_CONF=.\bin\log4j.xml
-)
 rem -- look if we have a custom logging configuration in settings --
 if EXIST "%SETTINGS_HOME%\log4j2.xml" (
   set "LOG4J2_CONF=%SETTINGS_HOME%\log4j2.xml"
@@ -298,9 +290,8 @@ if NOT DEFINED JAVA_MEM (
   call :memory
 )
 
-rem TODO remove log4j 1
 rem -- essential options, don't change unless you know what you're doing --
-set JAVA_OPTS=%JAVA_OPTS% -Dlog4j.configuration="%LOG4J_CONF%" -Dlog4j2.configurationFile=LOG4J2_CONF -Dlog.dir="%LOG_DIR%" -Djump.home="%JUMP_HOME%" %JAVA_MEM%
+set JAVA_OPTS=%JAVA_OPTS% -Dlog4j2.configurationFile="%LOG4J2_CONF%" -Dlog.dir="%LOG_DIR%" -Djump.home="%JUMP_HOME%" %JAVA_MEM%
 
 rem -- set default app options --
 set JUMP_OPTS=-default-plugins bin\default-plugins.xml -state "%SETTINGS_HOME%" -extensions-directory "%LIB%\ext" %JUMP_OPTS%
