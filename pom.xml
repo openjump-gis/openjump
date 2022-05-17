@@ -1577,7 +1577,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-            <version>2.12.1</version>
+            <version>2.12.2</version>
             <exclusions>
                 <!-- prevent error when building with jre9+, apparently 
                      org.w3c.dom is part of jre as module java.xml, error is
