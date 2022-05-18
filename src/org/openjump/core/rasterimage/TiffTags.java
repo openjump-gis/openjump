@@ -256,6 +256,7 @@ public class TiffTags {
      * @param tiffFile the Tiff file
      * @return the tiff image metadata
      */
+    // TODO : refactor and make it more robust
     public static TiffMetadata readIIOMetadata(File tiffFile) throws IOException, TiffReadingException {
 
         Integer colCount = null;
@@ -279,8 +280,14 @@ public class TiffTags {
         Map<String,Object> tagsByName = new HashMap<>();
         Map<Integer,Object> tagsById = new HashMap<>();
         traverse(root.getFirstChild(), tagsByName, tagsById);
-        colCount = ((int[])tagsById.get(256))[0];
-        rowCount = ((int[])tagsById.get(257))[0];
+        if (tagsById.get(256) instanceof int[])
+            colCount = ((int[])tagsById.get(256))[0];
+        else
+            colCount = (int)((long[])tagsById.get(256))[0];
+        if (tagsById.get(257) instanceof int[])
+            rowCount = ((int[])tagsById.get(257))[0];
+        else
+            rowCount = (int)((long[])tagsById.get(257))[0];
         AffineTransform transform = new AffineTransform();
         if (tagsByName.get("ModelPixelScaleTag") != null && tagsByName.get("ModelTiePointTag") != null)
             transform = getTransformFromScaleAndTiePoint(
