@@ -68,10 +68,11 @@ public class RasterImageIOUtils {
                 .getRectangleFromEnvelope(envWanted));
 
         rasterImageIO.writeImage(file, raster, envWanted,
-                rasterImageIO.new CellSizeXY(rLayer.getMetadata()
-                        .getOriginalCellSize(), rLayer.getMetadata()
-                        .getOriginalCellSize()), rLayer.getMetadata()
-                        .getNoDataValue());
+            rasterImageIO.new CellSizeXY(
+                rLayer.getMetadata().getOriginalCellSize().getX(),
+                rLayer.getMetadata().getOriginalCellSize().getY()
+            ),
+            rLayer.getMetadata().getNoDataValue());
     }
 
     public static void saveTIF(File file, RasterImageLayer rLayer,
@@ -113,10 +114,11 @@ public class RasterImageIOUtils {
         Raster raster = bi.getData();// rLayer.getRasterData(rLayer.getRectangleFromEnvelope(envWanted));
 
         rasterImageIO.writeImage(file, raster, envWanted,
-                rasterImageIO.new CellSizeXY(rLayer.getMetadata()
-                        .getOriginalCellSize(), rLayer.getMetadata()
-                        .getOriginalCellSize()), rLayer.getMetadata()
-                        .getNoDataValue());
+            rasterImageIO.new CellSizeXY(
+                rLayer.getMetadata().getOriginalCellSize().getX(),
+                rLayer.getMetadata().getOriginalCellSize().getY()
+            ),
+            rLayer.getMetadata().getNoDataValue());
     }
 
     /**
@@ -815,10 +817,7 @@ public class RasterImageIOUtils {
 
         GridFloat gf = new GridFloat(file.getAbsolutePath());
 
-        Envelope imageEnvelope = new Envelope(gf.getXllCorner(),
-                gf.getXllCorner() + gf.getnCols() * gf.getCellSize(),
-                gf.getYllCorner(), gf.getYllCorner() + gf.getnRows()
-                        * gf.getCellSize());
+        Envelope imageEnvelope = gf.getEnvelope();
 
         RasterImageLayer ril = new RasterImageLayer(file.getName(), context
                 .getWorkbenchContext().getLayerManager(),
@@ -855,10 +854,7 @@ public class RasterImageIOUtils {
                 viewport.getEnvelopeInModelCoordinates(), requestedRes);
         GridAscii gf = new GridAscii(file.getAbsolutePath());
 
-        Envelope imageEnvelope = new Envelope(gf.getXllCorner(),
-                gf.getXllCorner() + gf.getnCols() * gf.getCellSize(),
-                gf.getYllCorner(), gf.getYllCorner() + gf.getnRows()
-                        * gf.getCellSize());
+        Envelope imageEnvelope = gf.getEnvelope();
 
         RasterImageLayer rasterlayer = new RasterImageLayer(file.getName(),
                 context.getWorkbenchContext().getLayerManager(),

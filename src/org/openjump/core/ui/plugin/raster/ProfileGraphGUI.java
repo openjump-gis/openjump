@@ -194,15 +194,15 @@ public class ProfileGraphGUI {
         dy = Math.abs(y2 - y);
         if (dx > 0.0 || dy > 0.0) {
             if (dx > dy) {
-                dx /= getLayer().getMetadata().getOriginalCellSize();// this.rstLayer.getWindowCellSize().x;
+                dx /= getLayer().getMetadata().getOriginalCellSize().getX();// this.rstLayer.getWindowCellSize().x;
                 n = dx;
                 dy /= dx;
-                dx = getLayer().getMetadata().getOriginalCellSize();// this.rstLayer.getWindowCellSize().x;
+                dx = getLayer().getMetadata().getOriginalCellSize().getX();// this.rstLayer.getWindowCellSize().x;
             } else {
-                dy /= getLayer().getMetadata().getOriginalCellSize();// this.rstLayer.getWindowCellSize().y;
+                dy /= getLayer().getMetadata().getOriginalCellSize().getY();// this.rstLayer.getWindowCellSize().y;
                 n = dy;
                 dx /= dy;
-                dy = getLayer().getMetadata().getOriginalCellSize();// this.rstLayer.getWindowCellSize().y;
+                dy = getLayer().getMetadata().getOriginalCellSize().getY();// this.rstLayer.getWindowCellSize().y;
             }
             if (x2 < x) {
                 dx = -dx;

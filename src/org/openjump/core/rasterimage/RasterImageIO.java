@@ -14,6 +14,7 @@ import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.media.jai.*;
@@ -116,12 +117,15 @@ public class RasterImageIO {
 			}
 			 Envelope envelope = getGeoReferencing(fileNameOrURL, true,
 			 	new Point(bImage.getWidth(), bImage.getHeight()));
-			double cellSize = (envelope.getMaxX() - envelope.getMinX())
-					/ bImage.getWidth();
-			return new ImageAndMetadata(bImage, new Metadata(envelope,
-					envelope, new Point(bImage.getWidth(), bImage.getHeight()),
-					new Point(bImage.getWidth(), bImage.getHeight()), cellSize,
-					cellSize, Double.NaN, stats));
+			double cellSizeX = envelope.getWidth() / bImage.getWidth();
+			double cellSizeY = envelope.getHeight() / bImage.getHeight();
+			//Point2D.Double cellSize = new Point2D.Double(cellSizeX, cellSizeY);
+			return new ImageAndMetadata(bImage,
+					new Metadata(envelope, envelope,
+							new Point(bImage.getWidth(), bImage.getHeight()),
+							new Point(bImage.getWidth(), bImage.getHeight()),
+							new Resolution(cellSizeX, cellSizeY),
+							new Resolution(cellSizeX, cellSizeY), Double.NaN, stats));
 
     } else if (fileNameOrURL.toLowerCase().endsWith(".tif") || fileNameOrURL.toLowerCase().endsWith(".tiff")) {
 
@@ -153,20 +157,16 @@ public class RasterImageIO {
 			GridFloat gf = new GridFloat(fileNameOrURL);
 			gf.readGrid(null);
 
-			Envelope imageEnvelope = new Envelope(gf.getXllCorner(),
-					gf.getXllCorner() + gf.getnCols() * gf.getCellSize(),
-					gf.getYllCorner(), gf.getYllCorner() + gf.getnRows()
-							* gf.getCellSize());
+			Envelope imageEnvelope = gf.getEnvelope();
 
 			stats = new Stats(1);
-			stats.setStatsForBand(0, gf.getMinVal(), gf.getMaxVal(),
-					gf.getMeanVal(), gf.getStDevVal());
+			stats.setStatsForBand(0, gf.getStatistics());
 
 			return new ImageAndMetadata(gf.getBufferedImage(), new Metadata(
-					imageEnvelope, imageEnvelope, new Point(gf.getnCols(),
-							gf.getnRows()), new Point(gf.getnCols(),
-							gf.getnRows()), gf.getCellSize(), gf.getCellSize(),
-					gf.getNoData(), stats));
+					imageEnvelope, imageEnvelope, new Point(gf.getColNumber(),
+							gf.getRowNumber()), new Point(gf.getColNumber(),
+							gf.getRowNumber()), gf.getResolution(), gf.getResolution(),
+					gf.getNoDataValue(), stats));
 
 		} else if (fileNameOrURL.toLowerCase().endsWith(".asc")
 				|| fileNameOrURL.toLowerCase().endsWith(".txt")) {
@@ -174,21 +174,17 @@ public class RasterImageIO {
 			GridAscii ga = new GridAscii(fileNameOrURL);
 			ga.readGrid(null);
 
-			Envelope imageEnvelope = new Envelope(ga.getXllCorner(),
-					ga.getXllCorner() + ga.getnCols() * ga.getCellSize(),
-					ga.getYllCorner(), ga.getYllCorner() + ga.getnRows()
-							* ga.getCellSize());
+			Envelope imageEnvelope = ga.getEnvelope();
 
 			BufferedImage pImage = ga.getBufferedImage();
 
 			stats = new Stats(1);
-			stats.setStatsForBand(0, ga.getMinVal(), ga.getMaxVal(),
-					ga.getMeanVal(), ga.getStDevVal());
+			stats.setStatsForBand(0, ga.getStatistics());
 
 			return new ImageAndMetadata(pImage, new Metadata(imageEnvelope,
-					imageEnvelope, new Point(ga.getnCols(), ga.getnRows()),
-					new Point(ga.getnCols(), ga.getnRows()), ga.getCellSize(),
-					ga.getCellSize(), ga.getNoData(), stats));
+					imageEnvelope, new Point(ga.getColNumber(), ga.getRowNumber()),
+					new Point(ga.getColNumber(), ga.getRowNumber()), ga.getResolution(),
+					ga.getResolution(), ga.getNoDataValue(), stats));
 
 		}
 		// logger.printError("unsupported image format");
@@ -253,8 +249,8 @@ public class RasterImageIO {
 			DataBuffer dataBuffer = new DataBufferFloat(gf.getFloatArray(),
 					gf.getFloatArray().length);
 
-			int nCols = gf.getnCols();
-			int nRows = gf.getnRows();
+			int nCols = gf.getColNumber();
+			int nRows = gf.getRowNumber();
 			if (subset != null) {
 				nCols = subset.width;
 				nRows = subset.height;
@@ -270,8 +266,8 @@ public class RasterImageIO {
 			GridAscii ga = new GridAscii(filenameOrURL);
 			ga.readGrid(subset);
 
-			int nCols = ga.getnCols();
-			int nRows = ga.getnRows();
+			int nCols = ga.getColNumber();
+			int nRows = ga.getRowNumber();
 			if (subset != null) {
 				nCols = subset.width;
 				nRows = subset.height;
@@ -388,9 +384,22 @@ public class RasterImageIO {
 			}
 		} else if (filenameOrURL.toLowerCase().endsWith(".tif")
 				|| filenameOrURL.toLowerCase().endsWith(".tiff")) {
+			// First try to read image dimension with TiffTags.readMetadata which is the only robust
+			// method to read tiff tags with wrong data types
+			try {
+				if (new File(filenameOrURL).exists()) {
+					TiffTags.TiffMetadata metadata = TiffTags.readIIOMetadata(new File(filenameOrURL));
+					return new Point(metadata.getOriginalSize());
+				} else if (new File(new URL(filenameOrURL).getPath()).exists()) {
+					TiffTags.TiffMetadata metadata = TiffTags.readIIOMetadata(new File(new URL(filenameOrURL).getPath()));
+					return new Point(metadata.getOriginalSize());
+				}
+			} catch (TiffTags.TiffReadingException e) {
+				e.printStackTrace();
+			}
 			RenderedOp  renderedOp;
 			renderedOp=	TiffUtilsV2.getRenderedOp(new File(filenameOrURL));
-		 
+
 			if (renderedOp != null) {
 				return new Point(renderedOp.getWidth(), renderedOp.getHeight());
 			}
@@ -398,13 +407,13 @@ public class RasterImageIO {
 		} else if (filenameOrURL.toLowerCase().endsWith(".flt")) {
 
 			GridFloat gf = new GridFloat(filenameOrURL);
-			return new Point(gf.getnCols(), gf.getnRows());
+			return new Point(gf.getColNumber(), gf.getRowNumber());
 
 		} else if (filenameOrURL.toLowerCase().endsWith(".asc")
 				|| filenameOrURL.toLowerCase().endsWith(".txt")) {
 
 			GridAscii ga = new GridAscii(filenameOrURL);
-			return new Point(ga.getnCols(), ga.getnRows());
+			return new Point(ga.getColNumber(), ga.getRowNumber());
 
 		} else {
 			System.out.println("Filename " + filenameOrURL);
@@ -553,24 +562,14 @@ public class RasterImageIO {
 				isGeoTiff = true;
 				GridFloat gf = new GridFloat(fileName);
 
-				Coordinate upperLeft = new Coordinate(gf.getXllCorner(),
-						gf.getYllCorner() + gf.getnRows() * gf.getCellSize());
-				Coordinate lowerRight = new Coordinate(gf.getXllCorner()
-						+ gf.getnCols() * gf.getCellSize(), gf.getYllCorner());
-
-				env = new Envelope(upperLeft, lowerRight);
+				env = gf.getEnvelope();
 
 			} else if (fileName.toLowerCase().endsWith(".asc")
 					|| fileName.toLowerCase().endsWith(".txt")) {
 				isGeoTiff = true;
 				GridAscii ga = new GridAscii(fileName);
 
-				Coordinate upperLeft = new Coordinate(ga.getXllCorner(),
-						ga.getYllCorner() + ga.getnRows() * ga.getCellSize());
-				Coordinate lowerRight = new Coordinate(ga.getXllCorner()
-						+ ga.getnCols() * ga.getCellSize(), ga.getYllCorner());
-
-				env = new Envelope(upperLeft, lowerRight);
+				env = ga.getEnvelope();
 			}
 
 			if (!isGeoTiff || env == null) {
@@ -660,12 +659,12 @@ public class RasterImageIO {
 
 			GridAscii gridAscii = new GridAscii(fileNameOrURL);
 			gridAscii.readHeader();
-			return gridAscii.getNoData();
+			return gridAscii.getNoDataValue();
 
 		} else if (fileNameOrURL.toLowerCase().endsWith(".flt")) {
 
 			GridFloat gf = new GridFloat(fileNameOrURL);
-			return gf.getNoData();
+			return gf.getNoDataValue();
 
 		} else if (fileNameOrURL.toLowerCase().endsWith(".tif")) {
 
@@ -837,9 +836,11 @@ public class RasterImageIO {
 
 		// No data
 		String noDataS = Double.toString(noData);
-		byte[] bytes = noDataS.getBytes();
+		//byte[] bytes = noDataS.getBytes();
+		//tiffFields[1] = new TIFFField(TiffTags.TIFFTAG_GDAL_NODATA,
+		//		TIFFField.TIFF_BYTE, noDataS.length(), bytes);
 		tiffFields[1] = new TIFFField(TiffTags.TIFFTAG_GDAL_NODATA,
-				TIFFField.TIFF_BYTE, noDataS.length(), bytes);
+				TIFFField.TIFF_ASCII, 1, new String[]{noDataS});
 
 		// Tie point
 		tiffFields[2] = new TIFFField(GeoTiffConstants.ModelTiepointTag,

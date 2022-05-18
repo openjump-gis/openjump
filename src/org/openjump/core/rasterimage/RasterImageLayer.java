@@ -25,8 +25,6 @@ import java.util.UUID;
 import javax.media.jai.JAI;
 
 import com.vividsolutions.jump.workbench.model.*;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
 import org.openjump.util.metaData.MetaDataMap;
 import org.openjump.util.metaData.ObjectContainingMetaInformation;
 
@@ -263,22 +261,6 @@ public class RasterImageLayer extends GeoReferencedLayerable
                         getImageFileName(),
                         getImage(),
                         getEnvelope());
-        //RasterImageLayer raster = null;
-        //try {
-        //    BufferedImage im = image == null ? getImageForDisplay() : image;
-        //    raster = new RasterImageLayer(getName(), getLayerManager(), getImageFileName(),
-        //            getImageForDisplay(), new Envelope(getWholeImageEnvelope()));
-        //    raster.needToKeepImage = needToKeepImage;
-        //} catch (Exception ex) {
-        //    Logger.error(ex);
-        //}
-        //// clone must produce a layerable with the same name (as for Layer) not a unique name
-        //if (raster != null) {
-        //    raster.getLayerManager().setFiringEvents(false);
-        //    raster.setName(getName());
-        //    raster.getLayerManager().setFiringEvents(true);
-        //}
-        //return raster;
     }
     
     /**
@@ -350,33 +332,22 @@ public class RasterImageLayer extends GeoReferencedLayerable
             int visibleY2 = visibleY1 + visibleRect.height;
 
             // Viewport envelope in model coordinates
-            //Coordinate upperLeftVisible = viewport.toModelCoordinate(new Point(visibleX1, visibleY1));
-            //Coordinate lowerRightVisible = viewport.toModelCoordinate(new Point(visibleX2, visibleY2));
-            //Envelope newVisibleEnv = new Envelope(upperLeftVisible, lowerRightVisible);
             Envelope newVisibleEnv = viewport.toModelEnvelope(visibleX1, visibleX2, visibleY1, visibleY2);
 
             setImageSet(false);
             
             if (visibleEnv == null || !visibleEnv.equals(newVisibleEnv) || symbologyChanged) {
-                //visibleEnv.getMinX() != newVisibleEnv.getMinX() ||
-                //visibleEnv.getMaxX() != newVisibleEnv.getMaxX() ||
-                //visibleEnv.getMinY() != newVisibleEnv.getMinY() ||
-                //visibleEnv.getMaxY() != newVisibleEnv.getMaxY() ||
-                //symbologyChanged) {
+
                 visibleEnv = newVisibleEnv;
                     
                 symbologyChanged = false;
                 this.setNeedToKeepImage(false);
-                if (bitsPerPixel == -1) {
+                if (bitsPerPixel == -1) { // guess bitPerPixel to compute approximative image size
                     if (imageFileName.toLowerCase().endsWith(".flt")) bitsPerPixel = 16;
                     else if (imageFileName.toLowerCase().endsWith(".asc")) bitsPerPixel = 16;
                     else if (imageFileName.toLowerCase().endsWith(".txt")) bitsPerPixel = 16;
                     else {
-                        try {
-                            bitsPerPixel = Imaging.getImageInfo(new File(imageFileName)).getBitsPerPixel();
-                        } catch(ImageReadException e) {
-                            Logger.warn("Can't get ImageInfo of " + imageFileName, e);
-                        }
+                        bitsPerPixel = 32;
                     }
                 }
                 clearImageAndRaster(true);
@@ -397,8 +368,10 @@ public class RasterImageLayer extends GeoReferencedLayerable
                 reLoadImage(layerViewPanel);
                 if(image == null) {
                     // If image does not intersect viewport, it is null
+                    bitsPerPixel = -1;
                     return null;
-                }                    
+                }
+                bitsPerPixel = image.getColorModel().getPixelSize();
 
                 // Coordinates of actual image in viewport coordinates
                 Point2D upperLeftCornerOfImage = viewport.toViewPoint(new Coordinate(getActualImageEnvelope().getMinX(), getActualImageEnvelope().getMaxY()));
@@ -412,11 +385,6 @@ public class RasterImageLayer extends GeoReferencedLayerable
                 layerViewPanel.getViewport().update();
                 setImage(imageToDraw);
 
-                //if(getCommittedMemory() + minRamToKeepFree < availRAM){
-                    //setNeedToKeepImage(true); //so small images are not reloaded every time
-                //}
-
-                //[sstein end]
                 //Compute envelope of the visible part
                 imagePart = getVisibleImageCoordinatesOfImage(image.getWidth(), image.getHeight(),
                         visibleEnv, getActualImageEnvelope());
@@ -547,8 +515,8 @@ public class RasterImageLayer extends GeoReferencedLayerable
         stats = imageAndMetadata.getMetadata().getStats();
         setEnvelope(imageAndMetadata.getMetadata().getOriginalImageEnvelope());
         actualImageEnvelope = imageAndMetadata.getMetadata().getActualEnvelope();
-        originalCellSize = imageAndMetadata.getMetadata().getOriginalCellSize();        
-        actualCellSize = imageAndMetadata.getMetadata().getActualCellSize();
+        //originalCellSize = imageAndMetadata.getMetadata().getOriginalCellSize();
+        //actualCellSize = imageAndMetadata.getMetadata().getActualCellSize();
 
         if(image != null) {
             setImage(image);

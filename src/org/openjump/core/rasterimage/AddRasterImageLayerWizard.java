@@ -82,8 +82,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
     }
 
     private void initPanels(final WorkbenchContext workbenchContext) {
-        // [mmichaud 2012-05-11] bug #3521266 : create selectFilesPanel only
-        // once
+        // [mmichaud 2012-05-11] bug #3521266 : create selectFilesPanel only once
         if (selectFilesPanel == null) {
             selectFilesPanel = new SelectRasterImageFilesPanel(workbenchContext);
             addPanel(selectFilesPanel);
@@ -197,14 +196,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
         final RasterImageLayer rLayer = new RasterImageLayer(newLayerName,
                 context.getLayerManager(), imageFileName, null, envelope);
-        // [Giuseppe Aruta 04/01/2017] Store SRS info into
-        // RasterImageLayer.class metadata
+        // [Giuseppe Aruta 04/01/2017] Store SRS info into RasterImageLayer metadata
         try {
             // [Giuseppe Aruta 18/08/2018] applyed a patch to partially solve
-            // bug 479 (OpenJUMp doen't recognize RasterImageLayer SRS on
-            // loading
-            // anymore)
-            // rLayer.setSRSInfo(ProjUtils.getSRSInfoFromLayerSource(rLayer));
+            // bug 479 (OpenJUMP doen't recognize RasterImageLayer SRS on
+            // loading anymore)
             final SRSInfo srsInfo = ProjUtils.getSRSInfoFromLayerSource(rLayer);
             srsInfo.complete();
             rLayer.setSrsInfo(srsInfo);
@@ -218,16 +214,11 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         mih.addMetaInformation("file-name", imageFileName);
         mih.addMetaInformation("resolution", imageDimensions.x + " (px) x "
                 + imageDimensions.y + " (px)");
-        // mih.addMetaInformation("real-world-width", new
-        // Double(envelope.getWidth()));
-        // mih.addMetaInformation("real-world-height", new
-        // Double(envelope.getHeight()));
         mih.addMetaInformation("real-world-width", envelope.getWidth());
         mih.addMetaInformation("real-world-height", envelope.getHeight());
         // [Giuseppe Aruta 2017/11/13] Ass SRID and project source as
         // metadata. Those datas are saved into OJ project file and can be
-        // reused
-        // by the plugins
+        // reused by the plugins
         mih.addMetaInformation("srid", rLayer.getSrsInfo().getCode());
         mih.addMetaInformation("srid-location", rLayer.getSrsInfo().getSource());
 
@@ -235,8 +226,6 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         context.getLayerManager().addLayerable(catName, rLayer);
 
         if (zoomToInsertedImage || layersAsideImage == 0) {
-            // logger.printDebug("zooming to image, layers: " +
-            // layersAsideImage);
             try {
                 context.getLayerViewPanel().getViewport().zoom(envelope);
             } catch (final NoninvertibleTransformException e) {
@@ -256,9 +245,9 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
      * WorldFileHandler.readWorldFile()
      * 
      * @param fileName the file name
-     * @param alwaysLookForTFWExtension
-     * @param imageDimensions
-     * @param context
+     * @param alwaysLookForTFWExtension use tfw georeference file if exists
+     * @param imageDimensions width and height of the image
+     * @param context workbench context
      * @return the RasterImage Envelope
      * @throws IOException
      * @throws NoninvertibleTransformException
@@ -304,10 +293,12 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 isGeoTiff = true;
                 final GridFloat gf = new GridFloat(fileName);
 
-                final Coordinate upperLeft = new Coordinate(gf.getXllCorner(),
-                        gf.getYllCorner() + gf.getnRows() * gf.getCellSize());
-                final Coordinate lowerRight = new Coordinate(gf.getXllCorner()
-                        + gf.getnCols() * gf.getCellSize(), gf.getYllCorner());
+                final Coordinate upperLeft = new Coordinate(
+                    gf.getLlCorner().x,
+                    gf.getLlCorner().y + gf.getRowNumber() * gf.getResolution().getY());
+                final Coordinate lowerRight = new Coordinate(
+                    gf.getLlCorner().x + gf.getColNumber() * gf.getResolution().getX(),
+                    gf.getLlCorner().y);
 
                 env = new Envelope(upperLeft, lowerRight);
 
@@ -316,10 +307,12 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
                 isGeoTiff = true;
                 final GridAscii ga = new GridAscii(fileName);
 
-                final Coordinate upperLeft = new Coordinate(ga.getXllCorner(),
-                        ga.getYllCorner() + ga.getnRows() * ga.getCellSize());
-                final Coordinate lowerRight = new Coordinate(ga.getXllCorner()
-                        + ga.getnCols() * ga.getCellSize(), ga.getYllCorner());
+                final Coordinate upperLeft = new Coordinate(
+                    ga.getLlCorner().x,
+                    ga.getLlCorner().y + ga.getRowNumber() * ga.getResolution().getY());
+                final Coordinate lowerRight = new Coordinate(
+                    ga.getLlCorner().x + ga.getColNumber() * ga.getResolution().getX(),
+                    ga.getLlCorner().y);
 
                 env = new Envelope(upperLeft, lowerRight);
             }

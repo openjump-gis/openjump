@@ -384,8 +384,11 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         file_path = rLayer.getImageFileName();// get file path
         String fileSourcePath = rLayer.getImageFileName();
         String extension = FileUtil.getExtension(fileSourcePath).toLowerCase();
+        //if ((extension.equals("tif") || extension.equals("tiff"))
+        //        && TiffTags.readMetadata(new File(fileSourcePath)).isGeoTiff()) {
         if ((extension.equals("tif") || extension.equals("tiff"))
-                && TiffTags.readMetadata(new File(fileSourcePath)).isGeoTiff()) {
+                //&& TiffTags.readMetadataWithImageIoExt(new File(fileSourcePath)).isGeoTiff()) {
+                && TiffTags.readIIOMetadata(new File(fileSourcePath)).isGeoTiff()) {
             file_type = "GeoTIFF" + " - " + SEXTANTE;
         } else {
             file_type = RasterImageLayerProperties.getFileExtension(rLayer) + " - " + SEXTANTE;

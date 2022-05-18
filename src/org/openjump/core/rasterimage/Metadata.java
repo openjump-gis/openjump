@@ -2,7 +2,10 @@ package org.openjump.core.rasterimage;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
+import org.openjump.core.ccordsys.utils.SRSInfo;
+
 import java.awt.Point;
+import java.awt.geom.Point2D;
 
 /**
  *
@@ -11,9 +14,12 @@ import java.awt.Point;
     
 public class Metadata {
 
+    public static double DEFAULT_NODATA_VALUE = -3.40282346639e+038;
+
     public Metadata(Envelope originalImageEnvelope, Envelope actualEnvelope,
-            Point originalSize, Point actualSize,
-            double originalCellSize, double actualCellSize, double noDataValue, Stats stats) {
+                    Point originalSize, Point actualSize,
+                    Resolution originalCellSize, Resolution actualCellSize,
+                    double noDataValue, Stats stats) {
         this.originalImageEnvelope = originalImageEnvelope;
         this.actualEnvelope = actualEnvelope;
         this.originalSize = originalSize;
@@ -48,13 +54,19 @@ public class Metadata {
         return actualSize;
     }
     
-    public double getOriginalCellSize() {                      
-        return originalCellSize;
-    }        
+    public Resolution getOriginalCellSize() {
+        return new Resolution(
+            getOriginalImageEnvelope().getWidth() / getOriginalSize().x,
+            getOriginalImageEnvelope().getHeight() / getOriginalSize().y
+        );
+    }
 
-    public double getActualCellSize() {                      
-        return actualCellSize;
-    } 
+    public Resolution getActualCellSize() {
+        return new Resolution(
+            getActualEnvelope().getWidth() / getActualSize().x,
+            getActualEnvelope().getHeight() / getActualSize().y
+        );
+    }
     
     public double getNoDataValue() {
         return noDataValue;
@@ -68,9 +80,9 @@ public class Metadata {
     private final Envelope actualEnvelope;
     private final Point originalSize;
     private final Point actualSize;
-    private final double originalCellSize;
-    private final double actualCellSize;
-    private double noDataValue = -3.40282346639e+038;;
+    private final Resolution originalCellSize;
+    private final Resolution actualCellSize;
+    private double noDataValue = DEFAULT_NODATA_VALUE;
     private final Stats stats;
 
 }

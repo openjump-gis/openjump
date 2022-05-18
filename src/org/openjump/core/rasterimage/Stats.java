@@ -8,17 +8,26 @@ public class Stats {
 
     public Stats(int bandCount) {
         this.bandCount = bandCount;
-        this.min = new double[bandCount];
-        this.max = new double[bandCount];
-        this.mean = new double[bandCount];
-        this.stdDev = new double[bandCount];
+        basicStatistics = new BasicStatistics[bandCount];
+        //this.min = new double[bandCount];
+        //this.max = new double[bandCount];
+        //this.mean = new double[bandCount];
+        //this.stdDev = new double[bandCount];
+    }
+
+    public void setStatsForBand(int band, BasicStatistics basicStatistics) {
+        this.basicStatistics[band] = basicStatistics;
+    }
+    public void setStatsForBand(int band, int nb, double min, double max, double mean, double stdDev) {
+        this.basicStatistics[band] = new BasicStatistics(nb, min, max, mean, stdDev);
     }
 
     public void setStatsForBand(int band, double min, double max, double mean, double stdDev) {
-        this.min[band] = min;
-        this.max[band] = max;
-        this.mean[band] = mean;
-        this.stdDev[band] = stdDev;
+        this.basicStatistics[band] = new BasicStatistics(-1, min, max, mean, stdDev);
+        //this.min[band] = min;
+        //this.max[band] = max;
+        //this.mean[band] = mean;
+        //this.stdDev[band] = stdDev;
     }
 
     public int getBandCount() {
@@ -26,26 +35,27 @@ public class Stats {
     }
     
     public double getMin(int band) {
-        return min[band];
+        return basicStatistics[band].getMin();
     }
 
     public double getMax(int band) {
-        return max[band];
+        return basicStatistics[band].getMax();
     }
 
     public double getMean(int band) {
-        return mean[band];
+        return basicStatistics[band].getMean();
     }
 
     public double getStdDev(int band) {
-        return stdDev[band];
+        return basicStatistics[band].getStdDev();
     }
 
     private final int bandCount;
-    private final double[] min;
-    private final double[] max;
-    private final double[] mean;
-    private final double[] stdDev;
+    BasicStatistics[] basicStatistics;
+    //private final double[] min;
+    //private final double[] max;
+    //private final double[] mean;
+    //private final double[] stdDev;
 
     public static Stats defaultRGBStats() {
         

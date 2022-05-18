@@ -9,14 +9,12 @@ import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
+import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
@@ -24,11 +22,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import com.vividsolutions.jump.workbench.imagery.geoimg.GeoImageFactory;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageParser;
-import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.xml.sax.SAXException;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -40,7 +38,7 @@ import com.vividsolutions.jump.workbench.imagery.geoimg.GeoReferencedRaster;
 public class TiffUtilsV2 {
 
   // a File -> RenderedOp cache mapping to prevent recreating inputs for the same file
-  private static WeakHashMap<File,GeoReferencedRaster> geoRasterCache = new WeakHashMap<>();
+  private static final WeakHashMap<File,GeoReferencedRaster> geoRasterCache = new WeakHashMap<>();
 
 	public static void removeFromGeoRastercache(File file) {
 		geoRasterCache.remove(file);
@@ -65,21 +63,48 @@ public class TiffUtilsV2 {
     return geoRaster.getOriginalEnvelope();
   }
 
-  private static GeoReferencedRaster getGeoReferencedRaster(File tiffFile) throws IOException {
+  private static GeoReferencedRaster getGeoReferencedRaster(File tiffFile)
+			throws IOException {
     // prevent recreating inputs by reusing cached RenderedOp
     if (geoRasterCache.containsKey(tiffFile))
       return geoRasterCache.get(tiffFile);
 
-    GeoReferencedRaster geoRaster;
-    try {
-      geoRaster = new GeoReferencedRaster(tiffFile.toString(),
-          new it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi());
-          //new com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi());
-    } catch (ReferencedImageException e) {
-      // TODO: handle errors better, wrapping it in IOException here
-      //       because that's what's handled up from here
-      throw new IOException(e);
-    }
+    GeoReferencedRaster geoRaster = null;
+		//IIORegistry.getDefaultInstance().registerServiceProvider(
+		//		new com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi(),
+		//		ImageReaderSpi.class
+		//);
+		//final Iterator<? extends ImageReaderSpi> readers = IIORegistry
+		//		.getDefaultInstance().getServiceProviders(ImageReaderSpi.class, false);
+		//Iterator<ImageReader> readers = ImageIO.getImageReaders(tiffFile);
+		//Logger.debug("All readers for " + tiffFile + " : " + readers);
+		List<Object> readers = GeoReferencedRaster.listValidReaders(tiffFile.toURI());
+		readers.sort(Comparator.comparingInt(o -> GeoImageFactory.getPriority(o)));
+		Logger.info("Available unsorted readers : " + readers);
+		for (Object object : readers) {
+			if (object instanceof ImageReaderSpi) {
+				ImageReaderSpi reader = (ImageReaderSpi)object;
+				//ImageReaderSpi reader = readers.next();
+		  	//ImageReaderSpi reader = new TIFFImageReaderSpi();
+				Logger.info("Try to read with " + reader);
+				try {
+					geoRaster = new GeoReferencedRaster(tiffFile.toString(), reader);
+					break;
+				} catch (RuntimeException|ReferencedImageException e) {
+					//throw new IOException(e);
+					Logger.error("!!!!" + e.getMessage());
+				}
+			}
+		}
+    //try {
+    //  geoRaster = new GeoReferencedRaster(tiffFile.toString(),
+    //      new it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi());
+    //      //new com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi());
+    //} catch (ReferencedImageException e) {
+    //  // TODO: handle errors better, wrapping it in IOException here
+    //  //       because that's what's handled up from here
+    //  throw new IOException(e);
+    //}
 
     // save in cache
     geoRasterCache.put(tiffFile, geoRaster);
@@ -87,7 +112,8 @@ public class TiffUtilsV2 {
     return geoRaster;
   }
 
-  public static RenderedOp readSubsampled(File tiffFile, float xScale, float yScale) throws IOException {
+  public static RenderedOp readSubsampled(File tiffFile, float xScale, float yScale)
+			throws IOException {
     RenderedOp renderedOp = getRenderedOp(tiffFile);
     ParameterBlock parameterBlock = new ParameterBlock();
     parameterBlock.addSource(renderedOp);
@@ -120,10 +146,10 @@ public class TiffUtilsV2 {
 
 	    // Try to read geotiff tags
 	    TiffTags.TiffMetadata tiffMetadata = TiffTags.readMetadata(tiffFile);
-	    int originalImageWidth = tiffMetadata.getColsCount();
-	    int originalImageHeight = tiffMetadata.getRowsCount();
-	    Resolution cellSize = tiffMetadata.getResolution();
-	    Double noData = tiffMetadata.getNoData();
+	    int originalImageWidth = tiffMetadata.getOriginalSize().x;
+	    int originalImageHeight = tiffMetadata.getOriginalSize().y;
+	    Resolution cellSize = tiffMetadata.getOriginalCellSize();
+	    Double noData = tiffMetadata.getNoDataValue();
 
 	    // Now try with tfw
 	 /*   if (cellSize == null) {
@@ -184,9 +210,11 @@ public class TiffUtilsV2 {
 	        actualImageHeight = bufferedImage.getHeight();
 	      }
 	      Metadata metadata = new Metadata(wholeImageEnvelope, imagePartEnvelope,
-	          new Point(originalImageWidth, originalImageHeight), new Point(actualImageWidth, actualImageHeight),
-	          (cellSize.getX() + cellSize.getY()) / 2, (subsetResolution.getX() + subsetResolution.getY()) / 2, noData,
-	          stats);
+	          new Point(originalImageWidth, originalImageHeight),
+						new Point(actualImageWidth, actualImageHeight),
+	          new Resolution(cellSize.getX(), cellSize.getY()),
+						new Resolution(subsetResolution.getX(), subsetResolution.getY()),
+						noData, stats);
 	      return new ImageAndMetadata(bufferedImage, metadata);
 
 	    } else {
@@ -284,39 +312,45 @@ public class TiffUtilsV2 {
         
         
         
-		  //[Giuseppe Aruta 020-sept-23]
+		  //[Giuseppe Aruta 2020-sept-23]
 		  //Reverted Apache Commons Imaging to read only no data
 		  //as JAI still throws NumberFormatException in
-		  // one of the 24 test files. 
-		  TiffImageParser parser = new TiffImageParser();
-	      TiffImageMetadata tmetadata = (TiffImageMetadata) parser.getMetadata(tiffFile);
-	      List<TiffField> tiffFields = tmetadata.getAllFields();
-	      Double noData=Double.NaN;
-	      for(TiffField tiffField : tiffFields) {
-	    	  if(tiffField.getTag() == TiffTags.TIFFTAG_GDAL_NODATA) {
-	    		  try {
-	    			  String noDataString = "";
-	                  if(tiffField.getFieldType() == FieldType.ASCII) {
-	                      noDataString = tiffField.getStringValue();
-	                      if(noDataString.equalsIgnoreCase("NaN")) {
-	                          noDataString = "NaN";
-	                      }                    
-	                  } else if(tiffField.getFieldType() == FieldType.BYTE) {
-	                      noDataString = new String(tiffField.getByteArrayValue());
-	                  }
-	                  noData = Double.parseDouble(noDataString);
-	    		  }
-	    		  catch(NumberFormatException e){
-	    			  Logger.error("Failed to read no data. Using standard -99999.0D", e);
-	    			  noData=-99999.0D; 
-	    		  }
-	    	  }
-	      }
+		  // one of the 24 test files.
+
+		  // readIIOMetadata is the only way to read metadata from bigtiff and with wrong
+		  // nodata tag (stored with Bytes indtead of Asciis)
+			//double noData = TiffTags.readMetadataWithImageIoExt(tiffFile).getNoDataValue();
+		  double noData = TiffTags.readIIOMetadata(tiffFile).getNoDataValue();
+		  //double noData = TiffTags.readMetadata(tiffFile).getNoDataValue();
+		  //TiffImageParser parser = new TiffImageParser();
+	    //  TiffImageMetadata tmetadata = (TiffImageMetadata) parser.getMetadata(tiffFile);
+	    //  List<TiffField> tiffFields = tmetadata.getAllFields();
+	    //  Double noData=Double.NaN;
+	    //  for(TiffField tiffField : tiffFields) {
+	    //	  if(tiffField.getTag() == TiffTags.TIFFTAG_GDAL_NODATA) {
+	    //		  try {
+	    //			  String noDataString = "";
+	    //              if(tiffField.getFieldType() == FieldType.ASCII) {
+	    //                  noDataString = tiffField.getStringValue();
+	    //                  if(noDataString.equalsIgnoreCase("NaN")) {
+	    //                      noDataString = "NaN";
+	    //                  }
+	    //              } else if(tiffField.getFieldType() == FieldType.BYTE) {
+	    //                  noDataString = new String(tiffField.getByteArrayValue());
+	    //              }
+	    //              noData = Double.parseDouble(noDataString);
+	    //		  }
+	    //		  catch(NumberFormatException e){
+	    //			  Logger.error("Failed to read no data. Using standard -99999.0D", e);
+	    //			  noData=-99999.0D;
+	    //		  }
+	    //	  }
+	    //  }
         
         
 	    /////End of NoData reading
-	    
-	    
+
+
 	   
 	    double cellSizeX = wholeImageEnvelope.getWidth()/renderedOp1.getWidth();
 	    double cellSizeY = wholeImageEnvelope.getHeight()/renderedOp1.getHeight();
@@ -334,7 +368,7 @@ public class TiffUtilsV2 {
 	      yScale = Math.min(yScale, 1);
 
 	      RenderedOp renderedOp = readSubsampled(tiffFile, xScale, yScale);
-	    
+
 
 	      Resolution subsetResolution = new Resolution(wholeImageEnvelope.getWidth() / renderedOp.getWidth(),
 	          wholeImageEnvelope.getHeight() / renderedOp.getHeight());
@@ -359,9 +393,11 @@ public class TiffUtilsV2 {
 	      }
 
 	      Metadata metadata = new Metadata(wholeImageEnvelope, imagePartEnvelope,
-	          new Point(renderedOp1.getWidth(), renderedOp1.getHeight()), new Point(actualImageWidth, actualImageHeight),
-	          (cellSizeX + cellSizeY) / 2, (subsetResolution.getX() + subsetResolution.getY()) / 2, noData,
-	          stats);
+	          new Point(renderedOp1.getWidth(), renderedOp1.getHeight()),
+						new Point(actualImageWidth, actualImageHeight),
+	          new Resolution(cellSizeX, cellSizeY),
+						new Resolution(subsetResolution.getX(), subsetResolution.getY()),
+						noData, stats);
 	      return new ImageAndMetadata(bufferedImage, metadata);
 
   }
@@ -388,18 +424,22 @@ public class TiffUtilsV2 {
   	ImageInputStream imageInputStream = ImageIO.createImageInputStream(tiffFile);
   	Iterator<ImageReader> iterator = ImageIO.getImageReaders(imageInputStream);
 
-  	if (iterator != null && iterator.hasNext()) {
+  	//while (iterator != null && iterator.hasNext()) {
+		if (iterator != null && iterator.hasNext()) {
 
   		ImageReader imageReader = iterator.next();
   		imageReader.setInput(imageInputStream);
+			Logger.debug(imageReader.toString());
   		for (int i = 0; i < imageReader.getNumImages(true); i++) {
   			if (i + indexStart == overviewIndex) {
 
-  				Resolution subsetResolution = new Resolution(wholeImageEnvelope.getWidth() / imageReader.getWidth(i),
-	              wholeImageEnvelope.getHeight() / imageReader.getHeight(i));
+  				Resolution subsetResolution = new Resolution(
+							wholeImageEnvelope.getWidth() / imageReader.getWidth(i),
+							wholeImageEnvelope.getHeight() / imageReader.getHeight(i));
 
-  				Rectangle imageSubset = RasterImageIO.getDrawingRectangle(imageReader.getWidth(i), imageReader.getHeight(i),
-	              wholeImageEnvelope, viewportEnvelope, subsetResolution);
+  				Rectangle imageSubset = RasterImageIO.getDrawingRectangle(
+							imageReader.getWidth(i), imageReader.getHeight(i),
+							wholeImageEnvelope, viewportEnvelope, subsetResolution);
 
   				BufferedImage bufferedImage;
   				Envelope imagePartEnvelope;
@@ -429,9 +469,12 @@ public class TiffUtilsV2 {
 //	                        stats = calculateStats(statsBufferedImage, noDataValue);
 //	                    }
 
-					Metadata metadata = new Metadata(wholeImageEnvelope, imagePartEnvelope, originalSize,
-	              new Point(imageWidth, imageHeight), (originalCellSize.getX() + originalCellSize.getY()) / 2,
-	              (subsetResolution.getX() + subsetResolution.getY()) / 2, noDataValue, stats);
+					Metadata metadata = new Metadata(
+							wholeImageEnvelope, imagePartEnvelope, originalSize,
+							new Point(imageWidth, imageHeight),
+							new Resolution(originalCellSize.getX(), originalCellSize.getY()),
+							new Resolution(subsetResolution.getX(), subsetResolution.getY()),
+							noDataValue, stats);
   				if (imageReader != null) {
   					imageReader.dispose();
 			  	}
@@ -514,8 +557,8 @@ public class TiffUtilsV2 {
        * @throws IOException if a IOException occurs
        */
 	  private static Stats createStatsXml(File tiffFile, double noDataValue, File auxXmlFile)
-	      throws ParserConfigurationException, TransformerException, TransformerConfigurationException, SAXException,
-	      IOException {
+				throws ParserConfigurationException, TransformerException, TransformerConfigurationException, SAXException,
+				IOException {
 
 	    BufferedImage bufferedImage = readSubsampled(tiffFile, 1, 1).getAsBufferedImage();
 	    int bandCount = bufferedImage.getRaster().getNumBands();
@@ -583,9 +626,7 @@ public class TiffUtilsV2 {
 	    Coordinate ulCoord = new Coordinate(ulX, ulY);
 	    Coordinate lrCoord = new Coordinate(lrX, lrY);
 
-	    Envelope imagePartEnvelope = new Envelope(ulCoord, lrCoord);
-
-	    return imagePartEnvelope;
+			return new Envelope(ulCoord, lrCoord);
 
 	  }
 

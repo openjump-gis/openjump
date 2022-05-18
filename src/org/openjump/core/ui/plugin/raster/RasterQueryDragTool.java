@@ -305,8 +305,8 @@ public class RasterQueryDragTool extends RectangleTool {
 
                              rasterImageIO.writeImage(file , raster, envWanted,
                                      rasterImageIO.new CellSizeXY(rLayer.getMetadata()
-                                             .getOriginalCellSize(), rLayer.getMetadata()
-                                             .getOriginalCellSize()), rLayer.getMetadata()
+                                             .getOriginalCellSize().getX(), rLayer.getMetadata()
+                                             .getOriginalCellSize().getY()), rLayer.getMetadata()
                                              .getNoDataValue());
                         
                              saved(file);

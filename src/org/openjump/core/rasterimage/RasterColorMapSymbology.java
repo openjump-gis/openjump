@@ -42,27 +42,19 @@ public class RasterColorMapSymbology extends RasterSymbology {
     return null;
   }
 
-  //public String getColorMapType() {
-  //  return colorMapType;
-  //}
-
-  //public void setColorMapType(String colorMapType) {
-  //  this.colorMapType = colorMapType;
-  //}
-
-  public TreeMap<Double, Color> getColorMapEntries_tm() {
+  public TreeMap<Double, Color> getColorTreeMap() {
     return colorTreeMap;
   }
 
-  public void setColorTreeMap(TreeMap<Double, Color> colorMapEntries_tm) {
-    this.colorTreeMap = colorMapEntries_tm;
+  public void setColorTreeMap(TreeMap<Double, Color> colorTreeMap) {
+    this.colorTreeMap = colorTreeMap;
   }
 
   public ColorMapEntry[] getColorMapEntries() {
 
-    ColorMapEntry[] colorMapEntries = new ColorMapEntry[getColorMapEntries_tm().size()];
+    ColorMapEntry[] colorMapEntries = new ColorMapEntry[getColorTreeMap().size()];
     int pos = 0;
-    for(Map.Entry<Double,Color> colorMapEntry : getColorMapEntries_tm().entrySet()) {
+    for(Map.Entry<Double,Color> colorMapEntry : getColorTreeMap().entrySet()) {
       colorMapEntries[pos] = new ColorMapEntry(colorMapEntry.getKey(), colorMapEntry.getValue());
       pos++;
     }
@@ -89,7 +81,7 @@ public class RasterColorMapSymbology extends RasterSymbology {
   private double clampValue(double value) {
     // If symbology min value is higher than raster min value
     // the value becomes equal to the symbology min value
-    Double[] symbologyClassLimits =  getColorMapEntries_tm().keySet().toArray(new Double[0]);
+    Double[] symbologyClassLimits =  getColorTreeMap().keySet().toArray(new Double[0]);
     double newMinValue = symbologyClassLimits[0];
     if(isNoData(newMinValue)) {
       newMinValue = symbologyClassLimits[1];
@@ -125,12 +117,10 @@ public class RasterColorMapSymbology extends RasterSymbology {
 
           double relDist = distDown / (distUp + distDown);
 
-          Color newColor = calculateNewColor(
+          return calculateNewColor(
               downColorMapEntry.getColor(),
               upColorMapEntry.getColor(),
               relDist);
-
-          return newColor;
         }
       } else {
         return null;

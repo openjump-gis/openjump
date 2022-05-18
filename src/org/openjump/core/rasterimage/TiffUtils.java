@@ -45,10 +45,10 @@ public class TiffUtils {
 
     // Try to read geotiff tags
     TiffTags.TiffMetadata tiffMetadata = TiffTags.readMetadata(tiffFile);
-    int originalImageWidth = tiffMetadata.getColsCount();
-    int originalImageHeight = tiffMetadata.getRowsCount();
-    Resolution cellSize = tiffMetadata.getResolution();
-    Double noData = tiffMetadata.getNoData();
+    int originalImageWidth = tiffMetadata.getOriginalSize().x;
+    int originalImageHeight = tiffMetadata.getOriginalSize().y;
+    Resolution cellSize = tiffMetadata.getOriginalCellSize();
+    Double noData = tiffMetadata.getNoDataValue();
 
     // Now try with tfw
     if (cellSize == null) {
@@ -107,10 +107,13 @@ public class TiffUtils {
         actualImageHeight = bufferedImage.getHeight();
       }
 
-      Metadata metadata = new Metadata(wholeImageEnvelope, imagePartEnvelope,
-          new Point(originalImageWidth, originalImageHeight), new Point(actualImageWidth, actualImageHeight),
-          (cellSize.getX() + cellSize.getY()) / 2, (subsetResolution.getX() + subsetResolution.getY()) / 2, noData,
-          stats);
+      Metadata metadata = new Metadata(
+          wholeImageEnvelope, imagePartEnvelope,
+          new Point(originalImageWidth, originalImageHeight),
+          new Point(actualImageWidth, actualImageHeight),
+          new Resolution(cellSize.getX(), cellSize.getY()),
+          new Resolution(subsetResolution.getX(), subsetResolution.getY()),
+          noData, stats);
       return new ImageAndMetadata(bufferedImage, metadata);
 
     } else {
@@ -181,9 +184,14 @@ public class TiffUtils {
 //                        stats = calculateStats(statsBufferedImage, noDataValue);
 //                    }
 
-          Metadata metadata = new Metadata(wholeImageEnvelope, imagePartEnvelope, originalSize,
-              new Point(imageWidth, imageHeight), (originalCellSize.getX() + originalCellSize.getY()) / 2,
-              (subsetResolution.getX() + subsetResolution.getY()) / 2, noDataValue, stats);
+          Metadata metadata = new Metadata(
+              wholeImageEnvelope,
+              imagePartEnvelope,
+              originalSize,
+              new Point(imageWidth, imageHeight),
+              new Resolution(originalCellSize.getX(), originalCellSize.getY()),
+              new Resolution(subsetResolution.getX(), subsetResolution.getY()),
+              noDataValue, stats);
 
           return new ImageAndMetadata(bufferedImage, metadata);
 
