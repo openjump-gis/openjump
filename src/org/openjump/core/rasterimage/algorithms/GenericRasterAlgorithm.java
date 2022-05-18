@@ -282,10 +282,11 @@ public class GenericRasterAlgorithm {
         final RasterImageIO rasterImageIO = new RasterImageIO();
 
         rasterImageIO.writeImage(outputFile, raster, envelope,
-                rasterImageIO.new CellSizeXY(rasterLayer.getMetadata()
-                        .getOriginalCellSize(), rasterLayer.getMetadata()
-                        .getOriginalCellSize()), rasterLayer.getMetadata()
-                        .getNoDataValue());
+            rasterImageIO.new CellSizeXY(
+                rasterLayer.getMetadata().getOriginalCellSize().getX(),
+                rasterLayer.getMetadata().getOriginalCellSize().getY()
+            ),
+            rasterLayer.getMetadata().getNoDataValue());
 
     }
 
@@ -322,8 +323,8 @@ public class GenericRasterAlgorithm {
 
         rasterImageIO.writeImage(outputFile, raster2, env,
                 rasterImageIO.new CellSizeXY(rasterLayer.getMetadata()
-                        .getOriginalCellSize(), rasterLayer.getMetadata()
-                        .getOriginalCellSize()), rasterLayer.getMetadata()
+                        .getOriginalCellSize().getX(), rasterLayer.getMetadata()
+                        .getOriginalCellSize().getY()), rasterLayer.getMetadata()
                         .getNoDataValue());
 
     }
@@ -351,10 +352,10 @@ public class GenericRasterAlgorithm {
         final RenderedOp outputOp = JAI.create("Scale", pb, null);
 
         rasterImageIO.writeImage(file, outputOp.copyData(), env,
-                rasterImageIO.new CellSizeXY(rLayer.getMetadata()
-                        .getOriginalCellSize(), rLayer.getMetadata()
-                        .getOriginalCellSize()), rLayer.getMetadata()
-                        .getNoDataValue());
+                rasterImageIO.new CellSizeXY(
+                    rLayer.getMetadata().getOriginalCellSize().getX(),
+                    rLayer.getMetadata().getOriginalCellSize().getY()),
+            rLayer.getMetadata().getNoDataValue());
 
     }
 

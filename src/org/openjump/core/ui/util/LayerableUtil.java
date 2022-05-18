@@ -913,18 +913,19 @@ public abstract class LayerableUtil {
     public static double getValidArea(RasterImageLayer layer) throws IOException {
       Raster ras=layer.getRasterData(null);
       double noData =layer.getNoDataValue();
-      double cellSize=layer.getMetadata().getOriginalCellSize();
+      double cellSizeX = layer.getMetadata().getOriginalCellSize().getX();
+      double cellSizeY = layer.getMetadata().getOriginalCellSize().getY();
       int counter = 0;
       int nx = ras.getWidth();
-        int ny = ras.getHeight();
-        for (int y = 0; y < ny; y++) {
-            for (int x = 0; x < nx; x++) {
-                double value = ras.getSampleDouble(x, y, 0);
-                if (value != noData)
-                    counter++;
-            }
+      int ny = ras.getHeight();
+      for (int y = 0; y < ny; y++) {
+        for (int x = 0; x < nx; x++) {
+          double value = ras.getSampleDouble(x, y, 0);
+          if (value != noData)
+            counter++;
         }
-    return cellSize*cellSize*counter;
+      }
+      return cellSizeX * cellSizeY * counter;
     }
 
     public static void main(String[] args) {

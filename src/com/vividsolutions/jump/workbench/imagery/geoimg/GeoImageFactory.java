@@ -210,6 +210,8 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
   }
 
   // return a priority for the given loader object
+  // TODO maybe we should use the following way to sort ImageReader
+  //      https://stackoverflow.com/questions/38190507/how-to-exclude-specific-tiff-reader-from-imageio/38198991#38198991
   public static int getPriority(Object loader) {
     String name = loader.getClass().getName();
     
@@ -226,8 +228,10 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
       return 20;
     }
     // prefer oss jai core implementation, currently only TIF
+    // priority 30 -> 50 : this library is no more update while
+    // geosolutions library is actively maintained (ex. bigtiff)
     else if (name.startsWith("com.github.jaiimageio")){
-      return 30;
+      return 50;
     }
     // next are imageio-ext readers
     else if (name.startsWith("it.geosolutions.imageio")){

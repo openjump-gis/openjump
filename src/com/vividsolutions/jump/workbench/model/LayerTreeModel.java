@@ -42,9 +42,7 @@ import com.vividsolutions.jump.util.SimpleTreeModel;
 import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import org.openjump.core.rasterimage.RasterColorMapSymbology;
-import org.openjump.core.rasterimage.RasterHeatmapSymbology;
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.RasterSymbology;
 
 /**
  * JTree model for displaying the Layers, WMSLayers, and other Layerables
@@ -100,8 +98,6 @@ public class LayerTreeModel extends SimpleTreeModel {
         private final Double nextValue;
         private final Double value;
         private final String label;
-        //private int width;
-        //private int height;
         
         RasterStyleValueIntv(
                 String colorMapType,
@@ -136,14 +132,6 @@ public class LayerTreeModel extends SimpleTreeModel {
             return label;
         }
         
-        //public int getWidth() {
-        //    return width;
-        //}
-        
-        //public int getHeight() {
-        //    return height;
-        //}
-        
         @Override
         public String toString() {
             return label;
@@ -170,31 +158,13 @@ public class LayerTreeModel extends SimpleTreeModel {
         
         private final Double topValue;
         private final Double bottomValue;
-        private final Color[] colors;            
-        //private int width;
-        //private int height;
+        private final Color[] colors;
         
         RasterStyleValueRamp(Double topValue, Double bottomValue, Color[] colors) {
             this.topValue = topValue;
             this.bottomValue = bottomValue;
             this.colors = colors;
         }
-        
-        //RasterStyleValueRamp(Double topValue, Double bottomValue, Color[] colors, int width, int height) {
-        //    this.topValue = topValue;
-        //    this.bottomValue = bottomValue;
-        //    this.colors = colors;
-        //    //this.width = width;
-        //    //this.height = height;
-        //}
-        
-        //public int getWidth() {
-        //    return width;
-        //}
-        
-        //public int getHeight() {
-        //    return height;
-        //}
         
         @Override
         public String toString() {
@@ -283,7 +253,7 @@ public class LayerTreeModel extends SimpleTreeModel {
                     RasterColorMapSymbology rasterSymbology = (RasterColorMapSymbology)rasterImageLayer.getSymbology();
                     double bottomValue = rasterImageLayer.getMetadata().getStats().getMin(0);
                     double topValue = rasterImageLayer.getMetadata().getStats().getMax(0);
-                    Double[] keys = rasterSymbology.getColorMapEntries_tm().keySet().toArray(new Double[0]);
+                    Double[] keys = rasterSymbology.getColorTreeMap().keySet().toArray(new Double[0]);
 
                     if(!rasterImageLayer.getSymbology().getType().equals(RasterColorMapSymbology.TYPE_RAMP)) {
 
@@ -296,7 +266,7 @@ public class LayerTreeModel extends SimpleTreeModel {
 
                                 double nextValue = (i == keys.length-1)? topValue : keys[i+1];
 
-                                Color color = rasterSymbology.getColorMapEntries_tm().get(key);
+                                Color color = rasterSymbology.getColorTreeMap().get(key);
 
                                 styleValues_l.add(new RasterStyleValueIntv(
                                         rasterSymbology.getType(),
@@ -318,7 +288,7 @@ public class LayerTreeModel extends SimpleTreeModel {
                         for(int i=keys.length-1; i>=0; i--) {
                             Double key = keys[i];
                             if(!rasterImageLayer.isNoData(key)) {
-                                Color color = rasterSymbology.getColorMapEntries_tm().get(key);
+                                Color color = rasterSymbology.getColorTreeMap().get(key);
                                 colors_l.add(color);
                             }
                         }

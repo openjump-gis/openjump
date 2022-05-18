@@ -27,7 +27,6 @@ import org.openjump.core.apitools.LayerTools;
 import org.openjump.core.rasterimage.IRasterSymbology;
 import org.openjump.core.rasterimage.RasterColorMapSymbology;
 import org.openjump.core.rasterimage.RasterImageLayer;
-import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.rasterimage.styler.ui.ColorsLabelLegendComponent;
 import org.openjump.core.rasterimage.styler.ui.GradientLabelLegendComponent;
 import org.openjump.core.ui.io.file.FileNameExtensionFilter;
@@ -79,7 +78,6 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
     }
 
     JScrollPane scrollPane = new JScrollPane();
-    WorkbenchContext wcontext = JUMPWorkbench.getInstance().getContext();
 
     public static RasterImageLayer rasterImageLayer = new RasterImageLayer();
 
@@ -100,7 +98,7 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
 
             RasterColorMapSymbology symbology = (RasterColorMapSymbology) rasterStyler;
 
-            if (symbology.getColorMapEntries_tm().size() > 40) {
+            if (symbology.getColorTreeMap().size() > 40) {
                 JOptionPane.showMessageDialog(context.getWorkbenchFrame(),
                     // bundle.getString("LegendDialog.More40Colors.message"),
                     "More than 40 colors", RasterStylesExtension.extensionName,
@@ -108,8 +106,7 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
                 return false;
             }
 
-            final TreeMap<Double, Color> colorMapEntries = symbology
-                .getColorMapEntries_tm();
+            final TreeMap<Double, Color> colorMapEntries = symbology.getColorTreeMap();
 
             final String type = RasterLegendPlugIn.getLayer().getSymbology()
                 .getType();
@@ -222,24 +219,8 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
             }
         };
 
-        saveButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                save(scrollPane);
-                // frame.dispose();
-                return;
-            }
-        });
-        closeButton.addActionListener(new java.awt.event.ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                frame.dispose();
-
-                return;
-            }
-        });
+        saveButton.addActionListener(e -> save(scrollPane));
+        closeButton.addActionListener(e -> frame.dispose());
         okPanel.add(saveButton, BorderLayout.WEST);
         okPanel.add(closeButton, BorderLayout.EAST);
         return okPanel;
@@ -267,7 +248,7 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
     }
 
     private JPanel getPanelGradient(TreeMap<Double, Color> colorMapEntry,
-            RasterImageLayer rLayer) throws Exception {
+            RasterImageLayer rLayer) {
 
         final GradientLabelLegendComponent component = new GradientLabelLegendComponent(
                 colorMapEntry, rLayer.getNoDataValue(), rLayer.getName());
@@ -316,8 +297,7 @@ public class RasterLegendPlugIn implements ThreadedPlugIn {
 
         filter = new FileNameExtensionFilter("Portable Network Graphics (png)",
                 "png");
-        final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting(
-                "png");
+        final JFileChooser fc = new GUIUtil.FileChooserWithOverwritePrompting("png");
 
         fc.setFileFilter(filter);
         fc.addChoosableFileFilter(filter);

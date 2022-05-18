@@ -3,7 +3,6 @@ package org.openjump.core.ccordsys.utils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
@@ -61,11 +60,10 @@ public class ProjUtils {
      *            . eg. "c\documents\folder\image.tif"
      * @return the projection srid as a string. eg "32632"
      * @throws IOException if an IOException occurs
-     * @throws URISyntaxException if an URISyntaxException occurs
      */
     public static SRSInfo getSRSInfoFromGeoTiff(String fileSourcePath)
-            throws IOException, URISyntaxException,
-            TiffTags.TiffReadingException, ImageReadException {
+            throws IOException,
+        TiffTags.TiffReadingException, ImageReadException {
         return TiffTags.readMetadata(new File(fileSourcePath)).getSRSInfo();
     }
 
@@ -83,11 +81,9 @@ public class ProjUtils {
      *            auxiliary file path
      * @return SRSInfo and Projection definition
      * @throws IOException if an IOException occurs
-     * @throws URISyntaxException if an URISyntaxException occurs
      */
-
     public static SRSInfo getSRSInfoFromAuxiliaryFile(String fileSourcePath)
-            throws URISyntaxException, IOException {
+            throws IOException {
 
         // --- it reads an auxiliary file and decode a possible proj
         // --- definition to a simple string. Ex. "WGS 84 UTM Zone 32"
@@ -108,25 +104,6 @@ public class ProjUtils {
                 textProj = scanner.nextLine();
                 srsInfo = new SRSInfo().setSource(projectSourceFilePrj);
                 scanner.close();
-                /*
-                try {
-                    // Use new crs library to parse prj file if possible
-                    CoordinateReferenceSystem crs = new CRSFactory()
-                            .createFromPrj(textProj);
-                    if (crs.getAuthorityKey() != null
-                            && !crs.getAuthorityKey().equals("0")) {
-                        srsInfo.setRegistry(crs.getAuthorityName());
-                        srsInfo.setCode(crs.getAuthorityKey());
-                        srsInfo.setUnit(Unit.find(crs.getCoordinateSystem()
-                                .getUnit(0).toString()));
-                        srsInfo.setDescription(crs.getName());
-                        srsInfo.complete();
-                        return srsInfo;
-                    }
-                } catch (CRSException e) {
-                    e.printStackTrace();
-                }
-                */
             }
         } else if (new File(projectSourceRFilePrj).exists()) {
             Scanner scanner = new Scanner(new File(projectSourceRFilePrj));
@@ -188,8 +165,7 @@ public class ProjUtils {
             int end = textProj.indexOf("\",", start);
             prjname = textProj.substring(start + 2, end);
             // The following set of replacements allows to "harmonize" OGC, ESRI
-            // and
-            // few other WKT projection definitions
+            // and few other WKT projection definitions
             prjname = prjname.replaceAll("_", " ").replace(" / ", " ")
                     .replaceAll("\\bft US\\b", "(ftUS)")
                     .replaceAll("\\bftUS\\b", "(ftUS)")
@@ -331,7 +307,7 @@ public class ProjUtils {
             String sourcePathImage = null;
 
             for (Iterator<Feature> i = featureCollection.iterator(); i.hasNext();) {
-                Feature feature = (Feature) i.next();
+                Feature feature = i.next();
                 sourcePathImage = feature
                         .getString(ImageryLayerDataset.ATTR_URI);
 
@@ -405,27 +381,20 @@ public class ProjUtils {
     // Boolean. Selected layer is related to a database
     private static boolean isDataBaseLayer(Layer layer) {
         DataSourceQuery dsq = layer.getDataSourceQuery();
-        if (dsq == null
-                || dsq.getDataSource() instanceof DataStoreQueryDataSource) {
-            return true;
-        } else {
-            return false;
-        }
+        return dsq != null && dsq.getDataSource() instanceof DataStoreQueryDataSource;
     }
 
     // Boolean. Selected layer is related to GEoTIFF file
     public static boolean isImageGeoTIFFLayer(Layer layer) {
-        // String sclass = layer.getClass().getSimpleName();
-        // if (sclass.equals("ReferencedImagesLayer"))
         String fileSourcePath = "";
         if (layer.getStyle(ReferencedImageStyle.class) != null
                 && (layer.getDescription() != null)) {
 
             FeatureCollection featureCollection = layer
                     .getFeatureCollectionWrapper();
-            String sourcePathImage = null;
+            String sourcePathImage;
             for (Iterator<Feature> i = featureCollection.iterator(); i.hasNext();) {
-                Feature feature = (Feature) i.next();
+                Feature feature = i.next();
                 sourcePathImage = feature
                         .getString(ImageryLayerDataset.ATTR_URI);
 
@@ -440,17 +409,12 @@ public class ProjUtils {
             String extension = FileUtil.getExtension(fileSourcePath)
                     .toUpperCase();
             if ((extension.equals("TIF") || extension.equals("TIFF"))) {
-                TiffTags.TiffMetadata metadata = null;
+                TiffTags.TiffMetadata metadata;
                 try {
                     metadata = TiffTags.readMetadata(new File(fileSourcePath));
-                } catch (ImageReadException | IOException
-                        | TiffReadingException e) {
+                    return metadata.isGeoTiff();
+                } catch (ImageReadException | IOException | TiffReadingException e) {
                     e.printStackTrace();
-                }
-                if (metadata.isGeoTiff()) {
-                    return true;
-                } else {
-                    return false;
                 }
             }
         }
@@ -466,14 +430,18 @@ public class ProjUtils {
     // If layer is temporary or srid=0, it sets srid source to null
     //
     public static SRSInfo getSRSInfoFromLayerSource(RasterImageLayer layer)
-            throws Exception, URISyntaxException {
+            throws Exception {
         String fileSourcePath = layer.getImageFileName();
         String extension = FileUtil.getExtension(fileSourcePath).toLowerCase();
         SRSInfo srsInfo = null;
         // try to read geo tag
+        // 2022-04-18 [mmichaud] use imageio-ext instead of common-imaging
+        // to be able to read bigtiff
         if (extension.equals("tif") || extension.equals("tiff")) {
           try {
-            TiffTags.TiffMetadata metadata = TiffTags.readMetadata(new File(fileSourcePath));
+            //TiffTags.TiffMetadata metadata = TiffTags.readMetadataWithImageIoExt(new File(fileSourcePath));
+            TiffTags.TiffMetadata metadata = TiffTags.readIIOMetadata(new File(fileSourcePath));
+            //TiffTags.TiffMetadata metadata = TiffTags.readMetadata(new File(fileSourcePath));
             if (metadata.isGeoTiff()) {
               srsInfo = metadata.getSRSInfo();
               srsInfo.setSource(EMBEDDED_SRS);

@@ -279,8 +279,8 @@ public class KernelAlgorithm {
         final RasterImageIO rasterImageIO = new RasterImageIO();
         rasterImageIO.writeImage(file, result.getData(), rLayer
                 .getWholeImageEnvelope(), rasterImageIO.new CellSizeXY(rLayer
-                .getMetadata().getOriginalCellSize(), rLayer.getMetadata()
-                .getOriginalCellSize()), rLayer.getMetadata().getNoDataValue());
+                .getMetadata().getOriginalCellSize().getX(), rLayer.getMetadata()
+                .getOriginalCellSize().getY()), rLayer.getMetadata().getNoDataValue());
     }
 
     public void filterRaster2(File file, RasterImageLayer rLayer, float[] kernel)
@@ -316,8 +316,8 @@ public class KernelAlgorithm {
         final RasterImageIO rasterImageIO = new RasterImageIO();
         rasterImageIO.writeImage(file, result.getData(), rLayer
                 .getWholeImageEnvelope(), rasterImageIO.new CellSizeXY(rLayer
-                .getMetadata().getOriginalCellSize(), rLayer.getMetadata()
-                .getOriginalCellSize()), rLayer.getMetadata().getNoDataValue());
+                .getMetadata().getOriginalCellSize().getX(), rLayer.getMetadata()
+                .getOriginalCellSize().getY()), rLayer.getMetadata().getNoDataValue());
     }
 
     //TODO how is it different from GenericRasterAlgorithm.load ?

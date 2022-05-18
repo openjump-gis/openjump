@@ -74,7 +74,7 @@ public class LayerManager {
     // is lucky enough to have all its strong references released, let it
     // dispose of
     // itself immediately [Jon Aquino]
-    private final List<WeakReference<Layerable>> layerReferencesToDispose = new ArrayList<>();
+    private final List<WeakReference<Disposable>> layerReferencesToDispose = new ArrayList<>();
 
     private final List<LayerListener> layerListeners = new ArrayList<>();
     private final Iterator<Color> firstColors;
@@ -181,7 +181,9 @@ public class LayerManager {
 //            else {
 //                reproject((Layer) layerable, coordinateSystem);
 //            }
-            layerReferencesToDispose.add(new WeakReference<>(layerable));
+            if (layerable instanceof Disposable) {
+                layerReferencesToDispose.add(new WeakReference<Disposable>((Disposable)layerable));
+            }
         }
         addCategory(categoryName);
   
@@ -395,11 +397,11 @@ public class LayerManager {
 
     public void dispose() {
         this.setFiringEvents(false);
-        for (WeakReference<Layerable> reference : layerReferencesToDispose) {
-            Layer layer = (Layer) reference.get();
+        for (WeakReference<Disposable> reference : layerReferencesToDispose) {
+            Disposable disposableLayer = reference.get();
 
-            if (layer != null) {
-                layer.dispose();
+            if (disposableLayer != null) {
+                disposableLayer.dispose();
             }
         }
 

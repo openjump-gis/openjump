@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LinearGradientPaint;
 import java.awt.Paint;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.swing.JComponent;
@@ -79,7 +78,10 @@ public class GradientCanvas extends JComponent{
         for (ColorMapEntry colorMapEntry : colorMapEntries) {
             float fraction = (float) (colorMapEntry.getUpperValue() /
                     colorMapEntries[colorMapEntries.length - 1].getUpperValue());
-            map.put(fraction, colorMapEntry.getColor());
+            // Color maybe null in certain cases for nodata value (not sure if it is intended)
+            if (colorMapEntry.getColor() != null) {
+                map.put(fraction, colorMapEntry.getColor());
+            }
         }
         float[] fractions = new float[map.size()];
         Color[] colors = new Color[map.size()];
@@ -89,7 +91,6 @@ public class GradientCanvas extends JComponent{
             colors[index] = entry.getValue();
             index++;
         }
-        System.out.println(Arrays.toString(fractions));
         if(type == GradientType.HORIZONTAL) {
             if (orientation == GradientOrientation.DIRECT) {
                 paint = new LinearGradientPaint(0, 0, width, height, fractions, colors);

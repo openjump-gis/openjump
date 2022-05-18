@@ -117,8 +117,8 @@ public class WarpImageToFencePlugIn extends AbstractPlugIn {
     RenderedOp outputOp = JAI.create("Scale", pb, null);
 
     rasterImageIO.writeImage(outFile, outputOp.copyData(), envWanted,
-        rasterImageIO.new CellSizeXY(rLayer.getMetadata().getOriginalCellSize(),
-            rLayer.getMetadata().getOriginalCellSize()),
+        rasterImageIO.new CellSizeXY(rLayer.getMetadata().getOriginalCellSize().getX(),
+            rLayer.getMetadata().getOriginalCellSize().getY()),
         rLayer.getMetadata().getNoDataValue());
 
     String catName = StandardCategoryNames.WORKING;

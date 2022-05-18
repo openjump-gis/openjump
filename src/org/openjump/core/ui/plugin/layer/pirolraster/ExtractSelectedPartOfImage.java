@@ -149,8 +149,8 @@ public class ExtractSelectedPartOfImage extends AbstractPlugIn {
     RasterImageIO rasterImageIO = new RasterImageIO();
 
     rasterImageIO.writeImage(outFile, raster, envWanted,
-        rasterImageIO.new CellSizeXY(rLayer.getMetadata().getOriginalCellSize(),
-            rLayer.getMetadata().getOriginalCellSize()),
+        rasterImageIO.new CellSizeXY(rLayer.getMetadata().getOriginalCellSize().getX(),
+            rLayer.getMetadata().getOriginalCellSize().getY()),
         rLayer.getMetadata().getNoDataValue());
 
     String catName = StandardCategoryNames.WORKING;

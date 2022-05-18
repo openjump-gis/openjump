@@ -127,7 +127,7 @@ public class SLDHandler {
 
         if (symbology instanceof RasterColorMapSymbology) {
             for (Map.Entry<Double, Color> colorMapEntry :
-                ((RasterColorMapSymbology)symbology).getColorMapEntries_tm().entrySet()) {
+                ((RasterColorMapSymbology)symbology).getColorTreeMap().entrySet()) {
 
                 writer.writeStartElement("ColorMapEntry");
                 writer.writeAttribute("Color", SLDHandler.rgb2Hex(colorMapEntry.getValue()));

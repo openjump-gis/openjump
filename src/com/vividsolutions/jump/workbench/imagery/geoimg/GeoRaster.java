@@ -31,6 +31,7 @@ package com.vividsolutions.jump.workbench.imagery.geoimg;
  * (250)385-6040
  * www.vividsolutions.com
  */
+import com.vividsolutions.jump.workbench.model.Prioritized;
 import it.geosolutions.imageio.gdalframework.GDALImageReaderSpi;
 import it.geosolutions.imageio.gdalframework.GDALUtilities;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
@@ -79,12 +80,11 @@ import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImageException;
 import com.vividsolutions.jump.workbench.model.Disposable;
-import com.vividsolutions.jump.workbench.model.Prioritized;
 
 public class GeoRaster implements Disposable {
   protected String imageFileLocation;
   private URI uri = null;
-  protected Object fixed_reader = null;
+  protected Object fixed_reader;
   protected RenderedOp src = null;
   private ImageReader src_reader = null;
   private Object src_input = null;
@@ -154,7 +154,7 @@ public class GeoRaster implements Disposable {
       File file = new File(imageFileLocation);
       uri = file.toURI();
     }
-    Logger.trace("uri is now -> "+uri.toString());
+    Logger.trace("uri is now -> " + uri);
     // check availability early
     if (!new File(uri).canRead())
       throw new ReferencedImageException("cannot read file -> "+imageFileLocation);
@@ -166,13 +166,20 @@ public class GeoRaster implements Disposable {
     pbjImageRead.setParameter("readParam", param);
 
     // route, if fixed_reader was set
-    List<ImageReaderSpi> affirmed_readers;
+    List<Object> affirmed_readers;
+    fixed_reader = null;
     // default case, auto detection
     if (fixed_reader == null) {
-      affirmed_readers = new ArrayList(listValidImageIOReaders(uri, null));
+      affirmed_readers = new ArrayList<>(listValidImageIOReaders(uri, null));
+      //try {
+      //  affirmed_readers = listValidReaders(uri);
+      //} catch(IOException e) {
+      //  throw new ReferencedImageException(e);
+      //}
+      //affirmed_readers.sort(Comparator.comparingInt(it -> GeoImageFactory.getPriority(it)));
       // sort readers by priority
-      Collections.sort(affirmed_readers, new Comparator<ImageReaderSpi>() {
-        public int compare(final ImageReaderSpi o1, final ImageReaderSpi o2) {
+      Collections.sort(affirmed_readers, new Comparator<Object>() {
+        public int compare(final Object o1, final Object o2) {
           final Prioritized p1 = new Prioritized() {
             public int getPriority() {
               return GeoImageFactory.getPriority(o1);
@@ -183,14 +190,16 @@ public class GeoRaster implements Disposable {
               return GeoImageFactory.getPriority(o2);
             }
           };
-//            System.out.println(o1+"="+p1.getPriority()+"/"+o2+"="+p2.getPriority());
           return Prioritized.COMPARATOR.compare(p1, p2);
         }
       });
+      Logger.info("Available sorted readers : " + affirmed_readers);
     }
     // fixed reader is imageio reader
-    else if (fixed_reader instanceof ImageReaderSpi)
+    else if (fixed_reader instanceof ImageReaderSpi) {
       affirmed_readers = Collections.singletonList((ImageReaderSpi) fixed_reader);
+      Logger.info("Fixed reader : " + affirmed_readers);
+    }
     else {
       // fixed reader is something else, hopefully jai codec ;)
       // simply define an empty imageio reader list here to skip to jai below
@@ -198,43 +207,43 @@ public class GeoRaster implements Disposable {
     }
 
     // this is skipped if list is empty
-    // TODO: not sure looping makes sense here as image is
-    // actually rendered much later
-    for (Iterator<ImageReaderSpi> i = affirmed_readers.listIterator(); i
-        .hasNext();) {
 
-      ImageReaderSpi readerSpi = ((ImageReaderSpi) i.next());
+    Logger.info("Available readers : " + affirmed_readers);
+    for (Object reader : affirmed_readers) {
 
-      Logger.trace("Trying reader "+GeoImageFactory.loaderString(readerSpi));
+      Logger.info("Trying reader " + GeoImageFactory.loaderString(reader));
 
-      try {
-        src_input = createInput(uri, readerSpi);
+      if (reader instanceof ImageReaderSpi) {
+        ImageReaderSpi readerSpi = (ImageReaderSpi) reader;
+        try {
+          src_input = createInput(uri, reader);
 
-        src_reader = readerSpi.createReaderInstance(/* src_input */);
+          src_reader = readerSpi.createReaderInstance(/* src_input */);
 
-        src_reader.setInput(src_input);
-        pbjImageRead.setParameter("Input", src_input);
-        pbjImageRead.setParameter("Reader", src_reader);
+          src_reader.setInput(src_input);
+          pbjImageRead.setParameter("Input", src_input);
+          pbjImageRead.setParameter("Reader", src_reader);
 
-        src = JAI.create("ImageRead", pbjImageRead, null);
+          src = JAI.create("ImageRead", pbjImageRead, null);
 
-        // success OR dispose & try plain JAI below
-        if (src != null && src.getWidth() > 0) {
-          // set info vars
-          type = src_reader.getFormatName();
-          used_loader = src_reader;
-          return;
-        }
-        else
+          // success OR dispose & try plain JAI below
+          if (src != null /*&& src.getWidth() > 0*/) {
+            // set info vars
+            type = src_reader.getFormatName();
+            used_loader = src_reader;
+            return;
+          } else {
+            dispose();
+          }
+        } catch (Exception e) {
+          // if fixed_reader failed, it failed finally and we'll have to throw the reason
+          if (fixed_reader != null && fixed_reader == reader)
+            throw new ReferencedImageException(e);
+          // ok, this didn't work try the next one
+          Logger.debug(e);
+          // clean up any residue
           dispose();
-      } catch (Exception e) {
-        // if fixed_reader failed, it failed finally and we'll have to throw the reason
-        if (fixed_reader != null && fixed_reader == readerSpi)
-          throw new ReferencedImageException(e);
-        // ok, this didn't work try the next one
-        Logger.trace(e);
-        // clean up any residue
-        dispose();
+        }
       }
     }
 
@@ -323,7 +332,7 @@ public class GeoRaster implements Disposable {
 
   // TODO: probably better moved to GeoImage where the rendering is actually handled
   public RenderingHints createCacheRenderingHints() {
-    if (src instanceof RenderedOp && src.getWidth() > 2000
+    if (src != null && src.getWidth() > 2000
         && src.getHeight() > 2000 && cache_hints == null) {
       // use 64MB for images, default 16MB is kinda small
       cache = JAI.createTileCache(1024 * 1024 * 64L);
@@ -344,7 +353,7 @@ public class GeoRaster implements Disposable {
     Object input = createInput(uri);
     // create a temp stream to find all candidate codecs if codec was given
     String[] decs;
-    if (codec instanceof ImageCodec) {
+    if (codec != null) {
       SeekableStream is2 = SeekableStream.wrapInputStream(
           createInputStream(uri), true);
       decs = ImageCodec.getDecoderNames((SeekableStream) is2);
@@ -456,6 +465,12 @@ public class GeoRaster implements Disposable {
     resetGDALReaderSelection();
 
     // fetch all readers
+    // Don't know why this one is not automatically finded
+    // It is useful as it does not break on some wrong TiffTags like byte array nodata
+    // which breaks geosolutions imageio-ext reader
+    IIORegistry.getDefaultInstance().registerServiceProvider(
+        new com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi(), ImageReaderSpi.class
+    );
     final Iterator<? extends ImageReaderSpi> iter = IIORegistry
      .getDefaultInstance().getServiceProviders(ImageReaderSpi.class, false);
     
@@ -463,10 +478,9 @@ public class GeoRaster implements Disposable {
     
     // iterate all readers and return only valid ones
     ImageReaderSpi provider;
-    List<ImageReaderSpi> affirmed_readers = new Vector<ImageReaderSpi>();
+    List<ImageReaderSpi> affirmed_readers = new Vector<>();
     while (iter.hasNext()) {
       provider = iter.next();
-
       //Logger.trace("test "+GeoImageFactory.loaderString(provider));
 
       if (filter != null && !(filter.isInstance(provider)))
@@ -514,7 +528,8 @@ public class GeoRaster implements Disposable {
   }
 
   /**
-   * create a list of ImageCodec's supposedly able to open URI
+   * Create a list of ImageCodec's supposedly able to open URI.
+   * From com.sun.media.jai.codec.ImageCodec
    */
   static protected List<ImageCodec> listValidJAICodecs(URI uri)
       throws IOException {
@@ -535,7 +550,7 @@ public class GeoRaster implements Disposable {
    * create a list of JAI ImageCodec's and ImageIO readers supposedly able to open URI
    */
   static public List<Object> listValidReaders(URI uri) throws IOException {
-    List<Object> l = new ArrayList(listValidImageIOReaders(uri, null));
+    List<Object> l = new ArrayList<>(listValidImageIOReaders(uri, null));
     l.addAll(listValidJAICodecs(uri));
     return l;
   }
@@ -544,7 +559,7 @@ public class GeoRaster implements Disposable {
    * list all JAI ImageCodec's and ImageIO readers available in this jre
    */
   static public List<Object> listAllReaders() {
-    List<Object> loaders = new ArrayList();
+    List<Object> loaders = new ArrayList<>();
     // add imageio readers
     Iterator<? extends ImageReaderSpi> iter = IIORegistry
         .getDefaultInstance().getServiceProviders(ImageReaderSpi.class, true);
@@ -570,6 +585,12 @@ public class GeoRaster implements Disposable {
     return createInput(uri, null);
   }
 
+  /**
+   * @param uri the URI to read
+   * @param loader optional ImageReaderSpi
+   * @return the input as an InputStream, a File or a ImageInputStream
+   * @throws IOException
+   */
   static protected Object createInput(URI uri, Object loader)
       throws IOException {
 
@@ -598,7 +619,7 @@ public class GeoRaster implements Disposable {
       // how may i serve you today?
       Class[] clazzes = ((ImageReaderSpi) loader).getInputTypes();
       List<Class> intypes = clazzes != null ? Arrays.asList(clazzes)
-          : new ArrayList();
+          : new ArrayList<>();
       //System.out.println("GR in types: " + intypes);
       for (Class clazz : intypes) {
         // already reader compliant? off you f***
