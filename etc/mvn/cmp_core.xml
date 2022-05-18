@@ -30,7 +30,7 @@
         <include>*:imageio-ext-gdalframework</include>
         <include>*:imageio-ext-geocore</include>
         <include>*:imageio-ext-streams</include>
-        <include>*:imageio-ext-tiff:jar:1.1.13</include>
+        <include>*:imageio-ext-tiff:jar</include>
         <include>*:imageio-ext-utilities</include>
         <include>*:gdal</include>
       </includes>

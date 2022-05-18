@@ -29,7 +29,7 @@
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <batik.version>1.6-1</batik.version>
         <jts.version>1.18.2</jts.version>
-        <imageio-ext.version>1.3.11</imageio-ext.version>
+        <imageio-ext.version>1.4.2</imageio-ext.version>
     </properties>
     <profiles>
         <!-- switching os dependent lib paths for launch4j -->
@@ -1807,7 +1807,8 @@ ${project.artifactId} ${project.version} Changelog
            <groupId>it.geosolutions.imageio-ext</groupId>
            <artifactId>imageio-ext-tiff</artifactId>
            <!-- downgrade, as > 1.1.13 does not load single band TIFFs properly -->
-           <version>1.1.13</version>
+           <!-- 1.4.2 seems to be able to load single band TIFF properly -->
+           <version>${imageio-ext.version}</version>
            <scope>compile</scope>
         </dependency>
         <!-- selected imageio-ext modules for different image formats to be packaged into PLUS -->
