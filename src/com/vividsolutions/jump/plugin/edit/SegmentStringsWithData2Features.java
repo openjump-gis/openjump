@@ -194,23 +194,98 @@ public class SegmentStringsWithData2Features {
         double scale = 1.0;
         for (int i = 0 ; i < dp ; i++) scale *= 10.0;
         return Math.rint(d*scale)/scale;
-    } 
-    
+    }
+
+    private static double[] nextPointWithZ(int index, LineString line) {
+        double dist = 0.0;
+        Coordinate[] cc = line.getCoordinates();
+        for (int i = index+1 ; i < cc.length ; i++) {
+            dist += cc[i].distance(cc[i - 1]);
+            if (!Double.isNaN(cc[i].z)) return new double[] {cc[i].z, dist};
+        }
+        if (line.isClosed()) {
+            for (int i = 1 ; i < index ; i++) {
+                dist += cc[i].distance(cc[i - 1]);
+                if (!Double.isNaN(cc[i].z)) return new double[] {cc[i].z, dist};
+            }
+        }
+        return null;
+    }
+
+    private static double[] previousPointWithZ(int index, LineString line) {
+        double dist = 0.0;
+        Coordinate[] cc = line.getCoordinates();
+        for (int i = index-1 ; i >= 0 ; i--) {
+            dist += cc[i].distance(cc[i + 1]);
+            if (!Double.isNaN(cc[i].z)) return new double[] {cc[i].z, dist};
+        }
+        if (line.isClosed()) {
+            for (int i = cc.length-2 ; i > index ; i--) {
+                dist += cc[i].distance(cc[i + 1]);
+                if (!Double.isNaN(cc[i].z)) return new double[] {cc[i].z, dist};
+            }
+        }
+        return null;
+    }
+
     /**
      * Interpolate the z of coordinate c between coordinates
      * having prev and next indices in the line Coordinate array.
      */
     private static double interpolate(Coordinate c, LineString line, int dp) {
-        int prevIndex = -1;
+        //int prevIndex = -1;
         int index = -1;
-        int nextIndex = -1;
+        //int nextIndex = -1;
+        for (int i = 0 ; i < line.getNumPoints() ; i++) {
+            if (line.getCoordinateN(i).equals(c)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            double[] previous = previousPointWithZ(index, line);
+            double[] next = nextPointWithZ(index, line);
+            if (previous != null && next != null) {
+                double pZ = previous[0];
+                double nZ = next[0];
+                double pD = previous[1];
+                double nD = next[1];
+                double interpolated = pZ + (nZ-pZ)*(pD/(pD+nD));
+                return round(interpolated, dp);
+            }
+        }
+        return c.z;
+        /*
         Coordinate[] cc = line.getCoordinates();
+        Coordinate[][] beforeafter = split(c, line);
+        Coordinate[] before = beforeafter[0];
+        Coordinate[] after = beforeafter[1];
+        if (before.length > 0 && after.length > 0) {
+            double distBefore = 0.0;
+            double distAfter = 0.0;
+            for (int i = 0 ; i < before.length ; i++) {
+
+            }
+        }
         for (int i = 0 ; i < cc.length ; i++) {
             if (c.equals(cc[i]) && !Double.isNaN(cc[i].z)) {return cc[i].z;}
+            // index of c in line
             else if (index==-1 && c.equals(cc[i])) {index = i;}
+            // pass points having NaN values
             else if (Double.isNaN(cc[i].z)) {}
+            // if c index has still not be found and current cc[i] is not NaN,
+            // current cc[i] is the last previous point
             else if (index==-1) {prevIndex = i;}
-            else {nextIndex = i; break;}
+            // if cc[i] is neither a previous point neither the current point and it is not NaN
+            // set it as the next point and quit
+            else {
+                nextIndex = i;
+                if (prevIndex != -1)
+                    break;
+            }
+            if (prevIndex == -1 && nextIndex != -1 && line instanceof LinearRing) {
+                prevIndex = i;
+            }
         }
         if (prevIndex > -1 && nextIndex > -1) {
             return round(interpolate(index, prevIndex, nextIndex, cc), dp);
@@ -218,6 +293,7 @@ public class SegmentStringsWithData2Features {
         else {
             return c.z;
         }
+        */
     }
     
     /**
@@ -227,7 +303,13 @@ public class SegmentStringsWithData2Features {
     private static double interpolate(int c, int prev, int next, Coordinate[] cc) {
         double dBefor = 0.0;
         double dAfter = 0.0;
-        for (int i = prev ; i < c ; i++) dBefor += cc[i].distance(cc[i+1]);
+        if (prev > next) {
+            for (int i = prev ; i < cc.length-1 ; i++) dBefor += cc[i].distance(cc[i+1]);
+            for (int i = 0 ; i < c ; i++) dBefor += cc[i].distance(cc[i+1]);
+        }
+        else {
+            for (int i = prev; i < c; i++) dBefor += cc[i].distance(cc[i + 1]);
+        }
         for (int i = c ; i < next ; i++) dAfter += cc[i].distance(cc[i+1]);
         return cc[prev].z + (cc[next].z-cc[prev].z) * (dBefor/(dBefor+dAfter));
     }

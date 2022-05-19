@@ -48,10 +48,9 @@ public class Features2SegmentStringsWithData {
 
     private Features2SegmentStringsWithData() {}
     
-    public static List<SegmentString> getSegmentStrings(Collection inputFeatures) {
+    public static List<SegmentString> getSegmentStrings(Collection<Feature> inputFeatures) {
         List<SegmentString> segmentStrings = new ArrayList<>();
-        for (Object o : inputFeatures) {
-            Feature f = (Feature)o;
+        for (Feature f : inputFeatures) {
             segmentStrings.addAll(getSegmentStrings(f));
         }
         return segmentStrings;
@@ -84,6 +83,7 @@ public class Features2SegmentStringsWithData {
                                       List<SegmentString> segmentStrings) {
         SegmentString ss = new NodedSegmentString(line.getCoordinates(), 
             new SegmentStringData(f, i, j));
+
         segmentStrings.add(ss);
     }
         
