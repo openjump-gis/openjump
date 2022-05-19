@@ -103,16 +103,29 @@ public class SegmentStringsWithData2Features {
                 if (interpolate_z) {
                     interpolate(lines.get(0), exteriorRing, interpolated_z_dp);
                 }
+                // Preserve first coordinate
+                Coordinate[] array = exteriorRing.getCoordinates();
+                CoordinateArrays.scroll(
+                    exteriorRing.getCoordinates(),
+                    ((Polygon)sourceComponent).getExteriorRing().getCoordinateN(0));
+                exteriorRing = gf.createLinearRing(array);
                 // Now process holes the same way
                 List<LinearRing> holes = new ArrayList<>();
                 for (int j = 0 ; j < lines.size()-1 ; j++) {
                     LinearRing hole = (LinearRing)merge(lines.get(j+1), gf, true);
                     restoreZ(lines.get(j+1), ((Polygon)sourceComponent).getInteriorRingN(j), gf);
                     if (hole.isEmpty()) continue;
-                    holes.add(hole);
+                    //holes.add(hole);
                     if (interpolate_z) {
                         interpolate(lines.get(j+1), hole, interpolated_z_dp);
                     }
+                    // Preserve first coordinate
+                    array = hole.getCoordinates();
+                    CoordinateArrays.scroll(
+                        exteriorRing.getCoordinates(),
+                        ((Polygon)sourceComponent).getExteriorRing().getCoordinateN(0));
+                    hole = gf.createLinearRing(array);
+                    holes.add(hole);
                 }
                 finalComponents[i] = source.getFactory().createPolygon(exteriorRing, holes.toArray(new LinearRing[holes.size()]));
             }
@@ -255,64 +268,8 @@ public class SegmentStringsWithData2Features {
             }
         }
         return c.z;
-        /*
-        Coordinate[] cc = line.getCoordinates();
-        Coordinate[][] beforeafter = split(c, line);
-        Coordinate[] before = beforeafter[0];
-        Coordinate[] after = beforeafter[1];
-        if (before.length > 0 && after.length > 0) {
-            double distBefore = 0.0;
-            double distAfter = 0.0;
-            for (int i = 0 ; i < before.length ; i++) {
+    }
 
-            }
-        }
-        for (int i = 0 ; i < cc.length ; i++) {
-            if (c.equals(cc[i]) && !Double.isNaN(cc[i].z)) {return cc[i].z;}
-            // index of c in line
-            else if (index==-1 && c.equals(cc[i])) {index = i;}
-            // pass points having NaN values
-            else if (Double.isNaN(cc[i].z)) {}
-            // if c index has still not be found and current cc[i] is not NaN,
-            // current cc[i] is the last previous point
-            else if (index==-1) {prevIndex = i;}
-            // if cc[i] is neither a previous point neither the current point and it is not NaN
-            // set it as the next point and quit
-            else {
-                nextIndex = i;
-                if (prevIndex != -1)
-                    break;
-            }
-            if (prevIndex == -1 && nextIndex != -1 && line instanceof LinearRing) {
-                prevIndex = i;
-            }
-        }
-        if (prevIndex > -1 && nextIndex > -1) {
-            return round(interpolate(index, prevIndex, nextIndex, cc), dp);
-        }
-        else {
-            return c.z;
-        }
-        */
-    }
-    
-    /**
-     * Interpolate the z of coordinate having indice c between coordinates
-     * having prev and next indices in cc coordinate array.
-     */
-    private static double interpolate(int c, int prev, int next, Coordinate[] cc) {
-        double dBefor = 0.0;
-        double dAfter = 0.0;
-        if (prev > next) {
-            for (int i = prev ; i < cc.length-1 ; i++) dBefor += cc[i].distance(cc[i+1]);
-            for (int i = 0 ; i < c ; i++) dBefor += cc[i].distance(cc[i+1]);
-        }
-        else {
-            for (int i = prev; i < c; i++) dBefor += cc[i].distance(cc[i + 1]);
-        }
-        for (int i = c ; i < next ; i++) dAfter += cc[i].distance(cc[i+1]);
-        return cc[prev].z + (cc[next].z-cc[prev].z) * (dBefor/(dBefor+dAfter));
-    }
     
     /**
      * Creates a hierarchical structure containing all edges
