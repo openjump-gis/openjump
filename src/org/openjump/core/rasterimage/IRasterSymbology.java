@@ -68,7 +68,7 @@ public interface IRasterSymbology extends Cloneable {
 
   /**
    * Set a String representing this specific symbology.
-   * @param type
+   * @param type symbology type
    */
   void setType(String type);
 
@@ -95,7 +95,8 @@ public interface IRasterSymbology extends Cloneable {
   default Color getFinalColor(int[] data) {
     Color color = getPixelColor(data);
     double t = getTransparency();
-    if (data.length == 1 && isNoData(data[0])) return getNoDataColor();
+    if (data.length == 1 && isNoData(data[0]))
+      color = getNoDataColor();
     return t == 0 ? color :
         new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha()*(1.0-t)));
   }
@@ -110,7 +111,8 @@ public interface IRasterSymbology extends Cloneable {
   default Color getFinalColor(double[] data) {
     Color color = getPixelColor(data);
     double t = getTransparency();
-    if (data.length == 1 && isNoData(data[0])) return getNoDataColor();
+    if (data.length == 1 && isNoData(data[0]))
+      color = getNoDataColor();
     return t == 0 ? color :
         new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha()*(1.0-t)));
   }

@@ -481,9 +481,7 @@ public class RasterImageLayer extends GeoReferencedLayerable
 
     /**
      * Load the part of the image intersecting the viewport in image or set
-     * image to null if it does not intersects the viewport
-     * @param layerViewPanel
-     * @throws Exception
+     * image to null if it does not intersects the viewport.
      */
     public void reLoadImage(LayerViewPanel layerViewPanel) throws Exception {
         
@@ -536,9 +534,7 @@ public class RasterImageLayer extends GeoReferencedLayerable
 
     /**
      * Return a BufferedImage representing the part of the original image intersecting
-     * the viewport, with the user-defined symbology
-     * @return
-     * @throws NoninvertibleTransformException
+     * the viewport, with the user-defined symbology.
      */
     protected BufferedImage stretchImageValuesForDisplay() throws NoninvertibleTransformException{
 
@@ -566,8 +562,11 @@ public class RasterImageLayer extends GeoReferencedLayerable
                         } else {
                             rasterSymbology = new RasterColorMapSymbology(RasterColorMapSymbology.TYPE_RAMP);
                         }
-                        if (!Double.isNaN(metadata.getNoDataValue())) {
-                            rasterSymbology.addColorMapEntry(metadata.getNoDataValue(), transparentColor);
+                        // 2022-05-21 : initialize noData value in the symbolizer
+                        //              (old code added an entry in the ColorMapTree
+                        if (!Double.isNaN(noDataValue)) {
+                            rasterSymbology.setMinNoDataValue(noDataValue);
+                            rasterSymbology.setMaxNoDataValue(noDataValue);
                         }
                         rasterSymbology.addColorMapEntry(metadata.getStats().getMin(0), Color.WHITE);
                         rasterSymbology.addColorMapEntry(metadata.getStats().getMax(0), Color.BLACK);

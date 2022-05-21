@@ -79,6 +79,11 @@ public class RasterColorMapSymbology extends RasterSymbology {
   }
 
   private double clampValue(double value) {
+
+    // 2022-05-21 : Don't try to interpolate noDataValue in the ColorTreeMap
+    if (isNoData(value) && getNoDataColor() != null) {
+      return value;
+    }
     // If symbology min value is higher than raster min value
     // the value becomes equal to the symbology min value
     Double[] symbologyClassLimits =  getColorTreeMap().keySet().toArray(new Double[0]);
@@ -94,7 +99,17 @@ public class RasterColorMapSymbology extends RasterSymbology {
     }
   }
 
+  public Color getColor(int value) {
+    return getColor((double)value);
+  }
+
+
   public Color getColor(double value) {
+
+    // 2022-05-21 : special handling of noData values
+    if (isNoData(value)) {
+        return getNoDataColor();
+    }
 
     if(getType().equals(TYPE_RAMP)) {
 

@@ -377,10 +377,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         Range minMaxValues = new Range(stats.getMin(band), true, stats.getMax(band), true);
 
         stretchedPanel = new StretchedPanel(minMaxValues);
-        intervalPanel = new IntervalPanel(
-                this,
-                rasterImageLayer,
-                minMaxValues);
+        intervalPanel = new IntervalPanel(this, rasterImageLayer, minMaxValues);
         singleValuesPanel = new SingleValuesPanel(this, Utils.purgeNoData(rasterImageLayer.getActualRasterData(), rasterImageLayer), rasterImageLayer);
         heatMapPanel = new HeatMapPanel(this, rasterImageLayer, numbands);
         
@@ -428,16 +425,19 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         } else if(jTabbedPane_Type.getSelectedComponent() instanceof HeatMapPanel) {
             finalRasterSymbolizer = heatMapPanel.getRasterStyler();
         }
-        
+
+        finalRasterSymbolizer.setMinNoDataValue(rasterImageLayer.getNoDataValue());
+        finalRasterSymbolizer.setMaxNoDataValue(rasterImageLayer.getNoDataValue());
         finalRasterSymbolizer.setTransparency(GUIUtils.getAlpha_DecimalRange(Integer.parseInt(jTextField_TranspValue.getText())));
 
         if (finalRasterSymbolizer instanceof  RasterColorMapSymbology) {
+            // If noDataValue is selected, use the choosen color for noData values
             if (jCheckBox_NoDataValue.isSelected()) {
-                ((RasterColorMapSymbology)finalRasterSymbolizer)
-                    .addColorMapEntry(rasterImageLayer.getNoDataValue(), jButton_NoDataValueColor.getBackground());
-            } else {
-                ((RasterColorMapSymbology)finalRasterSymbolizer)
-                    .addColorMapEntry(rasterImageLayer.getNoDataValue(), null);
+                finalRasterSymbolizer.setNoDataColor(jButton_NoDataValueColor.getBackground());
+            }
+            // If noDataValue is not selected, use transparent pixels for noData values
+            else {
+                finalRasterSymbolizer.setNoDataColor(new Color(0,0,0,0));
             }
         }
 
