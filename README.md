@@ -1,5 +1,12 @@
-OpenJUMP, the Open Source GIS which has more than one trick in its kangaroo pocket, 
-"jumps" from sourceforge to github to help you as never.
+OpenJUMP2 (OJ2) - the cross-platform open source software Desktop-GIS with 
+a multitude of swiss-knifes in its kangaroo pocket. 
+Taking the _leap_ from _sourceforge_ to _github_, from _svn_ to _git_, 
+us few volunteers of the _jump pilot project_ hope that maybe **you might 
+join our struggle** to keep OJ2 not only alive but contribute to it's 
+improvement and adapation of new and exciting standards.
+
+**NOTE:** The [OJ2 github repository](https://github.com/openjump-gis/openjump) is mirrored 
+at https://gitlab.com/openjump-gis/openjump . 
 
 ## Introduction
 
@@ -23,30 +30,22 @@ a major refactoring is undertaken.
 The migration of OpenJUMP and all its extensions may take some time and this page 
 will be updated regularly until the first OpenJUMP2 official release.
 
+
 ## Documentation
 
 To learn more on OpenJUMP you can check the official 
 [website](http://www.openjump.org/) or read the 
 [wiki documentation](http://ojwiki.soldin.de/index.php?title=Main_Page) 
 
+
 ## Downloads
 
-The last official OpenJUMP release is OpenJUMP 1.16.
-You can download it from [Sourceforge - OpenJUMP](https://sourceforge.net/projects/jump-pilot/files/OpenJUMP/)
+The latest release is **OpenJUMP 2.0**.
+Readymade builds for Windows, Linux, MacOS can be downloaded from [OpenJUMP project's sf.net files area](https://sourceforge.net/projects/jump-pilot/files/OpenJUMP/).
 
-OpenJUMP 2 snapshots can be downloaded from
-https://sourceforge.net/projects/jump-pilot/files/OpenJUMP2_snapshots/
+Development snapshots are available too at
+https://sourceforge.net/projects/jump-pilot/files/OpenJUMP2_snapshots/ .
 
-
-## Migration to OpenJUMP 2
-
-OpenJUMP 2 - CORE is already compilable with maven
-
-If you have cloned the project, and you have maven installed,
-you can package the core distribution with
-
-`mvn package -P core,portable,snapshot
-`
 
 ## Extensions
 
@@ -59,7 +58,7 @@ xxx-extension (ex. skydriver-extension). An extension
 is a plugin or a set of plugins that OpenJUMP can 
 discover automatically while loading the jar file.
 
-**Drivers** are special etensions which will be named 
+**Drivers** are special extensions which will be named 
 xxx-driver (ex. dxf-driver).
 
 ### Extension migration status
@@ -89,7 +88,7 @@ xxx-driver (ex. dxf-driver).
 | Extension Manager      |      |     |      |     | Abandoned                 |
 | Five Colors            |   x  |  x  |  x   |  x  |                           |
 | Graph Toolbox          |   x  |  x  |  x   |  x  |                           |
-| Jump-JgraphT (lib)     |   x  |  x  |  x   |  x  | Support for Graph Toolbox |       |
+| Jump-JgraphT (lib)     |   x  |  x  |  x   |  x  | Support for Graph Toolbox |
 | Horae                  |      |     |      |     | To be done                |
 | Lansdscape Analysis    |      |     |      |     | To be done                |
 | MapGenToolbox          |   x  |  x  |  x   |  x  | Not included in PLUS      |
