@@ -28,14 +28,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,16 +48,7 @@ import javax.swing.MenuElement;
 
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.PointLocation;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryComponentFilter;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.GeometryEditor;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 
@@ -75,7 +62,6 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
-import com.vividsolutions.jump.workbench.ui.AttributeTab;
 import com.vividsolutions.jump.workbench.ui.FeatureSelection;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.LayerViewPanel;
@@ -83,7 +69,6 @@ import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog;
 import com.vividsolutions.jump.workbench.ui.OKCancelDialog.Validator;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
 
@@ -107,8 +92,8 @@ public class GCPlugin extends AbstractPlugIn {
 
   final private static I18N I18N = com.vividsolutions.jump.I18N.getInstance(new File("language/geomconv/gc"));
   private static GeometryFactory factory = new GeometryFactory();
-  private static Map geoms = null;
-  private static List<String> items = new ArrayList<String>();
+  private static Map<String,Method> geoms = null;
+  private static List<String> items = new ArrayList<>();
   static {
     // add geometry keys in the order shown in gui, case sensitive as
     // key is used verbatim to resolve GeometryFactory.create...() methods
@@ -141,7 +126,6 @@ public class GCPlugin extends AbstractPlugIn {
     if (target != null)
       return;
 
-    WorkbenchContext wbc = getWorkbenchContext();
     FeatureInstaller f = context.getFeatureInstaller();
 
     // create menu items
@@ -187,8 +171,7 @@ public class GCPlugin extends AbstractPlugIn {
   public void addToMainMenu(PlugInContext context, String[] menuchain) throws Exception {
     // one checker to rule them all
     EnableCheck checker = createEnableCheck();
-    for (Iterator iter = items.iterator(); iter.hasNext();) {
-      String menuentry = (String) iter.next();
+    for (String menuentry : items) {
       // add one plugin per menuitem
       GCPlugin plugin = new GCPlugin(menuentry);
       plugin.initialize(context);
@@ -197,7 +180,7 @@ public class GCPlugin extends AbstractPlugIn {
         context.getFeatureInstaller().addMenuSeparator(menuchain);
       } else {
         // one plugin per menuentry
-        context.getFeatureInstaller().addMainMenuItem(plugin, menuchain, _m(menuentry.toLowerCase()), false, null,
+        context.getFeatureInstaller().addMainMenuPlugin(plugin, menuchain, _m(menuentry.toLowerCase()), false, null,
             checker);
       }
     }
@@ -206,10 +189,9 @@ public class GCPlugin extends AbstractPlugIn {
   public boolean execute(PlugInContext context) throws Exception {
 
     if (layerMode()) {
-      Collection layers = getLayers();
+      Collection<Layer> layers = getLayers();
       StringBuffer buf = new StringBuffer();
-      for (Iterator i = layers.iterator(); i.hasNext();) {
-        Layer layer = (Layer) i.next();
+      for (Layer layer : layers) {
         String name = layer.getName();
         buf.append(buf.length() == 0 ? name : ", " + name);
       }
@@ -226,22 +208,20 @@ public class GCPlugin extends AbstractPlugIn {
     // Class[] cparams = ( method instanceof Method ) ? method.getParameterTypes() :
     // null;
 
-    Collection layers = getLayers();
+    Collection<Layer> layers = getLayers();
     // undo for all layers
     UndoableSetGeometry action = new UndoableSetGeometry(getName());
 
-    for (Iterator li = layers.iterator(); li.hasNext();) {
-      Layer layer = (Layer) li.next();
-      Collection feats = getFeatures(layer);
+    for (Layer layer : layers) {
+      Collection<Feature> feats = getFeatures(layer);
       // create undo for layer
       UndoableSetGeometry layeraction = new UndoableSetGeometry(layer, getName());
 
       // System.out.println("exec " + target + " on " + layer.getName()
       // + " feats#" + feats.size());
 
-      for (Iterator i = feats.iterator(); i.hasNext();) {
+      for (Feature feat : feats) {
         try {
-          Feature feat = (Feature) i.next();
           // keep for comparision with geom_new
           Geometry geom_orig = layeraction.getGeom(feat);
           // might be split in lines later
@@ -277,9 +257,6 @@ public class GCPlugin extends AbstractPlugIn {
                 geoms_new[j] = editor.edit(geom, new RemoveClosing());
               }
 
-              // System.out.println("geom: "+geom);
-              // System.out.println("new : "+geoms_new[j]);
-
               // did we receive a changed geometry?
               if (!geoms_new[j].equalsExact(geom))
                 changed = true;
@@ -299,9 +276,6 @@ public class GCPlugin extends AbstractPlugIn {
           else {
             geom_new = convert(geom_src, target);
           }
-
-          // System.out.println(geom_new);
-          // System.out.println(geom_orig);
 
           if (geom_new != null && !geom_new.equalsExact(geom_orig)) {
             layeraction.setGeom(feat, geom_new);
@@ -398,14 +372,11 @@ public class GCPlugin extends AbstractPlugIn {
     // are these layers editable?
     checker.add(new EnableCheck() {
       public String check(JComponent component) {
-        Collection layers = getLayers();
+        Collection<Layer> layers = getLayers();
         if (layers == null || layers.isEmpty())
           return _m("select-geometries-or-layers");
 
-        for (Iterator iterator = layers.iterator(); iterator.hasNext();) {
-          Layer layer = (Layer) iterator.next();
-          // System.out.println(layer.getName()
-          // +"->"+(layer.isEditable()?"ja":"nein"));
+        for (Layer layer : layers) {
           if (!layer.isEditable()) {
             return _m("layer-not-editable", layer.getName());
           }
@@ -433,11 +404,11 @@ public class GCPlugin extends AbstractPlugIn {
     }
   }
 
-  private Collection getFeatures(Layer layer) {
+  private Collection<Feature> getFeatures(Layer layer) {
     FeatureSelection sel = ((SelectionManagerProxy) getWorkbenchContext().getWorkbench().getFrame()
         .getActiveInternalFrame()).getSelectionManager().getFeatureSelection();
 
-    Collection feats;
+    Collection<Feature> feats;
     // user hand picked geometries (features)
     if (!sel.getFeaturesWithSelectedItems().isEmpty()) {
       feats = sel.getFeaturesWithSelectedItems(layer);
@@ -450,15 +421,15 @@ public class GCPlugin extends AbstractPlugIn {
     return feats;
   }
 
-  private Collection getLayers() {
+  private Collection<Layer> getLayers() {
     // all layers with selected items (parts of geometries)
-    Collection layers = ((SelectionManagerProxy) getWorkbenchContext().getWorkbench().getFrame()
+    Collection<Layer> layers = ((SelectionManagerProxy) getWorkbenchContext().getWorkbench().getFrame()
         .getActiveInternalFrame()).getSelectionManager().getFeatureSelection().getLayersWithSelectedItems();
     return layers.isEmpty() ? Arrays.asList(getWorkbenchContext().getLayerableNamePanel().getSelectedLayers()) : layers;
   }
 
   private Collection<String> getTypes(GeometryCollection geom) {
-    Collection types = new Vector();
+    Collection<String> types = new Vector<>();
     for (int i = 0; i < geom.getNumGeometries(); i++) {
       String type = geom.getGeometryN(i).getGeometryType();
       if (!types.contains(type))
@@ -467,11 +438,11 @@ public class GCPlugin extends AbstractPlugIn {
     return types;
   }
 
-  private static Map getCreateGeometryMethods() {
+  private static Map<String,Method> getCreateGeometryMethods() {
     if (geoms != null)
       return geoms;
 
-    geoms = new Hashtable();
+    geoms = new Hashtable<>();
     for (String key : items) {
       if (key.equals("separator"))
         break;
@@ -531,7 +502,7 @@ public class GCPlugin extends AbstractPlugIn {
 
     Method method = (Method) getCreateGeometryMethods().get(type);
     // do we have to && can we convert?
-    if (!(method instanceof Method)) {
+    if (method == null) {
       // ups we've got ourself no conversion
       warnUser(_m("no-conversion-method", _m(type.toLowerCase()), type));
       return null;
@@ -551,9 +522,9 @@ public class GCPlugin extends AbstractPlugIn {
 
     Class[] cparams = method.getParameterTypes();
 
-    // convert empty geometries
+    // convert empty geometries into an empty geometry of target type
     if (geom_src.isEmpty()) {
-      List<Object> params = new ArrayList<Object>();
+      List<Object> params = new ArrayList<>();
       for (Class clazz : cparams) {
         params.add(null);
       }
@@ -561,6 +532,7 @@ public class GCPlugin extends AbstractPlugIn {
       return geom_new;
     }
 
+    // Get the requested parameter for the target geometry builder
     boolean isArray = cparams[0].isArray();
     String name = isArray ? cparams[0].getComponentType().getName() : cparams[0].getName();
     // made from one coord, probably point ;)
@@ -580,7 +552,6 @@ public class GCPlugin extends AbstractPlugIn {
     }
     // multilinestring
     else if (isArray && name.equals("org.locationtech.jts.geom.LineString")) {
-      Coordinate[] coords = geom_src.getCoordinates();
 
       geom_new = (Geometry) method.invoke(factory, new Object[] { getLines(geom_src) });
 
@@ -628,15 +599,24 @@ public class GCPlugin extends AbstractPlugIn {
       Collection<String> types = getTypes((GeometryCollection) src);
       if (types.size() == 1 && types.iterator().next().equalsIgnoreCase("point"))
         src = factory.createLinearRing(src.getCoordinates());
+      else if (src.getNumGeometries() == 1 && src.getGeometryN(0) instanceof Polygon)
+        return (Polygon)src.getGeometryN(0);
+    }
+    // short-circuit
+    else if (src instanceof Polygon) {
+      return (Polygon)src;
+    }
+    // id src is a LineString, create a Polygon from a shell, whatever its orientation is
+    else if (src instanceof LineString) {
+      return factory.createPolygon(factory.createLinearRing(src.getCoordinates()));
     }
 
-    ArrayList<LinearRing> shells = new ArrayList<LinearRing>();
-    ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
+    ArrayList<LinearRing> shells = new ArrayList<>();
+    ArrayList<LinearRing> holes = new ArrayList<>();
     try {
       // split by direction shell are cw, holes ccw
       for (int i = 0; i < src.getNumGeometries(); i++) {
         Geometry geom = src.getGeometryN(i);
-
         LinearRing ring = factory.createLinearRing(geom.getCoordinates());
         if (Orientation.isCCW(ring.getCoordinates())) {
           holes.add(ring);
@@ -656,7 +636,7 @@ public class GCPlugin extends AbstractPlugIn {
         if (foundholes.size() > 0) {
           shells.removeAll(foundholes);
           for (int j = 0; j < foundholes.size(); j++) {
-            LinearRing hole = (LinearRing) foundholes.get(j);
+            LinearRing hole = foundholes.get(j);
             // reverse cw holes
             if (!Orientation.isCCW(hole.getCoordinates()))
               hole = reverseRing(hole);
@@ -671,7 +651,7 @@ public class GCPlugin extends AbstractPlugIn {
         return null;
       }
 
-      return factory.createPolygon((LinearRing) shells.get(0),
+      return factory.createPolygon(shells.get(0),
           (LinearRing[]) ((ArrayList) holes).toArray(new LinearRing[0]));
 
     } catch (IllegalArgumentException e) {
@@ -690,12 +670,22 @@ public class GCPlugin extends AbstractPlugIn {
    */
   public Polygon[] constructPolygons(Geometry src) {
 
+    // short-circuits
+    if (src instanceof MultiPolygon) {
+      Polygon[] polys = new Polygon[src.getNumGeometries()];
+      for (int i = 0 ; i < src.getNumGeometries() ; i++)
+        polys[i] = (Polygon)src.getGeometryN(i);
+      return polys;
+    }
+    else if (src instanceof Polygon)
+      return new Polygon[] {(Polygon)src};
+
     // split src to ring components early
     src = factory.createMultiLineString(getRings(src));
 
     GeometryFactory geometryFactory = this.factory;
-    ArrayList<LinearRing> shells = new ArrayList<LinearRing>();
-    ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
+    ArrayList<LinearRing> shells = new ArrayList<>();
+    ArrayList<LinearRing> holes = new ArrayList<>();
     // Bad rings are CCW rings not nested in another ring
     // and rings with more than 0 and less than 4 points
     // ArrayList<LineString> badRings = new ArrayList<LineString>();
@@ -737,7 +727,7 @@ public class GCPlugin extends AbstractPlugIn {
         shells.removeAll(holes);
         ArrayList ccwHoles = new ArrayList(holes.size());
         for (int i = 0; i < holes.size(); i++) {
-          ccwHoles.add(reverseRing((LinearRing) holes.get(i)));
+          ccwHoles.add(reverseRing(holes.get(i)));
         }
         holes = ccwHoles;
       }
@@ -753,14 +743,14 @@ public class GCPlugin extends AbstractPlugIn {
 
     // find holes
     for (int i = 0; i < holes.size(); i++) {
-      LinearRing testRing = (LinearRing) holes.get(i);
+      LinearRing testRing = holes.get(i);
       LinearRing minShell = null;
       Envelope minEnv = null;
       Envelope testEnv = testRing.getEnvelopeInternal();
       Coordinate testPt = testRing.getCoordinateN(0);
       LinearRing tryRing;
       for (int j = 0; j < shells.size(); j++) {
-        tryRing = (LinearRing) shells.get(j);
+        tryRing = shells.get(j);
         Envelope tryEnv = tryRing.getEnvelopeInternal();
         if (minShell != null)
           minEnv = minShell.getEnvelopeInternal();
@@ -810,7 +800,7 @@ public class GCPlugin extends AbstractPlugIn {
    * finds lr contained in other lr's (holes), returns all holes
    */
   private ArrayList<LinearRing> findCWHoles(ArrayList shells) {
-    ArrayList holesCW = new ArrayList(shells.size());
+    ArrayList<LinearRing> holesCW = new ArrayList<>(shells.size());
     LinearRing[] noHole = new LinearRing[0];
     for (int i = 0; i < shells.size(); i++) {
       LinearRing iRing = (LinearRing) shells.get(i);
@@ -908,48 +898,30 @@ public class GCPlugin extends AbstractPlugIn {
 
     dlg.setVisible(true);
 
-    return dlg.wasOKPressed() ? true : false;
+    return dlg.wasOKPressed();
   }
 
-  private class CloseRing extends GeometryEditor.CoordinateOperation {
+  private static class CloseRing extends GeometryEditor.CoordinateOperation {
     public Coordinate[] edit(Coordinate[] coordinates, Geometry geometry) {
-      // ignore already closed
-      Coordinate first = coordinates[0];
-      Coordinate last = coordinates[coordinates.length - 1];
-
-      if (first.equals(last))
-        return coordinates;
-
-      Coordinate[] coordinates_new = new Coordinate[coordinates.length + 1];
-      for (int i = 0; i < coordinates.length; i++) {
-        coordinates_new[i] = coordinates[i];
-      }
-      coordinates_new[coordinates_new.length - 1] = coordinates[0];
-      return coordinates_new;
+      CoordinateList list = new CoordinateList(coordinates);
+      list.closeRing();
+      return list.toCoordinateArray();
     }
   }
 
-  private class RemoveClosing extends GeometryEditor.CoordinateOperation {
+  private static class RemoveClosing extends GeometryEditor.CoordinateOperation {
     public Coordinate[] edit(Coordinate[] coordinates, Geometry geometry) {
-      // ignore points, nothing to remove here
-      if (coordinates.length < 2)
+      int lastIndex = coordinates.length-1;
+      while (lastIndex > 1 && coordinates[lastIndex].equals(coordinates[0])) {
+        lastIndex--;
+      }
+      if (lastIndex < coordinates.length-1) {
+        Coordinate[] newCoordinates = new Coordinate[lastIndex+1];
+        System.arraycopy(coordinates, 0, newCoordinates, 0, lastIndex+1);
+        return newCoordinates;
+      } else {
         return coordinates;
-      Coordinate first = coordinates[0];
-      Coordinate last = coordinates[coordinates.length - 1];
-      while (first.equals(last)) {
-        coordinates = removeLast(coordinates);
-        first = coordinates[0];
-        last = coordinates[coordinates.length - 1];
       }
-      return coordinates;
-    }
-
-    private Coordinate[] removeLast(Coordinate[] coordinates) {
-      Coordinate[] coordinates_new = new Coordinate[coordinates.length - 1];
-      for (int i = 0; i < coordinates.length - 1; i++) {
-        coordinates_new[i] = coordinates[i];
-      }
-      return coordinates_new;
     }
   }
 
