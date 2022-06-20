@@ -244,6 +244,7 @@ set "GDAL_FOLDER=lib\native\%GDAL_FOLDER%"
 if EXIST "%GDAL_FOLDER%" (
   set "GDAL_DATA=%GDAL_FOLDER%\bin\gdal-data"
   set "GDAL_DRIVER_PATH=%GDAL_FOLDER%\bin\gdal\plugins"
+  set "PROJ_LIB=%GDAL_FOLDER%\bin\proj7\share"
   set "PATH=%GDAL_FOLDER%\bin;%GDAL_FOLDER%\bin\gdal\java;%PATH%"
   rem --- gdal binding is version specific, prioritize the one delivered with native libs ---
   set "CLASSPATH=%GDAL_FOLDER%\bin\gdal\java\gdal.jar;%CLASSPATH%"
