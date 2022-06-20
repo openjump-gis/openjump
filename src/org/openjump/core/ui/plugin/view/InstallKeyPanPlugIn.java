@@ -60,18 +60,10 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
             {1, 1, -1, -1}, //ZOOM_IN
             {-1, -1, 1, 1}};//ZOOM_OUT
           
-    
+
     private static double panPercentage;
-    
-    AbstractPlugIn[] plugIns = { 
-        new PanHelper(sPAN_NORTH, NORTH),
-        new PanHelper(sPAN_EAST, EAST), 
-        new PanHelper(sPAN_SOUTH, SOUTH),
-        new PanHelper(sPAN_WEST, WEST),
-        new PanHelper(sZOOM_IN, ZOOM_IN), new PanHelper(sZOOM_OUT, ZOOM_OUT), 
-        new PanHelper(sZOOM_IN, ZOOM_IN), new PanHelper(sZOOM_OUT, ZOOM_OUT),
-        new PanHelper(sZOOM_EXT, ZOOM_FULL) };
-  
+
+    AbstractPlugIn[] plugIns;
     int[] keys = { KeyEvent.VK_UP, KeyEvent.VK_RIGHT, 
         KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, 
         KeyEvent.VK_PLUS, KeyEvent.VK_MINUS, 
@@ -95,12 +87,27 @@ public class InstallKeyPanPlugIn extends AbstractPlugIn implements MultiShortcut
     public InstallKeyPanPlugIn( double panPercentage ) {
         super();
         setPanPercentage( panPercentage );
-        
-        // assign shortcuts to plugins
-        for (int i = 0; i < keys.length; i++) {
-          plugIns[i].setShortcutKeys(keys[i]);
-          plugIns[i].setShortcutModifiers(KeyEvent.CTRL_MASK);
-        }
+    }
+
+    @Override
+    public void initialize(PlugInContext context) throws Exception {
+      super.initialize(context);
+
+      plugIns = new AbstractPlugIn[] { 
+          new PanHelper(sPAN_NORTH, NORTH),
+          new PanHelper(sPAN_EAST, EAST), 
+          new PanHelper(sPAN_SOUTH, SOUTH),
+          new PanHelper(sPAN_WEST, WEST),
+          new PanHelper(sZOOM_IN, ZOOM_IN), new PanHelper(sZOOM_OUT, ZOOM_OUT), 
+          new PanHelper(sZOOM_IN, ZOOM_IN), new PanHelper(sZOOM_OUT, ZOOM_OUT),
+          new PanHelper(sZOOM_EXT, ZOOM_FULL) };
+
+      // assign shortcuts to plugins
+      for (int i = 0; i < keys.length; i++) {
+        plugIns[i].initialize(context);
+        plugIns[i].setShortcutKeys(keys[i]);
+        plugIns[i].setShortcutModifiers(KeyEvent.CTRL_MASK);
+      }
     }
 
     public boolean execute(PlugInContext context) throws Exception {
