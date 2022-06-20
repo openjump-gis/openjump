@@ -215,9 +215,6 @@ set "NATIVEPATH=%NATIVEPATH%;%NATIVE%\%ID%-%JAVA_ARCH%;%NATIVE%\%ID%"
 set "NATIVEPATH=%NATIVEPATH%;%NATIVE%\%JAVA_ARCH%"
 set "PATH=%NATIVEPATH%;%NATIVE%;%LIB%\ext;%PATH%"
 
-rem -- debug info --
-if /i NOT "%JAVA_BIN%"=="javaw" echo ---PATH--- & echo %PATH%
-
 rem -- set classpath --
 set CLASSPATH=.;bin
 rem -- add jars to classpath --
@@ -254,6 +251,9 @@ if EXIST "%GDAL_FOLDER%" (
 
 rem -- debug info --
 if /i NOT "%JAVA_BIN%"=="javaw" echo ---CLASSPATH--- & echo %CLASSPATH%
+
+rem -- debug info --
+if /i NOT "%JAVA_BIN%"=="javaw" echo ---PATH--- & echo %PATH%
 
 rem -- set settings home/log dir if none given --
   rem --- dequote settings_home, later on we assume it's unquoted ---
