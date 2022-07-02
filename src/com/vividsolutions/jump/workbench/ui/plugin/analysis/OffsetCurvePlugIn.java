@@ -58,7 +58,7 @@ import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.math.Vector2D;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
-import org.locationtech.jts.operation.buffer.OffsetCurveSetBuilder;
+import org.locationtech.jts.operation.buffer.BufferCurveSetBuilder;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.linemerge.LineMerger;
