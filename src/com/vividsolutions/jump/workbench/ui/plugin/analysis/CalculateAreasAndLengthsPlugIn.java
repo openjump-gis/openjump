@@ -30,35 +30,15 @@
  * www.vividsolutions.com
  */
 package com.vividsolutions.jump.workbench.ui.plugin.analysis;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 
 import org.locationtech.jts.geom.Geometry;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.Feature;
-import com.vividsolutions.jump.feature.FeatureSchema;
-import com.vividsolutions.jump.util.Blackboard;
-import com.vividsolutions.jump.util.CollectionUtil;
-import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.FeatureEventType;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -68,8 +48,7 @@ import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
 import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.*;
-import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+
 
 /**
  * Calculates areas and lengths from information obtained

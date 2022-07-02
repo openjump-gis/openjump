@@ -52,7 +52,6 @@ import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
-import com.vividsolutions.jump.workbench.plugin.StartMacroPlugIn;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;

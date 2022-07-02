@@ -34,36 +34,25 @@ package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.lang.Exception;
 import java.lang.Integer;
 import java.util.*;
 
 import java.util.Collection;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.I18N;
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.distance.DistanceToPoint;
 import org.locationtech.jts.algorithm.distance.PointPairDistance;
 import org.locationtech.jts.geom.Position;
-import org.locationtech.jts.math.Vector2D;
-import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
-import org.locationtech.jts.operation.buffer.BufferCurveSetBuilder;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.linemerge.LineMerger;
-import org.locationtech.jts.operation.union.UnaryUnionOp;
-import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.task.*;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -71,7 +60,6 @@ import com.vividsolutions.jump.workbench.model.*;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import com.vividsolutions.jump.workbench.ui.plugin.clipboard.PasteItemsPlugIn;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
@@ -116,7 +104,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
   private String JOIN_ROUND;
   private String MITRE_LIMIT;
   
-  private List joinStyles;
+  private List<String> joinStyles;
 
   private Layer layer;
   private double offsetDistance    = 1.0;
@@ -143,9 +131,9 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
     }
   
     public void initialize(PlugInContext context) throws Exception {
-        context.getFeatureInstaller().addMainMenuItem(
+        context.getFeatureInstaller().addMainMenuPlugin(this,
             new String[] {MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS},
-            this,
+            getName(), false, null,
             createEnableCheck(context.getWorkbenchContext())
         );
     }
@@ -187,7 +175,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         JOIN_ROUND = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-round");
         MITRE_LIMIT = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.mitre-join-limit");
         
-	    joinStyles = new ArrayList();
+	    joinStyles = new ArrayList<>();
 	    joinStyles.add(JOIN_BEVEL);
 	    joinStyles.add(JOIN_MITRE);
 	    joinStyles.add(JOIN_ROUND);    
@@ -212,7 +200,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         featureSchema.addAttribute("GEOMETRY", AttributeType.GEOMETRY);
         FeatureCollection resultFC = new FeatureDataset(featureSchema);
         // Fill inputC with features to be processed
-        Collection inputC;
+        Collection<Feature> inputC;
         if (useSelected) {
         	inputC = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
         	Feature feature = (Feature) inputC.iterator().next();
@@ -231,11 +219,10 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 	    	return;
 	    }
 	    // Create offsets for each input feature
-        Collection resultGeomColl = runOffset(monitor, context, inputFD);
+        Collection<Geometry> resultGeomColl = runOffset(monitor, context, inputFD);
         FeatureCollection resultFeatureColl = new FeatureDataset(featureSchema);
         Iterator iResult = resultGeomColl.iterator();
-        for (Iterator iSource = inputFD.iterator(); iSource.hasNext(); ) {
-        	Feature sourceFeature = (Feature) iSource.next();
+        for (Feature sourceFeature : inputFD.getFeatures()) {
         	Geometry gResult = (Geometry) iResult.next();
         	if (!(gResult == null || gResult.isEmpty())) {
         		Feature newFeature = sourceFeature.clone(true);
@@ -260,14 +247,13 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         context.addLayer(categoryName, name, resultFC);
     }
 
-    private Collection runOffset(TaskMonitor monitor, PlugInContext context, FeatureCollection fcA) throws Exception {
+    private Collection<Geometry> runOffset(TaskMonitor monitor, PlugInContext context, FeatureCollection fcA) throws Exception {
         int total = fcA.size();
         int count = 0;
-        Collection resultColl = new ArrayList();
-        for (Iterator ia = fcA.iterator(); ia.hasNext(); ) {
+        Collection<Geometry> resultColl = new ArrayList<>();
+        for (Feature fa : fcA.getFeatures()) {
             monitor.report(count++, total, I18N.getInstance().get("com.vividsolutions.jump.qa.diff.DiffGeometry.features"));
             if (monitor.isCancelRequested()) break;
-            Feature fa = (Feature) ia.next();
             Geometry ga = fa.getGeometry();
             if (fromAttribute) {
         	    Object o = fa.getAttribute(attributeIndex);
@@ -283,7 +269,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
             } catch (Exception e) {
                 String errorMessage = I18N.getInstance().get(
                     "ui.plugin.analysis.BufferPlugIn.error-found",
-                    new Object[]{fa.getID(), ga.getCoordinate().x, ga.getCoordinate().x});
+                    fa.getID(), ga.getCoordinate().x, ga.getCoordinate().x);
                 context.getWorkbenchFrame().warnUser(errorMessage);
                 throw new Exception(errorMessage, e);
             }
@@ -298,7 +284,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         BufferParameters parameters =
             new BufferParameters(quadrantSegments, BufferParameters.CAP_FLAT, joinStyleCode, mitreLimit);
                 
-        Collection offsetCurves = new ArrayList();
+        Collection<Geometry> offsetCurves = new ArrayList<>();
         if (roughOffsetCurve) {
             addRoughOffsetCurves(offsetCurves, a, parameters);
             
@@ -309,20 +295,20 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
     }
     
     
-    private Collection merge(Collection linestrings) {
+    private Collection<Geometry> merge(Collection<Geometry> linestrings) {
         LineMerger merger = new LineMerger();
         merger.add(linestrings);
         return merger.getMergedLineStrings();
     }
     
-    private void addCleanOffsetCurves(Collection offsetCurves, 
+    private void addCleanOffsetCurves(Collection<Geometry> offsetCurves,
             Geometry sourceCurve, BufferParameters parameters) {
         parameters.setSingleSided(true);
         parameters.setQuadrantSegments(quadrantSegments);
         Geometry sidedBuffer = new BufferOp(sourceCurve, parameters)
             .getResultGeometry(offsetDistance)
             .getBoundary();
-        Collection offsetSegments = new ArrayList();
+        Collection<Geometry> offsetSegments = new ArrayList<>();
         // Segments located entirely under this distance are excluded
         double lowerBound = Math.abs(offsetDistance)*Math.sin(Math.PI/(4*quadrantSegments));
         // Segments located entirely over this distance are included
@@ -369,7 +355,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
     
     // Recursive function to split segments located on the single-side buffer
     // boundary, but having a part of them inside the full buffer.
-    private void divide(Collection offsetSegments, Geometry sourceCurve,
+    private void divide(Collection<Geometry> offsetSegments, Geometry sourceCurve,
             Coordinate c1, Coordinate c2, double d1, double d2, double lb, double ub) {
         // I stop recursion for segment < 2*lb to exclude small segments
         // perpendicular but very close to the boundary
@@ -401,7 +387,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         }
     }
     
-    private void addRoughOffsetCurves(Collection offsetCurves, 
+    private void addRoughOffsetCurves(Collection<Geometry> offsetCurves,
             Geometry sourceCurve, BufferParameters parameters) {
         
         OffsetCurveBuilder builder = new OffsetCurveBuilder(
@@ -460,16 +446,8 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
                 updateControls(dialog);
             }
         });
-        fromAttributeCheckBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                updateControls(dialog);
-            }
-        });
-        joinStyleComboBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                updateControls(dialog);
-            }
-        });
+        fromAttributeCheckBox.addActionListener(e -> updateControls(dialog));
+        joinStyleComboBox.addActionListener(e -> updateControls(dialog));
     }
 
     private void getDialogValues(MultiInputDialog dialog) {
@@ -497,8 +475,8 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
     }
     
     private int joinStyleCode(String joinStyle) {
-        if (joinStyle == JOIN_BEVEL) return BufferParameters.JOIN_BEVEL;
-        if (joinStyle == JOIN_MITRE) return BufferParameters.JOIN_MITRE;
+        if (joinStyle.equals(JOIN_BEVEL)) return BufferParameters.JOIN_BEVEL;
+        if (joinStyle.equals(JOIN_MITRE)) return BufferParameters.JOIN_MITRE;
         return BufferParameters.JOIN_ROUND;
     }
     
@@ -519,8 +497,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 	    dialog.setFieldEnabled(FROM_ATTRIBUTE, !useSelected && hasNumericAttributes);
 	    dialog.setFieldEnabled(ATTRIBUTE, !useSelected && fromAttribute && hasNumericAttributes);
 	    dialog.setFieldEnabled(QUADRANT_SEGMENTS, joinStyleCode == BufferParameters.JOIN_ROUND);
-        dialog.setFieldEnabled(MITRE_LIMIT, 
-                     joinStyleCode == BufferParameters.JOIN_MITRE);
+      dialog.setFieldEnabled(MITRE_LIMIT, joinStyleCode == BufferParameters.JOIN_MITRE);
     }
 
 }

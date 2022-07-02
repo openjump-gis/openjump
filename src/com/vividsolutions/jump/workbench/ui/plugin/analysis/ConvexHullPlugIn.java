@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
 
 import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.I18N;

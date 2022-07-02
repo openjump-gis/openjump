@@ -1,11 +1,9 @@
 package com.vividsolutions.jump.workbench.ui.plugin.analysis;
 
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jump.geom.AbstractGeometryProcessor;
 
 import java.util.List;
-import java.util.PriorityQueue;
 
 /**
  * Simplifier removing segments based on their size, and taking care to remove
