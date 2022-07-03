@@ -38,7 +38,6 @@
       <excludes>
         <exclude>*:jaxb-*</exclude>
         <exclude>*:javax.activation-*</exclude>
-        <exclude>org.gdal:gdal</exclude>
       </excludes>
     </dependencySet>
     <!-- place all jaxb jars separately, used by imageio-ext, set-attribute, view-manager currently -->

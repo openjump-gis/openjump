@@ -19,7 +19,6 @@
         <exclude>*:batik-*</exclude>
         <!-- exclude imageio-ext from CORE build, but include some selected jars below -->
         <exclude>it.geosolutions.imageio-ext:*</exclude>
-        <exclude>org.gdal:gdal</exclude>
         <!-- we'll package postgresql to lib/ext/dbdatastore/ below -->
         <exclude>org.postgresql:postgresql</exclude>
       </excludes>

@@ -1791,13 +1791,6 @@ ${project.artifactId} ${project.version} Changelog
             <groupId>it.geosolutions.imageio-ext</groupId>
             <artifactId>imageio-ext-gdalframework</artifactId>
             <version>${imageio-ext.version}</version>
-            <exclusions>
-              <exclusion>
-                <!-- let's choose our own gdal version above -->
-                <groupId>org.gdal</groupId>
-                <artifactId>gdal</artifactId>
-              </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>it.geosolutions.imageio-ext</groupId>
