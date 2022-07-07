@@ -1321,7 +1321,7 @@
           <plugin>
             <groupId>se.bjurr.gitchangelog</groupId>
             <artifactId>git-changelog-maven-plugin</artifactId>
-            <version>1.69</version>
+            <version>1.92</version>
             <?m2e ignore?>
             <executions>
               <execution>
