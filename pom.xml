@@ -1713,8 +1713,8 @@ ${project.artifactId} ${project.version} Changelog
             <scope>test</scope>
         </dependency>
         <!-- Version 2.2.1 is the last of the unmaintained 2.2 series
-        There are 2.5.x and 2.7 versions but they  are much bigger
-        don't know if we need them as only few people use jython -->
+        There are 2.5.x and 2.7 versions but they are much bigger
+        don't know if we need them as only few if any people use jython -->
         <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython</artifactId>
