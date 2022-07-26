@@ -341,8 +341,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/set-attributes-extension/releases/download/v2.0.1/set-attributes-extension-2.0.1.zip</url>
-                      <sha1>6e901cfc322cbc48fecbff9cc84fd0a1885aee32</sha1>
+                      <url>https://github.com/openjump-gis/set-attributes-extension/releases/download/v2.0.2/set-attributes-extension-2.0.2.zip</url>
+                      <sha1>522d222c9187a960786ae82ae2b5b200c09aa32d</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
@@ -389,8 +389,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/view-manager-extension/releases/download/v2.0.2/view-manager-extension-2.0.2.zip</url>
-                      <sha1>73de0920bb4dc4fa290d28867bc16e20a1ad17a8</sha1>
+                      <url>https://github.com/openjump-gis/view-manager-extension/releases/download/v2.0.3/view-manager-extension-2.0.3.zip</url>
+                      <sha1>bdff4634b623619f295dccf5f41670050bed49e3</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
