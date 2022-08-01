@@ -18,6 +18,7 @@ Bug Fixes (tickets on either
   - Fix z interpolation in NoderPlugIn
   - fix #52 "Geometry converter turns valid polygons into invalid ones"
   - fix "panning with shortcuts (Ctrl+Cursor keys)" died with error stack
+  - issue #55: java17+ jaxb related stack trace during start
 
 
 Version 2.0 release rev.5095[a56ff6d] (released on 01. March 2022)
