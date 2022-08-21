@@ -97,4 +97,25 @@ public class JFCWithEnterAction extends JFileChooser {
     return ((super.getSelectedFiles().length == 0) && (super.getSelectedFile() != null)) ? new File[] { getSelectedFile() } : super.getSelectedFiles();
   }
 
+  @Override
+  public void setSelectedFile(File file) {
+    if (file == null) return;
+
+    try {
+      super.setSelectedFile(file);
+    } catch (IndexOutOfBoundsException e) {
+      // ignore exception thrown because file is not available
+      // we allow prepopulating the dialog with missing file names
+      // e.g. for search of missing files when opening project
+    }
+
+    // workaround to just fill out the filename field
+    try {
+      Method setFileName = getUI().getClass().getDeclaredMethod("setFileName", String.class);
+      if (setFileName != null)
+        setFileName.invoke(getUI(), file.getName());
+    } catch (Exception e) {
+      Logger.error(e);
+    }
+  }
 }
