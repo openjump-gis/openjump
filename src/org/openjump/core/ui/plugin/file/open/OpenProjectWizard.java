@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -254,7 +256,6 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             layerManager.remove(layer);
     }
 
-    @SuppressWarnings("deprecation")
     private void loadLayers(LayerManager sourceLayerManager,
             LayerManager newLayerManager, CoordinateSystemRegistry registry,
             TaskMonitor monitor) throws Exception {
@@ -310,18 +311,19 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                     else if (layerable instanceof Layer) {
                         Layer layer = (Layer) layerable;
                         File layerFile = getLayerFileProperty(layer);
-                        if (!updateOnlyMissingResources || !layerFile.exists()) {
-                            if (updateResources
-                                    && layerFile != null
-                                    && isLocatedBellow(
-                                            oldProjectFile.getParentFile(),
-                                            layerFile)) {
-                                File newLayerFile = updateResourcePath(
-                                        oldProjectFile,
-                                        newTask.getProjectFile(), layerFile);
-                                setLayerFileProperty(layer, newLayerFile);
-                            }
+
+                        // fixup file path (replace/prepend old project basepath with new one)
+                        // if
+                        // - file path is relative
+                        // - update resources was requested 
+                        // - file is missing
+                        if (!layerFile.isAbsolute()
+                            || (!updateOnlyMissingResources || !layerFile.exists()) && updateResources
+                                && layerFile != null && isLocatedBelow(oldProjectFile.getParentFile(), layerFile)) {
+                          File newLayerFile = updateResourcePath(oldProjectFile, newTask.getProjectFile(), layerFile);
+                          setLayerFileProperty(layer, newLayerFile);
                         }
+
                         try {
                             load(layer, registry, monitor);
                         } catch (FileNotFoundException ex) {
@@ -338,7 +340,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                                                 JOptionPane.YES_NO_OPTION);
 
                                 if (response != JOptionPane.YES_OPTION) {
-                                    break;
+                                    continue;
                                 }
                             }
 
@@ -350,15 +352,16 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                             if (properties.get(DataSource.FILE_KEY) != null) {
                                 String fname = properties.get(
                                         DataSource.FILE_KEY).toString();
-                                String filename = findFile.getFileName(fname);
+                                String filename = findFile.getFileName(fname, newTask.getProjectFile().getParentFile());
                                 if (filename.length() > 0) {
                                     // set the new source for this layer
                                     properties.put(DataSource.FILE_KEY,
                                             filename);
                                     dataSource.setProperties(properties);
                                     load(layer, registry, monitor);
-                                } else {
-                                    break;
+                                }
+                                else {
+                                    continue;
                                 }
                             }
                         }
@@ -488,24 +491,25 @@ public class OpenProjectWizard extends AbstractWizardGroup {
             File layerFile) {
         String oldParent = oldProjectFile.getParentFile().getAbsolutePath();
         String newParent = newProjectFile.getParentFile().getAbsolutePath();
-        String child = layerFile.getAbsolutePath();
+        String child = layerFile.isAbsolute() ? layerFile.getAbsolutePath() : new File(oldParent,layerFile.getPath()).getAbsolutePath();
         String relativePath = child.substring(oldParent.length() + 1);
         return new File(newParent, relativePath);
     }
 
-    private boolean isLocatedBellow(File parentDir, File layerFile) {
-        if (layerFile == null)
+    private boolean isLocatedBelow(File parentDir, File layerFile) {
+        if (layerFile == null || parentDir == null)
             return false;
-        for (File layerParent = layerFile.getParentFile(); layerParent != null; layerParent = layerParent
-                .getParentFile()) {
-            if (layerParent.equals(parentDir))
-                return true;
-        }
+        Path layerPath = Paths.get(layerFile.getPath());
+        Path parentPath = Paths.get(parentDir.getPath());;
+        // relative w/o folder e.g. 'Lines.jml'
+        if (!layerPath.isAbsolute())
+          return true;
+        else if (layerPath.startsWith(parentPath))
+          return true;
 
         return false;
     }
 
-    @SuppressWarnings("deprecation")
     private File getLayerFileProperty(Layer layer) {
         DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
         DataSource dataSource = dataSourceQuery.getDataSource();
@@ -517,7 +521,6 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         return layerFile;
     }
 
-    @SuppressWarnings("deprecation")
     private void setLayerFileProperty(Layer layer, File file) {
         DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
         DataSource dataSource = dataSourceQuery.getDataSource();
