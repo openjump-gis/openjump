@@ -2,10 +2,6 @@ package com.vividsolutions.jump.workbench.ui.renderer;
 
 import java.awt.Graphics2D;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
 
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.workbench.model.Layer;
