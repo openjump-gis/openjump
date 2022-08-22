@@ -131,6 +131,7 @@ xxx-driver (ex. dxf-driver).
 | Delineation of functional and planning regions |GITHUB| burakbeyhan| https://github.com/burakbeyhan/delineation-of-functional-and-planning-regions | 2020 : Not ready for OJ2 |
 | GeOxygen                  |Sourceforge|oxygene-project| https://sourceforge.net/projects/oxygene-project/files/ | 2014 : Not Ready for OJ2|
 | SMT:SAR Management Toolkit|Sourceforge|sarmanager| https://sourceforge.net/projects/sarmanager/ | 2016 : not ready for OJ2|
+| Geo Arbores Raster Tools|Sourceforge| GiuseppeAruta | https://sourceforge.net/p/opensit/wiki/Geo%20Arbores%20Raster%20Tools/ | 2022 : ported to OJ2 not integrated|
 
 #### Other known drivers/forks non hosted on Github openjump-gis repository 
 
