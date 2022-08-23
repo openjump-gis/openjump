@@ -209,8 +209,6 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
     private JLabel timeLabel, memoryLabel, scaleLabel, coordinateLabel;
     private DecimalFormat scaleFormat = new DecimalFormat("#,###");
     private DecimalFormat scaleFormatSmall = new DecimalFormat("#.####");
-    private ZoomToScalePlugIn zoomToScalePlugin = new ZoomToScalePlugIn();
-    private ZoomToCoordinatePlugIn zoomToCoordPlugin = new ZoomToCoordinatePlugIn();
 
     private String lastStatusMessage = "";
 
@@ -1573,22 +1571,49 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
 
         // [Giuseppe Aruta 2016_6_4] doubleclick to open Zoom to Scale plugin
         scaleLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() != 2)
-                    return;
-                executePlugin(zoomToScalePlugin);
+          PlugIn plugin = null;
+
+          public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() != 2)
+              return;
+            // create and initialize plugin on demand
+            if (plugin == null) {
+              plugin = new ZoomToScalePlugIn() {
+                // override menu installation of parent, not needed here
+                public void initialize(PlugInContext context) throws Exception {
+                  super.initialize(context);
+                }
+              };
+              try {
+                plugin.initialize(workbenchContext.createPlugInContext());
+              } catch (Exception ex) {
+                handleThrowable(ex);
+              }
             }
+            executePlugin(plugin);
+          }
         });
 
         // [Giuseppe Aruta 2016_6_4] doubleclick to open Zoom to Coordinates
         // plugin
         coordinateLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() != 2)
-                    return;
+          PlugIn plugin = null;
 
-                executePlugin(zoomToCoordPlugin);
+          public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() != 2)
+              return;
+
+            // create and initialize plugin on demand
+            if (plugin == null) {
+              plugin = new ZoomToCoordinatePlugIn();
+              try {
+                plugin.initialize(workbenchContext.createPlugInContext());
+              } catch (Exception ex) {
+                handleThrowable(ex);
+              }
             }
+            executePlugin(plugin);
+          }
         });
 
         // Tooltips can cover some labels avoiding the usage of
@@ -1603,7 +1628,6 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                 ToolTipManager.sharedInstance().setInitialDelay(1000);
                 ToolTipManager.sharedInstance().setDismissDelay(1800);
                 // ToolTipManager.sharedInstance().setReshowDelay(1500);
-
             }
 
             public void mouseExited(MouseEvent me) {
@@ -2349,5 +2373,5 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         return false;
       }
     }
-    
+
 }
