@@ -1576,6 +1576,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
           public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() != 2)
               return;
+
             // create and initialize plugin on demand
             if (plugin == null) {
               plugin = new ZoomToScalePlugIn() {
@@ -1588,6 +1589,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                 plugin.initialize(workbenchContext.createPlugInContext());
               } catch (Exception ex) {
                 handleThrowable(ex);
+                return;
               }
             }
             executePlugin(plugin);
@@ -1610,6 +1612,7 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
                 plugin.initialize(workbenchContext.createPlugInContext());
               } catch (Exception ex) {
                 handleThrowable(ex);
+                return;
               }
             }
             executePlugin(plugin);
