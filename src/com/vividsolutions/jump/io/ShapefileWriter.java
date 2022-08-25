@@ -47,6 +47,7 @@ import org.geotools.dbffile.DbfFieldDef;
 import org.geotools.dbffile.DbfFile;
 import org.geotools.dbffile.DbfFileWriter;
 import org.geotools.shapefile.Shapefile;
+import org.openjump.core.ccordsys.utils.SridLookupTable;
 
 import javax.swing.*;
 import java.io.*;
@@ -693,10 +694,17 @@ public class ShapefileWriter implements JUMPWriter {
     }
 
 
-    private String getPrjString(String code) throws Exception {
+    protected String getPrjString(String code) throws Exception {
         try {
             int srid = Integer.parseInt(code);
-            return EsriProj.findProj(srid);
+            String prj = EsriProj.findProj(srid);
+            // TODO SridLookupTable can find prj which are not available in EsriProj
+            //  but it returns WKT which maybe slightly different from esri prj
+            // https://gis.stackexchange.com/questions/355184/prj-files-from-esri-arent-wkt
+            if (prj == null) {
+                prj = SridLookupTable.getOGCWKTFromWkidCode(""+srid);
+            }
+            return prj;
         } catch(IOException e) {
             Logger.warn(e);
             return null;

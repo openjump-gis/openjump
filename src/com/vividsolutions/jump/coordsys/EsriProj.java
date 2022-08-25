@@ -3,15 +3,15 @@ package com.vividsolutions.jump.coordsys;
 import com.vividsolutions.jump.io.CompressedFile;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
-import org.apache.commons.compress.archivers.ArchiveException;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /**
  * This class is used to find the precise Esri prj string for a given srid.
  *
- * Prj strings are taken from https://github.com/Esri/projection-engine-db-doc,
+ * Prj strings are taken from <a href="https://github.com/Esri/projection-engine-db-doc">Esri Github Repo</a>,
  * licensed under the Apache License, Version 2.0 (the "License").
  *
  * This class uses the two following files from the github repository :
@@ -33,16 +33,19 @@ import java.util.*;
 public class EsriProj {
 
   // A cache to remember already used projection string
-  public static Map<Integer,String> PROJMAP = new HashMap<>();
+  public static final Map<Integer,String> PROJMAP = new HashMap<>();
   // A cache to remember already used projection ids
-  public static Map<String,Integer> CODEMAP = new HashMap<>();
+  //public static final Map<String,Integer> CODEMAP = new HashMap<>();
 
-  private static final File projfile = JUMPWorkbench.getInstance().getPlugInManager()
-      .findFileOrFolderInExtensionDirs("coord_ref_sys/pe_list_projcs_geogcs.zip");
-  private static final String entryName = "pe_list_projcs_geogcs.csv";
+  private static File projfile;
+  private static String entryName;
 
+  public static void setProjFile(File zipFileName, String zipEntryName) {
+    projfile = zipFileName;
+    entryName = zipEntryName;
+  }
 
-  public static void main(String[] args) throws IOException, ArchiveException {
+  public static void main(String[] args) throws IOException, URISyntaxException {
     System.out.println(findProj(2154));
     System.out.println(findProj(2154));
   }
@@ -71,13 +74,15 @@ public class EsriProj {
     return tokens.toArray(new String[0]);
   }
 
-  public static String findProj(final int id) throws IOException, ArchiveException {
+  public static String findProj(final int id) throws IOException {
     //long t0 = System.currentTimeMillis();
     String proj = PROJMAP.get(id);
-    if (proj == null) proj = PROJMAP.get(id);
     if (proj == null) {
-      //InputStream fis = new FileInputStream(projfile);
-      //InputStream is = CompressedFile.getUncompressedStream(fis, entryName);
+      if (projfile == null) {
+        projfile = JUMPWorkbench.getInstance().getPlugInManager()
+            .findFileOrFolderInExtensionDirs("coord_ref_sys/pe_list_projcs_geogcs.zip");
+        entryName = "pe_list_projcs_geogcs.csv";
+      }
       InputStream is = CompressedFile.openFile(projfile.getPath(), entryName);
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
