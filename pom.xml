@@ -293,8 +293,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/matching-extension/releases/download/v2.0.1/matching-extension-2.0.1.zip</url>
-                      <sha1>3516da1ea644866085625e62a8d52587487b5711</sha1>
+                      <url>https://github.com/openjump-gis/matching-extension/releases/download/v2.0.2/matching-extension-2.0.2.zip</url>
+                      <sha1>948e8b06aacecf00064e67d9e6ad40b2547b41ba</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
