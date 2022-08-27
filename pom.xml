@@ -137,8 +137,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/aggregation-extension/releases/download/v2.0.0/aggregation-extension-2.0.0.zip</url>
-                      <sha1>91ca7f9320a91c602906c1efa46933094004461f</sha1>
+                      <url>https://github.com/openjump-gis/aggregation-extension/releases/download/v2.0.1/aggregation-extension-2.0.1.zip</url>
+                      <sha1>3c1d420aebee60df946cab468dad90d7e99837f3</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
@@ -257,8 +257,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/graph-toolbox-extension/releases/download/v2.0.0/graph-toolbox-2.0.0.zip</url>
-                      <sha1>07ae3a511c18df5fe82799a30d606fdc58399839</sha1>
+                      <url>https://github.com/openjump-gis/graph-toolbox-extension/releases/download/v2.0.2/graph-toolbox-2.0.2.zip</url>
+                      <sha1>ec870f2bd5934f10c1c87485a36fcf602108e925</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
