@@ -149,8 +149,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/bsheditor-extension/releases/download/2.0.0/bsheditor-extension-2.0.0.zip</url>
-                      <sha1>3d6393e3410d118cd89c5b66ff13b455067b2a8f</sha1>
+                      <url>https://github.com/openjump-gis/bsheditor-extension/releases/download/v2.0.1/bsheditor-extension-2.0.1.zip</url>
+                      <sha1>5b06393c125ed241e32828e489ccb9a882110341</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
