@@ -29,8 +29,8 @@
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <batik.version>1.6-1</batik.version>
         <jts.version>1.19.0</jts.version>
-        <postgresql.version>42.4.1</postgresql.version>
-        <imageio-ext.version>1.4.5</imageio-ext.version>
+        <postgresql.version>42.5.0</postgresql.version>
+        <imageio-ext.version>1.4.6</imageio-ext.version>
     </properties>
     <profiles>
         <!-- switching os dependent lib paths for launch4j -->
@@ -1738,7 +1738,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-imaging</artifactId>
-            <version>1.0-alpha2</version>
+            <version>1.0-alpha3</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
