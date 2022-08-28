@@ -1,5 +1,7 @@
 package com.vividsolutions.jump.workbench.imagery.graphic;
 
+import java.util.Arrays;
+
 /*
  * The Unified Mapping Platform (JUMP) is an extensible, interactive GUI 
  * for visualizing and manipulating spatial features with geometry and attributes.
@@ -63,8 +65,7 @@ public class CommonsImageFactory extends AbstractGraphicImageFactory {
         // skip mysterious unknown entry
         if (fmt.getName().equalsIgnoreCase("unknown"))
           continue;
-        String ext = fmt.getExtension().toLowerCase();
-        addExtension(ext);
+        addExtensions(Arrays.asList(fmt.getExtensions()));
       }
 
 //      System.out.println(this.getClass().getName()+": "+extensions);

@@ -12,10 +12,10 @@ import org.apache.commons.imaging.common.bytesource.ByteSourceInputStream;
 import org.apache.commons.imaging.formats.tiff.TiffContents;
 import org.apache.commons.imaging.formats.tiff.TiffDirectory;
 import org.apache.commons.imaging.formats.tiff.TiffField;
+import org.apache.commons.imaging.formats.tiff.TiffImagingParameters;
 import org.apache.commons.imaging.formats.tiff.TiffRasterData;
 import org.apache.commons.imaging.formats.tiff.TiffRasterStatistics;
 import org.apache.commons.imaging.formats.tiff.TiffReader;
-import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.formats.tiff.photometricinterpreters.floatingpoint.PaletteEntry;
 import org.apache.commons.imaging.formats.tiff.photometricinterpreters.floatingpoint.PaletteEntryForRange;
@@ -60,8 +60,8 @@ public class CommonsTIFFImage extends CommonsImage {
 //      float maxValue = pi.getMaxFound();
 //      float minValue = pi.getMinFound();
 
-      HashMap<String, Object> params = new HashMap<>();
-      TiffRasterData rasterData = directory.getFloatingPointRasterData(params);
+      final TiffImagingParameters params = new TiffImagingParameters();
+      final TiffRasterData rasterData = directory.getRasterData(params);
 
       float excludedValue = Float.NaN;
       TiffRasterStatistics simpleStats;
@@ -95,7 +95,7 @@ public class CommonsTIFFImage extends CommonsImage {
 //      paletteList.add(new PaletteEntryForValue(maxValue, Color.white));
       PhotometricInterpreterFloat photometricInterpreter = new PhotometricInterpreterFloat(paletteList);
 
-      params.put(TiffConstants.PARAM_KEY_CUSTOM_PHOTOMETRIC_INTERPRETER, photometricInterpreter);
+      params.setCustomPhotometricInterpreter(photometricInterpreter);
       BufferedImage bImage = directory.getTiffImage(params);
 
       setImage(bImage);
