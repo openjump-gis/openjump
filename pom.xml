@@ -173,8 +173,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/cadtools-extension/releases/download/v2.1.3/cadtools-extension-2.1.3.jar</url>
-                      <sha1>58a6c59c005ddcd680ae19a80aec07807cc8a5d3</sha1>
+                      <url>https://github.com/openjump-gis/cadtools-extension/releases/download/v2.1.4/cadtools-extension-2.1.4.jar</url>
+                      <sha1>805efb2f0c035351fd71fe3331274eb4ae145094</sha1>
                       <unpack>false</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
