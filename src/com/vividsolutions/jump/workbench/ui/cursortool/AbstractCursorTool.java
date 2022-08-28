@@ -637,6 +637,24 @@ public abstract class AbstractCursorTool implements CursorTool {
    * @param command undoable command to execute
    */
   protected void execute(UndoableCommand command) {
+    execute(command, false);
+  }
+
+  /**
+   * Optional means of execution, with undoability.
+   * Allows to ignore when command is null in case the calling code already warns
+   * user accordingly.
+   * 
+   * @param command
+   * @param ignoreNull
+   */
+  protected void execute(UndoableCommand command, boolean ignoreNull) {
+    if (command == null) {
+      if (ignoreNull)
+        return;
+      else
+        throw new IllegalArgumentException("UndoableCommand command must not be null.");
+    }
     AbstractPlugIn.execute(command, getPanel());
   }
 

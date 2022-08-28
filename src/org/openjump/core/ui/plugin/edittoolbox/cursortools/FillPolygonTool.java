@@ -176,7 +176,7 @@ public class FillPolygonTool extends NClickTool {
           context.getWorkbench().getFrame().warnUser(INTERRUPTION);
         } else if (!polygon.isEmpty()) {
           execute(featureDrawingUtil.createAddCommand(polygon,
-              isRollingBackInvalidEdits(), getPanel(), this));
+              isRollingBackInvalidEdits(), getPanel(), this),true);
         } else {
           context.getWorkbench().getFrame().warnUser(AREA_NOT_CLOSED);
         }

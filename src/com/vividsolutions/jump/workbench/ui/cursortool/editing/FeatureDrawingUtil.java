@@ -36,6 +36,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -158,6 +159,7 @@ public class FeatureDrawingUtil {
 			.getContext()
 			.warnUser(
 					I18N.getInstance().get("ui.cursortool.editing.FeatureDrawingUtil.draw-feature-tool-topology-error"));
+			Logger.error(new InvalidParameterException("Parameter geometry is not valid according to jts."));
 			return null;
 		}
 		// Don't want viewport to change at this stage. [Jon Aquino]

@@ -85,7 +85,7 @@ public class DrawConstrainedLineStringTool extends ConstrainedMultiClickTool {
         }
 
         execute(featureDrawingUtil.createAddCommand(getLineString(),
-                isRollingBackInvalidEdits(), getPanel(), this));
+                isRollingBackInvalidEdits(), getPanel(), this),true);
     }
 
     protected LineString getLineString() throws NoninvertibleTransformException {

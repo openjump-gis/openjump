@@ -85,7 +85,7 @@ public class DrawPointTool extends NClickTool {
 				getPoint(),
 				isRollingBackInvalidEdits(),
 				getPanel(),
-				this));
+				this),true);
 	}
 
 	protected Point getPoint()

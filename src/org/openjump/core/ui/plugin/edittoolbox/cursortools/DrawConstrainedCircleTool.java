@@ -99,7 +99,7 @@ public class DrawConstrainedCircleTool extends ConstrainedMultiClickTool {
         }
 
         execute(featureDrawingUtil.createAddCommand(getCircle(),
-                isRollingBackInvalidEdits(), getPanel(), this));
+                isRollingBackInvalidEdits(), getPanel(), this),true);
     }
 
     protected Polygon getCircle() throws NoninvertibleTransformException {
