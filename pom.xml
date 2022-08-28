@@ -389,8 +389,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/view-manager-extension/releases/download/v2.0.3/view-manager-extension-2.0.3.zip</url>
-                      <sha1>bdff4634b623619f295dccf5f41670050bed49e3</sha1>
+                      <url>https://github.com/openjump-gis/view-manager-extension/releases/download/v2.0.4/view-manager-extension-2.0.4.zip</url>
+                      <sha1>ae274f250c4c05c4534635e091eca2f543c30e4a</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
