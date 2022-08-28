@@ -81,7 +81,10 @@ public class ReaderWriterFileDataSource extends FileDataSource {
       @Override
       public FeatureCollection executeQuery(String query,
           Collection<Throwable> exceptions, TaskMonitor monitor) {
-        
+
+        // disabled datasources just do nothing
+        if (isDisabled()) return null;
+
         if (!isReadable())
           throw new UnsupportedOperationException("reading is not supported");
         
@@ -126,7 +129,10 @@ public class ReaderWriterFileDataSource extends FileDataSource {
       public void executeUpdate(String update,
           FeatureCollection featureCollection, TaskMonitor monitor)
           throws Exception {
-        
+
+        // disabled datasources just do nothing
+        if (isDisabled()) return;
+
         if (!isWritable())
           throw new UnsupportedOperationException("writing is not supported");
         

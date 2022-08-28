@@ -48,6 +48,9 @@ import java.util.Map;
 public abstract class DataSource {
 
   private Map<String,Object> properties;
+  // allow to keep datasource as is, but programmatically disable all access
+  // initially used to allow DummyLayers signaling missing source files
+  private boolean isDisabled = false;
 
   /**
    * Sets properties required to open a DataSource, such as username, password,
@@ -121,6 +124,14 @@ public abstract class DataSource {
 
   public boolean isWritable() {
     return true;
+  }
+
+  public boolean isDisabled() {
+    return isDisabled;
+  }
+
+  public void setDisabled(boolean onOff) {
+    isDisabled = onOff;
   }
 
   public FeatureCollection installCoordinateSystem(

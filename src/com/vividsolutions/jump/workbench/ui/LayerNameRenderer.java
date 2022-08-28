@@ -259,7 +259,10 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer<Object
 
         // assign layername to list entry
         Layerable layerable = (Layerable) value;
-        if (layerable instanceof LayerView) {
+        if (isDisabledLayer(layerable)) {
+          label.setText("<html><strike>"+layerable.getName()+"");
+        }
+        else if (layerable instanceof LayerView) {
           LayerView view = (LayerView)layerable;
           label.setText(view.getFullName());
         } else {
@@ -339,6 +342,9 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer<Object
 
         checkBox.setSelected(layerable.isVisible());
         checkBox.setVisible(showCheckBox);
+        if (isDisabledLayer(layerable)) {
+          checkBox.setVisible(false);
+        }
 
         // indicate editablility (if enabled) via text formatting
         // (regular,italic ...)
@@ -377,7 +383,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer<Object
                     .getFeatureCollectionWrapper().size() > 1 ? multiRasterIcon
                     : rasterIcon);
             imageLabel.setVisible(true);
-        } else if (showColorPanel && layerable instanceof Layer) {
+        } else if (showColorPanel && layerable instanceof Layer && !isDisabledLayer(layerable) ) {
             colorPanel.init((Layer) layerable, isSelected,
                     list.getBackground(), list.getSelectionBackground());
             colorPanel.setVisible(true);
@@ -422,6 +428,22 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer<Object
         }
 
         return this;
+    }
+
+    /**
+     * check if layer datasource (if any) is disabled
+     * so layer can be rendered accordingly above
+     */
+    private static boolean isDisabledLayer( Layerable layerable ) {
+      if (!(layerable instanceof Layer))
+        return false;
+
+      Layer layer = (Layer) layerable;
+
+      if (layer.getDataSourceQuery() == null || layer.getDataSourceQuery().getDataSource() == null)
+        return false;
+      
+      return layer.getDataSourceQuery().getDataSource().isDisabled();
     }
 
     private JList<?> list(JTree tree) {
@@ -889,10 +911,8 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer<Object
     }
 
     @Override
-    // [ede 11.2012] this is necessary for comboboxes with transparent bg, like
-    // in
-    // default vista/win7 lnf, else ugly background is painted behind the
-    // letters
+    // [ede 11.2012] necessary for comboboxes with transparent bg, e.g. in default
+    // vista/win7 lnf, else ugly background is painted behind the letters
     public boolean isOpaque() {
         Color bgc = getBackground();
         Component p;
@@ -904,7 +924,7 @@ public class LayerNameRenderer extends JPanel implements ListCellRenderer<Object
                 && bgc.equals(p.getBackground()) && p.isOpaque();
         return !colorMatchOrOpaque && super.isOpaque();
     }
-    
+
     /* 
      * [Giuseppe Aruta 11.2016] . True if all the layer geometries are empty
      * (Geometrycollection empty). Workaround to decode table files (like .csv or .dbf)

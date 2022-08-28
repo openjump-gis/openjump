@@ -537,6 +537,8 @@ public class Layer extends GeoReferencedLayerable implements Disposable {
 
   public Layer setDataSourceQuery(DataSourceQuery dataSourceQuery) {
     this.dataSourceQuery = dataSourceQuery;
+    // needed e.g. if dummy layer is "saved as ..." 
+    fireLayerChanged(LayerEventType.METADATA_CHANGED);
 
     return this;
   }

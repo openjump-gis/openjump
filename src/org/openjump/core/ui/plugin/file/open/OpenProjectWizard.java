@@ -59,6 +59,7 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.WorkbenchFrame;
+import com.vividsolutions.jump.workbench.ui.plugin.AddNewLayerPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.PersistentBlackboardPlugIn;
 import com.vividsolutions.jump.workbench.ui.plugin.WorkbenchContextReference;
 import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
@@ -263,6 +264,7 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         WorkbenchFrame workbenchFrame = workbench.getFrame();
         FindFile findFile = new FindFile(workbenchFrame);
         boolean displayDialog = true;
+        boolean findFiles = false;
 
         String oldProjectPath = sourceTask.getProperty(new QName(
                 Task.PROJECT_FILE_KEY));
@@ -288,108 +290,101 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         }
 
         try {
-            List<Category> categories = sourceLayerManager.getCategories();
-            for (Category sourceLayerCategory : categories) {
-                newLayerManager.addCategory(sourceLayerCategory.getName());
+          List<Category> categories = sourceLayerManager.getCategories();
+          for (Category sourceLayerCategory : categories) {
+            newLayerManager.addCategory(sourceLayerCategory.getName());
 
-                // LayerManager#addLayerable adds layerables to the top. So
-                // reverse the order.
-                ArrayList<Layerable> layerables = new ArrayList<>(
-                        sourceLayerCategory.getLayerables());
-                Collections.reverse(layerables);
+            // LayerManager#addLayerable adds layerables to the top. So reverse the order.
+            ArrayList<Layerable> layerables = new ArrayList<>(sourceLayerCategory.getLayerables());
+            Collections.reverse(layerables);
 
-                for (Layerable layerable : layerables) {
-                    if (monitor != null) {
-                        monitor.report(I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.loading")
-                                + " " + layerable.getName());
-                    }
-                    layerable.setLayerManager(newLayerManager);
+            for (Layerable layerable : layerables) {
+              if (monitor != null) {
+                monitor
+                    .report(I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.loading") + " " + layerable.getName());
+              }
+              layerable.setLayerManager(newLayerManager);
+              boolean missingDataSource = false;
 
-                    if (layerable instanceof LayerView) {
-                        //layerable.setLayerManager(newLayerManager);
-                    }
-                    else if (layerable instanceof Layer) {
-                        Layer layer = (Layer) layerable;
-                        File layerFile = getLayerFileProperty(layer);
+              if (layerable instanceof LayerView) {
+                // layerable.setLayerManager(newLayerManager);
+              } else if (layerable instanceof Layer) {
+                Layer layer = (Layer) layerable;
+                File layerFile = getLayerFileProperty(layer);
 
-                        // fixup file path (replace/prepend old project basepath with new one)
-                        // if
-                        // - file path is relative
-                        // - update resources was requested 
-                        // - file is missing
-                        if (!layerFile.isAbsolute()
-                            || (!updateOnlyMissingResources || !layerFile.exists()) && updateResources
-                                && layerFile != null && isLocatedBelow(oldProjectFile.getParentFile(), layerFile)) {
-                          File newLayerFile = updateResourcePath(oldProjectFile, newTask.getProjectFile(), layerFile);
-                          setLayerFileProperty(layer, newLayerFile);
-                        }
-
-                        try {
-                            load(layer, registry, monitor);
-                        } catch (FileNotFoundException ex) {
-                            if (displayDialog) {
-                                displayDialog = false;
-
-                                int response = JOptionPane
-                                        .showConfirmDialog(
-                                                workbenchFrame,
-                                                I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.At-least-one-file-in-the-task-could-not-be-found")
-                                                        + "\n"
-                                                        + I18N.getInstance().get("ui.plugin.OpenProjectPlugIn.Do-you-want-to-locate-it-and-continue-loading-the-task"),
-                                                "OpenJUMP",
-                                                JOptionPane.YES_NO_OPTION);
-
-                                if (response != JOptionPane.YES_OPTION) {
-                                    continue;
-                                }
-                            }
-
-                            DataSourceQuery dataSourceQuery = layer
-                                    .getDataSourceQuery();
-                            DataSource dataSource = dataSourceQuery
-                                    .getDataSource();
-                            Map<String,Object> properties = dataSource.getProperties();
-                            if (properties.get(DataSource.FILE_KEY) != null) {
-                                String fname = properties.get(
-                                        DataSource.FILE_KEY).toString();
-                                String filename = findFile.getFileName(fname, newTask.getProjectFile().getParentFile());
-                                if (filename.length() > 0) {
-                                    // set the new source for this layer
-                                    properties.put(DataSource.FILE_KEY,
-                                            filename);
-                                    dataSource.setProperties(properties);
-                                    load(layer, registry, monitor);
-                                }
-                                else {
-                                    continue;
-                                }
-                            }
-                        }
-                    } else if (layerable instanceof RasterImageLayer) {
-
-                        RasterImageLayer rasterImageLayer = (RasterImageLayer) layerable;
-                        loadRasterImageLayer(workbenchContext,
-                                rasterImageLayer,
-                                rasterImageLayer.getSymbology(),
-                                sourceLayerCategory);
-                        continue;
-                    } else if (layerable instanceof WMSLayer) {
-                        try {
-                            ((WMSLayer) layerable).getService().initialize();
-                        } catch(Exception e) {
-                            Logger.trace(e);
-                            continue;
-                        }
-                    }
-
-                    newLayerManager.addLayerable(sourceLayerCategory.getName(),
-                            layerable);
+                // fixup file path (replace/prepend old project basepath with new one)
+                // if
+                // - file path is relative
+                // - update resources was requested
+                // - file is missing
+                if (!layerFile.isAbsolute() || (!updateOnlyMissingResources || !layerFile.exists()) && updateResources
+                    && layerFile != null && isLocatedBelow(oldProjectFile.getParentFile(), layerFile)) {
+                  File newLayerFile = updateResourcePath(oldProjectFile, newTask.getProjectFile(), layerFile);
+                  setLayerFileProperty(layer, newLayerFile);
                 }
+
+                try {
+                  load(layer, registry, monitor);
+                } catch (FileNotFoundException ex) {
+                  missingDataSource = true;
+                  if (displayDialog) {
+                    displayDialog = false;
+                    int response = JOptionPane.showConfirmDialog(workbenchFrame,
+                        I18N.getInstance()
+                            .get("ui.plugin.OpenProjectPlugIn.At-least-one-file-in-the-task-could-not-be-found")
+                            + "\n"
+                            + I18N.getInstance().get(
+                                "ui.plugin.OpenProjectPlugIn.Do-you-want-to-locate-it-and-continue-loading-the-task"),
+                        "OpenJUMP", JOptionPane.YES_NO_OPTION);
+
+                    findFiles = (response == JOptionPane.YES_OPTION);
+                  }
+
+                  // find files was activated above, let's do so
+                  if (findFiles) {
+                    DataSourceQuery dataSourceQuery = layer.getDataSourceQuery();
+                    DataSource dataSource = dataSourceQuery.getDataSource();
+                    Map<String, Object> properties = dataSource.getProperties();
+                    if (properties.get(DataSource.FILE_KEY) != null) {
+                      String fname = properties.get(DataSource.FILE_KEY).toString();
+                      String filename = findFile.getFileName(fname, newTask.getProjectFile().getParentFile());
+                      // found a file, let's load
+                      if (filename.length() > 0) {
+                        // set the new source for this layer
+                        properties.put(DataSource.FILE_KEY, filename);
+                        dataSource.setProperties(properties);
+                        load(layer, registry, monitor);
+                        missingDataSource = false;
+                      }
+                    }
+                  }
+
+                  // still missing? set up layer accordingly
+                  if (missingDataSource)
+                    fixupMissingDatasourceLayer(layer);
+                }
+              } else if (layerable instanceof RasterImageLayer) {
+
+                RasterImageLayer rasterImageLayer = (RasterImageLayer) layerable;
+                loadRasterImageLayer(workbenchContext, rasterImageLayer, rasterImageLayer.getSymbology(),
+                    sourceLayerCategory);
+                continue;
+              } else if (layerable instanceof WMSLayer) {
+                try {
+                  ((WMSLayer) layerable).getService().initialize();
+                } catch (Exception e) {
+                  Logger.trace(e);
+                  continue;
+                }
+              }
+
+              newLayerManager.addLayerable(sourceLayerCategory.getName(), layerable);
             }
-            // fire TaskListener's
-            for (TaskListener taskListener : workbenchFrame.getTaskListeners()) {
-                taskListener.taskLoaded(new TaskEvent(this, newLayerManager.getTask()));
-            }
+          }
+          // fire TaskListener's
+          for (TaskListener taskListener : workbenchFrame.getTaskListeners()) {
+            taskListener.taskLoaded(new TaskEvent(this, newLayerManager.getTask()));
+          }
         } finally {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -526,6 +521,14 @@ public class OpenProjectWizard extends AbstractWizardGroup {
         DataSource dataSource = dataSourceQuery.getDataSource();
         Map<String,Object> properties = dataSource.getProperties();
         properties.put(DataSource.FILE_KEY, file.getAbsolutePath());
+    }
+
+    /**
+     * disable the datasource, add empty featcol just to satisfy renderer
+     */
+    private void fixupMissingDatasourceLayer( Layer layer ) {
+      layer.getDataSourceQuery().getDataSource().setDisabled(true);
+      layer.setFeatureCollection(AddNewLayerPlugIn.createBlankFeatureCollection());
     }
 
 }
