@@ -316,7 +316,10 @@ public class QuasimodeTool extends DelegatingTool {
 
   public void deactivate() {
     super.deactivate();
-    panel.getWorkBenchFrame().removeEasyKeyListener(keyListener);
+    if (panel != null) {
+      panel.getWorkBenchFrame().removeEasyKeyListener(keyListener);
+      this.panel = null;
+    }
   }
 
   // same as below, just does not alter key assignments but represents pressed keys instead
