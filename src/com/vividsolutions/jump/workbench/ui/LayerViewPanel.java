@@ -647,11 +647,12 @@ public class LayerViewPanel extends JPanel
 		return false;
 	}
 
-	public void dispose() {
-		renderingManager.dispose();
-		selectionManager.dispose();
-		layerManager.removeLayerListener(this);
-	}
+  public void dispose() {
+    removeCurrentCursorTool();
+    renderingManager.dispose();
+    selectionManager.dispose();
+    layerManager.removeLayerListener(this);
+  }
 
 	/**
 	 * @param millisecondDelay
