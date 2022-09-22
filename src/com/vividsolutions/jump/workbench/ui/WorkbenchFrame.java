@@ -1514,13 +1514,27 @@ public class WorkbenchFrame extends JFrame implements LayerViewPanelContext,
         this.getContentPane().setLayout(borderLayout1);
         this.addWindowListener(new java.awt.event.WindowAdapter() {
 
+            Exception lastException = null;
+
             public void windowActivated(WindowEvent e) {
+              try {
                 TaskFrame f = getActiveTaskFrame();
                 if (f != null) {
                     // have cursortool reactivated, in turn recheck the
                     // currently pressed keys
                     f.getLayerViewPanel().reSetCurrentCursorTool();
                 }
+              } catch (Exception ex) {
+                // handleThrowable() creates a new window, closing that recalls
+                // windowActivated(), prevent that loop by comparing last exceptions
+                // causing StackTraceElement
+                if (lastException != null && ex.getStackTrace()[0].equals(lastException.getStackTrace()[0])) {
+                  Logger.error(ex);
+                  return;
+                }
+                handleThrowable(ex);
+                lastException = ex;
+              }
             }
 
             public void windowClosing(WindowEvent e) {
