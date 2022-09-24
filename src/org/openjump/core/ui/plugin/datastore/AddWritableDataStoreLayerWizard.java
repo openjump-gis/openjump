@@ -149,12 +149,12 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
         ds.setSRID(panel.getGeometryColumn().getSRID());
 
         DataSourceQuery dsq = new DataSourceQuery(ds, null, datasetName);
-
+        boolean isFiringEvents = layerManager.isFiringEvents();
+        layerManager.setFiringEvents(false);
         layer.setDataSourceQuery(dsq);
 
         CoordinateSystemRegistry crsRegistry = CoordinateSystemRegistry.instance(workbenchContext.getBlackboard());
         try {
-            layerManager.setFiringEvents(false); // added by michaudm on 2009-04-05
             // TODO : there is currently two different ways to fix the SRID
             // May need refactoring there
             // One is with a CoordinateSystemRegistry stored in the context blackboard
@@ -173,11 +173,9 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
             Logger.info("    max features       = " + limit);
             Logger.info("    where clause       = " + whereClause);
             Logger.info("    limit to view      = " + limitedToView);
-
-            layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
         }
         finally {
-            layerManager.setFiringEvents(true);
+            layerManager.setFiringEvents(isFiringEvents);
         }
         DataStoreTransactionManager txManager =
                 DataStoreTransactionManager.getTxInstance(txManagerName);
