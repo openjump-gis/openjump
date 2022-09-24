@@ -76,7 +76,8 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
         final DataStoreConnection dscon = ConnectionManager.instance(context.getWorkbenchContext()).getOpenConnection(desc);
         RunnableQuery rQuery = new RunnableQuery(dscon, adhocQuery);
         FeatureInputStream featureInputStream;
-
+        boolean isFiringEvents = context.getLayerManager().isFiringEvents();
+        context.getLayerManager().setFiringEvents(false);
         try {
             // SQL query is execute in a separate thread to give the user a chance
             // to interrupt it
@@ -113,6 +114,7 @@ public class RunDatastoreQueryPlugIn extends AbstractAddDatastoreLayerPlugIn {
             throw new Exception(err);
         }
         finally {
+            context.getLayerManager().setFiringEvents(isFiringEvents);
             dscon.close();
         }
     }
