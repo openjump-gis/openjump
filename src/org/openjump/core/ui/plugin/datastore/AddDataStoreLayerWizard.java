@@ -128,11 +128,12 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
 
     DataSourceQuery dsq = new DataSourceQuery(ds, null, dsLayer.getFullName());
 
+    boolean isFiringEvents = layerManager.isFiringEvents();
+    layerManager.setFiringEvents(false);
     layer.setDataSourceQuery(dsq);
 
     CoordinateSystemRegistry crsRegistry = CoordinateSystemRegistry.instance(workbenchContext.getBlackboard());
     try {
-      layerManager.setFiringEvents(false); // added by michaudm on 2009-04-05
       // TODO : there is currently two different ways to fix the SRID
       // May need refactoring there
       // One is with a CoordinateSystemRegistry stored in the context blacboard
@@ -143,7 +144,7 @@ public class AddDataStoreLayerWizard extends AbstractWizardGroup {
       layer.addStyle(sridStyle);
       layerManager.setFiringEvents(true); // added by michaudm on 2009-04-05
     } finally {
-      layerManager.setFiringEvents(true);
+      layerManager.setFiringEvents(isFiringEvents);
     }
     return layer;
   }
