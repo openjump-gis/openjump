@@ -35,8 +35,10 @@ package com.vividsolutions.jump.workbench.ui.plugin;
 import javax.swing.*;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDSLayer;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
@@ -113,6 +115,9 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
           //if (makeEditable) setAllLayersToUneditable(context);
           layerable.setEditable(makeEditable);
           if (layerable instanceof Layer) {
+            if (layerable instanceof SpatialDSLayer) {
+              ConnectionManager.instance(getWorkbenchContext()).closeConnection((SpatialDSLayer)layerable);
+            }
             ((Layer)layerable).setDataSourceQuery(null);
           }
         }

@@ -246,6 +246,10 @@ public class ConnectionManager {
      * is currently needing it
      */
     public void closeConnection(SpatialDSLayer layer2remove) {
+      // Handle special case where datasource has been detached to make the layer editable
+      if (layer2remove.getDataSourceQuery() == null) {
+        return;
+      }
       ConnectionDescriptor cd2remove = (ConnectionDescriptor) layer2remove.getDataSourceQuery()
           .getDataSource().getProperties().get(DataStoreQueryDataSource.CONNECTION_DESCRIPTOR_KEY);
       

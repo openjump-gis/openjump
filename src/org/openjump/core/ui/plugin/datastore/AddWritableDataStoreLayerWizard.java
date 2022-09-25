@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import javax.swing.*;
 
+import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDSLayer;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager;
 import org.openjump.core.ui.plugin.file.open.ChooseProjectPanel;
@@ -121,8 +122,7 @@ public class AddWritableDataStoreLayerWizard extends AbstractWizardGroup {
         LayerManager layerManager = workbenchContext.getLayerManager();
         Color fillColor = layerManager.generateLayerFillColor();
         FeatureCollection featureCollection = AddNewLayerPlugIn.createBlankFeatureCollection();
-        Layer layer = new Layer(datasetName, fillColor, featureCollection,
-                layerManager);
+        Layer layer = new SpatialDSLayer(datasetName, fillColor, featureCollection, layerManager, workbenchContext);
 
         String geometryAttributeName = panel.getGeometryAttributeName();
         String identifierAttributeName = panel.getIdentifierAttributeName();
