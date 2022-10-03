@@ -198,6 +198,12 @@ public class DataStoreQueryDataSource extends com.vividsolutions.jump.io.datasou
             matcher.reset();
             query = matcher.replaceAll("ST_GeomFromText('" + selectionG.toText() + "',$1)");
         }
+        else {
+            Matcher matcher = PATTERN_SELECTION.matcher(query);
+            if (matcher.find()) sLastUsedSRID = matcher.group(1);
+            matcher.reset();
+            query = matcher.replaceAll("ST_GeomFromText('POLYGON EMPTY',$1)");
+        }
         if (sLastUsedSRID != null && sLastUsedSRID.matches("-?[0-9]+")) {
             context.getLayerManager().getBlackboard().put("SRID", Integer.parseInt(sLastUsedSRID));
         }

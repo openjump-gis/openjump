@@ -317,10 +317,12 @@ public class OpenProjectWizard extends AbstractWizardGroup {
                 // - file path is relative
                 // - update resources was requested
                 // - file is missing
-                if (!layerFile.isAbsolute() || (!updateOnlyMissingResources || !layerFile.exists()) && updateResources
-                    && layerFile != null && isLocatedBelow(oldProjectFile.getParentFile(), layerFile)) {
-                  File newLayerFile = updateResourcePath(oldProjectFile, newTask.getProjectFile(), layerFile);
-                  setLayerFileProperty(layer, newLayerFile);
+                if (layerFile != null && oldProjectFile != null) {
+                  if (!layerFile.isAbsolute() || (!updateOnlyMissingResources || !layerFile.exists()) && updateResources
+                    && isLocatedBelow(oldProjectFile.getParentFile(), layerFile)) {
+                    File newLayerFile = updateResourcePath(oldProjectFile, newTask.getProjectFile(), layerFile);
+                    setLayerFileProperty(layer, newLayerFile);
+                  }
                 }
 
                 try {
