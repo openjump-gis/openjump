@@ -161,6 +161,10 @@ public class AttributeQueryPlugIn extends AbstractPlugIn
       String outputLayerName = srcLayer.getName() + "_" + 
               attrName.replaceAll(".*\\.","") + "_" + // remove first part of geometry.**** 
               funcNameToRun + "_" + value;
+      if (complementResult) {
+        outputLayerName = outputLayerName + "_" +
+            I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Complement");
+      }
       context.getLayerManager().addCategory(categoryName);
       context.addLayer(categoryName, outputLayerName, resultFC);
     } else {

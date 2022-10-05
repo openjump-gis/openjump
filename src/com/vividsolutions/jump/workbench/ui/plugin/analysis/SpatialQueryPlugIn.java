@@ -153,6 +153,10 @@ public class SpatialQueryPlugIn extends AbstractPlugIn implements ThreadedPlugIn
           outputLayerName += (paramField.getText() + "_");
       }
       outputLayerName += maskLyr.getName();
+      if (complementResult) {
+        outputLayerName = outputLayerName + "_" +
+            I18N.getInstance().get("ui.plugin.analysis.SpatialQueryPlugIn.Complement");
+      }
       context.getLayerManager().addCategory(categoryName);
       context.addLayer(categoryName, outputLayerName, resultFC);
     } else {
