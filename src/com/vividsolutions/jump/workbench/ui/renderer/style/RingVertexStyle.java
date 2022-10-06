@@ -39,18 +39,18 @@ import java.awt.geom.Ellipse2D;
 
 public class RingVertexStyle extends VertexStyle {
     private BasicStroke stroke = new BasicStroke(5);
+    private int size;
 
     public RingVertexStyle() {
         super(new Ellipse2D.Double());
     }
 
     public void setSize(int size) {
+        this.size = size;
     }
 
     public int getSize() {
-        //Hardcode the size and don't let it be changed because the
-        //Appearance dialog's slider doesn't go that high right now. [Jon Aquino]
-        return 50;
+        return size;
     }
 
     protected void render(Graphics2D g) {

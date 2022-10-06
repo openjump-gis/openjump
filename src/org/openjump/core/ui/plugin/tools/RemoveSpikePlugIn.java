@@ -1,5 +1,8 @@
 package org.openjump.core.ui.plugin.tools;
 
+import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.RingVertexStyle;
+import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.distance.DistanceToPoint;
 import org.locationtech.jts.algorithm.distance.PointPairDistance;
@@ -17,11 +20,15 @@ import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
 import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
+import org.locationtech.jts.geom.Polygon;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by UMichael on 10/03/2016.
@@ -36,12 +43,21 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
     public static String ANGLE_TOLERANCE         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.angle-tolerance");
     public static String ANGLE_TOLERANCE_TOOLTIP = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.angle-tolerance-tooltip");
     public static String SPIKES_LOCALIZATION     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.spikes-localisation");
-
+    public static String ATTRIBUTE_TRANSFER      = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.attribute-transfer");
+    public static String NONE                    = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.none");
+    public static String ALL                     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.all");
+    public static String LOCATION_TYPE           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.spike-location_type");
+    public static String AS_LINESTRING           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.as-linestring");
+    public static String ON_SPIKE_TIP            = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.spike-tip");
 
     private Layer layerA;
     private double distTolerance = 1.0;
     private double angleTolerance = 5.0;
-    private boolean preventInvalid = true;
+    //private boolean preventInvalid = true;
+
+    private String attributeName = NONE;
+    private boolean asLineString = false;
+    private boolean onSpikeTip = true;
 
     public RemoveSpikePlugIn() {
     }
@@ -82,32 +98,69 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
     private void initDialog(final MultiInputDialog dialog, PlugInContext context) {
         dialog.setSideBarDescription(DESCRIPTION);
         Layer candidateA = layerA == null ? context.getCandidateLayer(0) : layerA;
-        final JComboBox layerComboBoxA    =
+        final JComboBox<Layer> layerComboBoxA    =
                 dialog.addLayerComboBox(SOURCE_LAYER, candidateA, context.getLayerManager());
         dialog.addDoubleField(DIST_TOLERANCE, distTolerance, 8, DIST_TOLERANCE_TOOLTIP);
         dialog.addDoubleField(ANGLE_TOLERANCE, angleTolerance, 8, ANGLE_TOLERANCE_TOOLTIP);
+        List<String> attributes = Arrays.asList(getAttributes(candidateA));
+        final JComboBox<String> attributeTransferJCB = dialog
+            .addComboBox(ATTRIBUTE_TRANSFER, NONE, attributes, ATTRIBUTE_TRANSFER);
+        dialog.addSubTitle(LOCATION_TYPE);
+        dialog.addRadioButton(AS_LINESTRING, LOCATION_TYPE, asLineString, AS_LINESTRING);
+        dialog.addRadioButton(ON_SPIKE_TIP, LOCATION_TYPE, onSpikeTip, ON_SPIKE_TIP);
         GUIUtil.centreOnWindow(dialog);
+
+        layerComboBoxA.addItemListener(e ->
+            attributeTransferJCB.setModel(new DefaultComboBoxModel<>(getAttributes(dialog.getLayer(SOURCE_LAYER))))
+        );
+    }
+
+    private String[] getAttributes(Layer layer) {
+        if (layer != null) {
+            FeatureSchema schema = layer.getFeatureCollectionWrapper().getFeatureSchema();
+            List<String> attributes = new ArrayList<>(schema.getAttributeNames());
+            String geomName = schema.getAttributeName(schema.getGeometryIndex());
+            attributes.remove(geomName);
+            attributes.add(0, ALL);
+            attributes.add(0, NONE);
+            return attributes.toArray(new String[0]);
+        } else return new String[] {NONE};
     }
 
     private void getDialogValues(MultiInputDialog dialog) {
         layerA = dialog.getLayer(SOURCE_LAYER);
         distTolerance = dialog.getDouble(DIST_TOLERANCE);
         angleTolerance = dialog.getDouble(ANGLE_TOLERANCE);
+        attributeName = dialog.getText(ATTRIBUTE_TRANSFER);
+        asLineString = dialog.getBoolean(AS_LINESTRING);
+        onSpikeTip = dialog.getBoolean(ON_SPIKE_TIP);
     }
 
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         monitor.allowCancellationRequests();
 
         // Clone layerA
-        FeatureCollection result1 = new FeatureDataset(layerA.getFeatureCollectionWrapper().getFeatureSchema());
+        FeatureSchema srcSchema = layerA.getFeatureCollectionWrapper().getFeatureSchema();
+        FeatureCollection result1 = new FeatureDataset(srcSchema.clone());
         FeatureSchema spikeSchema = new FeatureSchema();
-        spikeSchema.addAttribute("geometry", AttributeType.GEOMETRY);
-        spikeSchema.addAttribute("source_fid", AttributeType.INTEGER);
-        spikeSchema.addAttribute("status", AttributeType.STRING);
+        if (attributeName.equals(ALL)) {
+            spikeSchema = srcSchema.clone();
+            spikeSchema.addAttribute("status", AttributeType.STRING);
+        }
+        else if (attributeName.equals(NONE)) {
+            spikeSchema.addAttribute("geometry", AttributeType.GEOMETRY);
+            spikeSchema.addAttribute("status", AttributeType.STRING);
+        }
+        else {
+            spikeSchema.addAttribute("geometry", AttributeType.GEOMETRY);
+            spikeSchema.addAttribute(attributeName,
+                srcSchema.getAttributeType(srcSchema.getAttributeIndex(attributeName)));
+            spikeSchema.addAttribute("status", AttributeType.STRING);
+        }
         FeatureCollection result2 = new FeatureDataset(spikeSchema);
-        for (Object o : layerA.getFeatureCollectionWrapper().getFeatures()) {
-            Feature feature = ((Feature)o).clone(true, true);
-            List<Geometry> spikes = new ArrayList<Geometry>();
+        for (Feature f : layerA.getFeatureCollectionWrapper().getFeatures()) {
+            Feature feature = f.clone(true, true);
+            List<Geometry> spikes = new ArrayList<>();
             Geometry newGeom = null;
             if (feature.getGeometry() instanceof GeometryCollection) {
                 newGeom = removeSpike((GeometryCollection) feature.getGeometry(),
@@ -123,22 +176,54 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
             }
             if (spikes.size() > 0) {
                 Feature spikesFeature = new BasicFeature(spikeSchema);
-                spikesFeature.setGeometry(((Feature) o).getGeometry().getFactory().buildGeometry(spikes));
-                spikesFeature.setAttribute("source_fid", ((Feature) o).getID());
-                spikesFeature.setAttribute("status", isValid?"Fixed":"Not fixed");
+                for (int i = 0 ; i < spikeSchema.getAttributeCount() ; i++) {
+                    if (spikeSchema.getAttributeType(i) == AttributeType.GEOMETRY) {
+                        if (onSpikeTip) {
+                            spikes = spikes.stream().map(Geometry::getInteriorPoint).collect(Collectors.toList());
+                        }
+                        spikesFeature.setGeometry(f.getGeometry().getFactory().buildGeometry(spikes));
+                    }
+                    else if (spikeSchema.getAttributeName(i).equals("status")) {
+                        spikesFeature.setAttribute("status", isValid ? "Fixed" : "Not fixed");
+                    }
+                    else {
+                        spikesFeature.setAttribute(i, f.getAttribute(spikeSchema.getAttributeName(i)));
+                    }
+                }
                 result2.add(spikesFeature);
             }
             result1.add(feature);
         }
         workbenchContext.getLayerManager().addLayer(StandardCategoryNames.RESULT,
                     layerA.getName() + " - " + RESULT_LAYER_SUFFIX, result1);
-        workbenchContext.getLayerManager().addLayer(StandardCategoryNames.RESULT, SPIKES_LOCALIZATION, result2);
+        Layer locationLayer =
+            workbenchContext.getLayerManager().addLayer(StandardCategoryNames.RESULT, SPIKES_LOCALIZATION, result2);
+        if (locationLayer != null) {
+            boolean firingEvents = locationLayer.getLayerManager().isFiringEvents();
+            locationLayer.getLayerManager().setFiringEvents(false);
+            try {
+                if (asLineString) {
+                    locationLayer.getBasicStyle().setLineWidth(3);
+                    locationLayer.getBasicStyle().setLineColor(Color.RED);
+                    locationLayer.getVertexStyle().setEnabled(false);
+                } else if (onSpikeTip) {
+                    locationLayer.getBasicStyle().setFillColor(Color.RED);
+                    locationLayer.getBasicStyle().setLineColor(Color.RED);
+                    locationLayer.getBasicStyle().setEnabled(false);
+                    changeVertexToRing(locationLayer);
+                    locationLayer.getVertexStyle().setEnabled(true);
+                }
+            } finally {
+                locationLayer.getLayerManager().setFiringEvents(firingEvents);
+            }
+            locationLayer.fireAppearanceChanged();
+        }
     }
 
 
     private Geometry removeSpike(GeometryCollection geomCollection,
                                  double distTolerance, double angleTolerance, List<Geometry> spikes) {
-        List<Geometry> geometries = new ArrayList<Geometry>();
+        List<Geometry> geometries = new ArrayList<>();
         for (int i = 0; i < geomCollection.getNumGeometries() ; i++) {
             Geometry g = geomCollection.getGeometryN(i);
             if (g instanceof GeometryCollection) {
@@ -154,10 +239,10 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
 
 
     private Polygon removeSpike(Polygon poly, double distTolerance, double angleTolerance, List<Geometry> spikes) {
-        LinearRing shell = removeSpike((LinearRing)poly.getExteriorRing(), distTolerance, angleTolerance, spikes);
+        LinearRing shell = removeSpike(poly.getExteriorRing(), distTolerance, angleTolerance, spikes);
         LinearRing[] holes = new LinearRing[poly.getNumInteriorRing()];
         for (int i = 0 ; i < poly.getNumInteriorRing() ; i++) {
-            holes[i] = removeSpike((LinearRing)poly.getInteriorRingN(i), distTolerance, angleTolerance, spikes);
+            holes[i] = removeSpike(poly.getInteriorRingN(i), distTolerance, angleTolerance, spikes);
         }
         return poly.getFactory().createPolygon(shell, holes);
     }
@@ -172,9 +257,9 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
         if (size < 5) return ring;
         boolean vertexRemoved = false;
         for (int i = 0, j = 1, k = 2 ; i < size; ) {
-            Coordinate a = (Coordinate)cl.get(i);
-            Coordinate b = (Coordinate)cl.get((j)%(size-1));
-            Coordinate c = (Coordinate)cl.get((k)%(size-1));
+            Coordinate a = cl.get(i);
+            Coordinate b = cl.get((j)%(size-1));
+            Coordinate c = cl.get((k)%(size-1));
             PointPairDistance ppd = new PointPairDistance();
             DistanceToPoint.computeDistance(new LineSegment(a,b), c, ppd);
             double d1 = ppd.getDistance();
@@ -199,4 +284,14 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
             return newLinearRing;
         }
     }
+
+    private void changeVertexToRing(Layer errorLayer) {
+        errorLayer.removeStyle(errorLayer.getStyle(VertexStyle.class));
+        RingVertexStyle rvStyle = new RingVertexStyle();
+        rvStyle.setLineColor(Color.RED);
+        rvStyle.setLineWidth(3);
+        rvStyle.setSize(24);
+        errorLayer.addStyle(rvStyle);
+    }
+
 }
