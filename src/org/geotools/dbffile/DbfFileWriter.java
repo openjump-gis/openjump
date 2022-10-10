@@ -141,7 +141,13 @@ public class DbfFileWriter implements DbfConsts{
                 case 'n':
                     // int?
                     String fs="";
-                    if (fields[i].fieldnumdec==0){
+                    if (o == null) {
+                        byte space = ' ';
+                        byte[] byteArray = new byte[len];
+                        Arrays.fill(byteArray, space);
+                        ls.write(byteArray, 0, len);
+                    }
+                    else if (fields[i].fieldnumdec==0){
                         if (o instanceof Integer) {
                             fs = FormatedString.format((Integer) o,fields[i].fieldlen);
                         }

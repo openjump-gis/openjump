@@ -273,21 +273,21 @@ public class DbfFile implements DbfConsts, AutoCloseable {
                 String numb = new String(rec, start, len).trim();  //[sstein 9.Sept.08]
                 if (isLong) { //its an int
                     try {
-                        return Long.parseLong(numb);
+                        return numb.length() == 0 ? null : Long.parseLong(numb);
                     } catch (java.lang.NumberFormatException e) {
                         return null;
                     }
                 }
                 else if (isInteger) { //its an int
                     try {
-                        return Integer.parseInt(numb);
+                        return numb.length() == 0 ? null : Integer.parseInt(numb);
                     } catch (java.lang.NumberFormatException e) {
                         return null;
                     }
                 }
                 else { //its a float
                     try {
-                        return Double.parseDouble(numb);
+                        return numb.length() == 0 ? null : Double.parseDouble(numb);
                     } catch (java.lang.NumberFormatException e) {
                         // dBase can have numbers that look like '********' !! This isn't ideal but at least reads them
                         return null;
