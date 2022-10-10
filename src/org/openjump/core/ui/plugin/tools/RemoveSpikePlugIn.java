@@ -1,6 +1,5 @@
 package org.openjump.core.ui.plugin.tools;
 
-import com.vividsolutions.jump.workbench.ui.renderer.style.BasicStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.RingVertexStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 import org.locationtech.jts.algorithm.Angle;
@@ -46,18 +45,25 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
     public static String ATTRIBUTE_TRANSFER      = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.attribute-transfer");
     public static String NONE                    = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.none");
     public static String ALL                     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.all");
+
+    public static String REMOVE_THIN_HOLES       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.remove-thin-holes");
+
     public static String LOCATION_TYPE           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.spike-location_type");
     public static String AS_LINESTRING           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.as-linestring");
     public static String ON_SPIKE_TIP            = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.spike-tip");
+    public static String ON_SPIKE_BASE           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.spike-base");
+
 
     private Layer layerA;
     private double distTolerance = 1.0;
     private double angleTolerance = 5.0;
     //private boolean preventInvalid = true;
 
+    private boolean removeThinHoles = false;
     private String attributeName = NONE;
     private boolean asLineString = false;
     private boolean onSpikeTip = true;
+    private boolean onSpikeBase = false;
 
     public RemoveSpikePlugIn() {
     }
@@ -102,12 +108,15 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
                 dialog.addLayerComboBox(SOURCE_LAYER, candidateA, context.getLayerManager());
         dialog.addDoubleField(DIST_TOLERANCE, distTolerance, 8, DIST_TOLERANCE_TOOLTIP);
         dialog.addDoubleField(ANGLE_TOLERANCE, angleTolerance, 8, ANGLE_TOLERANCE_TOOLTIP);
+        dialog.addCheckBox(REMOVE_THIN_HOLES, removeThinHoles, REMOVE_THIN_HOLES);
         List<String> attributes = Arrays.asList(getAttributes(candidateA));
         final JComboBox<String> attributeTransferJCB = dialog
             .addComboBox(ATTRIBUTE_TRANSFER, NONE, attributes, ATTRIBUTE_TRANSFER);
+
         dialog.addSubTitle(LOCATION_TYPE);
         dialog.addRadioButton(AS_LINESTRING, LOCATION_TYPE, asLineString, AS_LINESTRING);
         dialog.addRadioButton(ON_SPIKE_TIP, LOCATION_TYPE, onSpikeTip, ON_SPIKE_TIP);
+        dialog.addRadioButton(ON_SPIKE_BASE, LOCATION_TYPE, onSpikeBase, ON_SPIKE_BASE);
         GUIUtil.centreOnWindow(dialog);
 
         layerComboBoxA.addItemListener(e ->
@@ -131,9 +140,11 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
         layerA = dialog.getLayer(SOURCE_LAYER);
         distTolerance = dialog.getDouble(DIST_TOLERANCE);
         angleTolerance = dialog.getDouble(ANGLE_TOLERANCE);
+        removeThinHoles = dialog.getBoolean(REMOVE_THIN_HOLES);
         attributeName = dialog.getText(ATTRIBUTE_TRANSFER);
         asLineString = dialog.getBoolean(AS_LINESTRING);
         onSpikeTip = dialog.getBoolean(ON_SPIKE_TIP);
+        onSpikeBase = dialog.getBoolean(ON_SPIKE_BASE);
     }
 
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
@@ -180,6 +191,10 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
                     if (spikeSchema.getAttributeType(i) == AttributeType.GEOMETRY) {
                         if (onSpikeTip) {
                             spikes = spikes.stream().map(Geometry::getInteriorPoint).collect(Collectors.toList());
+                        } else if (onSpikeBase) {
+                            spikes = spikes.stream().map(g ->
+                                g.getFactory().createPoint(g.getCoordinates()[0])
+                            ).collect(Collectors.toList());
                         }
                         spikesFeature.setGeometry(f.getGeometry().getFactory().buildGeometry(spikes));
                     }
@@ -207,6 +222,12 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
                     locationLayer.getBasicStyle().setLineColor(Color.RED);
                     locationLayer.getVertexStyle().setEnabled(false);
                 } else if (onSpikeTip) {
+                    locationLayer.getBasicStyle().setFillColor(Color.RED);
+                    locationLayer.getBasicStyle().setLineColor(Color.RED);
+                    locationLayer.getBasicStyle().setEnabled(false);
+                    changeVertexToRing(locationLayer);
+                    locationLayer.getVertexStyle().setEnabled(true);
+                } else if (onSpikeBase) {
                     locationLayer.getBasicStyle().setFillColor(Color.RED);
                     locationLayer.getBasicStyle().setLineColor(Color.RED);
                     locationLayer.getBasicStyle().setEnabled(false);
@@ -240,11 +261,18 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
 
     private Polygon removeSpike(Polygon poly, double distTolerance, double angleTolerance, List<Geometry> spikes) {
         LinearRing shell = removeSpike(poly.getExteriorRing(), distTolerance, angleTolerance, spikes);
-        LinearRing[] holes = new LinearRing[poly.getNumInteriorRing()];
-        for (int i = 0 ; i < poly.getNumInteriorRing() ; i++) {
-            holes[i] = removeSpike(poly.getInteriorRingN(i), distTolerance, angleTolerance, spikes);
+        // Do not destroy shell even if it is very thin
+        if (shell == null) {
+            shell = poly.getExteriorRing();
         }
-        return poly.getFactory().createPolygon(shell, holes);
+        //LinearRing[] holes = new LinearRing[poly.getNumInteriorRing()];
+        List<LinearRing> newHoles = new ArrayList<>();
+        for (int i = 0 ; i < poly.getNumInteriorRing() ; i++) {
+            LinearRing h = removeSpike(poly.getInteriorRingN(i), distTolerance, angleTolerance, spikes);
+            //holes[i] = removeSpike(poly.getInteriorRingN(i), distTolerance, angleTolerance, spikes);
+            if (h != null) newHoles.add(h);
+        }
+        return poly.getFactory().createPolygon(shell, newHoles.toArray(new LinearRing[0]));
     }
 
 
@@ -254,7 +282,7 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
         CoordinateList newCl = new CoordinateList();
         int size = cl.size();
         // If the LinearRing has only four points, it cannot be reduced
-        if (size < 5) return ring;
+        //if (size < 5) return ring;
         boolean vertexRemoved = false;
         for (int i = 0, j = 1, k = 2 ; i < size; ) {
             Coordinate a = cl.get(i);
@@ -270,13 +298,26 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
                 newCl.add(cl.get((i+1)%(size-1)), false);
                 i++; j++; k++;
             } else {
-                spikes.add(ring.getFactory().createLineString(new Coordinate[]{a,b,c}));
+                if (a.distance(b) < c.distance(b)) {
+                    spikes.add(ring.getFactory().createLineString(new Coordinate[]{a, b, c}));
+                } else {
+                    spikes.add(ring.getFactory().createLineString(new Coordinate[]{c, b, a}));
+                }
                 i = j; j++; k++;
                 vertexRemoved = true;
             }
         }
-        if (newCl.size() == size) return ring;
-        else if (newCl.size() < 4) return ring;
+        if (newCl.size() == size) {
+            return ring;
+        }
+        else if (newCl.size() < 4) {
+            if (removeThinHoles) {
+                return null;
+            }
+            else {
+                return ring;
+            }
+        }
         else {
             newCl.closeRing();
             LinearRing newLinearRing = ring.getFactory().createLinearRing(newCl.toCoordinateArray());
