@@ -6,16 +6,15 @@ import com.vividsolutions.jump.workbench.Logger;
 import java.io.*;
 import java.nio.charset.Charset;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 
 /**
@@ -63,8 +62,8 @@ public class DbfFile implements DbfConsts, AutoCloseable {
 	 * @param file file name
 	 */
     public DbfFile(String file) throws Exception {
-		this(file, Charset.defaultCharset());
-	}
+		    this(file, Charset.defaultCharset());
+	  }
 
     /**
      * Constructor, opens the file and reads the header infomation.
@@ -75,7 +74,7 @@ public class DbfFile implements DbfConsts, AutoCloseable {
 		    this.charset = charset;
         Logger.debug("DbfFile constructor");
         // InputStream to read the header and read the file sequentially
-        InputStream in = new FileInputStream(file);
+        InputStream in = Files.newInputStream(Paths.get(file));
         EndianDataInputStream sfile = new EndianDataInputStream(in);
         init(sfile);
         // for random access to the dbf file
@@ -163,7 +162,7 @@ public class DbfFile implements DbfConsts, AutoCloseable {
     }
 
     /**
-     * initailizer, allows the use of multiple constructers in later
+     * initializer, allows the use of multiple constructors in later
      * versions.
      */
     private void init(EndianDataInputStream sfile)

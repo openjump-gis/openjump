@@ -1,7 +1,8 @@
 package org.geotools.dbffile;
 
 import java.io.*;
-import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import org.geotools.misc.FormatedString;
@@ -10,14 +11,10 @@ import com.vividsolutions.jump.io.EndianDataOutputStream;
 import java.nio.charset.Charset;
 
 
-
 /** a class for writing dbf files
  * @author Ian Turton
  * modified by Micha&euml;l MICHAUD on 3 nov. 2004
  */
-
-
-
 public class DbfFileWriter implements DbfConsts{
 
     private final static boolean DEBUG=false;
@@ -30,7 +27,7 @@ public class DbfFileWriter implements DbfConsts{
 
     int recLength = 0;
 
-    DbfFieldDef fields[];
+    DbfFieldDef[] fields;
 
     EndianDataOutputStream ls;
 
@@ -39,18 +36,17 @@ public class DbfFileWriter implements DbfConsts{
 	private Charset charset = Charset.defaultCharset();
 
     public DbfFileWriter(String file) throws IOException {
-        if(DEBUG)System.out.println("---->uk.ac.leeds.ccg.dbffile.DbfFileWriter constructed. Will identify itself as "+DBC);
-        ls = new EndianDataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+        if(DEBUG)
+            System.out.println("---->uk.ac.leeds.ccg.dbffile.DbfFileWriter constructed. Will identify itself as "+DBC);
+        ls = new EndianDataOutputStream(new BufferedOutputStream(Files.newOutputStream(Paths.get(file))));
     }
 
-    public void writeHeader(DbfFieldDef f[], int nrecs) throws IOException{
+    public void writeHeader(DbfFieldDef[] f, int nrecs) throws IOException{
 
         NoFields = f.length;
         NoRecs = nrecs;
         fields = new DbfFieldDef[NoFields];
-        for(int i = 0 ; i < NoFields ; i++){
-            fields[i]=f[i];
-        }
+        System.arraycopy(f, 0, fields, 0, NoFields);
         ls.writeByteLE(3); // ID - dbase III with out memo
 
         // sort out the date
@@ -67,7 +63,8 @@ public class DbfFileWriter implements DbfConsts{
         }
 
         recLength++; // delete flag
-        if(DEBUG)System.out.println(DBC+"rec length "+recLength);
+        if(DEBUG)
+            System.out.println(DBC+"rec length "+recLength);
         ls.writeIntLE(NoRecs);
         ls.writeShortLE(dataOffset); // length of header
         ls.writeShortLE(recLength);
@@ -88,24 +85,28 @@ public class DbfFileWriter implements DbfConsts{
         header=true;
     }
 
-    public void writeRecords(Vector[] recs) throws DbfFileException,IOException {
+    public void writeRecords(Vector<Object>[] recs) throws DbfFileException,IOException {
         if(!header){
             throw(new DbfFileException("Must write header before records"));
         }
         int i=0;
         try {
             if(DEBUG)System.out.println(DBC+":writeRecords writing "+recs.length+" records");
-            for(i=0;i<recs.length;i++){
-                if(recs[i].size()!=NoFields) throw new DbfFileException("wrong number of records in "+ i+"th record "+
-                    recs[i].size()+" expected "+NoFields);
+            for(i=0 ; i<recs.length ; i++){
+                if(recs[i].size()!=NoFields) {
+                    throw new DbfFileException("wrong number of records in " + i + "th record " +
+                        recs[i].size() + " expected " + NoFields);
+                }
                 writeRecord(recs[i]);
             }
         }
-        catch(DbfFileException e) {throw new DbfFileException(DBC+"at rec "+i+"\n"+e);}
+        catch(DbfFileException e) {
+            throw new DbfFileException(DBC + "at rec " + i + "\n" + e);
+        }
     }
 
 
-    public void writeRecord(Vector rec)throws DbfFileException,IOException{
+    public void writeRecord(Vector<Object> rec)throws DbfFileException,IOException{
         if(!header){
             throw(new DbfFileException(DBC+"Must write header before records"));
         }
@@ -115,7 +116,6 @@ public class DbfFileWriter implements DbfConsts{
         String s;
         ls.writeByteLE(' ');
         int len;
-        StringBuffer tmps;
         for(int i = 0 ; i < NoFields ; i++){
             len = fields[i].fieldlen;
             Object o = rec.elementAt(i);
@@ -127,46 +127,45 @@ public class DbfFileWriter implements DbfConsts{
                 case 'M':
                 case 'G':
                 //chars
-                    String ss = (String) o;
-                    while  (ss.getBytes(charset.name()).length < fields[i].fieldlen) {
+                    StringBuilder tmps = new StringBuilder((String)o);
+                    while  (tmps.toString().getBytes(charset.name()).length < len) {
                         //need to fill it with ' ' chars
                         //this should converge quickly
-                        ss = ss + "                                                                                                                  ";
+                        tmps.append("                ");
                     }
-                    tmps = new StringBuffer(ss);
-                    tmps.setLength(fields[i].fieldlen);
+                    tmps.setLength(len);
                     //patch from Hisaji Ono for Double byte characters
-                    ls.write(tmps.toString().getBytes(charset.name()), fields[i].fieldstart,fields[i].fieldlen);  // [Matthias Scholz 04.Sept.2010] Charset added
+                    ls.write(tmps.toString().getBytes(charset.name()), fields[i].fieldstart, len);  // [Matthias Scholz 04.Sept.2010] Charset added
                     break;
                 case 'N':
                 case 'n':
                     // int?
                     String fs="";
-                    if(fields[i].fieldnumdec==0){
+                    if (fields[i].fieldnumdec==0){
                         if (o instanceof Integer) {
-                            fs = FormatedString.format(((Integer)o).intValue(),fields[i].fieldlen);
+                            fs = FormatedString.format((Integer) o,fields[i].fieldlen);
                         }
                         // case LONG added by mmichaud on 18 sept. 2004
                         else if (o instanceof Long) {
                             fs = FormatedString.format(((Long)o).toString(), 0, fields[i].fieldlen);
                         }
                         else if (o instanceof java.math.BigDecimal) {
-                            fs = FormatedString.format(((BigDecimal)o).toString(), 0, fields[i].fieldlen);
+                            fs = FormatedString.format(o.toString(), 0, fields[i].fieldlen);
                         }
-                        else;
                         if (fs.length()>fields[i].fieldlen) fs = FormatedString.format(0,fields[i].fieldlen);
                         ls.writeBytesLE(fs);
                         break;
                     }
                     else {
                         if (o instanceof Double) {
-                            fs = FormatedString.format(((Double)o).toString(), fields[i].fieldnumdec, fields[i].fieldlen);
+                            fs = FormatedString.format(o.toString(), fields[i].fieldnumdec, fields[i].fieldlen);
                         }
                         else if (o instanceof java.math.BigDecimal) {
-                            fs = FormatedString.format(((BigDecimal)o).toString(), fields[i].fieldnumdec, fields[i].fieldlen);
+                            fs = FormatedString.format(o.toString(), fields[i].fieldnumdec, fields[i].fieldlen);
                         }
-                        else;
-                        if (fs.length()>fields[i].fieldlen) fs = FormatedString.format("0.0",fields[i].fieldnumdec,fields[i].fieldlen);
+                        if (fs.length()>fields[i].fieldlen) {
+                            fs = FormatedString.format("0.0",fields[i].fieldnumdec,fields[i].fieldlen);
+                        }
                         ls.writeBytesLE(fs);
                         break;
                     }
@@ -182,7 +181,7 @@ public class DbfFileWriter implements DbfConsts{
                     //boolean
                     if (o==null || o.equals("") || o.equals(" ") || o.equals("?")) ls.writeBytesLE(" ");
                     else {
-                        boolean b = ((Boolean)o).booleanValue();
+                        boolean b = (Boolean) o;
                         ls.writeBytesLE(b?"T":"F");
                     }
                     break;
@@ -190,12 +189,12 @@ public class DbfFileWriter implements DbfConsts{
         }// fields
   }
 
-    public void close() throws IOException {
-        ls.writeByteLE(0x1a); // eof mark
-        ls.close();
-    }
+  public void close() throws IOException {
+    ls.writeByteLE(0x1a); // eof mark
+    ls.close();
+  }
 
-    int dp = 2; // default number of decimals to write
+  //int dp = 2; // default number of decimals to write
 
 	/**
 	 * @return the charset

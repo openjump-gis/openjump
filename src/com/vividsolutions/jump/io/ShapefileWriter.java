@@ -425,7 +425,7 @@ public class ShapefileWriter implements JUMPWriter {
         if (new File(fname).exists()){
             DbfFile dbfFile = null;
             try {
-                dbfFile = new DbfFile(fname);
+                dbfFile = new DbfFile(fname, charset);
                 int numFields = dbfFile.getNumFields();
                 fieldMap = new HashMap<>(numFields);
                 for (int i = 0; i < numFields; i++) {

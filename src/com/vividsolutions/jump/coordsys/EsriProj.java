@@ -81,6 +81,10 @@ public class EsriProj {
       if (projfile == null) {
         projfile = JUMPWorkbench.getInstance().getPlugInManager()
             .findFileOrFolderInExtensionDirs("coord_ref_sys/pe_list_projcs_geogcs.zip");
+        // file path when executed from the IDE
+        if (projfile == null) {
+          projfile = new File("lib/ext/coord_ref_sys/pe_list_projcs_geogcs.zip");
+        }
         entryName = "pe_list_projcs_geogcs.csv";
       }
       InputStream is = CompressedFile.openFile(projfile.getPath(), entryName);

@@ -29,8 +29,7 @@ public class DbfFieldDef implements DbfConsts{
 	}
 
 	public String toString(){
-		return new String(""+fieldname+" "+fieldtype+" "+fieldlen+
-			"."+fieldnumdec);
+		return "" + fieldname + " " + fieldtype + " " + fieldlen + "." + fieldnumdec;
 	}
 
   // [Matthias Scholz 04.Sept.2010] Charset changes
