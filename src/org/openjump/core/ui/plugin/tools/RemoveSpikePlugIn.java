@@ -46,7 +46,9 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
     public static String NONE                    = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.none");
     public static String ALL                     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.all");
 
+    public static String REMOVE_THIN_POLYGONS    = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.remove-thin-polygons");
     public static String REMOVE_THIN_HOLES       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.remove-thin-holes");
+    public static String SKIP_MICRO_SEGMENTS     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.skip-micro-segments");
 
     public static String LOCATION_TYPE           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.spike-location_type");
     public static String AS_LINESTRING           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.RemoveSpikePlugIn.as-linestring");
@@ -59,7 +61,10 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
     private double angleTolerance = 5.0;
     //private boolean preventInvalid = true;
 
+    private boolean removeThinPolygons = false;
     private boolean removeThinHoles = false;
+    private boolean skipMicroSegment = false;
+
     private String attributeName = NONE;
     private boolean asLineString = false;
     private boolean onSpikeTip = true;
@@ -109,6 +114,7 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
         dialog.addDoubleField(DIST_TOLERANCE, distTolerance, 8, DIST_TOLERANCE_TOOLTIP);
         dialog.addDoubleField(ANGLE_TOLERANCE, angleTolerance, 8, ANGLE_TOLERANCE_TOOLTIP);
         dialog.addCheckBox(REMOVE_THIN_HOLES, removeThinHoles, REMOVE_THIN_HOLES);
+        dialog.addCheckBox(SKIP_MICRO_SEGMENTS, skipMicroSegment, SKIP_MICRO_SEGMENTS);
         List<String> attributes = Arrays.asList(getAttributes(candidateA));
         final JComboBox<String> attributeTransferJCB = dialog
             .addComboBox(ATTRIBUTE_TRANSFER, NONE, attributes, ATTRIBUTE_TRANSFER);
@@ -141,6 +147,7 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
         distTolerance = dialog.getDouble(DIST_TOLERANCE);
         angleTolerance = dialog.getDouble(ANGLE_TOLERANCE);
         removeThinHoles = dialog.getBoolean(REMOVE_THIN_HOLES);
+        skipMicroSegment = dialog.getBoolean(SKIP_MICRO_SEGMENTS);
         attributeName = dialog.getText(ATTRIBUTE_TRANSFER);
         asLineString = dialog.getBoolean(AS_LINESTRING);
         onSpikeTip = dialog.getBoolean(ON_SPIKE_TIP);
@@ -279,23 +286,41 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
     private LinearRing removeSpike(LinearRing ring, double distTolerance,
                                    double angleTolerance, List<Geometry> spikes) {
         CoordinateList cl = new CoordinateList(ring.getCoordinates(), false);
+        double length = ring.getLength();
         CoordinateList newCl = new CoordinateList();
         int size = cl.size();
         // If the LinearRing has only four points, it cannot be reduced
         //if (size < 5) return ring;
         boolean vertexRemoved = false;
+        List<Coordinate> close_coordinates = new ArrayList<>();
         for (int i = 0, j = 1, k = 2 ; i < size; ) {
             Coordinate a = cl.get(i);
-            Coordinate b = cl.get((j)%(size-1));
-            Coordinate c = cl.get((k)%(size-1));
+            Coordinate b = cl.get(j % (size-1));
+            Coordinate c = cl.get(k % (size-1));
+            close_coordinates.clear();
+            if (skipMicroSegment) {
+                double dist = b.distance(c);
+                while (dist < distTolerance && k < size+2 && dist < length/4) {
+                    close_coordinates.add(c);
+                    c = cl.get((++k) % (size-1));
+                    dist = b.distance(c);
+                }
+                //k = j + 1;
+                i = k-2;
+                j = k-1;
+            }
             PointPairDistance ppd = new PointPairDistance();
             DistanceToPoint.computeDistance(new LineSegment(a,b), c, ppd);
             double d1 = ppd.getDistance();
             DistanceToPoint.computeDistance(new LineSegment(b,c), a, ppd);
             double d2 = ppd.getDistance();
             if ((!a.equals(c) && d1 > distTolerance && d2 > distTolerance) ||
-                    Angle.angleBetween(a,b,c)*180/Math.PI > angleTolerance) {
-                newCl.add(cl.get((i+1)%(size-1)), false);
+                    Angle.angleBetween(a,b,c) * 180 / Math.PI > angleTolerance) {
+                //newCl.add(cl.get((i+1)%(size-1)), false);
+                newCl.add(b, false);
+                for (Coordinate coord : close_coordinates) {
+                    newCl.add(coord, false);
+                }
                 i++; j++; k++;
             } else {
                 if (a.distance(b) < c.distance(b)) {
