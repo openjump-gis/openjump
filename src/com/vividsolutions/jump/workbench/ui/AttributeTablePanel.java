@@ -40,6 +40,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
 import org.locationtech.jts.geom.Geometry;
@@ -182,7 +183,12 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
               setIcon(nullString);
               setHorizontalAlignment(SwingConstants.CENTER);
             } else {
-              setText(finalDateFormatter.format(value));
+              try {
+                setText(finalDateFormatter.format(value));
+              } catch (IllegalArgumentException e) {
+                Logger.warn(e);
+                setIcon(nullString);
+              }
             }
           }
         };
