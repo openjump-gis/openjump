@@ -296,7 +296,7 @@ public class DbfFile implements DbfConsts, AutoCloseable {
 
             case 'L': //boolean added by mmichaud
                 String bool = new String(rec, start, len).trim().toLowerCase();
-                if (bool.equals("?")) return null;
+                if (bool.equals("?") || bool.trim().equals("")) return null;
                 else if (bool.equals("t") || bool.equals("y") || bool.equals("1")) return Boolean.TRUE;
                 else return Boolean.FALSE;
 
