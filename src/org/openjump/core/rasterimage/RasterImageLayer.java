@@ -584,8 +584,8 @@ public final class RasterImageLayer extends GeoReferencedLayerable
                         if (!Double.isNaN(metadata.getNoDataValue())) {
                             rasterSymbology.addColorMapEntry(metadata.getNoDataValue(), transparentColor);
                         }
-                        rasterSymbology.addColorMapEntry(metadata.getStats().getMin(0), Color.WHITE);
-                        rasterSymbology.addColorMapEntry(metadata.getStats().getMax(0), Color.BLACK);
+                        rasterSymbology.addColorMapEntry(metadata.getStats().getMin(0), Color.BLACK);
+                        rasterSymbology.addColorMapEntry(metadata.getStats().getMax(0), Color.WHITE);
                         setSymbology(rasterSymbology);
                         
                     } else {
