@@ -501,6 +501,19 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
           public void layerChanged(LayerEvent e) {
             if (e.getLayerable() != model.getLayer()) { return; }
             if (e.getType() == LayerEventType.METADATA_CHANGED) {
+
+              if (model.getLayer().getFeatureCollectionWrapper().size()==0 ||
+                  workbenchContext.getLayerViewPanel().getSelectionManager()
+                      .getFeaturesWithSelectedItems(model.getLayer()).size() == 0) {
+                // After a LayerEvent, check if there are still selected features in
+                // the info frame. If not, remove the AttributeTablePanel from InfoFrame
+                // otherwise it will display a single header row with very narrow default
+                // column and will never display the columns with a correct width again
+                for (JInternalFrame iFrame : workbenchContext.getWorkbench().getFrame().getInternalFrames()) {
+                  if (iFrame instanceof InfoFrame) ((InfoFrame)iFrame).getModel().remove(model.getLayer()                                                     );
+                }
+              }
+
               //If layer becomes editable, apply row striping
               // and remove gridlines,
               //as recommended in Java Look and Feel Design

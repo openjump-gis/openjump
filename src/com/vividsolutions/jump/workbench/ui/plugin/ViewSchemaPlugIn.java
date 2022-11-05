@@ -118,9 +118,11 @@ public class ViewSchemaPlugIn extends AbstractPlugIn {
         // the corresponding attributeTab in the InfoFrame is emptied and
         // the columns are schrinked to a null width.
         // Removing the attributeTab in the InfoFrame avoid these side effects
-        for (JInternalFrame iFrame : workbenchFrame.getInternalFrames()) {
-            if (iFrame instanceof InfoFrame) ((InfoFrame)iFrame).getModel().remove(layer);
-        }
+        // 2022-11-05 : This piece of code has been moved to AttributeTablePanel where
+        // the problem is fixed ni a more general way
+        //for (JInternalFrame iFrame : workbenchFrame.getInternalFrames()) {
+            //if (iFrame instanceof InfoFrame) ((InfoFrame)iFrame).getModel().remove(layer);
+        //}
 
         FeatureSchema newSchema = new FeatureSchema();
         //-- [sstein 10. Oct 2006] bugfix for colortheming by Ole
