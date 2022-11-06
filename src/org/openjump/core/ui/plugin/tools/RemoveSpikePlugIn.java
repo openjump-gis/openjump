@@ -23,6 +23,8 @@ import org.locationtech.jts.geom.Polygon;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -118,6 +120,16 @@ public class RemoveSpikePlugIn extends AbstractThreadedUiPlugIn {
         List<String> attributes = Arrays.asList(getAttributes(candidateA));
         final JComboBox<String> attributeTransferJCB = dialog
             .addComboBox(ATTRIBUTE_TRANSFER, NONE, attributes, ATTRIBUTE_TRANSFER);
+        attributeTransferJCB.setRenderer(new BasicComboBoxRenderer() {
+          @Override
+          public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+              super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+              // underline/capitalize "special" ALL/NONE entries on top of attribute list
+              if ( index<2 && value instanceof String && (ALL.equals(value) || NONE.equals(value)) )
+                setText("__"+value.toString().toUpperCase()+"__");
+              return this;
+          }
+        });
 
         dialog.addSubTitle(LOCATION_TYPE);
         dialog.addRadioButton(AS_LINESTRING, LOCATION_TYPE, asLineString, AS_LINESTRING);
