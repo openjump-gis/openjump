@@ -377,8 +377,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/vertex-symbols/releases/download/v2.2.1/vertex-symbols-2.2.1.zip</url>
-                      <sha1>a2c8bdb76c099ef9c2835148bc461a6a577e5d15</sha1>
+                      <url>https://github.com/openjump-gis/vertex-symbols/releases/download/v2.2.2/vertex-symbols-2.2.2.zip</url>
+                      <sha1>06010079348991b85be2347d50ae8d70f513fd6c</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
