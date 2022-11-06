@@ -49,9 +49,10 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
       "http://www2.demis.nl/WMS/wms.ashx?wms=WorldMap",
       "http://demo.mapserver.org/cgi-bin/wms",
       "http://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/raster/ortofoto_colore_12.map&service=wms&request=getCapabilities&version=1.3.0&",
-      "http://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv? ",
-      "http://www.gebco.net/data_and_products/gebco_web_services/north_polar_view_wms/mapserv?",
-      "http://www.gebco.net/data_and_products/gebco_web_services/south_polar_view_wms/mapserv?",
+      "http://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?",
+      "https://wxs.ign.fr/essentiels/geoportail/r/wms?",
+      "https://wxs.ign.fr/administratif/geoportail/r/wms?",
+      "https://wxs.ign.fr/ortho/geoportail/r/wms?",
       "http://magosm.magellium.com/geoserver/ows?"
   };
 
