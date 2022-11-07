@@ -58,6 +58,9 @@ public class HTTPProxySettings {
     
     private String directConnectionTo;
 
+    // A constructor without parameter is needed for Java2XML framework
+    public HTTPProxySettings() {}
+
     public HTTPProxySettings(boolean enabled) {
       this.enabled = enabled;
     }
