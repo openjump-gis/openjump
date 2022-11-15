@@ -36,10 +36,11 @@ package org.openjump.core.ui.plugin.layer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.swing.Icon;
 
-import org.locationtech.jts.geom.Geometry;
+import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.*;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -66,12 +67,6 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
   public String getName() {
     return COMBINE_SELECTED_LAYERS;
   }
-
-//  public void initialize(PlugInContext context) throws Exception {
-//    context.getFeatureInstaller().addMainMenuItem(this,
-//        new String[] { MenuNames.LAYER }, COMBINE_SELECTED_LAYERS, false, null,
-//        createEnableCheck(context.getWorkbenchContext()));
-//  }
 
   public void initialize(PlugInContext context) throws Exception {
     super.initialize(context);
@@ -110,7 +105,7 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
 
     FeatureDataset featureDataset = new FeatureDataset(featureSchema);
 
-    Collection selectedCategories = context.getLayerNamePanel()
+    Collection<Category> selectedCategories = context.getLayerNamePanel()
         .getSelectedCategories();
     Layer newLayer = context.addLayer(
         selectedCategories.isEmpty() ? StandardCategoryNames.RESULT
@@ -157,10 +152,12 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
   }
 
   private void setUniqueAttributeName(Set<String> set) {
-    if (!set.contains(LAYER)) uniqueName = LAYER;
+    // 2022-11-15 new attribute name should not be (case insensitive) equals to an existing one
+    set = set.stream().map(String::toUpperCase).collect(Collectors.toSet());
+    if (!set.contains(LAYER.toUpperCase())) uniqueName = LAYER;
     else {
       int i = 0;
-      while (set.contains(uniqueName)) uniqueName = LAYER + "_" + ++i;
+      while (set.contains(uniqueName.toUpperCase())) uniqueName = LAYER + "_" + ++i;
     }
   }
 
@@ -179,7 +176,7 @@ public class CombineSelectedLayersPlugIn extends AbstractPlugIn {
       FeatureSchema targetFeatureSchema, String layerName) {
     // Transfer as many attributes as possible, matching on name. [Jon Aquino]
     Feature copy = new BasicFeature(targetFeatureSchema);
-    copy.setGeometry((Geometry) original.getGeometry().copy());
+    copy.setGeometry(original.getGeometry().copy());
 
     for (int i = 0; i < original.getSchema().getAttributeCount(); i++) {
       if (i == original.getSchema().getGeometryIndex()) {
