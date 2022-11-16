@@ -331,7 +331,9 @@ public class ValidateSelectedLayersPlugIn extends AbstractPlugIn
             //Many parties assume that a layer always has a VertexStyle. Therefore,
             //disable events while we make the switch. [Jon Aquino]
             errorLayer.removeStyle(errorLayer.getStyle(VertexStyle.class));
-            errorLayer.addStyle(new RingVertexStyle());
+            RingVertexStyle ringVertexStyle = new RingVertexStyle();
+            ringVertexStyle.setSize(50);
+            errorLayer.addStyle(ringVertexStyle);
             errorLayer.getBasicStyle().setLineWidth(5);
         } finally {
             errorLayer.getLayerManager().setFiringEvents(firingEvents);
