@@ -257,8 +257,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/graph-toolbox-extension/releases/download/v2.0.3/graph-toolbox-2.0.3.zip</url>
-                      <sha1>ee9b2b20abb5d1383b7d7f6fcbad7e8d947b6b44</sha1>
+                      <url>https://github.com/openjump-gis/graph-toolbox-extension/releases/download/v2.0.4/graph-toolbox-2.0.4.zip</url>
+                      <sha1>fddcac6d4c67326d1d6f8d51dfed801feaaf53be</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
