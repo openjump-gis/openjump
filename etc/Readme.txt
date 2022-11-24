@@ -74,8 +74,8 @@ and the following plugins
    list of files and dependencies with license if any )
  Oracle Datastore (Nicolas Ribot) - GPL2 - gpl-2.txt
  SkyPrinter - GPL2 - gpl-2.txt
-  SkyPrinterPlugIn-*.jar
-  itext-*.jar - LGPL2.1 - lgpl-2.1.txt
+   SkyPrinterPlugIn-*.jar
+   itext-*.jar - LGPL2.1 - lgpl-2.1.txt
 
 
 Additionally PLUS distribution contains
@@ -83,22 +83,22 @@ Additionally PLUS distribution contains
    list of files and dependencies with license if any )
  Batik SVG Toolkit - Apache License Version 2.0 - apache_license-2.0.txt
  ECW and JPEG2000 Read Support based on ECW SDK 3.3 for 
-  Windows x86/x64, Linux, Mac OSX with 32bit java runtime - 
-  ERDAS ECW JPEG2000 SDK license - ecw license.txt
-  lib/native/[os/]{jecw-*.jar,NCS*.dll,ermapper.jar}
+   Windows x86/x64, Linux, Mac OSX with 32bit java runtime -
+   ERDAS ECW JPEG2000 SDK license - ecw license.txt
+   lib/native/[os/]{jecw-*.jar,NCS*.dll,ermapper.jar}
  Geoarbores Vertex Symbols Collection (Giuseppe Aruta) - GPL2 - gpl-2.txt
    lib/ext/VertexImages/*.wkt
  ImageIO Ext - LGPL3 - lgpl-3.0.txt (imageio-ext-tiff removed)
-  except the following dependencies/components:
-  commons-codec, commons-io, commons-lang, commons-logging (see above)
-  imageio-ext-streams - partly LGPL2 or 3 - imageio-ext-streams-LICENSE.txt
-  imageio-ext-tiff - BSD style license - imageio-ext-tiff-BSD-LICENSE.txt
-  imageio-ext-imagereadmt - BSD style license -
-  imageio-ext-imagereadmt-BSD-LICENSE.txt
-  turbojpeg-wrapper - BSD style license - LICENSE.libjpegturbo.txt
+   except the following dependencies/components:
+   commons-codec, commons-io, commons-lang, commons-logging (see above)
+   imageio-ext-streams - partly LGPL2 or 3 - imageio-ext-streams-LICENSE.txt
+   imageio-ext-tiff - BSD style license - imageio-ext-tiff-BSD-LICENSE.txt
+   imageio-ext-imagereadmt - BSD style license -
+   imageio-ext-imagereadmt-BSD-LICENSE.txt
+   turbojpeg-wrapper - BSD style license - LICENSE.libjpegturbo.txt
  JEdit (1999) - GPL2 - gpl-2.txt
  JGraphT - LGPL2 - lgpl-2.1.txt
-  lib/jgrapht-*.jar
+   lib/jgrapht-*.jar
  Postgis driver (postgis-*.jar) - LGPL2 - lgpl-2.1.txt
  MariaDB Connector/J (mariadb-java-client-*.jar) - LGPL2 - lgpl-2.1.txt
  MySQL Connector/J (mysql-connector-java-*-bin.jar) - GPL2 - gpl-2.txt
@@ -106,56 +106,56 @@ Additionally PLUS distribution contains
  
 and the following plugins
  Aggregation PlugIn (Michaël Michaud) - GPL2 - gpl-2.txt
-  aggregation-*.jar
+   aggregation-*.jar
  BeanShell Editor (Michaël Michaud) - GPL2 - gpl-2.txt
-  bsheditor4jump-*.jar, buoy.jar(see above)
+   bsheditor4jump-*.jar, buoy.jar(see above)
  CAD Tools (Giuseppe Aruta) - GPL3 - gpl-3.0.txt
-  CadTools-*.jar
+   CadTools-*.jar
  CSV driver (Michaël Michaud) - GPL2 - gpl-2.txt
-  csv-driver-*.jar
+   csv-driver-*.jar
  Concave Hull (Eric Grosso) - LGPL2.1, GPL2 - lgpl-2.1.txt, gpl-2.txt
-  ConcaveHull*.{jar,txt}
+   ConcaveHull*.{jar,txt}
  DXF driver (Michaël Michaud) - GPL2 - gpl-2.txt
-  driver-dxf-*.jar
+   driver-dxf-*.jar
  Five Color Map Coloring (Larry Reeder) - GPL3 - gpl-3.0.txt
-  SLF4J (see above), JGraphT (see above)
+   SLF4J (see above), JGraphT (see above)
  Graph Extension (Michaël Michaud) - GPL2 - gpl-2.txt
-  graph-toolbox-*.jar, lib/jump-jgrapht-*.jar
-  JGraphT (see above)
+   graph-toolbox-*.jar, lib/jump-jgrapht-*.jar
+   JGraphT (see above)
  Jump Chart (com.cadplan.jump) - GPL2 - gpl-2.txt
-  JumpChart.jar
+   JumpChart.jar
  Jump Fill Pattern (com.cadplan.jump) - GPL2 - gpl-2.txt
-  JumpFillPattern.jar
+   JumpFillPattern.jar
  KML Driver (skyjump) - GPL2 - gpl-2.txt
-  kml-driver-*.jar
+   kml-driver-*.jar
  Matching (Michaël Michaud) - GPL2 - gpl-2.txt
    matching-*.jar
    utils-*.jar
  Measure Toolbox (Giuseppe Aruta) - GPL3 - gpl-3.0.txt
-  MeasureToolbox_*.jar
+   MeasureToolbox_*.jar
  OpenKLEM (Geomatica) - GPL2 - gpl-2.0.txt
-  topographic and hydrological analysis
-  OpenKLEM-*.jar
-  OpenKLEMOJ-*.jar
+   topographic and hydrological analysis
+   OpenKLEM-*.jar
+   OpenKLEMOJ-*.jar
  Printer (com.cadplan.jump) - GPL2 - gpl-2.txt
-  jumpPrinter.jar (needs Vertex Symbols extension)
-  itext-*.jar - LGPL2.1 - lgpl-2.1.txt
+   jumpPrinter.jar (needs Vertex Symbols extension)
+   itext-*.jar - LGPL2.1 - lgpl-2.1.txt
  SetAttributes (Michaël Michaud) - GPL2 - gpl-2.txt
-  SetAttributes-.jar
-  jaxb/jaxb-*.jar
+   SetAttributes-.jar
+   jaxb/jaxb-*.jar
  Sextante Tools (es.unex.sextante.openjump.extensions) - GPL3 - gpl-3.0.txt
-  sextante-binding-*.jar, sextante/*.*
+   sextante-binding-*.jar, sextante/*.*
  Sextante algorithms  (www.scolab.es) - GPL3 - gpl-3.0.txt
-  sextante_new_algorithms.jar
+   sextante_new_algorithms.jar
  Topology Extension (Michaël Michaud) - GPL2 - gpl-2.txt
-  topology-*.jar
+   topology-*.jar
  Vertex Note (com.cadplan.jump) - GPL2 - gpl-2.txt
  Vertex Symbols (com.cadplan.jump) - GPL2 - gpl-2.txt
-  VertexSymbols.jar
-  itext-*.jar - LGPL2.1 - lgpl-2.1.txt
+   VertexSymbols.jar
+   itext-*.jar - LGPL2.1 - lgpl-2.1.txt
  View Manager Extension (Michaël Michaud) - GPL2 - gpl-2.txt
-  ViewManager-*.jar
-  jaxb/jaxb-*.jar
+   ViewManager-*.jar
+   jaxb/jaxb-*.jar
 
 
 2. Installation instructions
