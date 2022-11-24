@@ -24,12 +24,13 @@ as (Component name - License name - License file in "licenses/" folder or link)
  BeanShell - LGPL2.1 - lgpl-2.1.txt
  Buoy Framework - Public Domain
  Code2000 Unicode font - GPL2 - gpl-2.txt
- Commons Codec, Compress, Imaging, IO, Lang, Logging
+ Commons Codec, Compress, Imaging, IO, Lang3, Logging
    - Apache License Version 2.0 - apache_license-2.0.txt
  CTS - GNU Lesser General Public License (GNU LGPL)
  Esri projection list (resources/coord_ref_sys/pe_list_projcs_geogcs)
      - Apache License Version 2.0 - apache_license-2.0.txt
  Extensible-TIFF-JAI (xtiff jai) - MIT License - MIT-license.txt
+ GDAL -
  Icons (some original or based fully or in part on the following)
    FAMFAMFAM Silk by http://www.famfamfam.com - CC BY 2.5
      - http://creativecommons.org/licenses/by/2.5/
@@ -44,14 +45,13 @@ as (Component name - License name - License file in "licenses/" folder or link)
      - GPL3 - gpl-3.txt
  JAI core, codec - Java Advanced Imaging Distribution License - jdl-jai.pdf
  JAI imageio core - BSD style license - jai-core.BSD-LICENSE.txt
- jai-imageio-core (standalone) - BSD 3-style with nuclear exception
+ JAI-imageio-core (standalone) - BSD 3-style with nuclear exception
    - jai-imageio-core-LICENSE.txt
  JAMA - Public Domain
  Jdom - Apache-style open source jdom license, with the acknowledgment 
    clause removed - jdom_license.txt
  JMath and its successor projects JMathTools (IO,Plot,Array)
    - BSD license - jmath_license.txt
- Javascript library RHINO - GPL2 - gpl-2.txt
  JSON-simple - Apache License Version 2.0 - apache_license-2.0.txt
  JTS Topology Suite - LGPL2 - lgpl-2.1.txt
  JUnit - Eclipse Public License v1.0 - epl-v10.txt
@@ -115,10 +115,6 @@ and the following plugins
   csv-driver-*.jar
  Concave Hull (Eric Grosso) - LGPL2.1, GPL2 - lgpl-2.1.txt, gpl-2.txt
   ConcaveHull*.{jar,txt}
- CTS extension (Michaël Michaud) - GPL2 - gpl-2.txt
-  CTS-PlugIn-*.jar,
-  lib/cts-*.jar - LGPL3 - lgpl-3.0.txt
-  SLF4J (see above)
  DXF driver (Michaël Michaud) - GPL2 - gpl-2.txt
   driver-dxf-*.jar
  Five Color Map Coloring (Larry Reeder) - GPL3 - gpl-3.0.txt
@@ -128,12 +124,6 @@ and the following plugins
   JGraphT (see above)
  Jump Chart (com.cadplan.jump) - GPL2 - gpl-2.txt
   JumpChart.jar
- JUMP DB Query Plugin (Larry Reeder) - GPL3 - gpl-3.0.txt
-  jumpdbquery-*.jar, dbquery.properties
-  jsyntaxpane-*.jar - Apache License Version 2.0 - apache_license-2.0.txt
-  gt2-oracle-spatial-*.jar - LGPL2.1 - lgpl-2.1.txt
-  mysql-connector-java-*.jar - GPL2 - gpl-2.txt
-  sqlite-jdbc-*.jar - Apache License Version 2.0 - apache_license-2.0.txt
  Jump Fill Pattern (com.cadplan.jump) - GPL2 - gpl-2.txt
   JumpFillPattern.jar
  KML Driver (skyjump) - GPL2 - gpl-2.txt
@@ -144,17 +134,12 @@ and the following plugins
  Measure Toolbox (Giuseppe Aruta) - GPL3 - gpl-3.0.txt
   MeasureToolbox_*.jar
  OpenKLEM (Geomatica) - GPL2 - gpl-2.0.txt
- topographic and hydrological analysis
+  topographic and hydrological analysis
   OpenKLEM-*.jar
   OpenKLEMOJ-*.jar
- OSM Driver (Stefan Steiniger) - GPL2 - gpl-2.txt
-  oj_osm_reader_v*.jar
  Printer (com.cadplan.jump) - GPL2 - gpl-2.txt
   jumpPrinter.jar (needs Vertex Symbols extension)
   itext-*.jar - LGPL2.1 - lgpl-2.1.txt
- Pirol Csv Dataset 
-  (de.fhOsnabrueck.jump.pirol.datasources.pirolCSV) - GPL2 - gpl-2.txt
-  PirolCsv.jar, pbaseClasses.jar
  SetAttributes (Michaël Michaud) - GPL2 - gpl-2.txt
   SetAttributes-.jar
   jaxb/jaxb-*.jar
@@ -162,8 +147,6 @@ and the following plugins
   sextante-binding-*.jar, sextante/*.*
  Sextante algorithms  (www.scolab.es) - GPL3 - gpl-3.0.txt
   sextante_new_algorithms.jar
- TableLayout-*.jar - Clearthought License - clearthought-2.0.txt
-  xbean-*.jar - Apache License Version 2.0 - apache_license-2.0.txt
  Topology Extension (Michaël Michaud) - GPL2 - gpl-2.txt
   topology-*.jar
  Vertex Note (com.cadplan.jump) - GPL2 - gpl-2.txt
@@ -173,11 +156,6 @@ and the following plugins
  View Manager Extension (Michaël Michaud) - GPL2 - gpl-2.txt
   ViewManager-*.jar
   jaxb/jaxb-*.jar
- WFS Plugin
-  commons-httpclient-3.1.jar
-  deegree2-core-2.6-pre2-20140511.220246-596.jar
-  jaxen-1.1.1.jar
-  vecmath-1.5.2.jar
 
 
 2. Installation instructions
@@ -316,6 +294,7 @@ same time describes the objectives of this project to be fully open to anyone
 wanting to contribute.
 Since May 2005 a complete development source is available at:
 www.sourceforge.net/projects/jump-pilot
+In 2021, OpenJUMP moves to Github : https://github.com/openjump-gis/openjump
 
 
 6. Credits
@@ -364,6 +343,7 @@ Past contributors (in alphabetical order):
   Martin Davis (refractions.net)
   Matthias Scholz
   Mohammed Rashad
+  Neutius
   Ole Rahn
   Paolo Rizzi
   Paul Austin
