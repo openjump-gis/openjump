@@ -1,5 +1,79 @@
 ﻿Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
+Version 2.1.1 release
+
+    fix #74 : more intuitive behaviour of AutoCompletePolygonCursorTool
+    fix #72 : small regression in ValidateSelectedLayersPlugIn styling
+    fix #73 : attribute name duplication after layer combination
+    fix #70 : Connexions to WMS and database lost
+    update list of available wms url
+    fix default entry formatting in combobox
+    fix #68 about column shrinking after refreshing a layer based on a database query
+    fix #66 : Invert B/W Color scheme
+        B/W color scheme for raster has been inverted in OpenjUMP (white=min values, black=max values)
+        comparing to  other GIS program.
+        A standard B/W scheme (black=min val, white=max val) will improve the construction of shaded relief maps
+    improve attribute type conservation after dbf write/read, clean dbf code
+    Catch an error which can make the whole application instable
+    Improve RemoveSpikePlugIn
+    fix #64 about dbf writing 0 instead of empty for null numbers
+    fix #63 about AttributeQueryPlugIn and SpatialQueryPlugIn result layer name
+    fix exception in OpenProjectWizard when project contains a DataStoreQueryDataSource using ${selection}
+    wording for layers produced by PrecisionReducer (fr and en)
+    fix #62 exception removing SpatialDSLayer without datasource
+    layerListener must be deactivated during setDataSourceQuery
+    disable layerListener during layer creation as recommended in LayerManager#fireLayerChanged
+    handle exceptions during windows activations
+    fix #59 properly unset cursor tool on panel disposal
+    memorize nonassigned state by unsetting panel reference
+    delete unused variable assignment
+    fix #56: "CADTools - Drawing Blocks throws NPEs" (again)
+    prevent NPEs by selectively executing draw commands
+    adapt CommonsTiff reader to latest commons-imaging upgrade
+    upgrade imageio-ext, commons-imaging and pgjdbc
+    keep missing datafile layers in project, render name strikethrough
+        allows to edit project with missing data files
+        can be found on next opening or removed manually in layer tree
+        adding disabled datasource support to signal missing file
+        render layers with disabled datasource accordingly
+        some optimization to find file activation
+    if srid is absent from pe_list_projcs_geogcs esri file, use srid2prj wkt resource file
+    minor fix to prevent NPEs
+    fix #58 "RunTime exception using zoom plugins from statusbar"
+        "RuntimeException: Add super.initialize() ..."
+    improve handling of moved/missing data files when loading project
+        OpenProjectWizard
+        remove useless deprecation warning suppressions
+        fix typo in method name
+        improve loading of relative file paths in JMP project files
+        continue loading project when user opts not to find singular files
+        start looking for missing data files in current project folder
+        FindFile
+        rework caching changed prefix, fix stacktraces like
+        https://sourceforge.net/p/jump-pilot/bugs/522/#1cb9
+        replace path string manipulation with proper nio.Path handling
+        for better cross platform compatibility
+    add workaround to prefill file field in JFileChooser
+    minor cleanup of imports
+    update pom.xml
+        ugrade postgres to fix dependabot warning
+        https://github.com/openjump-gis/openjump/security/dependabot/9
+
+    Upgrade extensions :
+        raise graph-toolbox version to 2.0.4 : fix a bug in graph components plugin
+        raise vertex symbol extension version to 2.2.2
+        raise topology extension version to 2.0.4
+        raise graph-toolbox version to 2.0.3 (fix bug in GraphNodesPlugIn)
+        raise dxf-driver version to 2.0.1 (bug fixing)
+        raise view-manager-plugin version to 2.0.4
+        raise matching extension version to v2.0.2 (fix I18N for french)
+        raise bsheditor version to v2.0.1 (fix I18N issues)
+        raise aggregation and graph extension versions
+        raise cadtools extension and fix sf.net bug #522: "CADTools - Drawing Blocks throws NPEs"
+
+
+Version 2.1 release rev.5126[8c611f4] (released on 01. August 2022)
+
 New Features
   - prj file for shapefile: use the string from http://epsg.io when possible
 
