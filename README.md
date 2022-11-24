@@ -75,11 +75,11 @@ xxx-driver (ex. dxf-driver).
 | Extension              |GITHUB| JTS | I18N | POM |                           |
 | ---------------------- |:----:|:---:|:----:|:---:| ------------------------- |
 | BshEditor              |   x  |  x  |  x   |  x  |                           |
-| CadTools               |   x  |  x  |  x   |     |                           |
-| CadPlan Jump-Chart     |   x  |  x  |  x   |     |                           |
-| CadPlan Fill-Pattern   |   x  |  x  |  x   |     |                           |
-| CadPlan Printer        |   x  |  x  |  x   |     |                           |
-| CadPlan Symbols        |   x  |  x  |  x   |     |                           |
+| CadTools               |   x  |  x  |  x   |  x  |                           |
+| CadPlan Jump-Chart     |   x  |  x  |  x   |  x  |                           |
+| CadPlan Fill-Pattern   |   x  |  x  |  x   |  x  |                           |
+| CadPlan Printer        |   x  |  x  |  x   |  x  |                           |
+| CadPlan Symbols        |   x  |  x  |  x   |  x  |                           |
 | CadPlan Update Project |      |     |      |     | Abandoned                 |
 | Color Chooser          |   x  |  x  |  x   |  x  |                           |
 | ConcaveHull            |   x  |  x  |  x   |  x  |                           |
@@ -100,9 +100,9 @@ xxx-driver (ex. dxf-driver).
 | PrintLayout            |      |     |      |     | Unmaintained (?)          |
 | RoadMatcher            |      |     |      |     | Unmaintained (hard work)  |
 | SetAttributes          |   x  |  x  |  x   |  x  |                           |
-| Sextante               |   x  |  x  |  x   |     |                           |
+| Sextante               |   x  |  x  |  x   |  x  |                           |
 | SISJUMP                |      |     |      |     | Unmaintained              |
-| SkyPrinter             |   x  |  x  |  x   |     | Included in CORE          |
+| SkyPrinter             |   x  |  x  |  x   |  x  | Included in CORE          |
 | Text-utils (lib)       |   x  |  x  |  x   |     | Support for Matching ext. |
 | Topology               |   x  |  x  |  x   |  x  |                           |
 | ViewManager            |   x  |  x  |  x   |  x  |                           |
@@ -122,16 +122,16 @@ xxx-driver (ex. dxf-driver).
 
 #### Other known extension/forks non hosted on Github openjump-gis repository 
 
-| Extension                 | HOST | REPOSITORY | URL | STATUS |
-| ------------------------- | ---- | ---------- | --- | ------ |
-| RoadMatcher               |GITHUB| ssinger    | https://github.com/ssinger/roadmatcher | 2009: Not ready for OJ2 |
-| LogisticTools             |GITHUB| fduque     | https://github.com/fduque/LogisticTools-Plugin-OpenJUMP | 2019 : Not ready for OJ2 |
-| Morphometric analysis     |GITHUB| burakbeyhan| https://github.com/burakbeyhan/morphometric-analysis | 2021 : Not ready for OJ2 |
-| Maximum Inscribed Circle  |GITHUB| burakbeyhan| https://github.com/burakbeyhan/maximum-inscribed-circle | 2020 : Not ready for OJ2 |
-| Delineation of functional and planning regions |GITHUB| burakbeyhan| https://github.com/burakbeyhan/delineation-of-functional-and-planning-regions | 2020 : Not ready for OJ2 |
-| GeOxygen                  |Sourceforge|oxygene-project| https://sourceforge.net/projects/oxygene-project/files/ | 2014 : Not Ready for OJ2|
-| SMT:SAR Management Toolkit|Sourceforge|sarmanager| https://sourceforge.net/projects/sarmanager/ | 2016 : not ready for OJ2|
-| Geo Arbores Raster Tools|Sourceforge| GiuseppeAruta | https://sourceforge.net/p/opensit/wiki/Geo%20Arbores%20Raster%20Tools/ | 2022 : ported to OJ2 not integrated|
+| Extension                                      | HOST        | REPOSITORY      | URL | STATUS |
+|------------------------------------------------|-------------|-----------------| --- | ------ |
+| RoadMatcher                                    | GITHUB      | ssinger         | https://github.com/ssinger/roadmatcher | 2009: Not ready for OJ2 |
+| LogisticTools                                  | GITHUB      | fduque          | https://github.com/fduque/LogisticTools-Plugin-OpenJUMP | 2019 : Not ready for OJ2 |
+| Morphometric analysis                          | GITHUB      | burakbeyhan     | https://github.com/burakbeyhan/morphometric-analysis | 2021 : Not ready for OJ2 |
+| Maximum Inscribed Circle                       | GITHUB      | burakbeyhan     | https://github.com/burakbeyhan/maximum-inscribed-circle | 2020 : Not ready for OJ2 |
+| Delineation of functional and planning regions | GITHUB      | burakbeyhan     | https://github.com/burakbeyhan/delineation-of-functional-and-planning-regions | 2020 : Not ready for OJ2 |
+| GeOxygen                                       | Sourceforge | oxygene-project | https://sourceforge.net/projects/oxygene-project/files/ | 2014 : Not Ready for OJ2|
+| SMT:SAR Management Toolkit                     | Sourceforge | sarmanager      | https://sourceforge.net/projects/sarmanager/ | 2016 : not ready for OJ2|
+| Geo Arbores Raster Tools                       | Sourceforge | GiuseppeAruta   | https://sourceforge.net/p/opensit/wiki/Geo%20Arbores%20Raster%20Tools/ | 2022 : ported to OJ2 not integrated|
 
 #### Other known drivers/forks non hosted on Github openjump-gis repository 
 
