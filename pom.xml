@@ -42,7 +42,7 @@
                 </os>
             </activation>
             <properties>
-                <launch4j.dir>launcher/launch4j-3.0.2-win32</launch4j.dir>
+                <launch4j.dir>launcher/launch4j-3.50-win32/launch4j</launch4j.dir>
             </properties>
         </profile>
         <profile>
@@ -53,7 +53,7 @@
                 </os>
             </activation>
             <properties>
-                <launch4j.dir>launcher/launch4j-3.0.2-linux</launch4j.dir>
+                <launch4j.dir>launcher/launch4j-3.50-linux-x64/launch4j</launch4j.dir>
             </properties>
         </profile>
         <profile>
