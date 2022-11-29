@@ -25,7 +25,6 @@
 
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <batik.version>1.6-1</batik.version>
         <jts.version>1.19.0</jts.version>
@@ -620,7 +619,6 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>${maven-antrun-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>unzip distros</id>
@@ -748,10 +746,9 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>${maven-antrun-plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>create installers</id>
+                                <id>create izpack installer jars</id>
                                 <phase>package</phase>
                                 <configuration>
                                     <target>
@@ -845,6 +842,7 @@
                                         <!-- generate exe launcher via launch4j -->
                                         <!-- property name="launch4j.dir" location="launcher/launch4j-3.0.2" 
                                         / -->
+                                        <!-- kept for reference, can be deleted at some point in the future
                                         <property name="launch4j.config"
                                                   location="etc/launch4j/ojinstall-launch4j.xml" />
                                         <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
@@ -855,11 +853,42 @@
                                         <launch4j configFile="${launch4j.config}"
                                                   jar="${project.build.directory}/izpack/${installer.filename}-PLUS.jar"
                                                   outfile="${project.build.directory}/izpack/${installer.filename}-PLUS.exe" />
+                                        -->
                                     </target>
                                 </configuration>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                        <artifactId>launch4j-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>wrap CORE exe installer</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>launch4j</goal>
+                                </goals>
+                                <configuration>
+                                    <headerType>gui</headerType>
+                                    <jar>${project.build.directory}/izpack/${installer.filename}-CORE.jar</jar>
+                                    <outfile>${project.build.directory}/izpack/${installer.filename}-CORE.exe</outfile>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>wrap PLUS exe installer</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>launch4j</goal>
+                                </goals>
+                                <configuration>
+                                    <headerType>gui</headerType>
+                                    <jar>${project.build.directory}/izpack/${installer.filename}-PLUS.jar</jar>
+                                    <outfile>${project.build.directory}/izpack/${installer.filename}-PLUS.exe</outfile>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -874,7 +903,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.4.1</version>
                         <configuration>
                             <outputDirectory>${project.build.directory}/apidocs/</outputDirectory>
                             <reportOutputDirectory>${project.build.directory}/apidocs/</reportOutputDirectory>
@@ -899,7 +928,6 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>${maven-antrun-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>create apidoc zip</id>
@@ -975,7 +1003,6 @@
                     -->
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>${maven-antrun-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>create src zip</id>
@@ -1095,7 +1122,7 @@
       </profile>
       <profile>
         <id>execute</id>
-        <!-- activated by default unless -DskipSrczip is defined -->
+        <!-- activated only if -DtestExecute=true is defined -->
         <activation>
           <property>
             <name>testExecute</name>
@@ -1157,189 +1184,187 @@
       </profile>
     </profiles>
     <build>
-        <finalName>${project.artifactId}-${version.string}</finalName>
-        <sourceDirectory>src/</sourceDirectory>
-        <outputDirectory>target/classes/</outputDirectory>
-        <testSourceDirectory>test/</testSourceDirectory>
-        <testOutputDirectory>target/test-classes/</testOutputDirectory>
-        <resources>
-            <resource>
-                <directory>src</directory>
-                <!-- we copy _everything_ to target/classes and filter during packaging -->
-                <excludes>
-                    <!-- exclude> **/*.java </exclude -->
-                    <exclude>language/*.properties</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <filtering>true</filtering>
-                <directory>src</directory>
-                <includes>
-                    <include>language/*.properties</include>
-                </includes>
-            </resource>
-            <!-- filter version placeholders during copying -->
-            <resource>
-                <filtering>true</filtering>
-                <directory>etc</directory>
-                <includes>
-                    <include>Readme.txt</include>
-                </includes>
-                <targetPath>${project.build.directory}/res/</targetPath>
-            </resource>
-            <resource>
-                <filtering>true</filtering>
-                <directory>.</directory>
-                <includes>
-                    <include>Changes.txt</include>
-                </includes>
-                <targetPath>${project.build.directory}/res/</targetPath>
-            </resource>
-        </resources>
-        <testResources>
-          <testResource>
-            <directory>${project.build.testSourceDirectory}</directory>
-            <excludes>
-              <exclude> **/*.java </exclude>
-            </excludes>
-          </testResource>
-        </testResources>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <version>3.0.0</version>
-            <executions>
-              <execution>
-                <id>no-duplicate-declared-dependencies</id>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-                <configuration>
-                  <rules>
-                    <banDuplicatePomDependencyVersions/>
-                  </rules>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <version>3.8.1</version>
+      <finalName>${project.artifactId}-${version.string}</finalName>
+      <sourceDirectory>src/</sourceDirectory>
+      <outputDirectory>target/classes/</outputDirectory>
+      <testSourceDirectory>test/</testSourceDirectory>
+      <testOutputDirectory>target/test-classes/</testOutputDirectory>
+      <resources>
+        <resource>
+          <directory>src</directory>
+          <!-- we copy _everything_ to target/classes and filter during packaging -->
+          <excludes>
+            <!-- exclude> **/*.java </exclude -->
+            <exclude>language/*.properties</exclude>
+          </excludes>
+        </resource>
+        <resource>
+          <filtering>true</filtering>
+          <directory>src</directory>
+          <includes>
+            <include>language/*.properties</include>
+          </includes>
+        </resource>
+        <!-- filter version placeholders during copying -->
+        <resource>
+          <filtering>true</filtering>
+          <directory>etc</directory>
+          <includes>
+            <include>Readme.txt</include>
+          </includes>
+          <targetPath>${project.build.directory}/res/</targetPath>
+        </resource>
+        <resource>
+          <filtering>true</filtering>
+          <directory>.</directory>
+          <includes>
+            <include>Changes.txt</include>
+          </includes>
+          <targetPath>${project.build.directory}/res/</targetPath>
+        </resource>
+      </resources>
+      <testResources>
+        <testResource>
+          <directory>${project.build.testSourceDirectory}</directory>
+          <excludes>
+            <exclude> **/*.java </exclude>
+          </excludes>
+        </testResource>
+      </testResources>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.1.0</version>
+          <executions>
+            <execution>
+              <id>no-duplicate-declared-dependencies</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
               <configuration>
-                  <source>1.8</source>
-                  <target>1.8</target>
-                  <compilerArgs>
-                    <arg>-Xlint:deprecation</arg>
-                  </compilerArgs>
+                <rules>
+                  <banDuplicatePomDependencyVersions />
+                </rules>
               </configuration>
-          </plugin>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.10.1</version>
+          <configuration>
+            <source>1.8</source>
+            <target>1.8</target>
+            <compilerArgs>
+              <arg>-Xlint:deprecation</arg>
+            </compilerArgs>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>3.3.0</version>
+          <?m2e ignore?>
+          <executions>
+            <!-- build several build date stamp formattings used all over -->
+            <execution>
+              <id>build-datestamp-property</id>
+              <phase>validate</phase>
+              <goals>
+                <goal>timestamp-property</goal>
+              </goals>
+              <configuration>
+                <name>build.datestamp</name>
+                <pattern>yyyyMMdd</pattern>
+                <timeSource>build</timeSource>
+                <locale>en_US</locale>
+              </configuration>
+            </execution>
+            <execution>
+              <id>build-datelong-property</id>
+              <phase>validate</phase>
+              <goals>
+                <goal>timestamp-property</goal>
+              </goals>
+              <configuration>
+                <name>build.datelong</name>
+                <pattern>dd. MMMM yyyy</pattern>
+                <timeSource>build</timeSource>
+                <locale>en_US</locale>
+              </configuration>
+            </execution>
+            <execution>
+              <id>build-date-property</id>
+              <phase>validate</phase>
+              <goals>
+                <goal>timestamp-property</goal>
+              </goals>
+              <configuration>
+                <name>build.date</name>
+                <pattern>dd.MM.yyyy</pattern>
+                <timeSource>build</timeSource>
+                <locale>en_US</locale>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
 
-         <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <version>3.2.0</version>
-            <?m2e ignore?>
-            <executions>
-              <!-- build several build date stamp formattings used all over -->
-              <execution>
-                <id>build-datestamp-property</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>timestamp-property</goal>
-                </goals>
-                <configuration>
-                  <name>build.datestamp</name>
-                  <pattern>yyyyMMdd</pattern>
-                  <timeSource>build</timeSource>
-                  <locale>en_US</locale>
-                </configuration>
-              </execution>
-              <execution>
-                <id>build-datelong-property</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>timestamp-property</goal>
-                </goals>
-                <configuration>
-                  <name>build.datelong</name>
-                  <pattern>dd. MMMM yyyy</pattern>
-                  <timeSource>build</timeSource>
-                  <locale>en_US</locale>
-                </configuration>
-              </execution>
-              <execution>
-                <id>build-date-property</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>timestamp-property</goal>
-                </goals>
-                <configuration>
-                  <name>build.date</name>
-                  <pattern>dd.MM.yyyy</pattern>
-                  <timeSource>build</timeSource>
-                  <locale>en_US</locale>
-                </configuration>
-              </execution>
+        <plugin>
+          <groupId>io.github.git-commit-id</groupId>
+          <artifactId>git-commit-id-maven-plugin</artifactId>
+          <!-- version 5+ are java11+ compatible only -->
+          <version>4.9.9</version>
+          <?m2e ignore?>
+          <executions>
+            <!-- retrieve git revision information from local repo -->
+            <execution>
+              <id>fetch git properties of current branch</id>
+              <goals>
+                <goal>revision</goal>
+              </goals>
+              <phase>validate</phase>
+            </execution>
+          </executions>
+          <configuration>
+            <verbose>true</verbose>
+            <offline>true</offline>
+            <!-- write a copy of git props into target/classes to be contained in the resulting jar below -->
+            <generateGitPropertiesFile>true</generateGitPropertiesFile>
+            <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+            <includeOnlyProperties>
+              <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+              <includeOnlyProperty>^git.build.(time|version|(number(|.unique)))$</includeOnlyProperty>
+              <includeOnlyProperty>^git.commit.(id.(abbrev|full)|message.short)$</includeOnlyProperty>
+              <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
+              <includeOnlyProperty>^git.total.commit.count$</includeOnlyProperty>
+            </includeOnlyProperties>
+            <commitIdGenerationMode>full</commitIdGenerationMode>
+          </configuration>
+        </plugin>
 
-            </executions>
-          </plugin>
-  
-          <plugin>
-            <groupId>io.github.git-commit-id</groupId>
-            <artifactId>git-commit-id-maven-plugin</artifactId>
-            <!-- version 5+ are java11+ compatible only -->
-            <version>4.9.9</version>
-            <?m2e ignore?>
-            <executions>
-              <!-- retrieve git revision information from local repo -->
-              <execution>
-                <id>fetch git properties of current branch</id>
-                <goals>
-                  <goal>revision</goal>
-                </goals>
-                <phase>validate</phase>
-              </execution>
-            </executions>
-            <configuration>
-              <verbose>true</verbose>
-              <offline>true</offline>
-              <!-- write a copy of git props into target/classes to be contained in the resulting jar below -->
-              <generateGitPropertiesFile>true</generateGitPropertiesFile>
-              <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-              <includeOnlyProperties>
-                <includeOnlyProperty>^git.branch$</includeOnlyProperty>
-                <includeOnlyProperty>^git.build.(time|version|(number(|.unique)))$</includeOnlyProperty>
-                <includeOnlyProperty>^git.commit.(id.(abbrev|full)|message.short)$</includeOnlyProperty>
-                <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
-                <includeOnlyProperty>^git.total.commit.count$</includeOnlyProperty>
-              </includeOnlyProperties>
-              <commitIdGenerationMode>full</commitIdGenerationMode>
-            </configuration>
-          </plugin>
-
-          <plugin>
-            <groupId>se.bjurr.gitchangelog</groupId>
-            <artifactId>git-changelog-maven-plugin</artifactId>
-            <version>1.92</version>
-            <?m2e ignore?>
-            <executions>
-              <execution>
-                <id>GenerateGitChangelogCommits</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>git-changelog</goal>
-                </goals>
-                <configuration>
-                  <file>${project.build.directory}/res/Git-log.txt</file>
-                  <toRef>HEAD</toRef> 
-                  <fromCommit>17603d8a46840a58dcf2d105d22a0000763e7dfd</fromCommit>
-                  <!-- needs 'git fetch __tags', rather use commit hash above
-                  <fromRef>1.16</fromRef>
-                  -->
-                  <dateFormat>yyyy.MM.dd HH:mm:ss</dateFormat>
-                  <templateContent>
-                    <![CDATA[
+        <plugin>
+          <groupId>se.bjurr.gitchangelog</groupId>
+          <artifactId>git-changelog-maven-plugin</artifactId>
+          <version>1.95.2</version>
+          <?m2e ignore?>
+          <executions>
+            <execution>
+              <id>GenerateGitChangelogCommits</id>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>git-changelog</goal>
+              </goals>
+              <configuration>
+                <file>${project.build.directory}/res/Git-log.txt</file>
+                <toRef>HEAD</toRef>
+                <fromCommit>17603d8a46840a58dcf2d105d22a0000763e7dfd</fromCommit>
+                <!-- needs 'git fetch __tags', rather use commit hash above
+                    <fromRef>1.16</fromRef>
+                    -->
+                <dateFormat>yyyy.MM.dd HH:mm:ss</dateFormat>
+                <templateContent>
+                  <![CDATA[
 ${project.artifactId} ${project.version} Changelog
 
 {{#tags}}
@@ -1356,138 +1381,170 @@ ${project.artifactId} ${project.version} Changelog
 {{/commits}}
 
 {{/tags}}
-         ]]>
-                  </templateContent>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
+                  ]]>
+                </templateContent>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
 
-          <plugin>
-            <groupId>com.github.ekryd.echo-maven-plugin</groupId>
-            <artifactId>echo-maven-plugin</artifactId>
-            <version>1.3.2</version>
-            <!-- fixup some weird Eclipse m2e issue "Plugin execution not covered by lifecycle configuration"
-                 https://www.eclipse.org/m2e/documentation/release-notes-17.html#new-syntax-for-specifying-lifecycle-mapping-metadata -->
-            <?m2e ignore?>
-            <executions>
-              <execution>
-                <id>echo-version-info</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>echo</goal>
-                </goals>
-                <configuration>
-                  <message>Building
-                    ${project.build.finalName}
-                  </message>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
+        <plugin>
+          <groupId>com.github.ekryd.echo-maven-plugin</groupId>
+          <artifactId>echo-maven-plugin</artifactId>
+          <version>1.3.2</version>
+          <!-- fixup some weird Eclipse m2e issue "Plugin execution not covered by lifecycle configuration"
+                   https://www.eclipse.org/m2e/documentation/release-notes-17.html#new-syntax-for-specifying-lifecycle-mapping-metadata -->
+          <?m2e ignore?>
+          <executions>
+            <execution>
+              <id>echo-version-info</id>
+              <phase>initialize</phase>
+              <goals>
+                <goal>echo</goal>
+              </goals>
+              <configuration>
+                <message>Building
+                        ${project.build.finalName}
+                      </message>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
 
-          <plugin>
-            <groupId>com.googlecode.maven-download-plugin</groupId>
-            <artifactId>download-maven-plugin</artifactId>
-            <version>1.6.6</version>
-            <configuration>
-              <alwaysVerifyChecksum>true</alwaysVerifyChecksum>
-            </configuration>
-          </plugin>
+        <plugin>
+          <groupId>com.googlecode.maven-download-plugin</groupId>
+          <artifactId>download-maven-plugin</artifactId>
+          <version>1.6.8</version>
+          <configuration>
+            <alwaysVerifyChecksum>true</alwaysVerifyChecksum>
+          </configuration>
+        </plugin>
 
-          <!-- default-jar only needed for maven repo deployment,
-               so postpone creation to install cycle  -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>3.2.0</version>
-            <executions>
-              <execution>
-                <id>default-jar</id>
-                <phase>install</phase>
-                <configuration>
-                  <excludes>
-                    <exclude>**/*.java</exclude>
-                  </excludes>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
+        <!-- default-jar only needed for maven repo deployment,
+             so postpone creation to install cycle  -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.3.0</version>
+          <executions>
+            <execution>
+              <id>default-jar</id>
+              <phase>install</phase>
+              <configuration>
+                <excludes>
+                  <exclude>**/*.java</exclude>
+                </excludes>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
 
-          <!-- installing artifact to local repo (usually "~/.m2")
-               is mainly done to enable 
-                 https://jitpack.io/#openjump-gis/openjump
-               repo builds -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-install-plugin</artifactId>
-            <version>3.0.0-M1</version>
-            <executions>
-              <execution>
-                <id>default-install</id>
-                <phase>none</phase>
-                <goals>
-                  <goal>install-file</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>custom-install</id>
-                <goals>
-                  <goal>install-file</goal>
-                </goals>
-                <phase>install</phase>
-                <configuration>
-                  <packaging>jar</packaging>
-                  <file>${project.build.directory}/${project.build.finalName}.jar</file>
-                  <!-- 
-                  <localRepositoryPath>${project.build.directory}/repo/</localRepositoryPath>
-                  -->
-                  <version>${project.version}-${git.branch}-${git.commit.id.abbrev}</version>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
+        <!-- installing artifact to local repo (usually "~/.m2")
+             is mainly done to enable 
+             https://jitpack.io/#openjump-gis/openjump
+             repo builds -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>3.1.0</version>
+          <executions>
+            <execution>
+              <id>default-install</id>
+              <phase>none</phase>
+              <goals>
+                <goal>install-file</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>custom-install</id>
+              <goals>
+                <goal>install-file</goal>
+              </goals>
+              <phase>install</phase>
+              <configuration>
+                <packaging>jar</packaging>
+                <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                <!-- 
+                <localRepositoryPath>${project.build.directory}/repo/</localRepositoryPath>
+                -->
+                <version>${project.version}-${git.branch}-${git.commit.id.abbrev}</version>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
 
-          <!-- this deploys the jar to a repo-url given,
-               used in snapshot/release builds to update
-                 oj.soldin.de repo -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-deploy-plugin</artifactId>
-            <version>3.0.0-M1</version>
-            <executions>
-              <execution>
-                <id>default-deploy</id>
-                <phase>none</phase>
-              </execution>
-              <execution>
-                <id>custom-deploy</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>deploy-file</goal>
-                </goals>
-                <configuration>
-                  <file>${project.build.directory}/${project.build.finalName}.jar</file>
-                  <!-- needs to be set via -Durl=file://C:\m2-repo --> <!--
-                  <url>file://${project.build.directory}/build-repo/</url>
-                  -->
-                  <version>${project.version}-${git.branch}-SNAPSHOT</version>
-                  <files>${project.build.outputDirectory}/git.properties,${project.build.directory}/res/Git-log.txt</files>
-                  <classifiers>git-info,git-log</classifiers>
-                  <types>txt,txt</types>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
+        <!-- this deploys the jar to a repo-url given,
+             used in snapshot/release builds to update
+             oj.soldin.de repo -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.0.0</version>
+          <executions>
+            <execution>
+              <id>default-deploy</id>
+              <phase>none</phase>
+            </execution>
+            <execution>
+              <id>custom-deploy</id>
+              <phase>deploy</phase>
+              <goals>
+                <goal>deploy-file</goal>
+              </goals>
+              <configuration>
+                <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                <!-- needs to be set via -Durl=file://C:\m2-repo -->
+                <!--
+                <url>file://${project.build.directory}/build-repo/</url>
+                -->
+                <version>${project.version}-${git.branch}-SNAPSHOT</version>
+                <files>${project.build.outputDirectory}/git.properties,${project.build.directory}/res/Git-log.txt</files>
+                <classifiers>git-info,git-log</classifiers>
+                <types>txt,txt</types>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
 
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.0.0-M5</version>
-            <configuration>
-              <argLine>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argLine>
-            </configuration>
-          </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.0.0-M7</version>
+          <configuration>
+            <argLine>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argLine>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>com.akathist.maven.plugins.launch4j</groupId>
+          <artifactId>launch4j-maven-plugin</artifactId>
+          <version>2.2.0</version>
+          <configuration>
+            <supportUrl>http://openjump.org</supportUrl>
+            <icon>icon/openjump_icon3.ico</icon>
+            <jre>
+              <path>%JAVA_HOME%;%PATH%</path>
+              <minVersion>8</minVersion>
+            </jre>
+            <versionInfo>
+              <fileVersion>1.0.0.0</fileVersion>
+              <txtFileVersion>${version.string}</txtFileVersion>
+              <fileDescription>${project.build.finalName}</fileDescription>
+              <copyright>GPLv2</copyright>
+              <productVersion>1.0.0.0</productVersion>
+              <txtProductVersion>${project.build.finalName}</txtProductVersion>
+              <productName>${project.artifactId}</productName>
+              <companyName>OJ Team</companyName>
+              <internalName>OJ-installer</internalName>
+              <originalFilename>OJ-installer.exe</originalFilename>
+            </versionInfo>
+          </configuration>
+        </plugin>
       </plugins>
     </build>
     <repositories>
