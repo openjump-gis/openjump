@@ -5,8 +5,8 @@ us few volunteers of the _jump pilot project_ hope that maybe **you might
 join our struggle** to keep OJ2 not only alive but contribute to it's 
 improvement and adapation of new and exciting standards.
 
-**NOTE:** The [OJ2 github repository](https://github.com/openjump-gis/openjump) is mirrored 
-at https://gitlab.com/openjump-gis/openjump . 
+**NOTE:** The [OJ2 github repository](https://github.com/openjump-gis/openjump) 
+and several of the extension repositories are mirrored at https://gitlab.com/openjump-gis/ . 
 
 ## Introduction
 
@@ -35,15 +35,14 @@ will be updated regularly until the first OpenJUMP2 official release.
 
 To learn more on OpenJUMP you can check the official 
 [website](http://www.openjump.org/) or read the 
-[wiki documentation](http://ojwiki.soldin.de/index.php?title=Main_Page) 
+[wiki documentation](http://ojwiki.soldin.de) 
 
 
 ## Downloads
 
-The latest release is **OpenJUMP 2.0**.
-Readymade builds for Windows, Linux, MacOS can be downloaded from [OpenJUMP project's sf.net files area](https://sourceforge.net/projects/jump-pilot/files/OpenJUMP/).
+The latest and archived releases for Windows, Linux, macOS can be downloaded from [OpenJUMP project's sf.net files area](https://sourceforge.net/projects/jump-pilot/files/OpenJUMP/).
 
-Development snapshots are available too at
+Current development snapshots are available too at
 https://sourceforge.net/projects/jump-pilot/files/OpenJUMP2_snapshots/ .
 
 
