@@ -28,21 +28,21 @@ as (Component name - License name - License file in "licenses/" folder or link)
    - Apache License Version 2.0 - apache_license-2.0.txt
  CTS - GNU Lesser General Public License (GNU LGPL)
  Esri projection list (resources/coord_ref_sys/pe_list_projcs_geogcs)
-     - Apache License Version 2.0 - apache_license-2.0.txt
+   - Apache License Version 2.0 - apache_license-2.0.txt
  Extensible-TIFF-JAI (xtiff jai) - MIT License - MIT-license.txt
  GDAL -
  Icons (some original or based fully or in part on the following)
    FAMFAMFAM Silk by http://www.famfamfam.com - CC BY 2.5
-     - http://creativecommons.org/licenses/by/2.5/
+    - http://creativecommons.org/licenses/by/2.5/
    Fugue by Yusuke Kamiyamane http://p.yusukekamiyamane.com - CC BY 3.0
-     - http://creativecommons.org/licenses/by/3.0/
+    - http://creativecommons.org/licenses/by/3.0/
    OJ icon v3 and others by Edgar Soldin http://soldin.de - GPL2 - gpl-2.txt
    [ok|ko]_pg.png PostgreSQL icon - Trademark Policy
-     - https://wiki.postgresql.org/wiki/Trademark_Policy
+    - https://wiki.postgresql.org/wiki/Trademark_Policy
    [ok|ko]_mariadb.png MariaDB icon - MariaDB Branding Guidelines
-     - https://mariadb.com/kb/en/mariadb/branding-guidelines/
+    - https://mariadb.com/kb/en/mariadb/branding-guidelines/
    ok_spatialite.png Spatialite icon, dolphin_icon.png (Edgar Soldin)
-     - GPL3 - gpl-3.txt
+    - GPL3 - gpl-3.txt
  JAI core, codec - Java Advanced Imaging Distribution License - jdl-jai.pdf
  JAI imageio core - BSD style license - jai-core.BSD-LICENSE.txt
  JAI-imageio-core (standalone) - BSD 3-style with nuclear exception
@@ -93,8 +93,8 @@ Additionally PLUS distribution contains
    commons-codec, commons-io, commons-lang, commons-logging (see above)
    imageio-ext-streams - partly LGPL2 or 3 - imageio-ext-streams-LICENSE.txt
    imageio-ext-tiff - BSD style license - imageio-ext-tiff-BSD-LICENSE.txt
-   imageio-ext-imagereadmt - BSD style license -
-   imageio-ext-imagereadmt-BSD-LICENSE.txt
+   imageio-ext-imagereadmt - BSD style license
+    - imageio-ext-imagereadmt-BSD-LICENSE.txt
    turbojpeg-wrapper - BSD style license - LICENSE.libjpegturbo.txt
  JEdit (1999) - GPL2 - gpl-2.txt
  JGraphT - LGPL2 - lgpl-2.1.txt
@@ -160,9 +160,8 @@ and the following plugins
 
 2. Installation instructions
 ----------------------------
-Try the shiny installers
- OpenJUMP-Installer-*.exe (for windows)
- OpenJUMP-Installer-*.jar (for linux & mac)
+Try the shiny installers (for linux & mac)
+ OpenJUMP-Installer-*.jar
 Or
  Extract the portable zip file distribution.
  OpenJUMP-Portable-*.zip
@@ -171,7 +170,7 @@ Or
 3. Running OpenJUMP
 -------------------
 To start OpenJUMP run the launcher for your platform from the 
-<appfolder>/bin directory.
+<appfolder>/bin/ directory.
 - On Windows, double-click on oj_windows.bat or OpenJUMP.exe
 - On Linux/Unix, launch oj_linux.sh
 - On MacOSX, launch oj_mac.command or OpenJUMP.app
