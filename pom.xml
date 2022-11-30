@@ -32,7 +32,7 @@
         <imageio-ext.version>1.4.6</imageio-ext.version>
     </properties>
     <profiles>
-        <!-- switching os dependent lib paths for launch4j -->
+        <!-- switching os dependent lib paths for launch4j (not needed anymore, kept for reference) -->
         <profile>
             <id>windows</id>
             <activation>
@@ -1524,6 +1524,7 @@ ${project.artifactId} ${project.version} Changelog
           <groupId>com.akathist.maven.plugins.launch4j</groupId>
           <artifactId>launch4j-maven-plugin</artifactId>
           <version>2.2.0</version>
+          <!-- some defaults to used by all executions above -->
           <configuration>
             <supportUrl>http://openjump.org</supportUrl>
             <icon>icon/openjump_icon3.ico</icon>
