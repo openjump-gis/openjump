@@ -6,7 +6,7 @@ ${version.buildDateLong}
 
 Contents
 --------
-1. Licensing
+1. Licensing & sources
 2. Installation instructions
 3. Running OpenJUMP
 4. Support
@@ -14,10 +14,17 @@ Contents
 6. Credits
 
 
-1. Licensing
-------------
+1. Licensing & sources
+----------------------
 OpenJUMP is distributed under the GNU General Public License version 2 (GPLv2).
 The license text can be found in the file "licenses/gpl-2.txt".
+
+Sources for OpenJUMP itself and most of the extensions can be found on
+ https://github.com/openjump-gis/
+and are mirrored on
+ https://gitlab.com/openjump-gis/
+.
+Sources in other locations can be found in the component's description below.
 
 OpenJUMP uses and distributes the following (in alphabetical order) formatted
 as (Component name - License name - License file in "licenses/" folder or link)
@@ -30,7 +37,6 @@ as (Component name - License name - License file in "licenses/" folder or link)
  Esri projection list (resources/coord_ref_sys/pe_list_projcs_geogcs)
    - Apache License Version 2.0 - apache_license-2.0.txt
  Extensible-TIFF-JAI (xtiff jai) - MIT License - MIT-license.txt
- GDAL -
  Icons (some original or based fully or in part on the following)
    FAMFAMFAM Silk by http://www.famfamfam.com - CC BY 2.5
     - http://creativecommons.org/licenses/by/2.5/
@@ -43,6 +49,12 @@ as (Component name - License name - License file in "licenses/" folder or link)
     - https://mariadb.com/kb/en/mariadb/branding-guidelines/
    ok_spatialite.png Spatialite icon, dolphin_icon.png (Edgar Soldin)
     - GPL3 - gpl-3.txt
+ ImageIO Ext - LGPL3 - lgpl-3.0.txt
+   just minimal inclusion 'lib/ext/imageio-ext/' to enable TIFF support 
+   for Raster files
+   except the following dependencies/components:
+    imageio-ext-streams - partly LGPL2 or 3 - imageio-ext-streams-LICENSE.txt
+    imageio-ext-tiff - BSD style license - imageio-ext-tiff-BSD-LICENSE.txt
  JAI core, codec - Java Advanced Imaging Distribution License - jdl-jai.pdf
  JAI imageio core - BSD style license - jai-core.BSD-LICENSE.txt
  JAI-imageio-core (standalone) - BSD 3-style with nuclear exception
@@ -68,7 +80,6 @@ as (Component name - License name - License file in "licenses/" folder or link)
  Xerces2 Java Parser - Apache License Version 2.0 - apache_license-2.0.txt
  XZ for Java - Public Domain
 
-
 and the following plugins
 ( Component name - License name - License file in "licenses/" folder
    list of files and dependencies with license if any )
@@ -86,13 +97,9 @@ Additionally PLUS distribution contains
    Windows x86/x64, Linux, Mac OSX with 32bit java runtime -
    ERDAS ECW JPEG2000 SDK license - ecw license.txt
    lib/native/[os/]{jecw-*.jar,NCS*.dll,ermapper.jar}
- Geoarbores Vertex Symbols Collection (Giuseppe Aruta) - GPL2 - gpl-2.txt
-   lib/ext/VertexImages/*.wkt
- ImageIO Ext - LGPL3 - lgpl-3.0.txt (imageio-ext-tiff removed)
+ ImageIO Ext - LGPL3 - lgpl-3.0.txt
    except the following dependencies/components:
    commons-codec, commons-io, commons-lang, commons-logging (see above)
-   imageio-ext-streams - partly LGPL2 or 3 - imageio-ext-streams-LICENSE.txt
-   imageio-ext-tiff - BSD style license - imageio-ext-tiff-BSD-LICENSE.txt
    imageio-ext-imagereadmt - BSD style license
     - imageio-ext-imagereadmt-BSD-LICENSE.txt
    turbojpeg-wrapper - BSD style license - LICENSE.libjpegturbo.txt
@@ -103,7 +110,7 @@ Additionally PLUS distribution contains
  MariaDB Connector/J (mariadb-java-client-*.jar) - LGPL2 - lgpl-2.1.txt
  MySQL Connector/J (mysql-connector-java-*-bin.jar) - GPL2 - gpl-2.txt
  Xerial SQLite JDBC driver (sqlite-jdbc-*.jar) - apache_license-2.0.txt
- 
+
 and the following plugins
  Aggregation PlugIn (Michaël Michaud) - GPL2 - gpl-2.txt
    aggregation-*.jar
@@ -141,6 +148,7 @@ and the following plugins
    jumpPrinter.jar (needs Vertex Symbols extension)
    itext-*.jar - LGPL2.1 - lgpl-2.1.txt
  Raster Tools (Geo Arbores - Giuseppe Aruta) - GPL3 - gpl-3.txt
+  - https://sourceforge.net/p/opensit/code/
   RasterTools-*.jar
    containing parts of these projects
     ImageJ - Public domain
@@ -159,6 +167,7 @@ and the following plugins
  Vertex Symbols (com.cadplan.jump) - GPL2 - gpl-2.txt
    VertexSymbols.jar
    itext-*.jar - LGPL2.1 - lgpl-2.1.txt
+   lib/ext/VertexImages/*.wkt (Geo Arbores - Giuseppe Aruta)
  View Manager Extension (Michaël Michaud) - GPL2 - gpl-2.txt
    ViewManager-*.jar
    jaxb/jaxb-*.jar
