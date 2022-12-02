@@ -140,6 +140,12 @@ and the following plugins
  Printer (com.cadplan.jump) - GPL2 - gpl-2.txt
    jumpPrinter.jar (needs Vertex Symbols extension)
    itext-*.jar - LGPL2.1 - lgpl-2.1.txt
+ Raster Tools (Geo Arbores - Giuseppe Aruta) - GPL3 - gpl-3.txt
+  RasterTools-*.jar
+   containing parts of these projects
+    ImageJ - Public domain
+    WhiteBox GAT GIS - GPL3 - gpl-3.txt
+    JEP 1.2 - GPL3 - gpl-3.txt
  SetAttributes (Michaël Michaud) - GPL2 - gpl-2.txt
    SetAttributes-.jar
    jaxb/jaxb-*.jar

@@ -335,6 +335,18 @@
                     </configuration>
                   </execution>
                   <execution>
+                   <id>PLUS-install-raster_tools_extension</id>
+                   <goals>
+                     <goal>wget</goal>
+                   </goals>
+                   <configuration>
+                     <url>https://sourceforge.net/projects/opensit/files/Openjump/PlugIn/Raster%20Tools/RasterTools-2.0.3-28112022.jar</url>
+                     <sha1>2ea886fde876f16cad53a3b3eaf909a372aee809</sha1>
+                     <unpack>false</unpack>
+                     <outputDirectory>${plus.folder}</outputDirectory>
+                   </configuration>
+                 </execution>
+                  <execution>
                     <id>PLUS-install-set_attributes_extension</id>
                     <goals>
                       <goal>wget</goal>
