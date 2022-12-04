@@ -53,6 +53,7 @@
 
     Bug fixes
     ---------
+    fix #79 : projects including raster layers cannot be closed
     fix #72 : small regression in ValidateSelectedLayersPlugIn styling
     fix #73 : attribute name duplication after layer combination
     fix #70 : Connexions to WMS and database lost

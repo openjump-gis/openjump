@@ -396,10 +396,8 @@ public class LayerManager {
     public void dispose() {
         this.setFiringEvents(false);
         for (WeakReference<Layerable> reference : layerReferencesToDispose) {
-            Layer layer = (Layer) reference.get();
-
-            if (layer != null) {
-                layer.dispose();
+            if (reference instanceof Disposable) {
+                ((Disposable)reference).dispose();
             }
         }
 
