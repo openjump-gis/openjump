@@ -77,6 +77,94 @@ public class GridExtent {
 
 	}
 
+	
+	/**
+	 * Creates a new grid extent using the extents of a set of layers.<br>
+	 * This extend must contains all the input layers.
+	 * If they the input layers are  raster layers, the cell size will be added by the first one
+	 * @param 
+	 */
+	
+	public  GridExtent (ISextanteRasterLayer[] rasterImageLayers) {
+		m_dCellSizeX = rasterImageLayers[1].getLayerGridExtent().getCellSize().x;
+        	m_dCellSizeY = rasterImageLayers[1].getLayerGridExtent().getCellSize().y;
+		int i;
+		int numImages = rasterImageLayers.length;
+		boolean eastGreaterThanWest = true;
+		boolean northGreaterThanSouth = true;
+		final double[][] imageData = new double[numImages][6];
+		double north = Double.NEGATIVE_INFINITY;
+		double  south = Double.POSITIVE_INFINITY;
+		double east = Double.NEGATIVE_INFINITY;
+		double west = Double.POSITIVE_INFINITY;
+		// retrieve info from each image.
+		for (i = 0; i < numImages; i++) {
+			final Rectangle2D env = rasterImageLayers[i].getFullExtent();
+			imageData[i][0] = env.getMaxY();
+			imageData[i][1] = env.getMinY();
+			imageData[i][2] = env.getMaxX();
+			imageData[i][3] = env.getMinX();
+			imageData[i][4] = rasterImageLayers[i].getLayerGridExtent().getCellSize().x;
+			imageData[i][5] = rasterImageLayers[i].getLayerGridExtent().getCellSize().y;
+			if (i == 0) {
+				if (imageData[i][0] < imageData[i][1]) {
+					northGreaterThanSouth = false;
+					north = Double.POSITIVE_INFINITY;
+					south = Double.NEGATIVE_INFINITY;
+				}
+				if (imageData[i][2] < imageData[i][3]) {
+					eastGreaterThanWest = false;
+					east = Double.POSITIVE_INFINITY;
+					west = Double.NEGATIVE_INFINITY;
+				}
+			}
+			if (northGreaterThanSouth) {
+				if (imageData[i][0] > north) {
+					north = imageData[i][0];
+				}
+				if (imageData[i][1] < south) {
+					south = imageData[i][1];
+				}
+			} else {
+				if (imageData[i][0] < north) {
+					north = imageData[i][0];
+				}
+				if (imageData[i][1] > south) {
+					south = imageData[i][1];
+				}
+			}
+			if (eastGreaterThanWest) {
+				if (imageData[i][2] > east) {
+					east = imageData[i][2];
+				}
+				if (imageData[i][3] < west) {
+					west = imageData[i][3];
+				}
+			} else {
+				if (imageData[i][2] < east) {
+					east = imageData[i][2];
+				}
+				if (imageData[i][3] > west) {
+					west = imageData[i][3];
+				}
+			}
+			if (imageData[i][4] < m_dCellSizeX) {
+				m_dCellSizeX = imageData[i][4];
+			}
+			if (imageData[i][5] < m_dCellSizeY) {
+				m_dCellSizeY = imageData[i][4];
+			}
+			 
+		}
+		 setXRange(west, east);
+		 setYRange(south, north);
+		 setCellSize(m_dCellSizeX, m_dCellSizeY);
+		 recalculateNXAndNY();
+	}
+	
+	
+	
+	
 	/**
 	 * Sets a new range for X coordinates. Coordinates are not center
 	 * cell ones, but border ones. Note, the CellSize needs to be set first
