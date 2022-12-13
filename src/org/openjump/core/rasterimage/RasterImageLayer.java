@@ -1590,15 +1590,11 @@ public final class RasterImageLayer extends GeoReferencedLayerable
 	 * @return true if they are spatially consistent, false if they are not
 	 */
 	public  boolean isSpatiallyConsistentWith(RasterImageLayer rasteimageLayer) {
-		if (this.getMetadata().getOriginalCellSize() != rasteimageLayer.getMetadata().getOriginalCellSize()) {
+	
+	        if (!this.getWholeImageEnvelope().equals(rasteimageLayer.getWholeImageEnvelope())) {
 			return false;
 		}
-		if (this.getWholeImageEnvelope().getMinX() != rasteimageLayer.getWholeImageEnvelope().getMinX()) {
-			return false;
-		}
-		if ( this.getWholeImageEnvelope().getMinY() != rasteimageLayer.getWholeImageEnvelope().getMinY()) {
-			return false;
-		}
+		
 		if (this.getOrigImageWidth() != rasteimageLayer.getOrigImageWidth()) {
 			return false;
 		}
