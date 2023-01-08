@@ -2532,6 +2532,7 @@
 <4902>;<NDG (Paris)>;[degree]
 <4903>;<Madrid 1870 (Madrid)>;[degree]
 <4904>;<Lisbon 1890 (Lisbon)>;[degree]
+<4978>;<WGS 84>;[metre]
 <5659>;<Monte Mario / UTMRER>;[metre]
 <5819>;<EPSG topocentric example A>;[metre]
 <5820>;<EPSG topocentric example B>;[metre]
