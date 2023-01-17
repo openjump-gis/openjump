@@ -861,7 +861,168 @@ public class RasterImageIO {
 
 	}
 
+		
 	/**
+	 * Method to write GeoTIFF file embedding all the
+	 * georeferencing information into tags
+	 * @param outFile. Output tiff file
+	 * @param raster. java.awt.image.Raster
+	 * @param envelope. org.locationtech.jts.geom.Envelope
+	 * @param cellSizeX. double
+	 * @param cellSizeY. double
+	 * @param noData. double
+	 * @param SRSInfo.  
+	 * @throws IOException
+	 */
+ 
+	public static void writeToGeoTiff(File outFile, Raster raster, Envelope envelope,
+			double cellSizeX, double cellSizeY, double noData, SRSInfo srsInfo) 
+					throws IOException {
+	 
+		// Delete old .xml.aux statistics file
+		File auxXmlFile = new File(outFile.getParent(), outFile.getName()+ ".aux.xml");
+		if (auxXmlFile.exists() && auxXmlFile.canWrite()) {
+			try {
+				auxXmlFile.delete();
+			} catch (Exception ex) {
+				Logger.error(ex);
+			}
+		}
+		
+		outFile=FileUtil.addExtensionIfNone(outFile, "tif");
+		SampleModel sm = raster.getSampleModel();
+		ColorModel colorModel = PlanarImage.createColorModel(sm);
+		BufferedImage bufferedImage = new BufferedImage(colorModel,
+				(WritableRaster) raster, false, null);
+		
+		TIFFEncodeParam param = new TIFFEncodeParam();
+		param.setCompression(TIFFEncodeParam.COMPRESSION_NONE);
+	 
+		ArrayList<TIFFField> tiffields = new ArrayList<TIFFField>();
+		
+		if (!srsInfo.getCode().equals(SRSInfo.UNDEFINED)) {
+			//Build GeoKeyDirectoryTag. http://geotiff.maptools.org/spec/geotiff2.4.html
+			Unit unit=srsInfo.getUnit();
+			String crsCode=srsInfo.getCode();
+			int  srid = Integer.parseInt(crsCode);
+			
+			//The tag is an array of char values. Those values are called NumberOfKeys
+			//and are primarily grouped into blocks of 4 KeyEntry sets
+			char[] coords= new char[16];//= 4 NumberOfKeys
+					
+			//The first 4 NumberOfKeys definesh the
+			//GeoKey directory header information
+			coords[0]=(char) 1;//KeyDirectoryVersion, usually 1
+			coords[1]=(char) 1;//KeyRevision
+			coords[2]=(char) 2;//MinorRevision
+			//The following number (3)  identify how many  groups of NumberOfKeys are following 
+			//(3 groups NumberOfKeys=12 chars).
+			coords[3]=(char) 3;
+			
+			//The next 8 NumberOfKeys are grouped together. 
+			//a) GTModelTypeGeoKey which identifies if the coordinate system is geographic, geocentric or projected
+			//b) GeographicTypeGeoKey or ProjectedCSTypeGeoKey 
+			//c) related epsg code
+			coords[4]=(char) GeoTiffConstants.GTModelTypeGeoKey;
+			coords[5]=(char) 0;
+			coords[6]=(char) 1;
+			
+			//Reading the post https://github.com/opengeospatial/geotiff/issues/55
+			//ModelTypeGeocentric should be considered deprecated for GeoTIFF 
+			//nevertheless OpenJUMP srid.txt file has some geocentric coordinates, both geographic and projected
+			//which are all deprecated according to https://epsg.io
+			if (unit.equals(Unit.DEGREE)) {
+				coords[7]=(char) GeoTiffConstants.ModelTypeGeographic;// Geographic latitude-longitude System 
+				coords[8]=(char) GeoTiffConstants.GeographicTypeGeoKey;
+			} else {//unit meter, foot and others
+				coords[7]=(char) GeoTiffConstants.ModelTypeProjected;//Projection Coordinate System 
+				coords[8]=(char)  GeoTiffConstants.ProjectedCSTypeGeoKey;
+			}
+			coords[9]=(char) 0;
+			coords[10]=(char) 1;	
+			coords[11]=(char) srid;//srid code number (eg. 4326)
+			
+			//Last  4 NumberOfKey which defines how the pixels are represented (as points or as area
+			//For OpenJUMP the value is set to RasterPixelIsPoint (value 2)
+			//GTRasterTypeGeoKey
+			coords[12]=(char) GeoTiffConstants.GTRasterTypeGeoKey;
+			coords[13]=(char) 0;
+			coords[14]=(char) 1;
+			coords[15]=(char) GeoTiffConstants.RasterPixelIsPoint;
+		
+			//Building GeoKeyDirectoryTag with the char array
+			TIFFField geokeydirectorytag = new TIFFField( GeoTiffConstants.GeoKeyDirectoryTag, TIFFField.TIFF_SHORT,
+					coords.length, coords );
+			tiffields.add( geokeydirectorytag );
+					
+			
+			//GeoAsciiParamsTag. This tag is used to store all of the ASCII valued GeoKeys. 
+		    //Es "WGS84 UTM zone 32"for epsg 32632
+		    //This parameter is generally used if the projection is defined by the user.
+		    //Anyhow OpenJUMP should try read and decode GeoAsciiParamsTag if it fails to read GeoKeyDirectoryTag
+			final StringTokenizer tokenizer = new StringTokenizer(srsInfo.getDescription(), "|");
+	    	final String[] geoAsciiStrings = new String[tokenizer.countTokens()];
+	    	for (int i = 0; i < geoAsciiStrings.length; i++) {
+	    		geoAsciiStrings[i] = tokenizer.nextToken().concat("|");
+	    	}
+	    	String l=geoAsciiStrings[geoAsciiStrings.length-1];
+	    	l=l.substring(0, l.length() - 1);
+	    	TIFFField ASCIIPar =new TIFFField(GeoTiffConstants.GeoAsciiParamsTag,TIFFField.TIFF_ASCII,  geoAsciiStrings.length,
+	              geoAsciiStrings);
+	    	tiffields.add( ASCIIPar );
+		}
+		
+		// ModelPixelScaleTag. The size of the pixel of the image
+	   	TIFFField modelPixelScaleTag = new TIFFField( GeoTiffConstants.ModelPixelScaleTag, TIFFField.TIFF_DOUBLE, 2,
+				 new double[] { cellSizeX,cellSizeY});
+		tiffields.add( modelPixelScaleTag );
+			
+	    // ModelTiepointTag. Geographic extension of the image
+	    TIFFField modelTiepointTag = new TIFFField( GeoTiffConstants.ModelTiepointTag, 
+				 TIFFField.TIFF_DOUBLE, 6,  new double[] { 0, 0, 0,
+							envelope.getMinX(), envelope.getMaxY(), 0 } );
+	    tiffields.add(modelTiepointTag);
+		    
+	    // TIFFTAG_GDAL_NODATA. No data value of the image.
+	    //Only for DTM/DEM images
+	 	if(raster.getNumBands()==1) {
+	 		String noDataS = Double.toString(noData);
+	 		byte[] bytes = noDataS.getBytes();
+	 		TIFFField noDataT = new TIFFField(TiffTags.TIFFTAG_GDAL_NODATA, TIFFField.TIFF_BYTE, noDataS.length(), bytes);
+	 		tiffields.add( noDataT );
+	 	}
+	    
+	    //com.sun.media.jai.codec.TIFFEncodeParam requires that extra TIFFField
+	    //should be set as an array of objects
+	    TIFFField[] tiffFieldArray = null;
+	    if (tiffields != null && tiffields.size() > 0 ) {
+	    	tiffFieldArray = new TIFFField[tiffields.size()];
+	          for ( int i = 0; i < tiffFieldArray.length; i++ ) {
+	        	  tiffFieldArray[i] = tiffields.get( i );
+	          }
+	      }
+	    
+		param.setExtraFields(tiffFieldArray);
+
+		FileOutputStream tifOut = new FileOutputStream(outFile);
+		TIFFImageEncoder encoder = (TIFFImageEncoder) TIFFCodec
+				.createImageEncoder("tiff", tifOut, param);
+		encoder.encode(bufferedImage);
+		tifOut.close();
+		
+		//At this point the following code (save a worldfile) is not not needed.
+		//I left it as sometimes OJ fails to open a GeoTIFF
+		//if the load-file procedure is activated immediately after the save-file
+		//into a plugin
+    		WorldFileHandler worldFileHandler = new WorldFileHandler(
+ 	   				outFile.getAbsolutePath(), false);
+  	 	worldFileHandler.writeWorldFile(envelope, raster.getWidth(),
+ 	  				raster.getHeight());
+		 
+	}
+	
+	/**
+	 * @deprecated use writeToGeoTiff() method
 	 * Enhanced method to save the TIF with an external TIF.AUX.XML file
 	 * which contains statistics of raster and spatial reference system. 
 	 * Worldfile is not saved as geographic position  is already stored 
