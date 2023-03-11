@@ -111,6 +111,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
     private String S_JOIN_BEVEL = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-bevel");
     private String S_JOIN_MITRE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-mitre");
     private String S_JOIN_ROUND = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-round");
+    private String S_FEATURES_PROCESSED = I18N.getInstance().get("jump.features-processed");
     private String MITRE_LIMIT;
 
     private String LEFT_SINGLE_SIDED;
@@ -231,6 +232,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         MITRE_LIMIT = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.mitre-join-limit");
         LEFT_SINGLE_SIDED = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.left-single-sided");
         RIGHT_SINGLE_SIDED = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.right-single-sided");
+        S_FEATURES_PROCESSED = I18N.getInstance().get("jump.features-processed");
 
         endCapStyles = new ArrayList();
         endCapStyles.add(S_CAP_FLAT);
@@ -398,7 +400,7 @@ public class BufferPlugIn extends AbstractThreadedUiPlugIn {
         if (leftSingleSided) side += LEFT;
         if (rightSingleSided) side += RIGHT;
         for (Iterator ia = fcA.iterator(); ia.hasNext(); ) {
-            monitor.report(count++, total, I18N.getInstance().get("com.vividsolutions.jump.qa.diff.DiffGeometry.features"));
+            monitor.report(count++, total, S_FEATURES_PROCESSED);
             if (monitor.isCancelRequested()) break;
             Feature fa = (Feature) ia.next();
             Geometry ga = fa.getGeometry();

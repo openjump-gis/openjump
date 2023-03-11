@@ -103,6 +103,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
   private String JOIN_MITRE;
   private String JOIN_ROUND;
   private String MITRE_LIMIT;
+  private String S_FEATURES_PROCESSED;
   
   private List<String> joinStyles;
 
@@ -174,6 +175,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         JOIN_MITRE = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-mitre");
         JOIN_ROUND = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.join-round");
         MITRE_LIMIT = I18N.getInstance().get("ui.plugin.analysis.BufferPlugIn.mitre-join-limit");
+      S_FEATURES_PROCESSED = I18N.getInstance().get("jump.features-processed");
         
 	    joinStyles = new ArrayList<>();
 	    joinStyles.add(JOIN_BEVEL);
@@ -203,7 +205,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         Collection<Feature> inputC;
         if (useSelected) {
         	inputC = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
-        	Feature feature = (Feature) inputC.iterator().next();
+        	Feature feature = inputC.iterator().next();
         	featureSchema = feature.getSchema();
         	inputC = PasteItemsPlugIn.conform(inputC,featureSchema);
         } else {
@@ -221,9 +223,9 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
 	    // Create offsets for each input feature
         Collection<Geometry> resultGeomColl = runOffset(monitor, context, inputFD);
         FeatureCollection resultFeatureColl = new FeatureDataset(featureSchema);
-        Iterator iResult = resultGeomColl.iterator();
+        Iterator<Geometry> iResult = resultGeomColl.iterator();
         for (Feature sourceFeature : inputFD.getFeatures()) {
-        	Geometry gResult = (Geometry) iResult.next();
+        	Geometry gResult = iResult.next();
         	if (!(gResult == null || gResult.isEmpty())) {
         		Feature newFeature = sourceFeature.clone(true);
         		newFeature.setGeometry(gResult);
@@ -252,13 +254,13 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         int count = 0;
         Collection<Geometry> resultColl = new ArrayList<>();
         for (Feature fa : fcA.getFeatures()) {
-            monitor.report(count++, total, I18N.getInstance().get("com.vividsolutions.jump.qa.diff.DiffGeometry.features"));
+            monitor.report(count++, total, S_FEATURES_PROCESSED);
             if (monitor.isCancelRequested()) break;
             Geometry ga = fa.getGeometry();
             if (fromAttribute) {
         	    Object o = fa.getAttribute(attributeIndex);
         	    if (o instanceof Double)     		  
-        		    offsetDistance = ((Double) o).doubleValue();
+        		    offsetDistance = (Double) o;
         	    else if (o instanceof Integer)
            		    offsetDistance = ((Integer) o).doubleValue();
             }
@@ -277,7 +279,7 @@ public class OffsetCurvePlugIn extends AbstractThreadedUiPlugIn {
         return resultColl;
     }
 
-    private Geometry runOffset(Geometry a) throws TopologyException, Exception {
+    private Geometry runOffset(Geometry a) {
         GeometryFactory gf = a.getFactory();
         // If "a" is a surface, process its boundary
         if (a.getDimension() == 2) a = a.getBoundary();

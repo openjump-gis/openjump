@@ -49,7 +49,7 @@ public class EraseLayerAWithLayerBPlugIn extends AbstractThreadedUiPlugIn {
     private static String OVERLAY_NG         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.use-overlay-ng");
     private static String OVERLAY_NG_TT      = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.EraseLayerAWithLayerBPlugIn.use-overlay-ng-tt");
 
-    private static String sFeatures          = I18N.getInstance().get("ui.GenericNames.features");
+    private static String sFeatures          = I18N.getInstance().get("jump.features-processed");
 
     private Layer layerA;
     private Layer layerB;
