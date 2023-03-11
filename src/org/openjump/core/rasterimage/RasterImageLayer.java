@@ -1580,4 +1580,27 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     //    this.srsInfo = srs;
     //}
     
+      /**
+	 * Check if the RasteImageLayer is spatially consistent with another:
+	 * <li>both have the same cell size
+	 * <li>both have the same dimension (same width and height)
+	 * <li>both overlap to each other into the geographic space
+	 * 
+	 * @param  RasterImageLayer
+	 * @return true if they are spatially consistent, false if they are not
+	 */
+	public  boolean isSpatiallyConsistentWith(RasterImageLayer rasteimageLayer) {
+	
+	        if (!this.getWholeImageEnvelope().equals(rasteimageLayer.getWholeImageEnvelope())) {
+			return false;
+		}
+		
+		if (this.getOrigImageWidth() != rasteimageLayer.getOrigImageWidth()) {
+			return false;
+		}
+		if (this.getOrigImageHeight() != rasteimageLayer.getOrigImageHeight()) {
+			return false;
+		}
+		return true;
+	}
 }
