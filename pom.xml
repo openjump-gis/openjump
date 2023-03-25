@@ -376,8 +376,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/topology-extension/releases/download/v2.0.4/topology-extension-2.0.4.zip</url>
-                      <sha1>2b5c1b0de4204bc6916e9fb0c9cc9ed4e168da94</sha1>
+                      <url>https://github.com/openjump-gis/topology-extension/releases/download/v2.0.5/topology-extension-2.0.5.zip</url>
+                      <sha1>0a42c23a46d68c753c28d907164895d9826a3a9c</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
