@@ -361,7 +361,9 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
     		I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.The-Mask-layer-must-contain-a-single-feature,-which-is-used-as-the-second-operand-for-binary-functions"),
         context.getLayerManager()  );
     final JCheckBox useSelectedCheckBox =  dialog.addCheckBox(SELECTED_ONLY, useSelected);
-    useSelectedCheckBox.setEnabled(getSelectedFeatures((Layer)srcLayerComboBox.getSelectedItem(), context).size() > 0);
+    boolean selectionEmpty = getSelectedFeatures((Layer)srcLayerComboBox.getSelectedItem(), context).isEmpty();
+    useSelectedCheckBox.setSelected(useSelected && !selectionEmpty);
+    useSelectedCheckBox.setEnabled(!selectionEmpty);
 
     final String OUTPUT_GROUP = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.Match-Type");
     JRadioButton createNewLayerRB = dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, true,
