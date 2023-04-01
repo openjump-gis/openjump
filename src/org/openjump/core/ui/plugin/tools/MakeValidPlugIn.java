@@ -25,8 +25,6 @@ import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 
@@ -59,6 +57,7 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
     public static String CREATE_NEW_LAYER          = I18N.getInstance().get(KEY + ".create-new-layer");
     public static String CREATE_NEW_LAYER_TOOLTIP  = I18N.getInstance().get(KEY + ".create-new-layer-tooltip");
     public static String ERROR_LAYER_SUFFIX        = I18N.getInstance().get(KEY + ".error-layer-suffix");
+    private final static String FEATURES_PROCESSED = I18N.getInstance().get("jump.features-processed");
 
     private Layer layerA;
     private boolean jtsGeometryFixer = true;
@@ -110,11 +109,11 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
         final JComboBox layerComboBoxA    =
                 dialog.addLayerComboBox(SOURCE_LAYER, candidateA, context.getLayerManager());
         final JCheckBox jtsGeometryFixerCB =
-            dialog.addCheckBox(USE_JTS_ALGORITHM, jtsGeometryFixer, USE_JTS_ALGORITHM);
+            dialog.addCheckBox(USE_JTS_ALGORITHM, jtsGeometryFixer, USE_JTS_ALGORITHM_TOOLTIP);
         final JCheckBox preserveGeomDimCB =
             dialog.addCheckBox(PRESERVE_GEOM_DIM, preserveGeomDim, PRESERVE_GEOM_DIM_TOOLTIP);
         final JCheckBox removeDuplicateCoordCB =
-            dialog.addCheckBox(REMOVE_DUPLICATE_COORD, removeDuplicateCoord, REMOVE_DUPLICATE_COORD);
+            dialog.addCheckBox(REMOVE_DUPLICATE_COORD, removeDuplicateCoord, REMOVE_DUPLICATE_COORD_TOOLTIP);
         removeDuplicateCoordCB.setEnabled(!jtsGeometryFixer);
         final JCheckBox decomposeMultiCB =
             dialog.addCheckBox(DECOMPOSE_MULTI, decomposeMulti, DECOMPOSE_MULTI_TOOLTIP);
@@ -151,57 +150,18 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
         makeValidOp.setPreserveDuplicateCoord(!removeDuplicateCoord);
 
         if (correctCurrentLayer) {
-            correctCurrentLayer(context, makeValidOp);
+            correctCurrentLayer(context, makeValidOp, monitor);
         } else if (createNewLayer) {
-            createNewLayer(context, makeValidOp);
+            createNewLayer(context, makeValidOp, monitor);
         } else {
             assert true : "Should never reach here !";
         }
-
-        /*
-        // Clone layerA
-        FeatureCollection result1 = new FeatureDataset(layerA.getFeatureCollectionWrapper().getFeatureSchema());
-        for (Object o : layerA.getFeatureCollectionWrapper().getFeatures()) {
-            result1.add(((Feature)o).clone(true, true));
-        }
-        MakeValidOp makeValidOp = new MakeValidOp();
-        makeValidOp.setPreserveGeomDim(preserveGeomDim);
-        //makeValidOp.setPreserveCoordDim(preserveCoordDim);
-        makeValidOp.setPreserveDuplicateCoord(!removeDuplicateCoord);
-        for (Object o : result1.getFeatures()) {
-            Feature feature = (Feature)o;
-            Geometry validGeom = makeValidOp.makeValid(feature.getGeometry());
-            feature.setGeometry(validGeom);
-        }
-        if (decomposeMulti) {
-            FeatureCollection result2 = new FeatureDataset(result1.getFeatureSchema());
-            for (Object o : result1.getFeatures()) {
-                Geometry geometry = ((Feature) o).getGeometry();
-                if (!geometry.isEmpty()) {
-                    if (geometry instanceof GeometryCollection) {
-                        for (int i = 0; i < geometry.getNumGeometries(); i++) {
-                            Feature f = ((Feature) o).clone(false, false);
-                            f.setGeometry(geometry.getGeometryN(i));
-                            result2.add(f);
-                        }
-                    } else {
-                        result2.add((Feature) o);
-                    }
-                }
-            }
-            workbenchContext.getLayerManager().addLayer(StandardCategoryNames.RESULT,
-                    layerA.getName() + " - " + RESULT_LAYER_SUFFIX, result2);
-        } else {
-            workbenchContext.getLayerManager().addLayer(StandardCategoryNames.RESULT,
-                    layerA.getName() + " - " + RESULT_LAYER_SUFFIX, result1);
-        }
-        */
     }
 
-    private void correctCurrentLayer(PlugInContext context, MakeValidOp makeValidOp) {
+    private void correctCurrentLayer(PlugInContext context, MakeValidOp makeValidOp, TaskMonitor monitor) {
         FeatureCollection fc = layerA.getFeatureCollectionWrapper();
 
-        EditTransaction transaction = new EditTransaction(new ArrayList(),
+        EditTransaction transaction = new EditTransaction(new ArrayList<>(),
                 this.getName(), layerA,
                 this.isRollingBackInvalidEdits(context), true,
                 context.getWorkbenchFrame());
@@ -212,7 +172,10 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
         errorSchema.addAttribute("SOURCE_FID", AttributeType.INTEGER);
         FeatureCollection errors = new FeatureDataset(errorSchema);
 
+        int total = fc.getFeatures().size();
+        int count = 0;
         for (Feature feature : fc.getFeatures()) {
+            monitor.report(++count, total, FEATURES_PROCESSED);
             IsValidOp op = new IsValidOp(feature.getGeometry());
             if (!op.isValid()) {
                 Feature error = new BasicFeature(errorSchema);
@@ -246,30 +209,33 @@ public class MakeValidPlugIn extends AbstractThreadedUiPlugIn
         transaction.commit();
     }
 
-    private void createNewLayer(PlugInContext context, MakeValidOp makeValidOp) {
+    private void createNewLayer(PlugInContext context, MakeValidOp makeValidOp, TaskMonitor monitor) {
         // Clone layerA
         FeatureCollection result1 = new FeatureDataset(layerA.getFeatureCollectionWrapper().getFeatureSchema());
-        for (Object o : layerA.getFeatureCollectionWrapper().getFeatures()) {
-            result1.add(((Feature)o).clone(true, true));
+        for (Feature feature : layerA.getFeatureCollectionWrapper().getFeatures()) {
+            result1.add(feature.clone(true, true));
         }
-        for (Object o : result1.getFeatures()) {
-            Feature feature = (Feature)o;
+        int total = result1.getFeatures().size();
+        int count = 0;
+        for (Feature feature : result1.getFeatures()) {
+            monitor.report(++count, total, FEATURES_PROCESSED);
             Geometry validGeom = makeValidOp.makeValid(feature.getGeometry());
             feature.setGeometry(validGeom);
         }
         if (decomposeMulti) {
+            monitor.report(DECOMPOSE_MULTI);
             FeatureCollection result2 = new FeatureDataset(result1.getFeatureSchema());
-            for (Object o : result1.getFeatures()) {
-                Geometry geometry = ((Feature) o).getGeometry();
+            for (Feature feature : result1.getFeatures()) {
+                Geometry geometry = feature.getGeometry();
                 if (!geometry.isEmpty()) {
                     if (geometry instanceof GeometryCollection) {
                         for (int i = 0; i < geometry.getNumGeometries(); i++) {
-                            Feature f = ((Feature) o).clone(false, false);
+                            Feature f = feature.clone(false, false);
                             f.setGeometry(geometry.getGeometryN(i));
                             result2.add(f);
                         }
                     } else {
-                        result2.add((Feature) o);
+                        result2.add(feature);
                     }
                 }
             }

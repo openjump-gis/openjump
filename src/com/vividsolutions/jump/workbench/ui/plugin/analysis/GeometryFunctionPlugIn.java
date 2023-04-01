@@ -74,7 +74,7 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
   //-- [sstein 15.02.2006]
   private static String sErrorsFound = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.errors-found-while-executing-function");
   private static String sFunction = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.function");
-  private static String sFeatures = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.features");
+  private static String sFeatures = I18N.getInstance().get("jump.features-processed");
   
   private static String SRC_LAYER = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.Source");
   private static String MASK_LAYER = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.Mask");
@@ -361,7 +361,9 @@ public class GeometryFunctionPlugIn extends AbstractPlugIn implements ThreadedPl
     		I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.The-Mask-layer-must-contain-a-single-feature,-which-is-used-as-the-second-operand-for-binary-functions"),
         context.getLayerManager()  );
     final JCheckBox useSelectedCheckBox =  dialog.addCheckBox(SELECTED_ONLY, useSelected);
-    useSelectedCheckBox.setEnabled(getSelectedFeatures((Layer)srcLayerComboBox.getSelectedItem(), context).size() > 0);
+    boolean selectionEmpty = getSelectedFeatures((Layer)srcLayerComboBox.getSelectedItem(), context).isEmpty();
+    useSelectedCheckBox.setSelected(useSelected && !selectionEmpty);
+    useSelectedCheckBox.setEnabled(!selectionEmpty);
 
     final String OUTPUT_GROUP = I18N.getInstance().get("ui.plugin.analysis.GeometryFunctionPlugIn.Match-Type");
     JRadioButton createNewLayerRB = dialog.addRadioButton(CREATE_LYR, OUTPUT_GROUP, true,

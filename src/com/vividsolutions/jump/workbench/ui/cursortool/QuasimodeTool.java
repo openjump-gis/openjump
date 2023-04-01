@@ -97,7 +97,9 @@ public class QuasimodeTool extends DelegatingTool {
 
       addDefaultTool(new ModifierKeySpec(false, false, true), zoom);
       // KNOWN ISSUE: shortcut is used by Ubuntu
-      addDefaultTool(new ModifierKeySpec(false, true, true), pan);
+      // KNOWN ISSUE : shortcut is used by Windows (to change the default language) : replace Alt+Shift by Shift
+      // addDefaultTool(new ModifierKeySpec(false, true, true), pan);
+      addDefaultTool(new ModifierKeySpec(false, true, false), pan);
       // using Ctrl+Shift we can actually add to the selection or deselect
       selectFeaturesTool = addDefaultTool(new ModifierKeySpec(true, false, false),
           selectFeaturesTool);

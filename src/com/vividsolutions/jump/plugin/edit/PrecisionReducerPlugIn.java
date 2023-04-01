@@ -152,7 +152,7 @@ public class PrecisionReducerPlugIn extends AbstractThreadedUiPlugIn {
         invalidInput.add(feature.clone(true));
         invalidOutput.add(g2);
       }
-      monitor.report(++count, fc.size(), I18N.getInstance().get("ui.plugin.edit.PrecisionReducerPlugIn.features"));
+      monitor.report(++count, fc.size(), I18N.getInstance().get("jump.features-processed"));
     }
 
     transaction.commit();

@@ -1,8 +1,11 @@
 package org.openjump.core.ui.plugin.tools.analysis.onelayer;
 
+import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.IntersectionMatrix;
 import org.locationtech.jts.index.SpatialIndex;
-import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.index.quadtree.Quadtree;
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
@@ -18,12 +21,12 @@ import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 
 import javax.swing.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MergePolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn {
 
   private String sMergeTwoPolys = "Merge Selected Polygons with Neighbours (v2)";
   private String sFeaturesFromDifferentLayer = "Error: Features from different layers!";
+  private String sTitle;
   private String sSidebar = "Merges selected polygons with neighboring polygons, either with the one that is largest of " +
           "all neighbors, or the one with which it has " +
           "the longest common boundary. Note, the function may return multi-polygons if " +
@@ -31,7 +34,7 @@ public class MergePolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn {
   boolean useArea = true;
   boolean useBorder = false;
   String sUseArea = "merge with neighbor that has the largest area";
-  String sUseBoder = "merge with neighbor with the longest common edge";
+  String sUseBorder = "merge with neighbor with the longest common edge";
   String sChoseMergeMethod = "Please chose the merge method:";
   String sMerged = "merged";
   String sSearchingForMergeCandidates = "Searching for merge candidates...";
@@ -40,37 +43,54 @@ public class MergePolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn {
   String sUseAttribute = "Use an attribute";
   String sUseAttributeTooltip = "Merge features with same attribute value only";
   String sAttributeToUse = "Attribute to use";
+  String sSkipNullValues = "Skip features with null attribute value";
   String attribute = null;
+  boolean skipNullValues = true;
   String layerName;
+  String sMinimumArea;
+  double minimumArea = 10;
+  boolean featuresSelected = false;
   //String sInvalidFeatureMessage = "Features must be valid to be merged";
   final static String sMERGEMETHOD = "MERGE METHOD";
 
+  String sCreateNewLayer = "Create new layer for result";
+  boolean createNewLayer = false;
+
   private MultiInputDialog dialog;
 
-  public void initialize(PlugInContext context) throws Exception {
+  Comparator<Feature> areaComparator = (o1, o2) -> {
+    double diff = o1.getGeometry().getArea() - o2.getGeometry().getArea();
+    return diff > 0 ? 1 : diff < 0 ? -1 : 0;
+  };
 
-    sMergeTwoPolys = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merge-Selected-Polygons-with-Neighbours");
-    sFeaturesFromDifferentLayer = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.features-from-different-layers");
-    sSidebar = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.description");
-    sUseArea = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-with-neighbor-that-has-the-largest-area");
-    sUseBoder = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-with-neighbor-with-the-longest-common-edge");
-    sChoseMergeMethod = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Please-chose-the-merge-method");
-    sMerged = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merged");
-    sSearchingForMergeCandidates = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Searching-for-merge-candidates");
-    sMergingPolygons = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merging-polygons");
-    sUseAttribute = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Use-attribute");
-    sUseAttributeTooltip = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Use-attribute-tooltip");
-    sAttributeToUse = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Attribute");
+  public void initialize(PlugInContext context) throws Exception {
+    super.initialize(context);
+    sMergeTwoPolys = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merge-Selected-Polygons-with-Neighbours");
+    sFeaturesFromDifferentLayer = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.features-from-different-layers");
+    sSidebar = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.description");
+    sUseArea = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-with-neighbor-that-has-the-largest-area");
+    sUseBorder = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-with-neighbor-with-the-longest-common-edge");
+    sChoseMergeMethod = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Please-chose-the-merge-method");
+    sMerged = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merged");
+    sSearchingForMergeCandidates = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Searching-for-merge-candidates");
+    sMergingPolygons = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Merging-polygons");
+    sUseAttribute = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Use-attribute");
+    sUseAttributeTooltip = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Use-attribute-tooltip");
+    sAttributeToUse = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Attribute");
+    sSkipNullValues = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Skip-null-values");
+    sMinimumArea = I18N.JUMP.get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.minimum-area");
+    sCreateNewLayer = I18N.JUMP.get("ui.plugin.analysis.GeometryFunctionPlugIn.Create-new-layer-for-result");
     //sInvalidFeatureMessage = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Features-must-be-valid");
 
     FeatureInstaller featureInstaller = context.getFeatureInstaller();
     featureInstaller.addMainMenuPlugin(
-            this,                //exe
-            new String[]{MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},  //menu path
-            this.getName() + "...", //name methode .getName recieved by AbstractPlugIn
-            false,      //checkbox
-            null,      //icon
-            createEnableCheck(context.getWorkbenchContext())); //enable check
+            this,
+            new String[]{MenuNames.TOOLS, MenuNames.TOOLS_EDIT_GEOMETRY},
+            this.getName() + "...",
+            false,
+            null,
+            createEnableCheck(context.getWorkbenchContext())
+                .add(context.getCheckFactory().createExactlyNLayersMustBeSelectedCheck(1)));
   }
 
   public String getName() {
@@ -81,19 +101,33 @@ public class MergePolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn {
     EnableCheckFactory checkFactory = EnableCheckFactory.getInstance(workbenchContext);
 
     return new MultiEnableCheck()
-            .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
-            .add(checkFactory.createAtLeastNItemsMustBeSelectedCheck(1))
-            .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck());
+        .add(checkFactory.createWindowWithLayerNamePanelMustBeActiveCheck())
+        .add(checkFactory.createExactlyNLayersMustBeSelectedCheck(1));
   }
 
   public boolean execute(PlugInContext context) throws Exception {
 
-    Collection<Layer> layers = context.getWorkbenchContext().getLayerViewPanel().getSelectionManager().getLayersWithSelectedItems();
-    if (layers.size() != 1) {
+    Layer[] selectedLayers = context.getLayerNamePanel().getSelectedLayers();
+    Collection<Layer> layersWithSelectedItems = context.getLayerViewPanel().getSelectionManager().getLayersWithSelectedItems();
+
+    if (selectedLayers.length != 1) {
+      throw new Exception(I18N.JUMP.get("com.vividsolutions.jump.workbench.plugin.Exactly-one-layer-must-be-selected"));
+    }
+    Layer layer = selectedLayers[0];
+    if (layersWithSelectedItems.size() > 1 ||
+        (layersWithSelectedItems.size() == 1 && !layersWithSelectedItems.contains(layer))) {
       context.getWorkbenchFrame().warnUser(sFeaturesFromDifferentLayer);
       return false;
     }
-    layerName = layers.iterator().next().getName();
+    featuresSelected = !context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems(layer).isEmpty();
+    layerName = layer.getName();
+    sTitle = layersWithSelectedItems.isEmpty() ?
+        I18N.JUMP.get(
+            "org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-small-polygons",
+            layerName) :
+        I18N.JUMP.get(
+            "org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.merge-selected-polygons",
+            layerName);
 
     initDialog(context);
     dialog.setVisible(true);
@@ -106,232 +140,258 @@ public class MergePolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn {
   }
 
   private void initDialog(PlugInContext context) {
-
     dialog = new MultiInputDialog(context.getWorkbenchFrame(), this.getName(), true);
+
+    dialog.addSubTitle(sTitle);
+    dialog.addSeparator();
+
     dialog.setSideBarDescription(sSidebar);
     final String METHODGROUP = sMERGEMETHOD;
     dialog.addLabel(sChoseMergeMethod);
     dialog.addRadioButton(sUseArea, METHODGROUP, this.useArea, sUseArea);
-    dialog.addRadioButton(sUseBoder, METHODGROUP, this.useBorder, sUseBoder);
-    JCheckBox jcbUseAttribute = dialog.addCheckBox(sUseAttribute, useAttribute);
+    dialog.addRadioButton(sUseBorder, METHODGROUP, this.useBorder, sUseBorder);
+
+    if (!featuresSelected) {
+      JTextField minimumAreaTF = dialog.addDoubleField(sMinimumArea, minimumArea, 12);
+      minimumAreaTF.setEnabled(!featuresSelected);
+    }
+
+    // Creating a new Layer
+    JCheckBox jcbCreateLayer = dialog.addCheckBox(sCreateNewLayer, createNewLayer);
+    if (context.getLayerManager().getLayer(layerName).isEditable()) {
+      jcbCreateLayer.setVisible(true);
+    } else {
+      jcbCreateLayer.setVisible(false);
+      jcbCreateLayer.setSelected(true);
+      dialog.addLabel("<html><b>" + sCreateNewLayer + "</b></html>").setEnabled(false);
+    }
+
+    // Using an attribute
     List<String> attributes = AttributeTypeFilter.NO_GEOMETRY_FILTER.filter(context.getLayerManager()
-            .getLayer(layerName));
-    jcbUseAttribute.setEnabled(!attributes.isEmpty());
-    if (!jcbUseAttribute.isEnabled()) jcbUseAttribute.setSelected(false);
-    JComboBox<String> jcbAttribute = dialog.addComboBox(sAttributeToUse, attribute, attributes, null);
-    jcbAttribute.setEnabled(jcbUseAttribute.isSelected());
-    jcbUseAttribute.addActionListener(e -> jcbAttribute.setEnabled(jcbUseAttribute.isSelected()));
+        .getLayer(layerName));
+    if (!attributes.isEmpty()) {
+      dialog.addSeparator();
+      JCheckBox jcbUseAttribute = dialog.addCheckBox(sUseAttribute, useAttribute);
+      JComboBox<String> jcbAttribute = dialog.addComboBox(sAttributeToUse, attribute, attributes, null);
+      jcbAttribute.setEnabled(useAttribute);
+      JCheckBox jcbSkipNullValues = dialog.addCheckBox(sSkipNullValues, skipNullValues, null);
+      jcbSkipNullValues.setEnabled(useAttribute);
+      jcbUseAttribute.addActionListener(e -> {
+        jcbAttribute.setEnabled(jcbUseAttribute.isSelected());
+        jcbSkipNullValues.setEnabled(jcbUseAttribute.isSelected());
+        jcbSkipNullValues.setEnabled(jcbUseAttribute.isSelected());
+      });
+    }
+
     GUIUtil.centreOnWindow(dialog);
   }
 
   private void getDialogValues(MultiInputDialog dialog) {
     this.useArea = dialog.getBoolean(this.sUseArea);
-    this.useBorder = dialog.getBoolean(this.sUseBoder);
-    if (dialog.getBoolean(sUseAttribute)) {
+    this.useBorder = dialog.getBoolean(this.sUseBorder);
+    this.useAttribute = dialog.getBoolean(sUseAttribute);
+    if (useAttribute) {
       attribute = (String)dialog.getComboBox(sAttributeToUse).getSelectedItem();
+      skipNullValues = dialog.getBoolean(sSkipNullValues);
+    } else attribute = null;
+    if (!featuresSelected) {
+      minimumArea = dialog.getDouble(sMinimumArea);
     }
-    else attribute = null;
+    createNewLayer = dialog.getBoolean(sCreateNewLayer);
   }
 
   public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
 
     monitor.allowCancellationRequests();
-    context.getWorkbenchContext().getLayerManager().setFiringEvents(false);
-
+    monitor.report("Prepare data");
     Layer activeLayer = context.getLayerManager().getLayer(layerName);
-    Collection<Feature> selection = context.getWorkbenchContext().getLayerViewPanel()
-            .getSelectionManager().getFeaturesWithSelectedItems();
-    Set<Integer> selectedIds = selection.stream().map(Feature::getID).collect(Collectors.toSet());
-
-    FeatureCollection fc = activeLayer.getFeatureCollectionWrapper();
-    monitor.report("Indexing...");
-    STRtree index = index(fc);
-
-    monitor.report("Building the graph");
-    Map<Integer,Set<Integer>> graph = getPolygonGraph(index, selection, monitor);
-
-    // ids of all features which may change (selection + neighbouring)
-    Set<Integer> graphIds = getGraphIds(graph);
-    // Preserve original geometries
-    Map<Integer,Geometry> sourceGeometries = new HashMap<>();
-    Map<Integer,Feature> currentFeatures = new HashMap<>();
-    Map<Integer,Geometry> newGeometries = new HashMap<>();
-    for (Feature f : fc.getFeatures()) {
-      if (graphIds.contains(f.getID())) currentFeatures.put(f.getID(), f);
-      if (graphIds.contains(f.getID())) sourceGeometries.put(f.getID(), (Geometry)f.getGeometry().clone());
+    Collection<Feature> selectedFeatures = context.getWorkbenchContext().getLayerViewPanel()
+        .getSelectionManager().getFeaturesWithSelectedItems();
+    // May contain clones (if createNewLayer is true) or current features
+    Collection<Feature> features = new ArrayList<>();
+    Collection<Feature> selection = new ArrayList<>();
+    for (Feature feature : activeLayer.getFeatureCollectionWrapper().getFeatures()) {
+      Feature f = createNewLayer ? feature.clone(true) : feature;
+      features.add(f);
+      if (selectedFeatures.contains(feature)) selection.add(f);
     }
 
-    monitor.report(sMergingPolygons);
-    try {
+    Quadtree index = new Quadtree();
+    monitor.report("Index data");
+    for (Feature feature: features) {
+      index.insert(feature.getGeometry().getEnvelopeInternal(), feature);
+    }
+    Map<Feature,LinkedHashSet<Feature>> genealogy = new HashMap<>();
+    ArrayList<Feature> sortedList = new ArrayList<>();
+    monitor.report("Merge data");
+    if (featuresSelected) {
+      sortedList.addAll(selection);
+      int total = selection.size();
+          sortedList.sort(areaComparator);
       int count = 0;
-      for (Feature f : selection) {
-        Feature target = useArea ? chooseMaxAreaNeighbour(f.getID(), graph, currentFeatures)
-                : chooseLongestBoundaryNeighbour(f.getID(), graph, currentFeatures);
-        monitor.report(++count, selection.size(), sMerged);
-        if (target != null) {
-          merge(f.getID(), target.getID(), graph, currentFeatures);
-        }
+      while (!sortedList.isEmpty()) {
+        monitor.report(count++, total, "merged");
+        Feature feature = sortedList.get(0);
+        merge(feature, index, sortedList, genealogy);
       }
-    } finally {
-      // restore original geometries, even if something wrong happened during the merge
-      // but before, save new geometries to prepare the transaction which will be executed
-      // if no exception occured (transaction is postponed because of the iterative nature
-      // of the process where each feature may be modified several times)
-      for (int i : currentFeatures.keySet()) {
-        // Save new geometries from currentFeatures
-        if (selectedIds.contains(i) && !graph.containsKey(i)) newGeometries.put(i, null);
-        else newGeometries.put(i, currentFeatures.get(i).getGeometry());
-        // Restore original geometries in currentFeatures
-        currentFeatures.get(i).setGeometry(sourceGeometries.get(i));
+    } else {
+      sortedList.addAll(features);
+      sortedList.sort(areaComparator);
+      int count = 0;
+      int total = (int)sortedList.stream().filter(f -> f.getGeometry().getArea() <= minimumArea).count();
+      while (sortedList.size() > 0 && sortedList.get(0).getGeometry().getArea() <= minimumArea) {
+        Feature feature = sortedList.get(0);
+        Feature merged = merge(feature, index, sortedList, genealogy);
+        if (count%10 == 0) {
+          long pm = count*1000L/total;
+          monitor.report("" + pm/10.0 + "% merged");
+        }
+        count++;
+        if (merged != null && merged.getGeometry().getArea() <= minimumArea) total++;
       }
     }
 
-    monitor.report("Prepare transaction");
-    // Now make the changes within a transaction
-    reportNothingToUndoYet(context);
-    activeLayer.getLayerManager().getUndoableEditReceiver().startReceiving();
-    try {
-      EditTransaction transaction = new EditTransaction(
-            new ArrayList(),
+    if (createNewLayer) {
+      monitor.report("Compute result (create new layer)");
+      // Iterate through genealogy which maps new features to all ancestors
+      for (Map.Entry<Feature, LinkedHashSet<Feature>> entry : genealogy.entrySet()) {
+        for (Iterator<Feature> it = entry.getValue().iterator() ; it.hasNext() ;) {
+          features.remove(it.next());
+        }
+        features.add(entry.getKey());
+      }
+      FeatureCollection dataset = new FeatureDataset(activeLayer.getFeatureCollectionWrapper().getFeatureSchema());
+      dataset.addAll(features);
+      context.getLayerManager().addCategory(StandardCategoryNames.RESULT);
+      context.addLayer(StandardCategoryNames.RESULT, layerName + "-merged", dataset);
+    } else {
+      context.getWorkbenchContext().getLayerManager().setFiringEvents(false);
+      monitor.report("Prepare transaction");
+      // Now make the changes within a transaction
+      reportNothingToUndoYet(context);
+      activeLayer.getLayerManager().getUndoableEditReceiver().startReceiving();
+      try {
+        EditTransaction transaction = new EditTransaction(
+            new ArrayList<>(),
             "MergePolygonWithNeighbour",
             activeLayer,
             true,
             true,
             context.getLayerViewPanel()
-      );
-      for (int i : currentFeatures.keySet()) {
-        //if (!graph.containsKey(i))
-        if (selectedIds.contains(i)) {
-          transaction.deleteFeature(currentFeatures.get(i));
-        } else {
-          transaction.modifyFeatureGeometry(currentFeatures.get(i), newGeometries.get(i));
+        );
+        for (Map.Entry<Feature, LinkedHashSet<Feature>> entry : genealogy.entrySet()) {
+          while (entry.getValue().size() > 1) {
+            Feature f = entry.getValue().iterator().next();
+            transaction.deleteFeature(f);
+            entry.getValue().remove(f);
+          }
+          transaction.modifyFeatureGeometry(entry.getValue().iterator().next(), entry.getKey().getGeometry());
+        }
+        transaction.commit();
+        context.getWorkbenchContext().getLayerViewPanel().getSelectionManager().clear();
+        context.getWorkbenchContext().getLayerViewPanel().repaint();
+      } finally {
+        context.getWorkbenchContext().getLayerManager().setFiringEvents(true);
+        activeLayer.getLayerManager().getUndoableEditReceiver().stopReceiving();
+      }
+    }
+  }
+
+  private Feature merge(Feature feature, SpatialIndex index, ArrayList<Feature> sortedList,
+                        Map<Feature,LinkedHashSet<Feature>> genealogy) throws Exception {
+    // remove the feature being processed from the index
+    sortedList.remove(feature);
+    index.remove(feature.getGeometry().getEnvelopeInternal(), feature);
+    // find the best candidate to merge to
+    List<Feature> candidates = index.query(feature.getGeometry().getEnvelopeInternal());
+    Feature bestCandidate = getBestCandidate(feature, candidates);
+    if (bestCandidate != null) {
+      // Create a new merged feature
+      Geometry newGeom = feature.getGeometry().union(bestCandidate.getGeometry());
+      Feature newFeature = bestCandidate.clone();
+      newFeature.setGeometry(newGeom);
+
+      LinkedHashSet<Feature> children = new LinkedHashSet<>();
+      genealogy.put(newFeature, children);
+
+      if (genealogy.containsKey(feature)) children.addAll(genealogy.get(feature));
+      else children.add(feature);
+      genealogy.remove(feature);
+
+      if (genealogy.containsKey(bestCandidate)) children.addAll(genealogy.get(bestCandidate));
+      else children.add(bestCandidate);
+      genealogy.remove(bestCandidate);
+      sortedList.remove(bestCandidate);
+      index.remove(bestCandidate.getGeometry().getEnvelopeInternal(), bestCandidate);
+      index.insert(newGeom.getEnvelopeInternal(), newFeature);
+      // if there is no preselection of features to be processed but only an area criteria
+      // the process is iterative
+      if (!this.featuresSelected && this.minimumArea > 0.0) {
+        int idx = Collections.binarySearch(sortedList, newFeature, areaComparator);
+        if (idx >= 0) sortedList.add(idx, newFeature);
+        else sortedList.add((-idx-1), newFeature);
+      }
+      return newFeature;
+    }
+    return null;
+  }
+
+  private Feature getBestCandidate(Feature feature, List<Feature> candidates) throws Exception {
+    if (useArea) return getBestCandidateUsingArea(feature, candidates);
+    else if (useBorder) return getBestCandidateUsingBorder(feature, candidates);
+    else throw new Exception("No method has been selected to choose the feature to merge to : " +
+          "use 'max area' ore use 'common border length'");
+  }
+
+  private Feature getBestCandidateUsingArea(Feature feature, List<Feature> candidates) {
+    Feature bestCandidate = null;
+    double maxArea = 0.0;
+    for (Feature candidate : filterCandidates(feature,candidates)) {
+      double area = candidate.getGeometry().getArea();
+      IntersectionMatrix im = feature.getGeometry().relate(candidate.getGeometry());
+      if (im.matches("2********") || im.matches("****1****")) {
+        if (area > maxArea) {
+          bestCandidate = candidate;
+          maxArea = area;
         }
       }
-      transaction.commit();
-      context.getWorkbenchContext().getLayerViewPanel().getSelectionManager().clear();
-      context.getWorkbenchContext().getLayerViewPanel().repaint();
     }
-    finally {
-      context.getWorkbenchContext().getLayerManager().setFiringEvents(true);
-      activeLayer.getLayerManager().getUndoableEditReceiver().stopReceiving();
-    }
+    return bestCandidate;
   }
 
-  private STRtree index(FeatureCollection fc) {
-    STRtree index = new STRtree();
-    for (Feature f : fc.getFeatures()) {
-      index.insert(f.getGeometry().getEnvelopeInternal(), f);
-    }
-    return index;
-  }
-
-  // Create a map containing relations between each selected feature and adjacent features
-  private Map<Integer,Set<Integer>> getPolygonGraph(SpatialIndex index,
-                                                    Collection<Feature> selection,
-                                                    TaskMonitor monitor) throws Exception {
-
-    Map<Integer,Set<Integer>> graph = new HashMap<>();
-    Set<Integer> validated = new HashSet<>();
-    int count = 0;
-    int total = selection.size();
-    for (Feature f : selection) {
-      monitor.report(++count, total, "polygons");
-      if (f.getGeometry().getDimension() != 2) continue;
-      if (!f.getGeometry().isValid())
-        throw new Exception(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Features-must-be-valid", f.getID()));
-      validated.add(f.getID());
-      List<Feature> candidates = index.query(f.getGeometry().getEnvelopeInternal());
-      int fid = f.getID();
-      Set<Integer> neighbours = graph.get(fid);
-      if (neighbours == null) neighbours = new HashSet<>();
-      for (Feature candidate : candidates) {
-        int cid = candidate.getID();
-        if (cid == fid) continue;
-        if (candidate.getGeometry().getDimension() != 2) continue;
-        if (!validated.contains(cid) && !candidate.getGeometry().isValid())
-          throw new Exception(I18N.getInstance().get("org.openjump.core.ui.plugin.tools.MergeSelectedPolygonsWithNeighbourPlugIn.Features-must-be-valid", candidate.getID()));
-        validated.add(cid);
-        if (attribute != null && !Objects.equals(f.getAttribute(attribute), candidate.getAttribute(attribute))) continue;
-        if (f.getGeometry().intersects(candidate.getGeometry())) {
-          //relate is slower than intersects and has small benefit
-          //for the following step (choosing the best candidate)
-          //if (f.getGeometry().relate(c.getGeometry(),"****1****")) {
-          neighbours.add(candidate.getID());
+  private Feature getBestCandidateUsingBorder(Feature feature, List<Feature> candidates) {
+    Feature bestCandidate = null;
+    double maxLength = 0;
+    for (Feature candidate : filterCandidates(feature,candidates)) {
+      IntersectionMatrix im = feature.getGeometry().relate(candidate.getGeometry());
+      if (im.matches("****1****")) {
+        double length = feature.getGeometry().getBoundary()
+            .intersection(candidate.getGeometry().getBoundary()).getLength();
+        if (length > maxLength) {
+          maxLength = length;
+          bestCandidate = candidate;
         }
       }
-      graph.put(fid, neighbours);
     }
-    return graph;
+    return bestCandidate;
   }
 
-  private Set<Integer> getGraphIds(Map<Integer,Set<Integer>> graph) {
-    Set<Integer> ids = new HashSet<>();
-    for (Map.Entry<Integer,Set<Integer>> entry : graph.entrySet()) {
-      ids.add(entry.getKey());
-      ids.addAll(entry.getValue());
-    }
-    return ids;
-  }
-
-
-  private boolean merge(int srcId, int dstId, Map<Integer,Set<Integer>> graph, Map<Integer,Feature> currentFeatures) {
-    Feature src = currentFeatures.get(srcId);
-    Feature dst = currentFeatures.get(dstId);
-    dst.setGeometry(dst.getGeometry().union(src.getGeometry()));
-    Set<Integer> neighboursOfDst = graph.get(dstId);
-    // graph only contains neighbours of selected features
-    if (neighboursOfDst != null) {
-      neighboursOfDst.remove(srcId);
-    }
-    // Avoid concurrent modification
-    Set<Integer> neighboursOfSrc = new HashSet<>(graph.get(srcId));
-    for (int id : neighboursOfSrc) {
-      if (id != srcId && id != dstId && neighboursOfDst != null) {
-        neighboursOfDst.add(id);
+  private Collection<Feature> filterCandidates(Feature feature, Collection<Feature> candidates) {
+    if (attribute != null) {
+      List<Feature> list = new ArrayList<>();
+      Object ref = feature.getAttribute(attribute);
+      if ((ref == null || ref.toString().isEmpty()) && skipNullValues) {
+        return list;
       }
-      // If id is also a selected feature, update its neighbours
-      if (graph.containsKey(id)) {
-        graph.get(id).remove(srcId);
-        graph.get(id).add(dstId);
+      for (Feature c : candidates) {
+        if ((ref == null || ref.toString().isEmpty()) && !skipNullValues) {
+          if (c.getAttribute(attribute) == null) list.add(c);
+        } else if (ref != null && !ref.toString().isEmpty() && c.getAttribute(attribute) != null) {
+          if (ref.equals(c.getAttribute(attribute))) list.add(c);
+        }
       }
-    }
-    graph.remove(srcId);
-    return true;
-  }
-
-  private Feature chooseMaxAreaNeighbour(int fid, Map<Integer,Set<Integer>> graph,
-                                         Map<Integer,Feature> currentFeatures) {
-    Set<Integer> neighbours = graph.get(fid);
-    double max = 0;
-    Feature selected = null;
-    for (int cid : neighbours) {
-      if (cid == fid) continue;
-      Feature neighbour = currentFeatures.get(cid);
-      double area = neighbour.getGeometry().getArea();
-      if (area > max) {
-        max = area;
-        selected = neighbour;
-      }
-    }
-    return selected;
-  }
-
-  private Feature chooseLongestBoundaryNeighbour(int fid, Map<Integer,Set<Integer>> graph,
-                                                 Map<Integer,Feature> currentFeatures) {
-    Set<Integer> neighbours = graph.get(fid);
-    Feature src = currentFeatures.get(fid);
-    double max = 0;
-    Feature selected = null;
-    for (int cid : neighbours) {
-      if (cid == fid) continue;
-      Feature neighbour = currentFeatures.get(cid);
-      double length = neighbour.getGeometry().intersection(src.getGeometry()).getLength();
-      if (length > max) {
-        max = length;
-        selected = neighbour;
-      }
-    }
-    return selected;
+      return list;
+    } else return candidates;
   }
 
 }

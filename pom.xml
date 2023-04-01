@@ -340,8 +340,8 @@
                      <goal>wget</goal>
                    </goals>
                    <configuration>
-                     <url>https://sourceforge.net/projects/opensit/files/Openjump/PlugIn/Raster%20Tools/RasterTools-2.0.4-20221210.jar</url>
-                     <sha1>1b05ff1ecb9bd0b3a53b058524dd428bb1aca980</sha1>
+                     <url>https://sourceforge.net/projects/opensit/files/Openjump/PlugIn/Raster%20Tools/RasterTools-2.0.5-20230201.jar</url>
+                     <sha1>4a7053b4f72b2d4a27d25db4515057dd9d5be1c4</sha1>
                      <unpack>false</unpack>
                      <outputDirectory>${plus.folder}</outputDirectory>
                    </configuration>
@@ -376,8 +376,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/topology-extension/releases/download/v2.0.4/topology-extension-2.0.4.zip</url>
-                      <sha1>2b5c1b0de4204bc6916e9fb0c9cc9ed4e168da94</sha1>
+                      <url>https://github.com/openjump-gis/topology-extension/releases/download/v2.0.5/topology-extension-2.0.5.zip</url>
+                      <sha1>0a42c23a46d68c753c28d907164895d9826a3a9c</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>

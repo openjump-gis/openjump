@@ -40,8 +40,10 @@ import com.vividsolutions.jump.task.TaskMonitor;
 
 public class DiffGeometry {
 
-  private FeatureCollection[] inputFC = new FeatureCollection[2];
-  private TaskMonitor monitor;
+  private final static String FEATURES_PROCESSED = I18N.getInstance().get("jump.features-processed");
+
+  private final FeatureCollection[] inputFC = new FeatureCollection[2];
+  private final TaskMonitor monitor;
   private DiffGeometryMatcher diffMatcher = new ExactGeometryMatcher();
   private boolean splitIntoComponents = false;
 
@@ -88,11 +90,10 @@ public class DiffGeometry {
     FeatureCollection noMatch = new FeatureDataset(fc0.getFeatureSchema());
     int count = 1;
     int totalItems = fc0.size();
-    for (Iterator i = fc0.iterator(); i.hasNext(); ) {
+    for (Feature f : fc0.getFeatures()) {
 
-      monitor.report(count++, totalItems, I18N.getInstance().get("com.vividsolutions.jump.qa.diff.DiffGeometry.features"));
+      monitor.report(count++, totalItems, FEATURES_PROCESSED);
 
-      Feature f = (Feature) i.next();
       Geometry geom = f.getGeometry();
 
       Collection<Geometry> list = DiffGeometryIndex.splitGeometry(geom, splitIntoComponents);

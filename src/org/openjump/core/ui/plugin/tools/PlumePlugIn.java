@@ -37,6 +37,7 @@ import java.util.Collection;
 
 import javax.swing.JComponent;
 
+import com.vividsolutions.jump.workbench.model.Category;
 import org.openjump.core.geomutils.GeoUtils;
 
 import org.locationtech.jts.geom.Geometry;
@@ -76,13 +77,16 @@ public class PlumePlugIn extends AbstractPlugIn {
   public void initialize(PlugInContext context) throws Exception {
     super.initialize(context);
     workbenchContext = context.getWorkbenchContext();
-    context.getFeatureInstaller().addMainMenuItem(this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS },
-        getName() + "...", false, IconLoader.icon("buffer_plume.gif"), this.createEnableCheck(workbenchContext));
+    context.getFeatureInstaller().addMainMenuPlugin(
+        this, new String[] { MenuNames.TOOLS, MenuNames.TOOLS_ANALYSIS },
+        getName() + "...", false, IconLoader.icon("buffer_plume.gif"),
+        this.createEnableCheck(workbenchContext));
   }
 
   public boolean execute(final PlugInContext context) throws Exception {
     reportNothingToUndoYet(context);
-    Collection selectedFeatures = context.getLayerViewPanel().getSelectionManager().getFeaturesWithSelectedItems();
+    Collection<Feature> selectedFeatures = context.getLayerViewPanel().getSelectionManager()
+        .getFeaturesWithSelectedItems();
 
     // get the radii
     MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
@@ -96,16 +100,16 @@ public class PlumePlugIn extends AbstractPlugIn {
     Geometry plume = null;
     if (selectedFeatures.size() != 1)
       return false;
-    Geometry geo = ((Feature) selectedFeatures.iterator().next()).getGeometry();
+    Geometry geo = selectedFeatures.iterator().next().getGeometry();
     if (geo instanceof LineString) {
       plume = GeoUtils.createPlume(geo.getCoordinates(), radius1, radius2);
     }
 
     if (plume != null) {
-      Feature currFeature = (Feature) selectedFeatures.iterator().next();
-      Feature newFeature = (Feature) currFeature.clone();
+      Feature currFeature = selectedFeatures.iterator().next();
+      Feature newFeature = currFeature.clone();
       newFeature.setGeometry(plume);
-      Collection selectedCategories = context.getLayerNamePanel().getSelectedCategories();
+      Collection<Category> selectedCategories = context.getLayerNamePanel().getSelectedCategories();
       LayerManager layerManager = context.getLayerManager();
       FeatureDataset newFeatures = new FeatureDataset(currFeature.getSchema());
       newFeatures.add(newFeature);
@@ -141,9 +145,9 @@ public class PlumePlugIn extends AbstractPlugIn {
   public EnableCheck onlyOneLinestringMayBeSelected(final WorkbenchContext workbenchContext) {
     return new EnableCheck() {
       public String check(JComponent component) {
-        Collection selectedItems = ((SelectionManagerProxy) workbenchContext.getWorkbench().getFrame()
+        Collection<Geometry> selectedItems = ((SelectionManagerProxy) workbenchContext.getWorkbench().getFrame()
             .getActiveInternalFrame()).getSelectionManager().getSelectedItems();
-        if ((Geometry) selectedItems.iterator().next() instanceof LineString)
+        if (!selectedItems.isEmpty() && selectedItems.iterator().next() instanceof LineString)
           return null;
         return selectLineStrings;
       }
