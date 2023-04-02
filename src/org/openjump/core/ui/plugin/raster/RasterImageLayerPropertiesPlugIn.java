@@ -375,11 +375,13 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
     }
 
     private void setInfo(RasterImageLayer rLayer) throws Exception {
-        Locale locale = new Locale("en", "UK");
-        String pattern = "###.####";
-        DecimalFormat df = (DecimalFormat) NumberFormat
-                .getNumberInstance(locale);
-        df.applyPattern(pattern);
+        //[Giuseppe Aruta 01/04/2023] deactivated decimal format as it gives out wierd values if
+        //the image is in geographic coordinates
+       // Locale locale = new Locale("en", "UK");
+       // String pattern = "###.####";
+      //  DecimalFormat df = (DecimalFormat) NumberFormat
+      //          .getNumberInstance(locale);
+     //   df.applyPattern(pattern);
         layer_name = rLayer.getName();// Get name of layer
         file_path = rLayer.getImageFileName();// get file path
         String fileSourcePath = rLayer.getImageFileName();
@@ -394,7 +396,7 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         file_size = RasterImageLayerProperties.getFileSizeBytes(rLayer); // Get file size in byte
         file_sizeMB = RasterImageLayerProperties.getFileSizeMegaBytes(file_size); // Get file size in Mega
                                                        // Bytes
-        raster_bands = df.format(rLayer.getNumBands());// Get raster number of
+        raster_bands = ""+rLayer.getNumBands();// Get raster number of
                                                        // bands
         Raster raster = rLayer.getRasterData(null);
        // BufferedImage bImage = rLayer.getImage();
@@ -402,22 +404,22 @@ public class RasterImageLayerPropertiesPlugIn extends AbstractPlugIn {
         raster_colordepth =   RasterImageLayerProperties.getColorDepth(raster,new File(rLayer.getFilePath())); // Get raster color depth
         raster_dpi =  RasterImageLayerProperties.getDPI(raster,new File(rLayer.getFilePath())); // Get raster DPI
         extent = rLayer.getWholeImageEnvelope(); // Get Envelope
-        extent_cellSizeX = df.format(RasterImageLayerProperties.cellSizeX(raster, extent));// Get X Cell
+        extent_cellSizeX = ""+RasterImageLayerProperties.cellSizeX(raster, extent);// Get X Cell
                                                                 // size
-        extent_cellSizeY = df.format(RasterImageLayerProperties.cellSizeY(raster, extent));// Get Y Cell
+        extent_cellSizeY = ""+RasterImageLayerProperties.cellSizeY(raster, extent);// Get Y Cell
                                                                 // size
         extent_columns = RasterImageLayerProperties.getNumColumns(raster); // Get Number of columns
         extent_rows = RasterImageLayerProperties.getNumRows(raster); // Get Number of rows
         extent_cellnumber = String.valueOf(extent_columns * extent_rows); // Get
                                                                           // cell
                                                                           // number
-        extent_area = df.format(extent.getArea()); // Get area
-        extent_width = df.format(extent.getWidth()); // Get width
-        extent_height = df.format(extent.getHeight()); // Get height
-        extent_minX = df.format(extent.getMinX());
-        extent_maxX = df.format(extent.getMaxX());
-        extent_minY = df.format(extent.getMinY());
-        extent_maxY = df.format(extent.getMaxY());
+        extent_area = ""+extent.getArea(); // Get area
+        extent_width = ""+extent.getWidth(); // Get width
+        extent_height = ""+extent.getHeight(); // Get height
+        extent_minX = ""+extent.getMinX();
+        extent_maxX = ""+extent.getMaxX();
+        extent_minY = ""+extent.getMinY();
+        extent_maxY = ""+extent.getMaxY();
         raster_nodata = String.valueOf(rLayer.getNoDataValue());
         int numBands = rLayer.getNumBands();
         raster_bands = String.valueOf(numBands);
