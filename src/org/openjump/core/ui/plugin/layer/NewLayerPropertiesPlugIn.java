@@ -423,10 +423,10 @@ public class NewLayerPropertiesPlugIn extends AbstractPlugIn {
             }
             // LAYER EXTENSION section
             info = info + header("", EXTENT);
-            info = info + property(XMIN, df.format(extent.getMinX()), bgColor0);
-            info = info + property(XMAX, df.format(extent.getMaxX()), bgColor1);
-            info = info + property(YMIN, df.format(extent.getMinY()), bgColor0);
-            info = info + property(YMAX, df.format(extent.getMaxY()), bgColor1);
+            info = info + property(XMIN, ""+extent.getMinX(), bgColor0);
+            info = info + property(XMAX, ""+extent.getMaxX(), bgColor1);
+            info = info + property(YMIN, ""+extent.getMinY(), bgColor0);
+            info = info + property(YMAX, ""+extent.getMaxY(), bgColor1);
             // FEATURES and ATTRIBUTES section
             info = info + header("", FEATURES);
             info = info
