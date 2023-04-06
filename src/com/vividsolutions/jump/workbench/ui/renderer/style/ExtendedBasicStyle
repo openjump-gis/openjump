@@ -1,0 +1,114 @@
+package com.vividsolutions.jump.workbench.ui.renderer.style;
+
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.workbench.model.Layer;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
+import com.vividsolutions.jump.workbench.ui.Viewport;
+
+import java.awt.*;
+
+/**
+ * Experimental class.
+ * Modification of XBasicStyle in order to include also 
+ * LineStringStyle together with BasicStyle and VertexStyle
+ */
+public class ExtendedBasicStyle extends BasicStyle {
+
+    VertexStyle vertexStyle = new SquareVertexStyle();
+    LineStringStyle lineStringStyle;
+
+    public ExtendedBasicStyle() {} // for java2xml
+
+    public ExtendedBasicStyle(BasicStyle fromBasicStyle, VertexStyle fromVertexStyle, LineStringStyle fromLineStringStyle) {
+        super();
+        assert fromVertexStyle != null : "ExtendedBasicStyle must have a non null VertexStyle";
+        assert fromLineStringStyle != null : "ExtendedBasicStyle must have a non null LineStringStyle";
+
+        setEnabled(fromBasicStyle.isEnabled());
+
+        setRenderingFill(fromBasicStyle.isRenderingFill());
+        setFillColor(fromBasicStyle.getFillColor());
+        setAlpha(fromBasicStyle.getAlpha());
+        setFillPattern(fromBasicStyle.getFillPattern());
+        setRenderingFillPattern(fromBasicStyle.isRenderingFillPattern());
+
+        setRenderingLine(fromBasicStyle.isRenderingLine());
+        setLineColor(fromBasicStyle.getLineColor());
+        setLineWidth(fromBasicStyle.getLineWidth());
+        setLinePattern(fromBasicStyle.getLinePattern());
+        setRenderingLinePattern(fromBasicStyle.isRenderingLinePattern());
+        setInteriorBorder(fromBasicStyle.hasInteriorBorder());
+
+        // XBasicStyle already includes a VertexStyle attribute
+        // Use vertexStyle.setEnabled to make vertices visible
+        //setRenderingVertices(fromBasicStyle.getRenderingVertices());
+        setRenderingVertices(fromVertexStyle == null || !fromVertexStyle.isEnabled());
+
+        if (fromVertexStyle == null) {
+            vertexStyle = new SquareVertexStyle();
+            vertexStyle.setFillColor(fromBasicStyle.getFillColor());
+            vertexStyle.setLineColor(fromBasicStyle.getLineColor());
+            vertexStyle.setAlpha(fromBasicStyle.getAlpha());
+            vertexStyle.setEnabled(false);
+        } else {
+            vertexStyle = (VertexStyle)fromVertexStyle.clone();
+        }
+        if (fromLineStringStyle ==null) {
+        	lineStringStyle.setEnabled(false);
+        } else {
+        	lineStringStyle=(LineStringStyle)fromLineStringStyle.clone();
+        }
+    }
+
+    // fillColor is the color without alpha
+    // here we want to return the color with alpha to paint it
+    public Color getFillColor() {
+        return GUIUtil.alphaColor(super.getFillColor(), getAlpha());
+    }
+
+    public VertexStyle getVertexStyle() {
+        return vertexStyle;
+    }
+
+    public void setVertexStyle(VertexStyle vertexStyle) {
+        this.vertexStyle = vertexStyle;
+    }
+
+    
+    public LineStringStyle getLineStringStyle() {
+    	return lineStringStyle;
+    }
+    
+    public void setLineStringStyle(LineStringStyle lineStringStyle) {
+    	 this.lineStringStyle=lineStringStyle;
+    }
+    @Override public void initialize(Layer layer) {
+        super.initialize(layer);
+    }
+
+    @Override public void paint(Feature f, Graphics2D g, Viewport viewport) throws Exception {
+        // render basic style
+        super.paint(f, g, viewport);
+        // render vertex style
+        if (vertexStyle.isEnabled()) {
+            //@TODO don't know why some vertexStyles have a 0 alpha
+            vertexStyle.setAlpha(getAlpha());
+            vertexStyle.paint(f, g, viewport);
+        }
+        if(lineStringStyle.isEnabled()) {
+        	
+        	lineStringStyle.paint(f, g, viewport);
+        }
+    }
+
+    @Override public ExtendedBasicStyle clone() {
+        VertexStyle vs = (VertexStyle)vertexStyle.clone();
+        LineStringStyle ls = (LineStringStyle)lineStringStyle.clone();
+        return new ExtendedBasicStyle(this, vs,ls);
+    }
+
+    @Override public Color getFeatureColor(Feature feature) {
+        return super.getFeatureColor(feature);
+    }
+
+}
