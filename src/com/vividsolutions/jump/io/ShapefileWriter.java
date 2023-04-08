@@ -47,6 +47,7 @@ import org.geotools.dbffile.DbfFile;
 import org.geotools.dbffile.DbfFileWriter;
 import org.geotools.shapefile.Shapefile;
 import org.openjump.core.ccordsys.utils.SridLookupTable;
+import org.w3c.dom.Attr;
 
 import javax.swing.*;
 import java.io.*;
@@ -585,6 +586,8 @@ public class ShapefileWriter implements JUMPWriter {
             columnType == AttributeType.TIME ||
             columnType == AttributeType.TIMESTAMP) {
           dbfRow.add(DbfFile.DATE_PARSER.format((Date) a));
+        } else if (columnType == AttributeType.OBJECT) {
+          dbfRow.add(a.toString());
         } else if (columnType != AttributeType.GEOMETRY) {
           dbfRow.add(a);
         }
