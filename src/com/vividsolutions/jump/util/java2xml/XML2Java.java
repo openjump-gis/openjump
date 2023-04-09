@@ -194,9 +194,8 @@ public class XML2Java extends XMLBinder {
             }
             try {
                 return read(tag, Class.forName(tag.getAttributeValue("class"), true, classLoader));
-            } catch (ClassNotFoundException e) {
-                Logger.error("Could not find class for " + tag, e);
-                System.out.println("Class not found for tag " + tag.getName() + ": " + tag.getAttribute("class").getValue());
+            } catch (NoClassDefFoundError|ClassNotFoundException e) {
+                Logger.error("Class not found for tag " + tag.getName() + ": " + tag.getAttribute("class").getValue(), e);
                 throw e;
             }
         }
