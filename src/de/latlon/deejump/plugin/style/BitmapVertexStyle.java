@@ -19,17 +19,16 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 
-import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 
 import com.sun.media.jai.codec.MemoryCacheSeekableStream;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.ui.renderer.style.VertexStyle;
 
 /**
@@ -188,15 +187,8 @@ public class BitmapVertexStyle extends VertexStyle {
             MemoryCacheSeekableStream mcss = new MemoryCacheSeekableStream(is);
             RenderedOp rop = JAI.create("stream", mcss);
             return rop.getAsBufferedImage();
-        } catch (TranscoderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            Logger.error(e);
         }
 
         return null;
