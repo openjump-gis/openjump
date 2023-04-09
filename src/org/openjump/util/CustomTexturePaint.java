@@ -117,6 +117,10 @@ public class CustomTexturePaint implements Paint {
      * @throws IOException if an IOException occurred
      */
     public void setUrl(String url) throws IOException {
+        if (url == null || url.isEmpty()) {
+          Logger.error("Url given must not be null or empty.");
+          return;
+        }
         this.url = new URL(url);
         BufferedImage img = ImageIO.read(this.url);
         if (img == null) {
