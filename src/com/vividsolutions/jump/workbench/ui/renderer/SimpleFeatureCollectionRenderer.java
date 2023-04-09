@@ -24,7 +24,7 @@ public class SimpleFeatureCollectionRenderer extends SimpleRenderer {
 		if (!layer.isVisible()) {
 			return;
 		}
-		if (!style.isEnabled()) {
+		if (style==null || !style.isEnabled()) {
 			return;
 		}
 		style.initialize(layer);
