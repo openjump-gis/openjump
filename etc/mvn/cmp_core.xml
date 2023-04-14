@@ -16,7 +16,8 @@
       <useProjectArtifact>false</useProjectArtifact>
       <excludes>
         <!-- exclude batik we'll selectively include needed deps in cmp_plus.xml -->
-        <exclude>*:batik-*</exclude>
+        <!-- reincluded as "Change Style" vertice bitmap with PNG/SVG needs those -->
+        <!--  <exclude>*:batik-*</exclude> -->
         <!-- exclude imageio-ext from CORE build, but include some selected jars below -->
         <exclude>it.geosolutions.imageio-ext:*</exclude>
         <!-- we'll package postgresql to lib/ext/dbdatastore/ below -->

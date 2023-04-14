@@ -1669,45 +1669,13 @@ ${project.artifactId} ${project.version} Changelog
         </dependency>
         <dependency>
             <groupId>batik</groupId>
-            <artifactId>batik-awt-util</artifactId>
-            <version>${batik.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-dom</artifactId>
-            <version>${batik.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
             <artifactId>batik-svggen</artifactId>
             <version>${batik.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>*</groupId>
+                    <!-- currently not needed -->
                     <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-svg-dom</artifactId>
-            <version>${batik.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
+                    <groupId>xml-apis</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -1717,30 +1685,15 @@ ${project.artifactId} ${project.version} Changelog
             <version>${batik.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
+                    <!-- prevent "SAX2 driver class org.apache.crimson.parser.XMLReaderImpl not found" 
+                     when parsing/transcoding SVG -->
+                    <artifactId>fop</artifactId>
+                    <groupId>fop</groupId>
                 </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-util</artifactId>
-            <version>${batik.version}</version>
-            <exclusions>
-                <exclusion>
+                 <exclusion>
+                     <!-- currently not needed -->
+                    <artifactId>js</artifactId>
                     <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-xml</artifactId>
-            <version>${batik.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
