@@ -75,6 +75,9 @@ public class BitmapVertexStyle extends VertexStyle {
 
     @Override
     protected void render(Graphics2D g) {
+        if (image == null)
+          return;
+
         g.drawImage(image, (int) point.getX() - ((image.getWidth(null)) / 2), (int) point.getY()
                 - ((image.getHeight(null)) / 2), null);
 
@@ -173,8 +176,9 @@ public class BitmapVertexStyle extends VertexStyle {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(size * size * 4);
         TranscoderOutput output = new TranscoderOutput(bos);
 
-        PNGTranscoder trc = new PNGTranscoder();
+        PNGTranscoder trc = null;
         try {
+            trc = new PNGTranscoder();
             Reader in = new StringReader(updateSVGColors(new File(fileName), stroke, fill).toString());
             TranscoderInput input = new TranscoderInput(in);
             if (size > 0) {
