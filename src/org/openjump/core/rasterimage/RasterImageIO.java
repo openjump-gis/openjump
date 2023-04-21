@@ -416,21 +416,10 @@ public class RasterImageIO {
 		return null;
 	}
 
-	///**
-	// * Get Envelope  from file
-	// * @param fileName
-	// * @return Envelope
-	// * @throws ReferencedImageException
-	// */
-	//
-	///*	public static Envelope getGeoReferencing(String fileName) throws ReferencedImageException {
-	//	GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(new File(fileName).toURI().toString());
-	//return geoRaster.getEnvelope();
-	//
-	//}*/
+	
 	
 	/**
-	 * Substituted by method getGeoReferencing(String fileName)
+	 * Gets Envelope from the file. Check first into aux.xml and world file
 	 * @param fileName file name
 	 * @param alwaysLookForTFWExtension whether the method should read georeferencing
 	 *                                  in an associated world file (tfw)
@@ -439,6 +428,59 @@ public class RasterImageIO {
 	 * @throws Exception if an Exception occurs
 	 */
 	public static Envelope getGeoReferencing(String fileName,
+			boolean alwaysLookForTFWExtension, Point imageDimensions) throws Exception {
+		Envelope env = null;
+		WorldFileHandler worldFileHandler = new WorldFileHandler(fileName,
+				alwaysLookForTFWExtension);
+		if (imageDimensions == null) {
+			throw new Exception(
+					I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.can-not-determine-image-dimensions"));
+		}
+		//First check file.aux.xml
+		String auxFile = fileName+".aux.xml";
+		if ((new File(auxFile)).exists()) {
+			env = worldFileHandler.auxFileEnvelope(auxFile, imageDimensions.x,imageDimensions.y);
+		}
+		//then check world file
+		if (env==null & worldFileHandler.isWorldFileExistentForImage() != null) {
+			env = worldFileHandler.readWorldFile(imageDimensions.x, imageDimensions.y);
+		}
+		if (env == null) {
+			boolean isGeoTiff = false;
+			if (fileName.toLowerCase().endsWith(".tif") || fileName.toLowerCase().endsWith(".tiff")) {
+				isGeoTiff = true;
+				env=TiffUtilsV2.getEnvelope(new File(fileName));
+			} else if (fileName.toLowerCase().endsWith(".flt")) {
+				isGeoTiff = true;
+				GridFloat gf = new GridFloat(fileName);
+				env =gf.getEnvelope();
+
+			} else if (fileName.toLowerCase().endsWith(".asc")
+					|| fileName.toLowerCase().endsWith(".txt")) {
+				isGeoTiff = true;
+				GridAscii ga = new GridAscii(fileName);
+				env = ga.getEnvelope();
+			}
+			if (!isGeoTiff || env == null) {
+				Logger.warn(I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
+				return null;
+			}
+		}
+		return env;
+	} 
+	
+	 
+	
+	/**
+	 * getGeoReferencing(String fileName) method since 04.21.2023
+	 * @param fileName file name
+	 * @param alwaysLookForTFWExtension whether the method should read georeferencing
+	 *                                  in an associated world file (tfw)
+	 * @param imageDimensions
+	 * @return Envelope envelope of the image in model coordinates
+	 * @throws Exception if an Exception occurs
+	 */
+	public static Envelope getGeoReferencing_old(String fileName,
 			boolean alwaysLookForTFWExtension, Point imageDimensions) throws Exception {
 
 		Envelope env = null;
