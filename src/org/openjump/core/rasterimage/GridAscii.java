@@ -441,6 +441,14 @@ public class GridAscii {
         this.decimalPlaces = decimalPlaces;
     }
     
+    public Envelope getEnvelope() {
+    	Coordinate upperLeft = new Coordinate( xllCorner,
+    			yllCorner +  nRows *  cellSize);
+		Coordinate lowerRight = new Coordinate( xllCorner
+				+  nCols *  cellSize,  yllCorner);
+		return new Envelope(upperLeft, lowerRight);
+    }
+    
     private String ascFullFileName = null;
 
     private boolean origCorner = false;
