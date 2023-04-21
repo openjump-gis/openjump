@@ -152,11 +152,11 @@ public class RasterImageIO {
 
 			GridFloat gf = new GridFloat(fileNameOrURL);
 			gf.readGrid(null);
-
-			Envelope imageEnvelope = new Envelope(gf.getXllCorner(),
-					gf.getXllCorner() + gf.getnCols() * gf.getCellSize(),
-					gf.getYllCorner(), gf.getYllCorner() + gf.getnRows()
-							* gf.getCellSize());
+			Envelope imageEnvelope = gf.getEnvelope();
+		//	Envelope imageEnvelope = new Envelope(gf.getXllCorner(),
+		//			gf.getXllCorner() + gf.getnCols() * gf.getCellSize(),
+		//			gf.getYllCorner(), gf.getYllCorner() + gf.getnRows()
+		//					* gf.getCellSize());
 
 			stats = new Stats(1);
 			stats.setStatsForBand(0, gf.getMinVal(), gf.getMaxVal(),
@@ -173,11 +173,11 @@ public class RasterImageIO {
 
 			GridAscii ga = new GridAscii(fileNameOrURL);
 			ga.readGrid(null);
-
-			Envelope imageEnvelope = new Envelope(ga.getXllCorner(),
-					ga.getXllCorner() + ga.getnCols() * ga.getCellSize(),
-					ga.getYllCorner(), ga.getYllCorner() + ga.getnRows()
-							* ga.getCellSize());
+			Envelope imageEnvelope =ga.getEnvelope();
+			//Envelope imageEnvelope = new Envelope(ga.getXllCorner(),
+			//		ga.getXllCorner() + ga.getnCols() * ga.getCellSize(),
+			//		ga.getYllCorner(), ga.getYllCorner() + ga.getnRows()
+			//				* ga.getCellSize());
 
 			BufferedImage pImage = ga.getBufferedImage();
 
