@@ -48,6 +48,7 @@ public class ProjUtils {
     private static final String NO_SRS = I18N.getInstance().get("org.openjump.core.ccordsys.No-srs");
     private static final String EMBEDDED_SRS = I18N.getInstance().get("org.openjump.core.ccordsys.Embedded-srs");
     private static final String NOT_CONSISTENT_SRS = I18N.getInstance().get("org.openjump.core.ccordsys.Not-consistent-srs");
+    private static final String AUXFILE_SRS = I18N.getInstance().get("org.openjump.core.ccordsys.AuxFile-srs");
 
     /**
      * - Read SRS from GeoTIFF tag - This method gets projection srid code and
@@ -486,6 +487,7 @@ public class ProjUtils {
         // fallthrough
         if (srsInfo == null) {
             srsInfo = ProjUtils.getSRSInfoFromAuxiliaryFile(fileSourcePath);
+             srsInfo.setSource(AUXFILE_SRS);
         }
         // if srid=0 there must be no source for file projection.
         // if the layer is temporary (file saved into TEMP folder), srid source
