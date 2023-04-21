@@ -274,4 +274,50 @@ public class WorldFileHandler implements HandlerToMakeYourLifeEasier{
     public String getWorldFileName() {
         return worldFileName;
     }
+    
+      /**
+     * Envelope from spatial reference  recored into an auxiliary (<fileName>.aux.xml) file
+     * @param auxFile. File path of the image (ex. C:/folder/myIMage.png)
+     * @param width. Width in pixel of the image file
+     * @param height. Height in pixel of the image file 
+     * @return Envelope
+     */
+      
+    public   Envelope auxFileEnvelope(String auxFile, int width, int height) {
+    	double A = 0, B = 0, C = 0, D = 0, E = 0, F = 0;
+			String coordinates = null;
+			Scanner scanner;
+			 try {
+				 scanner = new Scanner(new File(auxFile));
+			 } catch (FileNotFoundException e1) {
+				 return null;
+			 }
+			 String fileText = scanner.useDelimiter("\\A").next();
+			if(fileText.contains("<GeoTransform>")) {
+				Pattern pattern = Pattern.compile("<GeoTransform>(.*)</GeoTransform>");
+				Matcher matcher = pattern.matcher(fileText);
+				matcher.find();
+				coordinates= matcher.group(1);
+				coordinates = StringUtil.replaceAll(coordinates, ",", " ");
+				final StringTokenizer stringTokenizer = new StringTokenizer(coordinates);
+				C = Double.valueOf(stringTokenizer.nextToken());
+				A = Double.valueOf(stringTokenizer.nextToken());
+				D = Double.valueOf(stringTokenizer.nextToken());
+				F = Double.valueOf(stringTokenizer.nextToken());
+				B = Double.valueOf(stringTokenizer.nextToken());
+				E = Double.valueOf(stringTokenizer.nextToken());
+				double west = A * 0 + B * 0 + C;
+				double north = D * 0 + E * 0 + F;
+				double east = A * (width - 1) + B * (height - 1) + C;
+				double south = D * (width - 1) + E * (height - 1) + F;
+				final Coordinate upperLeft = new Coordinate(west, north);
+				final Coordinate lowerRight = new Coordinate(east, south);
+				return new Envelope(upperLeft, lowerRight);
+			} else {
+				return null;
+			}
+	
+	}
+    
+    
 }
