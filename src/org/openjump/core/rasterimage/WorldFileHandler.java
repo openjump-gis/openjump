@@ -40,9 +40,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openjump.core.apitools.HandlerToMakeYourLifeEasier;
 
+import com.vividsolutions.jump.util.StringUtil;
+
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
