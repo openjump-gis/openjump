@@ -23,6 +23,9 @@ import java.util.Locale;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterFactory;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+
 public class GridAscii {
 
     public GridAscii(String ascFullFileName) throws IOException{
