@@ -25,6 +25,9 @@ import java.nio.channels.FileChannel;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterFactory;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+
 public class GridFloat {
 
     public GridFloat(String fltFullFileName) throws IOException{
