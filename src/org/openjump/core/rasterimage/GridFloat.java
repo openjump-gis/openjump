@@ -459,11 +459,11 @@ public class GridFloat {
     }
     
     public Envelope getEnvelope() {
-    	Coordinate upperLeft = new Coordinate( xllCorner,
-    			yllCorner +  nRows *  cellSize);
-		Coordinate lowerRight = new Coordinate( xllCorner
-				+  nCols *  cellSize,  yllCorner);
-		return new Envelope(upperLeft, lowerRight);
+        Coordinate upperLeft = new Coordinate( xllCorner,
+              yllCorner +  nRows *  cellSize);
+        Coordinate lowerRight = new Coordinate( xllCorner
+              +  nCols *  cellSize,  yllCorner);
+        return new Envelope(upperLeft, lowerRight);
     }
     
     private String fltFullFileName = null;
