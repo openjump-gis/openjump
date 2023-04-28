@@ -25,6 +25,7 @@ import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.openjump.core.ccordsys.utils.SRSInfo;
+import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel;
 import org.xml.sax.SAXException;
 
 import com.sun.media.jai.codec.FileSeekableStream;
@@ -36,9 +37,12 @@ import com.sun.media.jai.codecimpl.TIFFImageEncoder;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
-import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.Logger;
+import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 /**
  *
@@ -1036,8 +1040,8 @@ public class RasterImageIO {
 		private final double cellSizeY;
 
 	}
-
-	    /**
+	
+    /**
     * [Giuseppe Aruta 4/24/2023] This method opens a dialog where users can input coordinates of the four cardinal points of the
     * raster. It is used by RasterImageLayer framework in case there is no information about geographic
     * position of the loaded image layer<br>
@@ -1124,4 +1128,5 @@ public class RasterImageIO {
          }
          return env;
    }
+
 }
