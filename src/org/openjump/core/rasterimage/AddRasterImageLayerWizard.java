@@ -27,6 +27,7 @@ import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Category;
 import com.vividsolutions.jump.workbench.model.Layerable;
 import com.vividsolutions.jump.workbench.model.StandardCategoryNames;
+import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
@@ -171,27 +172,42 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         }
     }
 
-    private void addImage(WorkbenchContext context, Envelope envelope,
+    
+    //method from DataSourceQueryChooserOpenWizard
+    private String chooseCategory(WorkbenchContext context) {
+        return context.getLayerableNamePanel().getSelectedCategories().isEmpty() ? StandardCategoryNames.WORKING
+          : context.getLayerableNamePanel()
+            .getSelectedCategories()
+            .iterator()
+            .next()
+            .toString();
+      }
+    
+    
+   // @SuppressWarnings("deprecation")
+	private void addImage(WorkbenchContext context, Envelope envelope,
             Point imageDimensions) {
 
         if (context.getTask() == null) {
             context.getWorkbench().getFrame().addTaskFrame();
         }
-
+ 
         final String newLayerName = context.getLayerManager().uniqueLayerName(
                 cachedLayer);
 
-        String catName = StandardCategoryNames.WORKING;
+        String catName = chooseCategory(context);
+        
+       /* String catName = chooseCategory(context)StandardCategoryNames.WORKING;
 
         try {
-            catName = ((Category) context.createPlugInContext()
-                    .getLayerNamePanel().getSelectedCategories().toArray()[0])
+            catName = ((Category) context
+                    . getLayerableNamePanel().getSelectedCategories().toArray()[0])
                     .getName();
         } catch (final RuntimeException e1) {
             Logger.warn("AddRasterImageLayerWizard.addImage: " +
                     "error trying to get the name of the currently selected category", e1);
         }
-
+*/
         final int layersAsideImage = context.getLayerManager()
                 .getLayerables(Layerable.class).size();
 
@@ -246,7 +262,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
     }
 
-      /**
+    /**
      * TODO: [sstein] Feb.2009 - I discovered a 0.5px offset towards south-east
      * for the envelope, in comparison with images loaded with
      * Jon's/VividSolutions implementation, if the envelope is obtained from a
@@ -289,6 +305,9 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
          
         return env;
     }
+
+  
+    
     
     
 }
