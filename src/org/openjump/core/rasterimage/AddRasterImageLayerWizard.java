@@ -246,7 +246,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
     }
 
-    /**
+      /**
      * TODO: [sstein] Feb.2009 - I discovered a 0.5px offset towards south-east
      * for the envelope, in comparison with images loaded with
      * Jon's/VividSolutions implementation, if the envelope is obtained from a
@@ -254,6 +254,12 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
      * assume that the worldfile coordinate system origin is the corner of the
      * first pixel and not the center. I have corrected this in
      * WorldFileHandler.readWorldFile()
+     * 
+     * [Giuseppe Aruta - 04/27/2023]. The method has been "slimed" from the previous version:<br>
+     * <li>a) The first part that build the Envelope from image info has been removed and delegated
+     *  to RasterImageIO.getGeoReferencing() method.
+     * <li>b) In the case that the geographic information of the image are not find, the envelope is
+     *  build from the view using the method getEnvelopeFromView()<br>
      * 
      * @param fileName the file name
      * @param alwaysLookForTFWExtension
@@ -266,111 +272,23 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
      protected Envelope getGeoReferencing(String fileName,
             boolean alwaysLookForTFWExtension, Point imageDimensions,
             WorkbenchContext context) throws Exception {
-    	Envelope env = null;
+        Envelope env = null;
         env=RasterImageIO.getGeoReferencing(fileName,alwaysLookForTFWExtension, imageDimensions);
         if (env==null) {
-        	env=getEnvelopeFromView(fileName,imageDimensions,context);
-        	//Create worldfile only if it doesn't exist
-        	worldFileHandler = new WorldFileHandler(fileName, this.alwaysLookForTFWExtension);
-        	worldFileHandler.writeWorldFile(env, imageDimensions.x, imageDimensions.y);
-     		final File fil = new File(fileName);
-     		final String MSG = I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.message",
-     				fil.getName());
-     		context.getWorkbench().getFrame().setStatusMessage(MSG);
+            env=RasterImageIO.getEnvelopeFromView(fileName,imageDimensions,context);
         }
+            //Create worldfile only if it doesn't exist
+            //Previous version was creating a new worldfile al the times an image was loaded
+            worldFileHandler = new WorldFileHandler(fileName, this.alwaysLookForTFWExtension);
+            if (worldFileHandler.isWorldFileExistentForImage() == null) {
+                worldFileHandler.writeWorldFile(env, imageDimensions.x, imageDimensions.y);
+                final File fil = new File(fileName);
+                final String MSG = I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.message",fil.getName());
+                context.getWorkbench().getFrame().setStatusMessage(MSG);
+            }
+         
         return env;
     }
-
-     /**
-     * This method opens a dialog where users can input coordinates of the four cardinal points of the
-     * raster. It is used by RasterImageLayer framework in case there is no information about geographic
-     * position of the loaded image layer<br>
-     * It is public in case we want to reuse it in other raster process
-     * @param fileName
-     * @param imageDimensions
-     * @param context
-     * @return Envelope
-     * @throws NoninvertibleTransformException
-     */
-    public static Envelope getEnvelopeFromView(String fileName,Point imageDimensions,WorkbenchContext context) throws NoninvertibleTransformException {
-    	   double minx, maxx, miny, maxy;
-    	 final File fil = new File(fileName);
-    	 Envelope env;
-    	 final Viewport viewport = context.getLayerViewPanel().getViewport();
-    	 final Rectangle visibleRect = viewport.getPanel().getVisibleRect();
-    	 // 015-04-10 [Giuseppe Aruta] Calculate local coordinates
-    	 // as if the image is anchored to the view
-    	 final int width = imageDimensions.x;//.getWidth();
-    	 final int height = imageDimensions.y;//.getHeight();
-    	 final int visibleX1 = visibleRect.x;
-         final int visibleY1 = visibleRect.y;
-         final int visibleX2 = visibleX1 + width;// visibleRect.width;
-         final int visibleY2 = visibleY1 + height;// visibleRect.height;
-         final int visibleX3 = visibleX1 + visibleRect.width;
-         final int visibleY3 = visibleY1 + visibleRect.height;
-         final Coordinate upperLeftVisible = viewport
-                 .toModelCoordinate(new Point(0, 0));
-         final Coordinate lowerRightVisible1 = viewport
-                 .toModelCoordinate(new Point(visibleX2, visibleY2));
-         final Coordinate lowerRightVisible2 = viewport
-                 .toModelCoordinate(new Point(visibleX3, visibleY3));
-         context.getWorkbench().getFrame()
-                  .warnUser(
-                          I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
-         final WizardDialog dialog = new WizardDialog(context.getWorkbench().getFrame(),
-                  I18N.getInstance().get(
-                         "org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found-message",
-                         fil.getName()) , context.getErrorHandler());
-         dialog.init(new WizardPanel[] { new RasterImageWizardPanel() });
-
-         // 2015-04-10 [Giuseppe Aruta]wizard dialog now shows local
-         // coordinates if the image is anchored to /local view
-         RasterImageWizardPanel.minxTextField.setText(Double
-                 .toString(upperLeftVisible.x));
-         RasterImageWizardPanel.maxxTextField.setText(Double
-                 .toString(lowerRightVisible1.x));
-         RasterImageWizardPanel.minyTextField.setText(Double
-                 .toString(upperLeftVisible.y));
-         RasterImageWizardPanel.maxyTextField.setText(Double
-                 .toString(lowerRightVisible1.y));
-
-         // Set size after #init, because #init calls #pack. [Jon Aquino]
-         dialog.setSize(700, 350);
-         GUIUtil.centreOnWindow(dialog);
-         dialog.setVisible(true);
-
-         if (!dialog.wasFinishPressed()) {
-             // logger.printWarning("user canceled");
-             return null;
-         }
-         try {
-        	 if (RasterImageWizardPanel.warpCheckBox.isSelected()) {
-                  env = new Envelope(upperLeftVisible.x,
-                          lowerRightVisible2.x, upperLeftVisible.y,
-                          lowerRightVisible2.y);
-              } else {
-
-                  minx = Double.parseDouble((String) dialog
-                          .getData(RasterImageWizardPanel.MINX_KEY));
-                  maxx = Double.parseDouble((String) dialog
-                          .getData(RasterImageWizardPanel.MAXX_KEY));
-                  miny = Double.parseDouble((String) dialog
-                          .getData(RasterImageWizardPanel.MINY_KEY));
-                  maxy = Double.parseDouble((String) dialog
-                          .getData(RasterImageWizardPanel.MAXY_KEY));
-
-                  env = new Envelope(minx, maxx, miny, maxy);
-              }
-          } catch (final java.lang.NumberFormatException e) {
-
-              env = new Envelope(upperLeftVisible.x,
-                      lowerRightVisible1.x, upperLeftVisible.y,
-                      lowerRightVisible1.y);
-
-          }
-          return env;
-    }
-    
     
     
 }
