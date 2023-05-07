@@ -1,5 +1,45 @@
 ﻿Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
+New Features
+  * replace Quasimode Shortcut Alt+Shift with Shift to Pan
+   (alt+shift is used by windows to change the default language)
+  * Complete rewrite of MergePolygonsWithNeighbourPlugIn
+
+Improvements
+  * re-include batik libs in CORE, needed in "Change Style"
+  * upgrade RasterTools extension
+   - embedded JEP library conflicts with the JEP library of Sextante extension
+   - Raster Calculator of raster tools was not working.
+   - changed the package name embedded JEP as a workaround
+  * Upgraded Raster Tools Extension to v2.05 (#88)
+   - implement Spatial reference System into TIFF file export, allows to 
+     reproject raster and image files between different coordinate reference 
+     systems.
+   - Delaunay triangulation plugin: added a set of methods in order to cover 
+     a wide set of vector to raster transformation (Nearest Neighbor, Inverse 
+     Distance Weighted, Min Z, Max Z and Mean Z).
+   - Info and Style plugin are grouped together as one plugin.
+   - Raster Calculator plugin is deactivated in OJ Core due to missing JEP.
+  * Spatially consistency between 2  Raster layers
+   Check if the RasteImageLayer is spatially consistent with another:
+   a) both have the same cell size
+   b) both have the same dimension (same width and height)
+   c) both overlap to each other into the geographic space
+   Useful for overlapping processes between two raster image layers
+  * upgrade topology extension to 2.0.5 (speed improvement)
+  * Deactivated the numeric limit in raster/layer info (#90)
+  * convert Attributes of type OBJECT to string when writing shapefiles
+
+Bug Fixes (tickets on either
+  https://sourceforge.net/p/jump-pilot/bugs/ or
+  https://github.com/openjump-gis/openjump/issues )
+  * fix unintended exception in PlumePlugin
+  * fix geometry function dialog box (use selected features option was broken)
+  * survive invalid (probably PLUS) styles when opening projects with CORE
+
+
+Version 2.2.0 release rev.5193[9e7ba88] (released on 04. December 2022)
+
     New Features
     ------------
     New Raster tools including (PLUS version)
@@ -15,7 +55,6 @@
         (points and contours) to raster grid
       - a valid  raster 3D viewer adapted from ImageJ one (Public domain)
     Improve RemoveSpikePlugIn including new options
-
 
     Improvements
     ------------
