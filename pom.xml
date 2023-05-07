@@ -1358,7 +1358,7 @@
         <plugin>
           <groupId>se.bjurr.gitchangelog</groupId>
           <artifactId>git-changelog-maven-plugin</artifactId>
-          <version>1.95.2</version>
+          <version>1.97.0</version>
           <?m2e ignore?>
           <executions>
             <execution>
@@ -1384,7 +1384,7 @@ ${project.artifactId} ${project.version} Changelog
 
 {{#commits}}
 {{{commitTime}}} - {{{authorName}}}
-- https://github.com/{{{ownerName}}}/{{{repoName}}}/commit/{{{hash}}}
+- https://github.com/openjump-gis/openjump/commit/{{{hash}}}
 {{{messageTitle}}}
 {{#messageBodyItems}}
   {{{.}}}
