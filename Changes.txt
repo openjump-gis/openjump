@@ -7,10 +7,6 @@ New Features
 
 Improvements
   * re-include batik libs in CORE, needed in "Change Style"
-  * upgrade RasterTools extension
-   - embedded JEP library conflicts with the JEP library of Sextante extension
-   - Raster Calculator of raster tools was not working.
-   - changed the package name embedded JEP as a workaround
   * Upgraded Raster Tools Extension to v2.05 (#88)
    - implement Spatial reference System into TIFF file export, allows to 
      reproject raster and image files between different coordinate reference 
@@ -19,7 +15,9 @@ Improvements
      a wide set of vector to raster transformation (Nearest Neighbor, Inverse 
      Distance Weighted, Min Z, Max Z and Mean Z).
    - Info and Style plugin are grouped together as one plugin.
-   - Raster Calculator plugin is deactivated in OJ Core due to missing JEP.
+   - Removed embedded JEP classes: Raster Calculator plugin of Raster Tools
+     now uses external JEP library (OpenJUMP PLUS)  and it is deactivated 
+     if JEP is missing (OpenJUMP CORE).
   * Spatially consistency between 2  Raster layers
    Check if the RasteImageLayer is spatially consistent with another:
    a) both have the same cell size
