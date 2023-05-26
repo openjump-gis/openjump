@@ -260,7 +260,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
      * first pixel and not the center. I have corrected this in
      * WorldFileHandler.readWorldFile()
      * 
-     * [Giuseppe Aruta - 04/27/2023]. The method has been "slimed" from the previous version:<br>
+     * [Giuseppe Aruta - 04/27/2023]. The method has been optimized from the previous version:<br>
      * <li>a) The first part that build the Envelope from image info has been removed and delegated
      *  to RasterImageIO.getGeoReferencing() method.
      * <li>b) In the case that the geographic information of the image are not find, the envelope is
