@@ -23,6 +23,9 @@ import java.util.Locale;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterFactory;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+
 public class GridAscii {
 
     public GridAscii(String ascFullFileName) throws IOException{
@@ -439,6 +442,14 @@ public class GridAscii {
 
     public void setDecimalPlaces(Integer decimalPlaces) {
         this.decimalPlaces = decimalPlaces;
+    }
+    
+    public Envelope getEnvelope() {
+        Coordinate upperLeft = new Coordinate( xllCorner,
+              yllCorner +  nRows *  cellSize);
+        Coordinate lowerRight = new Coordinate( xllCorner
+              +  nCols *  cellSize,  yllCorner);
+        return new Envelope(upperLeft, lowerRight);
     }
     
     private String ascFullFileName = null;

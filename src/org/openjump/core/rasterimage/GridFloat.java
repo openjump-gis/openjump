@@ -25,6 +25,9 @@ import java.nio.channels.FileChannel;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterFactory;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+
 public class GridFloat {
 
     public GridFloat(String fltFullFileName) throws IOException{
@@ -454,7 +457,15 @@ public class GridFloat {
     public float[] getFloatArray() {
         return dataArray;
     }
-
+    
+    public Envelope getEnvelope() {
+        Coordinate upperLeft = new Coordinate( xllCorner,
+              yllCorner +  nRows *  cellSize);
+        Coordinate lowerRight = new Coordinate( xllCorner
+              +  nCols *  cellSize,  yllCorner);
+        return new Envelope(upperLeft, lowerRight);
+    }
+    
     private String fltFullFileName = null;
     private String hdrFullFileName = null;
 

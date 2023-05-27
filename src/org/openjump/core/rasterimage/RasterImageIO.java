@@ -25,6 +25,7 @@ import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.openjump.core.ccordsys.utils.SRSInfo;
+import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel;
 import org.xml.sax.SAXException;
 
 import com.sun.media.jai.codec.FileSeekableStream;
@@ -36,8 +37,12 @@ import com.sun.media.jai.codecimpl.TIFFImageEncoder;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
+import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.Viewport;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardDialog;
+import com.vividsolutions.jump.workbench.ui.wizard.WizardPanel;
 
 /**
  *
@@ -152,11 +157,11 @@ public class RasterImageIO {
 
 			GridFloat gf = new GridFloat(fileNameOrURL);
 			gf.readGrid(null);
-
-			Envelope imageEnvelope = new Envelope(gf.getXllCorner(),
-					gf.getXllCorner() + gf.getnCols() * gf.getCellSize(),
-					gf.getYllCorner(), gf.getYllCorner() + gf.getnRows()
-							* gf.getCellSize());
+			Envelope imageEnvelope = gf.getEnvelope();
+		//	Envelope imageEnvelope = new Envelope(gf.getXllCorner(),
+		//			gf.getXllCorner() + gf.getnCols() * gf.getCellSize(),
+		//			gf.getYllCorner(), gf.getYllCorner() + gf.getnRows()
+		//					* gf.getCellSize());
 
 			stats = new Stats(1);
 			stats.setStatsForBand(0, gf.getMinVal(), gf.getMaxVal(),
@@ -173,11 +178,11 @@ public class RasterImageIO {
 
 			GridAscii ga = new GridAscii(fileNameOrURL);
 			ga.readGrid(null);
-
-			Envelope imageEnvelope = new Envelope(ga.getXllCorner(),
-					ga.getXllCorner() + ga.getnCols() * ga.getCellSize(),
-					ga.getYllCorner(), ga.getYllCorner() + ga.getnRows()
-							* ga.getCellSize());
+			Envelope imageEnvelope =ga.getEnvelope();
+			//Envelope imageEnvelope = new Envelope(ga.getXllCorner(),
+			//		ga.getXllCorner() + ga.getnCols() * ga.getCellSize(),
+			//		ga.getYllCorner(), ga.getYllCorner() + ga.getnRows()
+			//				* ga.getCellSize());
 
 			BufferedImage pImage = ga.getBufferedImage();
 
@@ -416,21 +421,10 @@ public class RasterImageIO {
 		return null;
 	}
 
-	///**
-	// * Get Envelope  from file
-	// * @param fileName
-	// * @return Envelope
-	// * @throws ReferencedImageException
-	// */
-	//
-	///*	public static Envelope getGeoReferencing(String fileName) throws ReferencedImageException {
-	//	GeoReferencedRaster	geoRaster = new  GeoReferencedRaster(new File(fileName).toURI().toString());
-	//return geoRaster.getEnvelope();
-	//
-	//}*/
+	
 	
 	/**
-	 * Substituted by method getGeoReferencing(String fileName)
+	 * Gets Envelope from the file. Check first into aux.xml and world file
 	 * @param fileName file name
 	 * @param alwaysLookForTFWExtension whether the method should read georeferencing
 	 *                                  in an associated world file (tfw)
@@ -439,6 +433,59 @@ public class RasterImageIO {
 	 * @throws Exception if an Exception occurs
 	 */
 	public static Envelope getGeoReferencing(String fileName,
+			boolean alwaysLookForTFWExtension, Point imageDimensions) throws Exception {
+		Envelope env = null;
+		WorldFileHandler worldFileHandler = new WorldFileHandler(fileName,
+				alwaysLookForTFWExtension);
+		if (imageDimensions == null) {
+			throw new Exception(
+					I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.can-not-determine-image-dimensions"));
+		}
+		//First check file.aux.xml
+		String auxFile = fileName+".aux.xml";
+		if ((new File(auxFile)).exists()) {
+			env = worldFileHandler.auxFileEnvelope(auxFile, imageDimensions.x,imageDimensions.y);
+		}
+		//then check world file
+		if (env==null & worldFileHandler.isWorldFileExistentForImage() != null) {
+			env = worldFileHandler.readWorldFile(imageDimensions.x, imageDimensions.y);
+		}
+		if (env == null) {
+			boolean isGeoTiff = false;
+			if (fileName.toLowerCase().endsWith(".tif") || fileName.toLowerCase().endsWith(".tiff")) {
+				isGeoTiff = true;
+				env=TiffUtilsV2.getEnvelope(new File(fileName));
+			} else if (fileName.toLowerCase().endsWith(".flt")) {
+				isGeoTiff = true;
+				GridFloat gf = new GridFloat(fileName);
+				env =gf.getEnvelope();
+
+			} else if (fileName.toLowerCase().endsWith(".asc")
+					|| fileName.toLowerCase().endsWith(".txt")) {
+				isGeoTiff = true;
+				GridAscii ga = new GridAscii(fileName);
+				env = ga.getEnvelope();
+			}
+			if (!isGeoTiff || env == null) {
+				Logger.warn(I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
+				return null;
+			}
+		}
+		return env;
+	} 
+	
+	 
+	
+	/**
+	 * getGeoReferencing(String fileName) method since 04.21.2023
+	 * @param fileName file name
+	 * @param alwaysLookForTFWExtension whether the method should read georeferencing
+	 *                                  in an associated world file (tfw)
+	 * @param imageDimensions
+	 * @return Envelope envelope of the image in model coordinates
+	 * @throws Exception if an Exception occurs
+	 */
+	public static Envelope getGeoReferencing_old(String fileName,
 			boolean alwaysLookForTFWExtension, Point imageDimensions) throws Exception {
 
 		Envelope env = null;
@@ -993,5 +1040,93 @@ public class RasterImageIO {
 		private final double cellSizeY;
 
 	}
+	
+    /**
+    * [Giuseppe Aruta 4/24/2023] This method opens a dialog where users can input coordinates of the four cardinal points of the
+    * raster. It is used by RasterImageLayer framework in case there is no information about geographic
+    * position of the loaded image layer<br>
+    * In the previous version of this class,  this code was part of getGeoReferencing() method. It has been reloated
+    * in an independent method and made it public in order to reuse it in other raster process
+    * @param fileName
+    * @param imageDimensions
+    * @param context
+    * @return Envelope
+    * @throws NoninvertibleTransformException
+    */
+   public static Envelope getEnvelopeFromView(String fileName,Point imageDimensions,WorkbenchContext context) throws NoninvertibleTransformException {
+   	   double minx, maxx, miny, maxy;
+   	 final File fil = new File(fileName);
+   	 Envelope env;
+   	 final Viewport viewport = context.getLayerViewPanel().getViewport();
+   	 final Rectangle visibleRect = viewport.getPanel().getVisibleRect();
+   	 // 015-04-10 [Giuseppe Aruta] Calculate local coordinates
+   	 // as if the image is anchored to the view
+   	 final int width = imageDimensions.x;//.getWidth();
+   	 final int height = imageDimensions.y;//.getHeight();
+   	 final int visibleX1 = visibleRect.x;
+        final int visibleY1 = visibleRect.y;
+        final int visibleX2 = visibleX1 + width;// visibleRect.width;
+        final int visibleY2 = visibleY1 + height;// visibleRect.height;
+        final int visibleX3 = visibleX1 + visibleRect.width;
+        final int visibleY3 = visibleY1 + visibleRect.height;
+        final Coordinate upperLeftVisible = viewport
+                .toModelCoordinate(new Point(0, 0));
+        final Coordinate lowerRightVisible1 = viewport
+                .toModelCoordinate(new Point(visibleX2, visibleY2));
+        final Coordinate lowerRightVisible2 = viewport
+                .toModelCoordinate(new Point(visibleX3, visibleY3));
+        context.getWorkbench().getFrame()
+                 .warnUser(
+                         I18N.getInstance().get("org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found"));
+        final WizardDialog dialog = new WizardDialog(context.getWorkbench().getFrame(),
+                 I18N.getInstance().get(
+                        "org.openjump.core.rasterimage.AddRasterImageLayerWizard.no-worldfile-found-message",
+                        fil.getName()) , context.getErrorHandler());
+        dialog.init(new WizardPanel[] { new RasterImageWizardPanel() });
+
+        // 2015-04-10 [Giuseppe Aruta]wizard dialog now shows local
+        // coordinates if the image is anchored to /local view
+        RasterImageWizardPanel.minxTextField.setText(Double
+                .toString(upperLeftVisible.x));
+        RasterImageWizardPanel.maxxTextField.setText(Double
+                .toString(lowerRightVisible1.x));
+        RasterImageWizardPanel.minyTextField.setText(Double
+                .toString(upperLeftVisible.y));
+        RasterImageWizardPanel.maxyTextField.setText(Double
+                .toString(lowerRightVisible1.y));
+
+        // Set size after #init, because #init calls #pack. [Jon Aquino]
+        dialog.setSize(700, 350);
+        GUIUtil.centreOnWindow(dialog);
+        dialog.setVisible(true);
+
+        if (!dialog.wasFinishPressed()) {
+            // logger.printWarning("user canceled");
+            return null;
+        }
+        try {
+       	 if (RasterImageWizardPanel.warpCheckBox.isSelected()) {
+                 env = new Envelope(upperLeftVisible.x,
+                         lowerRightVisible2.x, upperLeftVisible.y,
+                         lowerRightVisible2.y);
+             } else {
+                 minx = Double.parseDouble((String) dialog
+                         .getData(RasterImageWizardPanel.MINX_KEY));
+                 maxx = Double.parseDouble((String) dialog
+                         .getData(RasterImageWizardPanel.MAXX_KEY));
+                 miny = Double.parseDouble((String) dialog
+                         .getData(RasterImageWizardPanel.MINY_KEY));
+                 maxy = Double.parseDouble((String) dialog
+                         .getData(RasterImageWizardPanel.MAXY_KEY));
+                 env = new Envelope(minx, maxx, miny, maxy);
+             }
+         } catch (final java.lang.NumberFormatException e) {
+             env = new Envelope(upperLeftVisible.x,
+                     lowerRightVisible1.x, upperLeftVisible.y,
+                     lowerRightVisible1.y);
+
+         }
+         return env;
+   }
 
 }
