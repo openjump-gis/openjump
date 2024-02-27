@@ -1561,13 +1561,6 @@ ${project.artifactId} ${project.version} Changelog
       </plugins>
     </build>
     <repositories>
-        <!-- Used for buoy and JAI core, codec and imageio
-             which are not avail on maven central -->
-        <repository>
-            <id>ojrepo</id>
-            <name>OpenJUMP Snapshot Repository</name>
-            <url>https://ojrepo.soldin.de/</url>
-        </repository>
         <!-- MvnRepository holds a list of recent repos
              https://mvnrepository.com/repos -->
         <repository>
@@ -1599,6 +1592,13 @@ ${project.artifactId} ${project.version} Changelog
             <id>imageio-ext-repository</id>
             <name>imageio-ext Repository</name>
             <url>https://maven.geo-solutions.it/</url>
+        </repository>
+        <!-- Used for buoy and JAI core, codec and imageio
+             which are not avail on maven central -->
+        <repository>
+            <id>ojrepo</id>
+            <name>OpenJUMP Snapshot Repository</name>
+            <url>https://ojrepo.soldin.de/</url>
         </repository>
     </repositories>
     <dependencies>
