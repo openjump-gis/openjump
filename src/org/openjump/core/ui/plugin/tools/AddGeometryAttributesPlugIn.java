@@ -279,7 +279,7 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
         if (addPolyWidth)    schema.addAttribute(POLY_WIDTH, AttributeType.DOUBLE);
         if (addPolyLength)   schema.addAttribute(POLY_LENGTH, AttributeType.DOUBLE);
         if (addCircularity)  schema.addAttribute(CIRCULARITY, AttributeType.DOUBLE);
-        if (addCompacity) schema.addAttribute(COMPACITY, AttributeType.STRING);
+        if (addCompacity) schema.addAttribute(COMPACITY, AttributeType.DOUBLE);
         if (addGeometryType) schema.addAttribute(GEOM_TYPE, AttributeType.STRING);
         if (addWKT)          schema.addAttribute(WKT, AttributeType.STRING);
         return schema;
