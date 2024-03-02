@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.workbench.JUMPWorkbench;
+import com.vividsolutions.jump.workbench.JUMPWorkbenchContext;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.Layer;
@@ -12,9 +13,10 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
 public class SpatialDSLayer extends Layer {
   protected WorkbenchContext workbenchContext;
 
-  // enforce parameters using constructor below
-  private SpatialDSLayer() {
+  // public for use with java2xml
+  public SpatialDSLayer() {
     super();
+    workbenchContext = JUMPWorkbench.getInstance().getContext();
   }
 
   public SpatialDSLayer(String name, Color fillColor, FeatureCollection featureCollection, LayerManager layerManager, WorkbenchContext workbenchContext) {
