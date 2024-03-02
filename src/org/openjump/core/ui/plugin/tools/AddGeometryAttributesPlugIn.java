@@ -63,51 +63,51 @@ import org.openjump.core.ui.plugin.AbstractThreadedUiPlugIn;
 
 public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
 
-    private static String LAYER               = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.layer");
+    private static final String LAYER               = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.layer");
 
-    private static String X                   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.x");
-    private static String Y                   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.y");
-    private static String ADD_XY              = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-xy");
+    private static final String X                   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.x");
+    private static final String Y                   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.y");
+    private static final String ADD_XY              = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-xy");
 
-    private static String Z                   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.z");
-    private static String ADD_Z               = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-z");
+    private static final String Z                   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.z");
+    private static final String ADD_Z               = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-z");
 
-    private static String NB_POINTS           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-points");
-    private static String ADD_NB_POINTS       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-points");
+    private static final String NB_POINTS           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-points");
+    private static final String ADD_NB_POINTS       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-points");
 
-    private static String NB_HOLES            = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-of-holes");
-    private static String ADD_NB_HOLES        = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-holes");
+    private static final String NB_HOLES            = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-of-holes");
+    private static final String ADD_NB_HOLES        = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-holes");
 
-    private static String NB_COMPONENTS       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-of-components");
-    private static String ADD_NB_COMPONENTS   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-components");
+    private static final String NB_COMPONENTS       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.nb-of-components");
+    private static final String ADD_NB_COMPONENTS   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-nb-of-components");
 
-    private static String LENGTH              = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.length");
-    private static String ADD_LENGTH          = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-length");
+    private static final String LENGTH              = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.length");
+    private static final String ADD_LENGTH          = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-length");
 
-    private static String AREA                = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.area");
-    private static String ADD_AREA            = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-area");
+    private static final String AREA                = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.area");
+    private static final String ADD_AREA            = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-area");
 
-    private static String GEOM_TYPE           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.geo-type");
-    private static String ADD_GEOMETRY_TYPE   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-geom-type");
+    private static final String GEOM_TYPE           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.geo-type");
+    private static final String ADD_GEOMETRY_TYPE   = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-geom-type");
 
-    private static String WKT                 = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.wkt");
-    private static String ADD_WKT             = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-wkt");
+    private static final String WKT                 = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.wkt");
+    private static final String ADD_WKT             = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-wkt");
 
-    private static String POLY_WIDTH          = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.poly-width");
-    private static String ADD_POLY_WIDTH      = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-poly-width");
+    private static final String POLY_WIDTH          = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.poly-width");
+    private static final String ADD_POLY_WIDTH      = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-poly-width");
 
-    private static String POLY_LENGTH         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.poly-length");
-    private static String ADD_POLY_LENGTH     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-poly-length");
+    private static final String POLY_LENGTH         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.poly-length");
+    private static final String ADD_POLY_LENGTH     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-poly-length");
 
-    private static String CIRCULARITY         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.circularity");
-    private static String ADD_CIRCULARITY     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-circularity");
+    private static final String CIRCULARITY         = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.circularity");
+    private static final String ADD_CIRCULARITY     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-circularity");
 
-    private static String COMPACITY           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.compacity");
-    private static String ADD_COMPACITY       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-compacity");
+    private static final String COMPACITY           = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.compacity");
+    private static final String ADD_COMPACITY       = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.add-compacity");
 
-    private static String GEOM_ATTRIBUTES     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.geometry-attributes");
+    private static final String GEOM_ATTRIBUTES     = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.geometry-attributes");
 
-    private static String COMPUTE_ATTRIBUTES  = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.compute-attributes");
+    private static final String COMPUTE_ATTRIBUTES  = I18N.getInstance().get("org.openjump.core.ui.plugin.tools.AddGeometryAttributesPlugIn.compute-attributes");
 
 
     String layer;
@@ -127,13 +127,13 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
     private boolean addCompacity  = false;
     
     public void initialize(PlugInContext context) throws Exception {
-    	    
-	        FeatureInstaller featureInstaller = context.getFeatureInstaller();
-	    	featureInstaller.addMainMenuPlugin(
-	    	        this,
-	                new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},
-	                getName() + "...", false, null,
-	                createEnableCheck(context.getWorkbenchContext()));
+
+      FeatureInstaller featureInstaller = context.getFeatureInstaller();
+      featureInstaller.addMainMenuPlugin(
+          this,
+          new String[] {MenuNames.TOOLS, MenuNames.TOOLS_EDIT_ATTRIBUTES},
+          getName() + "...", false, null,
+          createEnableCheck(context.getWorkbenchContext()));
     }
     
     public static MultiEnableCheck createEnableCheck(WorkbenchContext workbenchContext) {
@@ -141,19 +141,16 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
         return new MultiEnableCheck().add(checkFactory.createAtLeastNLayersMustExistCheck(1));
     }
     
-    
-	public boolean execute(PlugInContext context) throws Exception{
-	    this.reportNothingToUndoYet(context);
-	        
- 		MultiInputDialog dialog = new MultiInputDialog(
-	            context.getWorkbenchFrame(), getName(), true);
-	        setDialogValues(dialog, context);
-	        GUIUtil.centreOnWindow(dialog);
-	        dialog.setVisible(true);
-	        if (! dialog.wasOKPressed()) { return false; }
-	        getDialogValues(dialog);	    
-	    return true;
-	}
+    public boolean execute(PlugInContext context) throws Exception{
+      this.reportNothingToUndoYet(context);
+      MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
+      setDialogValues(dialog, context);
+      GUIUtil.centreOnWindow(dialog);
+      dialog.setVisible(true);
+      if (! dialog.wasOKPressed()) { return false; }
+      getDialogValues(dialog);
+      return true;
+    }
 
     public void setLayer(String sitesLayer) {
 	    this.layer = sitesLayer;
@@ -210,50 +207,48 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
     public void setAddWKT(boolean addWKT) {
 	    this.addWKT = addWKT;
 	}
-	
+
     private void setDialogValues(MultiInputDialog dialog, PlugInContext context) {
         layer = context.getCandidateLayer(0).getName();
-    	dialog.addLayerComboBox(LAYER, context.getLayerManager().getLayer(layer), null, context.getLayerManager());
-    	dialog.addCheckBox(ADD_XY, addXY);
-    	dialog.addCheckBox(ADD_Z, addZ);
-    	dialog.addCheckBox(ADD_NB_POINTS, addNbPoints);
-    	dialog.addCheckBox(ADD_NB_HOLES, addNbHoles);
-    	dialog.addCheckBox(ADD_NB_COMPONENTS, addNbComponents);
-    	dialog.addCheckBox(ADD_LENGTH, addLength);
-    	dialog.addCheckBox(ADD_AREA, addArea);
+        dialog.addLayerComboBox(LAYER, context.getLayerManager().getLayer(layer), null, context.getLayerManager());
+        dialog.addCheckBox(ADD_XY, addXY);
+        dialog.addCheckBox(ADD_Z, addZ);
+        dialog.addCheckBox(ADD_NB_POINTS, addNbPoints);
+        dialog.addCheckBox(ADD_NB_HOLES, addNbHoles);
+        dialog.addCheckBox(ADD_NB_COMPONENTS, addNbComponents);
+        dialog.addCheckBox(ADD_LENGTH, addLength);
+        dialog.addCheckBox(ADD_AREA, addArea);
         dialog.addCheckBox(ADD_POLY_WIDTH, addPolyWidth);
         dialog.addCheckBox(ADD_POLY_LENGTH, addPolyLength);
         dialog.addCheckBox(ADD_CIRCULARITY, addCircularity);
         dialog.addCheckBox(ADD_COMPACITY, addCompacity);
-    	dialog.addCheckBox(ADD_GEOMETRY_TYPE, addGeometryType);
-    	dialog.addCheckBox(ADD_WKT, addWKT);
+        dialog.addCheckBox(ADD_GEOMETRY_TYPE, addGeometryType);
+        dialog.addCheckBox(ADD_WKT, addWKT);
     }
 
-	private void getDialogValues(MultiInputDialog dialog) {
-	    layer           = dialog.getLayer(LAYER).getName();
-	    addXY           = dialog.getBoolean(ADD_XY);
-	    addZ            = dialog.getBoolean(ADD_Z);
-	    addNbPoints     = dialog.getBoolean(ADD_NB_POINTS);
-	    addNbHoles      = dialog.getBoolean(ADD_NB_HOLES);
-	    addNbComponents = dialog.getBoolean(ADD_NB_COMPONENTS);
-	    addLength       = dialog.getBoolean(ADD_LENGTH);
-	    addArea         = dialog.getBoolean(ADD_AREA);
-        addPolyWidth    = dialog.getBoolean(ADD_POLY_WIDTH);
-        addPolyLength   = dialog.getBoolean(ADD_POLY_LENGTH);
-        addCircularity  = dialog.getBoolean(ADD_CIRCULARITY);
-        addCompacity    = dialog.getBoolean(ADD_COMPACITY);
-	    addGeometryType = dialog.getBoolean(ADD_GEOMETRY_TYPE);
-	    addWKT          = dialog.getBoolean(ADD_WKT);
+    private void getDialogValues(MultiInputDialog dialog) {
+      layer           = dialog.getLayer(LAYER).getName();
+      addXY           = dialog.getBoolean(ADD_XY);
+      addZ            = dialog.getBoolean(ADD_Z);
+      addNbPoints     = dialog.getBoolean(ADD_NB_POINTS);
+      addNbHoles      = dialog.getBoolean(ADD_NB_HOLES);
+      addNbComponents = dialog.getBoolean(ADD_NB_COMPONENTS);
+      addLength       = dialog.getBoolean(ADD_LENGTH);
+      addArea         = dialog.getBoolean(ADD_AREA);
+      addPolyWidth    = dialog.getBoolean(ADD_POLY_WIDTH);
+      addPolyLength   = dialog.getBoolean(ADD_POLY_LENGTH);
+      addCircularity  = dialog.getBoolean(ADD_CIRCULARITY);
+      addCompacity    = dialog.getBoolean(ADD_COMPACITY);
+      addGeometryType = dialog.getBoolean(ADD_GEOMETRY_TYPE);
+      addWKT          = dialog.getBoolean(ADD_WKT);
     }
-    
-	
+
     public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
         monitor.report(COMPUTE_ATTRIBUTES + "...");
         LayerManager layerManager = context.getLayerManager();
         FeatureCollection inputFC = layerManager.getLayer(layer).getFeatureCollectionWrapper();
         FeatureCollection result = new FeatureDataset(getNewSchema(layerManager.getLayer(layer)));
-        for (Object o : inputFC.getFeatures()){
-            Feature f = (Feature)o;
+        for (Feature f : inputFC.getFeatures()){
             Feature bf = new BasicFeature(result.getFeatureSchema());
             Object[] attributes = new Object[result.getFeatureSchema().getAttributeCount()];
             System.arraycopy(f.getAttributes(), 0, attributes, 0, f.getSchema().getAttributeCount());
@@ -343,7 +338,7 @@ public class AddGeometryAttributesPlugIn extends AbstractThreadedUiPlugIn{
                 //calcul normal sur surface allong�e
                 return area / (((length / 2.0) - Math.sqrt(val)) / 2.0);
             } else {
-                //diam�tre du disque de m�me surface, sur une surface ramass�e
+                //diameter of a circle with the same area, on compact surfaces
                 //return 2.0 * Math.sqrt(area / Math.PI);
                 //improve width calculation for compact geometries
                 MinimumDiameter diameter = new MinimumDiameter(g);
