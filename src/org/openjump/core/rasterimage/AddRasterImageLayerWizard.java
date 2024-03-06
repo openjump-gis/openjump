@@ -183,13 +183,17 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 
         String catName = StandardCategoryNames.WORKING;
 
-        try {
-            catName = ((Category) context.createPlugInContext()
+        if (!context.createPlugInContext().getLayerNamePanel().getSelectedCategories().isEmpty()) {
+            try {
+                catName = ((Category) context.createPlugInContext()
                     .getLayerNamePanel().getSelectedCategories().toArray()[0])
                     .getName();
-        } catch (final RuntimeException e1) {
-            Logger.warn("AddRasterImageLayerWizard.addImage: " +
+            } catch (final RuntimeException e1) {
+                Logger.warn("AddRasterImageLayerWizard.addImage: " +
                     "error trying to get the name of the currently selected category", e1);
+            }
+        } else {
+            Logger.warn("AddRasterImageLayerWizard.addImage: a category must be selected");
         }
 
         final int layersAsideImage = context.getLayerManager()
