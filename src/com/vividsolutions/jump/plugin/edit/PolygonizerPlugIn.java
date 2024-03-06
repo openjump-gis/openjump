@@ -58,6 +58,7 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
   private final static String SRC_LAYER = I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Line-Layer");
   private final static String NODE_INPUT = I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Node-input-before-polygonizing");
   private final static String SELECTED_ONLY = GenericNames.USE_SELECTED_FEATURES_ONLY;
+  private final static String EXTRACT_ONLY_POLYGONAL = I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Extract-only-polygonal");
     
   private boolean useSelected = false;
   private String layerName;
@@ -66,6 +67,7 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
   private int dangleCount = 0;
   private int cutCount = 0;
   private int invalidRingCount = 0;
+  private boolean extractOnlyPolygonal = false;
 
   private GeometryFactory fact = new GeometryFactory();
 
@@ -109,7 +111,7 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
   public void run(TaskMonitor monitor, PlugInContext context) throws Exception {
     monitor.allowCancellationRequests();
 
-    Polygonizer polygonizer = new Polygonizer();
+    Polygonizer polygonizer = new Polygonizer(extractOnlyPolygonal);
     monitor.report(I18N.getInstance().get("jump.plugin.edit.PolygonizerPlugIn.Polygonizing"));
 
     Layer layer = context.getLayerManager().getLayer(layerName);
@@ -262,6 +264,7 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
     dialog.addLayerComboBox(SRC_LAYER, context.getCandidateLayer(0), null, context.getLayerManager());
     dialog.addCheckBox(SELECTED_ONLY, useSelected);
     dialog.addCheckBox(NODE_INPUT, nodeInputLines, NODE_INPUT);
+    dialog.addCheckBox(EXTRACT_ONLY_POLYGONAL, extractOnlyPolygonal, EXTRACT_ONLY_POLYGONAL);
   }
 
   private void getDialogValues(MultiInputDialog dialog) {
@@ -269,5 +272,6 @@ public class PolygonizerPlugIn extends AbstractThreadedUiPlugIn {
     layerName = layer.getName();
     useSelected = dialog.getBoolean(SELECTED_ONLY);
     nodeInputLines = dialog.getBoolean(NODE_INPUT);
+    extractOnlyPolygonal = dialog.getBoolean(EXTRACT_ONLY_POLYGONAL);
   }
 }
