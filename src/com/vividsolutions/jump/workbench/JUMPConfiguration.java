@@ -54,6 +54,7 @@ import com.vividsolutions.jump.workbench.imagery.geoimg.GeoImageFactoryFileLayer
 import com.vividsolutions.jump.workbench.imagery.geotiff.GeoTIFFImageFactory;
 import com.vividsolutions.jump.workbench.imagery.graphic.CommonsImageFactory;
 import com.vividsolutions.jump.workbench.imagery.mrsid.MrSIDImageFactory;
+import com.vividsolutions.jump.workbench.imagery.openjpeg.OpenJpegImageFactory;
 import com.vividsolutions.jump.workbench.registry.Registry;
 import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.plugin.*;
@@ -532,6 +533,7 @@ public class JUMPConfiguration implements Setup {
     // the next two factories are deprecated. the same and better functionality is in GeoImageFactoryFileLayerLoader
     //addImageFactory(workbenchContext, registry, new IOGraphicImageFactory(), null);
     //addImageFactory(workbenchContext, registry, new JAIGraphicImageFactory(), null);
+    addImageFactory(workbenchContext, registry, new OpenJpegImageFactory(), null);
     addImageFactory(workbenchContext, registry, new CommonsImageFactory(), null);
     addImageFactory(workbenchContext, registry, new ECWImageFactory(), null);
     addImageFactory(workbenchContext, registry, new JPEG2000ImageFactory(), null);

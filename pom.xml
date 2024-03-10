@@ -29,7 +29,8 @@
         <batik.version>1.6-1</batik.version>
         <jts.version>1.19.0</jts.version>
         <postgresql.version>42.5.5</postgresql.version>
-        <imageio-ext.version>1.4.6</imageio-ext.version>
+        <!--imageio-ext.version>1.4.6</imageio-ext.version-->
+        <imageio-ext.version>1.4.9</imageio-ext.version>
     </properties>
     <profiles>
         <!-- switching os dependent lib paths for launch4j (not needed anymore, kept for reference) -->
@@ -1802,8 +1803,14 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
           <groupId>org.gdal</groupId>
           <artifactId>gdal</artifactId>
-          <version>3.5.0</version>
+          <!--version>3.5.0</version-->
+          <version>3.8.0</version>
         </dependency>
+      <dependency>
+        <groupId>de.digitalcollections.imageio</groupId>
+        <artifactId>imageio-openjpeg</artifactId>
+        <version>0.6.7</version>
+      </dependency>
         <!-- imageio-ext modules needed for compilation and included in CORE -->
         <dependency>
             <groupId>it.geosolutions.imageio-ext</groupId>
