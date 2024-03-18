@@ -15,13 +15,13 @@ import de.digitalcollections.openjpeg.imageio.OpenJp2ImageReaderSpi;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.util.AffineTransformation;
-import org.locationtech.jts.geom.util.NoninvertibleTransformationException;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -41,8 +41,9 @@ public class OpenJpegImage implements ReferencedImage, Disposable {
   private File location;
   private Envelope imageEnvInModelCoordinate = new Envelope();
   private Envelope previousViewportEnvInModelCoordinates;
+  private Envelope subImageInViewportCoordinates;
+  //private double previousViewportScale = 0.0;
   private int alpha = 255;
-  private double lastViewportScale = 0.0;
   private double[] pyramid_resolutions;
   protected BufferedImage cachedImage = null;
 
@@ -80,10 +81,15 @@ public class OpenJpegImage implements ReferencedImage, Disposable {
   private Envelope getEnvelope(String location, int width, int height) throws URISyntaxException, IOException {
     // TODO first option should be to read jp2 metadata, but the library has no option for that
     // Try to retrieve envelope
-    // 1/ from .j2w world file
-    // 2/ from .tab georeference file
-    // 3/ from the file name (supposing it follows french BDORTHO convention
+    // 1/ from jp2 metadata (limited capabilities)
+    // 2/ from .j2w world file
+    // 3/ from .tab georeference file
+    // 4/ from the file name (supposing it follows french BDORTHO convention
     URI uri = new URI(location);
+    GeoJP2 geoJP2 = new GeoJP2(location);
+    if (geoJP2.getMetadata() != null) {
+      return geoJP2.getMetadata().getActualEnvelope();
+    }
     String path = new File(uri).getPath();
     Logger.info("Path: "+ path);
     // Try to find georeference from a j2w file
@@ -142,55 +148,53 @@ public class OpenJpegImage implements ReferencedImage, Disposable {
       Graphics2D g,
       Viewport viewport
   ) throws ReferencedImageException {
+
     OpenJp2ImageReader reader = null;
     final double viewportScale = viewport.getScale();
-
     Envelope viewportEnvInModelCoordinates = viewport.getEnvelopeInModelCoordinates();
-    if (previousViewportEnvInModelCoordinates == null || lastViewportScale == 0.0) {
-      previousViewportEnvInModelCoordinates = viewportEnvInModelCoordinates;
-      lastViewportScale = viewportScale;
-    }
+    //Logger.info("--------------- new paint ----------------");
 
+    // If image does not intersect viewport, return immediately
     if (!imageEnvInModelCoordinate.intersects(viewportEnvInModelCoordinates)) {
       cachedImage = null;
+      previousViewportEnvInModelCoordinates = viewportEnvInModelCoordinates;
       return;
     }
-
-    // if nothing changed, no reason to rerender the whole shebang
+    //viewport.getPanel().setDoubleBuffered(true);
+    // if nothing has changed, no reason to rerender the whole shebang
     // this is mainly the case when OJ lost and regained focus
-    if (cachedImage == null || lastViewportScale != viewportScale ||
-        imageEnvInModelCoordinate != previousViewportEnvInModelCoordinates) {
-
+    if (cachedImage == null ||
+        !viewportEnvInModelCoordinates.equals(previousViewportEnvInModelCoordinates)) {
       try {
-
+        //Logger.info("viewport : " + viewportEnvInModelCoordinates);
         // only set view if viewport has changed
         int level = 0;
         for (int i = 0; i < pyramid_resolutions.length; i++) {
           if (pyramid_resolutions[i] * viewportScale > 1) break;
           level = i;
         }
-        Logger.info("jp2 level = " + level);
-
+        //Thread.sleep(100);
         // Here calculate the real world image edges
         Envelope subImageInModelCoordinate = imageEnvInModelCoordinate.intersection(viewportEnvInModelCoordinates);
-        Logger.info("Subimage in model coordinates " + subImageInModelCoordinate);
+        // Transformation from full image to model (world coordinates)
         AffineTransformation image2modelAffineTransformation =
             new AffineTransformation(
                 pyramid_resolutions[level], 0, imageEnvInModelCoordinate.getMinX(),
                 0, -pyramid_resolutions[level], imageEnvInModelCoordinate.getMaxY());
+        // Using image2model transformation compute subIlage coordinates in full image coordinate system
+        //viewport.zoom(viewportEnvInModelCoordinates);
         Envelope subImageInImageCoordinates = transform(
             subImageInModelCoordinate, image2modelAffineTransformation.getInverse());
-        //Logger.info("SubImage in image coordinates" + subImageInImageCoordinates);
-        Point2D subImageULInViewportCoordinate = viewport.getModelToViewTransform().transform(
+        AffineTransform at = viewport.getModelToViewTransform();
+        Point2D subImageULInViewportCoordinate = at.transform(
             new Point2D.Double(subImageInModelCoordinate.getMinX(), subImageInModelCoordinate.getMaxY()),
             new Point2D.Double());
-        Point2D subImageLRInViewportCoordinate = viewport.getModelToViewTransform().transform(
+        Point2D subImageLRInViewportCoordinate = at.transform(
             new Point2D.Double(subImageInModelCoordinate.getMaxX(), subImageInModelCoordinate.getMinY()),
             new Point2D.Double());
-        Envelope subImageInViewportCoordinates = new Envelope(
+        subImageInViewportCoordinates = new Envelope(
             new Coordinate(subImageULInViewportCoordinate.getX(), subImageULInViewportCoordinate.getY()),
             new Coordinate(subImageLRInViewportCoordinate.getX(), subImageLRInViewportCoordinate.getY()));
-
         reader = (OpenJp2ImageReader)new OpenJp2ImageReaderSpi().createReaderInstance();
         ImageInputStream iis = ImageIO.createImageInputStream(this.location);
         reader.setInput(iis);
@@ -201,27 +205,37 @@ public class OpenJpegImage implements ReferencedImage, Disposable {
             (int)subImageInImageCoordinates.getWidth(),
             (int)subImageInImageCoordinates.getHeight()));
         BufferedImage br = reader.read(level, param);
-
+        Composite composite = g.getComposite();
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f * alpha / 255));
+        g.setTransform(new AffineTransform());
         g.drawImage(br,
             (int) subImageInViewportCoordinates.getMinX(),
             (int) subImageInViewportCoordinates.getMinY(),
             (int) subImageInViewportCoordinates.getMaxX(),
             (int) subImageInViewportCoordinates.getMaxY(),
             0, 0, br.getWidth(), br.getHeight(),
-            Color.WHITE,
-            viewport.getPanel());
-
+            Color.WHITE, null);
+        g.setComposite(composite);
         cachedImage = br;
       } catch (Exception e) {
         throw new ReferencedImageException(e);
       } finally {
         previousViewportEnvInModelCoordinates = viewportEnvInModelCoordinates;
-        lastViewportScale = viewportScale;
         if (reader != null) {
           reader.dispose();
         }
       }
     }
+    else {
+      g.drawImage(cachedImage,
+          (int) subImageInViewportCoordinates.getMinX(),
+          (int) subImageInViewportCoordinates.getMinY(),
+          (int) subImageInViewportCoordinates.getMaxX(),
+          (int) subImageInViewportCoordinates.getMaxY(),
+          0, 0, cachedImage.getWidth(), cachedImage.getHeight(),
+          Color.WHITE, null);
+    }
+    previousViewportEnvInModelCoordinates = viewportEnvInModelCoordinates;
   }
 
   private Envelope transform(Envelope env, AffineTransformation at) {
