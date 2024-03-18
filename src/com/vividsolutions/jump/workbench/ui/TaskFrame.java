@@ -33,8 +33,9 @@ package com.vividsolutions.jump.workbench.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.awt.geom.NoninvertibleTransformException;
+import java.beans.PropertyVetoException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -161,6 +162,30 @@ public class TaskFrame extends JInternalFrame implements TaskFrameProxy,
         });
         layerViewPanel = new LayerViewPanel(task.getLayerManager(),
                 workbenchContext.getWorkbench().getFrame());
+
+        // Keep viewport affine tranform correct after taskframe resizing
+        this.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);
+                try {
+                    layerViewPanel.getViewport().update();
+                } catch (NoninvertibleTransformException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(final ComponentEvent e) {
+                super.componentResized(e);
+                try {
+                    layerViewPanel.getViewport().update();
+                } catch (NoninvertibleTransformException ex) {
+                      throw new RuntimeException(ex);
+                }
+            }
+        });
 
         try {
             jbInit();
