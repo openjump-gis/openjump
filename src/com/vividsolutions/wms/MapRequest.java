@@ -37,10 +37,7 @@ import static org.openjump.util.UriUtil.urlEncode;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.openjump.util.UriUtil;
 
@@ -60,6 +57,8 @@ public class MapRequest extends AbstractWMSRequest{
     private String format;
     private MapStyle style;
     private String moreParameters;
+
+    private Map<String,String> originalUrlQueryParameters;
     
     /**
      * Creates a new MapRequest.
@@ -163,6 +162,10 @@ public class MapRequest extends AbstractWMSRequest{
 
     public void setMoreParameters(String moreParameters) {
         this.moreParameters = moreParameters;
+    }
+
+    public void setOriginalUrlQueryParameters(Map<String,String> parameters) {
+        originalUrlQueryParameters = parameters;
     }
 
     /**
@@ -283,7 +286,14 @@ public class MapRequest extends AbstractWMSRequest{
        if (moreParameters != null && moreParameters.length()>0) {
          if (!moreParameters.startsWith("&"))
            urlBuf.append("&");
-         urlBuf.append(urlEncode(moreParameters));
+         for (char c : moreParameters.toCharArray()) {
+            if (c == '&' || c == '=') urlBuf.append(c);
+            else urlBuf.append(urlEncode(new String(new char[]{c})));
+         }
+       }
+
+       if (originalUrlQueryParameters.containsKey("apikey")) {
+           urlBuf.append("&").append("apikey=").append(urlEncode(originalUrlQueryParameters.get("apikey")));
        }
 
        Logger.trace(urlBuf.toString());

@@ -38,6 +38,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -73,6 +74,8 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
   public static final String FORMAT_KEY = "FORMAT";
 
   public static final String URL_KEY = "URL";
+
+  public static final String URL_QUERY_PARAMETERS = "URL_QUERY_PARAMETERS";
   
   public static final String I18N_PREFIX = "ui.plugin.wms.URLWizardPanel.";
 
@@ -191,6 +194,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       dataMap.put(FORMAT_KEY, format);
       dataMap.put(MapLayerWizardPanel.INITIAL_LAYER_NAMES_KEY, null);
       dataMap.put(VERSION_KEY, wmsVersion);
+      dataMap.put(URL_QUERY_PARAMETERS, UriUtil.getParameters(URI.create(url)));
     } catch (IOException e) {
       throw new CancelNextException(e);
     }

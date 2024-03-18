@@ -49,11 +49,12 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
       "http://www2.demis.nl/WMS/wms.ashx?wms=WorldMap",
       "http://demo.mapserver.org/cgi-bin/wms",
       "http://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/raster/ortofoto_colore_12.map&service=wms&request=getCapabilities&version=1.3.0&",
-      "http://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?",
+      //"http://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?",
       "https://wxs.ign.fr/essentiels/geoportail/r/wms?",
       "https://wxs.ign.fr/administratif/geoportail/r/wms?",
       "https://wxs.ign.fr/ortho/geoportail/r/wms?",
-      "http://magosm.magellium.com/geoserver/ows?"
+      "http://magosm.magellium.com/geoserver/ows?",
+      "https://data.geopf.fr/wms-r/wms?"
   };
 
   private String lastWMSVersion = WMService.WMS_1_3_0;
@@ -107,12 +108,15 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
       String format = ((String)dialog.getData(SRSWizardPanel.FORMAT_KEY));
       MapStyle style = (MapStyle)dialog.getData(SRSWizardPanel.STYLE_KEY);
       String moreParameters = (String)dialog.getData(SRSWizardPanel.ADDITIONAL_PARAMETERS_KEY);
+      java.util.Map<String,String> originalUrlQueryParameters =
+          (java.util.Map<String,String>)dialog.getData(URLWizardPanel.URL_QUERY_PARAMETERS);
       WMSLayer layer = new WMSLayer(title, context.getLayerManager(), service,
         srs, layerNames, format);
       // [mmichaud 2021-03] adding styles and more
       if (style != null && style.getName().length()>0)
         layer.setStyle(style);
       layer.setMoreParameters(moreParameters);
+      layer.setOriginalUrlQueryParameters(originalUrlQueryParameters);
 
       LayerNamePanel layerNamePanel = context.getLayerNamePanel();
       Collection<Category> selectedCategories = layerNamePanel.getSelectedCategories();

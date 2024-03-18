@@ -41,6 +41,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 
@@ -69,6 +70,7 @@ public class WMSLayer
   private String format;
   private MapStyle style;
   private String moreParameters;
+  private Map<String,String> originalUrlQueryParameters;
   private int alpha = 255;
 
   private Reference oldImage;
@@ -186,6 +188,7 @@ public class WMSLayer
     request.setFormat(format);
     request.setStyle(style);
     request.setMoreParameters(moreParameters);
+    request.setOriginalUrlQueryParameters(originalUrlQueryParameters);
     request.setImageWidth(panel.getWidth());
     request.setImageHeight(panel.getHeight());
     request.setLayerNames(layerNames);
@@ -237,6 +240,14 @@ public class WMSLayer
 
   public void setMoreParameters(String moreParameters) {
     this.moreParameters = moreParameters;
+  }
+
+  public Map<String,String> getOriginalUrlQueryParameters() {
+    return originalUrlQueryParameters;
+  }
+
+  public void setOriginalUrlQueryParameters(Map<String,String> parameters) {
+    originalUrlQueryParameters = parameters;
   }
 
   public Object clone() throws java.lang.CloneNotSupportedException {

@@ -5,6 +5,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -318,5 +320,20 @@ public final class UriUtil {
       return url;
 
     return url.replaceFirst(regexp, "$1" + userinfo + "@$5");
+  }
+
+  public static Map<String,String> getParameters(URI uri) {
+    Map<String,String> parameters = new LinkedHashMap<>();
+    String query = uri.getRawQuery();
+    if (query != null && !query.isEmpty()) {
+      String[] pairs = query.split("&");
+      for (String pair : pairs) {
+        if (pair.contains("=")) {
+          String[] param =pair.split("=",2);
+          parameters.put(param[0], urlDecode(param[1]));
+        }
+      }
+    }
+    return parameters;
   }
 }
