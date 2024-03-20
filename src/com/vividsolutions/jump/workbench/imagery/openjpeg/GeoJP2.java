@@ -57,17 +57,16 @@ public class GeoJP2 {
           }
           String[] names = metadata.getMetadataFormatNames();
           for (String name : names) {
-            System.out.println("Format name: " + name);
-            //displayMetadata(metadata.getAsTree(names[i]));
+            //System.out.println("Format name: " + name);
             Node tree = metadata.getAsTree(name);
             toMap(map, tree, "", "@");
-            for (Map.Entry<String, Object> e : map.entrySet()) {
-              if (e.getValue() != null && e.getValue() instanceof double[]) {
-                System.out.println(e.getKey() + ": " + Arrays.toString((double[]) e.getValue()));
-              } else {
-                System.out.println(e.getKey() + ": " + e.getValue());
-              }
-            }
+//            for (Map.Entry<String, Object> e : map.entrySet()) {
+//              if (e.getValue() != null && e.getValue() instanceof double[]) {
+//                System.out.println(e.getKey() + ": " + Arrays.toString((double[]) e.getValue()));
+//              } else {
+//                System.out.println(e.getKey() + ": " + e.getValue());
+//              }
+//            }
           }
         } catch(Exception e) {
           Logger.warn(e);
