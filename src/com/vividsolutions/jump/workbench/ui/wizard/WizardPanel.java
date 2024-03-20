@@ -43,7 +43,7 @@ public interface WizardPanel {
      * Called when the user presses Next on this panel's previous panel
      * @param dataMap the dataMap containing all parameters
      */
-    void enteredFromLeft(Map dataMap);
+    void enteredFromLeft(Map<String,Object> dataMap);
 
     /**
      * Called when the user presses Next on this panel

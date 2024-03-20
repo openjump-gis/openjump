@@ -34,7 +34,6 @@ package com.vividsolutions.wms;
 
 import static org.openjump.util.UriUtil.urlEncode;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -57,9 +56,8 @@ public class MapRequest extends AbstractWMSRequest{
     private String format;
     private MapStyle style;
     private String moreParameters;
-
-    private Map<String,String> originalUrlQueryParameters;
-    
+    //private Map<String,String> originalUrlQueryParameters;
+    private String apiKeyNameAndValue;
     /**
      * Creates a new MapRequest.
      * @param service the WMService which this MapRequest will use
@@ -73,7 +71,6 @@ public class MapRequest extends AbstractWMSRequest{
         transparent = false;
         format = null;
     }
-
 
     /**
      * Returns the format of this request.
@@ -151,9 +148,6 @@ public class MapRequest extends AbstractWMSRequest{
         // for( int i = 0; i < formats.length; i++ ) {
         //     if( formats[i].equals( format ) ) {
         this.format = format;
-        return;
-        // }
-        //throw new IllegalArgumentException();
     }
 
     public void setStyle(MapStyle style) {
@@ -164,8 +158,8 @@ public class MapRequest extends AbstractWMSRequest{
         this.moreParameters = moreParameters;
     }
 
-    public void setOriginalUrlQueryParameters(Map<String,String> parameters) {
-        originalUrlQueryParameters = parameters;
+    public void setApiKeyNameAndValue(String apiKeyNameAndValue) {
+        this.apiKeyNameAndValue = apiKeyNameAndValue;
     }
 
     /**
@@ -283,17 +277,17 @@ public class MapRequest extends AbstractWMSRequest{
        else {
          urlBuf.append("&STYLES=").append(urlEncode(style.getName()));
        }
-       if (moreParameters != null && moreParameters.length()>0) {
+       if (moreParameters != null && !moreParameters.isEmpty()) {
          if (!moreParameters.startsWith("&"))
            urlBuf.append("&");
          for (char c : moreParameters.toCharArray()) {
             if (c == '&' || c == '=') urlBuf.append(c);
-            else urlBuf.append(urlEncode(new String(new char[]{c})));
+            else urlBuf.append(urlEncode(String.valueOf(c)));
          }
        }
 
-       if (originalUrlQueryParameters.containsKey("apikey")) {
-           urlBuf.append("&").append("apikey=").append(urlEncode(originalUrlQueryParameters.get("apikey")));
+       if (apiKeyNameAndValue != null) {
+           urlBuf.append("&").append(apiKeyNameAndValue);
        }
 
        Logger.trace(urlBuf.toString());

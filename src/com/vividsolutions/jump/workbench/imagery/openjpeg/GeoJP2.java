@@ -49,26 +49,31 @@ public class GeoJP2 {
         // attach source to the reader
         reader.setInput(iis, true);
         // read metadata of first image
-        IIOMetadata metadata = reader.getImageMetadata(0);
-        if (metadata == null) {
-          Logger.info("No metadata could be read from jp2 file");
-          return;
-        }
-        String[] names = metadata.getMetadataFormatNames();
-        for (String name : names) {
-          System.out.println("Format name: " + name);
-          //displayMetadata(metadata.getAsTree(names[i]));
-          Node tree = metadata.getAsTree(name);
-          toMap(map, tree, "", "@");
-          for (Map.Entry<String, Object> e : map.entrySet()) {
-            if (e.getValue() != null && e.getValue() instanceof double[]) {
-              System.out.println(e.getKey() + ": " + Arrays.toString((double[]) e.getValue()));
-            } else {
-              System.out.println(e.getKey() + ": " + e.getValue());
+        try {
+          IIOMetadata metadata = reader.getImageMetadata(0);
+          if (metadata == null) {
+            Logger.info("No metadata could be read from jp2 file");
+            return;
+          }
+          String[] names = metadata.getMetadataFormatNames();
+          for (String name : names) {
+            System.out.println("Format name: " + name);
+            //displayMetadata(metadata.getAsTree(names[i]));
+            Node tree = metadata.getAsTree(name);
+            toMap(map, tree, "", "@");
+            for (Map.Entry<String, Object> e : map.entrySet()) {
+              if (e.getValue() != null && e.getValue() instanceof double[]) {
+                System.out.println(e.getKey() + ": " + Arrays.toString((double[]) e.getValue()));
+              } else {
+                System.out.println(e.getKey() + ": " + e.getValue());
+              }
             }
           }
+        } catch(Exception e) {
+          Logger.warn(e);
+        } finally {
+          reader.dispose();
         }
-        reader.dispose();
       }
       if (map.get("/sun/JPEG2000HeaderBox/Width") == null) return;
       if (map.get("/sun/JPEG2000HeaderBox/Height") == null) return;

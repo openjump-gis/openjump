@@ -57,7 +57,7 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
       "https://data.geopf.fr/wms-r/wms?"
   };
 
-  private String lastWMSVersion = WMService.WMS_1_3_0;
+  //private String lastWMSVersion = WMService.WMS_1_3_0;
 
   private ChooseProjectPanel chooseProjectPanel;
 
@@ -108,21 +108,23 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
       String format = ((String)dialog.getData(SRSWizardPanel.FORMAT_KEY));
       MapStyle style = (MapStyle)dialog.getData(SRSWizardPanel.STYLE_KEY);
       String moreParameters = (String)dialog.getData(SRSWizardPanel.ADDITIONAL_PARAMETERS_KEY);
-      java.util.Map<String,String> originalUrlQueryParameters =
-          (java.util.Map<String,String>)dialog.getData(URLWizardPanel.URL_QUERY_PARAMETERS);
+
       WMSLayer layer = new WMSLayer(title, context.getLayerManager(), service,
         srs, layerNames, format);
       // [mmichaud 2021-03] adding styles and more
-      if (style != null && style.getName().length()>0)
+      if (style != null && !style.getName().isEmpty()) {
         layer.setStyle(style);
+      }
       layer.setMoreParameters(moreParameters);
-      layer.setOriginalUrlQueryParameters(originalUrlQueryParameters);
-
+      String apiKey = (String)dialog.getData(URLWizardPanel.API_KEY_NAME_AND_VALUE);
+      if (apiKey != null) {
+        layer.setApiKeyNameAndValue(apiKey);
+      }
       LayerNamePanel layerNamePanel = context.getLayerNamePanel();
       Collection<Category> selectedCategories = layerNamePanel.getSelectedCategories();
       LayerManager mgr = context.getLayerManager();
       // zooming to the whole WMSLayer if this is the first Layerable
-      if (mgr.getLayerables(Layerable.class).size() == 0) {
+      if (mgr.getLayerables(Layerable.class).isEmpty()) {
         try {
           workbenchContext.getLayerViewPanel().getViewport().zoom(layer.getEnvelope());
         } catch(NoninvertibleTransformException e) {
@@ -135,7 +137,7 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
       }
       mgr.addLayerable(categoryName, layer);
       String[] lastURLs = (String[])dialog.getData(URLWizardPanel.URL_KEY);
-      lastWMSVersion = (String)dialog.getData(URLWizardPanel.VERSION_KEY);
+      //lastWMSVersion = (String)dialog.getData(URLWizardPanel.VERSION_KEY);
 
       PersistentBlackboardPlugIn.get(context.getWorkbenchContext()).put(
         CACHED_URL_KEY, toCommaString(lastURLs));

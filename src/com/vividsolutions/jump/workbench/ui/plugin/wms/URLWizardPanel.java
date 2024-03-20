@@ -32,26 +32,21 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin.wms;
 
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.URI;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.*;
 
+import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 import org.openjump.util.UriUtil;
 
@@ -75,7 +70,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
 
   public static final String URL_KEY = "URL";
 
-  public static final String URL_QUERY_PARAMETERS = "URL_QUERY_PARAMETERS";
+  public static final String API_KEY_NAME_AND_VALUE = "API_KEY_NAME_AND_VALUE";
   
   public static final String I18N_PREFIX = "ui.plugin.wms.URLWizardPanel.";
 
@@ -85,15 +80,24 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
 
   private String[] urlList;
   private SelectUrlWithAuthPanel urlPanel;
+  private ApiKeyPanel apiKeyPanel;
 
   // [UT]
   public static final String VERSION_KEY = "WMS_VERSION";
   public static final String TITLE = I18N.getInstance().get(I18N_PREFIX + "select-uniform-resource-locator-url");
 
+  public static final String API_KEY_AUTHENTICATION = I18N.getInstance().get(I18N_PREFIX + "api-key-authentication");
+  public static final String API_KEY_NAME = I18N.getInstance().get(I18N_PREFIX + "api-key-name");
+  public static final String API_KEY_VALUE = I18N.getInstance().get(I18N_PREFIX + "api-key-value");
+
   // this is a hack, guess why
   public static String wmsVersion = WMService.WMS_1_3_0;
-  public static final String[] wmsVersions = new String[] { WMService.WMS_1_0_0,
-      WMService.WMS_1_1_0, WMService.WMS_1_1_1, WMService.WMS_1_3_0 };
+  public static final String[] wmsVersions = new String[] {
+      WMService.WMS_1_0_0,
+      WMService.WMS_1_1_0,
+      WMService.WMS_1_1_1,
+      WMService.WMS_1_3_0
+  };
   private String[] initialUrls = new String[0];
 
   private boolean lossyPreferred = true;
@@ -108,7 +112,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       
       jbInit();
     } catch (Exception ex) {
-      ex.printStackTrace();
+      Logger.warn(ex);
     }
   }
 
@@ -136,17 +140,23 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       urlList = initialUrls;
 
     urlPanel = new SelectUrlWithAuthPanel(urlList);
-    urlPanel.setBorder(BorderFactory.createTitledBorder(getTitle()));
+    urlPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), getTitle()));
 
     keepNorth.add(urlPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
-        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,
-            0, 0, 0), 0, 0));
+        GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 2, 2), 0, 0));
 
     JPanel versionPanel = createVersionPanel();
-    versionPanel.setBorder(BorderFactory.createTitledBorder(I18N.getInstance().get("ui.GenericNames.version")));
-    keepNorth.add(versionPanel, new GridBagConstraints(0, 1,
-        1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-        new Insets(0, 0, 0, 0), 0, 0));
+    versionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), I18N.getInstance().get("ui.GenericNames.version")));
+    keepNorth.add(versionPanel, new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 2, 2), 0, 0));
+
+    apiKeyPanel = new ApiKeyPanel();
+    apiKeyPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), API_KEY_AUTHENTICATION));
+    keepNorth.add(apiKeyPanel, new GridBagConstraints(0, 2, 1, 1, 1, 1,
+        GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+        new Insets(2, 2, 2, 2), 0, 0));
 
     this.setLayout(new GridBagLayout());
     this.add(keepNorth, new GridBagConstraints(0, 1, 1, 1, 1, 1,
@@ -162,6 +172,11 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
     try {
       String url = urlPanel.getUrl();
       url = UriUtil.urlAddCredentials(url, urlPanel.getUser(), urlPanel.getPass());
+      String apiKeyNameAndValue = apiKeyPanel.getApiKeyNameAndValue();
+      if (apiKeyNameAndValue != null) {
+        if (url.endsWith("?")) url = url + apiKeyNameAndValue;
+        else url = url + "&" + apiKeyNameAndValue;
+      }
 
       WMService service = new WMService(url, wmsVersion);
 
@@ -194,18 +209,17 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       dataMap.put(FORMAT_KEY, format);
       dataMap.put(MapLayerWizardPanel.INITIAL_LAYER_NAMES_KEY, null);
       dataMap.put(VERSION_KEY, wmsVersion);
-      dataMap.put(URL_QUERY_PARAMETERS, UriUtil.getParameters(URI.create(url)));
+      dataMap.put(API_KEY_NAME_AND_VALUE, apiKeyNameAndValue);
     } catch (IOException e) {
       throw new CancelNextException(e);
     }
   }
 
-  public void enteredFromLeft(Map dataMap) {
+  public void enteredFromLeft(Map<String,Object> dataMap) {
     this.dataMap = dataMap;
   }
 
-  public void enteredFromRight() throws Exception {
-    // System.out.println(Arrays.toString((String[])dataMap.get(URL_KEY)));
+  public void enteredFromRight() {
     if (dataMap.get(URL_KEY) != null)
       urlPanel.setUrlsList((String[]) dataMap.get(URL_KEY));
   }
@@ -222,7 +236,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
     try {
       String urlString = urlPanel.getUrl();
       String host = new URL(urlString).getHost();
-      return host.length() > 0;
+      return !host.isEmpty();
     } catch (Throwable e) {
       return false;
     }
@@ -259,6 +273,35 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
     return p;
   }
 
+  private static class ApiKeyPanel extends JPanel {
+    public ApiKeyPanel() {
+      super(new GridBagLayout());
+      GridBagConstraints c = new GridBagConstraints();
+      c.insets = new Insets(2,2,2,2);
+      c.anchor = GridBagConstraints.WEST;
+      c.fill = GridBagConstraints.NONE;
+      c.gridx = 0; c.gridy = 0; c.weightx = 0.1;
+      add(keyNameLabel, c);
+      c.gridx = 1; c.gridy = 0; c.weightx = 1.0;
+      add(keyNameField, c);
+      c.fill = GridBagConstraints.NONE;
+      c.gridx = 0; c.gridy = 1; c.weightx = 0.1;
+      add(keyValueName, c);
+      c.gridx = 1; c.gridy = 1; c.weightx = 1.0;
+      add(keyValueField, c);
+    }
+    JLabel keyNameLabel = new JLabel(API_KEY_NAME);
+    JTextField keyNameField = new JTextField(12);
+    JLabel keyValueName = new JLabel(API_KEY_VALUE);
+    JTextField keyValueField = new JTextField(12);
+    public String getApiKeyNameAndValue() throws UnsupportedEncodingException {
+      if (keyNameField.getText() != null && !keyNameField.getText().trim().isEmpty() &&
+          keyValueField.getText() != null && !keyValueField.getText().trim().isEmpty()) {
+        return URLEncoder.encode(keyNameField.getText(), "UTF-8") + "=" +
+            URLEncoder.encode(keyValueField.getText(), "UTF-8");
+      } else return null;
+    }
+  }
 
   
   // [UT] 20.10.2005
@@ -287,5 +330,3 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
     // nothing to do
   }
 }
-
-

@@ -41,7 +41,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JButton;
 
@@ -64,15 +63,13 @@ public class WMSLayer
 
   private WMService service;
   private String wmsVersion = WMService.WMS_1_3_0;
-
   private List<String> layerNames = new ArrayList<>();
   private String srs;
   private String format;
   private MapStyle style;
   private String moreParameters;
-  private Map<String,String> originalUrlQueryParameters;
+  private String apiKeyNameAndValue;
   private int alpha = 255;
-
   private Reference oldImage;
   private URL oldURL;
 
@@ -128,8 +125,7 @@ public class WMSLayer
   }
 
   protected void init() {
-    getBlackboard().put(RenderingManager.USE_MULTI_RENDERING_THREAD_QUEUE_KEY,
-        true);
+    getBlackboard().put(RenderingManager.USE_MULTI_RENDERING_THREAD_QUEUE_KEY, true);
     getBlackboard().put(LayerNameRenderer.USE_CLOCK_ANIMATION_KEY, true);
   }
 
@@ -188,7 +184,7 @@ public class WMSLayer
     request.setFormat(format);
     request.setStyle(style);
     request.setMoreParameters(moreParameters);
-    request.setOriginalUrlQueryParameters(originalUrlQueryParameters);
+    request.setApiKeyNameAndValue(this.apiKeyNameAndValue);
     request.setImageWidth(panel.getWidth());
     request.setImageHeight(panel.getHeight());
     request.setLayerNames(layerNames);
@@ -242,12 +238,12 @@ public class WMSLayer
     this.moreParameters = moreParameters;
   }
 
-  public Map<String,String> getOriginalUrlQueryParameters() {
-    return originalUrlQueryParameters;
+  public String getApiKeyNameAndValue() {
+    return apiKeyNameAndValue;
   }
 
-  public void setOriginalUrlQueryParameters(Map<String,String> parameters) {
-    originalUrlQueryParameters = parameters;
+  public void setApiKeyNameAndValue(String apiKeyNameAndValue) {
+    this.apiKeyNameAndValue = apiKeyNameAndValue;
   }
 
   public Object clone() throws java.lang.CloneNotSupportedException {
