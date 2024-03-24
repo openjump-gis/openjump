@@ -220,7 +220,7 @@ public class URLConnectionProvider {
       sc.init(null, new TrustManager[] { trm }, null);
       trustedURLs.add(url);
     } else {
-      Logger.info("Using the system trust manager to verify certificate for host '"+host+"'.");
+      Logger.debug("Using the system trust manager to verify certificate for host '"+host+"'.");
       sc.init(null, null, null);
     }
     // TODO: we should maybe not set a factory for _all_ connections here, 
