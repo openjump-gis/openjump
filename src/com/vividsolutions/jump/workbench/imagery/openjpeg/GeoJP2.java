@@ -8,9 +8,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.openjump.core.rasterimage.Metadata;
 import org.openjump.core.rasterimage.Resolution;
 import org.openjump.core.rasterimage.Stats;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -22,11 +20,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
+/**
+ * Try to find GeoJP2 geo-reference information in image metadata
+ */
 public class GeoJP2 {
   private final String location;
   private Metadata metadata = null;
@@ -36,37 +34,42 @@ public class GeoJP2 {
     init();
   }
 
-  public void init() {
+  public Metadata getMetadata() {
+    return metadata;
+  }
+
+  private void init() {
     ImageInputStream iis;
     Map<String, Object> map = new LinkedHashMap<>();
     try {
       URI uri = new URI(location);
       File file = new File(uri);
+
       iis = ImageIO.createImageInputStream(file);
       Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-      if (readers.hasNext()) {
+      while (readers.hasNext()) {
         ImageReader reader = readers.next();
-        // attach source to the reader
+        System.out.println("reader " + reader);
         reader.setInput(iis, true);
         // read metadata of first image
         try {
           IIOMetadata metadata = reader.getImageMetadata(0);
           if (metadata == null) {
-            Logger.info("No metadata could be read from jp2 file");
-            return;
+            continue;
           }
           String[] names = metadata.getMetadataFormatNames();
+          System.out.println(Arrays.toString(names));
           for (String name : names) {
-            //System.out.println("Format name: " + name);
+            System.out.println("Format name: " + name);
             Node tree = metadata.getAsTree(name);
             toMap(map, tree, "", "@");
-//            for (Map.Entry<String, Object> e : map.entrySet()) {
-//              if (e.getValue() != null && e.getValue() instanceof double[]) {
-//                System.out.println(e.getKey() + ": " + Arrays.toString((double[]) e.getValue()));
-//              } else {
-//                System.out.println(e.getKey() + ": " + e.getValue());
-//              }
-//            }
+            for (Map.Entry<String, Object> e : map.entrySet()) {
+              if (e.getValue() != null && e.getValue() instanceof double[]) {
+                System.out.println(e.getKey() + ": " + Arrays.toString((double[]) e.getValue()));
+              } else {
+                System.out.println(e.getKey() + ": " + e.getValue());
+              }
+            }
           }
         } catch(Exception e) {
           Logger.warn(e);
@@ -88,10 +91,6 @@ public class GeoJP2 {
     } catch (IOException | URISyntaxException e) {
       Logger.warn(e);
     }
-  }
-
-  public Metadata getMetadata() {
-    return metadata;
   }
 
   private Metadata setMetadata(double[] tiePoints, double[] scale, int width, int height, int bands) {
@@ -164,4 +163,5 @@ public class GeoJP2 {
     }
     return bytes;
   }
+
 }
