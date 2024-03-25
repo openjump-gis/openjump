@@ -145,15 +145,15 @@ public class GeoTIFFRaster extends GeoReferencedRaster {
     //String name = worldFileName();
     InputStream is = WorldFile.find(fileName);
     // Read the tags from the tiff worldfile.
-    List lines = FileUtil.getContents(is);
+    List<String> lines = FileUtil.getContents(is);
+    if (is != null) {
+      is.close();
+    }
     double[] tags = new double[6];
     for (int i = 0; i < 6; i++) {
-      String line = (String) lines.get(i);
+      String line = lines.get(i);
       tags[i] = Double.parseDouble(line);
     }
-//    setCoorRasterTiff_tiepointLT(new Coordinate(0, 0));
-//    setCoorModel_tiepointLT(new Coordinate(0, 0));
-//    setAffineTransformation(new AffineTransform(tags));
     setEnvelope(tags);
   }
   
