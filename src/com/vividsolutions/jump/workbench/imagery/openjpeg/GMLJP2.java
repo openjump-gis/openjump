@@ -17,12 +17,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.awt.*;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -88,12 +89,11 @@ public class GMLJP2 {
     ByteSequenceMatcher jp2cMatcher = new ByteSequenceMatcher(new int[]{0x63, 0x32, 0x70, 0x6A});
     ByteSequenceMatcher xmlTagMatcher = new ByteSequenceMatcher(new int[]{0x20, 0x6C, 0x6D, 0x78});
     if (jp2Path != null && Files.isReadable(jp2Path)) {
-      try (FileChannel channel = FileChannel.open(jp2Path)) {
-        MappedByteBuffer mappedByteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0L, channel.size());
+      try (InputStream is = new FileInputStream(String.valueOf(jp2Path))) {
         int currentByte;
-        while (mappedByteBuffer.hasRemaining() && !jp2cMatcher.matches((currentByte = mappedByteBuffer.get()))) {
+        while ((currentByte = is.read()) != -1 && !jp2cMatcher.matches((currentByte))) {
           if (xmlTagMatcher.matches(currentByte)) {
-            String xmlString = extractBlock(mappedByteBuffer);
+            String xmlString = extractBlock(is);
             if (!xmlString.contains("gml:FeatureCollection")) continue;
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             try {
@@ -123,7 +123,10 @@ public class GMLJP2 {
     Element lowerCorner = XPathUtils.getElement("//gml:lowerCorner", root, NSCONTEXT);
     Element upperCorner = XPathUtils.getElement("//gml:upperCorner", root, NSCONTEXT);
     Element grid = XPathUtils.getElement("//gml:limits/gml:GridEnvelope/gml:high", root, NSCONTEXT);
-    String srsName = "EPSG:" + envNode.getAttribute("srsName").split("EPSG:")[1];
+    String srsAttribute = envNode.getAttribute("srsName");
+    String srsName = srsAttribute.contains("EPSG:") ?
+            "EPSG:" + envNode.getAttribute("srsName").split("EPSG:")[1]
+            : srsAttribute;
     String[] lower = lowerCorner.getTextContent().split(" ");
     String[] upper = upperCorner.getTextContent().split(" ");
     String[] gridSize = grid.getTextContent().split(" ");
@@ -139,8 +142,6 @@ public class GMLJP2 {
       lly = Double.parseDouble(lower[0]);
       urx = Double.parseDouble(upper[1]);
       ury = Double.parseDouble(upper[0]);
-      //nbcol = Integer.parseInt(gridSize[1]) + 1;
-      //nbrow = Integer.parseInt(gridSize[0]) + 1;
     }
 
     return new Metadata(new Envelope(llx, urx, lly, ury), new Envelope(llx, urx, lly, ury),
@@ -148,10 +149,10 @@ public class GMLJP2 {
         (urx - llx) / nbcol, (ury - lly) / nbrow, Double.NaN, new Stats(3));
   }
 
-  private String extractBlock(MappedByteBuffer buffer) throws IOException {
+  private String extractBlock(InputStream is) throws IOException {
     StringBuilder builder = new StringBuilder();
     int current;
-    while (!blockTerminators.contains(current = buffer.get())) {
+    while (!blockTerminators.contains(current = is.read())) {
       builder.append((char) current);
     }
     return builder.toString();

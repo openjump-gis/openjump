@@ -58,6 +58,7 @@ public class OpenJpegImage implements ReferencedImage, AlphaSetting, Disposable 
     ImageReader reader = null;
 
     try {
+      Logger.info("Init image reader for " + location);
       URI uri = new URI(location);
       this.location = new File(uri);
       Info info = new OpenJpeg().getInfo(this.location.toPath());
@@ -81,7 +82,7 @@ public class OpenJpegImage implements ReferencedImage, AlphaSetting, Disposable 
     }
   }
 
-  private Envelope getEnvelope(String location, int width, int height) throws URISyntaxException, IOException {
+  private Envelope getEnvelope(String location, int width, int height) throws URISyntaxException {
     // Try to retrieve envelope
     // 1/ from .j2w world file
     // 2/ from .tab georeference file
@@ -228,7 +229,10 @@ public class OpenJpegImage implements ReferencedImage, AlphaSetting, Disposable 
             (int)subImageInImageCoordinates.getMinY(),
             (int)subImageInImageCoordinates.getWidth(),
             (int)subImageInImageCoordinates.getHeight()));
+        long t0 = System.currentTimeMillis();
         BufferedImage br = reader.read(level, param);
+        Logger.debug("Read image " + br.getWidth() + "x" + br.getHeight() + " (level=" + level + "): " +
+                (System.currentTimeMillis()-t0) + " s");
         Composite composite = g.getComposite();
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1f * alpha / 255));
         g.drawImage(br,
