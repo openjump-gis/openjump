@@ -299,10 +299,14 @@ public class WMSLayer
     try {
       for (String name : list) {
         MapLayer lyr = getService().getCapabilities().getMapLayerByName(name);
-        BoundingBox bb = lyr.getBoundingBox(getSRS());
-        if (bb != null
-            && bb.getEnvelope().getMinX() < bb.getEnvelope().getMaxX()) {
-          envelope.expandToInclude(bb.getEnvelope());
+        if (lyr != null) {
+          BoundingBox bb = lyr.getBoundingBox(getSRS());
+          if (bb != null
+                  && bb.getEnvelope().getMinX() < bb.getEnvelope().getMaxX()) {
+            envelope.expandToInclude(bb.getEnvelope());
+          }
+        } else {
+          Logger.debug("Could not get WMS MapLayer " + name);
         }
       }
     } catch (IOException e) {
