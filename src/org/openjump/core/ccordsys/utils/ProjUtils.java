@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.io.FilenameUtils;
 import org.openjump.core.ccordsys.srid.SRIDStyle;
 import org.openjump.core.rasterimage.RasterImageLayer;
@@ -61,11 +61,9 @@ public class ProjUtils {
      *            . eg. "c\documents\folder\image.tif"
      * @return the projection srid as a string. eg "32632"
      * @throws IOException if an IOException occurs
-     * @throws URISyntaxException if an URISyntaxException occurs
      */
     public static SRSInfo getSRSInfoFromGeoTiff(String fileSourcePath)
-            throws IOException, URISyntaxException,
-            TiffTags.TiffReadingException, ImageReadException {
+            throws IOException, TiffTags.TiffReadingException {
         return TiffTags.readMetadata(new File(fileSourcePath)).getSRSInfo();
     }
 
@@ -443,8 +441,7 @@ public class ProjUtils {
                 TiffTags.TiffMetadata metadata = null;
                 try {
                     metadata = TiffTags.readMetadata(new File(fileSourcePath));
-                } catch (ImageReadException | IOException
-                        | TiffReadingException e) {
+                } catch (IOException | TiffReadingException e) {
                     e.printStackTrace();
                 }
                 if (metadata.isGeoTiff()) {

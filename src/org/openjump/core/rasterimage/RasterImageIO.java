@@ -21,9 +21,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImagingException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
-import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
+import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldTypeAscii;
+import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldTypeDouble;
+import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldTypeFloat;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 import org.xml.sax.SAXException;
 
@@ -383,7 +385,7 @@ public class RasterImageIO {
 			try {
 				Dimension dimension = org.apache.commons.imaging.Imaging.getImageSize(new File(filenameOrURL));
 				return new Point((int)dimension.getWidth(), (int)dimension.getHeight());
-			} catch(ImageReadException e) {
+			} catch(ImagingException e) {
 				throw new IOException(e);
 			}
 		} else if (filenameOrURL.toLowerCase().endsWith(".tif")
@@ -652,8 +654,7 @@ public class RasterImageIO {
 
 	}
 
-	public static Double getNoData(String fileNameOrURL) throws IOException,
-			ImageReadException {
+	public static Double getNoData(String fileNameOrURL) throws IOException {
 
 		if (fileNameOrURL.toLowerCase().endsWith(".asc")
 				|| fileNameOrURL.toLowerCase().endsWith(".txt")) {
@@ -671,11 +672,11 @@ public class RasterImageIO {
 
 			TiffField field = TiffTags
 					.readField(new File(fileNameOrURL), 42113);
-			if (field.getFieldType() == FieldType.DOUBLE) {
+			if (field.getFieldType() instanceof FieldTypeDouble) {
 				return field.getDoubleValue();
-			} else if (field.getFieldType() == FieldType.FLOAT) {
+			} else if (field.getFieldType() instanceof FieldTypeFloat) {
 				return field.getDoubleValue();
-			} else if (field.getFieldType() == FieldType.ASCII) {
+			} else if (field.getFieldType() instanceof FieldTypeAscii) {
 				return Double.parseDouble(field.getStringValue());
 			}
 

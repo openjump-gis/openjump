@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 
 import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterImageLayer.RasterDataNotFoundException;
@@ -130,9 +129,8 @@ public class RasterImageLayerProperties {
 	     * @param file the File containing the image
 	     * @return the color depth as a String
 	     * @throws IOException if an IOException occurs during file I/O
-	     * @throws ImageReadException if an Exception occurs during image reading
 	     */
-	    public static String getColorDepth(Raster raster, File file) throws IOException, ImageReadException {
+	    public static String getColorDepth(Raster raster, File file) throws IOException {
 	    	 BufferedImage buf;
 	    	 String components ="(Cannot read num componets)";
 	    	 ColorModel cm;
@@ -164,9 +162,8 @@ public class RasterImageLayerProperties {
 	     * @param file the File containing the image
 	     * @return the number of bits per pixel as a String
 	     * @throws IOException if an IOException occurs during file I/O
-			 * @throws ImageReadException if an Exception occurs during image reading
 	     */
-	    public static  String getDPI(Raster raster, File file) throws IOException, ImageReadException {
+	    public static  String getDPI(Raster raster, File file) throws IOException {
 	    	 int pixelSize;
 	    	 String pixelSizeS="";
 	    	 try {

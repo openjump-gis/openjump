@@ -20,7 +20,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageParser;
@@ -197,7 +196,7 @@ public class TiffUtils {
   }
 
   private static Stats calculateStats(File tiffFile, double noDataValue, File imageFile)
-      throws ParserConfigurationException, TransformerException, ImageReadException, IOException, SAXException {
+      throws ParserConfigurationException, TransformerException, IOException, SAXException {
 
     Stats stats = null;
 

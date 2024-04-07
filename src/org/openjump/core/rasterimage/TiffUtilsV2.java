@@ -24,11 +24,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageParser;
-import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
+import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldTypeAscii;
+import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldTypeByte;
 import org.xml.sax.SAXException;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -296,12 +296,12 @@ public class TiffUtilsV2 {
 	    	  if(tiffField.getTag() == TiffTags.TIFFTAG_GDAL_NODATA) {
 	    		  try {
 	    			  String noDataString = "";
-	                  if(tiffField.getFieldType() == FieldType.ASCII) {
+	                  if(tiffField.getFieldType() instanceof FieldTypeAscii) {
 	                      noDataString = tiffField.getStringValue();
 	                      if(noDataString.equalsIgnoreCase("NaN")) {
 	                          noDataString = "NaN";
 	                      }                    
-	                  } else if(tiffField.getFieldType() == FieldType.BYTE) {
+	                  } else if(tiffField.getFieldType() instanceof FieldTypeByte) {
 	                      noDataString = new String(tiffField.getByteArrayValue());
 	                  }
 	                  noData = Double.parseDouble(noDataString);
@@ -456,12 +456,11 @@ public class TiffUtilsV2 {
 	   * @return a Stats object containing statistics about image data
 	   * @throws ParserConfigurationException if a ParserConfigurationException occurs
 	   * @throws TransformerException if a TransformerException occurs
-	   * @throws ImageReadException if a ImageReadException occurs
 	   * @throws IOException if a IOException occurs
 	   * @throws SAXException if a SAXException occurs
 	   */
 	  private static Stats calculateStats(File tiffFile, double noDataValue, File imageFile)
-	      throws ParserConfigurationException, TransformerException, ImageReadException, IOException, SAXException {
+	      throws ParserConfigurationException, TransformerException, IOException, SAXException {
 
 	    Stats stats = null;
 

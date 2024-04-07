@@ -1761,7 +1761,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-imaging</artifactId>
-            <version>1.0-alpha3</version>
+            <version>1.0.0-alpha4</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

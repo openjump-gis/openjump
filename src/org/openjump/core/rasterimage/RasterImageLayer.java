@@ -25,8 +25,8 @@ import java.util.UUID;
 import javax.media.jai.JAI;
 
 import com.vividsolutions.jump.workbench.model.*;
-import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.ImagingException;
 import org.openjump.util.metaData.MetaDataMap;
 import org.openjump.util.metaData.ObjectContainingMetaInformation;
 
@@ -374,7 +374,7 @@ public final class RasterImageLayer extends GeoReferencedLayerable
                     else {
                         try {
                             bitsPerPixel = Imaging.getImageInfo(new File(imageFileName)).getBitsPerPixel();
-                        } catch(ImageReadException e) {
+                        } catch(ImagingException e) {
                             Logger.warn("Can't get ImageInfo of " + imageFileName, e);
                         }
                     }
@@ -1586,19 +1586,19 @@ public final class RasterImageLayer extends GeoReferencedLayerable
 	 * <li>both have the same dimension (same width and height)
 	 * <li>both overlap to each other into the geographic space
 	 * 
-	 * @param  RasterImageLayer
+	 * @param  rasterImageLayer another RasterImageLayer
 	 * @return true if they are spatially consistent, false if they are not
 	 */
-	public  boolean isSpatiallyConsistentWith(RasterImageLayer rasteimageLayer) {
+	public  boolean isSpatiallyConsistentWith(RasterImageLayer rasterImageLayer) {
 	
-	        if (!this.getWholeImageEnvelope().equals(rasteimageLayer.getWholeImageEnvelope())) {
+	        if (!this.getWholeImageEnvelope().equals(rasterImageLayer.getWholeImageEnvelope())) {
 			return false;
 		}
 		
-		if (this.getOrigImageWidth() != rasteimageLayer.getOrigImageWidth()) {
+		if (this.getOrigImageWidth() != rasterImageLayer.getOrigImageWidth()) {
 			return false;
 		}
-		if (this.getOrigImageHeight() != rasteimageLayer.getOrigImageHeight()) {
+		if (this.getOrigImageHeight() != rasterImageLayer.getOrigImageHeight()) {
 			return false;
 		}
 		return true;

@@ -3,12 +3,10 @@ package com.vividsolutions.jump.workbench.imagery.graphic;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.imaging.FormatCompliance;
-import org.apache.commons.imaging.common.bytesource.ByteSource;
-import org.apache.commons.imaging.common.bytesource.ByteSourceInputStream;
+import org.apache.commons.imaging.bytesource.ByteSource;
 import org.apache.commons.imaging.formats.tiff.TiffContents;
 import org.apache.commons.imaging.formats.tiff.TiffDirectory;
 import org.apache.commons.imaging.formats.tiff.TiffField;
@@ -42,7 +40,7 @@ public class CommonsTIFFImage extends CommonsImage {
     String uri = getUri();
 
     try {
-      ByteSource byteSource = new ByteSourceInputStream(CompressedFile.openFile(uri), UriUtil.getFileName(uri));
+      ByteSource byteSource = ByteSource.inputStream(CompressedFile.openFile(uri), UriUtil.getFileName(uri));
       TiffReader tiffReader = new TiffReader(true);
       TiffContents contents = tiffReader.readDirectories(byteSource, true, FormatCompliance.getDefault());
       TiffDirectory directory = contents.directories.get(0);

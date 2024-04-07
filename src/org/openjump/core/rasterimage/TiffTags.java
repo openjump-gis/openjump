@@ -1,22 +1,23 @@
 package org.openjump.core.rasterimage;
 
+import org.apache.commons.imaging.ImagingException;
+import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldTypeAscii;
+import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldTypeByte;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageParser;
-import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.libtiff.jai.codec.XTIFF;
 import org.openjump.core.ccordsys.Unit;
 import org.openjump.core.ccordsys.utils.SRSInfo;
 
 public class TiffTags {
     
-    public static TiffMetadata readMetadata(File tiffFile) throws IOException, TiffReadingException, ImageReadException {
+    public static TiffMetadata readMetadata(File tiffFile) throws IOException, TiffReadingException {
         
         Integer colCount = null;
         Integer rowCount = null;
@@ -44,12 +45,12 @@ public class TiffTags {
                     break;
                 case TIFFTAG_GDAL_NODATA:
                     String noDataString = "";
-                    if(tiffField.getFieldType() == FieldType.ASCII) {
+                    if(tiffField.getFieldType() instanceof FieldTypeAscii) {
                         noDataString = tiffField.getStringValue();
                         if(noDataString.equalsIgnoreCase("NaN")) {
                             noDataString = "NaN";
                         }                    
-                    } else if(tiffField.getFieldType() == FieldType.BYTE) {
+                    } else if(tiffField.getFieldType() instanceof FieldTypeByte) {
                         noDataString = new String(tiffField.getByteArrayValue());
                     }
                     noData = Double.parseDouble(noDataString);
@@ -175,7 +176,7 @@ public class TiffTags {
         else return "";
     }
     
-    static TiffField readField(File tiffFile, int tagCode) throws ImageReadException, IOException {
+    static TiffField readField(File tiffFile, int tagCode) throws IOException {
      
         TiffImageParser parser = new TiffImageParser();
         TiffImageMetadata metadata = (TiffImageMetadata) parser.getMetadata(tiffFile);
@@ -189,7 +190,7 @@ public class TiffTags {
         
     }
     
-    public static TiffField readField(File tiffFile, String tagName) throws ImageReadException, IOException {
+    public static TiffField readField(File tiffFile, String tagName) throws IOException {
      
         TiffImageParser parser = new TiffImageParser();
         TiffImageMetadata metadata = (TiffImageMetadata) parser.getMetadata(tiffFile);
@@ -203,7 +204,7 @@ public class TiffTags {
         
     }
     
-    public static List<TiffField> readAllFields(File tiffFile, int tagCode) throws ImageReadException, IOException {
+    public static List<TiffField> readAllFields(File tiffFile, int tagCode) throws IOException {
      
         TiffImageParser parser = new TiffImageParser();
         TiffImageMetadata metadata = (TiffImageMetadata) parser.getMetadata(tiffFile);
