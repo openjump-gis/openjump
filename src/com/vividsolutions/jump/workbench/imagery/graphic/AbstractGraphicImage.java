@@ -243,9 +243,9 @@ public abstract class AbstractGraphicImage implements ReferencedImage,
       image_w += (leftOffset + rightOffset);
       image_h += (topOffset + botOffset);
 
-      RenderingHints rh = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-          RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-      g.setRenderingHints(rh);
+//      RenderingHints rh = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
+//          RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+//      g.setRenderingHints(rh);
 
       // parameters: destination corners then source corners
       // source corners are defined in terms of infinitely thin coordinates
