@@ -14,7 +14,6 @@ import javax.swing.ComboBoxEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
@@ -105,25 +104,26 @@ public class SelectUrlWithAuthPanel extends JPanel {
     this.url = (JTextComponent) ed.getEditorComponent();
 
     Insets insets = new Insets(3, 3, 3, 3);
-    add(userLabel, new GridBagConstraints(0, 0, 1, 1, 0, 0,
-        GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 0, 0));
-    add(user, new GridBagConstraints(1, 0, 1, 1, 0, 0,
-        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-    add(passLabel, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+    add(urlLabel, new GridBagConstraints(0, 0, 1, 1, 0, 0,
         GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 0, 0));
-    add(pass, new GridBagConstraints(1, 1, 1, 1, 1, 0,
-        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-    add(show, new GridBagConstraints(2, 1, 1, 1, 0, 0,
-        GridBagConstraints.CENTER, GridBagConstraints.NONE, insets, 0, 0));
-    add(showLabel, new GridBagConstraints(3, 1, 1, 1, 0, 0,
-        GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-    add(urlLabel, new GridBagConstraints(0, 2, 1, 1, 0, 0,
-        GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 0, 0));
-    add(urls, new GridBagConstraints(1, 2, 4, 1, 0, 0,
+    add(urls, new GridBagConstraints(1, 0, 4, 1, 0, 0,
         GridBagConstraints.CENTER, GridBagConstraints.BOTH, insets, 0, 0));
+
+    add(userLabel, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+        GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 0, 0));
+    add(user, new GridBagConstraints(1, 1, 1, 1, 0, 0,
+        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+    add(passLabel, new GridBagConstraints(0, 2, 1, 1, 0, 0,
+        GridBagConstraints.WEST, GridBagConstraints.NONE, insets, 0, 0));
+    add(pass, new GridBagConstraints(1, 2, 1, 1, 1, 0,
+        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+
+    add(show, new GridBagConstraints(2, 2, 1, 1, 0, 0,
+        GridBagConstraints.CENTER, GridBagConstraints.NONE, insets, 0, 0));
+    add(showLabel, new GridBagConstraints(3, 2, 1, 1, 0, 0,
+        GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
   }
 

@@ -46,6 +46,7 @@ import java.util.Set;
 
 import javax.swing.*;
 
+import com.vividsolutions.jump.util.StringUtil;
 import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.ui.plugin.wms.AddWmsLayerWizard;
 import org.openjump.util.UriUtil;
@@ -89,6 +90,8 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
   public static final String API_KEY_AUTHENTICATION = I18N.getInstance().get(I18N_PREFIX + "api-key-authentication");
   public static final String API_KEY_NAME = I18N.getInstance().get(I18N_PREFIX + "api-key-name");
   public static final String API_KEY_VALUE = I18N.getInstance().get(I18N_PREFIX + "api-key-value");
+  public static final String API_KEY_NEEDED_FOR_GETCAPABILITIES =
+      I18N.getInstance().get(I18N_PREFIX + "api-key-needed-for-getcapabilities");
 
   // this is a hack, guess why
   public static String wmsVersion = WMService.WMS_1_3_0;
@@ -99,8 +102,6 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       WMService.WMS_1_3_0
   };
   private String[] initialUrls = new String[0];
-
-  private boolean lossyPreferred = true;
 
   private URLWizardPanel() {
     try {
@@ -173,12 +174,9 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       String url = urlPanel.getUrl();
       url = UriUtil.urlAddCredentials(url, urlPanel.getUser(), urlPanel.getPass());
       String apiKeyNameAndValue = apiKeyPanel.getApiKeyNameAndValue();
-      if (apiKeyNameAndValue != null) {
-        if (url.endsWith("?")) url = url + apiKeyNameAndValue;
-        else url = url + "&" + apiKeyNameAndValue;
-      }
 
-      WMService service = new WMService(url, wmsVersion);
+      WMService service = new WMService(url, wmsVersion, apiKeyNameAndValue,
+          apiKeyPanel.isApiKeyNeededForGetCapabilities());
 
       service.initialize(true);
 
@@ -210,6 +208,7 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       dataMap.put(MapLayerWizardPanel.INITIAL_LAYER_NAMES_KEY, null);
       dataMap.put(VERSION_KEY, wmsVersion);
       dataMap.put(API_KEY_NAME_AND_VALUE, apiKeyNameAndValue);
+      dataMap.put(API_KEY_NEEDED_FOR_GETCAPABILITIES, apiKeyPanel.isApiKeyNeededForGetCapabilities());
     } catch (IOException e) {
       throw new CancelNextException(e);
     }
@@ -289,33 +288,26 @@ public class URLWizardPanel extends JPanel implements WizardPanelV2 {
       add(keyValueName, c);
       c.gridx = 1; c.gridy = 1; c.weightx = 1.0;
       add(keyValueField, c);
+      c.gridx = 0; c.gridy = 2; c.gridwidth = 2; c.weightx = 1.0;
+      add(apiKeyNeededForGetCapabilities, c);
     }
     JLabel keyNameLabel = new JLabel(API_KEY_NAME);
     JTextField keyNameField = new JTextField(12);
     JLabel keyValueName = new JLabel(API_KEY_VALUE);
     JTextField keyValueField = new JTextField(12);
+    JCheckBox apiKeyNeededForGetCapabilities = new JCheckBox(API_KEY_NEEDED_FOR_GETCAPABILITIES, true);
     public String getApiKeyNameAndValue() throws UnsupportedEncodingException {
-      if (keyNameField.getText() != null && !keyNameField.getText().trim().isEmpty() &&
-          keyValueField.getText() != null && !keyValueField.getText().trim().isEmpty()) {
+      if (!StringUtil.isEmpty(keyNameField.getText()) && !StringUtil.isEmpty(keyValueField.getText())) {
         return URLEncoder.encode(keyNameField.getText(), "UTF-8") + "=" +
             URLEncoder.encode(keyValueField.getText(), "UTF-8");
       } else return null;
     }
+    public Boolean isApiKeyNeededForGetCapabilities() throws UnsupportedEncodingException {
+      return !StringUtil.isEmpty(keyValueField.getText()) &&
+          !StringUtil.isEmpty(keyValueField.getText()) &&
+          apiKeyNeededForGetCapabilities.isSelected();
+    }
   }
-
-  
-  // [UT] 20.10.2005
-  private Component createLossyCheckBox() {
-    JPanel p = new JPanel();
-    JCheckBox checkBox = new JCheckBox(I18N.getInstance().get(I18N_PREFIX + "prefer-lossy-images"), true);
-
-    checkBox.setToolTipText("This will try to load JPEG images, if the WMS allows it.");
-    checkBox.addActionListener(e -> lossyPreferred = ((JCheckBox)e.getSource()).isSelected());
-    p.add(checkBox);
-
-    return p;
-  }
-  
 
   public static URLWizardPanel getInstance(){
     if (instance == null) {

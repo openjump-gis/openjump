@@ -41,11 +41,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-
-import javax.net.ssl.*;
 
 import org.openjump.util.UriUtil;
 
@@ -67,11 +63,41 @@ public class WMService {
   public static final String WMS_1_3_0 = "1.3.0";
 
   private final List<String> serverUrlPossibleParameter = Arrays.asList("MAP");
-  private URL serverUrl;
+  private final URL serverUrl;
+  private final String apiKeyNameAndValue;
+  private final boolean isApiKeyNeededForGetCapabilities;
   private String wmsVersion = WMS_1_1_1;
   private Capabilities cap;
-  private String additionalParameters;
+  // private String additionalParameters;
   // true if the user just confirm that he accepts or not untrusted connexion
+
+  /**
+   * Constructs a WMService object from a server URL.
+   *
+   * @param serverUrl
+   *          the URL of the WMS server
+   * @param wmsVersion
+   *          the WMS version
+   * @param apiKeyNameAndValue
+   *          a formatted string containing API Key and Value or null
+   * @param apiKeyNeededFotGetCapabilities
+   *          a boolean with value true if apiKeyNameAndValue is also needed for GetCapabilities
+   */
+  public WMService(String serverUrl, String wmsVersion, String apiKeyNameAndValue,
+                   boolean apiKeyNeededFotGetCapabilities) {
+    try {
+      // no need to process it, as this is done in MapRequest, FeatInfoRequest later
+      this.serverUrl = new URL(serverUrl);
+      this.apiKeyNameAndValue = apiKeyNameAndValue;
+      this.isApiKeyNeededForGetCapabilities = apiKeyNeededFotGetCapabilities;
+    } catch (MalformedURLException e) {
+      throw new IllegalArgumentException(e);
+    }
+
+    if (wmsVersion != null)
+      this.wmsVersion = wmsVersion;
+    this.cap = null;
+  }
 
   /**
    * Constructs a WMService object from a server URL.
@@ -84,7 +110,9 @@ public class WMService {
   public WMService(String serverUrl, String wmsVersion) {
     try {
       // no need to process it, as this is done in MapRequest, FeatInfoRequest later
-      this.serverUrl = new URL(serverUrl); 
+      this.serverUrl = new URL(serverUrl);
+      apiKeyNameAndValue = null;
+      isApiKeyNeededForGetCapabilities = false;
     } catch (MalformedURLException e) {
       throw new IllegalArgumentException(e);
     }
@@ -142,6 +170,12 @@ public class WMService {
     }
 
     String requestUrlString = UriUtil.urlMakeAppendSafe(this.serverUrl.toString()) + req;
+
+    if (this.apiKeyNameAndValue != null && this.isApiKeyNeededForGetCapabilities) {
+      if (requestUrlString.endsWith("?")) requestUrlString = requestUrlString + apiKeyNameAndValue;
+      else requestUrlString = requestUrlString + "&" + apiKeyNameAndValue;
+    }
+
     URL requestUrl = new URL(requestUrlString);
 
     InputStream inputStream = new BasicRequest(this, requestUrl).getInputStream();
@@ -232,7 +266,4 @@ public class WMService {
     return wmsVersion;
   }
 
-  public String getAdditionalParameters() {
-    return additionalParameters;
-  }
 }

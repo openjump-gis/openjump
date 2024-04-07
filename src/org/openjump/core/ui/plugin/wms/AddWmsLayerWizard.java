@@ -43,21 +43,19 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
   private final WorkbenchContext workbenchContext;
 
   public static final String[] DEFAULT_URLS = new String[] {
+      "https://data.geopf.fr/wms-r/wms?",
+      "https://wxs.ign.fr/essentiels/geoportail/r/wms?",
+      "https://wxs.ign.fr/administratif/geoportail/r/wms?",
+      "https://wxs.ign.fr/ortho/geoportail/r/wms?",
+      "http://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/raster/ortofoto_colore_12.map",
       "http://deegree3-demo.deegree.org/utah-workspace/services",
       "http://ows.terrestris.de/osm/service",
       "http://maps.omniscale.net/wms/demo/default/service",
       "http://www2.demis.nl/WMS/wms.ashx?wms=WorldMap",
       "http://demo.mapserver.org/cgi-bin/wms",
-      "http://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/raster/ortofoto_colore_12.map&service=wms&request=getCapabilities&version=1.3.0&",
+      "http://magosm.magellium.com/geoserver/ows?"
       //"http://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?",
-      "https://wxs.ign.fr/essentiels/geoportail/r/wms?",
-      "https://wxs.ign.fr/administratif/geoportail/r/wms?",
-      "https://wxs.ign.fr/ortho/geoportail/r/wms?",
-      "http://magosm.magellium.com/geoserver/ows?",
-      "https://data.geopf.fr/wms-r/wms?"
   };
-
-  //private String lastWMSVersion = WMService.WMS_1_3_0;
 
   private ChooseProjectPanel chooseProjectPanel;
 

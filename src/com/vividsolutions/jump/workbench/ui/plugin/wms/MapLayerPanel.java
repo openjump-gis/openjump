@@ -115,8 +115,8 @@ public class MapLayerPanel extends JPanel {
     private void setRendererText(JLabel renderer, MapLayer layer) {
         String label = fullSrsMap.get(layer.getTitle());
         if (label == null) {
-            label = layer.getTitle() + " [" +
-                StringUtil.toCommaDelimitedString(layer.getFullSRSList()) + "]";
+            label = layer.getTitle();
+                //+ " [" + StringUtil.toCommaDelimitedString(layer.getFullSRSList()) + "]";
             fullSrsMap.put(layer.getTitle(), label);
         }
         renderer.setText(label);
