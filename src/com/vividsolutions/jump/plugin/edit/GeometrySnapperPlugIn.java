@@ -11,7 +11,6 @@ import com.vividsolutions.jump.workbench.ui.EditTransaction;
 import com.vividsolutions.jump.workbench.ui.GUIUtil;
 import com.vividsolutions.jump.workbench.ui.MenuNames;
 import com.vividsolutions.jump.workbench.ui.MultiInputDialog;
-import com.vividsolutions.jump.workbench.ui.plugin.FeatureInstaller;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.index.strtree.STRtree;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 
 public class GeometrySnapperPlugIn extends AbstractPlugIn implements ThreadedPlugIn {
 
-  private static I18N i18n = I18N.getInstance();
+  private static final I18N i18n = I18N.getInstance();
   private static final String LAYER = i18n.get("ui.GenericNames.LAYER");
   private static final String REF_LAYER = i18n.get("ui.GenericNames.REFERENCE_LAYER");
   private static final String TOLERANCE = i18n.get("ui.plugin.analysis.GeometrySnapperPlugIn.tolerance");
@@ -30,7 +29,6 @@ public class GeometrySnapperPlugIn extends AbstractPlugIn implements ThreadedPlu
   private String layer;
   private String refLayer;
   private double tolerance = 1E-12;
-  private MultiInputDialog dialog;
 
   public String getName() {
     return i18n.get("ui.plugin.analysis.GeometrySnapperPlugIn.Geometry-Snapper");
@@ -54,7 +52,7 @@ public class GeometrySnapperPlugIn extends AbstractPlugIn implements ThreadedPlu
   }
 
   public boolean execute(PlugInContext context) throws Exception {
-    dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
+    MultiInputDialog dialog = new MultiInputDialog(context.getWorkbenchFrame(), getName(), true);
     setDialogValues(dialog, context);
     GUIUtil.centreOnWindow(dialog);
     dialog.setVisible(true);
@@ -82,7 +80,7 @@ public class GeometrySnapperPlugIn extends AbstractPlugIn implements ThreadedPlu
       }
     }
 
-    EditTransaction transaction = new EditTransaction(new ArrayList(),
+    EditTransaction transaction = new EditTransaction(new ArrayList<Feature>(),
         this.getName(), context.getLayerManager().getLayer(layer),
         this.isRollingBackInvalidEdits(context), true,
         context.getWorkbenchFrame());
@@ -92,7 +90,7 @@ public class GeometrySnapperPlugIn extends AbstractPlugIn implements ThreadedPlu
       env.expandBy(tolerance);
       Geometry refGeom = feature.getGeometry().getFactory().buildGeometry(index.query(env));
       Geometry newGeom = new GeometrySnapper(feature.getGeometry()).snapTo(refGeom, tolerance);
-      if (!newGeom.equals(feature.getGeometry())) {
+      if (!newGeom.equalsExact(feature.getGeometry())) {
         transaction.modifyFeatureGeometry(feature, newGeom);
       }
     }
