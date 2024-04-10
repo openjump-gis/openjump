@@ -82,14 +82,14 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
   public GeoImageFactory() {
     // register optional codecs TODO: how to register them more effortlessly
     try {
-    IIORegistry.getDefaultInstance().registerServiceProvider(
-        new JP2GDALOpenJPEGImageReaderSpi());
-    IIORegistry.getDefaultInstance().registerServiceProvider(
-        new JP2GDALEcwImageReaderSpi());
-    IIORegistry.getDefaultInstance().registerServiceProvider(
-        new JP2GDALJasperImageReaderSpi());
-    }catch( NoClassDefFoundError e){
-      Logger.error("Can't register JP2GDAL readers.",e);
+      IIORegistry.getDefaultInstance().registerServiceProvider(
+          new JP2GDALOpenJPEGImageReaderSpi());
+      IIORegistry.getDefaultInstance().registerServiceProvider(
+          new JP2GDALEcwImageReaderSpi());
+      IIORegistry.getDefaultInstance().registerServiceProvider(
+          new JP2GDALJasperImageReaderSpi());
+    } catch( NoClassDefFoundError e){
+        Logger.error("Can't register JP2GDAL readers.",e);
     }
 
     // initialize extensions
@@ -112,7 +112,7 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
 
     // add plain JAI codecs extensions
     for (Enumeration<ImageCodec> e = ImageCodec.getCodecs(); e.hasMoreElements();) {
-      ImageCodec codec = (ImageCodec) e.nextElement();
+      ImageCodec codec = e.nextElement();
       String ext = codec.getFormatName().toLowerCase();
       addExtension(ext);
     }
@@ -204,7 +204,7 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
   public int getPriority() {
     // the autoload (w/o defined loader) has topmost priority
     if (loader == null)
-      return 0;
+      return Prioritized.NOPRIORITY;
 
     return getPriority(loader);
   }
@@ -220,7 +220,7 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
       return 15; // tested and working well, second best choice for JP2 currently
     if (name.equals("it.geosolutions.imageio.plugins.jp2ecw.JP2GDALEcwImageReaderSpi"))
       return Prioritized.NOPRIORITY; // replaced by our patched version under com.vividsolutions.jump.workbench.imagery
-    
+
     // we've got some patched
     if (name.startsWith("com.vividsolutions.jump.workbench.imagery")) {
       return 20;
@@ -251,7 +251,7 @@ public class GeoImageFactory extends AbstractGraphicImageFactory {
   public boolean isAvailable(WorkbenchContext context) {
 
     // check JAI availability (usually part of jdk)
-    Class c = null, c2 = null;
+    Class<?> c, c2;
     try {
       c = this.getClass().getClassLoader().loadClass("javax.media.jai.JAI");
       c2 = this.getClass().getClassLoader()
