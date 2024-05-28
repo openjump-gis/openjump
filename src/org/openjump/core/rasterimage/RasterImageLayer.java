@@ -556,110 +556,111 @@ public final class RasterImageLayer extends GeoReferencedLayerable
     //   this.setImage(pi);
     //}
     
-    protected BufferedImage stretchImageValuesForDisplay() throws NoninvertibleTransformException{
+    protected BufferedImage stretchImageValuesForDisplay() throws NoninvertibleTransformException {
+      Raster actualRasterData = image.copyData(null);
+      int width = actualRasterData.getWidth();
+      int height = actualRasterData.getHeight();
 
-        Raster actualRasterData = image.copyData(null);
-        int width = actualRasterData.getWidth();
-        int height = actualRasterData.getHeight();
+      // Need to change image type to support transparency and apply symbology
+      if (image.getColorModel() instanceof IndexColorModel) {
+        return image;
+      }
 
-        // Need to change image type to support transparency and apply symbology
-        if(image.getColorModel() instanceof IndexColorModel) {
-            return image;  
-        }
+      BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+      for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+          // no Symbology yet?
+          if (symbology == null) {
+            if (stats.getBandCount() < 3) {
+              double min = metadata.getStats().getMin(0);
+              double max = metadata.getStats().getMax(0);
+              final RasterSymbology rasterSymbology;
+              // single banded raster file with only one value
+              if (min == max) {
+                rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_SINGLE);
+                rasterSymbology.addColorMapEntry(min, Color.GRAY);
+              }
+              // single banded raster file with a range of values
+              else {
+                rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
+                rasterSymbology.addColorMapEntry(min, Color.BLACK);
+                rasterSymbology.addColorMapEntry(max, Color.WHITE);
+              }
+              if (!Double.isNaN(metadata.getNoDataValue())) {
+                rasterSymbology.addColorMapEntry(metadata.getNoDataValue(), transparentColor);
+              }
+              setSymbology(rasterSymbology);
+            } else {
+              double valueR = actualRasterData.getSampleDouble(col, row, 0);
+              double valueG = actualRasterData.getSampleDouble(col, row, 1);
+              double valueB = actualRasterData.getSampleDouble(col, row, 2);
+              double valueAlpha = 255;
+              if (stats.getBandCount() > 3) {
+                valueAlpha = actualRasterData.getSampleDouble(col, row, 3);
+              }
+              if (Double.isNaN(valueR) || Double.isInfinite(valueR) || valueR == noDataValue || Double.isNaN(valueG)
+                  || Double.isInfinite(valueG) || valueG == noDataValue || Double.isNaN(valueB)
+                  || Double.isInfinite(valueB) || valueB == noDataValue || valueAlpha <= 0) {
+                newImage.setRGB(col, row, Color.TRANSLUCENT);
+                continue;
+              }
 
-        BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
+              int r = (int) ((valueR - stats.getMin(0)) * 255. / (stats.getMax(0) - stats.getMin(0)));
+              if (r > 255)
+                r = 255;
+              if (r < 0)
+                r = 0;
+              int g = (int) ((valueG - stats.getMin(1)) * 255. / (stats.getMax(1) - stats.getMin(0)));
+              if (g > 255)
+                g = 255;
+              if (g < 0)
+                g = 0;
+              int b = (int) ((valueB - stats.getMin(2)) * 255. / (stats.getMax(2) - stats.getMin(0)));
+              if (b > 255)
+                b = 255;
+              if (b < 0)
+                b = 0;
 
-                if(symbology == null) {
-                    if(stats.getBandCount() < 3) {
-                        
-                        final RasterSymbology rasterSymbology;
-                        if (metadata.getStats().getMin(0) == metadata
-                                .getStats().getMax(0)) {
-                            rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_SINGLE);
-                        } else {
-                            rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
-                        }
-                        if (!Double.isNaN(metadata.getNoDataValue())) {
-                            rasterSymbology.addColorMapEntry(metadata.getNoDataValue(), transparentColor);
-                        }
-                        rasterSymbology.addColorMapEntry(metadata.getStats().getMin(0), Color.BLACK);
-                        rasterSymbology.addColorMapEntry(metadata.getStats().getMax(0), Color.WHITE);
-                        setSymbology(rasterSymbology);
-                        
-                    } else {
-                        double valueR = actualRasterData.getSampleDouble(col, row, 0);
-                        double valueG = actualRasterData.getSampleDouble(col, row, 1);
-                        double valueB = actualRasterData.getSampleDouble(col, row, 2);
-                        double valueAlpha = 255;
-                        if(stats.getBandCount() > 3) {
-                            valueAlpha = actualRasterData.getSampleDouble(col, row, 3);
-                        }
-                        if(Double.isNaN(valueR) || Double.isInfinite(valueR) || valueR == noDataValue
-                                || Double.isNaN(valueG) || Double.isInfinite(valueG) || valueG == noDataValue
-                                || Double.isNaN(valueB) || Double.isInfinite(valueB) || valueB == noDataValue
-                                || valueAlpha <= 0) {
-                            newImage.setRGB(col, row, Color.TRANSLUCENT);
-                            continue;
-                        }
-                        
-                        int r = (int) ((valueR - stats.getMin(0)) * 255./(stats.getMax(0) - stats.getMin(0)));
-                        if(r > 255) r = 255;
-                        if(r < 0) r = 0;
-                        int g = (int) ((valueG - stats.getMin(1)) * 255./(stats.getMax(1) - stats.getMin(0)));
-                        if(g > 255) g = 255;
-                        if(g < 0) g = 0;
-                        int b = (int) ((valueB - stats.getMin(2)) * 255./(stats.getMax(2) - stats.getMin(0)));
-                        if(b > 255) b = 255;
-                        if(b < 0) b = 0;
+              int alpha = (int) valueAlpha;
 
-                        int alpha = (int) valueAlpha;
-                        
-                        newImage.setRGB(col, row, new Color(r, g, b, alpha).getRGB());
-                    }
-                } else {
-                    // Symbology exists
-                    double value = actualRasterData.getSampleDouble(col, row, 0);
-                    
-
-                    // If symbology min value is higher than raster min value
-                    // the value becomes equal to the symbology min value
-                    Double[] symbologyClassLimits =  symbology.getColorMapEntries_tm().keySet().toArray(new Double[0]);
-                    double symbMinValue = symbologyClassLimits[0];
-                    double symbFirstValue = symbologyClassLimits[0];
-                    if(this.isNoData(symbFirstValue)) {
-                        symbMinValue = symbologyClassLimits[1];
-                    }
-                    
-                    if(!this.isNoData(value) && value < symbMinValue) {
-                        value = symbMinValue;
-                    }
-                    
-                    Color color = symbology.getColor(value);
-                    
-                    if((Double.isNaN(value) || Double.isInfinite(value) || this.isNoData(value))
-                            && color == null) {
-                        newImage.setRGB(col, row, Color.TRANSLUCENT);
-                        continue;
-                    }
-                    
-                    // Transparency is a combination of total layer transparency
-                    // and single cell transparency
-                    int transparency = 
-                            (int)(((1 - symbology.getTransparency()) * 
-                            (color.getAlpha() / 255d)) * 255);
-                    newImage.setRGB(col, row, new Color(
-                            color.getRed(),
-                            color.getGreen(),
-                            color.getBlue(),
-                            transparency).getRGB());
-                }  
+              newImage.setRGB(col, row, new Color(r, g, b, alpha).getRGB());
             }
+          }
+          // Symbology exists
+          else {
+            double value = actualRasterData.getSampleDouble(col, row, 0);
+
+            // If symbology min value is higher than raster min value
+            // the value becomes equal to the symbology min value
+            Double[] symbologyClassLimits = symbology.getColorMapEntries_tm().keySet().toArray(new Double[0]);
+            double symbMinValue = symbologyClassLimits[0];
+            double symbFirstValue = symbologyClassLimits[0];
+            if (this.isNoData(symbFirstValue)) {
+              symbMinValue = symbologyClassLimits[1];
+            }
+
+            if (!this.isNoData(value) && value < symbMinValue) {
+              value = symbMinValue;
+            }
+
+            Color color = symbology.getColor(value);
+
+            if ((Double.isNaN(value) || Double.isInfinite(value) || this.isNoData(value)) && color == null) {
+              newImage.setRGB(col, row, Color.TRANSLUCENT);
+              continue;
+            }
+
+            // Transparency is a combination of total layer transparency
+            // and single cell transparency
+            int transparency = (int) (((1 - symbology.getTransparency()) * (color.getAlpha() / 255d)) * 255);
+            newImage.setRGB(col, row,
+                new Color(color.getRed(), color.getGreen(), color.getBlue(), transparency).getRGB());
+          }
         }
-        return newImage;
+      }
+      return newImage;
     }
-    
+
     /**
      * @return Envelope with the real world coordinates of the image
      */
