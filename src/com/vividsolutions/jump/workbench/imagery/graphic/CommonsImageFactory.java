@@ -35,8 +35,13 @@ import java.util.Arrays;
  */
 import org.apache.commons.imaging.ImageFormat;
 import org.apache.commons.imaging.ImageFormats;
+import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.bytesource.ByteSource;
 import org.apache.commons.io.FilenameUtils;
+import org.openjump.util.UriUtil;
 
+import com.vividsolutions.jump.io.CompressedFile;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.imagery.ReferencedImage;
 
@@ -46,18 +51,27 @@ public class CommonsImageFactory extends AbstractGraphicImageFactory {
   }
 
   public ReferencedImage createImage(String location) {
+    // try to read the format from file header
+    try {
+      ByteSource byteSource = ByteSource.inputStream(CompressedFile.openFile(location), UriUtil.getFileName(location));
+      ImageFormat format = Imaging.guessFormat(byteSource);
+      if (format.equals(ImageFormats.TIFF))
+        return new CommonsTIFFImage(location, null);
+    } catch (Exception e) {
+      Logger.error(e);
+    }
+    // or use file extension
     String ext = FilenameUtils.getExtension(location).toLowerCase();
     if (ext.matches("tiff?"))
       return new CommonsTIFFImage(location, null);
-    
+
     return new CommonsImage(location, null);
   }
 
   public boolean isAvailable(WorkbenchContext context) {
     Class c = null;
     try {
-      c = this.getClass().getClassLoader()
-          .loadClass("org.apache.commons.imaging.Imaging");
+      c = this.getClass().getClassLoader().loadClass("org.apache.commons.imaging.Imaging");
       if (c == null)
         return false;
 
@@ -68,7 +82,6 @@ public class CommonsImageFactory extends AbstractGraphicImageFactory {
         addExtensions(Arrays.asList(fmt.getExtensions()));
       }
 
-//      System.out.println(this.getClass().getName()+": "+extensions);
       return true;
     } catch (ClassNotFoundException e) {
       // eat it
