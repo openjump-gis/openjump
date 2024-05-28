@@ -570,25 +570,25 @@ public final class RasterImageLayer extends GeoReferencedLayerable
         BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-
-                if(symbology == null) {
-                    if(stats.getBandCount() < 3) {
-                        
-                        final RasterSymbology rasterSymbology;
-                        if (metadata.getStats().getMin(0) == metadata
-                                .getStats().getMax(0)) {
-                            rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_SINGLE);
-                        } else {
-                            rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
-                        }
-                        if (!Double.isNaN(metadata.getNoDataValue())) {
-                            rasterSymbology.addColorMapEntry(metadata.getNoDataValue(), transparentColor);
-                        }
-                        rasterSymbology.addColorMapEntry(metadata.getStats().getMin(0), Color.BLACK);
-                        rasterSymbology.addColorMapEntry(metadata.getStats().getMax(0), Color.WHITE);
-                        setSymbology(rasterSymbology);
-                        
-                    } else {
+             if (symbology == null) {
+		if (stats.getBandCount() < 3) {
+			double min = metadata.getStats().getMin(0);
+			double max = metadata.getStats().getMax(0);
+			final RasterSymbology rasterSymbology;
+			if (min == max) {// single banded raster file with only one value
+				rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_SINGLE);
+				rasterSymbology.addColorMapEntry(min, Color.GRAY);
+				rasterSymbology.addColorMapEntry(max, Color.GRAY);
+			} else {// single banded raster file with a range of values
+				rasterSymbology = new RasterSymbology(RasterSymbology.TYPE_RAMP);
+				rasterSymbology.addColorMapEntry(min, Color.BLACK);
+				rasterSymbology.addColorMapEntry(max, Color.WHITE);
+			}
+			if (!Double.isNaN(metadata.getNoDataValue())) {
+				rasterSymbology.addColorMapEntry(metadata.getNoDataValue(), transparentColor);
+			}
+			setSymbology(rasterSymbology);
+                     } else {
                         double valueR = actualRasterData.getSampleDouble(col, row, 0);
                         double valueG = actualRasterData.getSampleDouble(col, row, 1);
                         double valueB = actualRasterData.getSampleDouble(col, row, 2);
