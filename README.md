@@ -1,11 +1,11 @@
-OpenJUMP2 (OJ2) - the cross-platform open source software Desktop-GIS with 
+OpenJUMP (OJ) - the cross-platform open source software Desktop-GIS with 
 a multitude of swiss-knifes in its kangaroo pocket. 
 Taking the _leap_ from _sourceforge_ to _github_, from _svn_ to _git_, 
 us few volunteers of the _jump pilot project_ hope that maybe **you might 
-join our struggle** to keep OJ2 not only alive but contribute to it's 
+join our struggle** to keep OpenJUMP not only alive but contribute to it's 
 improvement and adapation of new and exciting standards.
 
-**NOTE:** The [OJ2 github repository](https://github.com/openjump-gis/openjump) 
+**NOTE:** The [OJ github repository](https://github.com/openjump-gis/openjump) 
 and several of the extension repositories are mirrored at https://gitlab.com/openjump-gis/ . 
 
 ## Introduction
