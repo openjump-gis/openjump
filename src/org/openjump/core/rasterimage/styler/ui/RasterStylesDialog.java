@@ -379,7 +379,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
                 this,
                 rasterImageLayer,
                 minMaxValues);
-        singleValuesPanel = new SingleValuesPanel(this, Utils.purgeNoData(rasterImageLayer.getActualRasterData(), rasterImageLayer), rasterImageLayer);
+        singleValuesPanel = new SingleValuesPanel(this, Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
         
         if (stats.getMin(band) == stats.getMax(band)) {
             final DummyPanel pan = new DummyPanel("No stretched classification available, this raster has only one value: " + stats.getMax(band));
