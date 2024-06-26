@@ -33,7 +33,6 @@
 
 package com.vividsolutions.jump.workbench.ui.plugin;
 
-import java.awt.event.KeyEvent;
 import java.util.Iterator;
 
 import javax.swing.ImageIcon;
@@ -55,11 +54,9 @@ public class FeatureInfoPlugIn extends AbstractPlugIn {
     private static EnableCheck checker = null;
 
     public FeatureInfoPlugIn() {
-      this.setShortcutKeys(KeyEvent.VK_I);
-      this.setShortcutModifiers(KeyEvent.ALT_MASK);
     }
 
-    public static final ImageIcon ICON = IconLoader.icon("information_16x16.png");
+    public static final ImageIcon ICON = IconLoader.icon("information_multi_20x20.png");
 
     public static EnableCheck createEnableCheck(
         WorkbenchContext workbenchContext) {

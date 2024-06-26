@@ -1596,6 +1596,12 @@
 
     <!-- ================ LayerView Popup Menu =============================== -->
     <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.UniqueFeatureInfoPlugIn
+        <menus>
+            <layerview-popup install="true" />
+        </menus>
+    </plug-in>
+    <plug-in>
         com.vividsolutions.jump.workbench.ui.plugin.FeatureInfoPlugIn
         <menus>
             <layerview-popup install="true" />
