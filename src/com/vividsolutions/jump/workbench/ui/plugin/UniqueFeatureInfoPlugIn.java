@@ -1,12 +1,10 @@
 package com.vividsolutions.jump.workbench.ui.plugin;
 
-import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.plugin.*;
 import com.vividsolutions.jump.workbench.ui.*;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
-import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
