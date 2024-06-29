@@ -624,9 +624,9 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             // if none of these feature has dim = 3, return 2, else return 3
             int step = 1 + coll.size()/1000;
             int count = 0;
-            for (Feature feature : coll.getFeatures()) {
+            for (Iterator it = coll.iterator() ; it.hasNext() ; ) {
                 if (count%step == 0 &&
-                        getGeometryDimension(feature.getGeometry()) == 3) {
+                        getGeometryDimension(((Feature)it.next()).getGeometry()) == 3) {
                     return 3;
                 }
                 count++;
@@ -669,8 +669,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 MultiPolygon.class
         };
         int[] types = new int[]{0,0,0,0,0,0};
-        for (Feature feature : coll.getFeatures()) {
-            Geometry geom = feature.getGeometry();
+        for (Iterator it = coll.iterator() ; it.hasNext() ; ) {
+            Geometry geom = ((Feature)it.next()).getGeometry();
             Class currentClazz = geom.getClass();
             if (currentClazz == GeometryCollection.class) return Geometry.class;
             int index = geom.getDimension() + ((geom instanceof GeometryCollection)?3:0);
