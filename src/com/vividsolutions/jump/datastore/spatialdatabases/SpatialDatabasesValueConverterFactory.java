@@ -7,7 +7,6 @@ import org.locationtech.jts.io.WKTReader;
 import java.sql.*;
 import com.vividsolutions.jump.datastore.jdbc.*;
 import com.vividsolutions.jump.feature.AttributeType;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import java.io.IOException;
 
 /**
@@ -25,13 +24,6 @@ public class SpatialDatabasesValueConverterFactory {
   protected final Connection conn;
 
   public SpatialDatabasesValueConverterFactory(Connection conn) {
-//      try { 
-//        JUMPWorkbench.getInstance().getFrame().log("creating a SpatialDatabasesValueConverterFactory (class:" + this.getClass() 
-//            + " ) (driver: " + conn.getMetaData().getDriverName() + ") id"
-//            + this.hashCode(), this.getClass());
-//      } catch (SQLException ex) {
-//        ex.printStackTrace();
-//      }
     this.conn = conn;
   }
 
@@ -59,7 +51,11 @@ public class SpatialDatabasesValueConverterFactory {
         throws IOException, SQLException, ParseException {
       Object valObj = rs.getObject(columnIndex);
       if (valObj == null) {
-        return wktReader.read("GEOMETRYCOLLECTION EMPTY");
+        // 2024-06-29 now return null if geometry is null
+        // This behaviour is more predictable and useful for geometries embeded in a Object type attribute
+        // For the main GEOMETRY, null are changed into GeometryCollection by the SQL query
+        //return wktReader.read("GEOMETRYCOLLECTION EMPTY");
+        return null;
       } else {
         return wktReader.read(valObj.toString());
       }
@@ -83,9 +79,13 @@ public class SpatialDatabasesValueConverterFactory {
       //can only be 0 or 1.
       //in the case of #2, it's a hex string, so values range from ascii 0-F
       //use this logic to determine how to process the bytes.
-      Geometry geometry = null;
-      if (bytes == null || bytes.length <= 0) {
-        geometry = wktReader.read("GEOMETRYCOLLECTION EMPTY");
+      Geometry geometry;
+      if (bytes == null || bytes.length == 0) {
+        // 2024-06-29 now return null if geometry is null
+        // This behaviour is more predictable and useful for geometries embeded in a Object type attribute
+        // For the main GEOMETRY, null are changed into GeometryCollection by the SQL query
+        //geometry = wktReader.read("GEOMETRYCOLLECTION EMPTY");
+        geometry = null;
       } else if (new String(new byte[]{bytes[0]}).matches("[GLMP]")) {
         geometry = wktReader.read(new String(bytes));
       } else {
@@ -121,9 +121,13 @@ public class SpatialDatabasesValueConverterFactory {
       //can only be 0 or 1.
       //in the case of #2, it's a hex string, so values range from ascii 0-F
       //use this logic to determine how to process the bytes.
-      Geometry geometry = null;
-      if (bytes == null || bytes.length <= 0) {
-        geometry = wktReader.read("GEOMETRYCOLLECTION EMPTY");
+      Geometry geometry;
+      if (bytes == null || bytes.length == 0) {
+        // 2024-06-29 now return null if geometry is null
+        // This behaviour is more predictable and useful for geometries embeded in a Object type attribute
+        // For the main GEOMETRY, null are changed into GeometryCollection by the SQL query
+        // geometry = wktReader.read("GEOMETRYCOLLECTION EMPTY");
+        geometry = null;
       } else {
         //assume it's the actual bytes (from ST_AsBinary)
         byte[] realWkbBytes = bytes;

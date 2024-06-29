@@ -8,7 +8,6 @@ import javax.swing.JOptionPane;
 
 import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
-import com.vividsolutions.jump.datastore.GeometryColumn;
 import com.vividsolutions.jump.datastore.SQLUtil;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDatabasesDSConnection;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
@@ -78,7 +77,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
     // primary key name
     protected String primaryKeyName = DEFAULT_PK_NAME;
 
-    private String txManagerClass;
+    // private String txManagerClass;
 
     public WritableDataStoreDataSource() {
         // Called by Java2XML [Jon Aquino 2005-03-16]
@@ -210,7 +209,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                         (boolean)getProperties().get(NARROW_GEOMETRY_TYPE_KEY);
                 boolean multi = getProperties().get(CONVERT_TO_MULTIGEOMETRY_KEY) != null &&
                         (boolean)getProperties().get(CONVERT_TO_MULTIGEOMETRY_KEY);
-                Class geometryType = getGeometryType(featureCollection, narrow, multi);
+                Class<Geometry> geometryType = getGeometryType(featureCollection, narrow, multi);
                 int dim = getProperties().get(GEOM_DIM_KEY)==null?
                         getGeometryDimension(featureCollection, 3) :
                         (Integer)getProperties().get(GEOM_DIM_KEY);
@@ -347,9 +346,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
         StringBuilder sb = new StringBuilder("INSERT INTO " + SQLUtil.compose(schemaName, tableName) + "(");
         // create a column name list without datatypes, including geometry and excluding primary key
         sb.append(conn.getMetadata().createColumnList(fSchema, false, true, false, false, normalizedColumnNames))
-          .append(") VALUES(");
-        //int nbValues = fSchema.getAttributeCount();
-        //if (primaryKeyName != null && fSchema.hasAttribute(primaryKeyName)) nbValues --;
+            .append(") VALUES(");
         boolean first = true;
         for (int i = 0 ; i < fSchema.getAttributeCount() ; i++) {
             if (fSchema.getExternalPrimaryKeyIndex() == i) continue;
@@ -454,6 +451,7 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             }
             else throw new IllegalArgumentException(type + " is an unknown AttributeType !");
         }
+        Logger.debug(pstmt.toString());
         return pstmt;
     }
 
@@ -600,7 +598,6 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 selectedLayers[0].setFeatureCollection(conn.executeQuery(null, monitor));
                 // We connect to a new table : the transaction manager must listen to it
                 if (!tableAlreadyCreated) {
-                    //DataStoreTransactionManager.getTransactionManager().registerLayer(selectedLayers[0],
                     DataStoreTransactionManager txManager =
                             DataStoreTransactionManager.getTxInstance(
                                     "org.openjump.core.ui.plugin.datastore.transaction.DataStoreTransactionManager");
@@ -622,14 +619,14 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
      * @return the geometry dimension of collection features
      */
     protected static int getGeometryDimension(FeatureCollection coll, int defaultDim) {
-        if (coll.size() > 0) {
+        if (!coll.isEmpty()) {
             // will explore up to 1000 features regularly distributed in the dataset
             // if none of these feature has dim = 3, return 2, else return 3
             int step = 1 + coll.size()/1000;
             int count = 0;
-            for (Iterator it = coll.iterator() ; it.hasNext() ; ) {
+            for (Feature feature : coll.getFeatures()) {
                 if (count%step == 0 &&
-                        getGeometryDimension(((Feature)it.next()).getGeometry()) == 3) {
+                        getGeometryDimension(feature.getGeometry()) == 3) {
                     return 3;
                 }
                 count++;
@@ -672,8 +669,8 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
                 MultiPolygon.class
         };
         int[] types = new int[]{0,0,0,0,0,0};
-        for (Iterator it = coll.iterator() ; it.hasNext() ; ) {
-            Geometry geom = ((Feature)it.next()).getGeometry();
+        for (Feature feature : coll.getFeatures()) {
+            Geometry geom = feature.getGeometry();
             Class currentClazz = geom.getClass();
             if (currentClazz == GeometryCollection.class) return Geometry.class;
             int index = geom.getDimension() + ((geom instanceof GeometryCollection)?3:0);
