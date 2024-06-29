@@ -42,7 +42,7 @@ import org.locationtech.jts.geom.Envelope;
  * A collection of Features, with a special method for querying the Features
  * that lie within a given Envelope.
  */
-public interface FeatureCollection {
+public interface FeatureCollection extends Iterable<Feature>{
 
     /**
      * Returns information about this FeatureCollection

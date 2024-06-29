@@ -624,9 +624,9 @@ public abstract class WritableDataStoreDataSource extends DataStoreDataSource {
             // if none of these feature has dim = 3, return 2, else return 3
             int step = 1 + coll.size()/1000;
             int count = 0;
-            for (Iterator it = coll.iterator() ; it.hasNext() ; ) {
+            for ( Feature f : coll ) {
                 if (count%step == 0 &&
-                        getGeometryDimension(((Feature)it.next()).getGeometry()) == 3) {
+                        getGeometryDimension(f.getGeometry()) == 3) {
                     return 3;
                 }
                 count++;
