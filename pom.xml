@@ -1358,7 +1358,7 @@
         <plugin>
           <groupId>se.bjurr.gitchangelog</groupId>
           <artifactId>git-changelog-maven-plugin</artifactId>
-          <version>2.1.0</version>
+          <version>1.101.0</version>
           <?m2e ignore?>
           <executions>
             <execution>
@@ -1426,7 +1426,8 @@ ${project.artifactId} ${project.version} Changelog
         <plugin>
           <groupId>com.googlecode.maven-download-plugin</groupId>
           <artifactId>download-maven-plugin</artifactId>
-          <version>1.9.0</version>
+          <!-- v1.9.0 breaks eclipse m2 -->
+          <version>1.8.1</version>
           <configuration>
             <alwaysVerifyChecksum>true</alwaysVerifyChecksum>
           </configuration>
