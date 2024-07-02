@@ -239,13 +239,13 @@
                     </configuration>
                   </execution>
                   <execution>
-                    <id>PLUS-install-fivecolors_extension</id>
+                    <id>PLUS-install-five_color_extension</id>
                     <goals>
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/openjump-gis/five-color-extension/releases/download/2.0.0/five-color-extension-2.0.0.zip</url>
-                      <sha1>c34e28eeba61f5ba3d45a87a7ef7de5f62d3ff65</sha1>
+                      <url>https://github.com/openjump-gis/five-color-extension/releases/download/2.0.1/five-color-extension-2.0.1.zip</url>
+                      <sha1>deb0105c285f6a80c3276e5f9831a25c3ba77231</sha1>
                       <unpack>true</unpack>
                       <outputDirectory>${plus.folder}</outputDirectory>
                     </configuration>
