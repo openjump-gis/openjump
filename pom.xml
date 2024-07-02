@@ -24,8 +24,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
-        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
-        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <batik.version>1.6-1</batik.version>
         <jts.version>1.19.0</jts.version>
         <postgresql.version>42.7.3</postgresql.version>
@@ -424,9 +422,7 @@
           <build>
             <plugins>
               <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven-jar-plugin.version}</version>
                 <executions>
                   <execution>
                     <id>nolang</id>
@@ -445,7 +441,6 @@
               </plugin>
               <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>${maven-assembly-plugin.version}</version>
                 <configuration>
                   <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
@@ -510,9 +505,7 @@
             <build>
                 <plugins>
                     <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
                       <artifactId>maven-jar-plugin</artifactId>
-                      <version>${maven-jar-plugin.version}</version>
                       <executions>
                         <execution>
                           <id>nosrc</id>
@@ -536,7 +529,6 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
-                        <version>${maven-assembly-plugin.version}</version>
                         <configuration>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
@@ -1243,6 +1235,19 @@
           </excludes>
         </testResource>
       </testResources>
+      <pluginManagement>
+        <plugins>
+          <!-- pin some versions here for plugins used in several profiles -->
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.7.1</version>
+          </plugin>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.4.2</version>
+          </plugin>
+        </plugins>
+      </pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1436,9 +1441,7 @@ ${project.artifactId} ${project.version} Changelog
         <!-- default-jar only needed for maven repo deployment,
              so postpone creation to install cycle  -->
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.4.2</version>
           <executions>
             <execution>
               <id>default-jar</id>
