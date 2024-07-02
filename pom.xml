@@ -341,7 +341,7 @@
                    </goals>
                    <configuration>
                      <url>https://sourceforge.net/projects/opensit/files/Openjump/PlugIn/Raster%20Tools/RasterTools-2.0.10-20240701.jar</url>
-                     <sha1>7DF9046A0DBC2D43D126BC32F2DB128469E2BA0B</sha1>
+                     <sha1>7df9046a0dbc2d43d126bc32f2db128469e2ba0b</sha1>
                      <unpack>false</unpack>
                      <outputDirectory>${plus.folder}</outputDirectory>
                    </configuration>
