@@ -142,7 +142,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
 
     private void formComponentShown(java.awt.event.ComponentEvent evt) {
 
-        if(firstTimeShown /*&& rasterImageLayer.getSymbology() == null*/) {
+        if(firstTimeShown && rasterImageLayer.getSymbology() == null) {
             firstTimeShown = false;
             try {
                 findUniqueValues();
