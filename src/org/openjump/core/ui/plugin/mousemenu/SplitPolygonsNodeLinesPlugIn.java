@@ -81,7 +81,7 @@ public class SplitPolygonsNodeLinesPlugIn extends AbstractThreadedUiPlugIn {
         return new MultiEnableCheck()
             .add(checkFactory.createWindowWithLayerManagerMustBeActiveCheck())
             .add(checkFactory.createAtLeastNLayersMustExistCheck(1))
-            .add(checkFactory.createExactlyOneSelectedLayerMustBeEditableCheck())
+            .add(checkFactory.createSelectedItemsLayersMustBeEditableCheck())
             .add(checkFactory.createAtLeastNFeaturesMustBeSelectedCheck(1));
     }
 
