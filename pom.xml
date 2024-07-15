@@ -18,6 +18,7 @@
         <version.release>mvn build</version.release>
         <version.revision>${git.total.commit.count}[${git.commit.id.abbrev}]</version.revision>
         <version.buildDateLong>${build.datelong}</version.buildDateLong>
+        <version.buildDate>${build.date}</version.buildDate>
         <version.string>${git.branch}(${git.commit.id.abbrev})</version.string>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
