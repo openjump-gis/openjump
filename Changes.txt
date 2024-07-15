@@ -1,6 +1,37 @@
 ﻿Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
 New Features
+  * Add option extractOnlyPolygonal to the polygonizer
+  * New default JPEG 2000 driver using https://github.com/dbmdz/imageio-jnr
+  * Add georeferencing from GeoJP2 metadata containing tiepoint and 
+    scale geotiff tags
+
+Improvements
+  * upgrade PostGIS, Apache Commons libraries, ImageIO-Ext, Gdal
+  * Understand WMS layer with apikey parameter an pass it to getMap request
+  * Improve WMS UI to manage API Key Authentication
+  * Project opening more robust if it contains an inaccessible WMS Layer
+  * Removed projection list in the WMS layer map list
+  * split FeatureInfoPlugIn into 
+    FeatureInfoPlugin (multiple frames allowed) and 
+    UniqueFeatureInfoFrame (single frame)
+
+Bug Fixes
+  * Several minor bug fixes
+  * Keep viewport affine tranform correct after taskframe resizing
+  * GeometrySnapper did not workk in some border cases.
+  * fix #113: Raster with a single value not visible
+  # fix #112: Raster Styles > Single values presents wrong range
+
+Upgraded Extensions
+  * RasterTools
+  * Five Color
+  * Topology
+
+
+Version 2.2.1 release rev.5222[94156e5] (released on 07. May 2023)
+
+New Features
   * replace Quasimode Shortcut Alt+Shift with Shift to Pan
    (alt+shift is used by windows to change the default language)
   * Complete rewrite of MergePolygonsWithNeighbourPlugIn
