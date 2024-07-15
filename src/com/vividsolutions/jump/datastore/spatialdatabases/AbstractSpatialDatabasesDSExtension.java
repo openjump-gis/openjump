@@ -3,8 +3,8 @@ package com.vividsolutions.jump.datastore.spatialdatabases;
 import java.util.Map;
 
 import com.vividsolutions.jump.I18N;
+import com.vividsolutions.jump.JUMPVersion;
 import com.vividsolutions.jump.datastore.DataStoreDriver;
-import com.vividsolutions.jump.workbench.JUMPWorkbench;
 import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.plugin.Extension;
@@ -17,6 +17,7 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
 
   static final String I18NPREFIX = AbstractSpatialDatabasesDSExtension.class
       .getName();
+  public static final String VERSION = JUMPVersion.CURRENT_VERSION;
 
   protected String errorMessage = null;
   protected DataStoreDriver driver = null;
@@ -87,8 +88,7 @@ abstract public class AbstractSpatialDatabasesDSExtension extends Extension {
    * the default version is 'svn revision (build date)'
    */
   public String getVersion() {
-    return "rev." + I18N.getInstance().get("JUMPWorkbench.version.revision") + "("
-        + I18N.getInstance().get("JUMPWorkbench.version.buildDate") + ")";
+    return VERSION;
   }
 
   /**
