@@ -382,17 +382,50 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         singleValuesPanel = new SingleValuesPanel(this, Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
         
         if (stats.getMin(band) == stats.getMax(band)) {
-            final DummyPanel pan = new DummyPanel("No stretched classification available, this raster has only one value: " + stats.getMax(band));
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), pan);  
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
-           for (final Component c2 : intervalPanel.getComponents()) {
-              c2.setEnabled(false);
-           }
-        } else {
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), stretchedPanel);
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
-        }
-        jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"), singleValuesPanel);
+			final DummyPanel pan = new DummyPanel(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.message1") + " "
+							+ stats.getMax(band));
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), pan);
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"),
+					intervalPanel);
+			for (final Component c2 : intervalPanel.getComponents()) {
+				c2.setEnabled(false);
+			}
+			singleValuesPanel = new SingleValuesPanel(this,
+					Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"),
+					singleValuesPanel);
+
+		} else if (values.length > 2048) {
+
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"),
+					stretchedPanel);
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"),
+					intervalPanel);
+			final DummyPanel pan = new DummyPanel(values.length
+					+ bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.message2"));
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"),
+					pan);
+		} else {
+
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"),
+					stretchedPanel);
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"),
+					intervalPanel);
+			singleValuesPanel = new SingleValuesPanel(this,
+					Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"),
+					singleValuesPanel);
+		}
         pack();
         
         /* Startup symbology */
