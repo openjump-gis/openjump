@@ -362,52 +362,84 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         
     }
     
-    private void fixComponents() throws Exception{
-        
-        this.setTitle(RasterStylesExtension.extensionName);
-        
-        /* Transparency text field */
-        jTextField_TranspValue.setInputVerifier(verifier);
-        jTextField_TranspValue.addActionListener(verifier);
-        jTextField_TranspValue.setText(Integer.toString(jSlider_Transparency.getValue()));               
-                
-        Stats stats = rasterImageLayer.getMetadata().getStats();
-        Range minMaxValues = new Range(stats.getMin(band), true, stats.getMax(band), true);
+	private void fixComponents() throws Exception {
 
-        stretchedPanel = new StretchedPanel(minMaxValues);
-        intervalPanel = new IntervalPanel(
-                this,
-                rasterImageLayer,
-                minMaxValues);
-        singleValuesPanel = new SingleValuesPanel(this, Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
-        
-        if (stats.getMin(band) == stats.getMax(band)) {
-            final DummyPanel pan = new DummyPanel("No stretched classification available, this raster has only one value: " + stats.getMax(band));
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), pan);  
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
-           for (final Component c2 : intervalPanel.getComponents()) {
-              c2.setEnabled(false);
-           }
-        } else {
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), stretchedPanel);
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
-        }
-        jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"), singleValuesPanel);
-        pack();
-        
-        /* Startup symbology */
-        if(rasterImageLayer.getSymbology() != null) {
-            
-            this.finalRasterSymbolizer = rasterImageLayer.getSymbology();
-            updateGUI();
-            
-        }
-        
-        //add RasterSymbolizer Object in BlackBoard, the key is the name of raster plus suffixBBoardKey var.
-        String bboardKey = GUIUtils.getBBKey(String.valueOf(rasterImageLayer.getUUID()));
-        context.getBlackboard().put(bboardKey, this);
-        
-    }
+		this.setTitle(RasterStylesExtension.extensionName);
+
+		/* Transparency text field */
+		jTextField_TranspValue.setInputVerifier(verifier);
+		jTextField_TranspValue.addActionListener(verifier);
+		jTextField_TranspValue.setText(Integer.toString(jSlider_Transparency.getValue()));
+
+		Stats stats = rasterImageLayer.getMetadata().getStats();
+		Range minMaxValues = new Range(stats.getMin(band), true, stats.getMax(band), true);
+		double[] values = Utils.purgeNoData(this.rasterImageLayer.getRasterData(null), this.rasterImageLayer);
+		stretchedPanel = new StretchedPanel(minMaxValues);
+		intervalPanel = new IntervalPanel(this, rasterImageLayer, minMaxValues);
+		singleValuesPanel = new SingleValuesPanel(this,
+				Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
+
+		if (stats.getMin(band) == stats.getMax(band)) {
+			final DummyPanel pan = new DummyPanel(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.message1") + " "
+							+ stats.getMax(band));
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), pan);
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"),
+					intervalPanel);
+			for (final Component c2 : intervalPanel.getComponents()) {
+				c2.setEnabled(false);
+			}
+			singleValuesPanel = new SingleValuesPanel(this,
+					Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"),
+					singleValuesPanel);
+
+		} else if (values.length > 2048) {
+
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"),
+					stretchedPanel);
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"),
+					intervalPanel);
+			final DummyPanel pan = new DummyPanel(values.length
+					+ bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.message2"));
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"),
+					pan);
+		} else {
+
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"),
+					stretchedPanel);
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"),
+					intervalPanel);
+			singleValuesPanel = new SingleValuesPanel(this,
+					Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
+			jTabbedPane_Type.addTab(
+					bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"),
+					singleValuesPanel);
+		}
+		pack();
+
+		/* Startup symbology */
+		if (rasterImageLayer.getSymbology() != null) {
+
+			this.finalRasterSymbolizer = rasterImageLayer.getSymbology();
+			updateGUI();
+
+		}
+
+		// add RasterSymbolizer Object in BlackBoard, the key is the name of raster plus
+		// suffixBBoardKey var.
+		String bboardKey = GUIUtils.getBBKey(String.valueOf(rasterImageLayer.getUUID()));
+		context.getBlackboard().put(bboardKey, this);
+
+	}
     
     public void updateRasterImageLayer() throws Exception {
         
