@@ -19,6 +19,7 @@ import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
 import org.openjump.core.rasterimage.styler.ColorUtils;
+import org.openjump.core.rasterimage.styler.I18N;
 import org.openjump.core.rasterimage.styler.RasterClassifier1D;
 import org.openjump.core.rasterimage.styler.RasterStylesExtension;
 import org.openjump.core.rasterimage.styler.Utils;
@@ -90,8 +91,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         layout.rowHeights = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0};
         setLayout(layout);
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle"); // NOI18N
-        jLabel_Method.setText(bundle.getString("IntervalPanel.jLabel.method")); // NOI18N
+        jLabel_Method.setText(I18N.get("IntervalPanel.jLabel.method")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -108,7 +108,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         gridBagConstraints.ipadx = 3;
         add(jComboBox_Method, gridBagConstraints);
 
-        jButton_Values.setText(bundle.getString("IntervalPanel.jButton.RampAll")); // NOI18N
+        jButton_Values.setText(I18N.get("IntervalPanel.jButton.RampAll")); // NOI18N
         jButton_Values.addActionListener(this::jButton_ValuesActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -117,7 +117,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         add(jButton_Values, gridBagConstraints);
 
-        jLabel_Classes.setText(bundle.getString("IntervalPanel.jLabel.Classes")); // NOI18N
+        jLabel_Classes.setText(I18N.get("IntervalPanel.jLabel.Classes")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -144,7 +144,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 0.5;
         add(jPanel_Table, gridBagConstraints);
 
-        jButton_AddRow.setText(bundle.getString("IntervalPanel.jButton.AddRow")); // NOI18N
+        jButton_AddRow.setText(I18N.get("IntervalPanel.jButton.AddRow")); // NOI18N
         jButton_AddRow.addActionListener(this::jButton_AddRowActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -152,7 +152,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 6;
         add(jButton_AddRow, gridBagConstraints);
 
-        jButton_RemoveRow.setText(bundle.getString("IntervalPanel.jButton.RemoveRow")); // NOI18N
+        jButton_RemoveRow.setText(I18N.get("IntervalPanel.jButton.RemoveRow")); // NOI18N
         jButton_RemoveRow.addActionListener(this::jButton_RemoveRowActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -160,7 +160,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 6;
         add(jButton_RemoveRow, gridBagConstraints);
 
-        jButton_Ramp.setText(bundle.getString("IntervalPanel.jButton.Ramp")); // NOI18N
+        jButton_Ramp.setText(I18N.get("IntervalPanel.jButton.Ramp")); // NOI18N
         jButton_Ramp.addActionListener(this::jButton_RampActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -226,12 +226,12 @@ public class IntervalPanel extends javax.swing.JPanel {
 
     private void fixComponents() {
         
-        classMethods_m.put(ClassificationMethod.EQUAL_RANGE, java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.EqualInterval"));
-        classMethods_m.put(ClassificationMethod.GIVEN_INTERVAL, java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.GivenInterval"));
-        classMethods_m.put(ClassificationMethod.JENKS, java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.Jenks"));
-        classMethods_m.put(ClassificationMethod.MAX_BREAKS, java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.MaxBreaks"));
-        classMethods_m.put(ClassificationMethod.MEAN_STDEV, java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.MeanStDev"));
-        classMethods_m.put(ClassificationMethod.QUANTILE, java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.Quantiles"));
+        classMethods_m.put(ClassificationMethod.EQUAL_RANGE, I18N.get("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.EqualInterval"));
+        classMethods_m.put(ClassificationMethod.GIVEN_INTERVAL, I18N.get("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.GivenInterval"));
+        classMethods_m.put(ClassificationMethod.JENKS, I18N.get("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.Jenks"));
+        classMethods_m.put(ClassificationMethod.MAX_BREAKS, I18N.get("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.MaxBreaks"));
+        classMethods_m.put(ClassificationMethod.MEAN_STDEV, I18N.get("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.MeanStDev"));
+        classMethods_m.put(ClassificationMethod.QUANTILE, I18N.get("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.Quantiles"));
         
         jComboBox_Method.removeAllItems();
         jComboBox_Method.addItem(classMethods_m.get(ClassificationMethod.EQUAL_RANGE));
@@ -249,9 +249,9 @@ public class IntervalPanel extends javax.swing.JPanel {
                 
                 ClassificationMethod classMethod = getKeyByValue(classMethods_m, jComboBox_Method.getSelectedItem().toString());
                 if(classMethod == ClassificationMethod.GIVEN_INTERVAL) {
-                    jLabel_Classes.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.jLabel.classwidth"));
+                    jLabel_Classes.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.IntervalPanel.jLabel.classwidth"));
                 } else {
-                    jLabel_Classes.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.jLabel.Classes"));
+                    jLabel_Classes.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.IntervalPanel.jLabel.Classes"));
                 }
                 
             }
@@ -281,8 +281,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         } catch(Exception ex) {
                 JOptionPane.showMessageDialog(
                 this,
-                java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle")
-                        .getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.numberOfClassesError"),
+                I18N.get("org.openjump.core.rasterimage.styler.ui.IntervalPanel.numberOfClassesError"),
                 RasterStylesExtension.extensionName,
                 JOptionPane.WARNING_MESSAGE);
             return;
@@ -335,7 +334,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         }
 
         if(breaks == null) {
-            throw new Exception(java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.message.ErrorWhileClassifying"));
+            throw new Exception(I18N.get("org.openjump.core.rasterimage.styler.ui.IntervalPanel.message.ErrorWhileClassifying"));
         }
 
         ColorMapEntry[] paletteColorMapEntries = ((GradientCanvas) jComboBox_Gradient.getSelectedItem()).getColorMapEntries();
@@ -379,7 +378,7 @@ public class IntervalPanel extends javax.swing.JPanel {
         if(colorsTablePanel.getSelectedRowsCount() != 2) {
             JOptionPane.showMessageDialog(
                     this,
-                    java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.EqualInterval.SelectTowRowsToRamp"),
+                    I18N.get("org.openjump.core.rasterimage.styler.ui.IntervalPanel.classMethods.EqualInterval.SelectTowRowsToRamp"),
                     RasterStylesExtension.extensionName,
                     JOptionPane.WARNING_MESSAGE);
         }
@@ -428,7 +427,6 @@ public class IntervalPanel extends javax.swing.JPanel {
         return rasterSymbolizer;
     }
  
-    private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle");
     private final Component parent;
     private final Map<ClassificationMethod,String> classMethods_m = new EnumMap<ClassificationMethod,String>(ClassificationMethod.class);
     private RasterImageLayer rasterImageLayer = null;

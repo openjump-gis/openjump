@@ -14,6 +14,7 @@ import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
 import org.openjump.core.rasterimage.styler.ColorUtils;
+import org.openjump.core.rasterimage.styler.I18N;
 import org.openjump.core.rasterimage.styler.RasterStylesExtension;
 
 import com.vividsolutions.jump.workbench.Logger;
@@ -95,8 +96,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         add(jPanel_Table, gridBagConstraints);
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle"); // NOI18N
-        jButton_Ramp.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.SingleValuesPanel.jButton_RampAll")); // NOI18N
+        jButton_Ramp.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.SingleValuesPanel.jButton_RampAll")); // NOI18N
         jButton_Ramp.addActionListener(this::jButton_RampActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -105,7 +105,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         add(jButton_Ramp, gridBagConstraints);
 
-        jButton_Random.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.SingleValuesPanel.jButton_Random")); // NOI18N
+        jButton_Random.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.SingleValuesPanel.jButton_Random")); // NOI18N
         jButton_Random.addActionListener(this::jButton_RandomActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -114,7 +114,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         add(jButton_Random, gridBagConstraints);
 
-        jButton1.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.SingleValuesPanel.jButton_Ramp")); // NOI18N
+        jButton1.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.SingleValuesPanel.jButton_Ramp")); // NOI18N
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -239,7 +239,7 @@ public class SingleValuesPanel extends javax.swing.JPanel {
         if(colorsTablePanel.getSelectedRowsCount() != 2) {
             JOptionPane.showMessageDialog(
                     this,
-                    java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.SingleValuesPanel.message.SelectTwoRows"),
+                    I18N.get("org.openjump.core.rasterimage.styler.ui.SingleValuesPanel.message.SelectTwoRows"),
                     RasterStylesExtension.extensionName,
                     JOptionPane.WARNING_MESSAGE);
         }

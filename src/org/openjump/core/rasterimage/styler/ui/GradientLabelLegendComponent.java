@@ -189,6 +189,4 @@ public class GradientLabelLegendComponent extends JComponent {
     private final TreeMap<Double, Color> colorMapEntries_tm;
     private final double noDataValue;
     private final String rasterName;
-    private final java.util.ResourceBundle bundle = java.util.ResourceBundle
-            .getBundle("org/openjump/core/rasterimage/styler/resources/Bundle"); // NOI18N
 }

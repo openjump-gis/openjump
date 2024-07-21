@@ -40,6 +40,9 @@ import java.awt.AWTError;
 import java.awt.BorderLayout;
 import javax.swing.AbstractCellEditor;
 import javax.swing.table.TableCellEditor;
+
+import org.openjump.core.rasterimage.styler.I18N;
+
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
@@ -64,7 +67,7 @@ public class ColorEditor extends AbstractCellEditor
     private JColorChooser colorChooser;
     private JDialog jDialog_ColorPicker;
     private JCheckBox jCheckBox_Transparent;
-    protected static final String EDIT = java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.ColorEditor.edit");
+    protected static final String EDIT = I18N.get("org.openjump.core.rasterimage.styler.ui.ColorEditor.edit");
 
     public ColorEditor(Component parent) {
         this.parent = parent;
@@ -95,9 +98,9 @@ public class ColorEditor extends AbstractCellEditor
         if(parent == null) {
             throw new AWTError("No suitable parent found for Component."); //NOI18N
         } else if (parent instanceof Dialog) {
-            jDialog_ColorPicker = new JDialog((Dialog) parent, java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.ColorEditor.PickAColor"));
+            jDialog_ColorPicker = new JDialog((Dialog) parent, I18N.get("org.openjump.core.rasterimage.styler.ui.ColorEditor.PickAColor"));
         } else if (parent instanceof Frame) {
-            jDialog_ColorPicker = new JDialog((Frame) parent, java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.ColorEditor.PickAColor"));
+            jDialog_ColorPicker = new JDialog((Frame) parent, I18N.get("org.openjump.core.rasterimage.styler.ui.ColorEditor.PickAColor"));
         }
         jDialog_ColorPicker.setLocationRelativeTo(parent);
         jDialog_ColorPicker.setSize(500, 500);
@@ -107,10 +110,10 @@ public class ColorEditor extends AbstractCellEditor
         colorChooser = new JColorChooser();
         jDialog_ColorPicker.getContentPane().add(colorChooser, BorderLayout.NORTH);
         
-        jCheckBox_Transparent = new JCheckBox(java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.ColorEditor.Transparent"));
+        jCheckBox_Transparent = new JCheckBox(I18N.get("org.openjump.core.rasterimage.styler.ui.ColorEditor.Transparent"));
         jDialog_ColorPicker.getContentPane().add(jCheckBox_Transparent, BorderLayout.CENTER);
         
-        JButton jButton_Cancel = new JButton(java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.ColorEditor.Cancel"));
+        JButton jButton_Cancel = new JButton(I18N.get("org.openjump.core.rasterimage.styler.ui.ColorEditor.Cancel"));
         jButton_Cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -118,7 +121,7 @@ public class ColorEditor extends AbstractCellEditor
             }
         });
         
-        JButton jButton_Ok = new JButton(java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle").getString("org.openjump.core.rasterimage.styler.ui.ColorEditor.Ok"));
+        JButton jButton_Ok = new JButton(I18N.get("org.openjump.core.rasterimage.styler.ui.ColorEditor.Ok"));
         jButton_Ok.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {

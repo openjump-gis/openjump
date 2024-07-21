@@ -4,6 +4,7 @@ import com.vividsolutions.jump.util.Range;
 
 import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.rasterimage.styler.ColorMapEntry;
+import org.openjump.core.rasterimage.styler.I18N;
 import org.openjump.core.rasterimage.RasterSymbology;
 
 import java.util.ResourceBundle;
@@ -76,8 +77,7 @@ public class StretchedPanel extends javax.swing.JPanel {
         setLayout(new java.awt.GridBagLayout());
 
         jLabel_Value.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
-        ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle"); // NOI18N
-        jLabel_Value.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_Value.text")); // NOI18N
+        jLabel_Value.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_Value.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -85,7 +85,7 @@ public class StretchedPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         add(jLabel_Value, gridBagConstraints);
 
-        jLabel_MinLabel.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MinLabel.text")); // NOI18N
+        jLabel_MinLabel.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MinLabel.text")); // NOI18N
         jLabel_MinLabel.setMaximumSize(new java.awt.Dimension(83, 14));
         jLabel_MinLabel.setMinimumSize(new java.awt.Dimension(83, 14));
         jLabel_MinLabel.setPreferredSize(new java.awt.Dimension(83, 14));
@@ -97,7 +97,7 @@ public class StretchedPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         add(jLabel_MinLabel, gridBagConstraints);
 
-        jLabel_MinValue.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MinValue.text")); // NOI18N
+        jLabel_MinValue.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MinValue.text")); // NOI18N
         jLabel_MinValue.setMaximumSize(new java.awt.Dimension(83, 14));
         jLabel_MinValue.setMinimumSize(new java.awt.Dimension(83, 14));
         jLabel_MinValue.setPreferredSize(new java.awt.Dimension(83, 14));
@@ -107,8 +107,8 @@ public class StretchedPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         add(jLabel_MinValue, gridBagConstraints);
 
-        jLabel_MaxLabel.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MaxLabel.text")); // NOI18N
-        jLabel_MaxLabel.setToolTipText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MaxLabel.toolTipText")); // NOI18N
+        jLabel_MaxLabel.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MaxLabel.text")); // NOI18N
+        jLabel_MaxLabel.setToolTipText(I18N.get("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MaxLabel.toolTipText")); // NOI18N
         jLabel_MaxLabel.setMaximumSize(new java.awt.Dimension(83, 14));
         jLabel_MaxLabel.setMinimumSize(new java.awt.Dimension(83, 14));
         jLabel_MaxLabel.setPreferredSize(new java.awt.Dimension(83, 14));
@@ -119,7 +119,7 @@ public class StretchedPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         add(jLabel_MaxLabel, gridBagConstraints);
 
-        jLabel_MaxValue.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MaxValue.text")); // NOI18N
+        jLabel_MaxValue.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jLabel_MaxValue.text")); // NOI18N
         jLabel_MaxValue.setMaximumSize(new java.awt.Dimension(83, 14));
         jLabel_MaxValue.setMinimumSize(new java.awt.Dimension(83, 14));
         jLabel_MaxValue.setPreferredSize(new java.awt.Dimension(83, 14));
@@ -139,7 +139,7 @@ public class StretchedPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         add(jPanel_ShowGradient, gridBagConstraints);
 
-        jButton_Custom.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jButton_Custom.text")); // NOI18N
+        jButton_Custom.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jButton_Custom.text")); // NOI18N
         jButton_Custom.addActionListener(this::jButton_CustomActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -148,7 +148,7 @@ public class StretchedPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         add(jButton_Custom, gridBagConstraints);
 
-        jCheckBox_Invert.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jCheckBox_Invert.text")); // NOI18N
+        jCheckBox_Invert.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.StretchedPanel.jCheckBox_Invert.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;

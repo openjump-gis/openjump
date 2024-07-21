@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import org.openjump.core.rasterimage.RasterImageLayer;
 import org.openjump.core.rasterimage.RasterSymbology;
 import org.openjump.core.rasterimage.Stats;
+import org.openjump.core.rasterimage.styler.I18N;
 import org.openjump.core.rasterimage.styler.RasterStylesExtension;
 import org.openjump.core.rasterimage.styler.SLDHandler;
 import org.openjump.core.rasterimage.styler.Utils;
@@ -111,8 +112,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
 
         jButton_NoDataValueColor.setBackground(new java.awt.Color(204, 204, 204));
         jButton_NoDataValueColor.setForeground(new java.awt.Color(204, 204, 204));
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle"); // NOI18N
-        jButton_NoDataValueColor.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_NoDataValueColor.text")); // NOI18N
+        jButton_NoDataValueColor.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_NoDataValueColor.text")); // NOI18N
         jButton_NoDataValueColor.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jButton_NoDataValueColor.setContentAreaFilled(false);
         jButton_NoDataValueColor.setDoubleBuffered(true);
@@ -131,7 +131,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(6, 6, 6, 6);
         jPanel_OtherParams.add(jButton_NoDataValueColor, gridBagConstraints);
 
-        jLabel_Transparency.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jLabel_Transparency.text")); // NOI18N
+        jLabel_Transparency.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jLabel_Transparency.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -140,7 +140,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         jPanel_OtherParams.add(jLabel_Transparency, gridBagConstraints);
 
         jLabel_Transp_0.setBackground(new java.awt.Color(0, 0, 0));
-        jLabel_Transp_0.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jLabel_Transp_0.text")); // NOI18N
+        jLabel_Transp_0.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jLabel_Transp_0.text")); // NOI18N
         jLabel_Transp_0.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jLabel_Transp_0.setMaximumSize(new java.awt.Dimension(10, 10));
         jLabel_Transp_0.setMinimumSize(new java.awt.Dimension(10, 10));
@@ -174,7 +174,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(9, 0, 0, 0);
         jPanel_OtherParams.add(jSlider_Transparency, gridBagConstraints);
 
-        jLabel_Transp_100.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jLabel_Transp_100.text")); // NOI18N
+        jLabel_Transp_100.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jLabel_Transp_100.text")); // NOI18N
         jLabel_Transp_100.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jLabel_Transp_100.setMaximumSize(new java.awt.Dimension(10, 10));
         jLabel_Transp_100.setMinimumSize(new java.awt.Dimension(10, 10));
@@ -187,7 +187,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
         jPanel_OtherParams.add(jLabel_Transp_100, gridBagConstraints);
 
-        jCheckBox_NoDataValue.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jCheckBox_NoDataValue.text")); // NOI18N
+        jCheckBox_NoDataValue.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jCheckBox_NoDataValue.text")); // NOI18N
         jCheckBox_NoDataValue.setMaximumSize(new java.awt.Dimension(70, 23));
         jCheckBox_NoDataValue.setMinimumSize(new java.awt.Dimension(70, 23));
         jCheckBox_NoDataValue.addActionListener(this::jCheckBox_NoDataValueActionPerformed);
@@ -197,7 +197,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 0;
         jPanel_OtherParams.add(jCheckBox_NoDataValue, gridBagConstraints);
 
-        jTextField_TranspValue.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jTextField_TranspValue.text")); // NOI18N
+        jTextField_TranspValue.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jTextField_TranspValue.text")); // NOI18N
         jTextField_TranspValue.setMinimumSize(new java.awt.Dimension(40, 20));
         jTextField_TranspValue.setPreferredSize(new java.awt.Dimension(40, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -213,7 +213,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridwidth = 6;
         getContentPane().add(jPanel_OtherParams, gridBagConstraints);
 
-        jButton_Load.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_Load.text")); // NOI18N
+        jButton_Load.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_Load.text")); // NOI18N
         jButton_Load.addActionListener(this::jButton_LoadActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -221,7 +221,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 2;
         getContentPane().add(jButton_Load, gridBagConstraints);
 
-        jButton_Save.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_Save.text")); // NOI18N
+        jButton_Save.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_Save.text")); // NOI18N
         jButton_Save.addActionListener(this::jButton_SaveActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -229,7 +229,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 2;
         getContentPane().add(jButton_Save, gridBagConstraints);
 
-        jButton_Cancel.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_Cancel.text")); // NOI18N
+        jButton_Cancel.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_Cancel.text")); // NOI18N
         jButton_Cancel.addActionListener(this::jButton_CancelActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -240,7 +240,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 20, 5, 10);
         getContentPane().add(jButton_Cancel, gridBagConstraints);
 
-        jButton_Restore.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_Restore.text")); // NOI18N
+        jButton_Restore.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_Restore.text")); // NOI18N
         jButton_Restore.addActionListener(this::jButton_RestoreActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -249,7 +249,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(jButton_Restore, gridBagConstraints);
 
-        jButton_Apply.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_Apply.text")); // NOI18N
+        jButton_Apply.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_Apply.text")); // NOI18N
         jButton_Apply.addActionListener(this::jButton_ApplyActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -258,7 +258,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(jButton_Apply, gridBagConstraints);
 
-        jButton_OK.setText(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_OK.text")); // NOI18N
+        jButton_OK.setText(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.jButton_OK.text")); // NOI18N
         jButton_OK.addActionListener(this::jButton_OKActionPerformed);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -275,8 +275,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         if(jCheckBox_NoDataValue.isSelected()){            
             noDataColor =  JColorChooser.showDialog(
                     this,
-                    ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle")
-                            .getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.chooseNoDataColor"),
+                    I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.chooseNoDataColor"),
                     jButton_NoDataValueColor.getBackground()
             );
             
@@ -361,54 +360,79 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         }
         
     }
-    
-    private void fixComponents() throws Exception{
-        
-        this.setTitle(RasterStylesExtension.extensionName);
-        
-        /* Transparency text field */
-        jTextField_TranspValue.setInputVerifier(verifier);
-        jTextField_TranspValue.addActionListener(verifier);
-        jTextField_TranspValue.setText(Integer.toString(jSlider_Transparency.getValue()));               
-                
-        Stats stats = rasterImageLayer.getMetadata().getStats();
-        Range minMaxValues = new Range(stats.getMin(band), true, stats.getMax(band), true);
 
-        stretchedPanel = new StretchedPanel(minMaxValues);
-        intervalPanel = new IntervalPanel(
-                this,
-                rasterImageLayer,
-                minMaxValues);
-        singleValuesPanel = new SingleValuesPanel(this, Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
-        
-        if (stats.getMin(band) == stats.getMax(band)) {
-            final DummyPanel pan = new DummyPanel("No stretched classification available, this raster has only one value: " + stats.getMax(band));
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), pan);  
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
-           for (final Component c2 : intervalPanel.getComponents()) {
-              c2.setEnabled(false);
-           }
-        } else {
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), stretchedPanel);
-            jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
+    private void fixComponents() throws Exception {
+
+      this.setTitle(RasterStylesExtension.extensionName);
+
+      /* Transparency text field */
+      jTextField_TranspValue.setInputVerifier(verifier);
+      jTextField_TranspValue.addActionListener(verifier);
+      jTextField_TranspValue.setText(Integer.toString(jSlider_Transparency.getValue()));
+
+      Stats stats = rasterImageLayer.getMetadata().getStats();
+      Range minMaxValues = new Range(stats.getMin(band), true, stats.getMax(band), true);
+      double[] values = Utils.purgeNoData(this.rasterImageLayer.getRasterData(null), this.rasterImageLayer);
+      stretchedPanel = new StretchedPanel(minMaxValues);
+      intervalPanel = new IntervalPanel(this, rasterImageLayer, minMaxValues);
+      singleValuesPanel = new SingleValuesPanel(this,
+          Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
+
+      if (stats.getMin(band) == stats.getMax(band)) {
+        final DummyPanel pan = new DummyPanel(
+            I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.no_stretched_only_one_value",stats.getMax(band)));
+        jTabbedPane_Type
+            .addTab(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"), pan);
+        jTabbedPane_Type.addTab(
+            I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
+        for (final Component c2 : intervalPanel.getComponents()) {
+          c2.setEnabled(false);
         }
-        jTabbedPane_Type.addTab(bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"), singleValuesPanel);
-        pack();
-        
-        /* Startup symbology */
-        if(rasterImageLayer.getSymbology() != null) {
-            
-            this.finalRasterSymbolizer = rasterImageLayer.getSymbology();
-            updateGUI();
-            
-        }
-        
-        //add RasterSymbolizer Object in BlackBoard, the key is the name of raster plus suffixBBoardKey var.
-        String bboardKey = GUIUtils.getBBKey(String.valueOf(rasterImageLayer.getUUID()));
-        context.getBlackboard().put(bboardKey, this);
-        
+        singleValuesPanel = new SingleValuesPanel(this,
+            Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
+        jTabbedPane_Type.addTab(
+            I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"),
+            singleValuesPanel);
+
+      } else if (values.length > 2048) {
+
+        jTabbedPane_Type.addTab(
+            I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"),
+            stretchedPanel);
+        jTabbedPane_Type.addTab(
+            I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
+        final DummyPanel pan = new DummyPanel(I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.no_single_too_many_values", values.length));
+        jTabbedPane_Type.addTab(
+            I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"), pan);
+      } else {
+
+        jTabbedPane_Type.addTab(
+            I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabStretched"),
+            stretchedPanel);
+        jTabbedPane_Type.addTab(
+            I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabIntervals"), intervalPanel);
+        singleValuesPanel = new SingleValuesPanel(this,
+            Utils.purgeNoData(rasterImageLayer.getRasterData(null), rasterImageLayer), rasterImageLayer);
+        jTabbedPane_Type.addTab(
+            I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.tabSingleValues"),
+            singleValuesPanel);
+      }
+      pack();
+
+      /* Startup symbology */
+      if (rasterImageLayer.getSymbology() != null) {
+
+        this.finalRasterSymbolizer = rasterImageLayer.getSymbology();
+        updateGUI();
+
+      }
+
+      // add RasterSymbolizer Object in BlackBoard, the key is the name of raster plus
+      // suffixBBoardKey var.
+      String bboardKey = GUIUtils.getBBKey(String.valueOf(rasterImageLayer.getUUID()));
+      context.getBlackboard().put(bboardKey, this);
     }
-    
+
     public void updateRasterImageLayer() throws Exception {
         
         if(jTabbedPane_Type.getSelectedComponent() instanceof StretchedPanel) {
@@ -453,7 +477,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
         JFileChooser chooser = new JFileChooser(PirolPlugInSettings.configDirectory());
         String extension = "sld";
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.fileChooser.sld"), extension);
+                I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.fileChooser.sld"), extension);
         chooser.setFileFilter(filter);
         int returnVal = chooser.showSaveDialog(this);
         
@@ -480,7 +504,7 @@ public class RasterStylesDialog extends javax.swing.JDialog {
                 
         JFileChooser chooser = new JFileChooser(PirolPlugInSettings.configDirectory());
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                bundle.getString("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.fileChooser.sld"), "sld");
+                I18N.get("org.openjump.core.rasterimage.styler.ui.RasterStylesDialog.fileChooser.sld"), "sld");
         chooser.setFileFilter(filter);
         chooser.setMultiSelectionEnabled(false);
         
@@ -549,7 +573,6 @@ public class RasterStylesDialog extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
     private Color noDataColor;
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle"); // NOI18N
     private final WorkbenchContext context;
     private final RasterImageLayer rasterImageLayer;
     private final int band;

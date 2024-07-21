@@ -104,8 +104,7 @@ public class RasterStylesPlugIn implements ThreadedPlugIn {
     
     @Override
     public String getName() {
-        return ResourceBundle.getBundle("org/openjump/core/rasterimage/styler/resources/Bundle")
-                .getString("org.openjump.core.rasterimage.styler.RasterStylesExtension.Name");
+        return I18N.get("org.openjump.core.rasterimage.styler.RasterStylesExtension.Name");
     }
-    
+
 }
