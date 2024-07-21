@@ -196,7 +196,11 @@ public final class I18N {
         if (stream != null) {
           try {
             bundle = new PropertyResourceBundle(new InputStreamReader(stream, encoding));
-          } finally {
+          } 
+          catch (Exception e) {
+            Logger.error(resourceName, e);
+          }
+          finally {
             stream.close();
           }
         }
@@ -447,7 +451,7 @@ public final class I18N {
       text = getInstance().getValue(text.substring(3).trim());
 
     // no params, nothing to parse
-    if (objects.length < 1)
+    if (objects == null || objects.length < 1)
       return text;
 
     // parse away
