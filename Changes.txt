@@ -24,7 +24,7 @@ Bug Fixes
   # fix #112: Raster Styles > Single values presents wrong range
 
 Upgraded Extensions
-  * RasterTools
+  * RasterTools (for details see "Raster tools>About>Change log")
   * Five Color
   * Topology
 
