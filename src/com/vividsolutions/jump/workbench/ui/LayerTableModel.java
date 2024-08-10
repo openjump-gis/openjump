@@ -237,9 +237,9 @@ public class LayerTableModel extends ColumnBasedTableModel {
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        if (!layer.isEditable()) {
-            return false;
-        }
+//        if (!layer.isEditable()) {
+//            return false;
+//        }
 
         if (getColumn(columnIndex) == fidColumn) {
             return false;
@@ -249,11 +249,11 @@ public class LayerTableModel extends ColumnBasedTableModel {
             return false;
         }
 
-		FeatureSchema schema = 
-			layer.getFeatureCollectionWrapper().getFeatureSchema();
-		if (schema.isAttributeReadOnly(schema.getAttributeIndex(getColumn(
-				columnIndex).getName())))
-			return false;
+//		FeatureSchema schema =
+//			layer.getFeatureCollectionWrapper().getFeatureSchema();
+//		if (schema.isAttributeReadOnly(schema.getAttributeIndex(getColumn(
+//				columnIndex).getName())))
+//			return false;
 
         return true;
     }

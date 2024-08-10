@@ -37,9 +37,11 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.ui.plugin.view.ViewOptionsPlugIn;
 
@@ -122,6 +124,7 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
           GUIUtil.doNotRoundDoubles(this);
           blackboard = PersistentBlackboardPlugIn.get(workbenchContext);
           DateFormat formatter;
+          setRowHeight(18); // a bit higher to see letter with descender (jgypq) during edition
           try {
               formatter = blackboard.get(DATE_FORMAT_KEY) == null ?
                       DEFAULT_DATE_FORMAT :
@@ -129,31 +132,56 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
           } catch (IllegalArgumentException e) {
               formatter = DEFAULT_DATE_FORMAT;
           }
-          //setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor(formatter));
-
-          NullifyMouseAdapter nullifyMouseAdapter = new NullifyMouseAdapter(MyTable.this);
-
-          DefaultCellEditor dateCellEditor = new FlexibleDateParser.CellEditor(formatter);
-          // I don't know why it does not work for Date cells
-          // It is not a big problem as one can empty the date field to nullify date value
-          //dateCellEditor.getComponent().addMouseListener(nullifyMouseAdapter);
-          setDefaultEditor(Date.class, dateCellEditor);
-
-          JTextField nullableTextField = new JTextField();
-          nullableTextField.addMouseListener(nullifyMouseAdapter);
-          setDefaultEditor(String.class, new DefaultCellEditor(nullableTextField));
-
-          JCheckBox nullableCheckBox = new JCheckBox();
-          nullableCheckBox.addMouseListener(nullifyMouseAdapter);
-          setDefaultEditor(Boolean.class, new DefaultCellEditor(nullableCheckBox));
-
+          setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor(formatter));
+          //setDefaultEditor(String.class, new DefaultCellEditor(new JTextField()));
+          //setDefaultEditor(Boolean.class, new DefaultCellEditor(new JCheckBox()));
       }
 
       //Row-stripe colour recommended in
       //Java Look and Feel Design Guidelines: Advanced Topics [Jon Aquino]
       private final Color LIGHT_GRAY = new Color(230, 230, 230);
 
-      private GeometryCellRenderer geomCellRenderer = new GeometryCellRenderer();
+      private boolean isLayerEditable() {
+        return AttributeTablePanel.this.getModel().getLayer().isEditable();
+      }
+
+      private boolean isColumnEditable(int column) {
+        LayerTableModel model = AttributeTablePanel.this.getModel();
+        FeatureSchema schema = model.getLayer().getFeatureCollectionWrapper().getFeatureSchema();
+        String colName = model.getColumn(column).getName();
+        return !colName.equals("FID") && !colName.equals(" ") &&
+            !schema.isAttributeReadOnly(schema.getAttributeIndex(colName));
+      }
+
+      private boolean isCellEditable(int column) {
+        return isLayerEditable() && isColumnEditable(column);
+      }
+
+      // 2024-08-10 : now use TableCellEditor for editable and non-editable layers
+      // -> override prepareEditor to change its behaviour depending on layer editability
+      @Override
+      public Component prepareEditor(TableCellEditor editor, int row, int column) {
+        Component c = super.prepareEditor(editor, row, column);
+
+        // prevent edit operation if backing layer is not editable
+        if (c instanceof JTextField) {
+          ((JTextField) c).setEditable(isCellEditable(column));
+          ((JTextField) c).setBorder(null); // use the full component surface
+        }
+        else if (c instanceof JCheckBox) {
+          c.setEnabled(isCellEditable(column));
+        }
+        // add/remove mouse listener
+        for (MouseListener ml : c.getMouseListeners()) {
+          if (ml instanceof NullifyMouseAdapter) c.removeMouseListener(ml);
+        }
+        if (isCellEditable(column)) {
+          c.addMouseListener(new NullifyMouseAdapter(MyTable.this));
+        }
+        return c;
+      }
+
+      private final GeometryCellRenderer geomCellRenderer = new GeometryCellRenderer();
 
       @Override
       public TableCellRenderer getCellRenderer(int row, int column) {
@@ -164,9 +192,9 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
   
         // now create some renderers according to value type
         final JComponent renderer = (JComponent) super.getCellRenderer(row, column);
-  
+
         // Get the preferred date formatter from the PersistentBlackboard
-        DateFormat dateFormatter = null;
+        DateFormat dateFormatter;
         try {
           dateFormatter = blackboard.get(DATE_FORMAT_KEY) == null ? DEFAULT_DATE_FORMAT
               : new SimpleDateFormat(blackboard.get(DATE_FORMAT_KEY).toString());
@@ -218,19 +246,16 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
         // Set default editor for time fields, as we want date display and date
         // editing
         // to be synchronized
-        setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor(finalDateFormatter));
-  
-        // render table cell backgrounds according to editability status
-        if (AttributeTablePanel.this.getModel().getLayer().isEditable()
-            && !AttributeTablePanel.this.getModel().isCellEditable(row, column))
-          // Shade _readonly_ cells light gray
+        // 2024-08-10 now always use the cellEditor
+        //setDefaultEditor(Date.class, new FlexibleDateParser.CellEditor(finalDateFormatter));
+
+        // If not editable, use row striping, as recommended in Java Look and
+        // Feel Design Guidelines: Advanced Topics [Jon Aquino]
+        if (!isColumnEditable(column))
           renderer.setBackground(LIGHT_GRAY);
-        else {
-          // If not editable, use row striping, as recommended in Java Look and
-          // Feel Design Guidelines: Advanced Topics [Jon Aquino]
-          renderer.setBackground((AttributeTablePanel.this.getModel().getLayer().isEditable() || ((row % 2) == 0))
-              ? Color.white : LIGHT_GRAY);
-        }
+        else
+          renderer.setBackground((isCellEditable(column) || ((row % 2) == 0))
+            ? Color.white : LIGHT_GRAY);
   
         return (TableCellRenderer) renderer;
       }
@@ -265,7 +290,9 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
     // To nullify a value, click the PopUpNullifyCell between mouse press and mouse release
     private class NullifyMouseAdapter extends MouseAdapter {
         JTable table;
-        PopUpNullifyCell menu;
+        final PopUpNullifyCell menu = new PopUpNullifyCell();
+        final long delay = 500;
+        boolean leftButtonPressed = false;
 
         NullifyMouseAdapter(final JTable table){
             super();
@@ -274,39 +301,31 @@ public class AttributeTablePanel extends JPanel implements AttributeTablePanelLi
 
         @Override
         public void mousePressed(final MouseEvent e) {
+          leftButtonPressed = true;
             if (SwingUtilities.isLeftMouseButton(e)) {
-                menu = new PopUpNullifyCell();
-                final int row = table.convertRowIndexToModel(table.getEditingRow());
-                final int column = table.convertColumnIndexToModel(table.getEditingColumn());
-                menu.anItem.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        table.removeEditor();
-                        table.getModel().setValueAt(null, row, column);
-                        //System.out.println(row + "/" + column + " : " + table.getModel().getValueAt(row, column));
-                    }
-                });
-                // Wait 1/2 s before displaying the nullify popup menu,
-                // so that the normal edition mode is not disturbed
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(333);
-                            if (menu!= null) menu.show(e.getComponent(), e.getX() + 10, e.getY());
-                        } catch(InterruptedException ie) {}
-                    }
-                }).start();
-
+              final int row = table.convertRowIndexToModel(table.getEditingRow());
+              final int column = table.convertColumnIndexToModel(table.getEditingColumn());
+              menu.anItem.addActionListener(e1 -> {
+                table.removeEditor();
+                table.getModel().setValueAt(null, row, column);
+              });
+              // Wait 1/2 s before displaying the nullify popup menu,
+              // so that the normal edition mode is not disturbed
+              // Use new Thread rather than SwingUtilities.invokeLater not to disturb normal edition mode
+              new Thread(() -> {
+                try {Thread.sleep(delay);}
+                catch(InterruptedException ignored) {}
+                if (leftButtonPressed) {
+                  menu.show(e.getComponent(), e.getX(), e.getY());
+                }
+              }).start();
             }
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            if (menu != null) {
-                menu.setVisible(false);
-                menu = null;
-            }
+          leftButtonPressed = false;
+          menu.setVisible(false);
         }
     }
 
