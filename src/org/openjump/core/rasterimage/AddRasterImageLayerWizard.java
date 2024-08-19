@@ -221,7 +221,7 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
 		// The style must be stored as SLD file with the same name of the layer.
 		if (rLayer.getNumBands() == 1) {// Currently OpenJUMP can read/write symbology only for
 			// monoband raster files
-			String sldS = new File(imageFileName).getAbsolutePath().replace("tif", "sld");
+			String sldS = org.openjump.util.UriUtil.removeExtension(imageFileName) + ".sld";
 			File sldFile = new File(sldS);
 			if (sldFile.exists() && !sldFile.isDirectory()) {
 				try {
