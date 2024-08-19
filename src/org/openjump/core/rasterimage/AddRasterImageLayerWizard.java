@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import com.vividsolutions.jump.workbench.Logger;
 import org.openjump.core.ccordsys.utils.ProjUtils;
 import org.openjump.core.ccordsys.utils.SRSInfo;
+import org.openjump.core.rasterimage.styler.SLDHandler;
 import org.openjump.core.ui.plugin.file.OpenRecentPlugIn;
 import org.openjump.core.ui.plugin.layer.pirolraster.RasterImageWizardPanel;
 import org.openjump.core.ui.swing.wizard.AbstractWizardGroup;
@@ -215,7 +216,24 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         } catch (Exception e) {
             Logger.error(e);
         }
-        // #################################
+       	// [Giuseppe Aruta 2024_08_19]
+		// This part of code allows to read and apply a style to a RasterImageLayer.
+		// The style must be stored as SLD file with the same name of the layer.
+		if (rLayer.getNumBands() == 1) {// Currently OpenJUMP can read/write symbology only for
+			// monoband raster files
+			String sldS = new File(imageFileName).getAbsolutePath().replace("tif", "sld");
+			File sldFile = new File(sldS);
+			if (sldFile.exists() && !sldFile.isDirectory()) {
+				try {
+					RasterSymbology finalRasterSymbolizer = SLDHandler.read(sldFile);
+					rLayer.setSymbology(finalRasterSymbolizer);
+				} catch (Exception e) {
+					Logger.error("cannot decode sld file: " + e);
+				}
+			}
+
+		}
+		// #################################
 
         final MetaInformationHandler mih = new MetaInformationHandler(rLayer);
         // [sstein 28.Feb.2009] -- not sure if these keys should be translated
