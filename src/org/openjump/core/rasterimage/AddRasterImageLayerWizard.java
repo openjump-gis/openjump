@@ -216,14 +216,8 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         } catch (Exception e) {
             Logger.error(e);
         }
-        // [Giuseppe Aruta 2024_08_19]
-        // This part of code allows to read and apply a style to a RasterImageLayer.
-        // The style must be stored as SLD file with the same name of the layer.
-        if (rLayer.getNumBands() == 1) {// Currently OpenJUMP can read/write symbology only for
-            // monoband raster files
+         if (rLayer.getNumBands() == 1) {
             String sldS = org.openjump.util.UriUtil.removeExtension(imageFileName) + ".sld";
-            // String sldS = new File(imageFileName).getAbsolutePath().replace("tif",
-            // "sld");
             File sldFile = new File(sldS);
             if (sldFile.exists() && !sldFile.isDirectory()) {
                 try {
