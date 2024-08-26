@@ -216,20 +216,22 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         } catch (Exception e) {
             Logger.error(e);
         }
-         if (rLayer.getNumBands() == 1) {
-            String sldS = org.openjump.util.UriUtil.removeExtension(imageFileName) + ".sld";
-            File sldFile = new File(sldS);
-            if (sldFile.exists() && !sldFile.isDirectory()) {
-                try {
-                    RasterSymbology finalRasterSymbolizer = SLDHandler.read(sldFile);
-                    rLayer.setSymbology(finalRasterSymbolizer);
-                } catch (Exception e) {
-                    Logger.error("cannot decode sld file: " + e);
-                }
-            }
 
+        // [Giuseppe Aruta 2024_08_19]
+        // This part of code allows to read and apply a style to a RasterImageLayer.
+        // The style must be stored as SLD file with the same name of the layer.
+        if (rLayer.getNumBands() == 1) {
+          String sldFileName = org.openjump.util.UriUtil.removeExtension(imageFileName) + ".sld";
+          File sldFile = new File(sldFileName);
+          if (sldFile.exists() && !sldFile.isDirectory()) {
+            try {
+              RasterSymbology finalRasterSymbolizer = SLDHandler.read(sldFile);
+              rLayer.setSymbology(finalRasterSymbolizer);
+            } catch (Exception e) {
+              Logger.error("cannot decode sld file: " + e);
+            }
+          }
         }
-        // #################################
 
         final MetaInformationHandler mih = new MetaInformationHandler(rLayer);
         // [sstein 28.Feb.2009] -- not sure if these keys should be translated
@@ -249,7 +251,6 @@ public class AddRasterImageLayerWizard extends AbstractWizardGroup {
         mih.addMetaInformation("srid", rLayer.getSrsInfo().getCode());
         mih.addMetaInformation("srid-location", rLayer.getSrsInfo().getSource());
 
-        // ###################################
         context.getLayerManager().addLayerable(catName, rLayer);
 
         if (zoomToInsertedImage || layersAsideImage == 0) {
