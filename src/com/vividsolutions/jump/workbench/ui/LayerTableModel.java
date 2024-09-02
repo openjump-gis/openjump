@@ -237,9 +237,10 @@ public class LayerTableModel extends ColumnBasedTableModel {
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-//        if (!layer.isEditable()) {
-//            return false;
-//        }
+
+        // All columns use a CellEditor except fid and geometry so that text can be selected,
+        // Underlying JTextField can still be made editable or not editable
+        // depending on attributes (see also JTable.prepareEditor in AttributeTablePanel)
 
         if (getColumn(columnIndex) == fidColumn) {
             return false;
@@ -248,12 +249,6 @@ public class LayerTableModel extends ColumnBasedTableModel {
         if (getColumn(columnIndex) == geomButtonColumn) {
             return false;
         }
-
-//		FeatureSchema schema =
-//			layer.getFeatureCollectionWrapper().getFeatureSchema();
-//		if (schema.isAttributeReadOnly(schema.getAttributeIndex(getColumn(
-//				columnIndex).getName())))
-//			return false;
 
         return true;
     }
