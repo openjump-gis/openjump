@@ -45,13 +45,7 @@ import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.ui.renderer.SelectionBackgroundRenderer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Provides aggregate information for selected features, parts, and linestrings.
@@ -240,7 +234,7 @@ public class SelectionManager {
     }
 
     public Collection<Layer> getLayersWithSelectedItems() {
-        Set<Layer> layersWithSelectedItems = new HashSet<>();
+        Set<Layer> layersWithSelectedItems = new LinkedHashSet<>();
         for (AbstractSelection selection : selections) {
             layersWithSelectedItems.addAll(selection.getLayersWithSelectedItems());
         }

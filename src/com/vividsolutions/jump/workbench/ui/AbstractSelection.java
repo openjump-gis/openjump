@@ -35,7 +35,6 @@ package com.vividsolutions.jump.workbench.ui;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -50,11 +49,12 @@ import com.vividsolutions.jump.workbench.model.Layer;
 /**
  * Superclass for holding a user-selected collection of {@link Feature} items.
  */
-// [mmichaud 2011-09-20] use generics and improve memory usage (initialize
-// lists with size 1 only)
+// [mmichaud 2024-09-22] make order of layers with selected items more predictable
+// [mmichaud 2013-01-10] make selected elements order predictable
+// [mmichaud 2011-09-20] use generics and improve memory usage (initialize lists with size 1 only)
 public abstract class AbstractSelection {
     
-    private Map<Layer,Map<Feature,Set<Integer>>> layerMap = new HashMap<>();
+    private Map<Layer,Map<Feature,Set<Integer>>> layerMap = new LinkedHashMap<>();
 
     public abstract String getRendererContentID();
 
@@ -62,7 +62,7 @@ public abstract class AbstractSelection {
 
     private AbstractSelection parent;
 
-    private SelectionManager selectionManager;
+    private final SelectionManager selectionManager;
 
     public AbstractSelection(SelectionManager selectionManager) {
         this.selectionManager = selectionManager;
@@ -95,7 +95,11 @@ public abstract class AbstractSelection {
      */
     public Map<Feature,Set<Integer>> getFeatureToSelectedItemIndexCollectionMap(Layer layer) {
         if (!layerMap.containsKey(layer)) {
-            layerMap.put(layer, new LinkedHashMap<Feature,Set<Integer>>());
+            // a new LinkedHashMap is returned to be able to add new selected features/items to it,
+            // but it is not added to layerMap until we are sure it contains some selected features
+            // because we want layerMap to contain only layers with selected features and
+            // preserving selection order as much as possible
+            return new LinkedHashMap<>();
         }
         return layerMap.get(layer);
     }
@@ -176,9 +180,13 @@ public abstract class AbstractSelection {
      * the selection indices.
      */
     public Collection<Geometry> getSelectedItems(Layer layer, Feature feature, Geometry geometry) {
-        Set<Integer> indices = getFeatureToSelectedItemIndexCollectionMap(layer).get(feature);
-        if (indices == null) indices = Collections.emptySet();
-        return items(geometry, indices);
+        if (layerMap.get(layer) != null) {
+            Set<Integer> indices = getFeatureToSelectedItemIndexCollectionMap(layer).get(feature);
+            if (indices == null) indices = Collections.emptySet();
+            return items(geometry, indices);
+        } else {
+            return Collections.emptySet();
+        }
     }
 
     /**
@@ -200,6 +208,10 @@ public abstract class AbstractSelection {
             for (Feature feature : featureToItemCollectionMap.keySet()) {
                 List<Geometry> items = featureToItemCollectionMap.get(feature);
                 if (items != null) unselectItems(layer, feature, items);
+                // remove layer from layerMap if it does not contain selected item any more
+                if (layerMap.get(layer) == null || layerMap.get(layer).isEmpty()) {
+                    layerMap.remove(layer);
+                }
             }
         } finally {
             selectionManager.setPanelUpdatesEnabled(originalPanelUpdatesEnabled);
@@ -208,17 +220,19 @@ public abstract class AbstractSelection {
     }
 
     public void selectItems(Layer layer, Map<Feature,List<Geometry>> featureToItemCollectionMap) {
-        boolean originalPanelUpdatesEnabled = selectionManager.arePanelUpdatesEnabled();
-        selectionManager.setPanelUpdatesEnabled(false);
-        try {
-            for (Feature feature : featureToItemCollectionMap.keySet()) {
-                List<Geometry> items = featureToItemCollectionMap.get(feature);
-                if (items != null) selectItems(layer, feature, items);
+        if (!featureToItemCollectionMap.isEmpty()) {
+            boolean originalPanelUpdatesEnabled = selectionManager.arePanelUpdatesEnabled();
+            selectionManager.setPanelUpdatesEnabled(false);
+            try {
+                for (Feature feature : featureToItemCollectionMap.keySet()) {
+                    List<Geometry> items = featureToItemCollectionMap.get(feature);
+                    if (items != null) selectItems(layer, feature, items);
+                }
+            } finally {
+                selectionManager.setPanelUpdatesEnabled(originalPanelUpdatesEnabled);
             }
-        } finally {
-            selectionManager.setPanelUpdatesEnabled(originalPanelUpdatesEnabled);
+            updatePanel();
         }
-        updatePanel();
     }
 
     public void selectItems(Layer layer, Feature feature, Collection<Geometry> items) {
@@ -226,10 +240,14 @@ public abstract class AbstractSelection {
         boolean originalPanelUpdatesEnabled = selectionManager.arePanelUpdatesEnabled();
         selectionManager.setPanelUpdatesEnabled(false);
         try {
+            // if some items are selected in a layer which is not yet in layerMap, it's time to add it
+            if (layerMap.get(layer) == null && feature != null && items != null && !items.isEmpty()) {
+                layerMap.put(layer, new LinkedHashMap<>());
+            }
             unselectInDescendants(layer, feature, itemsToSelect);
             Set<Integer> featureIndices = getFeatureToSelectedItemIndexCollectionMap(layer).get(feature);
             if (featureIndices == null) {
-                featureIndices = new LinkedHashSet<Integer>(1);
+                featureIndices = new LinkedHashSet<>(1);
                 getFeatureToSelectedItemIndexCollectionMap(layer).put(feature, featureIndices);
             }
             Set<Integer> itemIndices = indices(feature.getGeometry(), itemsToSelect);
@@ -237,6 +255,10 @@ public abstract class AbstractSelection {
                 featureIndices.addAll(itemIndices);
             }
         } finally {
+            // just in case we try to add an empty selection in a layer with no other selected feature
+            if (layerMap.get(layer) == null || layerMap.get(layer).isEmpty()) {
+                layerMap.remove(layer);
+            }
             selectionManager.setPanelUpdatesEnabled(originalPanelUpdatesEnabled);
         }
         updatePanel();
@@ -256,6 +278,10 @@ public abstract class AbstractSelection {
                 }
             }
         } finally {
+            // remove layer from layerMap if it does not contain selected item any more
+            if (layerMap.get(layer) == null || layerMap.get(layer).isEmpty()) {
+                layerMap.remove(layer);
+            }
             selectionManager.setPanelUpdatesEnabled(originalPanelUpdatesEnabled);
         }
         updatePanel();
@@ -337,6 +363,10 @@ public abstract class AbstractSelection {
 
     public void unselectItems(Layer layer, Feature feature) {
         getFeatureToSelectedItemIndexCollectionMap(layer).remove(feature);
+        // remove layer from layerMap if it does not contain selected item any more
+        if (layerMap.get(layer) == null || layerMap.get(layer).isEmpty()) {
+            layerMap.remove(layer);
+        }
         // [mmichaud 2011-09-24 : fix 2792806]
         //updatePanel();
     }
@@ -348,6 +378,10 @@ public abstract class AbstractSelection {
             if (indices.isEmpty()) {
                 getFeatureToSelectedItemIndexCollectionMap(layer).remove(feature);
             }
+        }
+        // remove layer from layerMap if it does not contain selected item any more
+        if (layerMap.get(layer) == null || layerMap.get(layer).isEmpty()) {
+            layerMap.remove(layer);
         }
     }
 
