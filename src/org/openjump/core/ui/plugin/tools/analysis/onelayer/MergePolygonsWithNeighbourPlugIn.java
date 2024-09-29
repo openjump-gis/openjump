@@ -169,18 +169,20 @@ public class MergePolygonsWithNeighbourPlugIn extends ThreadedBasePlugIn {
     // Using an attribute
     List<String> attributes = AttributeTypeFilter.NO_GEOMETRY_FILTER.filter(context.getLayerManager()
         .getLayer(layerName));
-    if (!attributes.isEmpty()) {
-      dialog.addSeparator();
-      JCheckBox jcbUseAttribute = dialog.addCheckBox(sUseAttribute, useAttribute);
-      JComboBox<String> jcbAttribute = dialog.addComboBox(sAttributeToUse, attribute, attributes, null);
-      jcbAttribute.setEnabled(useAttribute);
-      JCheckBox jcbSkipNullValues = dialog.addCheckBox(sSkipNullValues, skipNullValues, null);
-      jcbSkipNullValues.setEnabled(useAttribute);
-      jcbUseAttribute.addActionListener(e -> {
-        jcbAttribute.setEnabled(jcbUseAttribute.isSelected());
-        jcbSkipNullValues.setEnabled(jcbUseAttribute.isSelected());
-        jcbSkipNullValues.setEnabled(jcbUseAttribute.isSelected());
-      });
+    dialog.addSeparator();
+    JCheckBox jcbUseAttribute = dialog.addCheckBox(sUseAttribute, useAttribute);
+    JComboBox<String> jcbAttribute = dialog.addComboBox(sAttributeToUse, attribute, attributes, null);
+    jcbAttribute.setEnabled(useAttribute);
+    JCheckBox jcbSkipNullValues = dialog.addCheckBox(sSkipNullValues, skipNullValues, null);
+    jcbSkipNullValues.setEnabled(useAttribute);
+    jcbUseAttribute.addActionListener(e -> {
+      jcbAttribute.setEnabled(jcbUseAttribute.isSelected());
+      jcbSkipNullValues.setEnabled(jcbUseAttribute.isSelected());
+      jcbSkipNullValues.setEnabled(jcbUseAttribute.isSelected());
+    });
+    if (attributes.isEmpty()) {
+      jcbUseAttribute.setSelected(false);
+      jcbUseAttribute.setEnabled(false);
     }
 
     GUIUtil.centreOnWindow(dialog);
