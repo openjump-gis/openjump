@@ -12,6 +12,7 @@
   <element xml-name="format" java-name="format"/>
   <element xml-name="alpha" java-name="alpha"/>
   <element xml-name="version" java-name="wmsVersion"/>
+  <element xml-name="apikey-name-and-value" java-name="apiKeyNameAndValue"/>
   <element xml-name="wms-layer-names">
     <element xml-name="wms-layer-name" java-name="layerName"/>
   </element>  

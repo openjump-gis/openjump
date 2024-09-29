@@ -82,13 +82,15 @@ public class WMSLayer
 
   public WMSLayer(LayerManager layerManager, String serverURL, String srs,
       List<String> layerNames, String format, String version) throws IOException {
-    this(layerManager, initializedService(serverURL, version), srs, layerNames,
+    this(layerManager, initializedService(serverURL, version, null), srs, layerNames,
         format);
   }
 
-  private static WMService initializedService(String serverURL, String version)
+  private static WMService initializedService(String serverURL, String version,
+                                              String apiKeyNameAndValue)
       throws IOException {
-    WMService initializedService = new WMService(serverURL, version);
+    WMService initializedService =
+        new WMService(serverURL, version, apiKeyNameAndValue, true);
     initializedService.initialize();
     return initializedService;
   }
@@ -268,7 +270,7 @@ public class WMSLayer
   public WMService getService() throws IOException {
     if (service == null) {
       Assert.isTrue(serverURL != null);
-      setService(initializedService(serverURL, wmsVersion));
+      setService(initializedService(serverURL, wmsVersion, apiKeyNameAndValue));
     }
     return service;
   }
