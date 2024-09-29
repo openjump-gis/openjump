@@ -26,7 +26,7 @@
 
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
         <batik.version>1.6-1</batik.version>
-        <jts.version>1.19.0</jts.version>
+        <jts.version>1.20.0</jts.version>
         <postgresql.version>42.7.3</postgresql.version>
         <imageio-ext.version>1.4.9</imageio-ext.version>
     </properties>
