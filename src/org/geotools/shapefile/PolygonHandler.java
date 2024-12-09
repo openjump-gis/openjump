@@ -1,23 +1,25 @@
 package org.geotools.shapefile;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import com.vividsolutions.jump.workbench.Logger;
+import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.*;
 import com.vividsolutions.jump.io.EndianDataInputStream;
 import com.vividsolutions.jump.io.EndianDataOutputStream;
+import org.locationtech.jts.index.strtree.STRtree;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Wrapper for a Shapefile Polygon.
  */
 public class PolygonHandler implements ShapeHandler {
 
-    protected static CGAlgorithms cga = new CGAlgorithms();
-
     int myShapeType;
-    
+
     public PolygonHandler() {
         myShapeType = 5;
     }
@@ -34,7 +36,7 @@ public class PolygonHandler implements ShapeHandler {
                          int contentLength) throws IOException, InvalidShapefileException {
     
         int actualReadWords = 0; //actual number of 16 bits words read
-        Geometry geom = null;
+        Geometry geom;
 
         int shapeType = file.readIntLE();
         actualReadWords += 2;
@@ -58,7 +60,7 @@ public class PolygonHandler implements ShapeHandler {
             file.readDoubleLE();
             actualReadWords += 4*4;
             
-            int partOffsets[];
+            int[] partOffsets;
             
             int numParts = file.readIntLE();
             int numPoints = file.readIntLE();
@@ -70,12 +72,7 @@ public class PolygonHandler implements ShapeHandler {
                 partOffsets[i]=file.readIntLE();
                 actualReadWords += 2;
             }
-            
-            ArrayList<LinearRing> shells = new ArrayList<LinearRing>();
-            ArrayList<LinearRing> holes  = new ArrayList<LinearRing>();
-            //Bad rings are CCW rings not nested in another ring
-            //and rings with more than 0 and less than 4 points
-            ArrayList<LineString> badRings = new ArrayList<LineString>();
+
             Coordinate[] coords = new Coordinate[numPoints];
             
             for(int t=0 ; t<numPoints ; t++) {
@@ -111,190 +108,161 @@ public class PolygonHandler implements ShapeHandler {
                     }
                 }
             }
-            
+
+            // Build rings from coordinates list and parts indices
+            List<LinearRing> rings = new ArrayList<>();
             int offset = 0;
-            int start,finish,length;
-            for(int part=0 ; part<numParts ; part++) {
+            int start, finish, length;
+            for (int part = 0; part < numParts; part++) {
                 start = partOffsets[part];
-                if(part == numParts-1){finish = numPoints;}
-                else {
-                    finish=partOffsets[part+1];
+                if (part == numParts - 1) {
+                    finish = numPoints;
+                } else {
+                    finish = partOffsets[part + 1];
                 }
-                length = finish-start;
-                Coordinate points[] = new Coordinate[length];
-                for(int i=0;i<length;i++){
-                    points[i]=coords[offset];
+                length = finish - start;
+                Coordinate[] points = new Coordinate[length];
+                for (int i = 0; i < length; i++) {
+                    points[i] = coords[offset];
                     offset++;
                 }
-                //REVISIT: polygons with only 1 or 2 points are not polygons - geometryFactory will bomb so we skip if we find one.
-                if((points.length == 0 || points.length > 3) && points[0].equals(points[points.length-1])) {
-                    try {
+                // Create valid linear rings (and log invalid sequence of coordinates)
+                if (points.length != 1) {
+                    if ((points.length == 0 || points.length > 3) && points[0].equals(points[points.length - 1])) {
                         LinearRing ring = geometryFactory.createLinearRing(points);
-                        if(CGAlgorithms.isCCW(points)) {
-                            holes.add(ring);
-                        }
-                        else {
-                            shells.add(ring);
-                        }
-                    } catch(IllegalArgumentException iae) {
-                        LineString ring = geometryFactory.createLineString(points);
-                        badRings.add(ring);
+                        rings.add(ring);
+                    } else {
+                        Logger.warn("Wrong ring for a Polygon: " + Arrays.toString(points));
                     }
-                }
-                else {
-                    LineString ring = geometryFactory.createLineString(points);
-                    badRings.add(ring);
+                } else {
+                    Logger.warn("Wrong ring for a Polygon: " + Arrays.toString(points));
                 }
             }
-            
-            if ((shells.size()>1) && (holes.size()== 0)) {
-                //some shells may be CW holes - esri tolerates this
-                holes = findCWHoles(shells, geometryFactory);  //find all rings contained in others
-                if (holes.size() > 0) {
-                    shells.removeAll(holes);   
-                    ArrayList ccwHoles = new ArrayList(holes.size());
-                    for (int i=0 ; i<holes.size() ; i++) {
-                        ccwHoles.add( reverseRing((LinearRing) holes.get(i)) );
-                    }
-                    holes = ccwHoles;
-                }
-            }
-            
-            //now we have a list of all shells and all holes
-            ArrayList holesForShells = new ArrayList(shells.size());
-            ArrayList holesWithoutShells = new ArrayList();
-            
-            for(int i=0 ; i<shells.size() ; i++) {
-                holesForShells.add(new ArrayList());
-            }
-            
-            // Improve performance of complex polygon reading (already 
-            // implemented in geotools). See also Martin's mail at :
-            // http://www.mail-archive.com/jump-pilot-devel@lists.sourceforge.net/msg10788.html
-            // If shell is unique, don't check if holes are included : 
-            if (shells.size() == 1) {
-                ((ArrayList)holesForShells.get(0)).addAll(holes);
-            }
-            else {
-                //find holes
-                for(int i=0 ; i<holes.size() ; i++){
-                    LinearRing testRing = (LinearRing)holes.get(i);
-                    LinearRing minShell = null;
-                    Envelope minEnv = null;
-                    Envelope testEnv = testRing.getEnvelopeInternal();
-                    Coordinate testPt = testRing.getCoordinateN(0);
-                    LinearRing tryRing;
-                    for(int j=0 ; j<shells.size() ; j++){
-                        tryRing = (LinearRing) shells.get(j);
-                        Envelope tryEnv = tryRing.getEnvelopeInternal();
-                        if (minShell != null) minEnv = minShell.getEnvelopeInternal();
-                        boolean isContained = false;
-                        Coordinate[] coordList = tryRing.getCoordinates() ;
-                        // Change test order to perform PiP test as few as possible
-                        if (tryEnv.contains(testEnv) && 
-                            (minShell == null || minEnv.contains(tryEnv)) &&
-                            (cga.isPointInRing(testPt,coordList ))) {
-                            minShell = tryRing;
-                        }
-                    }
-                    
-                    if (minShell == null) {
-                        holesWithoutShells.add(testRing);
-                    }
-                    else {
-                      ((ArrayList) holesForShells.get(findIndex(shells, minShell))).add(testRing);
-                    }
-                }
-            }
-            
-            Polygon[] polygons = new Polygon[shells.size() + holesWithoutShells.size()];
-            
-            for(int i=0 ; i<shells.size() ; i++){
-                polygons[i]=geometryFactory.createPolygon((LinearRing)shells.get(i),(LinearRing[])((ArrayList)holesForShells.get(i)).toArray(new LinearRing[0]));
-            }
-            
-            for (int i=0 ; i<holesWithoutShells.size() ; i++) {
-                polygons[shells.size() + i]=geometryFactory.createPolygon((LinearRing)holesWithoutShells.get(i), null);
-                badRings.add((LinearRing)holesWithoutShells.get(i));
-            }
-            
-            if(polygons.length==1) { // it's a simple Polygon
-                geom = polygons[0];
-            }
-            else { //its a multi part
-                geom =  geometryFactory.createMultiPolygon(polygons);
-            }
-            //add bad rings as Geometry userData so that advanced users can retrieve them
-            if (badRings.size() > 0) {
-                geom.setUserData(geometryFactory.createMultiLineString(badRings.toArray(new LineString[0])));
-            }
-            holesForShells = null;
-            holesWithoutShells = null;
-            shells = null;
-            holes = null;
+
+            geom = polygonsFromRings(rings, geometryFactory);
+
         }
         //verify that we have read everything we need
         while (actualReadWords < contentLength) {
-            int junk = file.readShortBE();	
+            int junk = file.readShortBE();
             actualReadWords += 1;
         }
         return geom;
     }
-    
-   /**
-    * Finds a object in a list using == instead of equals. 
-    * Should be much faster than indexof
-    */
-    private static int findIndex(ArrayList list, Object o) {
-        for (int i = 0, n = list.size(); i < n; i++) {
-            if (list.get(i) == o) return i;
-        }
-        return -1;
-    }
 
-    ArrayList findCWHoles(ArrayList shells, GeometryFactory geometryFactory) {
-        ArrayList holesCW = new ArrayList(shells.size());
-        LinearRing[] noHole = new LinearRing[0];
-        for (int i = 0; i < shells.size(); i++) {
-            LinearRing iRing = (LinearRing) shells.get(i);
-            Envelope iEnv = iRing.getEnvelopeInternal();
-            Coordinate[] coordList = iRing.getCoordinates();
-            LinearRing jRing;
-            for (int j = 0; j < shells.size(); j++) {
-                if (i == j) continue;
-                jRing = (LinearRing) shells.get(j);               
-                Envelope jEnv = jRing.getEnvelopeInternal();                
-                Coordinate jPt = jRing.getCoordinateN(0);
-                Coordinate jPt2 = jRing.getCoordinateN(1);
-                if (iEnv.contains(jEnv) 
-                    //&& (CGAlgorithms.isPointInRing(jPt, coordList) || pointInList(jPt, coordList))
-                    //&& (CGAlgorithms.isPointInRing(jPt2, coordList) || pointInList(jPt2, coordList))) {
-                        && (CGAlgorithms.isPointInRing(jPt, coordList))
-                        && (CGAlgorithms.isPointInRing(jPt2, coordList))) {
-                    if (findIndex(holesCW, jRing) == -1) {
-                        Polygon iPoly = geometryFactory.createPolygon(iRing,noHole);
-                        Polygon jPoly = geometryFactory.createPolygon(jRing,noHole);
-                        if (iPoly.contains(jPoly)) holesCW.add(jRing);
-                    }
-                }
-            }
+    private Geometry polygonsFromRings(List<LinearRing> rings, GeometryFactory geometryFactory) {
+      if (rings.isEmpty()) {
+        return geometryFactory.createPolygon();
+      } else if (rings.size() == 1) {
+        return geometryFactory.createPolygon(rings.get(0));
+      } else {
+        // Add metadata and sort rings by ascending area
+        LinearRing[] ringArray = new LinearRing[rings.size()];
+        for (int i = 0; i < rings.size(); i++) {
+          ringArray[i] = rings.get(i);
+          ringArray[i].setUserData(new MD(ringArray[i]));
         }
-        return holesCW;
+        Arrays.parallelSort(ringArray, Comparator.comparingDouble(r -> ((MD) r.getUserData()).area));
+        for (int i = 0; i < ringArray.length; i++) {
+          ((MD) ringArray[i].getUserData()).index = i;
+        }
+
+        // Indexing rings
+        STRtree index = new STRtree();
+        for (LinearRing r : ringArray) {
+          index.insert(r.getEnvelopeInternal(), r);
+        }
+        index.build();
+
+        // Main (and longest) process to determine which ring is a shell and which one is a hole
+        // Loop through rings in increasing area order
+        // and find the smallest LinearRing entirely enclosing it
+        for (LinearRing r : ringArray) {
+          List<LinearRing> candidates = index.query(r.getEnvelopeInternal());
+          // LinearRings intersecting r, with a larger area and a bbox enclosing r bbox
+          candidates = candidates.stream()
+              .filter(a -> ((MD) a.getUserData()).index > ((MD) r.getUserData()).index)
+              .filter(a -> a.getEnvelopeInternal().contains(r.getEnvelopeInternal()))
+              .collect(Collectors.toList());
+          // Sort candidates to find the single enclosing one with the smallest area
+          candidates.sort(Comparator.comparingDouble(a -> ((MD) a.getUserData()).area));
+          for (LinearRing candidate : candidates) {
+            if (PointLocation.isInRing(((MD) r.getUserData()).c, candidate.getCoordinates())) {
+              ((MD) r.getUserData()).parent = ((MD) candidate.getUserData()).index;
+              ((MD) candidate.getUserData()).children.add(((MD) r.getUserData()).index);
+              break;
+            }
+          }
+        }
+
+        // Producing polygons
+        List<Polygon> polygons = new ArrayList<>();
+        for (LinearRing r : ringArray) {
+          MD md = (MD) r.getUserData();
+          if (isShell(ringArray, md.index)) {
+            if (Orientation.isCCW(r.getCoordinates())) {
+              Logger.warn("This CCW ring seems to be a shell : " + r);
+            }
+            List<LinearRing> holes = md.children.stream().map(i -> ringArray[i]).collect(Collectors.toList());
+            polygons.add(r.getFactory().createPolygon(r, holes.toArray(new LinearRing[0])));
+            ringArray[md.index] = null;
+            for (LinearRing h : holes) ringArray[((MD) h.getUserData()).index] = null;
+          }
+        }
+        for (LinearRing r : ringArray) {
+          if (r != null) {
+            Logger.warn("This ring is undefined, we eep it as a shell : " + r);
+            polygons.add(r.getFactory().createPolygon(r));
+          }
+        }
+
+        return geometryFactory.buildGeometry(polygons);
+      }
     }
 
     /**
-     *  reverses the order of points in lr (is CW -> CCW or CCW->CW)
-     */
-    LinearRing reverseRing(LinearRing lr) {
-        int numPoints = lr.getNumPoints();
-        Coordinate[] newCoords = new Coordinate[numPoints];
-        for (int t=0 ; t<numPoints ; t++) {
-            newCoords[t] = lr.getCoordinateN(numPoints - t - 1);
+    * LinearRing Metadata used during tests
+    */
+    static class MD {
+        int index = -1;
+        double area;
+        Coordinate c;
+        int parent = -1;
+        List<Integer>children = new ArrayList<>();
+        public MD(LinearRing ring) {
+            Polygon p = ring.getFactory().createPolygon(ring);
+            this.area = p.getArea();
+            this.c = p.getInteriorPoint().getCoordinate();
         }
-        return lr.getFactory().createLinearRing(newCoords);
+        public String toString() {
+            return index + ": {area=" + this.area + ", parent=" + this.parent + ",c=" + this.c + "}";
+        }
     }
 
-     public void write(Geometry geometry, EndianDataOutputStream file) throws IOException{
+    private boolean isShell(LinearRing[] array, int index) {
+      MD md = (MD)array[index].getUserData();
+      int ancestors = 0;
+      if (md != null) {
+        while (md.parent != -1) {
+          ancestors++;
+          md = (MD)array[md.parent].getUserData();
+        }
+      }
+      return ancestors % 2 == 0;
+    }
+    
+//   /**
+//    * Finds a object in a list using == instead of equals.
+//    * Should be much faster than indexof
+//    */
+//    private static int findIndex(List<?> list, Object o) {
+//        for (int i = 0, n = list.size(); i < n; i++) {
+//            if (list.get(i) == o) return i;
+//        }
+//        return -1;
+//    }
+
+    public void write(Geometry geometry, EndianDataOutputStream file) throws IOException{
 
         if (geometry.isEmpty()) {
             file.writeIntLE(0);
@@ -425,8 +393,8 @@ public class PolygonHandler implements ShapeHandler {
         Coordinate[] cs = g.getCoordinates();
         double z;
 
-        for (int t=0 ; t<cs.length ; t++) {
-            z= cs[t].z ;
+        for (Coordinate c : cs) {
+            z= c.z;
             if (!(Double.isNaN( z ))) {
                 if (validZFound) {
                     if (z < zmin) zmin = z;
@@ -453,6 +421,11 @@ public class PolygonHandler implements ShapeHandler {
 
 /*
  * $Log$
+ *
+ * Revision 1.8 2024/11/16 michaudm
+ * Improve polygon construction. Speedup may me more than 10x in the case of polygons with
+ * a lot of holes (tens of thousands)
+ *
  * Revision 1.7  2009/05/10 michaudm
  * Fix a bug in findCWHoles. Could create a 'outer hole' because the test to
  * check if a ring contains another ring was a quick and dirty test.
