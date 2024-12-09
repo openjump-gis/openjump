@@ -136,7 +136,7 @@ public abstract class StandardReaderWriterFileDataSource extends ReaderWriterFil
 
     public static class GeoJSON extends ClassicReaderWriterFileDataSource {
       public GeoJSON() {
-          super(new GeoJSONReader(), new GeoJSONWriter(), new String[] { "json" });
+          super(new GeoJSONReader(), new GeoJSONWriter(), new String[] { "json", "geojson" });
       }
     }
 
