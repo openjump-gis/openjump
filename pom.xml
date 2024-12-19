@@ -339,8 +339,8 @@
                      <goal>wget</goal>
                    </goals>
                    <configuration>
-                     <url>https://sourceforge.net/projects/opensit/files/Openjump/PlugIn/Raster%20Tools/RasterTools-3.0.0d-20241028.jar</url>
-                     <sha1>d8bf981e7adcf4a576c84d6ae94c0a05dec650c3</sha1>
+                     <url>https://sourceforge.net/projects/opensit/files/Openjump/PlugIn/Raster%20Tools/RasterTools-3.0.1-20241219.jar</url>
+                     <sha1>83fdb570cbc79c468c5688d62845be04b9ddb1fa</sha1>
                      <unpack>false</unpack>
                      <outputDirectory>${plus.folder}</outputDirectory>
                    </configuration>
