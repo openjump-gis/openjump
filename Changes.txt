@@ -10,6 +10,7 @@ Improvements
   * shapefile reader speed up for polygons with huge number of holes
   * rendering pipeline optimizations for complex geometries like polygons
     with many holes
+  * add geojson as a valid file extension for the reader
   * upgraded jts to 1.20
 
 Bug Fixes
