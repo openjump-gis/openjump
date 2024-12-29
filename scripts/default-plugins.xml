@@ -894,6 +894,9 @@
     <plug-in>
         org.openjump.core.ui.plugin.tools.generalization.SimplifyPolygonCoveragePlugIn
     </plug-in>
+    <plug-in>
+        com.vividsolutions.jump.workbench.ui.plugin.simplify.CoverageSimplifierPlugIn
+    </plug-in>
 
     <!-- ========= Tools Root ==================== -->
     <plug-in>
