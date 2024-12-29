@@ -15,6 +15,8 @@ Improvements
 
 Bug Fixes
   * MergePolygonsWithNeighbourPlugIn fix for layers w/o attributes
+  * fix #24: Applying a style on not sextante image throws exception
+  * enable copy/paste referenced image layers
 
 Upgraded Extensions
   * RasterTools (for details see "Raster tools>About>Change log")
