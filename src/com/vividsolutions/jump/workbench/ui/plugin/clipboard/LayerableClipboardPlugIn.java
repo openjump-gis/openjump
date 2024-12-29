@@ -37,9 +37,11 @@ import java.util.Iterator;
 import org.openjump.core.rasterimage.RasterImageLayer;
 
 import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jump.feature.Feature;
 import com.vividsolutions.jump.feature.FeatureCollection;
 import com.vividsolutions.jump.feature.FeatureDataset;
+import com.vividsolutions.jump.workbench.Logger;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.LayerManager;
 import com.vividsolutions.jump.workbench.model.Layerable;
@@ -81,7 +83,14 @@ public abstract class LayerableClipboardPlugIn extends AbstractPlugIn {
         LayerManager dummyLayerManager = new LayerManager();
         dummyLayerManager.setFiringEvents(false);
 
-        Layer clone = new Layer();
+        Layer clone;
+        try {
+          // try to instantiate the proper layer subclass
+          clone = layer.getClass().getDeclaredConstructor().newInstance();
+        } catch (Throwable t) {
+          Logger.error(t);
+          clone = new Layer();
+        }
         clone.setLayerManager(dummyLayerManager);
 
         //If this is the fence layer, #setName will call #applyStyles, which requires
