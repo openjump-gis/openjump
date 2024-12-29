@@ -130,7 +130,7 @@ public class ImageryLayerDataset {
     // set an informational type value
     feature.setAttribute(ATTR_TYPE, referencedImage.getType());
     // set what loader actually has been used
-    feature.setAttribute(ATTR_LOADER, referencedImage.getLoader());
+    //feature.setAttribute(ATTR_LOADER, referencedImage.getLoader());
   }
 
   public void dispose() {
