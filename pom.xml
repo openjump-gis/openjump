@@ -70,7 +70,7 @@
           <build>
             <plugins>
               <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <groupId>io.github.download-maven-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
                 <?m2e execute onConfiguration,onIncremental?>
                 <executions>
@@ -542,7 +542,6 @@
                                     <descriptors>
                                         <descriptor>etc/mvn/bin_zip-core_stable.xml</descriptor>
                                     </descriptors>
-                                    <useJvmChmod>true</useJvmChmod>
                                 </configuration>
                                 <goals>
                                     <goal>single</goal>
@@ -908,7 +907,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.4.1</version>
                         <configuration>
                             <outputDirectory>${project.build.directory}/apidocs/</outputDirectory>
                             <reportOutputDirectory>${project.build.directory}/apidocs/</reportOutputDirectory>
@@ -1125,9 +1123,9 @@
           </plugins>
         </build>
       </profile>
+      <!-- have mvn run OJ, e.g. mvn test -Dmaven.test.skip=true -DtestExecute=true -->
       <profile>
         <id>execute</id>
-        <!-- activated only if -DtestExecute=true is defined -->
         <activation>
           <property>
             <name>testExecute</name>
@@ -1139,7 +1137,7 @@
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>exec-maven-plugin</artifactId>
-              <version>3.2.0</version>
+              <version>3.5.0</version>
               <?m2e ignore?>
               <executions>
                 <execution>
@@ -1165,18 +1163,24 @@
                     <workingDirectory>${project.basedir}</workingDirectory>
                     <executable>java</executable>
                     <arguments>
-                      <argument>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argument>
                       <argument>-classpath</argument>
-                      <classpath />
+                      <!-- automatically creates the classpath using all project dependencies,
+                           also adding the project build directory -->
+                      <classpath/>
+                      <argument>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argument>
                       <argument>com.vividsolutions.jump.workbench.JUMPWorkbench</argument>
+                      <argument>-properties</argument>
+                      <argument>"workbench-properties.xml"</argument>
                       <argument>-default-plugins</argument>
-                      <argument>scripts\default-plugins.xml</argument>
-                      <argument>-plug-in-directory</argument>
-                      <argument>"lib\plus"</argument>
-                      <argument>-plug-in-directory</argument>
-                      <argument>"lib\ext"</argument>
+                      <argument>scripts/default-plugins.xml</argument>
+                      <argument>-extensions-directory</argument>
+                      <argument>"lib/ext"</argument>
+                      <argument>-extensions-directory</argument>
+                      <argument>"target/lib.ext.core"</argument>
+                      <argument>-extensions-directory</argument>
+                      <argument>"target/lib.ext.plus"</argument>
                       <argument>-I18n</argument>
-                      <argument>en_FR</argument>
+                      <argument>en_EN</argument>
                       <argument>-v</argument>
                       <argument>debug</argument>
                     </arguments>
@@ -1250,7 +1254,26 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-deploy-plugin</artifactId>
-            <version>3.1.2</version>
+            <version>3.1.3</version>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <version>3.5.0</version>
+          </plugin>
+          <plugin>
+            <groupId>io.github.download-maven-plugin</groupId>
+            <artifactId>download-maven-plugin</artifactId>
+            <version>2.0.0</version>
+          </plugin>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>3.1.0</version>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.4.1</version>
           </plugin>
         </plugins>
       </pluginManagement>
@@ -1258,7 +1281,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.5.0</version>
           <executions>
             <execution>
               <id>no-duplicate-declared-dependencies</id>
@@ -1414,6 +1436,7 @@ ${project.artifactId} ${project.version} Changelog
         <plugin>
           <groupId>com.github.ekryd.echo-maven-plugin</groupId>
           <artifactId>echo-maven-plugin</artifactId>
+          <!-- version 2+ are java11+ compatible only -->
           <version>1.3.2</version>
           <!-- fixup some weird Eclipse m2e issue "Plugin execution not covered by lifecycle configuration"
                    https://www.eclipse.org/m2e/documentation/release-notes-17.html#new-syntax-for-specifying-lifecycle-mapping-metadata -->
@@ -1435,10 +1458,8 @@ ${project.artifactId} ${project.version} Changelog
         </plugin>
 
         <plugin>
-          <groupId>com.googlecode.maven-download-plugin</groupId>
+          <groupId>io.github.download-maven-plugin</groupId>
           <artifactId>download-maven-plugin</artifactId>
-          <!-- v1.9.0 breaks eclipse m2 -->
-          <version>1.8.1</version>
           <configuration>
             <alwaysVerifyChecksum>true</alwaysVerifyChecksum>
           </configuration>
@@ -1468,7 +1489,7 @@ ${project.artifactId} ${project.version} Changelog
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.2</version>
+          <version>3.1.3</version>
           <executions>
             <execution>
               <id>default-install</id>
@@ -1531,15 +1552,10 @@ ${project.artifactId} ${project.version} Changelog
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.5.2</version>
           <configuration>
             <argLine>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argLine>
           </configuration>
-        </plugin>
-
-        <plugin>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>3.1.0</version>
         </plugin>
 
         <plugin>
