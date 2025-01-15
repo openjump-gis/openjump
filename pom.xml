@@ -8,9 +8,9 @@
     <version>2.4.0</version>
     <scm>
         <connection>scm:git:https://github.com/openjump-gis/openjump.git</connection>
-        <developerConnection>scm:git:https://github.com/openjump-gis/openjump.git</developerConnection>
+        <developerConnection>scm:git:ssh://git@github.com:openjump-gis/openjump.git</developerConnection>
         <tag>main</tag>
-        <url>https://github.com/openjump-gis/openjump/tree/main</url>
+        <url>https://github.com/openjump-gis/openjump</url>
     </scm>
     <properties>
         <!-- setup some defaults used or overridden later -->
