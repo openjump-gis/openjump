@@ -61,7 +61,7 @@ https://sourceforge.net/projects/jump-pilot/files/OpenJUMP2_snapshots/ .
 
 ## Extensions
 
-OJ makes use of **Extensions** and **Drivers** are based on a fairly simple **PlugIn API**.
+OJ makes use of **Extensions** and **Drivers** based on a fairly simple **PlugIn API**.
 
 For an example you may have a look at the [**HelloWorldExtension**](https://github.com/openjump-gis/helloworld-extension).
 
