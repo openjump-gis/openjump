@@ -1,5 +1,8 @@
-OpenJUMP (OJ) - the cross-platform open source software Desktop-GIS with 
-a multitude of swiss-knifes in its kangaroo pocket. 
+# OpenJUMP ![OpenJUMP logo](https://raw.githubusercontent.com/openjump-gis/openjump/refs/heads/main/icon//pngs/oj_48.png)
+
+OpenJUMP (OJ) - the cross-platform open source Desktop-GIS software provides 
+a swiss-knife of tools to analyze and edit huge GIS-datasets.
+
 Taking the _leap_ from _sourceforge_ to _github_, from _svn_ to _git_, 
 us few volunteers of the _jump pilot project_ hope that maybe **you might 
 join our struggle** to keep OpenJUMP not only alive but contribute to it's 
@@ -31,11 +34,21 @@ The migration of OpenJUMP and all its extensions may take some time and this pag
 will be updated regularly until the first OpenJUMP2 official release.
 
 
+## Development
+
+OJ development utilizes Maven build automation and can be done with established 
+Java IDEs like **Eclipse** or **IntelliJ IDEA** or others supporting mavenized 
+java projects. For a quick introduction on how to set up **OJ Core** or the 
+**HelloWorld Extension** have a look at this wiki article
+
+https://ojwiki.soldin.de/index.php?title=Eclipse:_Set_up_project_and_example_extension_from_git_sources
+
+
 ## Documentation
 
 To learn more on OpenJUMP you can check the official 
 [website](http://www.openjump.org/) or read the 
-[wiki documentation](http://ojwiki.soldin.de) 
+[wiki documentation](http://ojwiki.soldin.de)
 
 
 ## Downloads
@@ -48,8 +61,12 @@ https://sourceforge.net/projects/jump-pilot/files/OpenJUMP2_snapshots/ .
 
 ## Extensions
 
-Migration of all extensions may take some time as we take 
-advantage of the opportunity to mavenize and modernize
+OJ makes use of **Extensions** and **Drivers** are based on a fairly simple **PlugIn API**.
+
+For an example you may have a look at the [**HelloWorldExtension**](https://github.com/openjump-gis/helloworld-extension).
+
+Migration of extensions from OJ 1.x happened as documented below.
+advantage was taken of the opportunity to mavenize and modernize
 the migrated code.
 
 **Extensions** hosted on openjump-gis group will be named 
