@@ -15,6 +15,8 @@ import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 import com.vividsolutions.jump.workbench.ui.renderer.style.ColorThemingStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.LabelStyle;
 import com.vividsolutions.jump.workbench.ui.renderer.style.Style;
+import org.openjump.core.ccordsys.srid.SRIDStyle;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -74,6 +76,8 @@ public class PasteStylesPlugIn extends AbstractPlugIn {
             // Remove copied ReferencedImageStyle if target layer is not a ReferencedImagesLayer
             if (style instanceof ReferencedImageStyle &&
                     !(layer instanceof ReferencedImagesLayer)) continue;
+            // We don't want to copy SRID style with other styles as it is something rather different
+            if (style instanceof SRIDStyle) continue;
             styles.add(style);
         }
         // Add ReferencedImageStyle if copied styles does not contain ReferencedImageStyle
