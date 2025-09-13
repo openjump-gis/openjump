@@ -1,0 +1,8 @@
+version: 2
+
+updates:
+  - package-ecosystem: "maven"
+
+ignore:
+  - dependency-name: "log4j:log4j"
+    versions: [ "<2.0" ]
