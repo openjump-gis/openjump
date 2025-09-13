@@ -1847,7 +1847,7 @@ ${project.artifactId} ${project.version} Changelog
            <groupId>it.geosolutions.imageio-ext</groupId>
            <artifactId>imageio-ext-tiff</artifactId>
            <!-- downgrade, as > 1.1.13 does not load single band TIFFs properly -->
-           <version>1.1.13</version>
+           <version>${imageio-ext.version}</version>
            <scope>compile</scope>
         </dependency>
         <!-- selected imageio-ext modules for different image formats to be packaged into PLUS -->
