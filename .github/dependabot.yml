@@ -1,7 +1,11 @@
 version: 2
-
 updates:
   - package-ecosystem: "maven"
-  ignore:
-    - dependency-name: "log4j:log4j"
-      versions: [ "<2.0" ]
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    allow:
+      # Allow both direct and indirect updates for all packages.
+      - dependency-type: "all"
+    ignore:
+      - dependency-name: "log4j:log4j"
