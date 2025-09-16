@@ -1630,7 +1630,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
           <groupId>org.orbisgis</groupId>
           <artifactId>cts</artifactId>
-          <version>1.5.2</version>
+          <version>1.7.1</version>
         </dependency>
         <!-- disabled as needed jar pulled by cts automatically, 
              not sure we need cts to log to file really
