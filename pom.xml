@@ -1813,7 +1813,7 @@ ${project.artifactId} ${project.version} Changelog
       <dependency>
         <groupId>de.digitalcollections.imageio</groupId>
         <artifactId>imageio-openjpeg</artifactId>
-        <version>0.6.7</version>
+        <version>0.6.8</version>
       </dependency>
         <!-- imageio-ext modules needed for compilation and included in CORE -->
         <dependency>
