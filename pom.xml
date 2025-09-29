@@ -1737,7 +1737,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
-            <version>2.2</version>
+            <version>3.0</version>
             <scope>test</scope>
         </dependency>
         <!-- Version 2.2.1 is the last of the unmaintained 2.2 series
