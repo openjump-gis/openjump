@@ -29,6 +29,7 @@
         <jts.version>1.20.0</jts.version>
         <postgresql.version>42.7.7</postgresql.version>
         <imageio-ext.version>1.4.16</imageio-ext.version>
+        <junit.version>5.13.4</junit.version>
     </properties>
     <profiles>
         <!-- switching os dependent lib paths for launch4j (not needed anymore, kept for reference) -->
@@ -1726,13 +1727,13 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
           <groupId>org.junit.jupiter</groupId>
           <artifactId>junit-jupiter</artifactId>
-          <version>5.13.4</version>
+          <version>${junit.version}</version>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.junit.vintage</groupId>
           <artifactId>junit-vintage-engine</artifactId>
-          <version>5.13.4</version>
+          <version>${junit.version}</version>
           <scope>test</scope>
         </dependency>
         <dependency>
