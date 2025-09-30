@@ -1542,7 +1542,7 @@ ${project.artifactId} ${project.version} Changelog
         <plugin>
           <groupId>com.akathist.maven.plugins.launch4j</groupId>
           <artifactId>launch4j-maven-plugin</artifactId>
-          <version>2.5.2</version>
+          <version>2.6.0</version>
           <!-- some defaults to used by all executions above -->
           <configuration>
             <supportUrl>http://openjump.org</supportUrl>
