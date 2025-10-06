@@ -1810,7 +1810,7 @@ ${project.artifactId} ${project.version} Changelog
           <groupId>org.gdal</groupId>
           <artifactId>gdal</artifactId>
           <!--version>3.5.0</version-->
-          <version>3.8.0</version>
+          <version>3.11.0</version>
         </dependency>
       <dependency>
         <groupId>de.digitalcollections.imageio</groupId>
