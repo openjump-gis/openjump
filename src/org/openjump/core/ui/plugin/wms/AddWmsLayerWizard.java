@@ -52,7 +52,7 @@ public class AddWmsLayerWizard extends AbstractWizardGroup {
       "http://ows.terrestris.de/osm/service",
       "http://maps.omniscale.net/wms/demo/default/service",
       "http://www2.demis.nl/WMS/wms.ashx?wms=WorldMap",
-      "http://demo.mapserver.org/cgi-bin/wms",
+      "https://demo.mapserver.org/cgi-bin/wms?",
       "http://magosm.magellium.com/geoserver/ows?"
       //"http://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?",
   };
