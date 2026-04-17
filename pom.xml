@@ -2022,11 +2022,5 @@ ${project.artifactId} ${project.version} Changelog
             </exclusion>
           </exclusions>
         </dependency>
-
-        <dependency>
-            <groupId>org.burningwave</groupId>
-            <artifactId>core</artifactId>
-            <version>12.66.2</version>
-        </dependency>
     </dependencies>
 </project>
