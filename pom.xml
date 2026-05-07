@@ -27,7 +27,6 @@
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
         <batik.version>1.6-1</batik.version>
         <jts.version>1.20.0</jts.version>
-        <postgresql.version>42.7.7</postgresql.version>
         <imageio-ext.version>1.4.16</imageio-ext.version>
         <junit.version>5.13.4</junit.version>
     </properties>
@@ -1672,7 +1671,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
+            <version>42.7.11</version>
         </dependency>
         <dependency>
             <groupId>batik</groupId>
