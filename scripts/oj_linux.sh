@@ -248,6 +248,7 @@ if awk "BEGIN{if($JAVA_VERSION >= 9)exit 0;else exit 1}"; then
 --add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED \
 --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED \
 --add-exports java.desktop/com.sun.imageio.plugins.tiff=ALL-UNNAMED \
+--add-opens=java.base/java.util=ALL-UNNAMED
 $JAVA_OPTS"
 fi
 # java ee was removed from jdk in java 11
