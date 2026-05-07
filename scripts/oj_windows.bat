@@ -145,7 +145,8 @@ if %JAVAVER_MAJOR% geq 9 (
 --add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED ^
 --add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED ^
 --add-exports java.desktop/com.sun.imageio.spi=ALL-UNNAMED ^
---add-exports java.desktop/com.sun.imageio.plugins.tiff=ALL-UNNAMED
+--add-exports java.desktop/com.sun.imageio.plugins.tiff=ALL-UNNAMED ^
+--add-opens=java.base/java.util=ALL-UNNAMED
 )
 rem -- java ee was removed from jdk in java 11
 if %JAVAVER_MAJOR% geq 9 if %JAVAVER_MAJOR% lss 11 (
