@@ -1272,11 +1272,11 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.14.1</version>
+          <version>3.15.0</version>
           <configuration>
-            <source>8</source>
-            <target>8</target>
-            <release>8</release>
+            <source>11</source>
+            <target>11</target>
+            <release>11</release>
             <compilerArgs>
               <arg>-Xlint:deprecation</arg>
             </compilerArgs>
