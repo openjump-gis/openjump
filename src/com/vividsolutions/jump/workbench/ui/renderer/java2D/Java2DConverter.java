@@ -180,7 +180,7 @@ public class Java2DConverter {
       shape.add(toShape(g));
     }
 
-    return shape;
+    return shape.isEmpty() ? emptyPath : shape;
   }
 
 //  private GeneralPath toShape(MultiLineString mls)

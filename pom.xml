@@ -27,7 +27,6 @@
         <project.binaries>**/*.command,**/*.sh,**/*.bat,**/*.exe,**/MacOS/OpenJUMP</project.binaries>
         <batik.version>1.6-1</batik.version>
         <jts.version>1.20.0</jts.version>
-        <postgresql.version>42.7.7</postgresql.version>
         <imageio-ext.version>1.4.16</imageio-ext.version>
         <junit.version>5.13.4</junit.version>
     </properties>
@@ -111,8 +110,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://downloads.mariadb.com/Connectors/java/connector-java-2.7.3/mariadb-java-client-2.7.3.jar</url>
-                      <sha1>4a2edc05bd882ad19371d2615c2635dccf8d74f0</sha1>
+                      <url>https://dlm.mariadb.com/Connectors/java/connector-java-3.5.8/mariadb-java-client-3.5.8.jar</url>
+                      <sha1>272078c15f3f45051aa4ff5630d563dd0969d834</sha1>
                       <unpack>false</unpack>
                       <outputDirectory>${db.folder}</outputDirectory>
                     </configuration>
@@ -1672,7 +1671,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
+            <version>42.7.11</version>
         </dependency>
         <dependency>
             <groupId>batik</groupId>
@@ -1748,7 +1747,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython</artifactId>
-            <version>2.2.1</version>
+            <version>2.7.4</version>
         </dependency>
         <dependency>
             <groupId>org.tukaani</groupId>
