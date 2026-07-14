@@ -54,6 +54,10 @@ public class GeometryCollectionShape implements Shape {
     public GeometryCollectionShape() {
     }
 
+    public boolean isEmpty() {
+        return shapes.isEmpty();
+    }
+
     public void add(Shape shape) {
         shapes.add(shape);
     }
