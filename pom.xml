@@ -1220,7 +1220,7 @@
           <!-- pin some versions here for plugins used in several profiles -->
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.7.1</version>
+            <version>3.8.0</version>
           </plugin>
           <plugin>
             <artifactId>maven-jar-plugin</artifactId>
