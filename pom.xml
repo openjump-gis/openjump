@@ -28,7 +28,7 @@
         <batik.version>1.6-1</batik.version>
         <jts.version>1.20.0</jts.version>
         <imageio-ext.version>1.4.16</imageio-ext.version>
-        <junit.version>5.13.4</junit.version>
+        <junit.version>6.1.2</junit.version>
     </properties>
     <profiles>
         <!-- switching os dependent lib paths for launch4j (not needed anymore, kept for reference) -->
