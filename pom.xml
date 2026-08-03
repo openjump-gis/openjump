@@ -1285,7 +1285,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
           <?m2e ignore?>
           <executions>
             <!-- build several build date stamp formattings used all over -->
@@ -1335,7 +1335,7 @@
           <groupId>io.github.git-commit-id</groupId>
           <artifactId>git-commit-id-maven-plugin</artifactId>
           <!-- version 5+ are java11+ compatible only -->
-          <version>4.9.9</version>
+          <version>10.0.0</version>
           <?m2e ignore?>
           <executions>
             <!-- retrieve git revision information from local repo -->
@@ -1757,7 +1757,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.19.0</version>
+            <version>1.22.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -1809,7 +1809,7 @@ ${project.artifactId} ${project.version} Changelog
           <groupId>org.gdal</groupId>
           <artifactId>gdal</artifactId>
           <!--version>3.5.0</version-->
-          <version>3.11.0</version>
+          <version>3.13.0</version>
         </dependency>
       <dependency>
         <groupId>de.digitalcollections.imageio</groupId>
