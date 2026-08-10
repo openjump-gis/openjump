@@ -1541,7 +1541,7 @@ ${project.artifactId} ${project.version} Changelog
         <plugin>
           <groupId>com.akathist.maven.plugins.launch4j</groupId>
           <artifactId>launch4j-maven-plugin</artifactId>
-          <version>2.5.2</version>
+          <version>2.7.0</version>
           <!-- some defaults to used by all executions above -->
           <configuration>
             <supportUrl>http://openjump.org</supportUrl>
@@ -1752,7 +1752,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>org.tukaani</groupId>
             <artifactId>xz</artifactId>
-            <version>1.10</version>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -1777,7 +1777,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.18.0</version>
+            <version>3.20.0</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
