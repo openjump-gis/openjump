@@ -36,11 +36,15 @@ import javax.swing.*;
 
 import com.vividsolutions.jump.I18N;
 import com.vividsolutions.jump.datastore.spatialdatabases.SpatialDSLayer;
+import com.vividsolutions.jump.feature.Feature;
+import com.vividsolutions.jump.feature.FeatureCollection;
+import com.vividsolutions.jump.feature.FeatureDataset;
 import com.vividsolutions.jump.io.datasource.DataSource;
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.datastore.ConnectionManager;
 import com.vividsolutions.jump.workbench.model.Layer;
 import com.vividsolutions.jump.workbench.model.Layerable;
+import com.vividsolutions.jump.workbench.model.cache.DynamicFeatureCollection;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.CheckBoxed;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
@@ -52,6 +56,7 @@ import com.vividsolutions.jump.workbench.ui.cursortool.editing.EditingPlugIn;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
 import java.awt.*;
+import java.util.List;
 
 public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
 
@@ -115,10 +120,22 @@ public class EditablePlugIn extends AbstractPlugIn implements CheckBoxed {
           //if (makeEditable) setAllLayersToUneditable(context);
           layerable.setEditable(makeEditable);
           if (layerable instanceof Layer) {
+            Layer layer = (Layer) layerable;
+            // If the layer's feature storage is still a live, non-cached
+            // streaming view onto the datastore (the "not in memory" option),
+            // materialise its currently-visible features into an in-memory,
+            // writable collection *before* closing the connection - otherwise
+            // add/remove/clear all silently throw UnsupportedOperationException
+            FeatureCollection wrappee = layer.getFeatureCollectionWrapper().getUltimateWrappee();
+            if (wrappee instanceof DynamicFeatureCollection) {
+              DynamicFeatureCollection dynamic = (DynamicFeatureCollection) wrappee;
+              List<Feature> features = dynamic.query(dynamic.getEnvelope());
+              layer.setFeatureCollection(new FeatureDataset(features, dynamic.getFeatureSchema()));
+            }
             if (layerable instanceof SpatialDSLayer) {
               ConnectionManager.instance(getWorkbenchContext()).closeConnection((SpatialDSLayer)layerable);
             }
-            ((Layer)layerable).setDataSourceQuery(null);
+            layer.setDataSourceQuery(null);
           }
         }
       }
