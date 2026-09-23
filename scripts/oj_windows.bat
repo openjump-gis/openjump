@@ -31,7 +31,7 @@ rem --- use ##M for ## MB, ##G for ## GB             ---
 rem --- e.g. JAVA_MEM=-Xms64M -Xmx1G                 ---
 rem ---      JAVA_MEM=--XX:MaxRAMPercentage=80.0"    ---
 rem --- unset default sets Xmx to "80% memory" or to ---
-rem --- "100% .memory minus 1GB" whichever is bigger ---
+rem --- "100% memory minus 1GB" whichever is bigger  ---
 rem set "JAVA_MEM="
 
 rem --- uncomment and change your http proxy settings here
