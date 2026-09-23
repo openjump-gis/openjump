@@ -25,14 +25,14 @@ set "JAVA_OPTS="
 rem --- uncomment and change your language/country here to overwrite OS locale setting ---
 rem set JAVA_OPTS=%JAVA_OPTS% -Duser.language=de -Duser.country=DE
 
-rem --- enforce a memory limits here, default is a jre  ---
-rem --- setting to use 80 percent of available memory   ---
-rem --- Xms is initial size, Xmx is maximum size        ---
-rem --- use ##M for ## Megabytes, ##G for ## Gigabytes  ---
-rem --- e.g. set JAVA_MEM=-Xms64M -Xmx512M              ---
-rem --- commenting this setting will lead the script to ---
-rem --- calculate and set a 80 percent memory Xmx value ---
-set "JAVA_MEM=--XX:MaxRAMPercentage=80.0"
+rem --- enforce memory limits here                   ---
+rem --- Xms is initial size, Xmx is maximum size     ---
+rem --- use ##M for ## MB, ##G for ## GB             ---
+rem --- e.g. JAVA_MEM=-Xms64M -Xmx1G                 ---
+rem ---      JAVA_MEM=--XX:MaxRAMPercentage=80.0"    ---
+rem --- unset default sets Xmx to "80% memory" or to ---
+rem --- "100% .memory minus 1GB" whichever is bigger ---
+rem set "JAVA_MEM="
 
 rem --- uncomment and change your http proxy settings here
 rem set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyHost=myproxyserver.com -Dhttp.proxyPort=80 -Dhttp.nonProxyHosts="localhost|host.mydomain.com"
@@ -384,17 +384,19 @@ rem --- try wmic, avail until Win11 2026
 where wmic >nul 2>&1 && for /f "delims=" %%l in ('wmic os get FreePhysicalMemory^,TotalVisibleMemorySize /format:list') do >nul 2>&1 set "OS_%%l"
 rem --- use powershell fallback
 if NOT DEFINED OS_TotalVisibleMemorySize (
-  for /f %%i in ('powershell -command "(Get-CimInstance -ClassName 'Cim_PhysicalMemory' | Measure-Object -Property Capacity -Sum).Sum"') do set "MemorySizeBytes=%%i"
+  for /f %%i in ('powershell -command "(Get-CimInstance -ClassName 'Cim_PhysicalMemory' | Measure-Object -Property Capacity -Sum).Sum/1024"') do set "OS_TotalVisibleMemorySize=%%i"
 )
-rem --- cut to kb, can't use cmd calc as it is limited to int32 max (2,147,483,648) so anything over 2GB blows it
-if DEFINED MemorySizeBytes set "OS_TotalVisibleMemorySize=%MemorySizeBytes:~0,-3%"
 rem --- eventually fail if not succeeded
 if NOT DEFINED OS_TotalVisibleMemorySize (
   call :mem_failed
   goto:eof
 )
 
+set /a "ONEGB=1024*1024"
+set /a "TWENTYPCT=%OS_TotalVisibleMemorySize%/10*2"
+rem --- set Xmx to 80 percent or memory - 1GB whichever is bigger ---
 set /a "JAVA_XMX=%OS_TotalVisibleMemorySize%/10*8"
+if %TWENTYPCT% GTR %ONEGB% set /a "JAVA_XMX=%OS_TotalVisibleMemorySize%-%ONEGB%"
 set /a "JAVA_RAM_QUARTER=%OS_TotalVisibleMemorySize%/4"
 
 rem --- a. cap to 1GB for 32bit jre ---
@@ -417,7 +419,7 @@ goto:eof
   goto:eof
 :use_max
   call :xmx %JAVA_XMX%
-  if /i NOT "%JAVA_BIN%"=="javaw" echo set %JAVA_MEM_STRING% ^(80% ram maximum^)
+  if /i NOT "%JAVA_BIN%"=="javaw" echo set %JAVA_MEM_STRING% ^(80%% memory or memory minus 1GB^)
   goto:eof
 :use_free
   call :xmx %OS_FreePhysicalMemory%
