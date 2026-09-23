@@ -8,10 +8,14 @@
 ## uncomment and put the path to your jre here
 #JAVA_HOME="/home/ed/jre1.6.0_21"
 
-## uncomment and change your memory configuration here 
+## change your memory configuration here 
 ## Xms is initial size, Xmx is maximum size
 ## values are ##M for ## Megabytes, ##G for ## Gigabytes
-#JAVA_MAXMEM="-Xmx512M"
+## e.g. JAVA_MAXMEM="-Xms64M -Xmx512M" or
+##      JAVA_MAXMEM="-XX:MaxRAMPercentage=80.0"
+## our default is a maximum of "80 percent of available memory"
+## or "available memory minus 1GB" whichever value is bigger
+# JAVA_MAXMEM=""
 
 ## uncomment and change your language/country here 
 ## to overwrite OS default locale setting
@@ -234,7 +238,6 @@ if [ -n "$JUMP_PROPERTIES" ] && [ -f "$JUMP_PROPERTIES" ]; then
 fi
 
 # compile jre opts, respect already set ones by environment
-JAVA_OPTS="$JAVA_MAXMEM $JAVA_LANG $JAVA_OPTS"
 JAVA_OPTS="$JAVA_OPTS -Djump.home=."
 [ -n "JAVA_SAXDRIVER"    ] && JAVA_OPTS="$JAVA_OPTS -Dorg.xml.sax.driver=$JAVA_SAXDRIVER"
 [ -n "$JAVA_LOOKANDFEEL" ] && JAVA_OPTS="$JAVA_OPTS -Dswing.defaultlaf=$JAVA_LOOKANDFEEL"
@@ -359,11 +362,13 @@ else
   echo set max. memory limit to $MEM_MAX_MB MiB
 fi
 
+JAVA_OPTS="$JAVA_MAXMEM $JAVA_LANG $JAVA_OPTS"
+
 # eventually try to start if no errors so far
 if [ -z "$ERROR" ]; then
   echo ---Start OJ---
   # log.dir needs a trailing slash for path concatenation in log4j.xml
-"$JAVA" -Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader -cp "$CLASSPATH" -Dlog.dir="$JUMP_SETTINGS/" $JAVA_OPTS $MAIN -state "$JUMP_SETTINGS/" $JUMP_OPTS "$@"
+  echo "$JAVA" -Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader -cp "$CLASSPATH" -Dlog.dir="$JUMP_SETTINGS/" $JAVA_OPTS $MAIN -state "$JUMP_SETTINGS/" $JUMP_OPTS "$@"
   # result of jre call
   ERROR=$?
 fi
