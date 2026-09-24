@@ -29,7 +29,7 @@ rem --- enforce memory limits here                   ---
 rem --- Xms is initial size, Xmx is maximum size     ---
 rem --- use ##M for ## MB, ##G for ## GB             ---
 rem --- e.g. JAVA_MEM=-Xms64M -Xmx1G                 ---
-rem ---      JAVA_MEM=--XX:MaxRAMPercentage=80.0"    ---
+rem ---      JAVA_MEM=-XX:MaxRAMPercentage=80.0"    ---
 rem --- unset default sets Xmx to "80% memory" or to ---
 rem --- "100% memory minus 1GB" whichever is bigger  ---
 rem set "JAVA_MEM="
@@ -426,7 +426,8 @@ goto:eof
   if /i NOT "%JAVA_BIN%"=="javaw" call echo set %JAVA_MEM_STRING% ^(free memory^)
   goto:eof
 :mem_failed
-  if /i NOT "%JAVA_BIN%"=="javaw" call echo skipped because: Couldn't determine ram size.
+  set "JAVA_MEM=-XX:MaxRAMPercentage=80.0"
+  if /i NOT "%JAVA_BIN%"=="javaw" call echo Couldn't determine ram size. will use ^'%JAVA_MEM%^'
   goto:eof
 
 :xmx
