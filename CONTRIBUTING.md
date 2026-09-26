@@ -34,10 +34,10 @@ cleanly before opening a PR.
 
 ## Issues
 
-**Issue creation is currently restricted** on this repository — please raise problems or
-proposals as a pull request instead, even a small or partial one, rather than opening a new
-issue. If you've found and fixed something, that's the most useful way to bring it to the
-maintainers' attention.
+Bug reports and proposals are welcome as GitHub issues. Please include the OpenJUMP version,
+your operating system and Java version, and the steps to reproduce the problem. If you've
+already found and fixed something, you're welcome to open a pull request that references the
+issue.
 
 ## Licence
 
