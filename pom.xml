@@ -110,8 +110,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://dlm.mariadb.com/Connectors/java/connector-java-3.5.8/mariadb-java-client-3.5.8.jar</url>
-                      <sha1>272078c15f3f45051aa4ff5630d563dd0969d834</sha1>
+                      <url>https://dlm.mariadb.com/4787586/Connectors/java/connector-java-3.5.10/mariadb-java-client-3.5.10.jar</url>
+                      <sha1>c6a687f7ccb65394103cd516e0583e61e6d92c24</sha1>
                       <unpack>false</unpack>
                       <outputDirectory>${db.folder}</outputDirectory>
                     </configuration>
@@ -122,8 +122,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/xerial/sqlite-jdbc/releases/download/3.36.0.3/sqlite-jdbc-3.36.0.3.jar</url>
-                      <sha1>7fa71c4dfab806490cb909714fb41373ec552c29</sha1>
+                      <url>https://github.com/xerial/sqlite-jdbc/releases/download/3.53.4.0/sqlite-jdbc-3.53.4.0.jar</url>
+                      <sha256>bcb1f51e36f940867e83342f9efbf5968ac44a6bef4d397bb4af7b17b45cd2fb</sha256>
                       <unpack>false</unpack>
                       <outputDirectory>${db.folder}</outputDirectory>
                     </configuration>
@@ -1112,7 +1112,7 @@
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>exec-maven-plugin</artifactId>
-              <version>3.6.3</version>
+              <version>3.6.4</version>
               <?m2e ignore?>
               <executions>
                 <execution>
@@ -1229,7 +1229,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-deploy-plugin</artifactId>
-            <version>3.1.4</version>
+            <version>3.2.0</version>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -1272,7 +1272,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.15.0</version>
+          <version>3.16.0</version>
           <configuration>
             <source>11</source>
             <target>11</target>
@@ -1285,7 +1285,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.6.1</version>
+          <version>3.6.2</version>
           <?m2e ignore?>
           <executions>
             <!-- build several build date stamp formattings used all over -->
@@ -1335,7 +1335,7 @@
           <groupId>io.github.git-commit-id</groupId>
           <artifactId>git-commit-id-maven-plugin</artifactId>
           <!-- version 5+ are java11+ compatible only -->
-          <version>10.0.0</version>
+          <version>10.0.1</version>
           <?m2e ignore?>
           <executions>
             <!-- retrieve git revision information from local repo -->
@@ -1367,7 +1367,7 @@
         <plugin>
           <groupId>se.bjurr.gitchangelog</groupId>
           <artifactId>git-changelog-maven-plugin</artifactId>
-          <version>2.2.11</version>
+          <version>2.4.0</version>
           <?m2e ignore?>
           <executions>
             <execution>
@@ -1465,7 +1465,7 @@ ${project.artifactId} ${project.version} Changelog
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.4</version>
+          <version>3.2.0</version>
           <executions>
             <execution>
               <id>default-install</id>
@@ -1528,7 +1528,7 @@ ${project.artifactId} ${project.version} Changelog
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.6</version>
+          <version>3.6.0</version>
           <configuration>
             <argLine>-Djava.system.class.loader=com.vividsolutions.jump.workbench.plugin.PlugInClassLoader</argLine>
           </configuration>
@@ -1741,13 +1741,22 @@ ${project.artifactId} ${project.version} Changelog
             <version>3.0</version>
             <scope>test</scope>
         </dependency>
+        <!-- Test-scoped only: sqlite-jdbc is no runtime dependency as CORE 
+        runs without it. -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.53.4.0</version>
+            <scope>test</scope>
+        </dependency>
         <!-- Version 2.2.1 is the last of the unmaintained 2.2 series
-        There are 2.5.x and 2.7 versions but they are much bigger
-        don't know if we need them as only few if any people use jython -->
+        There are 2.5.x and 2.7 versions but they are much bigger 30MB+
+        we'll stick to the old jython until a good reason to upgrade manifests
+        -->
         <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython</artifactId>
-            <version>2.7.4</version>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.tukaani</groupId>

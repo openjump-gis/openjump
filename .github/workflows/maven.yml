@@ -30,4 +30,6 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
     - name: Build with Maven
-      run: mvn -B package -P snapshot
+      run: |
+        export MAVEN_OPTS="--enable-native-access=ALL-UNNAMED"
+        mvn -B package -P snapshot

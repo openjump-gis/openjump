@@ -20,16 +20,19 @@ rem -- run OJ with '--help' argument to find out which are available --
 set JUMP_OPTS=
 
 rem -- set some java runtime options here, initialize empty --
-set JAVA_OPTS=
+set "JAVA_OPTS="
 
 rem --- uncomment and change your language/country here to overwrite OS locale setting ---
 rem set JAVA_OPTS=%JAVA_OPTS% -Duser.language=de -Duser.country=DE
 
-rem --- enforce a memory configuration here, default value is the ---
-rem --- size of ram or 1GB for 32bit jre's, whichever is bigger   ---
-rem --- Xms is initial size, Xmx is maximum size, values          ---
-rem --- are ##M for ## Megabytes, ##G for ## Gigabytes            ---
-rem set JAVA_MEM=-Xms64M -Xmx512M
+rem --- enforce memory limits here                   ---
+rem --- Xms is initial size, Xmx is maximum size     ---
+rem --- use ##M for ## MB, ##G for ## GB             ---
+rem --- e.g. JAVA_MEM=-Xms64M -Xmx1G                 ---
+rem ---      JAVA_MEM=-XX:MaxRAMPercentage=80.0"    ---
+rem --- unset default sets Xmx to "80% memory" or to ---
+rem --- "100% memory minus 1GB" whichever is bigger  ---
+rem set "JAVA_MEM="
 
 rem --- uncomment and change your http proxy settings here
 rem set JAVA_OPTS=%JAVA_OPTS% -Dhttp.proxyHost=myproxyserver.com -Dhttp.proxyPort=80 -Dhttp.nonProxyHosts="localhost|host.mydomain.com"
@@ -153,6 +156,11 @@ if %JAVAVER_MAJOR% geq 9 if %JAVAVER_MAJOR% lss 11 (
   set JAVA_OPTS=%JAVA_OPTS% --add-modules java.se.ee
 )
 
+rem -- java24+ wants explicit jni allowal
+if %JAVAVER_MAJOR% geq 24 (
+  set JAVA_OPTS=%JAVA_OPTS% --enable-native-access=ALL-UNNAMED
+)
+
 rem -- detect if java is 64bit --
 for /f "delims=" %%v in ('echo "%JAVA_VERSIONSTRING%"^|findstr /I "64-Bit"') do (
   set JAVA_X64=64
@@ -203,8 +211,9 @@ rem --- 8.1 Version 6.3 ---
 for /f "delims=" %%v in ('ver^|findstr /REC:" 6.3.[0-9\.]*]"') do (
   set "ID=eightone"
 )
-rem --- 10 Version 10.x ---
-for /f "delims=" %%v in ('ver^|findstr /REC:" 10.[0-9\.]*]"') do (
+rem --- 10 & 11 print out Version 10.0.buildnumber.x ---
+rem --- to distinguish either we would have to  parse the build number, 22000+ is Win11 --
+for /f "delims=" %%v in ('ver^|findstr /REC:" 10.0.[0-9\.]*]"') do (
   set "ID=ten"
 )
 rem -- add native as fallthrough and lib\ext the legacy value and default system path --
@@ -301,6 +310,12 @@ set JUMP_OPTS=-default-plugins bin\default-plugins.xml -state "%SETTINGS_HOME%" 
 rem --- workbench-properties.xml is used to manually load plugins (ISA uses this) ---
 if EXIST "bin\workbench-properties.xml" set "JUMP_OPTS=-properties bin\workbench-properties.xml %JUMP_OPTS%"
 
+rem -- debug info --
+if /i NOT "%JAVA_BIN%"=="javaw" echo ---JUMP_OPTS--- & echo %JUMP_OPTS%
+
+rem -- debug info --
+if /i NOT "%JAVA_BIN%"=="javaw" echo ---JAVA_OPTS--- & echo %JAVA_OPTS%
+
 rem -- disconnect javaw from console by using start --
 rem -- note: title is needed or start won't accept quoted path to java binary (protect spaces in javapath) --
 if /i "%JAVA_BIN%"=="javaw" ( set START=start "" ) else ( set START= )
@@ -365,15 +380,29 @@ rem --- default java32 limit is 1GB ---
 set /a "JAVA_XMX_X86=1024*1024"
 
 rem --- detect ram size, values are in kB ---
-for /f "delims=" %%l in ('wmic os get FreePhysicalMemory^,TotalVisibleMemorySize /format:list') do >nul 2>&1 set "OS_%%l"
-if NOT DEFINED OS_TotalVisibleMemorySize goto mem_failed
+rem --- try wmic, avail until Win11 2026
+where wmic >nul 2>&1 && for /f "delims=" %%l in ('wmic os get FreePhysicalMemory^,TotalVisibleMemorySize /format:list') do >nul 2>&1 set "OS_%%l"
+rem --- use powershell fallback
+if NOT DEFINED OS_TotalVisibleMemorySize (
+  for /f %%i in ('powershell -command "(Get-CimInstance -ClassName 'Cim_PhysicalMemory' | Measure-Object -Property Capacity -Sum).Sum/1024"') do set "OS_TotalVisibleMemorySize=%%i"
+)
+rem --- eventually fail if not succeeded
+if NOT DEFINED OS_TotalVisibleMemorySize (
+  call :mem_failed
+  goto:eof
+)
 
-set /a "JAVA_XMX=%OS_TotalVisibleMemorySize%"
+set /a "ONEGB=1024*1024"
+set /a "TWENTYPCT=%OS_TotalVisibleMemorySize%/10*2"
+rem --- set Xmx to 80 percent or memory - 1GB whichever is bigger ---
+set /a "JAVA_XMX=%OS_TotalVisibleMemorySize%/10*8"
+if %TWENTYPCT% GTR %ONEGB% set /a "JAVA_XMX=%OS_TotalVisibleMemorySize%-%ONEGB%"
 set /a "JAVA_RAM_QUARTER=%OS_TotalVisibleMemorySize%/4"
+
 rem --- a. cap to 1GB for 32bit jre ---
 rem --- b. use xmx value if it fits into free space ---
-rem --- c. use freemem value if bigger than 1/4 ram (jre default) ---
-rem --- d. don't set, use jre default (works even though less than 1/4 ram might be free) ---
+rem --- (disabled) c. use freemem value if bigger than 1/4 ram (jre default) ---
+rem --- (disabled) d. don't set, use jre default (works even though less than 1/4 ram might be free) ---
 
 if NOT DEFINED JAVA_X64 if %JAVA_XMX% GTR %JAVA_XMX_X86% goto use_cap
 goto use_max
@@ -390,20 +419,20 @@ goto:eof
   goto:eof
 :use_max
   call :xmx %JAVA_XMX%
-  if /i NOT "%JAVA_BIN%"=="javaw" echo set %JAVA_MEM_STRING% ^(ram maximum^)
+  if /i NOT "%JAVA_BIN%"=="javaw" echo set %JAVA_MEM_STRING% ^(80%% memory or memory minus 1GB^)
   goto:eof
 :use_free
   call :xmx %OS_FreePhysicalMemory%
   if /i NOT "%JAVA_BIN%"=="javaw" call echo set %JAVA_MEM_STRING% ^(free memory^)
   goto:eof
 :mem_failed
-  if /i NOT "%JAVA_BIN%"=="javaw" call echo skipped because: Couldn't determine ram size. Use safe 1GB value.
-  call :xmx %JAVA_XMX_X86%
+  set "JAVA_MEM=-XX:MaxRAMPercentage=80.0"
+  if /i NOT "%JAVA_BIN%"=="javaw" call echo Couldn't determine ram size. will use ^'%JAVA_MEM%^'
   goto:eof
 
 :xmx
 set /a "value=%1/1024"
-set JAVA_MEM=-Xmx%value%M
+set "JAVA_MEM=-Xmx%value%M"
 set "JAVA_MEM_STRING=Xmx to %value%M"
 goto:eof
 

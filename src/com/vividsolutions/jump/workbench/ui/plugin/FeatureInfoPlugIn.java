@@ -39,7 +39,6 @@ import javax.swing.ImageIcon;
 
 import com.vividsolutions.jump.workbench.WorkbenchContext;
 import com.vividsolutions.jump.workbench.model.Layer;
-import com.vividsolutions.jump.workbench.model.LayerManagerProxy;
 import com.vividsolutions.jump.workbench.plugin.AbstractPlugIn;
 import com.vividsolutions.jump.workbench.plugin.EnableCheck;
 import com.vividsolutions.jump.workbench.plugin.EnableCheckFactory;
@@ -47,6 +46,7 @@ import com.vividsolutions.jump.workbench.plugin.MultiEnableCheck;
 import com.vividsolutions.jump.workbench.plugin.PlugInContext;
 import com.vividsolutions.jump.workbench.ui.InfoFrame;
 import com.vividsolutions.jump.workbench.ui.SelectionManagerProxy;
+import com.vividsolutions.jump.workbench.ui.TaskFrame;
 import com.vividsolutions.jump.workbench.ui.TaskFrameProxy;
 import com.vividsolutions.jump.workbench.ui.images.IconLoader;
 
@@ -79,14 +79,11 @@ public class FeatureInfoPlugIn extends AbstractPlugIn {
 
     public boolean execute(PlugInContext context) throws Exception {
         reportNothingToUndoYet(context);
-        //Don't pass in TaskFrame as LayerManagerProxy, because the TaskFrame may
-        //be closed and thus the LayerManagerProxy may return null. [Jon Aquino]
-        InfoFrame infoFrame =
-            new InfoFrame(
-                context.getWorkbenchContext(),
-                (LayerManagerProxy) context.getActiveInternalFrame(),
-                ((TaskFrameProxy) context.getActiveInternalFrame()).getTaskFrame());
-        infoFrame.setSize(500, 300);
+        // Reuse the TaskFrame's single PrimaryInfoFrame instead of creating a new
+        // InfoFrame on every invocation - matches UniqueFeatureInfoPlugIn's pattern
+        TaskFrame taskFrame = ((TaskFrameProxy) context.getActiveInternalFrame()).getTaskFrame();
+        InfoFrame infoFrame = taskFrame.getInfoFrame();
+        infoFrame.getModel().clear();
 
         // TODO should be nice to extend FeatureInfoPlugIn to non-layer layerables
         for (Iterator<Layer> i = context.getLayerManager().iterator(Layer.class); i.hasNext();) {
@@ -105,8 +102,7 @@ public class FeatureInfoPlugIn extends AbstractPlugIn {
                     layer));
         }
 
-        //infoFrame.setSelectedTab(infoFrame.getGeometryTab());
-        context.getWorkbenchFrame().addInternalFrame(infoFrame);
+        infoFrame.surface();
 
         return true;
     }
