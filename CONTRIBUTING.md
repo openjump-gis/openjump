@@ -1,7 +1,6 @@
 # Contributing to OpenJUMP
 
-Thanks for your interest in contributing! OpenJUMP is maintained by a small team of volunteers,
-so clear, focused contributions are the most useful kind.
+OpenJUMP (OJ) is maintained by a very small team of volunteers, so any contribution is welcome.
 
 ## Setting up a development environment
 
@@ -34,19 +33,21 @@ cleanly before opening a PR.
 
 ## Issues
 
-Bug reports and proposals are welcome as GitHub issues. Please include the OpenJUMP version,
-your operating system and Java version, and the steps to reproduce the problem. If you've
-already found and fixed something, you're welcome to open a pull request that references the
-issue.
+Bug reports and proposals are welcome as [GitHub issues](https://github.com/openjump-gis/openjump/issues). 
+Please include the OpenJUMP version, your operating system and Java version, and the steps to 
+reproduce the problem. 
+If you've already found and fixed something, feel free to open a [pull request](https://github.com/openjump-gis/openjump/pulls) 
+referencing the issue.
 
-## Licence
+## License
 
-OpenJUMP is licensed under the GNU General Public License v2 (GPLv2). By submitting a
-contribution, you agree it will be distributed under the same licence.
+OpenJUMP is licensed under the GNU General Public License v2 (GPLv2). When submitting a
+contribution, make sure you agree to it being distributed under the same license.
 
 ## Extensions
 
 If your contribution is really a standalone plugin rather than a change to OJ Core, consider
-whether it belongs in its own extension repository instead — see the README's Extensions section
+setting up a separate extension repository instead — see the 
+[README's Extensions section](https://github.com/openjump-gis/openjump/blob/main/README.md#extensions)
 for the naming convention (`xxx-extension`, `xxx-driver`) and the
-[HelloWorldExtension](https://github.com/openjump-gis/helloworld-extension) example.
+[HelloWorldExtension repo](https://github.com/openjump-gis/helloworld-extension) for an example.
