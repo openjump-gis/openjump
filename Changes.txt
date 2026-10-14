@@ -1,5 +1,23 @@
 ﻿Version ${version.number} ${version.release} rev.${version.revision} (released on ${version.buildDateLong})
 
+Improvements
+  * overhaul memory detection/jre Xmx setting in start scripts
+  * read GeoPackage table extent from gpkg_contents
+  * limit spatialite extension loading to one trial per runtime
+  * reuse the TaskFrame's single InfoFrame in FeatureInfoPlugIn
+  * upgraded dependencies
+  
+Bug Fixes
+  * fix memory detection on Win11 2026+
+  * pinned Raster file reader to use JAI TIFF reader
+  * correct demo.mapserver.org WMS endpoint
+  * fix mariadb jdbc download
+  * avoid NPE when flashing a GeometryCollection
+  * fix "Show WMS URL script stopped working"
+
+
+Version 2.4.0 release rev.5303[6c9a02d] (released on 15. January 2025)
+
 New Features
   * new Coverage Simplifier Plugin based on new JTS coverage code
   * load single band sextante raster style from sidecar SLD file
