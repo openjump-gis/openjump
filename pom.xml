@@ -122,8 +122,8 @@
                       <goal>wget</goal>
                     </goals>
                     <configuration>
-                      <url>https://github.com/xerial/sqlite-jdbc/releases/download/3.53.4.0/sqlite-jdbc-3.53.4.0.jar</url>
-                      <sha256>bcb1f51e36f940867e83342f9efbf5968ac44a6bef4d397bb4af7b17b45cd2fb</sha256>
+                      <url>https://github.com/xerial/sqlite-jdbc/releases/download/3.54.1.0/sqlite-jdbc-3.54.1.0.jar</url>
+                      <sha256>f8dce420a6016278497f4f0560f65602b9db858de141b541cf91a4644ebe4639</sha256>
                       <unpack>false</unpack>
                       <outputDirectory>${db.folder}</outputDirectory>
                     </configuration>
@@ -1234,7 +1234,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
-            <version>3.6.3</version>
+            <version>3.7.0</version>
           </plugin>
           <plugin>
             <groupId>io.github.download-maven-plugin</groupId>
@@ -1746,7 +1746,7 @@ ${project.artifactId} ${project.version} Changelog
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.53.4.0</version>
+            <version>3.54.1.0</version>
             <scope>test</scope>
         </dependency>
         <!-- Version 2.2.1 is the last of the unmaintained 2.2 series
