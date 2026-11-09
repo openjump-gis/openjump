@@ -1285,7 +1285,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.6.2</version>
+          <version>3.7.0</version>
           <?m2e ignore?>
           <executions>
             <!-- build several build date stamp formattings used all over -->
@@ -1367,7 +1367,7 @@
         <plugin>
           <groupId>se.bjurr.gitchangelog</groupId>
           <artifactId>git-changelog-maven-plugin</artifactId>
-          <version>2.5.4</version>
+          <version>2.5.6</version>
           <?m2e ignore?>
           <executions>
             <execution>
